@@ -69,6 +69,8 @@ homer2.first_name = "Marge";
 
 ## Support for containers
 
+### C++ standard library
+
 reflect-cpp supports the following containers from the C++ standard library:
 
 - `std::array` (TODO)
@@ -88,6 +90,8 @@ reflect-cpp supports the following containers from the C++ standard library:
 - `std::variant`
 - `std::vector`
 
+### Additional containers
+
 In addition, it includes the following custom containers:
 
 - `rfl::Box`: Similar to `std::unique_ptr`, but guaranteed to never be null.
@@ -97,7 +101,9 @@ In addition, it includes the following custom containers:
 - `rfl::Ref`: Similar to `std::shared_ptr`, but guaranteed to never be null. 
 - `rfl::TaggedUnion`: Similar to `std::variant`, but with explicit tags that make parsing more efficient, results in a different serialization format than `rfl::Enum`.
 
-Finally, it is very easy to extend full support to your own custom classes, refer to the [documentation](TODO) for details.
+### Custom classes
+
+Finally, it is very easy to extend full support to your own classes, refer to the [documentation](TODO) for details.
 
 ## Serialization formats
 
@@ -111,8 +117,22 @@ reflect-cpp is deliberately designed in a very modular format, using [concepts](
 
 ## Installation
 
-...TODO...
+If you **do not** need JSON support, then reflect-cpp is header-only. Simply copy the contents of the folder `include` into your source repository or add it to your include path.
+
+If you **do** need JSON support, then you should also add `src/yyjson.c` to your source files for compilation. Note that `yyjson.c` is written in ANSI C.
+
+If you need support for other serialization formats like XML or flexbuffers, you should also include and link the respective libraries, as listed in the previous section.
 
 ## Authors
 
-reflect-cpp has been developed by [scaleML](https://www.scaleml.de), a company specializing in software engineering and machine learning for enterprise applications. It is extensively used in [getML](https://getml.com), a software for automated feature engineering using relational learning.
+reflect-cpp has been developed by [scaleML](https://www.scaleml.de), a company specializing in software engineering and machine learning for enterprise applications. It is extensively used for [getML](https://getml.com), a software for automated feature engineering using relational learning.
+
+## License
+
+reflect-cpp is released under the MIT License. Refer to the LICENSE file for details.
+
+reflect-cpp includes [YYJSON](https://github.com/ibireme/yyjson), the fastest JSON library currently in existence. YYJSON is written by YaoYuan (<ibireme@gmail.com>) and also released under the MIT License.
+
+
+
+
