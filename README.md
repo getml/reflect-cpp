@@ -9,8 +9,8 @@ Design principles for reflect-cpp include:
 - Close integration with containers in the C++ library
 - Close integration with C++ idioms
 - Out-of-the-box support for JSON, no dependencies
-- Simple installation: If no JSON support is required, reflect-cpp is header-only. For JSON support, only a single source file needs to be included.
-- Simple extendability to other formats
+- Simple installation: If no JSON support is required, reflect-cpp is header-only. For JSON support, only a single source file needs to be compiled.
+- Simple extendability to other formats.
 - No macros
 
 ```cpp
