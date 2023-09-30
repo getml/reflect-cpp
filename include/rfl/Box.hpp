@@ -14,8 +14,8 @@ class Box {
     /// The only way of creating new boxes is
     /// Box<T>::make(...).
     template <class... Args>
-    static Box<T> make(Args... _args) {
-        return Box<T>(std::make_unique<T>(_args...));
+    static Box<T> make(Args&&... _args) {
+        return Box<T>(std::make_unique<T>(std::forward<Args>(_args)...));
     }
 
     ~Box() = default;
@@ -41,6 +41,12 @@ class Box {
     /// The underlying unique_ptr_
     std::unique_ptr<T> ptr_;
 };
+
+/// Generates a new Ref<T>.
+template <class T, class... Args>
+Box<T> make_box(Args&&... _args) {
+    return Box<T>::make(std::forward<Args>(_args)...);
+}
 
 }  // namespace rfl
 

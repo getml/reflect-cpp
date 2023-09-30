@@ -12,10 +12,10 @@ template <class T>
 class Ref {
    public:
     /// The default way of creating new references is
-    /// Ref<T>::make(...).
+    /// Ref<T>::make(...) or make_ref<T>(...).
     template <class... Args>
-    static Ref<T> make(Args... _args) {
-        return Ref<T>(std::make_shared<T>(_args...));
+    static Ref<T> make(Args&&... _args) {
+        return Ref<T>(std::make_shared<T>(std::forward<Args>(_args)...));
     }
 
     /// Wrapper around a shared_ptr, leads to a runtime error,
@@ -64,6 +64,12 @@ class Ref {
     /// The underlying shared_ptr_
     std::shared_ptr<T> ptr_;
 };
+
+/// Generates a new Ref<T>.
+template <class T, class... Args>
+Ref<T> make_ref(Args&&... _args) {
+    return Ref<T>::make(std::forward<Args>(_args)...);
+}
 
 }  // namespace rfl
 
