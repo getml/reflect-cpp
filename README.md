@@ -158,7 +158,7 @@ reflect-cpp has been developed by [scaleML](https://www.scaleml.de), a company s
 
 reflect-cpp is released under the MIT License. Refer to the LICENSE file for details.
 
-reflect-cpp includes [YYJSON](https://github.com/ibireme/yyjson), the fastest JSON library currently in existence. YYJSON is written by YaoYuan (<ibireme@gmail.com>) and also released under the MIT License.
+reflect-cpp includes [YYJSON](https://github.com/ibireme/yyjson), the fastest JSON library currently in existence. YYJSON is written by YaoYuan and also released under the MIT License.
 
 
 
