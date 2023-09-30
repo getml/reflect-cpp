@@ -130,6 +130,17 @@ reflect-cpp currently supports the following serialization formats:
 
 reflect-cpp is deliberately designed in a very modular format, using [concepts](https://en.cppreference.com/w/cpp/language/constraints), to make it as easy as possible to support additional serialization formats. Refer to the [documentation](TODO) for details. PRs related to serialization formats are welcome.
 
+## Current status
+
+At the moment, this is work-in-progress. Here are some things that are still missing：
+
+- Extensive testing
+- Benchmarks
+- Documentation
+- Support for std::array
+- Support for rfl::Flatten<std::map<...>> (serde supports this as well)
+- Support for std::any (whether we want to support this as all is still being debated).
+
 ## Installation
 
 If you **do not** need JSON support, then reflect-cpp is header-only. Simply copy the contents of the folder `include` into your source repository or add it to your include path.
@@ -158,7 +169,7 @@ reflect-cpp has been developed by [scaleML](https://www.scaleml.de), a company s
 
 reflect-cpp is released under the MIT License. Refer to the LICENSE file for details.
 
-reflect-cpp includes [YYJSON](https://github.com/ibireme/yyjson), the fastest JSON library currently in existence. YYJSON is written by YaoYuan (<ibireme@gmail.com>) and also released under the MIT License.
+reflect-cpp includes [YYJSON](https://github.com/ibireme/yyjson), the fastest JSON library currently in existence. YYJSON is written by YaoYuan and also released under the MIT License.
 
 
 
