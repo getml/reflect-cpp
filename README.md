@@ -138,6 +138,18 @@ If you **do** need JSON support, then you should also add `src/yyjson.c` to your
 
 If you need support for other serialization formats like XML or flexbuffers, you should also include and link the respective libraries, as listed in the previous section.
 
+## Compiling the tests
+
+To compile the tests, do the following:
+
+```
+cd tests
+mkdir build
+cd build
+cmake ..
+make
+```
+
 ## Authors
 
 reflect-cpp has been developed by [scaleML](https://www.scaleml.de), a company specializing in software engineering and machine learning for enterprise applications. It is extensively used for [getML](https://getml.com), a software for automated feature engineering using relational learning.
