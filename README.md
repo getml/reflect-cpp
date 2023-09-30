@@ -1,6 +1,14 @@
-# reflect-cpp
+# ![C++](https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white) reflect-cpp
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
+[![Generic badge](https://img.shields.io/badge/gcc-10+-<GREEN>.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/clang-TODO-<GREEN>.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/MSVC-TODO-<GREEN>.svg)](https://shields.io/)
 
 ![image](banner1.png)
+
+
 
 **reflect-cpp** is a C++-20 library for fast serialization and deserialization using compile-time reflection, similar to [serde](https://github.com/serde-rs) in Rust, [pydantic](https://github.com/pydantic/pydantic) in Python, [encoding](https://github.com/golang/go/tree/master/src/encoding) in Go or [aeson](https://github.com/haskell/aeson/tree/master) in Haskell.
 
@@ -74,10 +82,10 @@ homer2.first_name = "Marge";
 reflect-cpp supports the following containers from the C++ standard library:
 
 - `std::array` (TODO)
-- `std::deque` (TODO)
-- `std::forward_list` (TODO)
-- `std::map` (TODO)
-- `std::list` (TODO)
+- `std::deque` 
+- `std::forward_list` 
+- `std::map` 
+- `std::list` 
 - `std::optional`
 - `std::pair`
 - `std::set`
@@ -85,8 +93,8 @@ reflect-cpp supports the following containers from the C++ standard library:
 - `std::string`
 - `std::tuple`
 - `std::unique_ptr`
-- `std::unordered_map` (TODO)
-- `std::unordered_set` (TODO)
+- `std::unordered_map` 
+- `std::unordered_set` 
 - `std::variant`
 - `std::vector`
 
