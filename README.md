@@ -27,53 +27,59 @@ Design principles for reflect-cpp include:
 
 ```cpp
 #include <iostream>
-#include <rfl>
-#include <rfl/json>
+#include <rfl/json.hpp>
+#include <rfl.hpp>
 
 // "firstName", "lastName" and "children" are the field names
 // as they will appear in the JSON. The C++ standard is
 // snake case, the JSON standard is camel case, so the names
 // will not always be identical.
 struct Person {
-    rfl::Field<std::string, "firstName"> first_name;
-    rfl::Field<std::string, "lastName"> last_name;
-    rfl::Field<std::vector<Person>, "children"> children;
+    rfl::Field<"firstName", std::string> first_name;
+    rfl::Field<"lastName", std::string> last_name;
+    rfl::Field<"children", std::vector<Person>> children;
 };
 
-const auto bart = Person{
-    .first_name = "Bart", 
-    .last_name = "Simpson", 
-    .children = std::vector<Person>()
-};
+const auto bart = Person{.first_name = "Bart",
+                         .last_name = "Simpson",
+                         .children = std::vector<Person>()};
 
 const auto lisa = Person{
-    .first_name = "Lisa", 
-    .last_name = "Simpson", 
-    .children = rfl::default_value // same as std::vector<Person>() 
+    .first_name = "Lisa",
+    .last_name = "Simpson",
+    .children = rfl::default_value  // same as std::vector<Person>()
 };
 
 // Returns a deep copy of the original object,
 // replacing first_name.
-const auto maggie = rfl::replace(
-    lisa, rfl::make_field<"firstName">("Maggie"));
+const auto maggie =
+    rfl::replace(lisa, rfl::make_field<"firstName">(std::string("Maggie")));
 
-const auto homer = Person{
-    .first_name = "Homer", 
-    .last_name = "Simpson", 
-    .children = std::vector<Person>({bart, lisa, maggie})
-}; 
+const auto homer =
+    Person{.first_name = "Homer",
+           .last_name = "Simpson",
+           .children = std::vector<Person>({bart, lisa, maggie})};
 
 // We can now transform this into a JSON string.
 const std::string json_string = rfl::json::write(homer);
+
+// {"firstName":"Homer","lastName":"Simpson","children":[{"firstName":"Bart","lastName":"Simpson","children":[]},{"firstName":"Lisa","lastName":"Simpson","children":[]},{"firstName":"Maggie","lastName":"Simpson","children":[]}]} 
+std::cout << json_string << std::endl;
 
 // And we can parse the string to recreate the struct.
 auto homer2 = rfl::json::read<Person>(json_string).value();
 
 // Fields can be accessed like this:
-std::cout << "Hello, my name is " << homer.first_name() << " " << homer.last_name() << "." << std::endl;
+std::cout << "Hello, my name is " << homer.first_name() << " "
+          << homer.last_name() << "." << std::endl;
 
 // Since homer2 is mutable, we can also change the values like this:
 homer2.first_name = "Marge";
+
+std::cout << "Hello, my name is " << homer2.first_name() << " "
+          << homer2.last_name() << "." << std::endl;
+
+
 ```
 
 ## Support for containers
