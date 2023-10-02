@@ -20,11 +20,12 @@ struct TaggedUnion {
     TaggedUnion(VariantType&& _variant) noexcept
         : variant_(std::move(_variant)) {}
 
-    TaggedUnion(const TaggedUnion<_discriminator, VariantType>& _tagged_union)
+    TaggedUnion(
+        const TaggedUnion<_discriminator, NamedTupleTypes...>& _tagged_union)
         : variant_(_tagged_union.variant_) {}
 
-    TaggedUnion(
-        TaggedUnion<_discriminator, VariantType>&& _tagged_union) noexcept
+    TaggedUnion(TaggedUnion<_discriminator, NamedTupleTypes...>&&
+                    _tagged_union) noexcept
         : variant_(std::move(_tagged_union.variant_)) {}
 
     template <class T,
@@ -65,13 +66,13 @@ struct TaggedUnion {
 
     /// Assigns the underlying object.
     inline void operator=(
-        const TaggedUnion<_discriminator, VariantType>& _field) {
+        const TaggedUnion<_discriminator, NamedTupleTypes...>& _field) {
         variant_ = _field.get();
     }
 
     /// Assigns the underlying object.
     inline void operator=(
-        TaggedUnion<_discriminator, VariantType>&& _other) noexcept {
+        TaggedUnion<_discriminator, NamedTupleTypes...>&& _other) noexcept {
         variant_ = std::move(_other.variant_);
     }
 
