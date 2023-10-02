@@ -12,7 +12,8 @@ void write_and_read(const T& _struct, const std::string& _expected) {
         std::cout << "Test failed on write. Expected:" << std::endl
                   << _expected << std::endl
                   << "Got: " << std::endl
-                  << json_string1 << std::endl;
+                  << json_string1 << std::endl
+                  << std::endl;
         return;
     }
     const auto struct2 = rfl::json::read<T>(json_string1).value();
@@ -21,7 +22,8 @@ void write_and_read(const T& _struct, const std::string& _expected) {
         std::cout << "Test failed on read. Expected:" << std::endl
                   << _expected << std::endl
                   << "Got: " << std::endl
-                  << json_string2 << std::endl;
+                  << json_string2 << std::endl
+                  << std::endl;
         return;
     }
     std::cout << "OK" << std::endl << std::endl;

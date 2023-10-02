@@ -4,9 +4,13 @@
 #include <string>
 #include <vector>
 
+#include "write_and_read.hpp"
+
 // Makes sure that the example in the README works as expected.
 // It would be embarrassing if it didn't...
 void test_readme_example() {
+    std::cout << "test_readme_example" << std::endl;
+
     // "firstName", "lastName" and "children" are the field names
     // as they will appear in the JSON. The C++ standard is
     // snake case, the JSON standard is camel case, so the names
@@ -37,21 +41,10 @@ void test_readme_example() {
                .last_name = "Simpson",
                .children = std::vector<Person>({bart, lisa, maggie})};
 
-    // We can now transform this into a JSON string.
-    const std::string json_string = rfl::json::write(homer);
-
-    std::cout << json_string << std::endl;
-
-    // And we can parse the string to recreate the struct.
-    auto homer2 = rfl::json::read<Person>(json_string).value();
-
-    // Fields can be accessed like this:
-    std::cout << "Hello, my name is " << homer.first_name() << " "
-              << homer.last_name() << "." << std::endl;
-
-    // Since homer2 is mutable, we can also change the values like this:
-    homer2.first_name = "Marge";
-
-    std::cout << "Hello, my name is " << homer2.first_name() << " "
-              << homer2.last_name() << "." << std::endl;
+    write_and_read(
+        homer,
+        "{\"firstName\":\"Homer\",\"lastName\":\"Simpson\",\"children\":[{"
+        "\"firstName\":\"Bart\",\"lastName\":\"Simpson\",\"children\":[]},{"
+        "\"firstName\":\"Lisa\",\"lastName\":\"Simpson\",\"children\":[]},{"
+        "\"firstName\":\"Maggie\",\"lastName\":\"Simpson\",\"children\":[]}]}");
 }
