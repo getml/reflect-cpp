@@ -103,5 +103,5 @@ const auto handle_shapes = [](const auto& s) {
   }
 };
 
-std::visit(handle_shapes, my_shape.variant);
+std::visit(handle_shapes, my_shape.variant());
 ```
