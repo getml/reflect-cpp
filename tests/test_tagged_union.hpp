@@ -28,7 +28,7 @@ void test_tagged_union() {
         rfl::Field<"width", double> width;
     };
 
-    using Shapes = std::variant<Circle, Square, Rectangle>;
+    using Shapes = rfl::TaggedUnion<"shape", Circle, Square, Rectangle>;
 
     const Shapes r = Rectangle{.height = 10, .width = 5};
 
