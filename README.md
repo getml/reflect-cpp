@@ -99,7 +99,7 @@ reflect-cpp supports the following containers from the C++ standard library:
 - `std::shared_ptr`
 - `std::string`
 - `std::tuple`
-- `std::unique_ptr`
+- `std::unique_ptr` (TODO)
 - `std::unordered_map` 
 - `std::unordered_set` 
 - `std::variant`
@@ -109,7 +109,7 @@ reflect-cpp supports the following containers from the C++ standard library:
 
 In addition, it includes the following custom containers:
 
-- `rfl::Box`: Similar to `std::unique_ptr`, but guaranteed to never be null.
+- `rfl::Box`: Similar to `std::unique_ptr`, but guaranteed to never be null (TODO).
 - `rfl::Enum`: Similar to `std::variant`, but with explicit tags that make parsing more efficient.
 - `rfl::Literal`: An explicitly enumerated string.
 - `rfl::NamedTuple`: Similar to `std::tuple`, but with named fields that can be retrieved via their name at compile time.
@@ -126,7 +126,7 @@ reflect-cpp currently supports the following serialization formats:
 
 - **JSON**: Out-of-the-box support, no additional dependencies required.
 - **XML**: Requires [libxml2](https://github.com/GNOME/libxml2) (TODO).
-- **flexbuffers**: Requires [flatbuffers](https://github.com/google/flatbuffers).
+- **flexbuffers**: Requires [flatbuffers](https://github.com/google/flatbuffers) (TODO).
 
 reflect-cpp is deliberately designed in a very modular format, using [concepts](https://en.cppreference.com/w/cpp/language/constraints), to make it as easy as possible to support additional serialization formats. Refer to the [documentation](TODO) for details. PRs related to serialization formats are welcome.
 
@@ -137,7 +137,7 @@ At the moment, this is work-in-progress. Here are some things that are still mis
 - Extensive testing
 - Benchmarks
 - Documentation
-- Support for std::array
+- Support for std::array, std::unique_ptr and full support for rfl::Box
 - Support for rfl::Flatten<std::map<...>> (serde supports this as well)
 - Support for std::any (whether we want to support this as all is still being debated).
 
