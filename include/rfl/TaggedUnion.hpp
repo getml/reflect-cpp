@@ -17,14 +17,15 @@ struct TaggedUnion {
 
     TaggedUnion(const VariantType& _variant) : variant_(_variant) {}
 
-    TaggedUnion(VariantType&& _variant)
-        : variant_(std::forward<VariantType>(_variant)) {}
+    TaggedUnion(VariantType&& _variant) noexcept
+        : variant_(std::move(_variant)) {}
 
     TaggedUnion(const TaggedUnion<_discriminator, VariantType>& _tagged_union)
         : variant_(_tagged_union.variant_) {}
 
-    TaggedUnion(TaggedUnion<_discriminator, VariantType>&& _tagged_union)
-        : variant_(std::forward<VariantType>(_tagged_union.variant_)) {}
+    TaggedUnion(
+        TaggedUnion<_discriminator, VariantType>&& _tagged_union) noexcept
+        : variant_(std::move(_tagged_union.variant_)) {}
 
     template <class T,
               typename std::enable_if<std::is_convertible_v<T, VariantType>,
@@ -34,7 +35,7 @@ struct TaggedUnion {
     template <class T,
               typename std::enable_if<std::is_convertible_v<T, VariantType>,
                                       bool>::type = true>
-    TaggedUnion(T&& _t) : variant_(std::forward<T>(_t)) {}
+    TaggedUnion(T&& _t) noexcept : variant_(std::forward<T>(_t)) {}
 
     ~TaggedUnion() = default;
 
@@ -42,8 +43,16 @@ struct TaggedUnion {
     inline void operator=(const VariantType& _variant) { variant_ = _variant; }
 
     /// Assigns the underlying object.
-    inline void operator=(VariantType&& _variant) {
-        variant_ = std::forward<VariantType>(_variant);
+    inline void operator=(VariantType&& _variant) noexcept {
+        variant_ = std::move(_variant);
+    }
+
+    /// Assigns the underlying object.
+    template <class T,
+              typename std::enable_if<std::is_convertible_v<T, VariantType>,
+                                      bool>::type = true>
+    inline void operator=(T&& _variant) {
+        variant_ = std::forward<T>(_variant);
     }
 
     /// Assigns the underlying object.
@@ -61,8 +70,9 @@ struct TaggedUnion {
     }
 
     /// Assigns the underlying object.
-    inline void operator=(TaggedUnion<_discriminator, VariantType>&& _other) {
-        variant_ = std::forward<VariantType>(_other.variant_);
+    inline void operator=(
+        TaggedUnion<_discriminator, VariantType>&& _other) noexcept {
+        variant_ = std::move(_other.variant_);
     }
 
     /// Returns the underlying variant.

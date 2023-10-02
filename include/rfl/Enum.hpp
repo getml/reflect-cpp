@@ -22,8 +22,7 @@ struct Enum {
                       "Duplicate field names are not allowed");
     }
 
-    Enum(VariantType&& _variant)
-        : variant_(std::forward<VariantType>(_variant)) {
+    Enum(VariantType&& _variant) : variant_(std::move(_variant)) {
         static_assert(internal::no_duplicate_field_names<Fields>(),
                       "Duplicate field names are not allowed");
     }
@@ -41,7 +40,7 @@ struct Enum {
     inline void operator=(VariantType&& _variant) {
         static_assert(internal::no_duplicate_field_names<Fields>(),
                       "Duplicate field names are not allowed");
-        variant_ = std::forward<VariantType>(_variant);
+        variant_ = std::move(_variant);
     }
 
     /// Returns the underlying variant.

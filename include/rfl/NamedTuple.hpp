@@ -100,7 +100,7 @@ class NamedTuple {
     template <class... TupContent, class... Tail>
     auto add(const std::tuple<TupContent...>& _tuple, Tail&&... _tail) const {
         if constexpr (sizeof...(Tail) > 0) {
-            return add_tuple(std::forward<std::tuple<TupContent...>>(_tuple),
+            return add_tuple(_tuple,
                              std::make_index_sequence<sizeof...(TupContent)>{})
                 .replace(_tail...);
         } else {

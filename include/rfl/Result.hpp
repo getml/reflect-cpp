@@ -66,11 +66,11 @@ class Result {
 
     Result(const T& _val) : t_or_err_(_val) {}
 
-    Result(T&& _val) : t_or_err_(std::forward<T>(_val)) {}
+    Result(T&& _val) noexcept : t_or_err_(std::forward<T>(_val)) {}
 
     Result(const Error& _err) : t_or_err_(_err) {}
 
-    Result(Error&& _err) : t_or_err_(std::forward<Error>(_err)) {}
+    Result(Error&& _err) noexcept : t_or_err_(std::forward<Error>(_err)) {}
 
     template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
                                                bool>::type = true>

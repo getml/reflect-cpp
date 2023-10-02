@@ -17,19 +17,19 @@ namespace rfl {
 template <internal::StringLiteral _name, class _Type>
 struct Field {
     /// The underlying type.
-    using Type = std::decay_t<_Type>;
+    using Type = _Type;
 
     /// The name of the field.
     using Name = rfl::Literal<_name>;
 
     Field(const Type& _value) : value_(_value) {}
 
-    Field(Type&& _value) : value_(std::forward<Type>(_value)) {}
+    Field(Type&& _value) noexcept : value_(std::move(_value)) {}
 
     Field(const Field<_name, Type>& _field) : value_(_field.get()) {}
 
-    Field(Field<_name, Type>&& _field)
-        : value_(std::forward<Type>(_field.value_)) {}
+    Field(Field<_name, Type>&& _field) noexcept
+        : value_(std::move(_field.value_)) {}
 
     template <class T>
     Field(const Field<_name, T>& _field) : value_(_field.get()) {}
@@ -43,7 +43,7 @@ struct Field {
 
     template <class T, typename std::enable_if<std::is_convertible_v<T, Type>,
                                                bool>::type = true>
-    Field(T&& _value) : value_(_value) {}
+    Field(T&& _value) noexcept : value_(std::forward<T>(_value)) {}
 
     template <class T, typename std::enable_if<std::is_convertible_v<T, Type>,
                                                bool>::type = true>
@@ -73,8 +73,8 @@ struct Field {
     inline void operator=(const Type& _value) { value_ = _value; }
 
     /// Assigns the underlying object.
-    inline void operator=(Type&& _value) {
-        value_ = std::forward<Type>(_value);
+    inline void operator=(Type&& _value) noexcept {
+        value_ = std::move(_value);
     }
 
     /// Assigns the underlying object.
@@ -118,7 +118,7 @@ struct Field {
     inline void set(const Type& _value) { value_ = _value; }
 
     /// Assigns the underlying object.
-    inline void set(Type&& _value) { value_ = std::forward<Type>(_value); }
+    inline void set(Type&& _value) { value_ = std::move(_value); }
 
     /// Returns the underlying object.
     inline Type& value() { return value_; }
