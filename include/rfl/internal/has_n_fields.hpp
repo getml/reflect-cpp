@@ -20,762 +20,1009 @@ struct any {
     constexpr operator T() const noexcept;
 };
 
+template <class T, int n>
+struct constructable_with_n_fields;
+
 /*The following boilerplate code was generated using a Python script:
 
 def has_field_template(num: int) -> str:
     anys = "".join([", any"] * num)
-    return f"""
+    return """
     template <class T>
-    constexpr bool has_{num}_fields = constructable<T{anys}>;
-    """
-code = "".join((has_field_template(i) for i in range(101)))
+    struct constructable_with_n_fields<T, {num}> {
+        static constexpr bool value = constructable<T{anys}>;
+    };
+    """.replace(
+        "{num}", str(num)
+    ).replace(
+        "{anys}", anys
+    )
 
+
+code = "".join((has_field_template(i) for i in range(102)))
 with open("generated_code.cpp", "w", encoding="utf-8") as codefile:
     codefile.write(code)
 
 */
 
 template <class T>
-constexpr bool has_0_fields = constructable<T>;
+struct constructable_with_n_fields<T, 0> {
+    static constexpr bool value = constructable<T>;
+};
 
 template <class T>
-constexpr bool has_1_fields = constructable<T, any>;
+struct constructable_with_n_fields<T, 1> {
+    static constexpr bool value = constructable<T, any>;
+};
 
 template <class T>
-constexpr bool has_2_fields = constructable<T, any, any>;
+struct constructable_with_n_fields<T, 2> {
+    static constexpr bool value = constructable<T, any, any>;
+};
 
 template <class T>
-constexpr bool has_3_fields = constructable<T, any, any, any>;
+struct constructable_with_n_fields<T, 3> {
+    static constexpr bool value = constructable<T, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_4_fields = constructable<T, any, any, any, any>;
+struct constructable_with_n_fields<T, 4> {
+    static constexpr bool value = constructable<T, any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_5_fields = constructable<T, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 5> {
+    static constexpr bool value = constructable<T, any, any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_6_fields = constructable<T, any, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 6> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_7_fields =
-    constructable<T, any, any, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 7> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_8_fields =
-    constructable<T, any, any, any, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 8> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_9_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 9> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_10_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 10> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_11_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 11> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_12_fields = constructable<T, any, any, any, any, any, any,
-                                             any, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 12> {
+    static constexpr bool value = constructable<T, any, any, any, any, any, any,
+                                                any, any, any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_13_fields = constructable<T, any, any, any, any, any, any,
-                                             any, any, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 13> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any>;
+};
 
 template <class T>
-constexpr bool has_14_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any>;
+struct constructable_with_n_fields<T, 14> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any>;
+};
 
 template <class T>
-constexpr bool has_15_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any>;
+struct constructable_with_n_fields<T, 15> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_16_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any>;
+struct constructable_with_n_fields<T, 16> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_17_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any>;
+struct constructable_with_n_fields<T, 17> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_18_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 18> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_19_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 19> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_20_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 20> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_21_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 21> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_22_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 22> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any>;
+};
 
 template <class T>
-constexpr bool has_23_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 23> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any>;
+};
 
 template <class T>
-constexpr bool has_24_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 24> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any>;
+};
 
 template <class T>
-constexpr bool has_25_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any>;
-
-template <class T>
-constexpr bool has_26_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any>;
-
-template <class T>
-constexpr bool has_27_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any>;
-
-template <class T>
-constexpr bool has_28_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any>;
-
-template <class T>
-constexpr bool has_29_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_30_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_31_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_32_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_33_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_34_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_35_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_36_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_37_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any>;
-
-template <class T>
-constexpr bool has_38_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any>;
-
-template <class T>
-constexpr bool has_39_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any>;
-
-template <class T>
-constexpr bool has_40_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any>;
-
-template <class T>
-constexpr bool has_41_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_42_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_43_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_44_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_45_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_46_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_47_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_48_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_49_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any>;
-
-template <class T>
-constexpr bool has_50_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any>;
-
-template <class T>
-constexpr bool has_51_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any>;
-
-template <class T>
-constexpr bool has_52_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any>;
-
-template <class T>
-constexpr bool has_53_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_54_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_55_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_56_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_57_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_58_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_59_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_60_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_61_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any>;
-
-template <class T>
-constexpr bool has_62_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any>;
-
-template <class T>
-constexpr bool has_63_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any>;
-
-template <class T>
-constexpr bool has_64_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any>;
-
-template <class T>
-constexpr bool has_65_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_66_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_67_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_68_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_69_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_70_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_71_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_72_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_73_fields = constructable<
-    T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_74_fields = constructable<
-    T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_75_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any>;
-
-template <class T>
-constexpr bool has_76_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any>;
-
-template <class T>
-constexpr bool has_77_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_78_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_79_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_80_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_81_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_82_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_83_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_84_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_85_fields = constructable<
-    T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_86_fields = constructable<
-    T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_87_fields = constructable<
-    T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_88_fields = constructable<
-    T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_89_fields = constructable<
-    T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_90_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_91_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_92_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_93_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_94_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_95_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_96_fields =
-    constructable<T, any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any,
-                  any, any, any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_97_fields = constructable<
-    T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_98_fields = constructable<
-    T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_99_fields = constructable<
-    T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any>;
-
-template <class T>
-constexpr bool has_100_fields = constructable<
-    T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
-    any, any, any, any, any, any, any, any, any, any, any>;
+struct constructable_with_n_fields<T, 25> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 26> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 27> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 28> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 29> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 30> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 31> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 32> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 33> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 34> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 35> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 36> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 37> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 38> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 39> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 40> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 41> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 42> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 43> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 44> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 45> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 46> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 47> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 48> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 49> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 50> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 51> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 52> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 53> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 54> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 55> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 56> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 57> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 58> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 59> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 60> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 61> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 62> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 63> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 64> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 65> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 66> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 67> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 68> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 69> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 70> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 71> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 72> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 73> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 74> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 75> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 76> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 77> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 78> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 79> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 80> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 81> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 82> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 83> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 84> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 85> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 86> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 87> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 88> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 89> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 90> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 91> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 92> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 93> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 94> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 95> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 96> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 97> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 98> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 99> {
+    static constexpr bool value =
+        constructable<T, any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any,
+                      any, any, any, any, any, any, any, any, any, any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 100> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any>;
+};
+
+template <class T>
+struct constructable_with_n_fields<T, 101> {
+    static constexpr bool value = constructable<
+        T, any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any, any, any, any, any, any, any, any, any, any, any, any,
+        any, any, any>;
+};
+
+// ---------------------------------
+// End of generated boilerplate code
+// ---------------------------------
+
+template <class T, int n>
+constexpr bool has_n_fields = constructable_with_n_fields<T, n>::value &&
+                              !constructable_with_n_fields<T, n + 1>::value;
 
 }  // namespace internal
 }  // namespace rfl
