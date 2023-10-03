@@ -4,6 +4,7 @@
 #include "test_default_values.hpp"
 #include "test_field_variant.hpp"
 #include "test_literal.hpp"
+#include "test_optional_fields.hpp"
 #include "test_readme_example.hpp"
 #include "test_ref.hpp"
 #include "test_tagged_union.hpp"
@@ -12,6 +13,7 @@
 int main() {
     test_readme_example();
     test_default_values();
+    test_optional_fields();
     test_literal();
     test_variant();
     test_tagged_union();
