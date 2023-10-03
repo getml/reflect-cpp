@@ -1,6 +1,6 @@
 # Structs
 
-In order to setup a struct, all of it fields need to be an `rfl::Field`. The `rfl::Field` contains the type and the name. 
+In order to setup a struct, all of its fields need to be an `rfl::Field`. The `rfl::Field` contains the type and the name. 
 The name is a compile-time string and won't have any runtime overhead. The compile-time string is what will eventually
 appear in the JSON (or any other format).
 

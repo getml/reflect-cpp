@@ -3,7 +3,7 @@
 If you absolutely do not want to make any changes to your original classes whatsoever,
 you can implement a custom parser using `rfl::parsing::CustomParser`.
 
-In order to do so, you must to the following:
+In order to do so, you must do the following:
 
 You must create a helper struct that *can* be parsed. The helper struct must fulfill the following
 conditions:
