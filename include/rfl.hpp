@@ -22,6 +22,7 @@
 #include "rfl/make_named_tuple.hpp"
 #include "rfl/name_t.hpp"
 #include "rfl/named_tuple_t.hpp"
+#include "rfl/parsing/CustomParser.hpp"
 #include "rfl/remove_fields.hpp"
 #include "rfl/replace.hpp"
 #include "rfl/to_named_tuple.hpp"

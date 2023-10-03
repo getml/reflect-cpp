@@ -31,15 +31,13 @@ struct PersonImpl {
     rfl::Field<"lastName", std::string> last_name;
     rfl::Field<"age", int> age;
 
-    static PersonImpl from_person(const Person& _p) {
+    static PersonImpl from_class(const Person& _p) noexcept {
         return PersonImpl{.first_name = _p.first_name(),
                           .last_name = _p.last_name(),
                           .age = _p.age()};
     }
 
-    Person to_person() const {
-        return Person(first_name(), last_name(), age());
-    }
+    Person to_class() const { return Person(first_name(), last_name(), age()); }
 };
 
 }  // namespace tcc3
@@ -48,19 +46,9 @@ namespace rfl {
 namespace parsing {
 
 template <class ReaderType, class WriterType>
-struct Parser<ReaderType, WriterType, tcc3::Person> {
-    static Result<tcc3::Person> read(const ReaderType& _r,
-                                     auto* _var) noexcept {
-        const auto to_person = [](const auto& _p) { return _p.to_person(); };
-        return Parser<ReaderType, WriterType, tcc3::PersonImpl>::read(_r, _var)
-            .transform(to_person);
-    }
-
-    static auto write(const WriterType& _w, const tcc3::Person& _p) noexcept {
-        return Parser<ReaderType, WriterType, tcc3::PersonImpl>::write(
-            _w, tcc3::PersonImpl::from_person(_p));
-    }
-};
+struct Parser<ReaderType, WriterType, tcc3::Person>
+    : public CustomParser<ReaderType, WriterType, tcc3::Person,
+                          tcc3::PersonImpl> {};
 
 }  // namespace parsing
 }  // namespace rfl
