@@ -19,8 +19,16 @@ void test_default_values() {
     };
 
     const auto bart = Person{.first_name = "Bart"};
+    const auto lisa = Person{.first_name = "Lisa"};
+    const auto maggie = Person{.first_name = "Maggie"};
+    const auto homer =
+        Person{.first_name = "Homer",
+               .children = std::vector<Person>({bart, lisa, maggie})};
 
     write_and_read(
-        bart,
-        "{\"firstName\":\"Bart\",\"lastName\":\"Simpson\",\"children\":[]}");
+        homer,
+        "{\"firstName\":\"Homer\",\"lastName\":\"Simpson\",\"children\":[{"
+        "\"firstName\":\"Bart\",\"lastName\":\"Simpson\",\"children\":[]},{"
+        "\"firstName\":\"Lisa\",\"lastName\":\"Simpson\",\"children\":[]},{"
+        "\"firstName\":\"Maggie\",\"lastName\":\"Simpson\",\"children\":[]}]}");
 }
