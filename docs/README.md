@@ -18,4 +18,4 @@
 
 2.1) [Custom classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_classes.md) - For when you have custom classes with private fields.
 
-2.2) [Custom parser for your classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_parser.md) - For when you have custom classes with private fields and you want to leave them absolutely untouched.
+2.2) [Custom parsers for your classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_parser.md) - For when you have custom classes with private fields and you want to leave them absolutely untouched.
