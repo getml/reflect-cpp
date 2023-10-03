@@ -18,7 +18,6 @@
 #include <vector>
 
 #include "rfl/Box.hpp"
-#include "rfl/Enum.hpp"
 #include "rfl/Literal.hpp"
 #include "rfl/NamedTuple.hpp"
 #include "rfl/Ref.hpp"

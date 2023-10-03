@@ -2,7 +2,6 @@
 #define RFL_RFL_HPP_
 
 #include "rfl/Box.hpp"
-#include "rfl/Enum.hpp"
 #include "rfl/Field.hpp"
 #include "rfl/Flatten.hpp"
 #include "rfl/Literal.hpp"
