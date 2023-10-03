@@ -332,7 +332,7 @@ struct Parser<ReaderType, WriterType, NamedTuple<FieldTypes...>> {
         const auto size = sizeof...(Args);
 
         if constexpr (size == sizeof...(FieldTypes)) {
-            return NamedTuple<FieldTypes...>(_args...);
+            return NamedTuple<FieldTypes...>(std::move(_args)...);
         } else {
             using FieldType = typename std::tuple_element<
                 size, typename NamedTuple<FieldTypes...>::Fields>::type;
@@ -348,13 +348,14 @@ struct Parser<ReaderType, WriterType, NamedTuple<FieldTypes...>> {
                     return Error("Field named '" + key + "' not found!");
                 } else {
                     return build_named_tuple_recursively(
-                        _r, _map, _args..., FieldType(ValueType()));
+                        _r, _map, std::move(_args)..., FieldType(ValueType()));
                 }
             }
 
             const auto build = [&](auto&& _value) {
-                return build_named_tuple_recursively(_r, _map, _args...,
-                                                     FieldType(_value));
+                return build_named_tuple_recursively(
+                    _r, _map, std::move(_args)...,
+                    FieldType(std::move(_value)));
             };
 
             return get_value<ValueType>(_r, *it).and_then(build);
