@@ -110,11 +110,10 @@ reflect-cpp supports the following containers from the C++ standard library:
 In addition, it includes the following custom containers:
 
 - `rfl::Box`: Similar to `std::unique_ptr`, but guaranteed to never be null (TODO).
-- `rfl::Enum`: Similar to `std::variant`, but with explicit tags that make parsing more efficient.
 - `rfl::Literal`: An explicitly enumerated string.
 - `rfl::NamedTuple`: Similar to `std::tuple`, but with named fields that can be retrieved via their name at compile time.
 - `rfl::Ref`: Similar to `std::shared_ptr`, but guaranteed to never be null. 
-- `rfl::TaggedUnion`: Similar to `std::variant`, but with explicit tags that make parsing more efficient, results in a different serialization format than `rfl::Enum`.
+- `rfl::TaggedUnion`: Similar to `std::variant`, but with explicit tags that make parsing more efficient.
 
 ### Custom classes
 
