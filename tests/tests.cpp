@@ -1,3 +1,5 @@
+#include "test_custom_class1.hpp"
+#include "test_custom_class2.hpp"
 #include "test_default_values.hpp"
 #include "test_field_variant.hpp"
 #include "test_literal.hpp"
@@ -14,6 +16,8 @@ int main() {
     test_tagged_union();
     test_field_variant();
     test_ref();
+    test_custom_class1();
+    test_custom_class2();
 
     return 0;
 }
