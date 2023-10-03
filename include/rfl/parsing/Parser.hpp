@@ -29,6 +29,7 @@
 #include "rfl/internal/all_fields.hpp"
 #include "rfl/internal/has_reflection_method_v.hpp"
 #include "rfl/internal/has_reflection_type_v.hpp"
+#include "rfl/internal/no_duplicate_field_names.hpp"
 #include "rfl/named_tuple_t.hpp"
 #include "rfl/parsing/is_required.hpp"
 #include "rfl/to_named_tuple.hpp"
@@ -655,6 +656,10 @@ struct FieldVariantParser {
 
     /// Expresses the variables as type T.
     static ResultType read(const ReaderType& _r, InputVarType* _var) noexcept {
+        static_assert(
+            internal::no_duplicate_field_names<std::tuple<FieldTypes...>>(),
+            "Externally tagged variants cannot have duplicate field names.");
+
         const auto to_map = [&](auto _obj) { return _r.to_map(&_obj); };
 
         const auto to_result = [&](auto _map) -> ResultType {
@@ -676,11 +681,16 @@ struct FieldVariantParser {
     /// Expresses the variables as a JSON type.
     static OutputVarType write(const WriterType& _w,
                                const std::variant<FieldTypes...>& _v) noexcept {
+        static_assert(
+            internal::no_duplicate_field_names<std::tuple<FieldTypes...>>(),
+            "Externally tagged variants cannot have duplicate field names.");
+
         const auto handle = [&](const auto& _field) {
             using NamedTupleType = NamedTuple<std::decay_t<decltype(_field)>>;
             return Parser<ReaderType, WriterType, NamedTupleType>::write(
                 _w, NamedTupleType(_field));
         };
+
         return std::visit(handle, _v);
     }
 
@@ -775,28 +785,18 @@ struct Parser<ReaderType, WriterType, std::variant<FieldTypes...>> {
     }
 
     /// Expresses the variables as a JSON type.
-    template <int _i = 0>
     static OutputVarType write(
         const WriterType& _w,
         const std::variant<FieldTypes...>& _variant) noexcept {
-        using AltType =
-            std::variant_alternative_t<_i, std::variant<FieldTypes...>>;
-        if constexpr (_i == 0 &&
-                      internal::all_fields<std::tuple<FieldTypes...>>()) {
+        if constexpr (internal::all_fields<std::tuple<FieldTypes...>>()) {
             return FieldVariantParser<ReaderType, WriterType,
                                       FieldTypes...>::write(_w, _variant);
-        } else if constexpr (_i + 1 == sizeof...(FieldTypes)) {
-            return Parser<ReaderType, WriterType, std::decay_t<AltType>>::write(
-                _w, std::get<AltType>(_variant));
         } else {
-            if (std::holds_alternative<AltType>(_variant)) {
-                return Parser<ReaderType, WriterType,
-                              std::decay_t<AltType>>::write(_w,
-                                                            std::get<AltType>(
-                                                                _variant));
-            } else {
-                return write<_i + 1>(_w, _variant);
-            }
+            const auto handle = [&](const auto& _v) {
+                using Type = std::decay_t<decltype(_v)>;
+                return Parser<ReaderType, WriterType, Type>::write(_w, _v);
+            };
+            return std::visit(handle, _variant);
         }
     }
 };
