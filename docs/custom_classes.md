@@ -12,7 +12,7 @@ If you want your class to be supported by reflect-cpp, it needs to have the foll
 If you class fulfills these three conditions, then it is fully supported by all serialization and deserialization
 routines in reflect-cpp.
 
-If you absolutely do not want to make any changes to your original class, you can implement a custom parser.
+If you absolutely do not want to make any changes to your original class, you can implement a [custom parser](https://github.com/getml/reflect-cpp/blob/main/docs/custom_parser.md).
 
 ## Example 1: Using an Impl struct
 
