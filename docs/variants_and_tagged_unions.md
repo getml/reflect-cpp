@@ -1,6 +1,6 @@
 # `std::variant` and `rfl::TaggedUnion`
 
-## `std::variant`
+## `std::variant` (untagged)
 
 Sometimes you know that the JSON object can be one of several alternatives. For example,
 you might have several shapes like `Circle`, `Rectangle` or `Square`. For these kind of 
