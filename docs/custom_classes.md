@@ -204,7 +204,7 @@ namespace rfl {
 namespace parsing {
 
 template <class ReaderType, class WriterType>
-struct Parser<ReaderType, WriterType, tcc3::Person>
+struct Parser<ReaderType, WriterType, Person>
     : public CustomParser<ReaderType, WriterType, Person, PersonImpl> {};
 
 }  // namespace parsing
