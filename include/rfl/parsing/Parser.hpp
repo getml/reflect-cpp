@@ -27,6 +27,7 @@
 #include "rfl/field_type.hpp"
 #include "rfl/from_named_tuple.hpp"
 #include "rfl/internal/StringLiteral.hpp"
+#include "rfl/internal/all_fields.hpp"
 #include "rfl/internal/has_reflection_method_v.hpp"
 #include "rfl/internal/has_reflection_type_v.hpp"
 #include "rfl/named_tuple_t.hpp"
@@ -122,102 +123,6 @@ struct Parser<ReaderType, WriterType, Box<T>> {
                                const Box<T>& _box) noexcept {
         return Parser<ReaderType, WriterType, std::decay_t<T>>::write(_w,
                                                                       *_box);
-    }
-};
-
-// ----------------------------------------------------------------------------
-
-template <class ReaderType, class WriterType, class... FieldTypes>
-struct Parser<ReaderType, WriterType, Enum<FieldTypes...>> {
-    using ResultType = Result<Enum<FieldTypes...>>;
-
-   public:
-    using InputObjectType = typename ReaderType::InputObjectType;
-    using InputVarType = typename ReaderType::InputVarType;
-
-    using OutputObjectType = typename WriterType::OutputObjectType;
-    using OutputVarType = typename WriterType::OutputVarType;
-
-    /// Expresses the variables as type T.
-    static ResultType read(const ReaderType& _r, InputVarType* _var) noexcept {
-        const auto to_map = [&](auto _obj) { return _r.to_map(&_obj); };
-
-        const auto to_result = [&](auto _map) -> ResultType {
-            if (_map.size() != 1) {
-                return Error(
-                    "Could not parse Enum: Expected the object to have exactly "
-                    "one "
-                    "field, but found " +
-                    std::to_string(_map.size()) + " fields.");
-            }
-            const auto it = _map.begin();
-            const auto& disc_value = it->first;
-            auto& var = it->second;
-            return find_matching_alternative(_r, disc_value, &var);
-        };
-
-        return _r.to_object(_var).transform(to_map).and_then(to_result);
-    }
-
-    /// Expresses the variables as a JSON type.
-    static OutputVarType write(const WriterType& _w,
-                               const Enum<FieldTypes...>& _enum) noexcept {
-        const auto handle = [&](const auto& _field) {
-            using NamedTupleType = NamedTuple<std::decay_t<decltype(_field)>>;
-            return Parser<ReaderType, WriterType, NamedTupleType>::write(
-                _w, NamedTupleType(_field));
-        };
-        return std::visit(handle, _enum.variant_);
-    }
-
-   private:
-    template <int _i = 0>
-    static ResultType find_matching_alternative(const ReaderType& _r,
-                                                const std::string& _disc_value,
-                                                InputVarType* _var) noexcept {
-        if constexpr (_i == sizeof...(FieldTypes)) {
-            return Error("Could not parse enum, could not match field named '" +
-                         _disc_value + "'.");
-        } else {
-            const auto optional = try_option<_i>(_r, _disc_value, _var);
-            if (optional) {
-                return *optional;
-            } else {
-                return find_matching_alternative<_i + 1>(_r, _disc_value, _var);
-            }
-        }
-    }
-
-    /// Tries to parse one particular option.
-    template <int _i>
-    static std::optional<ResultType> try_option(const ReaderType& _r,
-                                                const std::string& _disc_value,
-                                                InputVarType* _var) noexcept {
-        using FieldType = std::decay_t<
-            typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type>;
-
-        using ValueType = std::decay_t<typename FieldType::Type>;
-
-        const auto key = FieldType::name_.str();
-
-        if (key == _disc_value) {
-            const auto to_enum = [](ValueType&& _val) {
-                return Enum<FieldTypes...>(
-                    FieldType(std::forward<ValueType>(_val)));
-            };
-
-            const auto embellish_error = [&](const Error& _e) {
-                return Error("Could not parse enum with field '" + _disc_value +
-                             "': " + _e.what());
-            };
-
-            return Parser<ReaderType, WriterType, ValueType>::read(_r, _var)
-                .transform(to_enum)
-                .or_else(embellish_error);
-
-        } else {
-            return std::optional<ResultType>();
-        }
     }
 };
 
@@ -736,6 +641,104 @@ struct Parser<ReaderType, WriterType, std::tuple<Ts...>> {
 
 // ----------------------------------------------------------------------------
 
+/// To be used when all options of the variants are rfl::Field. Essentially,
+/// this is an externally tagged union.
+template <class ReaderType, class WriterType, class... FieldTypes>
+struct FieldVariantParser {
+    using ResultType = Result<std::variant<FieldTypes...>>;
+
+   public:
+    using InputObjectType = typename ReaderType::InputObjectType;
+    using InputVarType = typename ReaderType::InputVarType;
+
+    using OutputObjectType = typename WriterType::OutputObjectType;
+    using OutputVarType = typename WriterType::OutputVarType;
+
+    /// Expresses the variables as type T.
+    static ResultType read(const ReaderType& _r, InputVarType* _var) noexcept {
+        const auto to_map = [&](auto _obj) { return _r.to_map(&_obj); };
+
+        const auto to_result = [&](auto _map) -> ResultType {
+            if (_map.size() != 1) {
+                return Error(
+                    "Could not parse Field: Expected the object to have "
+                    "exactly one field, but found " +
+                    std::to_string(_map.size()) + " fields.");
+            }
+            const auto it = _map.begin();
+            const auto& disc_value = it->first;
+            auto& var = it->second;
+            return find_matching_alternative(_r, disc_value, &var);
+        };
+
+        return _r.to_object(_var).transform(to_map).and_then(to_result);
+    }
+
+    /// Expresses the variables as a JSON type.
+    static OutputVarType write(const WriterType& _w,
+                               const std::variant<FieldTypes...>& _v) noexcept {
+        const auto handle = [&](const auto& _field) {
+            using NamedTupleType = NamedTuple<std::decay_t<decltype(_field)>>;
+            return Parser<ReaderType, WriterType, NamedTupleType>::write(
+                _w, NamedTupleType(_field));
+        };
+        return std::visit(handle, _v);
+    }
+
+   private:
+    template <int _i = 0>
+    static ResultType find_matching_alternative(const ReaderType& _r,
+                                                const std::string& _disc_value,
+                                                InputVarType* _var) noexcept {
+        if constexpr (_i == sizeof...(FieldTypes)) {
+            return Error(
+                "Could not parse std::variant, could not match field named '" +
+                _disc_value + "'.");
+        } else {
+            const auto optional = try_option<_i>(_r, _disc_value, _var);
+            if (optional) {
+                return *optional;
+            } else {
+                return find_matching_alternative<_i + 1>(_r, _disc_value, _var);
+            }
+        }
+    }
+
+    /// Tries to parse one particular option.
+    template <int _i>
+    static std::optional<ResultType> try_option(const ReaderType& _r,
+                                                const std::string& _disc_value,
+                                                InputVarType* _var) noexcept {
+        using FieldType = std::decay_t<
+            typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type>;
+
+        using ValueType = std::decay_t<typename FieldType::Type>;
+
+        const auto key = FieldType::name_.str();
+
+        if (key == _disc_value) {
+            const auto to_variant = [](ValueType&& _val) {
+                return std::variant<FieldTypes...>(
+                    FieldType(std::forward<ValueType>(_val)));
+            };
+
+            const auto embellish_error = [&](const Error& _e) {
+                return Error("Could not parse std::variant with field '" +
+                             _disc_value + "': " + _e.what());
+            };
+
+            return Parser<ReaderType, WriterType, ValueType>::read(_r, _var)
+                .transform(to_variant)
+                .or_else(embellish_error);
+
+        } else {
+            return std::optional<ResultType>();
+        }
+    }
+};
+
+// ----------------------------------------------------------------------------
+
 template <class ReaderType, class WriterType, class... FieldTypes>
 struct Parser<ReaderType, WriterType, std::variant<FieldTypes...>> {
     using InputVarType = typename ReaderType::InputVarType;
@@ -746,7 +749,11 @@ struct Parser<ReaderType, WriterType, std::variant<FieldTypes...>> {
     static Result<std::variant<FieldTypes...>> read(
         const ReaderType& _r, InputVarType* _var,
         const std::string _errors = "") noexcept {
-        if constexpr (_i == sizeof...(FieldTypes)) {
+        if constexpr (_i == 0 &&
+                      internal::all_fields<std::tuple<FieldTypes...>>()) {
+            return FieldVariantParser<ReaderType, WriterType,
+                                      FieldTypes...>::read(_r, _var);
+        } else if constexpr (_i == sizeof...(FieldTypes)) {
             return Error("Could not parse variant: " + _errors);
         } else {
             const auto to_variant = [](const auto& _val) {
@@ -775,7 +782,11 @@ struct Parser<ReaderType, WriterType, std::variant<FieldTypes...>> {
         const std::variant<FieldTypes...>& _variant) noexcept {
         using AltType =
             std::variant_alternative_t<_i, std::variant<FieldTypes...>>;
-        if constexpr (_i + 1 == sizeof...(FieldTypes)) {
+        if constexpr (_i == 0 &&
+                      internal::all_fields<std::tuple<FieldTypes...>>()) {
+            return FieldVariantParser<ReaderType, WriterType,
+                                      FieldTypes...>::write(_w, _variant);
+        } else if constexpr (_i + 1 == sizeof...(FieldTypes)) {
             return Parser<ReaderType, WriterType, std::decay_t<AltType>>::write(
                 _w, std::get<AltType>(_variant));
         } else {
