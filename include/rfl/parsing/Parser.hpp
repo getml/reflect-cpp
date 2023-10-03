@@ -163,14 +163,15 @@ struct Parser<ReaderType, WriterType, std::array<T, _size>> {
     template <class... AlreadyExtracted>
     static Result<std::array<T, _size>> extract_field_by_field(
         const ReaderType& _r, std::vector<InputVarType> _vec,
-        const AlreadyExtracted&... _already_extracted) noexcept {
+        AlreadyExtracted&&... _already_extracted) noexcept {
         constexpr size_t i = sizeof...(AlreadyExtracted);
         if constexpr (i == _size) {
-            return std::array<T, _size>({_already_extracted...});
+            return std::array<T, _size>({std::move(_already_extracted)...});
         } else {
-            const auto extract_next = [&](auto new_entry) {
+            const auto extract_next = [&](auto&& new_entry) {
                 return extract_field_by_field(_r, std::move(_vec),
-                                              _already_extracted..., new_entry);
+                                              std::move(_already_extracted)...,
+                                              std::move(new_entry));
             };
             return extract_single_field<i>(_r, &_vec).and_then(extract_next);
         }
@@ -680,14 +681,15 @@ struct Parser<ReaderType, WriterType, std::tuple<Ts...>> {
     template <class... AlreadyExtracted>
     static Result<std::tuple<Ts...>> extract_field_by_field(
         const ReaderType& _r, std::vector<InputVarType> _vec,
-        const AlreadyExtracted&... _already_extracted) noexcept {
+        AlreadyExtracted&&... _already_extracted) noexcept {
         constexpr size_t i = sizeof...(AlreadyExtracted);
         if constexpr (i == sizeof...(Ts)) {
             return std::tuple<Ts...>(std::make_tuple(_already_extracted...));
         } else {
-            const auto extract_next = [&](auto new_entry) {
+            const auto extract_next = [&](auto&& new_entry) {
                 return extract_field_by_field(_r, std::move(_vec),
-                                              _already_extracted..., new_entry);
+                                              std::move(_already_extracted)...,
+                                              std::move(new_entry));
             };
             return extract_single_field<i>(_r, &_vec).and_then(extract_next);
         }
