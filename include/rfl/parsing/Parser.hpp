@@ -57,22 +57,30 @@ struct Parser {
         } else {
             if constexpr (internal::has_reflection_type_v<T>) {
                 using ReflectionType = std::decay_t<typename T::ReflectionType>;
-                const auto wrap_in_t = [](auto _named_tuple) {
-                    return T(_named_tuple);
+                const auto wrap_in_t = [](auto _named_tuple) -> Result<T> {
+                    try {
+                        return T(_named_tuple);
+                    } catch (std::exception& e) {
+                        return Error(e.what());
+                    }
                 };
                 return Parser<ReaderType, WriterType, ReflectionType>::read(
                            _r, _var)
-                    .transform(wrap_in_t);
+                    .and_then(wrap_in_t);
             } else if constexpr (std::is_class_v<T> &&
                                  !std::is_same<T, std::string>()) {
                 using NamedTupleType = named_tuple_t<T>;
-                const auto to_struct = [](NamedTupleType&& _n) {
-                    return from_named_tuple<T, NamedTupleType>(
-                        std::forward<NamedTupleType>(_n));
+                const auto to_struct =
+                    [](const NamedTupleType& _n) -> Result<T> {
+                    try {
+                        return from_named_tuple<T, NamedTupleType>(_n);
+                    } catch (std::exception& e) {
+                        return Error(e.what());
+                    }
                 };
                 return Parser<ReaderType, WriterType, NamedTupleType>::read(
                            _r, _var)
-                    .transform(to_struct);
+                    .and_then(to_struct);
             } else {
                 return _r.template to_basic_type<std::decay_t<T>>(_var);
             }
