@@ -117,7 +117,7 @@ In addition, it includes the following custom containers:
 
 ### Custom classes
 
-Finally, it is very easy to extend full support to your own classes, refer to the [documentation](TODO) for details.
+Finally, it is very easy to extend full support to your own classes, refer to the [documentation](https://github.com/getml/reflect-cpp/tree/main/docs) for details.
 
 ## Serialization formats
 
@@ -127,7 +127,11 @@ reflect-cpp currently supports the following serialization formats:
 - **XML**: Requires [libxml2](https://github.com/GNOME/libxml2) (TODO).
 - **flexbuffers**: Requires [flatbuffers](https://github.com/google/flatbuffers) (TODO).
 
-reflect-cpp is deliberately designed in a very modular format, using [concepts](https://en.cppreference.com/w/cpp/language/constraints), to make it as easy as possible to support additional serialization formats. Refer to the [documentation](TODO) for details. PRs related to serialization formats are welcome.
+reflect-cpp is deliberately designed in a very modular format, using [concepts](https://en.cppreference.com/w/cpp/language/constraints), to make it as easy as possible to support additional serialization formats. Refer to the [documentation](https://github.com/getml/reflect-cpp/tree/main/docs) for details (TODO). PRs related to serialization formats are welcome.
+
+## Documentation
+
+Click [here](https://github.com/getml/reflect-cpp/tree/main/docs).
 
 ## Current status
 
@@ -135,7 +139,7 @@ At the moment, this is work-in-progress. Here are some things that are still mis
 
 - Extensive testing
 - Benchmarks
-- Documentation
+- Documentation is unfinished
 - Support for std::array, std::unique_ptr and full support for rfl::Box
 - Support for rfl::Flatten<std::map<...>> (serde supports this as well)
 - Support for std::any (whether we want to support this as all is still being debated).
