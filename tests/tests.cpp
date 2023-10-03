@@ -1,5 +1,6 @@
 #include "test_custom_class1.hpp"
 #include "test_custom_class2.hpp"
+#include "test_custom_class3.hpp"
 #include "test_default_values.hpp"
 #include "test_field_variant.hpp"
 #include "test_literal.hpp"
@@ -18,6 +19,7 @@ int main() {
     test_ref();
     test_custom_class1();
     test_custom_class2();
+    test_custom_class3();
 
     return 0;
 }
