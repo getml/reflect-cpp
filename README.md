@@ -88,7 +88,7 @@ std::cout << "Hello, my name is " << homer2.first_name() << " "
 
 reflect-cpp supports the following containers from the C++ standard library:
 
-- `std::array` (TODO)
+- `std::array` 
 - `std::deque` 
 - `std::forward_list` 
 - `std::map` 

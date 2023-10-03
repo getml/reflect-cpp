@@ -1,3 +1,4 @@
+#include "test_array.hpp"
 #include "test_custom_class1.hpp"
 #include "test_custom_class2.hpp"
 #include "test_custom_class3.hpp"
@@ -22,6 +23,7 @@ int main() {
     test_custom_class1();
     test_custom_class2();
     test_custom_class3();
+    test_array();
 
     return 0;
 }

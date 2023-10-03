@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_PARSER_HPP_
 #define RFL_PARSING_PARSER_HPP_
 
+#include <array>
 #include <cstddef>
 #include <deque>
 #include <exception>
@@ -108,6 +109,78 @@ struct Parser {
         } else {
             return _w.from_basic_type(_var);
         }
+    }
+};
+
+// ----------------------------------------------------------------------------
+
+template <class ReaderType, class WriterType, class T, size_t _size>
+struct Parser<ReaderType, WriterType, std::array<T, _size>> {
+   public:
+    using InputArrayType = typename ReaderType::InputArrayType;
+    using InputVarType = typename ReaderType::InputVarType;
+
+    using OutputArrayType = typename WriterType::OutputArrayType;
+    using OutputVarType = typename WriterType::OutputVarType;
+
+    static Result<std::array<T, _size>> read(const ReaderType& _r,
+                                             InputVarType* _var) noexcept {
+        const auto to_vec = [&](auto _arr) { return _r.to_vec(&_arr); };
+
+        const auto check_size =
+            [](auto _vec) -> Result<std::vector<InputVarType>> {
+            if (_vec.size() != _size) {
+                return Error("Expected " + std::to_string(_size) +
+                             " fields, got " + std::to_string(_vec.size()) +
+                             ".");
+            }
+            return std::move(_vec);
+        };
+
+        const auto extract = [&_r](auto _vec) {
+            return extract_field_by_field(_r, std::move(_vec));
+        };
+
+        return _r.to_array(_var)
+            .transform(to_vec)
+            .and_then(check_size)
+            .and_then(extract);
+    }
+
+    static OutputVarType write(const WriterType& _w,
+                               const std::array<T, _size>& _arr) noexcept {
+        auto arr = _w.new_array();
+        for (auto it = _arr.begin(); it != _arr.end(); ++it) {
+            _w.add(
+                Parser<ReaderType, WriterType, std::decay_t<T>>::write(_w, *it),
+                &arr);
+        }
+        return OutputVarType(arr);
+    }
+
+   private:
+    /// Extracts values from the array, field by field.
+    template <class... AlreadyExtracted>
+    static Result<std::array<T, _size>> extract_field_by_field(
+        const ReaderType& _r, std::vector<InputVarType> _vec,
+        const AlreadyExtracted&... _already_extracted) noexcept {
+        constexpr size_t i = sizeof...(AlreadyExtracted);
+        if constexpr (i == _size) {
+            return std::array<T, _size>({_already_extracted...});
+        } else {
+            const auto extract_next = [&](auto new_entry) {
+                return extract_field_by_field(_r, std::move(_vec),
+                                              _already_extracted..., new_entry);
+            };
+            return extract_single_field<i>(_r, &_vec).and_then(extract_next);
+        }
+    }
+
+    /// Extracts a single field from a JSON.
+    template <int _i>
+    static auto extract_single_field(const ReaderType& _r,
+                                     std::vector<InputVarType>* _vec) noexcept {
+        return Parser<ReaderType, WriterType, T>::read(_r, &((*_vec)[_i]));
     }
 };
 
