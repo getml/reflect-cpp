@@ -78,7 +78,7 @@ This results in the following JSON string:
 
 We can also create structs from the string:
 
-```
+```cpp
 auto homer2 = rfl::json::read<Person>(json_string).value();
 
 // Fields can be accessed like this:
