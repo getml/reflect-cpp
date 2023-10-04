@@ -70,3 +70,18 @@ And you can parse it back into a struct:
 ```cpp
 const auto homer = rfl::json::read<Person>(json_string).value();
 ```
+
+## Important note
+
+**Do not create custom constructors on the structs.**
+
+reflect-cpp needs to be able to create the structs like this:
+
+```cpp
+Person{rfl::Field<"firstName", std::string>("Bart"), rfl::Field<"lastName", std::string>("Simpson"), ...};
+```
+
+But if you create a custom constructor, then C++ will no longer allow this kind of constructions.
+
+If you want to create the struct from one of your classes (the most like reason, you want to create custom constructors in the first place),
+you might want to check out the section on [custom classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_classes.md) or [custom parsers](https://github.com/getml/reflect-cpp/blob/main/docs/custom_parser.md).

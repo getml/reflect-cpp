@@ -36,7 +36,7 @@ several problems with this:
 2) It leads to confusing error messages: If none of the alternatives can be matched, you will get an error message telling you why each of the alternatives couldn't be matched. Such error messages are very long-winding and hard to read.
 3) It is dangerous. Imagine we had written `std::variant<Circle, Square, Rectangle>` instead of `std::variant<Circle, Rectangle, Square>`. This would mean that `Rectangle` could never be matched, because the fields in `Square` are a subset of `Rectangle`. This leads to very confusing bugs.
 
-## Tagging `std::variant` (externally tagged)
+## `std::variant` (externally tagged)
 
 From a functional programming point-of-view, the most straightforward way to handle these problems is to add tags. 
 
@@ -136,12 +136,12 @@ const Shapes my_shape =
     rfl::make_field<"rectangle">(Rectangle{.height = 10, .width = 5});
 
 const auto handle_shapes = [](const auto& field) {
-  using Type = typename std::decay_t(decltype(field))::Type;
-  if constexpr (std::is_same<Type, Circle>()) {
+  using Name = typename std::decay_t(decltype(field))::Name;
+  if constexpr (std::is_same<Name, rfl::Literal<"circle">>()) {
      std::cout << is circle, radius: << field.value().radius() << std::endl;
-  } else if constexpr (std::is_same<Type, Rectangle>()) {
+  } else if constexpr (std::is_same<Name, rfl::Literal<"rectangle">>()) {
      std::cout << is rectangle, width: << field.value().width() << ", height: " << field.value().height() << std::endl;
-  } else if constexpr (std::is_same<Type, Square>()) {
+  } else if constexpr (std::is_same<Name, rfl::Literal<"square">>()) {
      std::cout << is square, width: << field.value().width() << std::endl;
   } else {
     // reflect-cpp also provides this very useful helper that ensures

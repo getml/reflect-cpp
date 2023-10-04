@@ -22,18 +22,18 @@ Literals can be used inside switches:
 
 ```cpp
 switch(my_literal.value()) {
-  case MyLiteral::value_of<"option1">:
+  case MyLiteral::value_of<"option1">():
     ...
 
-  case MyLiteral::value_of<"option2">:
+  case MyLiteral::value_of<"option2">():
     ...
 
   ...
 }
 ```
 
-Literals are stored as `uint8_t` or `uint16_t` under-the-hood. But you can extract their name using `.name()` as a string
-or the underlying value using `.value`.
+Literals are stored as `uint8_t` or `uint16_t` under-the-hood. But you can extract their name as a string using `.name()` 
+or the underlying value using `.value()`.
 
 ```cpp
 using MyLiteral = rfl::Literal<"option1", "option2", ...>;
