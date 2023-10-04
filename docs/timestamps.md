@@ -8,7 +8,7 @@ Here is a reference for for how you can specify the format:
 
 https://en.cppreference.com/w/cpp/chrono/c/strftime
 
-In fact, `rfl::Timestamp` does call `strftime` and `strptime` under-the-hood.
+In fact, `rfl::Timestamp` calls `strftime` and `strptime` under-the-hood.
 
 They can be used in your struct like this:
 
