@@ -18,16 +18,19 @@ void test_readme_example() {
     struct Person {
         rfl::Field<"firstName", std::string> first_name;
         rfl::Field<"lastName", std::string> last_name;
+        rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
         rfl::Field<"children", std::vector<Person>> children;
     };
 
     const auto bart = Person{.first_name = "Bart",
                              .last_name = "Simpson",
+                             .birthday = "1987-04-19",
                              .children = std::vector<Person>()};
 
     const auto lisa = Person{
         .first_name = "Lisa",
         .last_name = "Simpson",
+        .birthday = "1987-04-19",
         .children = rfl::default_value  // same as std::vector<Person>()
     };
 
@@ -39,12 +42,15 @@ void test_readme_example() {
     const auto homer =
         Person{.first_name = "Homer",
                .last_name = "Simpson",
+               .birthday = "1987-04-19",
                .children = std::vector<Person>({bart, lisa, maggie})};
 
     write_and_read(
         homer,
-        "{\"firstName\":\"Homer\",\"lastName\":\"Simpson\",\"children\":[{"
-        "\"firstName\":\"Bart\",\"lastName\":\"Simpson\",\"children\":[]},{"
-        "\"firstName\":\"Lisa\",\"lastName\":\"Simpson\",\"children\":[]},{"
-        "\"firstName\":\"Maggie\",\"lastName\":\"Simpson\",\"children\":[]}]}");
+        "{\"firstName\":\"Homer\",\"lastName\":\"Simpson\",\"birthday\":\"1987-"
+        "04-19\",\"children\":[{\"firstName\":\"Bart\",\"lastName\":"
+        "\"Simpson\",\"birthday\":\"1987-04-19\",\"children\":[]},{"
+        "\"firstName\":\"Lisa\",\"lastName\":\"Simpson\",\"birthday\":\"1987-"
+        "04-19\",\"children\":[]},{\"firstName\":\"Maggie\",\"lastName\":"
+        "\"Simpson\",\"birthday\":\"1987-04-19\",\"children\":[]}]}");
 }

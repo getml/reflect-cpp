@@ -8,6 +8,7 @@
 #include "rfl/NamedTuple.hpp"
 #include "rfl/Ref.hpp"
 #include "rfl/TaggedUnion.hpp"
+#include "rfl/Timestamp.hpp"
 #include "rfl/always_false.hpp"
 #include "rfl/as.hpp"
 #include "rfl/default.hpp"

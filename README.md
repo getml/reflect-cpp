@@ -37,16 +37,19 @@ Design principles for reflect-cpp include:
 struct Person {
     rfl::Field<"firstName", std::string> first_name;
     rfl::Field<"lastName", std::string> last_name;
+    rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
     rfl::Field<"children", std::vector<Person>> children;
 };
 
 const auto bart = Person{.first_name = "Bart",
                          .last_name = "Simpson",
+                         .birthday = "1987-04-19",
                          .children = std::vector<Person>()};
 
 const auto lisa = Person{
     .first_name = "Lisa",
     .last_name = "Simpson",
+    .birthday = "1987-04-19",
     .children = rfl::default_value  // same as std::vector<Person>()
 };
 
@@ -58,15 +61,24 @@ const auto maggie =
 const auto homer =
     Person{.first_name = "Homer",
            .last_name = "Simpson",
+           .birthday = "1987-04-19",
            .children = std::vector<Person>({bart, lisa, maggie})};
 
 // We can now transform this into a JSON string.
 const std::string json_string = rfl::json::write(homer);
 
-// {"firstName":"Homer","lastName":"Simpson","children":[{"firstName":"Bart","lastName":"Simpson","children":[]},{"firstName":"Lisa","lastName":"Simpson","children":[]},{"firstName":"Maggie","lastName":"Simpson","children":[]}]} 
 std::cout << json_string << std::endl;
+```
 
-// And we can parse the string to recreate the struct.
+This results in the following JSON string:
+
+```json
+{"firstName":"Homer","lastName":"Simpson","birthday":"1987-04-19","children":[{"firstName":"Bart","lastName":"Simpson","birthday":"1987-04-19","children":[]},{"firstName":"Lisa","lastName":"Simpson","birthday":"1987-04-19","children":[]},{"firstName":"Maggie","lastName":"Simpson","birthday":"1987-04-19","children":[]}]}
+```
+
+We can also create structs from the string:
+
+```
 auto homer2 = rfl::json::read<Person>(json_string).value();
 
 // Fields can be accessed like this:
@@ -78,8 +90,6 @@ homer2.first_name = "Marge";
 
 std::cout << "Hello, my name is " << homer2.first_name() << " "
           << homer2.last_name() << "." << std::endl;
-
-
 ```
 
 ## Support for containers

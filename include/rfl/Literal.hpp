@@ -163,6 +163,9 @@ class Literal {
         return name() != _str;
     }
 
+    /// Alias for .name().
+    std::string str() const { return name(); }
+
     /// Returns the value actually contained in the Literal.
     inline ValueType value() const { return value_; }
 
