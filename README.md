@@ -146,11 +146,24 @@ At the moment, this is work-in-progress. Here are some things that are still mis
 
 ## Installation
 
+### Option 1: Header-only
+
 If you **do not** need JSON support, then reflect-cpp is header-only. Simply copy the contents of the folder `include` into your source repository or add it to your include path.
 
-If you **do** need JSON support, then you should also add `src/yyjson.c` to your source files for compilation. Note that `yyjson.c` is written in ANSI C.
+### Option 2: Include source files into your own build
+
+Simply copy the contents of the folder `include` into your source repository or add it to your include path and also add `src/yyjson.c` to your source files for compilation.
 
 If you need support for other serialization formats like XML or flexbuffers, you should also include and link the respective libraries, as listed in the previous section.
+
+### Option 3: Compilation using cmake 
+
+```
+mkdir build
+cd build
+cmake ..
+make
+```
 
 ## Compiling the tests
 

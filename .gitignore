@@ -37,3 +37,4 @@
 **/*.cmake
 **/CMakeFiles/**
 **/reflect-cpp-tests
+**/build/**
