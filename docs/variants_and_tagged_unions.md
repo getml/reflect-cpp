@@ -36,7 +36,7 @@ several problems with this:
 2) It leads to confusing error messages: If none of the alternatives can be matched, you will get an error message telling you why each of the alternatives couldn't be matched. Such error messages are very long-winding and hard to read.
 3) It is dangerous. Imagine we had written `std::variant<Circle, Square, Rectangle>` instead of `std::variant<Circle, Rectangle, Square>`. This would mean that `Rectangle` could never be matched, because the fields in `Square` are a subset of `Rectangle`. This leads to very confusing bugs.
 
-## Tagging `std::variant` (externally tagged)
+## `std::variant` (externally tagged)
 
 From a functional programming point-of-view, the most straightforward way to handle these problems is to add tags. 
 
