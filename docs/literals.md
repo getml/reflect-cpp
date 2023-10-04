@@ -22,10 +22,10 @@ Literals can be used inside switches:
 
 ```cpp
 switch(my_literal.value()) {
-  case MyLiteral::value_of<"option1">:
+  case MyLiteral::value_of<"option1">():
     ...
 
-  case MyLiteral::value_of<"option2">:
+  case MyLiteral::value_of<"option2">():
     ...
 
   ...
