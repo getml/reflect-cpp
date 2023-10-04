@@ -141,7 +141,7 @@ const auto handle_shapes = [](const auto& field) {
      std::cout << is circle, radius: << field.value().radius() << std::endl;
   } else if constexpr (std::is_same<Name, rfl::Literal<"rectangle">>()) {
      std::cout << is rectangle, width: << field.value().width() << ", height: " << field.value().height() << std::endl;
-  } else if constexpr (std::is_same<Name, rfl::Literal<"rectangle">>()) {
+  } else if constexpr (std::is_same<Name, rfl::Literal<"square">>()) {
      std::cout << is square, width: << field.value().width() << std::endl;
   } else {
     // reflect-cpp also provides this very useful helper that ensures
