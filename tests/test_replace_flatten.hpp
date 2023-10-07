@@ -30,9 +30,10 @@ void test_replace_flatten() {
         .salary = 60000.0};
 
     auto employee2 =
-        rfl::replace(std::move(employee), rfl::make_field<"salary">(70000.0));
+        rfl::replace(std::move(employee), rfl::make_field<"salary">(70000.0),
+                     rfl::make_field<"age">(46));
 
     write_and_read(
         employee2,
-        R"({"firstName":"Homer","lastName":"Simpson","age":45,"employer":"Mr. Burns","salary":70000.0})");
+        R"({"firstName":"Homer","lastName":"Simpson","age":46,"employer":"Mr. Burns","salary":70000.0})");
 }
