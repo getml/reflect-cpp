@@ -1,0 +1,62 @@
+# `rfl::replace`
+
+`rfl::replace` creates a deep copy of the original struct or moves the original struct, replacing one or several
+fields in the process.
+
+In some cases, we really only want to change one or a few fields, to get from one struct to another:
+
+```cpp
+const auto lisa = Person{
+    .first_name = "Lisa",
+    .last_name = "Simpson",
+    .children = rfl::default_value  // same as std::vector<Person>()
+};
+
+// Returns a deep copy of the original object,
+// replacing first_name.
+const auto maggie =
+    rfl::replace(lisa, rfl::make_field<"firstName">(std::string("Maggie")));
+```
+
+`maggie` is now a deep copy of `lisa`, but with a new `first_name`.
+
+However, in some cases, we do not want or are unable to create a deep copy of a struct.
+
+For instance, suppose we had put the field `children` into a `rfl::Box`:
+
+```cpp
+struct Person {
+    rfl::Field<"firstName", std::string> first_name;
+    rfl::Field<"lastName", std::string> last_name;
+    rfl::Field<"children", rfl::Box<std::vector<Person>>> children;
+};
+```
+
+`rfl::Box` cannot be copied, and if we naively try to apply `rfl::replace` to this,
+this will not compile (disabling copies is very much the point of `rfl::Box`).
+
+However, we can use `std::move`:
+
+```cpp
+auto lisa = Person{.first_name = "Lisa",
+                   .last_name = "Simpson",
+                   .children = rfl::make_box<std::vector<Person>>()};
+
+const auto maggie = rfl::replace(
+    std::move(lisa), rfl::make_field<"firstName">(std::string("Maggie")));
+```
+
+The fields from `lisa` have now been moved into `maggie`.
+
+We can also remove several fields using `replace`:
+
+```cpp
+auto lisa = Person{.first_name = "Lisa",
+                   .last_name = "Simpson",
+                   .children = rfl::make_box<std::vector<Person>>()};
+
+const auto milhouse = rfl::replace(
+    std::move(lisa),
+    rfl::make_field<"firstName">(std::string("Maggie")),
+    rfl::make_field<"lastName">(std::string("Van Houten")));
+```
