@@ -2,7 +2,10 @@
 #define RFL_PARSING_CUSTOMPARSER_HPP_
 
 #include <exception>
+#include <tuple>
 
+#include "rfl/internal/has_to_class_method_v.hpp"
+#include "rfl/internal/to_ptr_field_tuple.hpp"
 #include "rfl/parsing/Parser.hpp"
 
 namespace rfl {
@@ -13,9 +16,17 @@ template <class ReaderType, class WriterType, class OriginalClass,
 struct CustomParser {
     static Result<OriginalClass> read(const ReaderType& _r,
                                       auto* _var) noexcept {
-        const auto to_class = [](const auto& _h) -> Result<OriginalClass> {
+        const auto to_class = [](auto&& _h) -> Result<OriginalClass> {
             try {
-                return _h.to_class();
+                if constexpr (internal::has_to_class_method_v<HelperStruct>) {
+                    return _h.to_class();
+                } else {
+                    auto ptr_field_tuple = internal::to_ptr_field_tuple(_h);
+                    const auto class_from_ptrs = [](auto&... _ptrs) {
+                        return OriginalClass(std::move(*_ptrs.value_)...);
+                    };
+                    return std::apply(class_from_ptrs, ptr_field_tuple);
+                }
             } catch (std::exception& e) {
                 return Error(e.what());
             }

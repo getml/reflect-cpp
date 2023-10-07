@@ -3,6 +3,7 @@
 #include "test_custom_class1.hpp"
 #include "test_custom_class2.hpp"
 #include "test_custom_class3.hpp"
+#include "test_custom_class4.hpp"
 #include "test_default_values.hpp"
 #include "test_field_variant.hpp"
 #include "test_flatten.hpp"
@@ -31,6 +32,7 @@ int main() {
     test_custom_class1();
     test_custom_class2();
     test_custom_class3();
+    test_custom_class4();
     test_array();
     test_timestamp();
     test_flatten();
