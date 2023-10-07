@@ -30,7 +30,7 @@ Design principles for reflect-cpp include:
 #include <rfl/json.hpp>
 #include <rfl.hpp>
 
-// "firstName", "lastName" and "children" are the field names
+// "firstName", "lastName", "birthday" and "children" are the field names
 // as they will appear in the JSON. The C++ standard is
 // snake case, the JSON standard is camel case, so the names
 // will not always be identical.
@@ -78,7 +78,7 @@ This results in the following JSON string:
 
 We can also create structs from the string:
 
-```
+```cpp
 auto homer2 = rfl::json::read<Person>(json_string).value();
 
 // Fields can be accessed like this:
