@@ -10,9 +10,10 @@ void test_uuid() {
         rfl::Field<"id", rfl::UUIDv1> id;
     };
 
-    const auto bart = Person{.first_name = "Bart", .id = "12345678-1234-5678-1234-567812345678"};
+    const auto bart = Person{.first_name = "Bart", .id = "de76b905-5b32-4127-96d1-48e5321e11a6"};
+    
 
-    //write_and_read(bart,
-    //               "{\"firstName\":\"Bart\",\"lastName\":\"Simpson\","
-    //               "\"birthday\":\"1987-04-19\"}");
+    write_and_read(bart,
+                   "{\"firstName\":\"Bart\",\"lastName\":\"Simpson\","
+                   "\"birthday\":\"12345678-1234-5678-1234-567812345678\"}");
 }
