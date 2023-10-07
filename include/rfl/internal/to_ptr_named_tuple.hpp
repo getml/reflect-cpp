@@ -22,14 +22,28 @@ auto flatten_ptr_field_tuple(const PtrFieldTuple& _t, Args&&... _args) {
     } else {
         using T = std::tuple_element_t<i, std::decay_t<PtrFieldTuple>>;
         if constexpr (internal::is_flatten_field<T>::value) {
-            return flatten_ptr_field_tuple(
-                _t, std::forward<Args>(_args)...,
-                flatten_ptr_field_tuple(
-                    internal::to_ptr_field_tuple(*std::get<i>(_t).get())));
+            const auto subtuple =
+                internal::to_ptr_field_tuple(*std::get<i>(_t).get());
+            return flatten_ptr_field_tuple(_t, std::forward<Args>(_args)...,
+                                           flatten_ptr_field_tuple(subtuple));
         } else {
             return flatten_ptr_field_tuple(_t, std::forward<Args>(_args)...,
                                            std::make_tuple(std::get<i>(_t)));
         }
+    }
+}
+
+template <class PtrFieldTuple>
+auto field_tuple_to_named_tuple(const PtrFieldTuple& _ptr_field_tuple) {
+    const auto ft_to_nt = []<class... Fields>(const Fields&... _fields) {
+        return make_named_tuple(_fields...);
+    };
+
+    if constexpr (!has_flatten_fields<std::decay_t<PtrFieldTuple>>()) {
+        return std::apply(ft_to_nt, std::move(_ptr_field_tuple));
+    } else {
+        const auto flattened_tuple = flatten_ptr_field_tuple(_ptr_field_tuple);
+        return std::apply(ft_to_nt, flattened_tuple);
     }
 }
 
@@ -41,20 +55,7 @@ auto to_ptr_named_tuple(const T& _t) {
         return nt_to_ptr_named_tuple(_t);
     } else {
         const auto ptr_field_tuple = to_ptr_field_tuple(_t);
-
-        const auto ft_to_nt = []<class... Fields>(const Fields&... _fields) {
-            return make_named_tuple(_fields...);
-        };
-
-        using PtrFieldTuple = std::decay_t<decltype(ptr_field_tuple)>;
-
-        if constexpr (!has_flatten_fields<PtrFieldTuple>()) {
-            return std::apply(ft_to_nt, std::move(ptr_field_tuple));
-        } else {
-            const auto flattened_tuple =
-                flatten_ptr_field_tuple(ptr_field_tuple);
-            return std::apply(ft_to_nt, flattened_tuple);
-        }
+        return field_tuple_to_named_tuple(ptr_field_tuple);
     }
 }
 

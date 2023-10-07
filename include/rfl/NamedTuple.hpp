@@ -25,6 +25,21 @@ class NamedTuple {
     using Values = std::tuple<typename std::decay<FieldTypes>::type::Type...>;
 
    public:
+    /// Construct from the values.
+    NamedTuple(typename std::decay<FieldTypes>::type::Type&&... _values)
+        : values_(std::forward<typename std::decay<FieldTypes>::type::Type>(
+              _values)...) {
+        static_assert(no_duplicate_field_names(),
+                      "Duplicate field names are not allowed");
+    }
+
+    /// Construct from the values.
+    NamedTuple(const typename std::decay<FieldTypes>::type::Type&... _values)
+        : values_(std::make_tuple(_values...)) {
+        static_assert(no_duplicate_field_names(),
+                      "Duplicate field names are not allowed");
+    }
+
     /// Construct from the fields.
     NamedTuple(FieldTypes&&... _fields)
         : values_(std::make_tuple(std::move(_fields.value_)...)) {
@@ -205,6 +220,20 @@ class NamedTuple {
     /// with the non-replaced fields left unchanged.
     template <class RField, class... OtherRFields>
     NamedTuple<FieldTypes...> replace(RField&& _field,
+                                      OtherRFields&&... _other_fields) {
+        constexpr auto num_other_fields = sizeof...(OtherRFields);
+        if constexpr (num_other_fields == 0) {
+            return replace_value<RField>(_field.value_);
+        } else {
+            return replace_value<RField>(_field.value_)
+                .replace(std::forward<OtherRFields>(_other_fields)...);
+        }
+    }
+
+    /// Replaces one or several fields, returning a new version
+    /// with the non-replaced fields left unchanged.
+    template <class RField, class... OtherRFields>
+    NamedTuple<FieldTypes...> replace(RField&& _field,
                                       OtherRFields&&... _other_fields) const {
         constexpr auto num_other_fields = sizeof...(OtherRFields);
         if constexpr (num_other_fields == 0) {
@@ -300,8 +329,8 @@ class NamedTuple {
     }
 
     /// Generates a new named tuple with one value replaced with a new value.
-    template <int _index, class T, class... Args>
-    auto make_replaced(T&& _val, Args&&... _args) const {
+    template <int _index, class V, class T, class... Args>
+    auto make_replaced(V&& _values, T&& _val, Args&&... _args) const {
         constexpr auto size = sizeof...(Args);
 
         constexpr bool retrieved_all_fields = size == std::tuple_size<Fields>{};
@@ -312,13 +341,16 @@ class NamedTuple {
             using FieldType = typename std::tuple_element<size, Fields>::type;
 
             if constexpr (size == _index) {
-                return make_replaced<_index, T>(std::forward<T>(_val),
-                                                std::forward<Args>(_args)...,
-                                                FieldType(_val));
+                return make_replaced<_index, V, T>(
+                    std::forward<V>(_values), std::forward<T>(_val),
+                    std::forward<Args>(_args)...,
+                    FieldType(std::forward<T>(_val)));
             } else {
-                return make_replaced<_index, T>(
-                    std::forward<T>(_val), std::forward<Args>(_args)...,
-                    FieldType(std::get<size>(values_)));
+                using U = typename FieldType::Type;
+                return make_replaced<_index, V, T>(
+                    std::forward<V>(_values), std::forward<T>(_val),
+                    std::forward<Args>(_args)...,
+                    FieldType(std::forward<U>(std::get<size>(_values))));
             }
         }
     }
@@ -330,16 +362,21 @@ class NamedTuple {
 
     /// Replaced the field signified by the field type.
     template <class Field, class T>
+    NamedTuple<FieldTypes...> replace_value(T&& _val) {
+        using FieldType = std::decay_t<Field>;
+        constexpr auto index = internal::find_index<FieldType::name_, Fields>();
+        return make_replaced<index, Values, T>(std::forward<Values>(values_),
+                                               std::forward<T>(_val));
+    }
+
+    /// Replaced the field signified by the field type.
+    template <class Field, class T>
     NamedTuple<FieldTypes...> replace_value(T&& _val) const {
         using FieldType = std::decay_t<Field>;
         constexpr auto index = internal::find_index<FieldType::name_, Fields>();
-        static_assert(
-            std::is_same<typename std::tuple_element<index, Fields>::type::Type,
-                         typename FieldType::Type>(),
-            "If two fields have the same name, "
-            "their type must be the same as "
-            "well.");
-        return make_replaced<index, T>(_val);
+        auto values = values_;
+        return make_replaced<index, Values, T>(std::move(values),
+                                               std::forward<T>(_val));
     }
 
     /// Adds the elements of a tuple to a newly created named tuple,

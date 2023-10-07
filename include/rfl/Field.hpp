@@ -26,7 +26,7 @@ struct Field {
 
     Field(Type&& _value) noexcept : value_(std::move(_value)) {}
 
-    Field(Field<_name, Type>&& _field) noexcept
+    Field(Field<_name, _Type>&& _field) noexcept
         : value_(std::move(_field.value_)) {}
 
     Field(const Field<_name, Type>& _field) : value_(_field.get()) {}
@@ -98,7 +98,7 @@ struct Field {
     }
 
     /// Assigns the underlying object.
-    inline void operator=(Field<_name, Type>&& _field) {
+    inline void operator=(Field<_name, Type>&& _field) noexcept {
         value_ = _field.get();
     }
 

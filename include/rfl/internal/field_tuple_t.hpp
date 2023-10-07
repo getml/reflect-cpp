@@ -5,14 +5,14 @@
 #include <tuple>
 #include <type_traits>
 
-#include "rfl/internal/to_field_tuple.hpp"
+#include "rfl/internal/copy_to_field_tuple.hpp"
 
 namespace rfl {
 namespace internal {
 
 template <class T>
 using field_tuple_t =
-    typename std::invoke_result<decltype(to_field_tuple<T>), T>::type;
+    typename std::invoke_result<decltype(copy_to_field_tuple<T>), T>::type;
 
 }
 }  // namespace rfl

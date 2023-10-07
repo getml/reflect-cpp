@@ -11,6 +11,7 @@
 #include "test_optional_fields.hpp"
 #include "test_readme_example.hpp"
 #include "test_ref.hpp"
+#include "test_replace.hpp"
 #include "test_tagged_union.hpp"
 #include "test_timestamp.hpp"
 #include "test_unique_ptr.hpp"
@@ -29,13 +30,16 @@ int main() {
     test_field_variant();
     test_ref();
     test_box();
+    test_array();
+    test_timestamp();
+    test_flatten();
+
     test_custom_class1();
     test_custom_class2();
     test_custom_class3();
     test_custom_class4();
-    test_array();
-    test_timestamp();
-    test_flatten();
+
+    test_replace();
 
     return 0;
 }

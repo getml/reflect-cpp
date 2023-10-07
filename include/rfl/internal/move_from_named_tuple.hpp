@@ -76,7 +76,7 @@ auto move_from_pointers(Pointers& _ptrs, Args&&... _args) {
 /// Creates a struct of type T from a named tuple by moving the underlying
 /// fields.
 template <class T, class NamedTupleType>
-T move_from_named_tuple(NamedTupleType& _n) {
+T move_from_named_tuple(NamedTupleType&& _n) {
     using RequiredType = std::decay_t<named_tuple_t<T>>;
 
     if constexpr (is_named_tuple_v<std::decay_t<T>>) {

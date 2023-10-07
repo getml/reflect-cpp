@@ -15,7 +15,7 @@ constexpr bool has_flatten_fields() {
     if constexpr (_i == std::tuple_size_v<TupleType>) {
         return false;
     } else {
-        using T = std::tuple_element_t<_i, TupleType>;
+        using T = std::decay_t<std::tuple_element_t<_i, TupleType>>;
         return is_flatten_field<T>::value ||
                has_flatten_fields<TupleType, _i + 1>();
     }

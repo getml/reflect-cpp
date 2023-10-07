@@ -1,5 +1,5 @@
-#ifndef RFL_INTERNAL_TO_FIELD_TUPLE_HPP_
-#define RFL_INTERNAL_TO_FIELD_TUPLE_HPP_
+#ifndef RFL_INTERNAL_COPY_TO_FIELD_TUPLE_HPP_
+#define RFL_INTERNAL_COPY_TO_FIELD_TUPLE_HPP_
 
 #include <iostream>
 #include <tuple>
@@ -41,7 +41,7 @@ with open("generated_code2.cpp", "w", encoding="utf-8") as codefile:
 */
 
 template <class T>
-auto to_field_tuple(const T& _t) {
+auto copy_to_field_tuple(const T& _t) {
     if constexpr (internal::is_named_tuple_v<T>) {
         return _t.fields();
     } else if constexpr (internal::has_n_fields<T, 0>) {

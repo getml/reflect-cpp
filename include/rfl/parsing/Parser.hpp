@@ -31,7 +31,6 @@
 #include "rfl/internal/all_fields.hpp"
 #include "rfl/internal/has_reflection_method_v.hpp"
 #include "rfl/internal/has_reflection_type_v.hpp"
-#include "rfl/internal/move_from_named_tuple.hpp"
 #include "rfl/internal/no_duplicate_field_names.hpp"
 #include "rfl/internal/to_ptr_named_tuple.hpp"
 #include "rfl/named_tuple_t.hpp"
@@ -76,7 +75,7 @@ struct Parser {
                 using NamedTupleType = named_tuple_t<T>;
                 const auto to_struct = [](NamedTupleType&& _n) -> Result<T> {
                     try {
-                        return internal::move_from_named_tuple<T>(_n);
+                        return from_named_tuple<T>(std::move(_n));
                     } catch (std::exception& e) {
                         return Error(e.what());
                     }
