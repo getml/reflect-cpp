@@ -99,7 +99,7 @@ struct Field {
 
     /// Assigns the underlying object.
     inline void operator=(Field<_name, Type>&& _field) noexcept {
-        value_ = _field.get();
+        value_ = std::move(_field.value_);
     }
 
     /// Assigns the underlying object.

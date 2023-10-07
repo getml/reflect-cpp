@@ -17,11 +17,12 @@ struct Flatten {
 
     Flatten(const Type& _value) : value_(_value) {}
 
-    Flatten(Type&& _value) : value_(std::forward<Type>(_value)) {}
+    Flatten(Type&& _value) noexcept : value_(std::forward<Type>(_value)) {}
 
     Flatten(const Flatten<Type>& _f) : value_(_f.get()) {}
 
-    Flatten(Flatten<Type>&& _f) : value_(std::forward<Type>(_f.value_)) {}
+    Flatten(Flatten<Type>&& _f) noexcept
+        : value_(std::forward<Type>(_f.value_)) {}
 
     template <class T>
     Flatten(const Flatten<T>& _f) : value_(_f.get()) {}
@@ -72,7 +73,7 @@ struct Flatten {
 
     /// Assigns the underlying object.
     inline void operator=(Flatten<Type>&& _f) {
-        value_ = std::forward<Type>(_f);
+        value_ = std::forward<Type>(_f.value_);
     }
 
     /// Assigns the underlying object.

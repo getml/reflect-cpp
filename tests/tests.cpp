@@ -12,6 +12,7 @@
 #include "test_readme_example.hpp"
 #include "test_ref.hpp"
 #include "test_replace.hpp"
+#include "test_replace_flatten.hpp"
 #include "test_tagged_union.hpp"
 #include "test_timestamp.hpp"
 #include "test_unique_ptr.hpp"
@@ -40,6 +41,7 @@ int main() {
     test_custom_class4();
 
     test_replace();
+    test_replace_flatten();
 
     return 0;
 }

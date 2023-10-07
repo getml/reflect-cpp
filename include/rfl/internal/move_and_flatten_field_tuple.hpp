@@ -3,8 +3,8 @@
 
 #include <tuple>
 
-#include "rfl/internal/copy_to_field_tuple.hpp"
 #include "rfl/internal/is_flatten_field.hpp"
+#include "rfl/internal/move_to_field_tuple.hpp"
 
 namespace rfl {
 namespace internal {
@@ -20,8 +20,7 @@ auto move_and_flatten_field_tuple(FieldTuple&& _t, Args&&... _args) {
             return move_and_flatten_field_tuple(
                 std::move(_t), std::move(_args)...,
                 move_and_flatten_field_tuple(
-                    copy_to_field_tuple(  // TODO: move_to_...
-                        std::get<i>(_t).get())));
+                    move_to_field_tuple(std::move(std::get<i>(_t).value_))));
         } else {
             return move_and_flatten_field_tuple(
                 std::move(_t), std::move(_args)...,
