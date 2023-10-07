@@ -24,6 +24,5 @@ void test_literal() {
     const auto bart = Person{.first_name = FirstName::make<"Bart">()};
 
     write_and_read(
-        bart,
-        "{\"firstName\":\"Bart\",\"lastName\":\"Simpson\",\"children\":[]}");
+        bart, R"({"firstName":"Bart","lastName":"Simpson","children":[]})");
 }

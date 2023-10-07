@@ -28,5 +28,5 @@ void test_variant() {
 
     const Shapes r = Rectangle{.height = 10, .width = 5};
 
-    write_and_read(r, "{\"height\":10.0,\"width\":5.0}");
+    write_and_read(r, R"({"height":10.0,"width":5.0})");
 }

@@ -27,8 +27,5 @@ void test_unique_ptr() {
 
     write_and_read(
         homer,
-        "{\"firstName\":\"Homer\",\"lastName\":\"Simpson\",\"children\":[{"
-        "\"firstName\":\"Bart\",\"lastName\":\"Simpson\"},{"
-        "\"firstName\":\"Lisa\",\"lastName\":\"Simpson\"},{"
-        "\"firstName\":\"Maggie\",\"lastName\":\"Simpson\"}]}");
+        R"({"firstName":"Homer","lastName":"Simpson","children":[{"firstName":"Bart","lastName":"Simpson"},{"firstName":"Lisa","lastName":"Simpson"},{"firstName":"Maggie","lastName":"Simpson"}]})");
 }

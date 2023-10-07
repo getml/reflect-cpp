@@ -27,7 +27,7 @@ void test_timestamp() {
 
     const auto bart = Person{.first_name = "Bart", .birthday = "1987-04-19"};
 
-    write_and_read(bart,
-                   "{\"firstName\":\"Bart\",\"lastName\":\"Simpson\","
-                   "\"birthday\":\"1987-04-19\"}");
+    write_and_read(
+        bart,
+        R"({"firstName":"Bart","lastName":"Simpson","birthday":"1987-04-19"})");
 }

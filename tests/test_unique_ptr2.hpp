@@ -41,7 +41,5 @@ void test_unique_ptr2() {
 
     write_and_read(
         tree,
-        "{\"leafOrNode\":{\"type\":\"Node\",\"criticalValue\":10.0,\"left\":{"
-        "\"leafOrNode\":{\"type\":\"Leaf\",\"value\":3.0}},\"right\":{"
-        "\"leafOrNode\":{\"type\":\"Leaf\",\"value\":5.0}}}}");
+        R"({"leafOrNode":{"type":"Node","criticalValue":10.0,"left":{"leafOrNode":{"type":"Leaf","value":3.0}},"right":{"leafOrNode":{"type":"Leaf","value":5.0}}}})");
 }

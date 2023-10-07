@@ -47,10 +47,5 @@ void test_readme_example() {
 
     write_and_read(
         homer,
-        "{\"firstName\":\"Homer\",\"lastName\":\"Simpson\",\"birthday\":\"1987-"
-        "04-19\",\"children\":[{\"firstName\":\"Bart\",\"lastName\":"
-        "\"Simpson\",\"birthday\":\"1987-04-19\",\"children\":[]},{"
-        "\"firstName\":\"Lisa\",\"lastName\":\"Simpson\",\"birthday\":\"1987-"
-        "04-19\",\"children\":[]},{\"firstName\":\"Maggie\",\"lastName\":"
-        "\"Simpson\",\"birthday\":\"1987-04-19\",\"children\":[]}]}");
+        R"({"firstName":"Homer","lastName":"Simpson","birthday":"1987-04-19","children":[{"firstName":"Bart","lastName":"Simpson","birthday":"1987-04-19","children":[]},{"firstName":"Lisa","lastName":"Simpson","birthday":"1987-04-19","children":[]},{"firstName":"Maggie","lastName":"Simpson","birthday":"1987-04-19","children":[]}]})");
 }

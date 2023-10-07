@@ -27,8 +27,5 @@ void test_default_values() {
 
     write_and_read(
         homer,
-        "{\"firstName\":\"Homer\",\"lastName\":\"Simpson\",\"children\":[{"
-        "\"firstName\":\"Bart\",\"lastName\":\"Simpson\",\"children\":[]},{"
-        "\"firstName\":\"Lisa\",\"lastName\":\"Simpson\",\"children\":[]},{"
-        "\"firstName\":\"Maggie\",\"lastName\":\"Simpson\",\"children\":[]}]}");
+        R"({"firstName":"Homer","lastName":"Simpson","children":[{"firstName":"Bart","lastName":"Simpson","children":[]},{"firstName":"Lisa","lastName":"Simpson","children":[]},{"firstName":"Maggie","lastName":"Simpson","children":[]}]})");
 }

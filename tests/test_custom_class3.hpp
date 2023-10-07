@@ -58,6 +58,6 @@ void test_custom_class3() {
 
     const auto bart = tcc3::Person("Bart", "Simpson", 10);
 
-    write_and_read(
-        bart, "{\"firstName\":\"Bart\",\"lastName\":\"Simpson\",\"age\":10}");
+    write_and_read(bart,
+                   R"({"firstName":"Bart","lastName":"Simpson","age":10})");
 }

@@ -30,5 +30,5 @@ void test_field_variant() {
     const Shapes r =
         rfl::make_field<"rectangle">(Rectangle{.height = 10, .width = 5});
 
-    write_and_read(r, "{\"rectangle\":{\"height\":10.0,\"width\":5.0}}");
+    write_and_read(r, R"({"rectangle":{"height":10.0,"width":5.0}})");
 }

@@ -32,6 +32,5 @@ void test_tagged_union() {
 
     const Shapes r = Rectangle{.height = 10, .width = 5};
 
-    write_and_read(r,
-                   "{\"shape\":\"Rectangle\",\"height\":10.0,\"width\":5.0}");
+    write_and_read(r, R"({"shape":"Rectangle","height":10.0,"width":5.0})");
 }
