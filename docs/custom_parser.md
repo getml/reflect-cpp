@@ -9,7 +9,7 @@ You must create a helper struct that *can* be parsed. The helper struct must ful
 conditions:
 
 1) It must contain a static method called `from_class` that takes your original class as an input and returns the helper struct. This method must not throw an exception.
-2) It must contain a method called `to_class` that transforms the helper struct into your original class. This method may throw an exception, if you want to.
+2) (Optional) It must contain a method called `to_class` that transforms the helper struct into your original class. This method may throw an exception, if you want to. If you can directly construct your custom class from the field values in the order they were declared in the helper struct, you do not have to write a `to_class` method.
 
 You can then implement a custom parser for your class like this:
 
@@ -68,6 +68,8 @@ struct PersonImpl {
 
     // 2) Const method called `to_class` that transforms the helper struct
     //    into your original class.
+    //    In this case, the `to_class` method is actually optional, because
+    //    you can directly create Person from the field values.
     Person to_class() const { return Person(first_name(), last_name(), age()); }
 };
 ```
@@ -91,4 +93,21 @@ inside a vector:
 
 ```cpp
 const auto people = rfl::json::read<std::vector<Person>>(json_str).value();
+```
+
+As we have noted, in this particular example, the `Person` class can be constructed from the field values in
+`PersonImpl` in the exact same order they were declaced in `PersonImpl`. So we can drop the `.to_class` method:
+
+```cpp
+struct PersonImpl {
+    rfl::Field<"firstName", std::string> first_name;
+    rfl::Field<"lastName", std::string> last_name;
+    rfl::Field<"age", int> age;
+
+    static PersonImpl from_class(const Person& _p) noexcept {
+        return PersonImpl{.first_name = _p.first_name(),
+                          .last_name = _p.last_name(),
+                          .age = _p.age()};
+    }
+};
 ```
