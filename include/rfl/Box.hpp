@@ -18,6 +18,8 @@ class Box {
         return Box<T>(std::make_unique<T>(std::forward<Args>(_args)...));
     }
 
+    Box(Box<T>&& _other) : ptr_(std::move(_other.ptr_)) {}
+
     ~Box() = default;
 
     /// Returns a pointer to the underlying object
@@ -34,8 +36,7 @@ class Box {
 
    private:
     /// Only make is allowed to use this constructor.
-    explicit Box(std::unique_ptr<T>&& _ptr)
-        : ptr_(std::forward<std::unique_ptr<T>>(_ptr)) {}
+    explicit Box(std::unique_ptr<T>&& _ptr) : ptr_(std::move(_ptr)) {}
 
    private:
     /// The underlying unique_ptr_

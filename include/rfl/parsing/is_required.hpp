@@ -17,10 +17,16 @@ template <class T>
 class is_required : public std::true_type {};
 
 template <class T>
+class is_required<T*> : public std::false_type {};
+
+template <class T>
 class is_required<std::optional<T>> : public std::false_type {};
 
 template <class T>
 class is_required<std::shared_ptr<T>> : public std::false_type {};
+
+template <class T>
+class is_required<std::unique_ptr<T>> : public std::false_type {};
 
 }  // namespace parsing
 }  // namespace rfl

@@ -24,7 +24,7 @@ void test_variant() {
         rfl::Field<"width", double> width;
     };
 
-    using Shapes = std::variant<Circle, Rectangle, Square>;
+    using Shapes = std::variant<Circle, Rectangle, std::unique_ptr<Square>>;
 
     const Shapes r = Rectangle{.height = 10, .width = 5};
 

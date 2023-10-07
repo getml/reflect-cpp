@@ -22,11 +22,26 @@ template <class... FieldTypes>
 class NamedTuple {
    public:
     using Fields = std::tuple<std::decay_t<FieldTypes>...>;
+    using Values = std::tuple<typename std::decay<FieldTypes>::type::Type...>;
 
    public:
     /// Construct from the fields.
-    NamedTuple(FieldTypes... _fields)
-        : values_(std::forward_as_tuple(_fields.value_...)) {
+    NamedTuple(FieldTypes&&... _fields)
+        : values_(std::make_tuple(std::move(_fields.value_)...)) {
+        static_assert(no_duplicate_field_names(),
+                      "Duplicate field names are not allowed");
+    }
+
+    /// Construct from the fields.
+    NamedTuple(const FieldTypes&... _fields)
+        : values_(std::make_tuple(_fields.value_...)) {
+        static_assert(no_duplicate_field_names(),
+                      "Duplicate field names are not allowed");
+    }
+
+    /// Construct from a tuple containing fields.
+    NamedTuple(std::tuple<FieldTypes...>&& _tup)
+        : NamedTuple(std::make_from_tuple<NamedTuple<FieldTypes...>>(_tup)) {
         static_assert(no_duplicate_field_names(),
                       "Duplicate field names are not allowed");
     }
@@ -250,10 +265,10 @@ class NamedTuple {
     }
 
     /// Returns the underlying std::tuple.
-    auto& values() { return values_; }
+    Values& values() { return values_; }
 
     /// Returns the underlying std::tuple.
-    const auto& values() const { return values_; }
+    const Values& values() const { return values_; }
 
    private:
     /// Adds the elements of a tuple to a newly created named tuple,
@@ -367,7 +382,7 @@ class NamedTuple {
     /// As you can see, a NamedTuple is just a normal tuple under-the-hood,
     /// everything else is resolved at compile time. It should have no
     /// runtime overhead over a normal std::tuple.
-    std::tuple<typename std::decay<FieldTypes>::type::Type...> values_;
+    Values values_;
 };
 
 // ----------------------------------------------------------------------------

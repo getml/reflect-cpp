@@ -57,8 +57,7 @@ class Ref {
 
    private:
     /// Only make is allowed to use this constructor.
-    explicit Ref(std::shared_ptr<T>&& _ptr)
-        : ptr_(std::forward<std::shared_ptr<T>>(_ptr)) {}
+    explicit Ref(std::shared_ptr<T>&& _ptr) : ptr_(std::move(_ptr)) {}
 
    private:
     /// The underlying shared_ptr_

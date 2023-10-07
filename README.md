@@ -109,7 +109,7 @@ reflect-cpp supports the following containers from the C++ standard library:
 - `std::shared_ptr`
 - `std::string`
 - `std::tuple`
-- `std::unique_ptr` (TODO)
+- `std::unique_ptr` 
 - `std::unordered_map` 
 - `std::unordered_set` 
 - `std::variant`
@@ -119,7 +119,7 @@ reflect-cpp supports the following containers from the C++ standard library:
 
 In addition, it includes the following custom containers:
 
-- `rfl::Box`: Similar to `std::unique_ptr`, but guaranteed to never be null (TODO).
+- `rfl::Box`: Similar to `std::unique_ptr`, but guaranteed to never be null.
 - `rfl::Literal`: An explicitly enumerated string.
 - `rfl::NamedTuple`: Similar to `std::tuple`, but with named fields that can be retrieved via their name at compile time.
 - `rfl::Ref`: Similar to `std::shared_ptr`, but guaranteed to never be null. 

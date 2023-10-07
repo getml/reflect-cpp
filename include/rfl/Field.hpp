@@ -26,10 +26,10 @@ struct Field {
 
     Field(Type&& _value) noexcept : value_(std::move(_value)) {}
 
-    Field(const Field<_name, Type>& _field) : value_(_field.get()) {}
-
     Field(Field<_name, Type>&& _field) noexcept
         : value_(std::move(_field.value_)) {}
+
+    Field(const Field<_name, Type>& _field) : value_(_field.get()) {}
 
     template <class T>
     Field(const Field<_name, T>& _field) : value_(_field.get()) {}
@@ -129,6 +129,11 @@ struct Field {
     /// The underlying value.
     Type value_;
 };
+
+template <internal::StringLiteral _name, class _Type>
+inline auto make_field(_Type&& _value) {
+    return Field<_name, _Type>(std::forward<_Type>(_value));
+}
 
 template <internal::StringLiteral _name, class _Type>
 inline auto make_field(const _Type& _value) {

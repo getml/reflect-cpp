@@ -25,7 +25,7 @@ void test_field_variant() {
 
     using Shapes = std::variant<rfl::Field<"circle", Circle>,
                                 rfl::Field<"rectangle", Rectangle>,
-                                rfl::Field<"square", Square>>;
+                                rfl::Field<"square", rfl::Box<Square>>>;
 
     const Shapes r =
         rfl::make_field<"rectangle">(Rectangle{.height = 10, .width = 5});

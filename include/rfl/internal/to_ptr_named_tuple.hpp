@@ -1,0 +1,64 @@
+#ifndef RFL_INTERNAL_TO_PTR_NAMED_TUPLE_HPP_
+#define RFL_INTERNAL_TO_PTR_NAMED_TUPLE_HPP_
+
+#include <iostream>
+#include <tuple>
+
+#include "rfl/always_false.hpp"
+#include "rfl/internal/has_flatten_fields.hpp"
+#include "rfl/internal/is_field.hpp"
+#include "rfl/internal/is_named_tuple.hpp"
+#include "rfl/internal/to_ptr_field_tuple.hpp"
+#include "rfl/make_named_tuple.hpp"
+
+namespace rfl {
+namespace internal {
+
+template <class PtrFieldTuple, class... Args>
+auto flatten_ptr_field_tuple(const PtrFieldTuple& _t, Args&&... _args) {
+    constexpr auto i = sizeof...(Args);
+    if constexpr (i == std::tuple_size_v<std::decay_t<PtrFieldTuple>>) {
+        return std::tuple_cat(std::forward<Args>(_args)...);
+    } else {
+        using T = std::tuple_element_t<i, std::decay_t<PtrFieldTuple>>;
+        if constexpr (internal::is_flatten_field<T>::value) {
+            return flatten_ptr_field_tuple(
+                _t, std::forward<Args>(_args)...,
+                flatten_ptr_field_tuple(
+                    internal::to_ptr_field_tuple(*std::get<i>(_t).get())));
+        } else {
+            return flatten_ptr_field_tuple(_t, std::forward<Args>(_args)...,
+                                           std::make_tuple(std::get<i>(_t)));
+        }
+    }
+}
+
+/// Generates a named tuple that contains pointers to the original values in
+/// the struct.
+template <class T>
+auto to_ptr_named_tuple(const T& _t) {
+    if constexpr (is_named_tuple_v<std::decay_t<T>>) {
+        return nt_to_ptr_named_tuple(_t);
+    } else {
+        const auto ptr_field_tuple = to_ptr_field_tuple(_t);
+
+        const auto ft_to_nt = []<class... Fields>(const Fields&... _fields) {
+            return make_named_tuple(_fields...);
+        };
+
+        using PtrFieldTuple = std::decay_t<decltype(ptr_field_tuple)>;
+
+        if constexpr (!has_flatten_fields<PtrFieldTuple>()) {
+            return std::apply(ft_to_nt, std::move(ptr_field_tuple));
+        } else {
+            const auto flattened_tuple =
+                flatten_ptr_field_tuple(ptr_field_tuple);
+            return std::apply(ft_to_nt, flattened_tuple);
+        }
+    }
+}
+
+}  // namespace internal
+}  // namespace rfl
+
+#endif

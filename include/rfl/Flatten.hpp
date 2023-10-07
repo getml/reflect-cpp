@@ -49,11 +49,15 @@ struct Flatten {
     inline const Type& operator()() const { return value_; }
 
     /// Assigns the underlying object.
-    inline void operator=(const Type& _value) { value_ = _value; }
+    inline Flatten<Type> operator=(const Type& _value) {
+        value_ = _value;
+        return *this;
+    }
 
     /// Assigns the underlying object.
-    inline void operator=(Type&& _value) {
+    inline Flatten<Type> operator=(Type&& _value) {
         value_ = std::forward<Type>(_value);
+        return *this;
     }
 
     /// Assigns the underlying object.

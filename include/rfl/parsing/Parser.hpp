@@ -24,13 +24,16 @@
 #include "rfl/Ref.hpp"
 #include "rfl/Result.hpp"
 #include "rfl/TaggedUnion.hpp"
+#include "rfl/always_false.hpp"
 #include "rfl/field_type.hpp"
 #include "rfl/from_named_tuple.hpp"
 #include "rfl/internal/StringLiteral.hpp"
 #include "rfl/internal/all_fields.hpp"
 #include "rfl/internal/has_reflection_method_v.hpp"
 #include "rfl/internal/has_reflection_type_v.hpp"
+#include "rfl/internal/move_from_named_tuple.hpp"
 #include "rfl/internal/no_duplicate_field_names.hpp"
+#include "rfl/internal/to_ptr_named_tuple.hpp"
 #include "rfl/named_tuple_t.hpp"
 #include "rfl/parsing/is_required.hpp"
 #include "rfl/to_named_tuple.hpp"
@@ -71,10 +74,9 @@ struct Parser {
             } else if constexpr (std::is_class_v<T> &&
                                  !std::is_same<T, std::string>()) {
                 using NamedTupleType = named_tuple_t<T>;
-                const auto to_struct =
-                    [](const NamedTupleType& _n) -> Result<T> {
+                const auto to_struct = [](NamedTupleType&& _n) -> Result<T> {
                     try {
-                        return from_named_tuple<T, NamedTupleType>(_n);
+                        return internal::move_from_named_tuple<T>(_n);
                     } catch (std::exception& e) {
                         return Error(e.what());
                     }
@@ -102,13 +104,38 @@ struct Parser {
             }
         } else if constexpr (std::is_class_v<T> &&
                              !std::is_same<T, std::string>()) {
-            const auto named_tuple = to_named_tuple(_var);
-            using NamedTupleType = std::decay_t<decltype(named_tuple)>;
-            return Parser<ReaderType, WriterType, NamedTupleType>::write(
-                _w, named_tuple);
+            const auto ptr_named_tuple = internal::to_ptr_named_tuple(_var);
+            using PtrNamedTupleType = std::decay_t<decltype(ptr_named_tuple)>;
+            return Parser<ReaderType, WriterType, PtrNamedTupleType>::write(
+                _w, ptr_named_tuple);
         } else {
             return _w.from_basic_type(_var);
         }
+    }
+};
+
+template <class ReaderType, class WriterType, class T>
+struct Parser<ReaderType, WriterType, T*> {
+    using InputVarType = typename ReaderType::InputVarType;
+    using OutputVarType = typename WriterType::OutputVarType;
+
+    /// Expresses the variables as type T.
+    static Result<T*> read(const ReaderType& _r, InputVarType* _var) noexcept {
+        static_assert(
+            always_false_v<T>,
+            "Reading into raw pointers is dangerous and therefore unsupported. "
+            "Please consider using std::unique_ptr, rfl::Box, std::shared_ptr, "
+            "rfl::Ref or std::optional instead.");
+        return Error("Unsupported.");
+    }
+
+    /// Expresses the variable a a JSON.
+    static OutputVarType write(const WriterType& _w, const T* _ptr) noexcept {
+        if (!_ptr) {
+            return _w.empty_var();
+        }
+        return Parser<ReaderType, WriterType, std::decay_t<T>>::write(_w,
+                                                                      *_ptr);
     }
 };
 
@@ -195,7 +222,9 @@ struct Parser<ReaderType, WriterType, Box<T>> {
     /// Expresses the variables as type T.
     static Result<Box<T>> read(const ReaderType& _r,
                                InputVarType* _var) noexcept {
-        const auto to_box = [&](auto&& _t) { return Box<T>::make(_t); };
+        const auto to_box = [&](auto&& _t) {
+            return Box<T>::make(std::move(_t));
+        };
         return Parser<ReaderType, WriterType, std::decay_t<T>>::read(_r, _var)
             .transform(to_box);
     }
@@ -309,7 +338,7 @@ struct Parser<ReaderType, WriterType, NamedTuple<FieldTypes...>> {
     static Result<NamedTuple<FieldTypes...>> read(const ReaderType& _r,
                                                   InputVarType* _var) noexcept {
         const auto to_map = [&](auto _obj) { return _r.to_map(&_obj); };
-        const auto build = [&](const auto& _map) {
+        const auto build = [&](auto _map) {
             return build_named_tuple_recursively(_r, _map);
         };
         return _r.to_object(_var).transform(to_map).and_then(build);
@@ -534,7 +563,7 @@ struct Parser<ReaderType, WriterType,
             return get_discriminator(_r, &_obj);
         };
 
-        const auto to_result = [&_r, _var](std::string _disc_value) {
+        const auto to_result = [&_r, _var](const std::string& _disc_value) {
             return find_matching_alternative(_r, _disc_value, _var);
         };
 
@@ -562,9 +591,27 @@ struct Parser<ReaderType, WriterType,
             return Error("Could not parse tagged union, could not match " +
                          _discriminator.str() + " '" + _disc_value + "'.");
         } else {
-            const auto optional = try_option<_i>(_r, _disc_value, _var);
-            if (optional) {
-                return *optional;
+            using AlternativeType = std::decay_t<std::variant_alternative_t<
+                _i, std::variant<AlternativeTypes...>>>;
+
+            if (contains_disc_value<AlternativeType>(_disc_value)) {
+                const auto to_tagged_union = [](auto&& _val) {
+                    return TaggedUnion<_discriminator, AlternativeTypes...>(
+                        std::move(_val));
+                };
+
+                const auto embellish_error = [&](Error&& _e) {
+                    return Error(
+                        "Could not parse tagged union with discrimininator " +
+                        _discriminator.str() + " '" + _disc_value +
+                        "': " + _e.what());
+                };
+
+                return Parser<ReaderType, WriterType, AlternativeType>::read(
+                           _r, _var)
+                    .transform(to_tagged_union)
+                    .or_else(embellish_error);
+
             } else {
                 return find_matching_alternative<_i + 1>(_r, _disc_value, _var);
             }
@@ -601,36 +648,6 @@ struct Parser<ReaderType, WriterType,
             using LiteralType =
                 field_type_t<_discriminator, typename T::ReflectionType>;
             return LiteralType::contains(_disc_value);
-        }
-    }
-
-    /// Tries to parse one particular option.
-    template <int _i>
-    static std::optional<ResultType> try_option(const ReaderType& _r,
-                                                const std::string& _disc_value,
-                                                InputVarType* _var) noexcept {
-        using AlternativeType = std::decay_t<
-            std::variant_alternative_t<_i, std::variant<AlternativeTypes...>>>;
-
-        if (contains_disc_value<AlternativeType>(_disc_value)) {
-            const auto to_tagged_union = [](const auto& _val) {
-                return TaggedUnion<_discriminator, AlternativeTypes...>(_val);
-            };
-
-            const auto embellish_error = [&](const Error& _e) {
-                return Error(
-                    "Could not parse tagged union with discrimininator " +
-                    _discriminator.str() + " '" + _disc_value +
-                    "': " + _e.what());
-            };
-
-            return Parser<ReaderType, WriterType, AlternativeType>::read(_r,
-                                                                         _var)
-                .transform(to_tagged_union)
-                .or_else(embellish_error);
-
-        } else {
-            return std::optional<ResultType>();
         }
     }
 };
@@ -725,6 +742,36 @@ struct Parser<ReaderType, WriterType, std::tuple<Ts...>> {
 
 // ----------------------------------------------------------------------------
 
+template <class ReaderType, class WriterType, class T>
+struct Parser<ReaderType, WriterType, std::unique_ptr<T>> {
+    using InputVarType = typename ReaderType::InputVarType;
+    using OutputVarType = typename WriterType::OutputVarType;
+
+    /// Expresses the variables as type T.
+    static Result<std::unique_ptr<T>> read(const ReaderType& _r,
+                                           InputVarType* _var) noexcept {
+        if (_r.is_empty(_var)) {
+            return std::unique_ptr<T>();
+        }
+        const auto to_ptr = [](auto&& _t) {
+            return std::make_unique<T>(std::move(_t));
+        };
+        return Parser<ReaderType, WriterType, std::decay_t<T>>::read(_r, _var)
+            .transform(to_ptr);
+    }
+
+    /// Expresses the variable a a JSON.
+    static OutputVarType write(const WriterType& _w,
+                               const std::unique_ptr<T>& _s) noexcept {
+        if (!_s) {
+            return _w.empty_var();
+        }
+        return Parser<ReaderType, WriterType, std::decay_t<T>>::write(_w, *_s);
+    }
+};
+
+// ----------------------------------------------------------------------------
+
 /// To be used when all options of the variants are rfl::Field. Essentially,
 /// this is an externally tagged union.
 template <class ReaderType, class WriterType, class... FieldTypes>
@@ -770,9 +817,11 @@ struct FieldVariantParser {
             "Externally tagged variants cannot have duplicate field names.");
 
         const auto handle = [&](const auto& _field) {
-            using NamedTupleType = NamedTuple<std::decay_t<decltype(_field)>>;
+            const auto named_tuple =
+                make_named_tuple(internal::to_ptr_field(_field));
+            using NamedTupleType = std::decay_t<decltype(named_tuple)>;
             return Parser<ReaderType, WriterType, NamedTupleType>::write(
-                _w, NamedTupleType(_field));
+                _w, named_tuple);
         };
 
         return std::visit(handle, _v);
@@ -788,44 +837,30 @@ struct FieldVariantParser {
                 "Could not parse std::variant, could not match field named '" +
                 _disc_value + "'.");
         } else {
-            const auto optional = try_option<_i>(_r, _disc_value, _var);
-            if (optional) {
-                return *optional;
+            using FieldType = std::decay_t<typename std::tuple_element<
+                _i, std::tuple<FieldTypes...>>::type>;
+
+            using ValueType = std::decay_t<typename FieldType::Type>;
+
+            const auto key = FieldType::name_.str();
+
+            if (key == _disc_value) {
+                const auto to_variant = [](ValueType&& _val) {
+                    return std::variant<FieldTypes...>(
+                        FieldType(std::move(_val)));
+                };
+
+                const auto embellish_error = [&](const Error& _e) {
+                    return Error("Could not parse std::variant with field '" +
+                                 _disc_value + "': " + _e.what());
+                };
+
+                return Parser<ReaderType, WriterType, ValueType>::read(_r, _var)
+                    .transform(to_variant)
+                    .or_else(embellish_error);
             } else {
                 return find_matching_alternative<_i + 1>(_r, _disc_value, _var);
             }
-        }
-    }
-
-    /// Tries to parse one particular option.
-    template <int _i>
-    static std::optional<ResultType> try_option(const ReaderType& _r,
-                                                const std::string& _disc_value,
-                                                InputVarType* _var) noexcept {
-        using FieldType = std::decay_t<
-            typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type>;
-
-        using ValueType = std::decay_t<typename FieldType::Type>;
-
-        const auto key = FieldType::name_.str();
-
-        if (key == _disc_value) {
-            const auto to_variant = [](ValueType&& _val) {
-                return std::variant<FieldTypes...>(
-                    FieldType(std::forward<ValueType>(_val)));
-            };
-
-            const auto embellish_error = [&](const Error& _e) {
-                return Error("Could not parse std::variant with field '" +
-                             _disc_value + "': " + _e.what());
-            };
-
-            return Parser<ReaderType, WriterType, ValueType>::read(_r, _var)
-                .transform(to_variant)
-                .or_else(embellish_error);
-
-        } else {
-            return std::optional<ResultType>();
         }
     }
 };
@@ -849,8 +884,8 @@ struct Parser<ReaderType, WriterType, std::variant<FieldTypes...>> {
         } else if constexpr (_i == sizeof...(FieldTypes)) {
             return Error("Could not parse variant: " + _errors);
         } else {
-            const auto to_variant = [](const auto& _val) {
-                return std::variant<FieldTypes...>(_val);
+            const auto to_variant = [](auto&& _val) {
+                return std::variant<FieldTypes...>(std::move(_val));
             };
 
             const auto try_next = [&_r, _var, &_errors](const auto& _err) {
@@ -905,9 +940,9 @@ struct VectorParser {
         using namespace std::ranges::views;
 
         const auto get_result = [&](auto& _v) {
-            return Parser<ReaderType, WriterType, std::decay_t<T>>::read(_r,
-                                                                         &_v)
-                .value();
+            return std::move(
+                Parser<ReaderType, WriterType, std::decay_t<T>>::read(_r, &_v)
+                    .value());
         };
 
         const auto to_vec = [&](InputArrayType _arr) -> Result<VecType> {

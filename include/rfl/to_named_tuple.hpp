@@ -47,7 +47,7 @@ auto to_named_tuple(const T& _t) {
         using FieldTuple = std::decay_t<decltype(field_tuple)>;
 
         const auto ft_to_nt = []<class... Fields>(Fields&&... _fields) {
-            return make_named_tuple(std::forward<Fields>(_fields)...);
+            return make_named_tuple(_fields...);
         };
 
         if constexpr (!internal::has_flatten_fields<FieldTuple>()) {

@@ -4,15 +4,15 @@
 #include <functional>
 #include <type_traits>
 
-#include "rfl/internal/field_tuple_t.hpp"
 #include "rfl/internal/has_flatten_fields.hpp"
 #include "rfl/internal/is_named_tuple.hpp"
+#include "rfl/internal/ptr_field_tuple_t.hpp"
 #include "rfl/named_tuple_t.hpp"
 
 namespace rfl {
 
 template <class FieldTupleType, class NamedTupleType, class... Args>
-FieldTupleType concat_named_tuple(const NamedTupleType& _n, Args&&... _args);
+FieldTupleType concat_named_tuple(NamedTupleType&& _n, Args&&... _args);
 
 /// Creates a struct of type T from a named tuple.
 /// All fields of the struct must be an rfl::Field.
@@ -24,17 +24,20 @@ T from_named_tuple(NamedTupleType&& _n) {
         return std::forward<NamedTupleType>(_n);
     } else if constexpr (std::is_same<std::decay_t<NamedTupleType>,
                                       RequiredType>()) {
-        const auto make = []<class... FieldTypes>(FieldTypes&&... _fields) {
-            return T{std::forward<FieldTypes>(_fields)...};
+        const auto make = []<class... ValueTypes>(ValueTypes&&... _values) {
+            return T{std::forward<ValueTypes>(_values)...};
         };
 
-        using FieldTupleType = internal::field_tuple_t<std::decay_t<T>>;
+        using PtrFieldTupleType = internal::ptr_field_tuple_t<std::decay_t<T>>;
 
-        if constexpr (!internal::has_flatten_fields<FieldTupleType>()) {
-            return std::apply(make, _n.fields());
+        if constexpr (!internal::has_flatten_fields<PtrFieldTupleType>()) {
+            return std::apply(
+                make,
+                std::forward<typename NamedTupleType::Values>(_n.values()));
         } else {
-            const auto fields = concat_named_tuple<FieldTupleType>(_n);
-            return std::apply(make, fields);
+            auto fields = concat_named_tuple<PtrFieldTupleType>(_n);
+            using FieldsType = std::decay_t<decltype(fields)>;
+            return std::apply(make, std::forward<FieldsType>(fields));
         }
 
     } else {
@@ -45,7 +48,7 @@ T from_named_tuple(NamedTupleType&& _n) {
 
 /// Creates a struct of type T from a named tuple.
 /// All fields of the struct must be an rfl::Field.
-template <class T, class NamedTupleType>
+/*template <class T, class NamedTupleType>
 T from_named_tuple(const NamedTupleType& _n) {
     using RequiredType = std::decay_t<named_tuple_t<T>>;
     if constexpr (internal::is_named_tuple_v<std::decay_t<T>>) {
@@ -53,7 +56,8 @@ T from_named_tuple(const NamedTupleType& _n) {
 
     } else if constexpr (std::is_same<std::decay_t<NamedTupleType>,
                                       RequiredType>()) {
-        const auto make = [](const auto&... _fields) { return T{_fields...}; };
+        const auto make = [](const auto&... _fields) { return T{_fields...};
+};
 
         using FieldTupleType = internal::field_tuple_t<T>;
 
@@ -67,10 +71,10 @@ T from_named_tuple(const NamedTupleType& _n) {
     } else {
         return from_named_tuple<T, RequiredType>(RequiredType(_n));
     }
-}
+}*/
 
 template <class FieldTupleType, class NamedTupleType, class... Args>
-FieldTupleType concat_named_tuple(const NamedTupleType& _n, Args&&... _args) {
+FieldTupleType concat_named_tuple(NamedTupleType&& _n, Args&&... _args) {
     constexpr auto i = sizeof...(Args);
     if constexpr (i == std::tuple_size_v<std::decay_t<FieldTupleType>>) {
         return std::make_tuple(std::forward<Args>(_args)...);
@@ -78,12 +82,12 @@ FieldTupleType concat_named_tuple(const NamedTupleType& _n, Args&&... _args) {
         using T = std::tuple_element_t<i, FieldTupleType>;
         if constexpr (internal::is_flatten_field<T>::value) {
             return concat_named_tuple<FieldTupleType>(
-                _n, std::forward<Args>(_args)...,
+                _n, std::move(_args)...,
                 from_named_tuple<typename T::Type>(_n));
         } else {
             return concat_named_tuple<FieldTupleType>(
                 _n, std::forward<Args>(_args)...,
-                _n.template get_field<T::name_>());
+                std::move(_n.template get_field<T::name_>()));
         }
     }
 }

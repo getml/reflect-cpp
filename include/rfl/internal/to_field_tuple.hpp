@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <tuple>
+#include <type_traits>
 
 #include "rfl/always_false.hpp"
 #include "rfl/internal/has_n_fields.hpp"
@@ -33,13 +34,7 @@ if constexpr (internal::is_named_tuple_v<T>) {
 
 main_part = "".join((make_field_template(i) for i in range(101)))
 
-end = """} else {
-    static_assert(rfl::always_false_v<T>, "Only up to 100 fields are
-supported.");
-    }
-"""
-
-code = beginning + main_part + end
+code = beginning + main_part
 
 with open("generated_code2.cpp", "w", encoding="utf-8") as codefile:
     codefile.write(code)
@@ -1085,9 +1080,23 @@ auto to_field_tuple(const T& _t) {
             f68, f69, f70, f71, f72, f73, f74, f75, f76, f77, f78, f79, f80,
             f81, f82, f83, f84, f85, f86, f87, f88, f89, f90, f91, f92, f93,
             f94, f95, f96, f97, f98, f99, f100);
+
+        // ---------------------------------
+        // End of generated boilerplate code
+        // ---------------------------------
     } else {
-        static_assert(rfl::always_false_v<T>,
-                      "Only up to 100 fields are supported.");
+        static_assert(
+            rfl::always_false_v<T>,
+            "\n\nThis error occurs for one of two reasons:\n\n"
+            "1) You have created a struct with more than 100 fields, which is "
+            "unsupported. Please split up your struct into several "
+            "smaller structs and then use rfl::Flatten<...> to combine them. "
+            "Refer "
+            "to the documentation on rfl::Flatten<...> for details.\n\n"
+            "2) You have added a custom constructor to your struct, which you "
+            "shouldn't do either. Please refer to the sections on custom "
+            "classes or custom parsers in the documentation "
+            "for solutions to this problem.\n\n");
     }
 }
 

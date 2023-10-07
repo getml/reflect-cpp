@@ -30,31 +30,6 @@ class Error {
 /// successful.
 struct Nothing {};
 
-/// Helper class to be used to within the Result class to support the operator*.
-/// This is necessary, because we only want this class to be unwrapped, not
-/// normal std::tuple.
-template <class... Args>
-struct HelperTuple {
-    using TupleType = std::tuple<Args...>;
-    TupleType tuple_;
-};
-
-template <class>
-struct is_helper_tuple : std::false_type {};
-
-template <class... Args>
-struct is_helper_tuple<HelperTuple<Args...>> : std::true_type {};
-
-template <class T>
-struct value_type {
-    using Type = T;
-};
-
-template <class... Args>
-struct value_type<HelperTuple<Args...>> {
-    using Type = HelperTuple<Args...>::TupleType;
-};
-
 /// The Result class is used for monadic error handling.
 template <class T>
 class Result {
@@ -62,15 +37,13 @@ class Result {
                   "The result type cannot be Error.");
 
    public:
-    using ValueType = typename value_type<T>::Type;
-
     Result(const T& _val) : t_or_err_(_val) {}
 
-    Result(T&& _val) noexcept : t_or_err_(std::forward<T>(_val)) {}
+    Result(T&& _val) noexcept : t_or_err_(std::move(_val)) {}
 
     Result(const Error& _err) : t_or_err_(_err) {}
 
-    Result(Error&& _err) noexcept : t_or_err_(std::forward<Error>(_err)) {}
+    Result(Error&& _err) noexcept : t_or_err_(std::move(_err)) {}
 
     template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
                                                bool>::type = true>
@@ -91,48 +64,32 @@ class Result {
     /// Monadic operation - F must be a function of type T -> Result<U>.
     template <class F>
     auto and_then(const F& _f) {
-        const auto apply = [&_f](auto&& _t) {
-            if constexpr (is_helper_tuple<T>()) {
-                using TupleType = std::decay_t<decltype(_t.tuple)>;
-                return std::apply(_f, std::forward<TupleType>(_t.tuple_));
-            } else {
-                return _f(_t);
-            }
-        };
-
         /// Result_U is expected to be of type Result<U>.
-        using Result_U = typename std::invoke_result<decltype(apply), T>::type;
+        using Result_U = typename std::invoke_result<F, T>::type;
 
         const auto handle_variant =
-            [apply]<class TOrError>(TOrError&& _t_or_err) -> Result_U {
+            [&]<class TOrError>(TOrError&& _t_or_err) -> Result_U {
             if constexpr (!std::is_same<std::decay_t<TOrError>, Error>()) {
-                return apply(std::forward<TOrError>(_t_or_err));
+                return _f(std::forward<TOrError>(_t_or_err));
             } else {
-                return _t_or_err;
+                return std::forward<TOrError>(_t_or_err);
             }
         };
 
-        return std::visit(handle_variant, t_or_err_);
+        return std::visit(handle_variant,
+                          std::forward<std::variant<T, Error>>(t_or_err_));
     }
 
     /// Monadic operation - F must be a function of type T -> Result<U>.
     template <class F>
     auto and_then(const F& _f) const {
-        const auto apply = [&_f](const auto& _t) {
-            if constexpr (is_helper_tuple<T>()) {
-                return std::apply(_f, _t.tuple_);
-            } else {
-                return _f(_t);
-            }
-        };
-
         /// Result_U is expected to be of type Result<U>.
-        using Result_U = typename std::invoke_result<decltype(apply), T>::type;
+        using Result_U = typename std::invoke_result<F, T>::type;
 
         const auto handle_variant =
-            [apply]<class TOrError>(const TOrError& _t_or_err) -> Result_U {
+            [&]<class TOrError>(const TOrError& _t_or_err) -> Result_U {
             if constexpr (!std::is_same<TOrError, Error>()) {
-                return apply(_t_or_err);
+                return _f(_t_or_err);
             } else {
                 return _t_or_err;
             }
@@ -143,15 +100,11 @@ class Result {
 
     /// Results types can be iterated over, which even make it possible to use
     /// them within a std::range.
-    ValueType* begin() noexcept {
+    T* begin() noexcept {
         const auto get_ptr =
-            [this]<class TOrError>(const TOrError& _t_or_err) -> ValueType* {
+            [this]<class TOrError>(const TOrError& _t_or_err) -> T* {
             if constexpr (!std::is_same<TOrError, Error>()) {
-                if constexpr (is_helper_tuple<T>()) {
-                    return &_t_or_err.tuple_;
-                } else {
-                    return &_t_or_err;
-                }
+                return &_t_or_err;
             } else {
                 return nullptr;
             }
@@ -161,16 +114,11 @@ class Result {
 
     /// Results types can be iterated over, which even make it possible to use
     /// them within a std::range.
-    const ValueType* begin() const noexcept {
+    const T* begin() const noexcept {
         const auto get_ptr =
-            [this]<class TOrError>(
-                const TOrError& _t_or_err) -> const ValueType* {
+            [this]<class TOrError>(const TOrError& _t_or_err) -> const T* {
             if constexpr (!std::is_same<TOrError, Error>()) {
-                if constexpr (is_helper_tuple<T>()) {
-                    return &_t_or_err.tuple_;
-                } else {
-                    return &_t_or_err;
-                }
+                return &_t_or_err;
             } else {
                 return nullptr;
             }
@@ -180,15 +128,11 @@ class Result {
 
     /// Results types can be iterated over, which even make it possible to use
     /// them within a std::range.
-    ValueType* end() noexcept {
+    T* end() noexcept {
         const auto get_ptr =
-            [this]<class TOrError>(const TOrError& _t_or_err) -> ValueType* {
+            [this]<class TOrError>(const TOrError& _t_or_err) -> T* {
             if constexpr (!std::is_same<TOrError, Error>()) {
-                if constexpr (is_helper_tuple<T>()) {
-                    return &_t_or_err.tuple_ + 1;
-                } else {
-                    return &_t_or_err + 1;
-                }
+                return &_t_or_err + 1;
             } else {
                 return nullptr;
             }
@@ -198,16 +142,11 @@ class Result {
 
     /// Results types can be iterated over, which even make it possible to use
     /// them within a std::range.
-    const ValueType* end() const noexcept {
+    const T* end() const noexcept {
         const auto get_ptr =
-            [this]<class TOrError>(
-                const TOrError& _t_or_err) -> const ValueType* {
+            [this]<class TOrError>(const TOrError& _t_or_err) -> const T* {
             if constexpr (!std::is_same<TOrError, Error>()) {
-                if constexpr (is_helper_tuple<T>()) {
-                    return &_t_or_err.tuple_ + 1;
-                } else {
-                    return &_t_or_err + 1;
-                }
+                return &_t_or_err + 1;
             } else {
                 return nullptr;
             }
@@ -254,6 +193,22 @@ class Result {
     /// Expects a function that takes of type Error -> Result<T> and returns
     /// Result<T>.
     template <class F>
+    Result<T> or_else(const F& _f) {
+        const auto handle_variant =
+            [&]<class TOrError>(TOrError&& _t_or_err) -> Result<T> {
+            if constexpr (std::is_same<TOrError, Error>()) {
+                return _f(std::forward<TOrError>(_t_or_err));
+            } else {
+                return std::forward<TOrError>(_t_or_err);
+            }
+        };
+        return std::visit(handle_variant,
+                          std::forward<std::variant<T, Error>>(t_or_err_));
+    }
+
+    /// Expects a function that takes of type Error -> Result<T> and returns
+    /// Result<T>.
+    template <class F>
     Result<T> or_else(const F& _f) const {
         const auto handle_variant =
             [&_f]<class TOrError>(const TOrError& _t_or_err) -> Result<T> {
@@ -276,49 +231,32 @@ class Result {
     /// Functor operation - F must be a function of type T -> U.
     template <class F>
     auto transform(const F& _f) {
-        const auto apply = [&_f](auto&& _t) {
-            if constexpr (is_helper_tuple<T>()) {
-                using TupleType = std::decay_t<decltype(_t.tuple)>;
-                return std::apply(_f, std::forward<TupleType>(_t.tuple_));
-            } else {
-                return _f(std::forward<T>(_t));
-            }
-        };
-
         /// Result_U is expected to be of type Result<U>.
-        using U = typename std::invoke_result<decltype(apply), T>::type;
+        using U = typename std::invoke_result<F, T>::type;
 
         const auto handle_variant =
-            [apply]<class TOrError>(TOrError&& _t_or_err) -> rfl::Result<U> {
+            [&]<class TOrError>(TOrError&& _t_or_err) -> rfl::Result<U> {
             if constexpr (!std::is_same<std::decay_t<TOrError>, Error>()) {
-                return apply(std::forward<TOrError>(_t_or_err));
+                return _f(std::forward<TOrError>(_t_or_err));
             } else {
-                return _t_or_err;
+                return std::forward<TOrError>(_t_or_err);
             }
         };
 
-        return std::visit(handle_variant, t_or_err_);
+        return std::visit(handle_variant,
+                          std::forward<std::variant<T, Error>>(t_or_err_));
     }
 
     /// Functor operation - F must be a function of type T -> U.
     template <class F>
     auto transform(const F& _f) const {
-        const auto apply = [&_f](const auto& _t) {
-            if constexpr (is_helper_tuple<T>()) {
-                return std::apply(_f, _t.tuple_);
-            } else {
-                return _f(_t);
-            }
-        };
-
         /// Result_U is expected to be of type Result<U>.
-        using U = typename std::invoke_result<decltype(apply), T>::type;
+        using U = typename std::invoke_result<F, T>::type;
 
         const auto handle_variant =
-            [apply]<class TOrError>(
-                const TOrError& _t_or_err) -> rfl::Result<U> {
+            [&]<class TOrError>(const TOrError& _t_or_err) -> rfl::Result<U> {
             if constexpr (!std::is_same<TOrError, Error>()) {
-                return apply(_t_or_err);
+                return _f(_t_or_err);
             } else {
                 return _t_or_err;
             }
@@ -329,15 +267,11 @@ class Result {
 
     /// Returns the value if the result does not contain an error, throws an
     /// exceptions if not. Similar to .unwrap() in Rust.
-    ValueType& value() {
+    T& value() {
         const auto handle_variant =
-            [&]<class TOrError>(TOrError& _t_or_err) -> ValueType& {
+            [&]<class TOrError>(TOrError& _t_or_err) -> T& {
             if constexpr (!std::is_same<TOrError, Error>()) {
-                if constexpr (is_helper_tuple<T>()) {
-                    return _t_or_err.tuple_;
-                } else {
-                    return _t_or_err;
-                }
+                return _t_or_err;
             } else {
                 throw std::runtime_error(_t_or_err.what());
             }
@@ -347,15 +281,11 @@ class Result {
 
     /// Returns the value if the result does not contain an error, throws an
     /// exceptions if not. Similar to .unwrap() in Rust.
-    const ValueType& value() const {
+    const T& value() const {
         const auto handle_variant =
-            [&]<class TOrError>(const TOrError& _t_or_err) -> const ValueType& {
+            [&]<class TOrError>(const TOrError& _t_or_err) -> const T& {
             if constexpr (!std::is_same<TOrError, Error>()) {
-                if constexpr (is_helper_tuple<T>()) {
-                    return _t_or_err.tuple_;
-                } else {
-                    return _t_or_err;
-                }
+                return _t_or_err;
             } else {
                 throw std::runtime_error(_t_or_err.what());
             }
@@ -380,108 +310,6 @@ class Result {
     /// The underlying variant, can either be T or Error.
     std::variant<T, Error> t_or_err_;
 };
-
-/// operator* allows to combine result types as a product type.
-
-template <class T, class U>
-inline auto operator*(const Result<T>& _rt, const Result<U>& _ru) {
-    const auto f1 = [&_ru](const T& _t) {
-        const auto f2 = [&_t](const U& _u) {
-            return HelperTuple<T, U>(std::make_tuple(_t, _u));
-        };
-        return _ru.transform(f2);
-    };
-    return _rt.and_then(f1);
-}
-
-template <class... T, class... U>
-inline auto operator*(const Result<HelperTuple<T...>>& _rt,
-                      const Result<HelperTuple<U...>>& _ru) {
-    const auto f1 = [&_ru](const T&... _t) {
-        const auto f2 = [&](const U&... _u) {
-            return HelperTuple<T..., U...>(std::make_tuple(_t..., _u...));
-        };
-        return _ru.transform(f2);
-    };
-    return _rt.and_then(f1);
-}
-
-template <class... T, class U>
-inline auto operator*(const Result<const HelperTuple<T...>>& _rt,
-                      const Result<U>& _ru) {
-    const auto f = [](const U& _u) {
-        return HelperTuple<U>(std::make_tuple(_u));
-    };
-    return _rt * _ru.transform(f);
-}
-
-template <class T, class... U>
-inline auto operator*(const Result<T>& _rt,
-                      const Result<HelperTuple<U...>>& _ru) {
-    const auto f = [](const T& _t) {
-        return HelperTuple<T>(std::make_tuple(_t));
-    };
-    return _rt.transform(f) * _ru;
-}
-
-template <class T, class U>
-inline auto operator*(const Result<T>& _rt, const U& _u) {
-    return _rt * Result<U>(_u);
-}
-
-template <class T, class U>
-inline auto operator*(const T& _t, const Result<U>& _ru) {
-    return Result<T>(_t) * _ru;
-}
-
-template <class T, class U>
-inline auto operator*(Result<T>&& _rt, Result<U>&& _ru) {
-    const auto f1 = [&_ru](T&& _t) {
-        const auto f2 = [&_t](U&& _u) {
-            return HelperTuple<T, U>(std::forward_as_tuple(_t, _u));
-        };
-        return _ru.transform(f2);
-    };
-    return _rt.and_then(f1);
-}
-
-template <class... T, class... U>
-inline auto operator*(Result<HelperTuple<T...>>&& _rt,
-                      Result<HelperTuple<U...>>&& _ru) {
-    const auto f1 = [&_ru](T&&... _t) {
-        const auto f2 = [&](U&&... _u) {
-            return HelperTuple<T..., U...>(std::forward_as_tuple(_t..., _u...));
-        };
-        return _ru.transform(f2);
-    };
-    return _rt.and_then(f1);
-}
-
-template <class... T, class U>
-inline auto operator*(Result<HelperTuple<T...>>&& _rt, Result<U>&& _ru) {
-    const auto f = [](U&& _u) {
-        return HelperTuple<U>(std::forward_as_tuple(_u));
-    };
-    return _rt * _ru.transform(f);
-}
-
-template <class T, class... U>
-inline auto operator*(Result<T>&& _rt, Result<HelperTuple<U...>>&& _ru) {
-    const auto f = [](T&& _t) {
-        return HelperTuple<T>(std::forward_as_tuple(_t));
-    };
-    return _rt.transform(f) * _ru;
-}
-
-template <class T, class U>
-inline auto operator*(Result<T>&& _rt, U&& _u) {
-    return _rt * Result<U>(_u);
-}
-
-template <class T, class U>
-inline auto operator*(T&& _t, Result<U>&& _ru) {
-    return Result<T>(_t) * _ru;
-}
 
 }  // namespace rfl
 
