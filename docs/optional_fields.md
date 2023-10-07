@@ -10,7 +10,7 @@ we generated a JSON string like this:
 Likewise, if we read the JSON string and the field "children" is missing, that will result in a runtime error.
 
 But Bart doesn't have any children. After all, he's only 10 years old. To indicate to the library that the field "children" is optional,
-we can use either `std::optional`, `std::shared_ptr` or `std::unique_ptr` (TODO: unique_ptr currently unsupported).
+we can use either `std::optional`, `std::shared_ptr` or `std::unique_ptr`.
 
 If `std::optional` is `std::nullopt` or any of the smart pointers is a `nullptr`, 
 then the field will not be written to the JSON string. Likewise, it is not required 
