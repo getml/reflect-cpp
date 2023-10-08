@@ -147,12 +147,9 @@ Click [here](https://github.com/getml/reflect-cpp/tree/main/docs).
 
 At the moment, this is work-in-progress. Here are some things that are still missing：
 
-- Extensive testing
-- Benchmarks
-- Documentation is unfinished
-- Support for std::array, std::unique_ptr and full support for rfl::Box
-- Support for rfl::Flatten<std::map<...>> (serde supports this as well)
-- Support for std::any (whether we want to support this as all is still being debated).
+- Benchmarks and optimization
+- Documentation is unfinished (missing rfl::Result, rfl::NamedTuple as well as extension to other serialization formats)
+- Support for Clang and MSVC
 
 ## Installation
 
