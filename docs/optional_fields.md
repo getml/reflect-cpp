@@ -13,8 +13,7 @@ But Bart doesn't have any children. After all, he's only 10 years old. To indica
 we can use either `std::optional`, `std::shared_ptr` or `std::unique_ptr`.
 
 If `std::optional` is `std::nullopt` or any of the smart pointers is a `nullptr`, 
-then the field will not be written to the JSON string. Likewise, it is not required 
-when you read the JSON string, the fields will not be required.
+then the field will not be written to the JSON string. Likewise, when you read the JSON string, the fields will not be required.
 
 So this is how we could rewrite the previous example:
 
