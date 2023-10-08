@@ -92,3 +92,40 @@ auto employee2 =
 In this case `age` is part of `Person` and `salary` part ot `Employee`, but
 because you have flattened them, you can treat them as if they were on
 the same level.
+
+You can also replace structs with other structs. Consider the following example:
+
+```cpp
+struct Person {
+    rfl::Field<"firstName", std::string> first_name;
+    rfl::Field<"lastName", std::string> last_name;
+    rfl::Field<"age", int> age;
+};
+
+struct Employee {
+    rfl::Flatten<Person> person;
+    rfl::Field<"employer", std::string> employer;
+    rfl::Field<"salary", float> salary;
+};
+
+const auto employee = Employee{
+    .person =
+        Person{.first_name = "Homer", .last_name = "Simpson", .age = 45},
+    .employer = std::string("Mr. Burns"),
+    .salary = 60000.0};
+
+const auto carl = Person{.first_name = "Carl", .last_name = "", .age = 45};
+
+const auto employee2 = rfl::replace(employee, carl);
+```
+
+This code flattens the employee structs and then replaces all relevant fields with their counterparts contained in `carl`.
+
+Finally, we get this JSON string:
+
+```json
+{"firstName":"Carl","lastName":"","age":45,"employer":"Mr. Burns","salary":60000.0}
+```
+
+Don't worry, this is fairly optimized and makes heavy use of forwarding. It does not make any copies than it absolutely has to.
+
