@@ -60,3 +60,35 @@ const auto milhouse = rfl::replace(
     rfl::make_field<"firstName">(std::string("Maggie")),
     rfl::make_field<"lastName">(std::string("Van Houten")));
 ```
+
+If you have nested structs using `rfl::Flatten`, you can treat the fields inside `rfl::Flatten`
+as if they were on the main level:
+
+```cpp
+struct Person {
+    rfl::Field<"firstName", std::string> first_name;
+    rfl::Field<"lastName", rfl::Box<std::string>> last_name;
+    rfl::Field<"age", int> age;
+};
+
+struct Employee {
+    rfl::Flatten<Person> person;
+    rfl::Field<"employer", rfl::Box<std::string>> employer;
+    rfl::Field<"salary", float> salary;
+};
+
+auto employee = Employee{
+    .person = Person{.first_name = "Homer",
+                     .last_name = rfl::make_box<std::string>("Simpson"),
+                     .age = 45},
+    .employer = rfl::make_box<std::string>("Mr. Burns"),
+    .salary = 60000.0};
+
+auto employee2 =
+    rfl::replace(std::move(employee), rfl::make_field<"salary">(70000.0),
+                 rfl::make_field<"age">(46));
+````
+
+In this case `age` is part of `Person` and `salary` part ot `Employee`, but
+because you have flattened them, you can treat them as if they were on
+the same level.
