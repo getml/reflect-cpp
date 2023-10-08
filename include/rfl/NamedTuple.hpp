@@ -289,42 +289,38 @@ class NamedTuple {
     /// Template specialization for std::tuple, so we can pass fields from other
     /// named tuples.
     template <class... TupContent, class... Tail>
-    auto replace(std::tuple<TupContent...>&& _tuple, Tail&&... _tail) const {
+    auto replace(std::tuple<TupContent...>&& _tuple, Tail&&... _tail) {
         if constexpr (sizeof...(Tail) > 0) {
             return replace_tuple(
-                       std::forward<std::tuple<TupContent...>>(_tuple),
-                       std::make_index_sequence<sizeof...(TupContent)>{})
+                       std::forward<std::tuple<TupContent...>>(_tuple))
                 .replace(std::forward<Tail>(_tail)...);
         } else {
             return replace_tuple(
-                std::forward<std::tuple<TupContent...>>(_tuple),
-                std::make_index_sequence<sizeof...(TupContent)>{});
+                std::forward<std::tuple<TupContent...>>(_tuple));
         }
     }
 
     /// Template specialization for std::tuple, so we can pass fields from other
     /// named tuples.
     template <class... TupContent, class... Tail>
-    auto replace(const std::tuple<TupContent...>& _tuple,
-                 Tail&&... _tail) const {
+    auto replace(std::tuple<TupContent...>&& _tuple, Tail&&... _tail) const {
         if constexpr (sizeof...(Tail) > 0) {
             return replace_tuple(
-                       std::forward<std::tuple<TupContent...>>(_tuple),
-                       std::make_index_sequence<sizeof...(TupContent)>{})
+                       std::forward<std::tuple<TupContent...>>(_tuple))
                 .replace(std::forward<Tail>(_tail)...);
         } else {
             return replace_tuple(
-                std::forward<std::tuple<TupContent...>>(_tuple),
-                std::make_index_sequence<sizeof...(TupContent)>{});
+                std::forward<std::tuple<TupContent...>>(_tuple));
         }
     }
 
     /// Template specialization for NamedTuple, so we can pass fields from other
     /// named tuples.
     template <class... TupContent, class... Tail>
-    auto replace(NamedTuple<TupContent...>&& _named_tuple,
-                 Tail&&... _tail) const {
-        return replace(_named_tuple.fields(), std::forward<Tail>(_tail)...);
+    auto replace(NamedTuple<TupContent...>&& _named_tuple, Tail&&... _tail) {
+        return replace(
+            std::forward<NamedTuple<TupContent...>>(_named_tuple).fields(),
+            std::forward<Tail>(_tail)...);
     }
 
     /// Template specialization for NamedTuple, so we can pass fields from other
@@ -332,7 +328,9 @@ class NamedTuple {
     template <class... TupContent, class... Tail>
     auto replace(const NamedTuple<TupContent...>& _named_tuple,
                  Tail&&... _tail) const {
-        return replace(_named_tuple.fields(), std::forward<Tail>(_tail)...);
+        return replace(
+            std::forward<NamedTuple<TupContent...>>(_named_tuple).fields(),
+            std::forward<Tail>(_tail)...);
     }
 
     /// Returns the underlying std::tuple.
@@ -457,10 +455,22 @@ class NamedTuple {
 
     /// Adds the elements of a tuple to a newly created named tuple,
     /// and other elements to a newly created named tuple.
-    template <class Tuple, size_t... Is>
-    constexpr auto replace_tuple(Tuple&& _tuple,
-                                 const std::index_sequence<Is...>) const {
-        return replace(std::get<Is>(_tuple)...);
+    template <class... TupContent, size_t... Is>
+    auto replace_tuple(std::tuple<TupContent...>&& _tuple) {
+        const auto r = [this](auto&&... _fields) {
+            return replace(std::forward<TupContent>(_fields)...);
+        };
+        return std::apply(r, std::forward<std::tuple<TupContent...>>(_tuple));
+    }
+
+    /// Adds the elements of a tuple to a newly created named tuple,
+    /// and other elements to a newly created named tuple.
+    template <class... TupContent, size_t... Is>
+    auto replace_tuple(std::tuple<TupContent...>&& _tuple) const {
+        const auto r = [this](auto&&... _fields) {
+            return replace(std::forward<TupContent>(_fields)...);
+        };
+        return std::apply(r, std::forward<std::tuple<TupContent...>>(_tuple));
     }
 
     /// Retrieves the fields from another tuple.

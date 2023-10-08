@@ -15,6 +15,7 @@
 #include "test_ref.hpp"
 #include "test_replace.hpp"
 #include "test_replace_flatten.hpp"
+#include "test_replace_with_other_struct.hpp"
 #include "test_tagged_union.hpp"
 #include "test_timestamp.hpp"
 #include "test_unique_ptr.hpp"
@@ -44,6 +45,7 @@ int main() {
 
     test_replace();
     test_replace_flatten();
+    test_replace_with_other_struct();
     test_as();
     test_as_flatten();
 
