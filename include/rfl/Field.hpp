@@ -70,48 +70,61 @@ struct Field {
     inline const Type& operator()() const { return value_; }
 
     /// Assigns the underlying object.
-    inline void operator=(const Type& _value) { value_ = _value; }
+    inline auto& operator=(const Type& _value) {
+        value_ = _value;
+        return *this;
+    }
 
     /// Assigns the underlying object.
-    inline void operator=(Type&& _value) noexcept {
+    inline auto& operator=(Type&& _value) noexcept {
         value_ = std::move(_value);
+        return *this;
     }
 
     /// Assigns the underlying object.
     template <class T, typename std::enable_if<std::is_convertible_v<T, Type>,
                                                bool>::type = true>
-    inline void operator=(const T& _value) {
+    inline auto& operator=(const T& _value) {
         value_ = _value;
+        return *this;
     }
 
     /// Assigns the underlying object to its default value.
     template <class T = Type,
               typename std::enable_if<std::is_default_constructible_v<T>,
                                       bool>::type = true>
-    inline void operator=(const Default& _default) {
+    inline auto& operator=(const Default& _default) {
         value_ = Type();
+        return *this;
+    }
+    /// Assigns the underlying object.
+    inline Field<_name, _Type>& operator=(const Field<_name, _Type>& _field) {
+        if (&_field != this) {
+            value_ = _field.get();
+        }
+        return *this;
     }
 
     /// Assigns the underlying object.
-    inline void operator=(const Field<_name, Type>& _field) {
-        value_ = _field.get();
-    }
-
-    /// Assigns the underlying object.
-    inline void operator=(Field<_name, Type>&& _field) noexcept {
-        value_ = std::move(_field.value_);
+    inline Field<_name, _Type>& operator=(Field<_name, _Type>&& _field) {
+        if (&_field != this) {
+            value_ = std::move(_field.value_);
+        }
+        return *this;
     }
 
     /// Assigns the underlying object.
     template <class T>
-    inline void operator=(const Field<_name, T>& _field) {
+    inline auto& operator=(const Field<_name, T>& _field) {
         value_ = _field.get();
+        return *this;
     }
 
     /// Assigns the underlying object.
     template <class T>
-    inline void operator=(Field<_name, T>&& _field) {
-        value_ = _field.get();
+    inline auto& operator=(Field<_name, T>&& _field) {
+        value_ = std::forward<T>(_field.value_);
+        return *this;
     }
 
     /// Assigns the underlying object.

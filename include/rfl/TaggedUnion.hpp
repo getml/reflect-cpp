@@ -41,39 +41,55 @@ struct TaggedUnion {
     ~TaggedUnion() = default;
 
     /// Assigns the underlying object.
-    inline void operator=(const VariantType& _variant) { variant_ = _variant; }
-
-    /// Assigns the underlying object.
-    inline void operator=(VariantType&& _variant) noexcept {
-        variant_ = std::move(_variant);
-    }
-
-    /// Assigns the underlying object.
-    template <class T,
-              typename std::enable_if<std::is_convertible_v<T, VariantType>,
-                                      bool>::type = true>
-    inline void operator=(T&& _variant) {
-        variant_ = std::forward<T>(_variant);
-    }
-
-    /// Assigns the underlying object.
-    template <class T,
-              typename std::enable_if<std::is_convertible_v<T, VariantType>,
-                                      bool>::type = true>
-    inline void operator=(const T& _variant) {
+    inline TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
+        const VariantType& _variant) {
         variant_ = _variant;
+        return *this;
     }
 
     /// Assigns the underlying object.
-    inline void operator=(
-        const TaggedUnion<_discriminator, NamedTupleTypes...>& _field) {
-        variant_ = _field.get();
+    inline TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
+        VariantType&& _variant) {
+        variant_ = std::move(_variant);
+        return *this;
     }
 
     /// Assigns the underlying object.
-    inline void operator=(
-        TaggedUnion<_discriminator, NamedTupleTypes...>&& _other) noexcept {
-        variant_ = std::move(_other.variant_);
+    template <class T,
+              typename std::enable_if<std::is_convertible_v<T, VariantType>,
+                                      bool>::type = true>
+    inline TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
+        T&& _variant) {
+        variant_ = std::forward<T>(_variant);
+        return *this;
+    }
+
+    /// Assigns the underlying object.
+    template <class T,
+              typename std::enable_if<std::is_convertible_v<T, VariantType>,
+                                      bool>::type = true>
+    inline TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
+        const T& _variant) {
+        variant_ = _variant;
+        return *this;
+    }
+
+    /// Assigns the underlying object.
+    inline TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
+        const TaggedUnion<_discriminator, NamedTupleTypes...>& _other) {
+        if (this != &_other) {
+            variant_ = _other.get();
+        }
+        return *this;
+    }
+
+    /// Assigns the underlying object.
+    inline TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
+        TaggedUnion<_discriminator, NamedTupleTypes...>&& _other) {
+        if (this != &_other) {
+            variant_ = std::move(_other.variant_);
+        }
+        return *this;
     }
 
     /// Returns the underlying variant.

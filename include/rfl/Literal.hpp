@@ -119,19 +119,23 @@ class Literal {
     }
 
     /// Assigns from another literal.
-    Literal<fields_...> operator=(const Literal<fields_...>& _other) {
-        value_ = _other.value_;
+    Literal<fields_...>& operator=(const Literal<fields_...>& _other) {
+        if (this != &_other) {
+            value_ = _other.value_;
+        }
         return *this;
     }
 
     /// Assigns from another literal.
-    Literal<fields_...> operator=(Literal<fields_...>&& _other) noexcept {
-        value_ = _other.value_;
+    Literal<fields_...>& operator=(Literal<fields_...>&& _other) noexcept {
+        if (this != &_other) {
+            value_ = _other.value_;
+        }
         return *this;
     }
 
     /// Assigns the literal from a string
-    Literal<fields_...> operator=(const std::string& _str) {
+    Literal<fields_...>& operator=(const std::string& _str) {
         value_ = find_value(_str);
         return *this;
     }

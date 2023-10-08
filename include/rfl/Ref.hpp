@@ -18,18 +18,9 @@ class Ref {
         return Ref<T>(std::make_shared<T>(std::forward<Args>(_args)...));
     }
 
-    /// Wrapper around a shared_ptr, leads to a runtime error,
-    /// if the shared_ptr is not allocated.
-    explicit Ref(const std::shared_ptr<T>& _ptr) {
-        assert_true(_ptr);
-        if (!_ptr) {
-            throw std::runtime_error(
-                "Could not create Ref from shared_ptr, because shared_ptr was "
-                "not "
-                "set.");
-        }
-        ptr_ = _ptr;
-    }
+    Ref(const Ref<T>& _other) : ptr_(_other.ptr_){};
+
+    Ref(Ref<T>&& _other) : ptr_(std::move(_other.ptr_)) {}
 
     template <class Y>
     Ref(const Ref<Y>& _other) : ptr_(_other.ptr()) {}
@@ -52,6 +43,22 @@ class Ref {
     template <class Y>
     Ref<T>& operator=(const Ref<Y>& _other) {
         ptr_ = _other.ptr();
+        return *this;
+    }
+
+    /// Move assignment operator
+    inline Ref<T>& operator=(Ref<T>&& _other) noexcept {
+        if (&_other != this) {
+            ptr_ = std::move(_other.ptr_);
+        }
+        return *this;
+    }
+
+    /// Copy assignment operator
+    inline Ref<T>& operator=(const Ref<T>& _other) {
+        if (&_other != this) {
+            ptr_ = _other.ptr_;
+        }
         return *this;
     }
 

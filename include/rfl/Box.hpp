@@ -18,12 +18,25 @@ class Box {
         return Box<T>(std::make_unique<T>(std::forward<Args>(_args)...));
     }
 
+    Box(const Box<T>& _other) = delete;
+
     Box(Box<T>&& _other) : ptr_(std::move(_other.ptr_)) {}
 
     ~Box() = default;
 
     /// Returns a pointer to the underlying object
     inline T* get() const { return ptr_.get(); }
+
+    /// Copy assignment operator
+    inline Box<T>& operator=(const Box<T>& _other) = delete;
+
+    /// Move assignment operator
+    inline Box<T>& operator=(Box<T>&& _other) noexcept {
+        if (&_other != this) {
+            ptr_ = std::move(_other.ptr_);
+        }
+        return *this;
+    }
 
     /// Returns the underlying object.
     inline T& operator*() const { return *ptr_; }
