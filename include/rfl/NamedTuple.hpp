@@ -56,7 +56,8 @@ class NamedTuple {
 
     /// Construct from a tuple containing fields.
     NamedTuple(std::tuple<FieldTypes...>&& _tup)
-        : NamedTuple(std::make_from_tuple<NamedTuple<FieldTypes...>>(_tup)) {
+        : NamedTuple(std::make_from_tuple<NamedTuple<FieldTypes...>>(
+              std::forward<std::tuple<FieldTypes...>>(_tup))) {
         static_assert(no_duplicate_field_names(),
                       "Duplicate field names are not allowed");
     }
@@ -129,12 +130,10 @@ class NamedTuple {
     template <class... TupContent, class... Tail>
     auto add(std::tuple<TupContent...>&& _tuple, Tail&&... _tail) {
         if constexpr (sizeof...(Tail) > 0) {
-            return add_tuple(std::forward<std::tuple<TupContent...>>(_tuple),
-                             std::make_index_sequence<sizeof...(TupContent)>{})
-                .replace(_tail...);
+            return add_tuple(std::forward<std::tuple<TupContent...>>(_tuple))
+                .add(std::forward<Tail>(_tail)...);
         } else {
-            return add_tuple(std::forward<std::tuple<TupContent...>>(_tuple),
-                             std::make_index_sequence<sizeof...(TupContent)>{});
+            return add_tuple(std::forward<std::tuple<TupContent...>>(_tuple));
         }
     }
 
@@ -143,12 +142,10 @@ class NamedTuple {
     template <class... TupContent, class... Tail>
     auto add(std::tuple<TupContent...>&& _tuple, Tail&&... _tail) const {
         if constexpr (sizeof...(Tail) > 0) {
-            return add_tuple(std::forward<std::tuple<TupContent...>>(_tuple),
-                             std::make_index_sequence<sizeof...(TupContent)>{})
-                .replace(_tail...);
+            return add_tuple(std::forward<std::tuple<TupContent...>>(_tuple))
+                .add(std::forward<Tail>(_tail)...);
         } else {
-            return add_tuple(std::forward<std::tuple<TupContent...>>(_tuple),
-                             std::make_index_sequence<sizeof...(TupContent)>{});
+            return add_tuple(std::forward<std::tuple<TupContent...>>(_tuple));
         }
     }
 
@@ -157,12 +154,9 @@ class NamedTuple {
     template <class... TupContent, class... Tail>
     auto add(const std::tuple<TupContent...>& _tuple, Tail&&... _tail) const {
         if constexpr (sizeof...(Tail) > 0) {
-            return add_tuple(_tuple,
-                             std::make_index_sequence<sizeof...(TupContent)>{})
-                .replace(_tail...);
+            return add_tuple(_tuple).add(std::forward<Tail>(_tail)...);
         } else {
-            return add_tuple(std::forward<std::tuple<TupContent...>>(_tuple),
-                             std::make_index_sequence<sizeof...(TupContent)>{});
+            return add_tuple(std::forward<std::tuple<TupContent...>>(_tuple));
         }
     }
 
@@ -170,14 +164,18 @@ class NamedTuple {
     /// named tuples.
     template <class... TupContent, class... Tail>
     auto add(NamedTuple<TupContent...>&& _named_tuple, Tail&&... _tail) {
-        return add(_named_tuple.fields(), std::forward<Tail>(_tail)...);
+        return add(
+            std::forward<std::tuple<TupContent...>>(_named_tuple.fields()),
+            std::forward<Tail>(_tail)...);
     }
 
     /// Template specialization for NamedTuple, so we can pass fields from other
     /// named tuples.
     template <class... TupContent, class... Tail>
     auto add(NamedTuple<TupContent...>&& _named_tuple, Tail&&... _tail) const {
-        return add(_named_tuple.fields(), std::forward<Tail>(_tail)...);
+        return add(
+            std::forward<std::tuple<TupContent...>>(_named_tuple.fields()),
+            std::forward<Tail>(_tail)...);
     }
 
     /// Template specialization for NamedTuple, so we can pass fields from other
@@ -346,17 +344,22 @@ class NamedTuple {
    private:
     /// Adds the elements of a tuple to a newly created named tuple,
     /// and other elements to a newly created named tuple.
-    template <class Tuple, size_t... Is>
-    constexpr auto add_tuple(Tuple&& _tuple, const std::index_sequence<Is...>) {
-        return add(std::get<Is>(_tuple)...);
+    template <class... TupContent>
+    constexpr auto add_tuple(std::tuple<TupContent...>&& _tuple) {
+        const auto a = [this](auto&&... _fields) {
+            return add(std::forward<TupContent>(_fields)...);
+        };
+        return std::apply(a, std::forward<std::tuple<TupContent...>>(_tuple));
     }
 
     /// Adds the elements of a tuple to a newly created named tuple,
     /// and other elements to a newly created named tuple.
-    template <class Tuple, size_t... Is>
-    constexpr auto add_tuple(Tuple&& _tuple,
-                             const std::index_sequence<Is...>) const {
-        return add(std::get<Is>(_tuple)...);
+    template <class... TupContent>
+    constexpr auto add_tuple(std::tuple<TupContent...>&& _tuple) const {
+        const auto a = [this](auto&&... _fields) {
+            return add(std::forward<TupContent>(_fields)...);
+        };
+        return std::apply(a, std::forward<std::tuple<TupContent...>>(_tuple));
     }
 
     /// Generates the fields.
@@ -480,10 +483,13 @@ class NamedTuple {
 
             using FieldType = typename std::tuple_element<size, Fields>::type;
 
+            using T = std::decay_t<typename FieldType::Type>;
+
             return retrieve_fields(
                 std::forward<std::tuple<OtherFieldTypes...>>(_other_fields),
                 std::forward<Args>(_args)...,
-                FieldType(std::get<index>(_other_fields).value_));
+                FieldType(
+                    std::forward<T>(std::get<index>(_other_fields).value_)));
         }
     }
 

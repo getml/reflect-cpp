@@ -1,4 +1,6 @@
 #include "test_array.hpp"
+#include "test_as.hpp"
+#include "test_as_flatten.hpp"
 #include "test_box.hpp"
 #include "test_custom_class1.hpp"
 #include "test_custom_class2.hpp"
@@ -42,6 +44,8 @@ int main() {
 
     test_replace();
     test_replace_flatten();
+    test_as();
+    test_as_flatten();
 
     return 0;
 }
