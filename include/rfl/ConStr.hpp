@@ -41,7 +41,7 @@ public:
     if constexpr (_max >= 0) {
       if (unvalidated_str.length() > _max) {
         throw std::runtime_error("String '" + unvalidated_str +
-                                 "' is shorter than max length" +
+                                 "' is longer than max length" +
                                  std::to_string(_max));
       }
     }
