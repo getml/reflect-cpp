@@ -7,9 +7,13 @@
 #include "test_custom_class3.hpp"
 #include "test_custom_class4.hpp"
 #include "test_default_values.hpp"
+#include "test_deque.hpp"
 #include "test_field_variant.hpp"
 #include "test_flatten.hpp"
+#include "test_forward_list.hpp"
+#include "test_list.hpp"
 #include "test_literal.hpp"
+#include "test_map.hpp"
 #include "test_optional_fields.hpp"
 #include "test_readme_example.hpp"
 #include "test_ref.hpp"
@@ -20,6 +24,7 @@
 #include "test_timestamp.hpp"
 #include "test_unique_ptr.hpp"
 #include "test_unique_ptr2.hpp"
+#include "test_unordered_map.hpp"
 #include "test_variant.hpp"
 
 int main() {
@@ -37,6 +42,11 @@ int main() {
     test_array();
     test_timestamp();
     test_flatten();
+    test_deque();
+    test_forward_list();
+    test_list();
+    test_map();
+    test_unordered_map();
 
     test_custom_class1();
     test_custom_class2();

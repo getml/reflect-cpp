@@ -34,6 +34,8 @@
 #include "rfl/internal/no_duplicate_field_names.hpp"
 #include "rfl/internal/to_ptr_named_tuple.hpp"
 #include "rfl/named_tuple_t.hpp"
+#include "rfl/parsing/is_forward_list.hpp"
+#include "rfl/parsing/is_map_like.hpp"
 #include "rfl/parsing/is_required.hpp"
 #include "rfl/to_named_tuple.hpp"
 
@@ -533,9 +535,10 @@ struct Parser<ReaderType, WriterType, std::pair<FirstType, SecondType>> {
     static OutputVarType write(
         const WriterType& _w,
         const std::pair<FirstType, SecondType>& _p) noexcept {
-        const auto tup = std::make_tuple(_p.first, _p.second);
-        return Parser<ReaderType, WriterType,
-                      std::tuple<FirstType, SecondType>>::write(_w, tup);
+        const auto tup = std::make_tuple(&_p.first, &_p.second);
+        return Parser<
+            ReaderType, WriterType,
+            std::tuple<const FirstType*, const SecondType*>>::write(_w, tup);
     }
 };
 
@@ -699,7 +702,8 @@ struct Parser<ReaderType, WriterType, std::tuple<Ts...>> {
         AlreadyExtracted&&... _already_extracted) noexcept {
         constexpr size_t i = sizeof...(AlreadyExtracted);
         if constexpr (i == sizeof...(Ts)) {
-            return std::tuple<Ts...>(std::make_tuple(_already_extracted...));
+            return std::tuple<Ts...>(
+                std::make_tuple(std::move(_already_extracted)...));
         } else {
             const auto extract_next = [&](auto&& new_entry) {
                 return extract_field_by_field(_r, std::move(_vec),
@@ -943,12 +947,35 @@ struct VectorParser {
                 .value();
         };
 
+        const auto get_pair = [&](auto& _v) {
+            if constexpr (is_map_like<VecType>()) {
+                using K = std::decay_t<typename T::first_type>;
+                using V = std::decay_t<typename T::second_type>;
+                return Parser<ReaderType, WriterType,
+                              std::decay_t<std::pair<K, V>>>::read(_r, &_v)
+                    .value();
+            }
+        };
+
         const auto to_container =
             [&](InputArrayType&& _arr) -> Result<VecType> {
             auto input_vars = _r.to_vec(&_arr);
             VecType vec;
-            for (auto it = input_vars.begin(); it != input_vars.end(); ++it) {
-                vec.emplace_back(get_elem(*it));
+            if constexpr (is_forward_list<VecType>()) {
+                for (auto it = input_vars.rbegin(); it != input_vars.rend();
+                     ++it) {
+                    vec.emplace_front(get_elem(*it));
+                }
+            } else if constexpr (is_map_like<VecType>()) {
+                for (auto it = input_vars.begin(); it != input_vars.end();
+                     ++it) {
+                    vec.insert(get_pair(*it));
+                }
+            } else {
+                for (auto it = input_vars.begin(); it != input_vars.end();
+                     ++it) {
+                    vec.emplace_back(get_elem(*it));
+                }
             }
             return vec;
         };
@@ -968,9 +995,9 @@ struct VectorParser {
     static OutputVarType write(const WriterType& _w,
                                const VecType& _vec) noexcept {
         auto arr = _w.new_array();
-        for (auto it = _vec.begin(); it != _vec.end(); ++it) {
+        for (const auto& v : _vec) {
             _w.add(
-                Parser<ReaderType, WriterType, std::decay_t<T>>::write(_w, *it),
+                Parser<ReaderType, WriterType, std::decay_t<T>>::write(_w, v),
                 &arr);
         }
         return OutputVarType(arr);
