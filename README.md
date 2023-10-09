@@ -4,7 +4,7 @@
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![Generic badge](https://img.shields.io/badge/C++-20-blue.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/gcc-10+-blue.svg)](https://shields.io/)
-[![Generic badge](https://img.shields.io/badge/clang-10+-blue.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/clang-14+-blue.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/MSVC-TODO-red.svg)](https://shields.io/)
 
 ![image](banner1.png)
