@@ -10,6 +10,7 @@
 #include "test_ref.hpp"
 #include "test_tagged_union.hpp"
 #include "test_timestamp.hpp"
+#include "test_constr.hpp"
 #include "test_variant.hpp"
 
 int main() {
@@ -26,6 +27,7 @@ int main() {
     test_custom_class3();
     test_array();
     test_timestamp();
+    test_constr();
 
     return 0;
 }

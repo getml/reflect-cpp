@@ -28,6 +28,6 @@
 #include "rfl/replace.hpp"
 #include "rfl/to_named_tuple.hpp"
 #include "rfl/visit.hpp"
-#include "rfl/UUID.hpp"
+#include "rfl/ConStr.hpp"
 
 #endif
