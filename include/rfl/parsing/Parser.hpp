@@ -221,7 +221,7 @@ struct Parser<ReaderType, WriterType, Box<T>> {
     /// Expresses the variables as type T.
     static Result<Box<T>> read(const ReaderType& _r,
                                InputVarType* _var) noexcept {
-        const auto to_box = [&](auto&& _t) {
+        const auto to_box = [](auto&& _t) {
             return Box<T>::make(std::move(_t));
         };
         return Parser<ReaderType, WriterType, std::decay_t<T>>::read(_r, _var)
@@ -444,9 +444,7 @@ struct Parser<ReaderType, WriterType, std::optional<T>> {
         if (_r.is_empty(_var)) {
             return std::optional<T>();
         }
-        const auto to_opt = [&_r](auto&& _t) {
-            return std::make_optional<T>(_t);
-        };
+        const auto to_opt = [](auto&& _t) { return std::make_optional<T>(_t); };
         return Parser<ReaderType, WriterType, std::decay_t<T>>::read(_r, _var)
             .transform(to_opt);
     }
@@ -922,7 +920,8 @@ struct Parser<ReaderType, WriterType, std::variant<FieldTypes...>> {
 // ----------------------------------------------------------------------------
 
 /// This can be used for data structures that would be expressed as array in
-/// serialized format (std::vector, std::set, std::deque, ...).
+/// serialized format (std::vector, std::set, std::deque, ...),
+/// but also includes map-like types, when the key is not of type std::string.
 template <class ReaderType, class WriterType, class VecType>
 struct VectorParser {
    public:
@@ -938,23 +937,32 @@ struct VectorParser {
                                 InputVarType* _var) noexcept {
         using namespace std::ranges::views;
 
-        const auto get_result = [&](auto& _v) {
-            return std::move(
-                Parser<ReaderType, WriterType, std::decay_t<T>>::read(_r, &_v)
-                    .value());
+        const auto get_elem = [&](auto& _v) {
+            return Parser<ReaderType, WriterType, std::decay_t<T>>::read(_r,
+                                                                         &_v)
+                .value();
         };
 
-        const auto to_vec = [&](InputArrayType _arr) -> Result<VecType> {
+        const auto to_container =
+            [&](InputArrayType&& _arr) -> Result<VecType> {
             auto input_vars = _r.to_vec(&_arr);
-            auto range = input_vars | transform(get_result);
+            VecType vec;
+            for (auto it = input_vars.begin(); it != input_vars.end(); ++it) {
+                vec.emplace_back(get_elem(*it));
+            }
+            return vec;
+        };
+
+        const auto to_result = [&](InputArrayType&& _arr) -> Result<VecType> {
             try {
-                return Result<VecType>(VecType(range.begin(), range.end()));
+                return Result<VecType>(
+                    to_container(std::forward<InputArrayType>(_arr)));
             } catch (std::exception& e) {
                 return Error(e.what());
             }
         };
 
-        return _r.to_array(_var).and_then(to_vec);
+        return _r.to_array(_var).and_then(to_result);
     }
 
     static OutputVarType write(const WriterType& _w,

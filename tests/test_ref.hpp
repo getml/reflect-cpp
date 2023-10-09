@@ -32,10 +32,10 @@ void test_ref() {
 
     const auto leaf2 = DecisionTree::Leaf{.value = 5.0};
 
-    auto node =
-        DecisionTree::Node{.critical_value = 10.0,
-                           .lesser = rfl::make_ref<DecisionTree>(leaf1),
-                           .greater = rfl::make_ref<DecisionTree>(leaf2)};
+    auto node = DecisionTree::Node{
+        .critical_value = 10.0,
+        .lesser = rfl::make_ref<DecisionTree>(DecisionTree{leaf1}),
+        .greater = rfl::make_ref<DecisionTree>(DecisionTree{leaf2})};
 
     const DecisionTree tree{.leaf_or_node = std::move(node)};
 

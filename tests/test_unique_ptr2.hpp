@@ -32,10 +32,10 @@ void test_unique_ptr2() {
 
     auto leaf2 = DecisionTree::Leaf{.value = 5.0};
 
-    auto node =
-        DecisionTree::Node{.critical_value = 10.0,
-                           .lesser = std::make_unique<DecisionTree>(leaf1),
-                           .greater = std::make_unique<DecisionTree>(leaf2)};
+    auto node = DecisionTree::Node{
+        .critical_value = 10.0,
+        .lesser = std::make_unique<DecisionTree>(DecisionTree{leaf1}),
+        .greater = std::make_unique<DecisionTree>(DecisionTree{leaf2})};
 
     const DecisionTree tree{.leaf_or_node = std::move(node)};
 

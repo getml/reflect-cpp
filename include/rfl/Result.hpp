@@ -144,7 +144,7 @@ class Result {
     /// them within a std::range.
     const T* end() const noexcept {
         const auto get_ptr =
-            [this]<class TOrError>(const TOrError& _t_or_err) -> const T* {
+            []<class TOrError>(const TOrError& _t_or_err) -> const T* {
             if constexpr (!std::is_same<TOrError, Error>()) {
                 return &_t_or_err + 1;
             } else {
@@ -158,7 +158,7 @@ class Result {
     /// or std::nullopt otherwise.
     std::optional<Error> error() const noexcept {
         const auto get_err =
-            [this]<class TOrError>(
+            []<class TOrError>(
                 const TOrError& _t_or_err) -> std::optional<Error> {
             if constexpr (!std::is_same<TOrError, Error>()) {
                 return std::nullopt;
@@ -284,11 +284,11 @@ class Result {
 
     /// Returns the value if the result does not contain an error, throws an
     /// exceptions if not. Similar to .unwrap() in Rust.
-    T& value() {
+    T value() {
         const auto handle_variant =
-            [&]<class TOrError>(TOrError& _t_or_err) -> T& {
+            [&]<class TOrError>(TOrError& _t_or_err) -> T {
             if constexpr (!std::is_same<TOrError, Error>()) {
-                return _t_or_err;
+                return std::forward<T>(_t_or_err);
             } else {
                 throw std::runtime_error(_t_or_err.what());
             }
@@ -305,6 +305,19 @@ class Result {
                 return _t_or_err;
             } else {
                 throw std::runtime_error(_t_or_err.what());
+            }
+        };
+        return std::visit(handle_variant, t_or_err_);
+    }
+
+    /// Returns the value or a default.
+    T value_or(const T& _default) noexcept {
+        const auto handle_variant =
+            [&]<class TOrError>(const TOrError& _t_or_err) -> T {
+            if constexpr (!std::is_same<TOrError, Error>()) {
+                return std::forward<T>(_t_or_err);
+            } else {
+                return _default;
             }
         };
         return std::visit(handle_variant, t_or_err_);

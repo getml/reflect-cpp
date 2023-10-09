@@ -149,17 +149,6 @@ class NamedTuple {
         }
     }
 
-    /// Template specialization for std::tuple, so we can pass fields from other
-    /// named tuples.
-    template <class... TupContent, class... Tail>
-    auto add(const std::tuple<TupContent...>& _tuple, Tail&&... _tail) const {
-        if constexpr (sizeof...(Tail) > 0) {
-            return add_tuple(_tuple).add(std::forward<Tail>(_tail)...);
-        } else {
-            return add_tuple(std::forward<std::tuple<TupContent...>>(_tuple));
-        }
-    }
-
     /// Template specialization for NamedTuple, so we can pass fields from other
     /// named tuples.
     template <class... TupContent, class... Tail>
@@ -176,21 +165,6 @@ class NamedTuple {
         return add(
             std::forward<std::tuple<TupContent...>>(_named_tuple.fields()),
             std::forward<Tail>(_tail)...);
-    }
-
-    /// Template specialization for NamedTuple, so we can pass fields from other
-    /// named tuples.
-    template <class... TupContent, class... Tail>
-    auto add(const NamedTuple<TupContent...>& _named_tuple, Tail&&... _tail) {
-        return add(_named_tuple.fields(), std::forward<Tail>(_tail)...);
-    }
-
-    /// Template specialization for NamedTuple, so we can pass fields from other
-    /// named tuples.
-    template <class... TupContent, class... Tail>
-    auto add(const NamedTuple<TupContent...>& _named_tuple,
-             Tail&&... _tail) const {
-        return add(_named_tuple.fields(), std::forward<Tail>(_tail)...);
     }
 
     /// Returns a tuple containing the fields.
@@ -345,7 +319,7 @@ class NamedTuple {
     template <class... TupContent>
     constexpr auto add_tuple(std::tuple<TupContent...>&& _tuple) {
         const auto a = [this](auto&&... _fields) {
-            return add(std::forward<TupContent>(_fields)...);
+            return this->add(std::forward<TupContent>(_fields)...);
         };
         return std::apply(a, std::forward<std::tuple<TupContent...>>(_tuple));
     }
@@ -355,7 +329,7 @@ class NamedTuple {
     template <class... TupContent>
     constexpr auto add_tuple(std::tuple<TupContent...>&& _tuple) const {
         const auto a = [this](auto&&... _fields) {
-            return add(std::forward<TupContent>(_fields)...);
+            return this->add(std::forward<TupContent>(_fields)...);
         };
         return std::apply(a, std::forward<std::tuple<TupContent...>>(_tuple));
     }
@@ -458,7 +432,7 @@ class NamedTuple {
     template <class... TupContent, size_t... Is>
     auto replace_tuple(std::tuple<TupContent...>&& _tuple) {
         const auto r = [this](auto&&... _fields) {
-            return replace(std::forward<TupContent>(_fields)...);
+            return this->replace(std::forward<TupContent>(_fields)...);
         };
         return std::apply(r, std::forward<std::tuple<TupContent...>>(_tuple));
     }
@@ -468,7 +442,7 @@ class NamedTuple {
     template <class... TupContent, size_t... Is>
     auto replace_tuple(std::tuple<TupContent...>&& _tuple) const {
         const auto r = [this](auto&&... _fields) {
-            return replace(std::forward<TupContent>(_fields)...);
+            return this->replace(std::forward<TupContent>(_fields)...);
         };
         return std::apply(r, std::forward<std::tuple<TupContent...>>(_tuple));
     }

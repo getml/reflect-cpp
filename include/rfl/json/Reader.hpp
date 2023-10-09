@@ -18,34 +18,19 @@
 namespace rfl {
 namespace json {
 
-struct YYJSONOutputArray {
-    yyjson_mut_val* val_;
-};
-
-struct YYJSONOutputObject {
-    yyjson_mut_val* val_;
-};
-
-struct YYJSONOutputVar {
-    YYJSONOutputVar(yyjson_mut_val* _val) : val_(_val) {}
-
-    YYJSONOutputVar(YYJSONOutputArray _arr) : val_(_arr.val_) {}
-
-    YYJSONOutputVar(YYJSONOutputObject _obj) : val_(_obj.val_) {}
-
-    yyjson_mut_val* val_;
-};
-
 struct Reader {
     struct YYJSONInputArray {
+        YYJSONInputArray(yyjson_val* _val) : val_(_val) {}
         yyjson_val* val_;
     };
 
     struct YYJSONInputObject {
+        YYJSONInputObject(yyjson_val* _val) : val_(_val) {}
         yyjson_val* val_;
     };
 
     struct YYJSONInputVar {
+        YYJSONInputVar(yyjson_val* _val) : val_(_val) {}
         yyjson_val* val_;
     };
 

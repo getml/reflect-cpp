@@ -19,10 +19,12 @@ namespace json {
 
 struct Writer {
     struct YYJSONOutputArray {
+        YYJSONOutputArray(yyjson_mut_val* _val) : val_(_val) {}
         yyjson_mut_val* val_;
     };
 
     struct YYJSONOutputObject {
+        YYJSONOutputObject(yyjson_mut_val* _val) : val_(_val) {}
         yyjson_mut_val* val_;
     };
 
