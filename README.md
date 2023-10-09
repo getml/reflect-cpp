@@ -4,7 +4,7 @@
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![Generic badge](https://img.shields.io/badge/C++-20-blue.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/gcc-10+-blue.svg)](https://shields.io/)
-[![Generic badge](https://img.shields.io/badge/clang-TODO-red.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/clang-10+-blue.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/MSVC-TODO-red.svg)](https://shields.io/)
 
 ![image](banner1.png)
@@ -149,9 +149,14 @@ At the moment, this is work-in-progress. Here are some things that are still mis
 
 - Benchmarks and optimization
 - Documentation is unfinished (missing rfl::Result, rfl::NamedTuple as well as extension to other serialization formats)
-- Support for Clang and MSVC
+- Support for MSVC
 
 ## Installation
+
+The following compilers are supported:
+- GCC 11.4 or higher
+- Clang 14.0 or higher
+- MSVC (TODO)
 
 ### Option 1: Header-only
 
