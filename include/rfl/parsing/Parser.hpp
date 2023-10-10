@@ -37,6 +37,7 @@
 #include "rfl/parsing/is_forward_list.hpp"
 #include "rfl/parsing/is_map_like.hpp"
 #include "rfl/parsing/is_required.hpp"
+#include "rfl/parsing/is_set_like.hpp"
 #include "rfl/to_named_tuple.hpp"
 
 namespace rfl {
@@ -967,14 +968,16 @@ struct VectorParser {
                     vec.emplace_front(get_elem(*it));
                 }
             } else if constexpr (is_map_like<VecType>()) {
-                for (auto it = input_vars.begin(); it != input_vars.end();
-                     ++it) {
-                    vec.insert(get_pair(*it));
+                for (auto& v : input_vars) {
+                    vec.insert(get_pair(v));
+                }
+            } else if constexpr (is_set_like<VecType>()) {
+                for (auto& v : input_vars) {
+                    vec.insert(get_elem(v));
                 }
             } else {
-                for (auto it = input_vars.begin(); it != input_vars.end();
-                     ++it) {
-                    vec.emplace_back(get_elem(*it));
+                for (auto& v : input_vars) {
+                    vec.emplace_back(get_elem(v));
                 }
             }
             return vec;
@@ -1020,6 +1023,14 @@ template <class ReaderType, class WriterType, class K, class V>
 struct Parser<ReaderType, WriterType, std::map<K, V>>
     : public VectorParser<ReaderType, WriterType, std::map<K, V>> {};
 
+template <class ReaderType, class WriterType, class K, class V>
+struct Parser<ReaderType, WriterType, std::multimap<K, V>>
+    : public VectorParser<ReaderType, WriterType, std::multimap<K, V>> {};
+
+template <class ReaderType, class WriterType, class K, class V>
+struct Parser<ReaderType, WriterType, std::multiset<K, V>>
+    : public VectorParser<ReaderType, WriterType, std::multiset<K, V>> {};
+
 template <class ReaderType, class WriterType, class T>
 struct Parser<ReaderType, WriterType, std::set<T>>
     : public VectorParser<ReaderType, WriterType, std::set<T>> {};
@@ -1027,6 +1038,16 @@ struct Parser<ReaderType, WriterType, std::set<T>>
 template <class ReaderType, class WriterType, class K, class V>
 struct Parser<ReaderType, WriterType, std::unordered_map<K, V>>
     : public VectorParser<ReaderType, WriterType, std::unordered_map<K, V>> {};
+
+template <class ReaderType, class WriterType, class K, class V>
+struct Parser<ReaderType, WriterType, std::unordered_multiset<K, V>>
+    : public VectorParser<ReaderType, WriterType,
+                          std::unordered_multiset<K, V>> {};
+
+template <class ReaderType, class WriterType, class K, class V>
+struct Parser<ReaderType, WriterType, std::unordered_multimap<K, V>>
+    : public VectorParser<ReaderType, WriterType,
+                          std::unordered_multimap<K, V>> {};
 
 template <class ReaderType, class WriterType, class T>
 struct Parser<ReaderType, WriterType, std::unordered_set<T>>

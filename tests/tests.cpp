@@ -14,17 +14,23 @@
 #include "test_list.hpp"
 #include "test_literal.hpp"
 #include "test_map.hpp"
+#include "test_multimap.hpp"
+#include "test_multiset.hpp"
 #include "test_optional_fields.hpp"
 #include "test_readme_example.hpp"
 #include "test_ref.hpp"
 #include "test_replace.hpp"
 #include "test_replace_flatten.hpp"
 #include "test_replace_with_other_struct.hpp"
+#include "test_set.hpp"
 #include "test_tagged_union.hpp"
 #include "test_timestamp.hpp"
 #include "test_unique_ptr.hpp"
 #include "test_unique_ptr2.hpp"
 #include "test_unordered_map.hpp"
+#include "test_unordered_multimap.hpp"
+#include "test_unordered_multiset.hpp"
+#include "test_unordered_set.hpp"
 #include "test_variant.hpp"
 
 int main() {
@@ -47,6 +53,12 @@ int main() {
     test_list();
     test_map();
     test_unordered_map();
+    test_set();
+    test_unordered_set();
+    test_multimap();
+    test_unordered_multimap();
+    test_multiset();
+    test_unordered_multiset();
 
     test_custom_class1();
     test_custom_class2();
