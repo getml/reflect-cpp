@@ -272,8 +272,10 @@ struct Parser<ReaderType, WriterType, Literal<_fields...>> {
 
 // ----------------------------------------------------------------------------
 
-template <class ReaderType, class WriterType, class ValueType>
-struct Parser<ReaderType, WriterType, std::map<std::string, ValueType>> {
+/// Used for maps for which the key type is std::string. These are represented
+/// as objects.
+template <class ReaderType, class WriterType, class MapType>
+struct MapParser {
    public:
     using InputObjectType = typename ReaderType::InputObjectType;
     using InputVarType = typename ReaderType::InputVarType;
@@ -281,12 +283,13 @@ struct Parser<ReaderType, WriterType, std::map<std::string, ValueType>> {
     using OutputObjectType = typename WriterType::OutputObjectType;
     using OutputVarType = typename WriterType::OutputVarType;
 
-    /// Expresses the variables as a std::map.
-    static Result<std::map<std::string, ValueType>> read(
-        const ReaderType& _r, InputVarType* _var) noexcept {
+    using ValueType = std::decay_t<typename MapType::value_type::second_type>;
+
+    static Result<MapType> read(const ReaderType& _r,
+                                InputVarType* _var) noexcept {
         const auto get_pair = [&](auto _pair) {
-            const auto to_pair = [&](const ValueType& _val) {
-                return std::make_pair(_pair.first, _val);
+            const auto to_pair = [&](ValueType&& _val) {
+                return std::make_pair(_pair.first, std::move(_val));
             };
             return Parser<ReaderType, WriterType,
                           std::decay_t<ValueType>>::read(_r, &_pair.second)
@@ -294,25 +297,24 @@ struct Parser<ReaderType, WriterType, std::map<std::string, ValueType>> {
                 .value();
         };
 
-        const auto to_map = [&_r, get_pair](auto _obj) {
-            using namespace std::ranges::views;
+        const auto to_map = [&_r, get_pair](auto _obj) -> Result<MapType> {
             auto m = _r.to_map(&_obj);
-            auto range = m | transform(get_pair);
+            MapType res;
             try {
-                return std::map<std::string, ValueType>(range.begin(),
-                                                        range.end());
+                for (const auto& p : m) {
+                    res.insert(get_pair(p));
+                }
             } catch (std::exception& e) {
                 return Error(e.what());
             }
+            return res;
         };
 
         return _r.to_object(_var).and_then(to_map);
     }
 
-    /// Transform a std::map into an object
-    static OutputVarType write(
-        const WriterType& _w,
-        const std::map<std::string, ValueType>& _m) noexcept {
+    static OutputVarType write(const WriterType& _w,
+                               const MapType& _m) noexcept {
         auto obj = _w.new_object();
         for (const auto& [k, v] : _m) {
             _w.set_field(
@@ -324,6 +326,15 @@ struct Parser<ReaderType, WriterType, std::map<std::string, ValueType>> {
         return obj;
     }
 };
+
+template <class ReaderType, class WriterType, class T>
+struct Parser<ReaderType, WriterType, std::map<std::string, T>>
+    : public MapParser<ReaderType, WriterType, std::map<std::string, T>> {};
+
+template <class ReaderType, class WriterType, class T>
+struct Parser<ReaderType, WriterType, std::unordered_map<std::string, T>>
+    : public MapParser<ReaderType, WriterType,
+                       std::unordered_map<std::string, T>> {};
 
 // ----------------------------------------------------------------------------
 

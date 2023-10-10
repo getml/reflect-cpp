@@ -23,6 +23,8 @@
 #include "test_replace_flatten.hpp"
 #include "test_replace_with_other_struct.hpp"
 #include "test_set.hpp"
+#include "test_string_map.hpp"
+#include "test_string_unordered_map.hpp"
 #include "test_tagged_union.hpp"
 #include "test_timestamp.hpp"
 #include "test_unique_ptr.hpp"
@@ -59,6 +61,8 @@ int main() {
     test_unordered_multimap();
     test_multiset();
     test_unordered_multiset();
+    test_string_map();
+    test_string_unordered_map();
 
     test_custom_class1();
     test_custom_class2();
