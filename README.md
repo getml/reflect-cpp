@@ -101,7 +101,9 @@ reflect-cpp supports the following containers from the C++ standard library:
 - `std::array` 
 - `std::deque` 
 - `std::forward_list` 
-- `std::map` 
+- `std::map`
+- `std::multimap`
+- `std::multiset`
 - `std::list` 
 - `std::optional`
 - `std::pair`
@@ -110,7 +112,9 @@ reflect-cpp supports the following containers from the C++ standard library:
 - `std::string`
 - `std::tuple`
 - `std::unique_ptr` 
-- `std::unordered_map` 
+- `std::unordered_map`
+- `std::unordered_multimap`
+- `std::unordered_multiset`
 - `std::unordered_set` 
 - `std::variant`
 - `std::vector`
