@@ -352,7 +352,7 @@ struct Parser<ReaderType, WriterType, NamedTuple<FieldTypes...>> {
                                                   InputVarType* _var) noexcept {
         const auto to_map = [&](auto _obj) { return _r.to_map(&_obj); };
         const auto build = [&](auto _map) {
-            return build_named_tuple(_r, _map);
+            return build_named_tuple_recursively(_r, _map);
         };
         return _r.to_object(_var).transform(to_map).and_then(build);
     }
@@ -368,37 +368,40 @@ struct Parser<ReaderType, WriterType, NamedTuple<FieldTypes...>> {
    private:
     /// Builds the named tuple field by field.
     template <class... Args>
-    static Result<NamedTuple<FieldTypes...>> build_named_tuple(
-        const ReaderType& _r,
-        const std::map<std::string, InputVarType>& _map) noexcept {
-        try {
-            return NamedTuple<FieldTypes...>(
-                build_one_field<FieldTypes>(_r, _map).value()...);
-        } catch (std::exception& e) {
-            return Error(e.what());
-        }
-    }
+    static Result<NamedTuple<FieldTypes...>> build_named_tuple_recursively(
+        const ReaderType& _r, const std::map<std::string, InputVarType>& _map,
+        Args&&... _args) noexcept {
+        const auto size = sizeof...(Args);
 
-    /// Builds a single field for the named tuple.
-    template <class FieldType>
-    static Result<FieldType> build_one_field(
-        const ReaderType& _r,
-        const std::map<std::string, InputVarType>& _map) noexcept {
-        using ValueType = std::decay_t<typename FieldType::Type>;
+        if constexpr (size == sizeof...(FieldTypes)) {
+            return NamedTuple<FieldTypes...>(std::move(_args)...);
+        } else {
+            using FieldType = typename std::tuple_element<
+                size, typename NamedTuple<FieldTypes...>::Fields>::type;
 
-        const auto key = FieldType::name_.str();
+            using ValueType = std::decay_t<typename FieldType::Type>;
 
-        const auto it = _map.find(key);
+            const auto key = FieldType::name_.str();
 
-        if (it == _map.end()) {
-            if constexpr (is_required<ValueType>()) {
-                return Error("Field named '" + key + "' not found!");
-            } else {
-                return FieldType(ValueType());
+            const auto it = _map.find(key);
+
+            if (it == _map.end()) {
+                if constexpr (is_required<ValueType>()) {
+                    return Error("Field named '" + key + "' not found!");
+                } else {
+                    return build_named_tuple_recursively(
+                        _r, _map, std::move(_args)..., FieldType(ValueType()));
+                }
             }
-        }
 
-        return get_value<ValueType>(_r, *it);
+            const auto build = [&](auto&& _value) {
+                return build_named_tuple_recursively(
+                    _r, _map, std::move(_args)...,
+                    FieldType(std::move(_value)));
+            };
+
+            return get_value<ValueType>(_r, *it).and_then(build);
+        }
     }
 
     /// Builds the object field by field.
