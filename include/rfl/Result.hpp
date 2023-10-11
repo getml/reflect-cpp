@@ -47,6 +47,14 @@ class Result {
 
     template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
                                                bool>::type = true>
+    Result(Result<U>&& _other)
+        : t_or_err_(
+              std::forward<Result<U>>(_other)
+                  .transform([](U&& _u) { return T(std::forward<U>(_u)); })
+                  .t_or_err_) {}
+
+    template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
+                                               bool>::type = true>
     Result(const Result<U>& _other)
         : t_or_err_(
               _other.transform([](const U& _u) { return T(_u); }).t_or_err_) {}
