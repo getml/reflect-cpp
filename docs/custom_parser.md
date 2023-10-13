@@ -96,7 +96,7 @@ const auto people = rfl::json::read<std::vector<Person>>(json_str).value();
 ```
 
 As we have noted, in this particular example, the `Person` class can be constructed from the field values in
-`PersonImpl` in the exact same order they were declaced in `PersonImpl`. So we can drop the `.to_class` method:
+`PersonImpl` in the exact same order they were declared in `PersonImpl`. So we can drop the `.to_class` method:
 
 ```cpp
 struct PersonImpl {
