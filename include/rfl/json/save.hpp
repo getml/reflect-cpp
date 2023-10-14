@@ -6,6 +6,7 @@
 #include <string>
 
 #include "rfl/Result.hpp"
+#include "rfl/io/save_string.hpp"
 #include "rfl/json/write.hpp"
 
 namespace rfl {
@@ -13,15 +14,7 @@ namespace json {
 
 template <class T>
 Result<Nothing> save(const std::string& _fname, const T& _obj) {
-    try {
-        std::ofstream outfile;
-        outfile.open(_fname);
-        outfile << write(_obj);
-        outfile.close();
-    } catch (std::exception& e) {
-        return Error(e.what());
-    }
-    return Nothing{};
+    return rfl::io::save_string(write(_obj));
 }
 
 }  // namespace json
