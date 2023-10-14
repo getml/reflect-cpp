@@ -5,11 +5,13 @@
 
 #include <exception>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <unordered_map>
 #include <vector>
 
 #include "rfl/Result.hpp"
@@ -98,6 +100,22 @@ struct Reader {
             return rfl::Error("Could not cast to array!");
         }
         return InputArrayType(_var->val_);
+    }
+
+    std::vector<std::optional<InputVarType>> to_fields_vec(
+        const std::unordered_map<std::string, size_t>& _field_indices,
+        InputObjectType* _obj) const noexcept {
+        std::vector<std::optional<InputVarType>> f_vec(_field_indices.size());
+        yyjson_obj_iter iter;
+        yyjson_obj_iter_init(_obj->val_, &iter);
+        yyjson_val* key;
+        while ((key = yyjson_obj_iter_next(&iter))) {
+            const auto it = _field_indices.find(yyjson_get_str(key));
+            if (it != _field_indices.end()) {
+                f_vec[it->second] = InputVarType(yyjson_obj_iter_get_val(key));
+            }
+        }
+        return f_vec;
     }
 
     std::map<std::string, InputVarType> to_map(

@@ -350,11 +350,13 @@ struct Parser<ReaderType, WriterType, NamedTuple<FieldTypes...>> {
     /// Generates a NamedTuple from a JSON Object.
     static Result<NamedTuple<FieldTypes...>> read(const ReaderType& _r,
                                                   InputVarType* _var) noexcept {
-        const auto to_map = [&](auto _obj) { return _r.to_map(&_obj); };
-        const auto build = [&](auto _map) {
-            return build_named_tuple_recursively(_r, _map);
+        const auto to_fields_vec = [&](auto _obj) {
+            return _r.to_fields_vec(field_indices(), &_obj);
         };
-        return _r.to_object(_var).transform(to_map).and_then(build);
+        const auto build = [&](auto _fields_vec) {
+            return build_named_tuple_recursively(_r, _fields_vec);
+        };
+        return _r.to_object(_var).transform(to_fields_vec).and_then(build);
     }
 
     /// Transforms a NamedTuple into a JSON object.
@@ -369,7 +371,8 @@ struct Parser<ReaderType, WriterType, NamedTuple<FieldTypes...>> {
     /// Builds the named tuple field by field.
     template <class... Args>
     static Result<NamedTuple<FieldTypes...>> build_named_tuple_recursively(
-        const ReaderType& _r, const std::map<std::string, InputVarType>& _map,
+        const ReaderType& _r,
+        const std::vector<std::optional<InputVarType>>& _fields_vec,
         Args&&... _args) noexcept {
         const auto size = sizeof...(Args);
 
@@ -381,26 +384,26 @@ struct Parser<ReaderType, WriterType, NamedTuple<FieldTypes...>> {
 
             using ValueType = std::decay_t<typename FieldType::Type>;
 
-            const auto key = FieldType::name_.str();
+            const auto& f = _fields_vec[size];
 
-            const auto it = _map.find(key);
-
-            if (it == _map.end()) {
+            if (!f) {
                 if constexpr (is_required<ValueType>()) {
+                    const auto key = FieldType::name_.str();
                     return Error("Field named '" + key + "' not found!");
                 } else {
                     return build_named_tuple_recursively(
-                        _r, _map, std::move(_args)..., FieldType(ValueType()));
+                        _r, _fields_vec, std::move(_args)...,
+                        FieldType(ValueType()));
                 }
             }
 
             const auto build = [&](auto&& _value) {
                 return build_named_tuple_recursively(
-                    _r, _map, std::move(_args)...,
+                    _r, _fields_vec, std::move(_args)...,
                     FieldType(std::move(_value)));
             };
 
-            return get_value<ValueType>(_r, *it).and_then(build);
+            return get_value<FieldType>(_r, *f).and_then(build);
         }
     }
 
@@ -430,19 +433,49 @@ struct Parser<ReaderType, WriterType, NamedTuple<FieldTypes...>> {
         }
     }
 
+    /// Uses a memoization pattern to retrieve the field indices.
+    /// There are some objects that we are likely to parse many times,
+    /// so we only calculate these indices once.
+    static const auto& field_indices() noexcept {
+        if (field_indices_.size() == 0) {
+            set_field_indices();
+        }
+        return Parser<ReaderType, WriterType,
+                      NamedTuple<FieldTypes...>>::field_indices_;
+    }
+
     /// Retrieves the value from the object. This is mainly needed to generate a
     /// better error message.
-    template <class ValueType>
-    static auto get_value(const ReaderType& _r,
-                          std::pair<std::string, InputVarType> _pair) noexcept {
+    template <class FieldType>
+    static auto get_value(const ReaderType& _r, InputVarType _var) noexcept {
         const auto embellish_error = [&](const Error& _e) {
-            return Error("Failed to parse field '" + _pair.first +
-                         "': " + _e.what());
+            const auto key = FieldType::name_.str();
+            return Error("Failed to parse field '" + key + "': " + _e.what());
         };
-        return Parser<ReaderType, WriterType, ValueType>::read(_r,
-                                                               &_pair.second)
+        using ValueType = std::decay_t<typename FieldType::Type>;
+        return Parser<ReaderType, WriterType, ValueType>::read(_r, &_var)
             .or_else(embellish_error);
     }
+
+    /// Builds the object field by field.
+    template <size_t _i = 0>
+    static void set_field_indices() noexcept {
+        if constexpr (_i >= sizeof...(FieldTypes)) {
+            return;
+        } else {
+            using FieldType =
+                typename std::tuple_element<_i,
+                                            std::tuple<FieldTypes...>>::type;
+            const auto name = FieldType::name_.str();
+            Parser<ReaderType, WriterType,
+                   NamedTuple<FieldTypes...>>::field_indices_[name] = _i;
+            set_field_indices<_i + 1>();
+        }
+    }
+
+   private:
+    /// Maps each of the field names to an index signifying their order.
+    static inline std::unordered_map<std::string, size_t> field_indices_;
 };
 
 // ----------------------------------------------------------------------------
