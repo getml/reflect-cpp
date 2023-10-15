@@ -191,25 +191,15 @@ class Result {
     const T& operator*() const { return *std::get_if<T>(&t_or_err_); }
 
     /// Assigns the underlying object.
-    inline Result<T>& operator=(const Result<T>& _other) {
-        if (this != &_other) {
-            t_or_err_ = _other.t_or_err_;
-        }
-        return *this;
-    }
+    Result<T>& operator=(const Result<T>& _other) = default;
 
     /// Assigns the underlying object.
-    inline Result<T>& operator=(Result<T>&& _other) {
-        if (this != &_other) {
-            t_or_err_ = std::move(_other.t_or_err_);
-        }
-        return *this;
-    }
+    Result<T>& operator=(Result<T>&& _other) = default;
 
     /// Assigns the underlying object.
     template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
                                                bool>::type = true>
-    inline auto& operator=(const Result<U>& _other) {
+    auto& operator=(const Result<U>& _other) {
         const auto to_t = [](const U& _u) -> T { return _u; };
         t_or_err_ = _other.transform(to_t).t_or_err_;
         return *this;

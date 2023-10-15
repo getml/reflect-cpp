@@ -20,32 +20,27 @@ class Box {
 
     Box(const Box<T>& _other) = delete;
 
-    Box(Box<T>&& _other) : ptr_(std::move(_other.ptr_)) {}
+    Box(Box<T>&& _other) = default;
 
     ~Box() = default;
 
     /// Returns a pointer to the underlying object
-    inline T* get() const { return ptr_.get(); }
+    T* get() const { return ptr_.get(); }
 
     /// Copy assignment operator
-    inline Box<T>& operator=(const Box<T>& _other) = delete;
+    Box<T>& operator=(const Box<T>& _other) = delete;
 
     /// Move assignment operator
-    inline Box<T>& operator=(Box<T>&& _other) noexcept {
-        if (&_other != this) {
-            ptr_ = std::move(_other.ptr_);
-        }
-        return *this;
-    }
+    Box<T>& operator=(Box<T>&& _other) noexcept = default;
 
     /// Returns the underlying object.
-    inline T& operator*() const { return *ptr_; }
+    T& operator*() const { return *ptr_; }
 
     /// Returns the underlying object.
-    inline T* operator->() const { return ptr_.get(); }
+    T* operator->() const { return ptr_.get(); }
 
     /// Returns the underlying unique_ptr
-    inline const std::unique_ptr<T>& ptr() const { return ptr_; }
+    const std::unique_ptr<T>& ptr() const { return ptr_; }
 
    private:
     /// Only make is allowed to use this constructor.

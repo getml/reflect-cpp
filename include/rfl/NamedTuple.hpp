@@ -70,16 +70,10 @@ class NamedTuple {
     }
 
     /// Copy constructor.
-    NamedTuple(const NamedTuple<FieldTypes...>& _other)
-        : values_(_other.values_) {
-        // Duplicate field checks not required - has already been checked.
-    }
+    NamedTuple(const NamedTuple<FieldTypes...>& _other) = default;
 
     /// Move constructor.
-    NamedTuple(NamedTuple<FieldTypes...>&& _other)
-        : values_(std::move(_other.values_)) {
-        // Duplicate field checks not required - has already been checked.
-    }
+    NamedTuple(NamedTuple<FieldTypes...>&& _other) = default;
 
     /// Copy constructor.
     template <class... OtherFieldTypes>
@@ -175,62 +169,53 @@ class NamedTuple {
 
     /// Gets a field by index.
     template <int _index>
-    inline auto& get() {
+    auto& get() {
         return rfl::get<_index>(*this);
     }
 
     /// Gets a field by name.
     template <internal::StringLiteral _field_name>
-    inline auto& get() {
+    auto& get() {
         return rfl::get<_field_name>(*this);
     }
 
     /// Gets a field by the field type.
     template <class Field>
-    inline auto& get() {
+    auto& get() {
         return rfl::get<Field>(*this);
     }
 
     /// Gets a field by index.
     template <int _index>
-    inline const auto& get() const {
+    const auto& get() const {
         return rfl::get<_index>(*this);
     }
 
     /// Gets a field by name.
     template <internal::StringLiteral _field_name>
-    inline const auto& get() const {
+    const auto& get() const {
         return rfl::get<_field_name>(*this);
     }
 
     /// Gets a field by the field type.
     template <class Field>
-    inline const auto& get() const {
+    const auto& get() const {
         return rfl::get<Field>(*this);
     }
 
     /// Returns the results wrapped in a field.
     template <internal::StringLiteral _field_name>
-    inline auto get_field() const {
+    auto get_field() const {
         return rfl::make_field<_field_name>(rfl::get<_field_name>(*this));
     }
 
     /// Copy assignment operator.
     NamedTuple<FieldTypes...>& operator=(
-        const NamedTuple<FieldTypes...>& _other) {
-        values_ = _other.values_;
-        return *this;
-    }
+        const NamedTuple<FieldTypes...>& _other) = default;
 
     /// Move assignment operator.
     NamedTuple<FieldTypes...>& operator=(
-        NamedTuple<FieldTypes...>&& _other) noexcept {
-        if (this == &_other) {
-            return *this;
-        }
-        values_ = std::move(_other.values_);
-        return *this;
-    }
+        NamedTuple<FieldTypes...>&& _other) noexcept = default;
 
     /// Replaces one or several fields, returning a new version
     /// with the non-replaced fields left unchanged.

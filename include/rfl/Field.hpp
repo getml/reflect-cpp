@@ -26,10 +26,9 @@ struct Field {
 
     Field(Type&& _value) noexcept : value_(std::move(_value)) {}
 
-    Field(Field<_name, _Type>&& _field) noexcept
-        : value_(std::move(_field.value_)) {}
+    Field(Field<_name, _Type>&& _field) noexcept = default;
 
-    Field(const Field<_name, Type>& _field) : value_(_field.get()) {}
+    Field(const Field<_name, Type>& _field) = default;
 
     template <class T>
     Field(const Field<_name, T>& _field) : value_(_field.get()) {}
@@ -61,22 +60,22 @@ struct Field {
     constexpr static const internal::StringLiteral name_ = _name;
 
     /// Returns the underlying object.
-    inline const Type& get() const { return value_; }
+    const Type& get() const { return value_; }
 
     /// Returns the underlying object.
-    inline Type& operator()() { return value_; }
+    Type& operator()() { return value_; }
 
     /// Returns the underlying object.
-    inline const Type& operator()() const { return value_; }
+    const Type& operator()() const { return value_; }
 
     /// Assigns the underlying object.
-    inline auto& operator=(const Type& _value) {
+    auto& operator=(const Type& _value) {
         value_ = _value;
         return *this;
     }
 
     /// Assigns the underlying object.
-    inline auto& operator=(Type&& _value) noexcept {
+    auto& operator=(Type&& _value) noexcept {
         value_ = std::move(_value);
         return *this;
     }
@@ -84,7 +83,7 @@ struct Field {
     /// Assigns the underlying object.
     template <class T, typename std::enable_if<std::is_convertible_v<T, Type>,
                                                bool>::type = true>
-    inline auto& operator=(const T& _value) {
+    auto& operator=(const T& _value) {
         value_ = _value;
         return *this;
     }
@@ -93,51 +92,41 @@ struct Field {
     template <class T = Type,
               typename std::enable_if<std::is_default_constructible_v<T>,
                                       bool>::type = true>
-    inline auto& operator=(const Default& _default) {
+    auto& operator=(const Default& _default) {
         value_ = Type();
         return *this;
     }
     /// Assigns the underlying object.
-    inline Field<_name, _Type>& operator=(const Field<_name, _Type>& _field) {
-        if (&_field != this) {
-            value_ = _field.get();
-        }
-        return *this;
-    }
+    Field<_name, _Type>& operator=(const Field<_name, _Type>& _field) = default;
 
     /// Assigns the underlying object.
-    inline Field<_name, _Type>& operator=(Field<_name, _Type>&& _field) {
-        if (&_field != this) {
-            value_ = std::move(_field.value_);
-        }
-        return *this;
-    }
+    Field<_name, _Type>& operator=(Field<_name, _Type>&& _field) = default;
 
     /// Assigns the underlying object.
     template <class T>
-    inline auto& operator=(const Field<_name, T>& _field) {
+    auto& operator=(const Field<_name, T>& _field) {
         value_ = _field.get();
         return *this;
     }
 
     /// Assigns the underlying object.
     template <class T>
-    inline auto& operator=(Field<_name, T>&& _field) {
+    auto& operator=(Field<_name, T>&& _field) {
         value_ = std::forward<T>(_field.value_);
         return *this;
     }
 
     /// Assigns the underlying object.
-    inline void set(const Type& _value) { value_ = _value; }
+    void set(const Type& _value) { value_ = _value; }
 
     /// Assigns the underlying object.
-    inline void set(Type&& _value) { value_ = std::move(_value); }
+    void set(Type&& _value) { value_ = std::move(_value); }
 
     /// Returns the underlying object.
-    inline Type& value() { return value_; }
+    Type& value() { return value_; }
 
     /// Returns the underlying object.
-    inline const Type& value() const { return value_; }
+    const Type& value() const { return value_; }
 
     /// The underlying value.
     Type value_;
