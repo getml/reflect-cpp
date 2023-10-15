@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include <stdexcept>
+#include <string>
 #include <tuple>
 #include <type_traits>
 #include <unordered_map>
@@ -466,7 +467,7 @@ struct Parser<ReaderType, WriterType, NamedTuple<FieldTypes...>> {
             using FieldType =
                 typename std::tuple_element<_i,
                                             std::tuple<FieldTypes...>>::type;
-            const auto name = FieldType::name_.str();
+            const auto name = FieldType::name_.string_view();
             Parser<ReaderType, WriterType,
                    NamedTuple<FieldTypes...>>::field_indices_[name] = _i;
             set_field_indices<_i + 1>();
@@ -475,7 +476,7 @@ struct Parser<ReaderType, WriterType, NamedTuple<FieldTypes...>> {
 
    private:
     /// Maps each of the field names to an index signifying their order.
-    static inline std::unordered_map<std::string, size_t> field_indices_;
+    static inline std::unordered_map<std::string_view, size_t> field_indices_;
 };
 
 // ----------------------------------------------------------------------------
