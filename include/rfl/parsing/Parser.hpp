@@ -351,13 +351,14 @@ struct Parser<ReaderType, WriterType, NamedTuple<FieldTypes...>> {
     /// Generates a NamedTuple from a JSON Object.
     static Result<NamedTuple<FieldTypes...>> read(const ReaderType& _r,
                                                   InputVarType* _var) noexcept {
-        const auto to_fields_vec = [&](auto _obj) {
-            return _r.to_fields_vec(field_indices(), &_obj);
+        const auto to_fields_array = [&](auto _obj) {
+            return _r.template to_fields_array<sizeof...(FieldTypes)>(
+                field_indices(), &_obj);
         };
         const auto build = [&](auto _fields_vec) {
             return build_named_tuple_recursively(_r, _fields_vec);
         };
-        return _r.to_object(_var).transform(to_fields_vec).and_then(build);
+        return _r.to_object(_var).transform(to_fields_array).and_then(build);
     }
 
     /// Transforms a NamedTuple into a JSON object.
@@ -373,19 +374,20 @@ struct Parser<ReaderType, WriterType, NamedTuple<FieldTypes...>> {
     template <class... Args>
     static Result<NamedTuple<FieldTypes...>> build_named_tuple_recursively(
         const ReaderType& _r,
-        const std::vector<std::optional<InputVarType>>& _fields_vec,
+        const std::array<std::optional<InputVarType>, sizeof...(FieldTypes)>&
+            _fields_vec,
         Args&&... _args) noexcept {
-        const auto size = sizeof...(Args);
+        constexpr auto i = sizeof...(Args);
 
-        if constexpr (size == sizeof...(FieldTypes)) {
+        if constexpr (i == sizeof...(FieldTypes)) {
             return NamedTuple<FieldTypes...>(std::move(_args)...);
         } else {
             using FieldType = typename std::tuple_element<
-                size, typename NamedTuple<FieldTypes...>::Fields>::type;
+                i, typename NamedTuple<FieldTypes...>::Fields>::type;
 
             using ValueType = std::decay_t<typename FieldType::Type>;
 
-            const auto& f = _fields_vec[size];
+            const auto& f = std::get<i>(_fields_vec);
 
             if (!f) {
                 if constexpr (is_required<ValueType>()) {

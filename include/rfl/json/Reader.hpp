@@ -3,6 +3,7 @@
 
 #include <yyjson.h>
 
+#include <array>
 #include <exception>
 #include <map>
 #include <memory>
@@ -102,10 +103,11 @@ struct Reader {
         return InputArrayType(_var->val_);
     }
 
-    std::vector<std::optional<InputVarType>> to_fields_vec(
+    template <size_t size>
+    std::array<std::optional<InputVarType>, size> to_fields_array(
         const std::unordered_map<std::string_view, size_t>& _field_indices,
         InputObjectType* _obj) const noexcept {
-        std::vector<std::optional<InputVarType>> f_vec(_field_indices.size());
+        std::array<std::optional<InputVarType>, size> f_arr;
         yyjson_obj_iter iter;
         yyjson_obj_iter_init(_obj->val_, &iter);
         yyjson_val* key;
@@ -113,10 +115,10 @@ struct Reader {
             const char* k = yyjson_get_str(key);
             const auto it = _field_indices.find(std::string_view(k, strlen(k)));
             if (it != _field_indices.end()) {
-                f_vec[it->second] = InputVarType(yyjson_obj_iter_get_val(key));
+                f_arr[it->second] = InputVarType(yyjson_obj_iter_get_val(key));
             }
         }
-        return f_vec;
+        return f_arr;
     }
 
     std::map<std::string, InputVarType> to_map(
