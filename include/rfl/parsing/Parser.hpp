@@ -288,9 +288,9 @@ struct MapParser {
 
     static Result<MapType> read(const ReaderType& _r,
                                 InputVarType* _var) noexcept {
-        const auto get_pair = [&](auto _pair) {
+        const auto get_pair = [&](auto& _pair) {
             const auto to_pair = [&](ValueType&& _val) {
-                return std::make_pair(_pair.first, std::move(_val));
+                return std::make_pair(std::move(_pair.first), std::move(_val));
             };
             return Parser<ReaderType, WriterType,
                           std::decay_t<ValueType>>::read(_r, &_pair.second)
@@ -302,7 +302,7 @@ struct MapParser {
             auto m = _r.to_map(&_obj);
             MapType res;
             try {
-                for (const auto& p : m) {
+                for (auto& p : m) {
                     res.insert(get_pair(p));
                 }
             } catch (std::exception& e) {
