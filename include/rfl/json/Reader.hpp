@@ -113,7 +113,7 @@ struct Reader {
         yyjson_val* key;
         while ((key = yyjson_obj_iter_next(&iter))) {
             const char* k = yyjson_get_str(key);
-            const auto it = _field_indices.find(std::string_view(k, strlen(k)));
+            const auto it = _field_indices.find(std::string_view(k));
             if (it != _field_indices.end()) {
                 f_arr[it->second] = InputVarType(yyjson_obj_iter_get_val(key));
             }
@@ -121,17 +121,16 @@ struct Reader {
         return f_arr;
     }
 
-    std::map<std::string, InputVarType> to_map(
+    std::vector<std::pair<std::string, InputVarType>> to_map(
         InputObjectType* _obj) const noexcept {
-        std::map<std::string, InputVarType> m;
+        std::vector<std::pair<std::string, InputVarType>> m;
         yyjson_obj_iter iter;
         yyjson_obj_iter_init(_obj->val_, &iter);
         yyjson_val* key;
         while ((key = yyjson_obj_iter_next(&iter))) {
-            const auto p =
-                std::make_pair(yyjson_get_str(key),
-                               InputVarType(yyjson_obj_iter_get_val(key)));
-            m.emplace(std::move(p));
+            auto p = std::make_pair(yyjson_get_str(key),
+                                    InputVarType(yyjson_obj_iter_get_val(key)));
+            m.emplace_back(std::move(p));
         }
         return m;
     }
