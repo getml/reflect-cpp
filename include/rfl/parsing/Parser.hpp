@@ -519,7 +519,9 @@ struct Parser<ReaderType, WriterType, Ref<T>> {
     /// Expresses the variables as type T.
     static Result<Ref<T>> read(const ReaderType& _r,
                                InputVarType* _var) noexcept {
-        const auto to_ref = [&](auto&& _t) { return Ref<T>::make(_t); };
+        const auto to_ref = [&](auto&& _t) {
+            return Ref<T>::make(std::move(_t));
+        };
         return Parser<ReaderType, WriterType, std::decay_t<T>>::read(_r, _var)
             .transform(to_ref);
     }
@@ -545,7 +547,9 @@ struct Parser<ReaderType, WriterType, std::shared_ptr<T>> {
         if (_r.is_empty(_var)) {
             return std::shared_ptr<T>();
         }
-        const auto to_ptr = [](auto&& _t) { return std::make_shared<T>(_t); };
+        const auto to_ptr = [](auto&& _t) {
+            return std::make_shared<T>(std::move(_t));
+        };
         return Parser<ReaderType, WriterType, std::decay_t<T>>::read(_r, _var)
             .transform(to_ptr);
     }
