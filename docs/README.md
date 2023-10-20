@@ -36,3 +36,7 @@
 
 3.4) [rfl::Result](https://github.com/getml/reflect-cpp/blob/main/docs/result.md) - For error handling without exceptions
 
+## 4) Supported formats
+
+4.1) [JSON](https://github.com/getml/reflect-cpp/blob/main/docs/json.md)
+
