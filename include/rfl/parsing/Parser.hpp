@@ -62,7 +62,7 @@ struct Parser {
     using OutputVarType = typename W::OutputVarType;
 
     /// Expresses the variables as type T.
-    static Result<T> read(const R& _r, InputVarType* _var) noexcept {
+    static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
         if constexpr (R::template has_custom_constructor<T>) {
             return _r.template use_custom_constructor<T>(_var);
         } else {
@@ -124,7 +124,7 @@ struct Parser<R, W, T*> {
     using OutputVarType = typename W::OutputVarType;
 
     /// Expresses the variables as type T.
-    static Result<T*> read(const R& _r, InputVarType* _var) noexcept {
+    static Result<T*> read(const R& _r, const InputVarType& _var) noexcept {
         static_assert(
             always_false_v<T>,
             "Reading into raw pointers is dangerous and therefore unsupported. "
@@ -154,9 +154,9 @@ struct Parser<R, W, std::array<T, _size>> {
     using OutputArrayType = typename W::OutputArrayType;
     using OutputVarType = typename W::OutputVarType;
 
-    static Result<std::array<T, _size>> read(const R& _r,
-                                             InputVarType* _var) noexcept {
-        const auto to_vec = [&](auto _arr) { return _r.to_vec(&_arr); };
+    static Result<std::array<T, _size>> read(
+        const R& _r, const InputVarType& _var) noexcept {
+        const auto to_vec = [&](const auto& _arr) { return _r.to_vec(_arr); };
 
         const auto check_size =
             [](auto _vec) -> Result<std::vector<InputVarType>> {
@@ -202,15 +202,15 @@ struct Parser<R, W, std::array<T, _size>> {
                                               std::move(_already_extracted)...,
                                               std::move(new_entry));
             };
-            return extract_single_field<i>(_r, &_vec).and_then(extract_next);
+            return extract_single_field<i>(_r, _vec).and_then(extract_next);
         }
     }
 
     /// Extracts a single field from a JSON.
     template <int _i>
-    static auto extract_single_field(const R& _r,
-                                     std::vector<InputVarType>* _vec) noexcept {
-        return Parser<R, W, T>::read(_r, &((*_vec)[_i]));
+    static auto extract_single_field(
+        const R& _r, const std::vector<InputVarType>& _vec) noexcept {
+        return Parser<R, W, T>::read(_r, _vec[_i]);
     }
 };
 
@@ -223,7 +223,7 @@ struct Parser<R, W, Box<T>> {
     using OutputVarType = typename W::OutputVarType;
 
     /// Expresses the variables as type T.
-    static Result<Box<T>> read(const R& _r, InputVarType* _var) noexcept {
+    static Result<Box<T>> read(const R& _r, const InputVarType& _var) noexcept {
         const auto to_box = [](auto&& _t) {
             return Box<T>::make(std::move(_t));
         };
@@ -246,7 +246,7 @@ struct Parser<R, W, Literal<_fields...>> {
 
     /// Expresses the variables as type T.
     static Result<Literal<_fields...>> read(const R& _r,
-                                            InputVarType* _var) noexcept {
+                                            const InputVarType& _var) noexcept {
         const auto to_type = [](const auto& _str) {
             return Literal<_fields...>::from_string(_str);
         };
@@ -283,19 +283,20 @@ struct MapParser {
 
     using ValueType = std::decay_t<typename MapType::value_type::second_type>;
 
-    static Result<MapType> read(const R& _r, InputVarType* _var) noexcept {
+    static Result<MapType> read(const R& _r,
+                                const InputVarType& _var) noexcept {
         const auto get_pair = [&](auto& _pair) {
             const auto to_pair = [&](ValueType&& _val) {
                 return std::make_pair(std::move(_pair.first), std::move(_val));
             };
-            return Parser<R, W, std::decay_t<ValueType>>::read(_r,
-                                                               &_pair.second)
+            return Parser<R, W, std::decay_t<ValueType>>::read(_r, _pair.second)
                 .transform(to_pair)
                 .value();
         };
 
-        const auto to_map = [&_r, get_pair](auto _obj) -> Result<MapType> {
-            auto m = _r.to_map(&_obj);
+        const auto to_map = [&_r,
+                             get_pair](const auto& _obj) -> Result<MapType> {
+            auto m = _r.to_map(_obj);
             MapType res;
             try {
                 for (auto& p : m) {
@@ -345,8 +346,8 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
 
    public:
     /// Generates a NamedTuple from a JSON Object.
-    static Result<NamedTuple<FieldTypes...>> read(const R& _r,
-                                                  InputVarType* _var) noexcept {
+    static Result<NamedTuple<FieldTypes...>> read(
+        const R& _r, const InputVarType& _var) noexcept {
         const auto& indices = field_indices();
         const auto fct = [&](const std::string_view& _str) -> std::int16_t {
             const auto it = indices.find(_str);
@@ -355,7 +356,7 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
         };
         const auto to_fields_array = [&](auto _obj) {
             return _r.template to_fields_array<sizeof...(FieldTypes)>(fct,
-                                                                      &_obj);
+                                                                      _obj);
         };
         const auto build = [&](auto _fields_vec) {
             return build_named_tuple_recursively(_r, _fields_vec);
@@ -508,14 +509,13 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
     /// Retrieves the value from the object. This is mainly needed to
     /// generate a better error message.
     template <class FieldType>
-    static auto get_value(const R& _r, InputVarType _var) noexcept {
+    static auto get_value(const R& _r, const InputVarType _var) noexcept {
         const auto embellish_error = [&](const Error& _e) {
             const auto key = FieldType::name_.str();
             return Error("Failed to parse field '" + key + "': " + _e.what());
         };
         using ValueType = std::decay_t<typename FieldType::Type>;
-        return Parser<R, W, ValueType>::read(_r, &_var).or_else(
-            embellish_error);
+        return Parser<R, W, ValueType>::read(_r, _var).or_else(embellish_error);
     }
 
     /// Builds the object field by field.
@@ -550,8 +550,8 @@ struct Parser<R, W, std::optional<T>> {
 
     /// Expresses the variables as type T.
     static Result<std::optional<T>> read(const R& _r,
-                                         InputVarType* _var) noexcept {
-        if (_r.is_empty(*_var)) {
+                                         const InputVarType& _var) noexcept {
+        if (_r.is_empty(_var)) {
             return std::optional<T>();
         }
         const auto to_opt = [](auto&& _t) { return std::make_optional<T>(_t); };
@@ -577,7 +577,7 @@ struct Parser<R, W, Ref<T>> {
     using OutputVarType = typename W::OutputVarType;
 
     /// Expresses the variables as type T.
-    static Result<Ref<T>> read(const R& _r, InputVarType* _var) noexcept {
+    static Result<Ref<T>> read(const R& _r, const InputVarType& _var) noexcept {
         const auto to_ref = [&](auto&& _t) {
             return Ref<T>::make(std::move(_t));
         };
@@ -600,7 +600,7 @@ struct Parser<R, W, std::shared_ptr<T>> {
 
     /// Expresses the variables as type T.
     static Result<std::shared_ptr<T>> read(const R& _r,
-                                           InputVarType* _var) noexcept {
+                                           const InputVarType& _var) noexcept {
         if (_r.is_empty(*_var)) {
             return std::shared_ptr<T>();
         }
@@ -630,7 +630,7 @@ struct Parser<R, W, std::pair<FirstType, SecondType>> {
 
     /// Expresses the variables as type T.
     static Result<std::pair<FirstType, SecondType>> read(
-        const R& _r, InputVarType* _var) noexcept {
+        const R& _r, const InputVarType& _var) noexcept {
         const auto to_pair = [&](auto&& _t) {
             return std::make_pair(std::move(std::get<0>(_t)),
                                   std::move(std::get<1>(_t)));
@@ -666,9 +666,9 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
     using OutputVarType = typename W::OutputVarType;
 
     /// Expresses the variables as type T.
-    static ResultType read(const R& _r, InputVarType* _var) noexcept {
+    static ResultType read(const R& _r, const InputVarType& _var) noexcept {
         const auto get_disc = [&_r](auto _obj) {
-            return get_discriminator(_r, &_obj);
+            return get_discriminator(_r, _obj);
         };
 
         const auto to_result = [&_r, _var](const std::string& _disc_value) {
@@ -690,9 +690,9 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
 
    private:
     template <int _i = 0>
-    static ResultType find_matching_alternative(const R& _r,
-                                                const std::string& _disc_value,
-                                                InputVarType* _var) noexcept {
+    static ResultType find_matching_alternative(
+        const R& _r, const std::string& _disc_value,
+        const InputVarType& _var) noexcept {
         if constexpr (_i == sizeof...(AlternativeTypes)) {
             return Error("Could not parse tagged union, could not match " +
                          _discriminator.str() + " '" + _disc_value + "'.");
@@ -726,7 +726,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
 
     /// Retrieves the discriminator.
     static Result<std::string> get_discriminator(
-        const R& _r, InputObjectType* _obj) noexcept {
+        const R& _r, const InputObjectType& _obj) noexcept {
         const auto embellish_error = [](const auto& _err) {
             return Error(
                 "Could not parse tagged union: Could not find field '" +
@@ -734,7 +734,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
         };
 
         const auto to_type = [&_r](auto _var) {
-            return _r.template to_basic_type<std::string>(&_var);
+            return _r.template to_basic_type<std::string>(_var);
         };
 
         return _r.get_field(_discriminator.str(), _obj)
@@ -771,8 +771,8 @@ struct Parser<R, W, std::tuple<Ts...>> {
     using OutputVarType = typename W::OutputVarType;
 
     static Result<std::tuple<Ts...>> read(const R& _r,
-                                          InputVarType* _var) noexcept {
-        const auto to_vec = [&](auto _arr) { return _r.to_vec(&_arr); };
+                                          const InputVarType& _var) noexcept {
+        const auto to_vec = [&](auto _arr) { return _r.to_vec(_arr); };
 
         const auto check_size =
             [](auto _vec) -> Result<std::vector<InputVarType>> {
@@ -817,17 +817,17 @@ struct Parser<R, W, std::tuple<Ts...>> {
                                               std::move(_already_extracted)...,
                                               std::move(new_entry));
             };
-            return extract_single_field<i>(_r, &_vec).and_then(extract_next);
+            return extract_single_field<i>(_r, _vec).and_then(extract_next);
         }
     }
 
     /// Extracts a single field from a JSON.
     template <int _i>
-    static auto extract_single_field(const R& _r,
-                                     std::vector<InputVarType>* _vec) noexcept {
+    static auto extract_single_field(
+        const R& _r, const std::vector<InputVarType>& _vec) noexcept {
         using NewFieldType = std::decay_t<
             typename std::tuple_element<_i, std::tuple<Ts...>>::type>;
-        return Parser<R, W, NewFieldType>::read(_r, &((*_vec)[_i]));
+        return Parser<R, W, NewFieldType>::read(_r, _vec[_i]);
     }
 
     /// Transforms a tuple to an array.
@@ -856,8 +856,8 @@ struct Parser<R, W, std::unique_ptr<T>> {
 
     /// Expresses the variables as type T.
     static Result<std::unique_ptr<T>> read(const R& _r,
-                                           InputVarType* _var) noexcept {
-        if (_r.is_empty(*_var)) {
+                                           const InputVarType& _var) noexcept {
+        if (_r.is_empty(_var)) {
             return std::unique_ptr<T>();
         }
         const auto to_ptr = [](auto&& _t) {
@@ -893,13 +893,13 @@ struct FieldVariantParser {
     using OutputVarType = typename W::OutputVarType;
 
     /// Expresses the variables as type T.
-    static ResultType read(const R& _r, InputVarType* _var) noexcept {
+    static ResultType read(const R& _r, const InputVarType& _var) noexcept {
         static_assert(
             internal::no_duplicate_field_names<std::tuple<FieldTypes...>>(),
             "Externally tagged variants cannot have duplicate field "
             "names.");
 
-        const auto to_map = [&](auto _obj) { return _r.to_map(&_obj); };
+        const auto to_map = [&](auto _obj) { return _r.to_map(_obj); };
 
         const auto to_result = [&](auto _map) -> ResultType {
             if (_map.size() != 1) {
@@ -910,8 +910,8 @@ struct FieldVariantParser {
             }
             const auto it = _map.begin();
             const auto& disc_value = it->first;
-            auto& var = it->second;
-            return find_matching_alternative(_r, disc_value, &var);
+            const auto& var = it->second;
+            return find_matching_alternative(_r, disc_value, var);
         };
 
         return _r.to_object(_var).transform(to_map).and_then(to_result);
@@ -937,9 +937,9 @@ struct FieldVariantParser {
 
    private:
     template <int _i = 0>
-    static ResultType find_matching_alternative(const R& _r,
-                                                const std::string& _disc_value,
-                                                InputVarType* _var) noexcept {
+    static ResultType find_matching_alternative(
+        const R& _r, const std::string& _disc_value,
+        const InputVarType& _var) noexcept {
         if constexpr (_i == sizeof...(FieldTypes)) {
             return Error(
                 "Could not parse std::variant, could not match field named "
@@ -985,7 +985,7 @@ struct Parser<R, W, std::variant<FieldTypes...>> {
     /// Expresses the variables as type T.
     template <int _i = 0>
     static Result<std::variant<FieldTypes...>> read(
-        const R& _r, InputVarType* _var,
+        const R& _r, const InputVarType& _var,
         const std::string _errors = "") noexcept {
         if constexpr (_i == 0 &&
                       internal::all_fields<std::tuple<FieldTypes...>>()) {
@@ -999,7 +999,8 @@ struct Parser<R, W, std::variant<FieldTypes...>> {
 
             const auto try_next = [&_r, _var, &_errors](const auto& _err) {
                 auto errors = _errors;
-                errors += std::string("\n -") + _err.what();
+                errors += std::string("\n " + std::to_string(_i + 1) + ")") +
+                          _err.what();
                 return read<_i + 1>(_r, _var, errors);
             };
 
@@ -1045,26 +1046,26 @@ struct VectorParser {
 
     using T = typename VecType::value_type;
 
-    static Result<VecType> read(const R& _r, InputVarType* _var) noexcept {
+    static Result<VecType> read(const R& _r,
+                                const InputVarType& _var) noexcept {
         using namespace std::ranges::views;
 
         const auto get_elem = [&](auto& _v) {
-            return Parser<R, W, std::decay_t<T>>::read(_r, &_v).value();
+            return Parser<R, W, std::decay_t<T>>::read(_r, _v).value();
         };
 
         const auto get_pair = [&](auto& _v) {
             if constexpr (is_map_like<VecType>()) {
                 using K = std::decay_t<typename T::first_type>;
                 using V = std::decay_t<typename T::second_type>;
-                return Parser<R, W, std::decay_t<std::pair<K, V>>>::read(_r,
-                                                                         &_v)
+                return Parser<R, W, std::decay_t<std::pair<K, V>>>::read(_r, _v)
                     .value();
             }
         };
 
         const auto to_container =
             [&](InputArrayType&& _arr) -> Result<VecType> {
-            auto input_vars = _r.to_vec(&_arr);
+            auto input_vars = _r.to_vec(_arr);
             VecType vec;
             if constexpr (is_forward_list<VecType>()) {
                 for (auto it = input_vars.rbegin(); it != input_vars.rend();

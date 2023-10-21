@@ -20,9 +20,9 @@ Result<T> read(const std::string& _json_str) {
     using PtrType = std::unique_ptr<yyjson_doc, void (*)(yyjson_doc*)>;
     yyjson_doc* doc = yyjson_read(_json_str.c_str(), _json_str.size(), 0);
     const auto ptr = PtrType(doc, yyjson_doc_free);
-    InputVarType root = InputVarType(yyjson_doc_get_root(doc));
+    const auto root = InputVarType(yyjson_doc_get_root(doc));
     const auto r = Reader();
-    return Parser<T>::read(r, &root);
+    return Parser<T>::read(r, root);
 }
 
 }  // namespace json
