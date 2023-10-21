@@ -392,7 +392,10 @@ struct Parser<ReaderType, WriterType, NamedTuple<FieldTypes...>> {
             if (!f) {
                 if constexpr (is_required<ValueType>()) {
                     const auto key = FieldType::name_.str();
-                    return Error("Field named '" + key + "' not found!");
+                    return collect_errors<i + 1>(
+                        _r, _fields_vec,
+                        std::vector<Error>(
+                            {Error("Field named '" + key + "' not found!")}));
                 } else {
                     return build_named_tuple_recursively(
                         _r, _fields_vec, std::move(_args)...,
@@ -406,7 +409,64 @@ struct Parser<ReaderType, WriterType, NamedTuple<FieldTypes...>> {
                     FieldType(std::move(_value)));
             };
 
-            return get_value<FieldType>(_r, *f).and_then(build);
+            const auto handle_error = [&](Error&& _error) {
+                return collect_errors<i + 1>(
+                    _r, _fields_vec, std::vector<Error>({std::move(_error)}));
+            };
+
+            return get_value<FieldType>(_r, *f)
+                .or_else(handle_error)
+                .and_then(build);
+        }
+    }
+
+    /// If something went wrong, we want to collect all of the errors - it's
+    /// just good UX.
+    template <int _i>
+    static Error collect_errors(
+        const ReaderType& _r,
+        const std::array<std::optional<InputVarType>, sizeof...(FieldTypes)>&
+            _fields_vec,
+        std::vector<Error> _errors) noexcept {
+        if constexpr (_i == sizeof...(FieldTypes)) {
+            if (_errors.size() == 1) {
+                return std::move(_errors[0]);
+            } else {
+                std::string msg =
+                    "Found " + std::to_string(_errors.size()) + " errors:";
+                for (size_t i = 0; i < _errors.size(); ++i) {
+                    msg += "\n" + std::to_string(i + 1) + ") " +
+                           _errors.at(i).what();
+                }
+                return Error(msg);
+            }
+        } else {
+            using FieldType = typename std::tuple_element<
+                _i, typename NamedTuple<FieldTypes...>::Fields>::type;
+
+            using ValueType = std::decay_t<typename FieldType::Type>;
+
+            const auto& f = std::get<_i>(_fields_vec);
+
+            if (!f) {
+                if constexpr (is_required<ValueType>()) {
+                    const auto key = FieldType::name_.str();
+                    _errors.emplace_back(
+                        Error("Field named '" + key + "' not found."));
+                }
+                return collect_errors<_i + 1>(_r, _fields_vec,
+                                              std::move(_errors));
+            }
+
+            const auto add_error_if_applicable =
+                [&](Error&& _error) -> Result<ValueType> {
+                _errors.emplace_back(std::move(_error));
+                return _error;
+            };
+
+            get_value<FieldType>(_r, *f).or_else(add_error_if_applicable);
+
+            return collect_errors<_i + 1>(_r, _fields_vec, std::move(_errors));
         }
     }
 
@@ -447,8 +507,8 @@ struct Parser<ReaderType, WriterType, NamedTuple<FieldTypes...>> {
                       NamedTuple<FieldTypes...>>::field_indices_;
     }
 
-    /// Retrieves the value from the object. This is mainly needed to generate a
-    /// better error message.
+    /// Retrieves the value from the object. This is mainly needed to
+    /// generate a better error message.
     template <class FieldType>
     static auto get_value(const ReaderType& _r, InputVarType _var) noexcept {
         const auto embellish_error = [&](const Error& _e) {
@@ -654,7 +714,8 @@ struct Parser<ReaderType, WriterType,
 
                 const auto embellish_error = [&](Error&& _e) {
                     return Error(
-                        "Could not parse tagged union with discrimininator " +
+                        "Could not parse tagged union with "
+                        "discrimininator " +
                         _discriminator.str() + " '" + _disc_value +
                         "': " + _e.what());
                 };
@@ -842,7 +903,8 @@ struct FieldVariantParser {
     static ResultType read(const ReaderType& _r, InputVarType* _var) noexcept {
         static_assert(
             internal::no_duplicate_field_names<std::tuple<FieldTypes...>>(),
-            "Externally tagged variants cannot have duplicate field names.");
+            "Externally tagged variants cannot have duplicate field "
+            "names.");
 
         const auto to_map = [&](auto _obj) { return _r.to_map(&_obj); };
 
@@ -867,7 +929,8 @@ struct FieldVariantParser {
                                const std::variant<FieldTypes...>& _v) noexcept {
         static_assert(
             internal::no_duplicate_field_names<std::tuple<FieldTypes...>>(),
-            "Externally tagged variants cannot have duplicate field names.");
+            "Externally tagged variants cannot have duplicate field "
+            "names.");
 
         const auto handle = [&](const auto& _field) {
             const auto named_tuple =
@@ -887,7 +950,8 @@ struct FieldVariantParser {
                                                 InputVarType* _var) noexcept {
         if constexpr (_i == sizeof...(FieldTypes)) {
             return Error(
-                "Could not parse std::variant, could not match field named '" +
+                "Could not parse std::variant, could not match field named "
+                "'" +
                 _disc_value + "'.");
         } else {
             using FieldType = std::decay_t<typename std::tuple_element<
@@ -977,7 +1041,8 @@ struct Parser<ReaderType, WriterType, std::variant<FieldTypes...>> {
 
 /// This can be used for data structures that would be expressed as array in
 /// serialized format (std::vector, std::set, std::deque, ...),
-/// but also includes map-like types, when the key is not of type std::string.
+/// but also includes map-like types, when the key is not of type
+/// std::string.
 template <class ReaderType, class WriterType, class VecType>
 struct VectorParser {
    public:

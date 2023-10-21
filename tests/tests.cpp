@@ -8,6 +8,7 @@
 #include "test_custom_class4.hpp"
 #include "test_default_values.hpp"
 #include "test_deque.hpp"
+#include "test_error_messages.hpp"
 #include "test_field_variant.hpp"
 #include "test_flatten.hpp"
 #include "test_forward_list.hpp"
@@ -63,6 +64,7 @@ int main() {
     test_unordered_multiset();
     test_string_map();
     test_string_unordered_map();
+    test_error_messages();
 
     test_custom_class1();
     test_custom_class2();

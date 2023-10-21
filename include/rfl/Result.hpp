@@ -211,10 +211,10 @@ class Result {
     Result<T> or_else(const F& _f) {
         const auto handle_variant =
             [&]<class TOrError>(TOrError&& _t_or_err) -> Result<T> {
-            if constexpr (std::is_same<TOrError, Error>()) {
-                return _f(std::forward<TOrError>(_t_or_err));
+            if constexpr (std::is_same<std::decay_t<TOrError>, Error>()) {
+                return _f(std::forward<Error>(_t_or_err));
             } else {
-                return std::forward<TOrError>(_t_or_err);
+                return std::forward<T>(_t_or_err);
             }
         };
         return std::visit(handle_variant,
