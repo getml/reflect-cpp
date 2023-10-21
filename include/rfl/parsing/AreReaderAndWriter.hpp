@@ -8,7 +8,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class T>
-concept AreReaderAndWriter = IsReader<R, T> && IsWriter<W>;
+concept AreReaderAndWriter = IsReader<R, T> && IsWriter<W, T>;
 
 }  // namespace parsing
 }  // namespace rfl

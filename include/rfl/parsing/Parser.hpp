@@ -3,6 +3,7 @@
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <deque>
 #include <exception>
 #include <forward_list>
@@ -346,9 +347,15 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
     /// Generates a NamedTuple from a JSON Object.
     static Result<NamedTuple<FieldTypes...>> read(const R& _r,
                                                   InputVarType* _var) noexcept {
+        const auto& indices = field_indices();
+        const auto fct = [&](const std::string_view& _str) -> std::int16_t {
+            const auto it = indices.find(_str);
+            return it != indices.end() ? it->second
+                                       : static_cast<std::uint16_t>(-1);
+        };
         const auto to_fields_array = [&](auto _obj) {
-            return _r.template to_fields_array<sizeof...(FieldTypes)>(
-                field_indices(), &_obj);
+            return _r.template to_fields_array<sizeof...(FieldTypes)>(fct,
+                                                                      &_obj);
         };
         const auto build = [&](auto _fields_vec) {
             return build_named_tuple_recursively(_r, _fields_vec);
@@ -369,8 +376,7 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
     template <class... Args>
     static Result<NamedTuple<FieldTypes...>> build_named_tuple_recursively(
         const R& _r,
-        const std::array<std::optional<InputVarType>, sizeof...(FieldTypes)>&
-            _fields_vec,
+        const std::array<InputVarType, sizeof...(FieldTypes)>& _fields_vec,
         Args&&... _args) noexcept {
         constexpr auto i = sizeof...(Args);
 
@@ -384,7 +390,7 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
 
             const auto& f = std::get<i>(_fields_vec);
 
-            if (!f) {
+            if (_r.is_empty(f)) {
                 if constexpr (is_required<ValueType>()) {
                     const auto key = FieldType::name_.str();
                     return collect_errors<i + 1>(
@@ -409,7 +415,7 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
                     _r, _fields_vec, std::vector<Error>({std::move(_error)}));
             };
 
-            return get_value<FieldType>(_r, *f)
+            return get_value<FieldType>(_r, f)
                 .or_else(handle_error)
                 .and_then(build);
         }
@@ -420,8 +426,7 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
     template <int _i>
     static Error collect_errors(
         const R& _r,
-        const std::array<std::optional<InputVarType>, sizeof...(FieldTypes)>&
-            _fields_vec,
+        const std::array<InputVarType, sizeof...(FieldTypes)>& _fields_vec,
         std::vector<Error> _errors) noexcept {
         if constexpr (_i == sizeof...(FieldTypes)) {
             if (_errors.size() == 1) {
@@ -443,7 +448,7 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
 
             const auto& f = std::get<_i>(_fields_vec);
 
-            if (!f) {
+            if (_r.is_empty(f)) {
                 if constexpr (is_required<ValueType>()) {
                     const auto key = FieldType::name_.str();
                     _errors.emplace_back(
@@ -459,7 +464,7 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
                 return _error;
             };
 
-            get_value<FieldType>(_r, *f).or_else(add_error_if_applicable);
+            get_value<FieldType>(_r, f).or_else(add_error_if_applicable);
 
             return collect_errors<_i + 1>(_r, _fields_vec, std::move(_errors));
         }
@@ -480,7 +485,7 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
             auto value = Parser<R, W, ValueType>::write(_w, rfl::get<_i>(_tup));
             const auto name = FieldType::name_.str();
             if constexpr (!is_required<ValueType>()) {
-                if (!_w.is_empty(&value)) {
+                if (!_w.is_empty(value)) {
                     _w.set_field(name, value, _ptr);
                 }
             } else {
@@ -523,14 +528,16 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
                 typename std::tuple_element<_i,
                                             std::tuple<FieldTypes...>>::type;
             const auto name = FieldType::name_.string_view();
-            Parser<R, W, NamedTuple<FieldTypes...>>::field_indices_[name] = _i;
+            Parser<R, W, NamedTuple<FieldTypes...>>::field_indices_[name] =
+                static_cast<std::int16_t>(_i);
             set_field_indices<_i + 1>();
         }
     }
 
    private:
     /// Maps each of the field names to an index signifying their order.
-    static inline std::unordered_map<std::string_view, size_t> field_indices_;
+    static inline std::unordered_map<std::string_view, std::int16_t>
+        field_indices_;
 };
 
 // ----------------------------------------------------------------------------
@@ -544,7 +551,7 @@ struct Parser<R, W, std::optional<T>> {
     /// Expresses the variables as type T.
     static Result<std::optional<T>> read(const R& _r,
                                          InputVarType* _var) noexcept {
-        if (_r.is_empty(_var)) {
+        if (_r.is_empty(*_var)) {
             return std::optional<T>();
         }
         const auto to_opt = [](auto&& _t) { return std::make_optional<T>(_t); };
@@ -594,7 +601,7 @@ struct Parser<R, W, std::shared_ptr<T>> {
     /// Expresses the variables as type T.
     static Result<std::shared_ptr<T>> read(const R& _r,
                                            InputVarType* _var) noexcept {
-        if (_r.is_empty(_var)) {
+        if (_r.is_empty(*_var)) {
             return std::shared_ptr<T>();
         }
         const auto to_ptr = [](auto&& _t) {
@@ -850,7 +857,7 @@ struct Parser<R, W, std::unique_ptr<T>> {
     /// Expresses the variables as type T.
     static Result<std::unique_ptr<T>> read(const R& _r,
                                            InputVarType* _var) noexcept {
-        if (_r.is_empty(_var)) {
+        if (_r.is_empty(*_var)) {
             return std::unique_ptr<T>();
         }
         const auto to_ptr = [](auto&& _t) {

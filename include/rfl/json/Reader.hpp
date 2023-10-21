@@ -33,6 +33,7 @@ struct Reader {
     };
 
     struct YYJSONInputVar {
+        YYJSONInputVar() : val_(nullptr) {}
         YYJSONInputVar(yyjson_val* _val) : val_(_val) {}
         yyjson_val* val_;
     };
@@ -64,8 +65,8 @@ struct Reader {
         return var;
     }
 
-    bool is_empty(InputVarType* _var) const noexcept {
-        return !_var->val_ || yyjson_is_null(_var->val_);
+    bool is_empty(const InputVarType& _var) const noexcept {
+        return !_var.val_ || yyjson_is_null(_var.val_);
     }
 
     template <class T>
@@ -103,19 +104,18 @@ struct Reader {
         return InputArrayType(_var->val_);
     }
 
-    template <size_t size>
-    std::array<std::optional<InputVarType>, size> to_fields_array(
-        const std::unordered_map<std::string_view, size_t>& _field_indices,
-        InputObjectType* _obj) const noexcept {
-        std::array<std::optional<InputVarType>, size> f_arr;
+    template <size_t size, class FunctionType>
+    std::array<InputVarType, size> to_fields_array(
+        const FunctionType _fct, InputObjectType* _obj) const noexcept {
+        std::array<InputVarType, size> f_arr;
         yyjson_obj_iter iter;
         yyjson_obj_iter_init(_obj->val_, &iter);
         yyjson_val* key;
         while ((key = yyjson_obj_iter_next(&iter))) {
             const char* k = yyjson_get_str(key);
-            const auto it = _field_indices.find(std::string_view(k));
-            if (it != _field_indices.end()) {
-                f_arr[it->second] = InputVarType(yyjson_obj_iter_get_val(key));
+            const auto ix = _fct(std::string_view(k));
+            if (ix != -1) {
+                f_arr[ix] = InputVarType(yyjson_obj_iter_get_val(key));
             }
         }
         return f_arr;
