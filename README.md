@@ -92,6 +92,23 @@ std::cout << "Hello, my name is " << homer2.first_name() << " "
           << homer2.last_name() << "." << std::endl;
 ```
 
+reflect-cpp returns clear and comprehensive error messages:
+
+```cpp
+const std::string faulty_json_string =
+    R"({"firstName":"Homer","lastName":12345,"birthday":"04/19/1987"})";
+const auto result = rfl::json::read<Person>(faulty_json_string);
+```
+
+Yields the following error message:
+
+```
+Found 3 errors:
+1) Failed to parse field 'lastName': Could not cast to string.
+2) Failed to parse field 'birthday': String '04/19/1987' did not match format '%Y-%m-%d'.
+3) Field named 'children' not found.
+```
+
 ## Support for containers
 
 ### C++ standard library
