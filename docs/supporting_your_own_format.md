@@ -58,7 +58,7 @@ Any Writer needs to define the following types:
 1) An `OutputArrayType`, which must be an array-like data structure.
 2) An `OutputObjectType`, which must contain key-value pairs.
 3) An `OutputVarType`, which must be able to represent either
-   OutputArrayType, OutputObjectType or a basic type (bool, integral,
+   `OutputArrayType`, `OutputObjectType` or a basic type (bool, integral,
    floating point, std::string). We hesitate to call these "primitive types",
    because primitive types in C++ are defined as a slightly different group
    of types.
