@@ -47,7 +47,7 @@ std::string write(const T& _obj) {
 ```
 
 In the following two sections, we will provide templates for your `Reader` and `Writer`.
-You should probably just Copy + Paste this into your own code and fill in the blanks.
+You should probably just copy + paste this into your own code and fill in the blanks.
 
 ## Implementing your own writer 
 
