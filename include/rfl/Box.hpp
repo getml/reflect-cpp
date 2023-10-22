@@ -18,6 +18,8 @@ class Box {
         return Box<T>(std::make_unique<T>(std::forward<Args>(_args)...));
     }
 
+    Box() : ptr_(std::make_unique<T>()) {}
+
     Box(const Box<T>& _other) = delete;
 
     Box(Box<T>&& _other) = default;

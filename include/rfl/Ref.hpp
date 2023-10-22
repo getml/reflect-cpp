@@ -18,6 +18,8 @@ class Ref {
         return Ref<T>(std::make_shared<T>(std::forward<Args>(_args)...));
     }
 
+    Ref() : ptr_(std::make_shared<T>()) {}
+
     Ref(const Ref<T>& _other) = default;
 
     Ref(Ref<T>&& _other) = default;
