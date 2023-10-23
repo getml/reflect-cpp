@@ -49,6 +49,8 @@ std::string write(const T& _obj) {
 In the following two sections, we will provide templates for your `Reader` and `Writer`.
 You should probably just copy + paste this into your own code and fill in the blanks.
 
+As a reference, you can take a look at how this is done for JSON: https://github.com/getml/reflect-cpp/tree/main/include/rfl/json
+
 ## Implementing your own writer 
 
 Because writers are somewhat simpler, we will start with them.
