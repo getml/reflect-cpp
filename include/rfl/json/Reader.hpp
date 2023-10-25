@@ -52,6 +52,12 @@ struct Reader {
         : std::true_type {};
 
     template <class T>
+    struct has_from_json_obj<T, std::enable_if_t<std::is_invocable_r<
+                                    rfl::Result<T>, decltype(T::from_json_obj),
+                                    typename Reader::InputVarType>::value>>
+        : std::true_type {};
+
+    template <class T>
     static constexpr bool has_custom_constructor = has_from_json_obj<T>::value;
 
     rfl::Result<InputVarType> get_field(

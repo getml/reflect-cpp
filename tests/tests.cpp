@@ -6,6 +6,7 @@
 #include "test_custom_class2.hpp"
 #include "test_custom_class3.hpp"
 #include "test_custom_class4.hpp"
+#include "test_custom_constructor.hpp"
 #include "test_default_values.hpp"
 #include "test_deque.hpp"
 #include "test_error_messages.hpp"
@@ -76,6 +77,8 @@ int main() {
     test_replace_with_other_struct();
     test_as();
     test_as_flatten();
+
+    test_custom_constructor();
 
     return 0;
 }
