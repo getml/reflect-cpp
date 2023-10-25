@@ -24,6 +24,11 @@ class Box {
 
     Box(Box<T>&& _other) = default;
 
+    template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
+                                               bool>::type = true>
+    Box(Box<U>&& _other) noexcept
+        : ptr_(std::make_unique<T>(std::forward<U>(*_other))) {}
+
     ~Box() = default;
 
     /// Returns a pointer to the underlying object
@@ -35,8 +40,22 @@ class Box {
     /// Move assignment operator
     Box<T>& operator=(Box<T>&& _other) noexcept = default;
 
+    /// Move assignment operator
+    template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
+                                               bool>::type = true>
+    Box<T>& operator=(Box<U>&& _other) noexcept {
+        ptr_ = std::make_unique<T>(std::forward<U>(*_other));
+        return *this;
+    }
+
+    /// Returns the underlying object.
+    T& operator*() { return *ptr_; }
+
     /// Returns the underlying object.
     T& operator*() const { return *ptr_; }
+
+    /// Returns the underlying object.
+    T* operator->() { return ptr_.get(); }
 
     /// Returns the underlying object.
     T* operator->() const { return ptr_.get(); }
@@ -57,6 +76,18 @@ class Box {
 template <class T, class... Args>
 Box<T> make_box(Args&&... _args) {
     return Box<T>::make(std::forward<Args>(_args)...);
+}
+
+template <class T1, class T2>
+inline auto operator<=>(const Box<T1>& _t1, const Box<T2>& _t2) {
+    return _t1.ptr() <=> _t2.ptr();
+}
+
+template <class CharT, class Traits, class T>
+inline std::basic_ostream<CharT, Traits>& operator<<(
+    std::basic_ostream<CharT, Traits>& _os, const Box<T>& _b) {
+    _os << _b.get();
+    return _os;
 }
 
 }  // namespace rfl
