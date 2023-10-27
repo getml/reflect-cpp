@@ -50,7 +50,7 @@ template <class T, class Pointers, class... Args>
 auto move_from_pointers(Pointers& _ptrs, Args&&... _args) {
     constexpr auto i = sizeof...(Args);
     if constexpr (i == std::tuple_size_v<std::decay_t<Pointers>>) {
-        return T(std::move(_args)...);
+        return T{std::move(_args)...};
     } else {
         using FieldType = std::tuple_element_t<i, std::decay_t<Pointers>>;
 

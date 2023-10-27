@@ -13,16 +13,19 @@
 #include <vector>
 
 #include "rfl/Result.hpp"
+#include "rfl/always_false.hpp"
 
 namespace rfl {
 namespace json {
 
 struct Writer {
     struct YYJSONOutputArray {
+        YYJSONOutputArray(yyjson_mut_val* _val) : val_(_val) {}
         yyjson_mut_val* val_;
     };
 
     struct YYJSONOutputObject {
+        YYJSONOutputObject(yyjson_mut_val* _val) : val_(_val) {}
         yyjson_mut_val* val_;
     };
 
@@ -53,7 +56,7 @@ struct Writer {
     }
 
     template <class T>
-    OutputVarType from_basic_type(const T _var) const noexcept {
+    OutputVarType from_basic_type(const T& _var) const noexcept {
         if constexpr (std::is_same<std::decay_t<T>, std::string>()) {
             return OutputVarType(yyjson_mut_strcpy(doc_, _var.c_str()));
         } else if constexpr (std::is_same<std::decay_t<T>, bool>()) {
@@ -61,8 +64,10 @@ struct Writer {
         } else if constexpr (std::is_floating_point<std::decay_t<T>>()) {
             return OutputVarType(
                 yyjson_mut_real(doc_, static_cast<double>(_var)));
-        } else {
+        } else if constexpr (std::is_integral<std::decay_t<T>>()) {
             return OutputVarType(yyjson_mut_int(doc_, static_cast<int>(_var)));
+        } else {
+            static_assert(rfl::always_false_v<T>, "Unsupported type.");
         }
     }
 
@@ -74,8 +79,8 @@ struct Writer {
         return OutputObjectType(yyjson_mut_obj(doc_));
     }
 
-    bool is_empty(OutputVarType* _var) const noexcept {
-        return yyjson_mut_is_null(_var->val_);
+    bool is_empty(const OutputVarType& _var) const noexcept {
+        return yyjson_mut_is_null(_var.val_);
     }
 
     void set_field(const std::string& _name, const OutputVarType& _var,

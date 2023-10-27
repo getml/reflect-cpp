@@ -21,6 +21,11 @@ struct StringLiteral {
 
     /// Returns the value as a string.
     std::string str() const { return std::string(value_); }
+
+    /// Returns the value as a string.
+    std::string_view string_view() const {
+        return std::string_view(value_, N - 1);
+    }
 };
 
 template <size_t N1, size_t N2>

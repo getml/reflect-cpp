@@ -20,13 +20,11 @@ struct TaggedUnion {
     TaggedUnion(VariantType&& _variant) noexcept
         : variant_(std::move(_variant)) {}
 
-    TaggedUnion(
-        const TaggedUnion<_discriminator, NamedTupleTypes...>& _tagged_union)
-        : variant_(_tagged_union.variant_) {}
+    TaggedUnion(const TaggedUnion<_discriminator, NamedTupleTypes...>&
+                    _tagged_union) = default;
 
     TaggedUnion(TaggedUnion<_discriminator, NamedTupleTypes...>&&
-                    _tagged_union) noexcept
-        : variant_(std::move(_tagged_union.variant_)) {}
+                    _tagged_union) noexcept = default;
 
     template <class T,
               typename std::enable_if<std::is_convertible_v<T, VariantType>,
@@ -41,14 +39,14 @@ struct TaggedUnion {
     ~TaggedUnion() = default;
 
     /// Assigns the underlying object.
-    inline TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
+    TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
         const VariantType& _variant) {
         variant_ = _variant;
         return *this;
     }
 
     /// Assigns the underlying object.
-    inline TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
+    TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
         VariantType&& _variant) {
         variant_ = std::move(_variant);
         return *this;
@@ -58,8 +56,7 @@ struct TaggedUnion {
     template <class T,
               typename std::enable_if<std::is_convertible_v<T, VariantType>,
                                       bool>::type = true>
-    inline TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
-        T&& _variant) {
+    TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(T&& _variant) {
         variant_ = std::forward<T>(_variant);
         return *this;
     }
@@ -68,35 +65,26 @@ struct TaggedUnion {
     template <class T,
               typename std::enable_if<std::is_convertible_v<T, VariantType>,
                                       bool>::type = true>
-    inline TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
+    TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
         const T& _variant) {
         variant_ = _variant;
         return *this;
     }
 
     /// Assigns the underlying object.
-    inline TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
-        const TaggedUnion<_discriminator, NamedTupleTypes...>& _other) {
-        if (this != &_other) {
-            variant_ = _other.get();
-        }
-        return *this;
-    }
+    TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
+        const TaggedUnion<_discriminator, NamedTupleTypes...>& _other) =
+        default;
 
     /// Assigns the underlying object.
-    inline TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
-        TaggedUnion<_discriminator, NamedTupleTypes...>&& _other) {
-        if (this != &_other) {
-            variant_ = std::move(_other.variant_);
-        }
-        return *this;
-    }
+    TaggedUnion<_discriminator, NamedTupleTypes...>& operator=(
+        TaggedUnion<_discriminator, NamedTupleTypes...>&& _other) = default;
 
     /// Returns the underlying variant.
-    inline VariantType& variant() { return variant_; }
+    VariantType& variant() { return variant_; }
 
     /// Returns the underlying variant.
-    inline const VariantType& variant() const { return variant_; }
+    const VariantType& variant() const { return variant_; }
 
     /// The underlying variant - a TaggedUnion is a thin wrapper
     /// around a variant that is mainly used for parsing.

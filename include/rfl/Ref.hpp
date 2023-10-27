@@ -18,9 +18,11 @@ class Ref {
         return Ref<T>(std::make_shared<T>(std::forward<Args>(_args)...));
     }
 
-    Ref(const Ref<T>& _other) : ptr_(_other.ptr_){};
+    Ref() : ptr_(std::make_shared<T>()) {}
 
-    Ref(Ref<T>&& _other) : ptr_(std::move(_other.ptr_)) {}
+    Ref(const Ref<T>& _other) = default;
+
+    Ref(Ref<T>&& _other) = default;
 
     template <class Y>
     Ref(const Ref<Y>& _other) : ptr_(_other.ptr()) {}
@@ -28,16 +30,16 @@ class Ref {
     ~Ref() = default;
 
     /// Returns a pointer to the underlying object
-    inline T* get() const { return ptr_.get(); }
+    T* get() const { return ptr_.get(); }
 
     /// Returns the underlying object.
-    inline T& operator*() const { return *ptr_; }
+    T& operator*() const { return *ptr_; }
 
     /// Returns the underlying object.
-    inline T* operator->() const { return ptr_.get(); }
+    T* operator->() const { return ptr_.get(); }
 
     /// Returns the underlying shared_ptr
-    inline const std::shared_ptr<T>& ptr() const { return ptr_; }
+    const std::shared_ptr<T>& ptr() const { return ptr_; }
 
     /// Copy assignment operator.
     template <class Y>
@@ -47,20 +49,10 @@ class Ref {
     }
 
     /// Move assignment operator
-    inline Ref<T>& operator=(Ref<T>&& _other) noexcept {
-        if (&_other != this) {
-            ptr_ = std::move(_other.ptr_);
-        }
-        return *this;
-    }
+    Ref<T>& operator=(Ref<T>&& _other) noexcept = default;
 
     /// Copy assignment operator
-    inline Ref<T>& operator=(const Ref<T>& _other) {
-        if (&_other != this) {
-            ptr_ = _other.ptr_;
-        }
-        return *this;
-    }
+    Ref<T>& operator=(const Ref<T>& _other) = default;
 
    private:
     /// Only make is allowed to use this constructor.

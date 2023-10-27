@@ -34,10 +34,10 @@ class Literal {
     static constexpr ValueType num_fields_ = sizeof...(fields_);
 
     /// Constructs a Literal from another literal.
-    Literal(const Literal<fields_...>& _other) : value_(_other.value_) {}
+    Literal(const Literal<fields_...>& _other) = default;
 
     /// Constructs a Literal from another literal.
-    Literal(Literal<fields_...>&& _other) noexcept : value_(_other.value_) {}
+    Literal(Literal<fields_...>&& _other) noexcept = default;
 
     /// A single-field literal is special because it
     /// can also have a default constructor.
@@ -48,20 +48,18 @@ class Literal {
     ~Literal() = default;
 
     /// Determines whether the literal contains the string.
-    inline static bool contains(const std::string& _str) {
-        return has_value(_str);
-    }
+    static bool contains(const std::string& _str) { return has_value(_str); }
 
     /// Determines whether the literal contains the string at compile time.
     template <internal::StringLiteral _name>
-    inline static constexpr bool contains() {
+    static constexpr bool contains() {
         return find_value_of<_name>() != -1;
     }
 
     /// Determines whether the literal contains any of the strings in the other
     /// literal at compile time.
     template <class OtherLiteralType, int _i = 0>
-    inline static constexpr bool contains_any() {
+    static constexpr bool contains_any() {
         if constexpr (_i == num_fields_) {
             return false;
         } else {
@@ -74,7 +72,7 @@ class Literal {
     /// Determines whether the literal contains all of the strings in the other
     /// literal at compile time.
     template <class OtherLiteralType, int _i = 0, int _n_found = 0>
-    inline static constexpr bool contains_all() {
+    static constexpr bool contains_all() {
         if constexpr (_i == num_fields_) {
             return _n_found == OtherLiteralType::num_fields_;
         } else {
@@ -89,9 +87,7 @@ class Literal {
 
     /// Determines whether the literal has duplicate strings at compile time.
     /// These is useful for checking collections of strings in other contexts.
-    inline static constexpr bool has_duplicates() {
-        return has_duplicate_strings();
-    }
+    static constexpr bool has_duplicates() { return has_duplicate_strings(); }
 
     /// Constructs a Literal from a string. Returns an error if the string
     /// cannot be found.
@@ -113,26 +109,17 @@ class Literal {
 
     /// Helper function to retrieve a name at compile time.
     template <int _value>
-    inline constexpr static auto name_of() {
+    constexpr static auto name_of() {
         constexpr auto name = find_name_within_own_fields<_value>();
         return Literal<name>();
     }
 
     /// Assigns from another literal.
-    Literal<fields_...>& operator=(const Literal<fields_...>& _other) {
-        if (this != &_other) {
-            value_ = _other.value_;
-        }
-        return *this;
-    }
+    Literal<fields_...>& operator=(const Literal<fields_...>& _other) = default;
 
     /// Assigns from another literal.
-    Literal<fields_...>& operator=(Literal<fields_...>&& _other) noexcept {
-        if (this != &_other) {
-            value_ = _other.value_;
-        }
-        return *this;
-    }
+    Literal<fields_...>& operator=(Literal<fields_...>&& _other) noexcept =
+        default;
 
     /// Assigns the literal from a string
     Literal<fields_...>& operator=(const std::string& _str) {
@@ -141,37 +128,33 @@ class Literal {
     }
 
     /// Equality operator other Literals.
-    inline bool operator==(const Literal<fields_...>& _other) const {
+    bool operator==(const Literal<fields_...>& _other) const {
         return value() == _other.value();
     }
 
     /// Equality operator other Literals with different fields.
     template <internal::StringLiteral... other_fields>
-    inline bool operator==(const Literal<other_fields...>& _other) const {
+    bool operator==(const Literal<other_fields...>& _other) const {
         return name() == _other.name();
     }
 
     /// Inequality operator for other Literals.
     template <internal::StringLiteral... other_fields>
-    inline bool operator!=(const Literal<other_fields...>& _other) const {
+    bool operator!=(const Literal<other_fields...>& _other) const {
         return !(*this == _other);
     }
 
     /// Equality operator for strings.
-    inline bool operator==(const std::string& _str) const {
-        return name() == _str;
-    }
+    bool operator==(const std::string& _str) const { return name() == _str; }
 
     /// Inequality operator for strings.
-    inline bool operator!=(const std::string& _str) const {
-        return name() != _str;
-    }
+    bool operator!=(const std::string& _str) const { return name() != _str; }
 
     /// Alias for .name().
     std::string str() const { return name(); }
 
     /// Returns the value actually contained in the Literal.
-    inline ValueType value() const { return value_; }
+    ValueType value() const { return value_; }
 
     /// Returns the value of the string literal in the template.
     template <internal::StringLiteral _name>
@@ -187,7 +170,7 @@ class Literal {
 
     /// Returns all of the allowed fields.
     template <int _i = 0>
-    inline static std::string allowed_strings(const std::string& _values = "") {
+    static std::string allowed_strings(const std::string& _values = "") {
         using FieldType = typename std::tuple_element<_i, FieldsType>::type;
         const auto head = "'" + FieldType::field_.str() + "'";
         const auto values = _values.size() == 0 ? head : _values + ", " + head;
@@ -200,7 +183,7 @@ class Literal {
 
     /// Whether the Literal contains duplicate strings.
     template <int _i = 1>
-    inline constexpr static bool has_duplicate_strings() {
+    constexpr static bool has_duplicate_strings() {
         if constexpr (_i >= num_fields_) {
             return false;
         } else {
@@ -209,7 +192,7 @@ class Literal {
     }
 
     template <int _i, int _j = _i - 1>
-    inline constexpr static bool is_duplicate() {
+    constexpr static bool is_duplicate() {
         using FieldType1 = typename std::tuple_element<_i, FieldsType>::type;
         using FieldType2 = typename std::tuple_element<_j, FieldsType>::type;
         if constexpr (FieldType1::field_ == FieldType2::field_) {
@@ -239,7 +222,7 @@ class Literal {
     /// Finds the correct index associated with
     /// the string at compile time within the Literal's own fields.
     template <int _i>
-    inline constexpr static auto find_name_within_own_fields() {
+    constexpr static auto find_name_within_own_fields() {
         using FieldType = typename std::tuple_element<_i, FieldsType>::type;
         return FieldType::field_;
     }
@@ -247,7 +230,7 @@ class Literal {
     /// Finds the correct value associated with
     /// the string at run time.
     template <int _i = 0>
-    inline static Result<int> find_value(const std::string& _str) {
+    static Result<int> find_value(const std::string& _str) {
         using FieldType = typename std::tuple_element<_i, FieldsType>::type;
         if (FieldType::field_.str() == _str) {
             return _i;
@@ -276,7 +259,7 @@ class Literal {
 
     /// Whether the literal contains this string.
     template <int _i = 0>
-    inline static bool has_value(const std::string& _str) {
+    static bool has_value(const std::string& _str) {
         using FieldType = typename std::tuple_element<_i, FieldsType>::type;
         if (FieldType::field_.str() == _str) {
             return true;

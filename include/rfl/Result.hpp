@@ -47,6 +47,14 @@ class Result {
 
     template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
                                                bool>::type = true>
+    Result(Result<U>&& _other)
+        : t_or_err_(
+              std::forward<Result<U>>(_other)
+                  .transform([](U&& _u) { return T(std::forward<U>(_u)); })
+                  .t_or_err_) {}
+
+    template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
+                                               bool>::type = true>
     Result(const Result<U>& _other)
         : t_or_err_(
               _other.transform([](const U& _u) { return T(_u); }).t_or_err_) {}
@@ -144,7 +152,7 @@ class Result {
     /// them within a std::range.
     const T* end() const noexcept {
         const auto get_ptr =
-            [this]<class TOrError>(const TOrError& _t_or_err) -> const T* {
+            []<class TOrError>(const TOrError& _t_or_err) -> const T* {
             if constexpr (!std::is_same<TOrError, Error>()) {
                 return &_t_or_err + 1;
             } else {
@@ -158,7 +166,7 @@ class Result {
     /// or std::nullopt otherwise.
     std::optional<Error> error() const noexcept {
         const auto get_err =
-            [this]<class TOrError>(
+            []<class TOrError>(
                 const TOrError& _t_or_err) -> std::optional<Error> {
             if constexpr (!std::is_same<TOrError, Error>()) {
                 return std::nullopt;
@@ -183,25 +191,15 @@ class Result {
     const T& operator*() const { return *std::get_if<T>(&t_or_err_); }
 
     /// Assigns the underlying object.
-    inline Result<T>& operator=(const Result<T>& _other) {
-        if (this != &_other) {
-            t_or_err_ = _other.t_or_err_;
-        }
-        return *this;
-    }
+    Result<T>& operator=(const Result<T>& _other) = default;
 
     /// Assigns the underlying object.
-    inline Result<T>& operator=(Result<T>&& _other) {
-        if (this != &_other) {
-            t_or_err_ = std::move(_other.t_or_err_);
-        }
-        return *this;
-    }
+    Result<T>& operator=(Result<T>&& _other) = default;
 
     /// Assigns the underlying object.
     template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
                                                bool>::type = true>
-    inline auto& operator=(const Result<U>& _other) {
+    auto& operator=(const Result<U>& _other) {
         const auto to_t = [](const U& _u) -> T { return _u; };
         t_or_err_ = _other.transform(to_t).t_or_err_;
         return *this;
@@ -213,10 +211,10 @@ class Result {
     Result<T> or_else(const F& _f) {
         const auto handle_variant =
             [&]<class TOrError>(TOrError&& _t_or_err) -> Result<T> {
-            if constexpr (std::is_same<TOrError, Error>()) {
-                return _f(std::forward<TOrError>(_t_or_err));
+            if constexpr (std::is_same<std::decay_t<TOrError>, Error>()) {
+                return _f(std::forward<Error>(_t_or_err));
             } else {
-                return std::forward<TOrError>(_t_or_err);
+                return std::forward<T>(_t_or_err);
             }
         };
         return std::visit(handle_variant,
@@ -284,11 +282,11 @@ class Result {
 
     /// Returns the value if the result does not contain an error, throws an
     /// exceptions if not. Similar to .unwrap() in Rust.
-    T& value() {
+    T value() {
         const auto handle_variant =
-            [&]<class TOrError>(TOrError& _t_or_err) -> T& {
+            [&]<class TOrError>(TOrError& _t_or_err) -> T {
             if constexpr (!std::is_same<TOrError, Error>()) {
-                return _t_or_err;
+                return std::forward<T>(_t_or_err);
             } else {
                 throw std::runtime_error(_t_or_err.what());
             }
@@ -305,6 +303,19 @@ class Result {
                 return _t_or_err;
             } else {
                 throw std::runtime_error(_t_or_err.what());
+            }
+        };
+        return std::visit(handle_variant, t_or_err_);
+    }
+
+    /// Returns the value or a default.
+    T value_or(const T& _default) noexcept {
+        const auto handle_variant =
+            [&]<class TOrError>(const TOrError& _t_or_err) -> T {
+            if constexpr (!std::is_same<TOrError, Error>()) {
+                return std::forward<T>(_t_or_err);
+            } else {
+                return _default;
             }
         };
         return std::visit(handle_variant, t_or_err_);

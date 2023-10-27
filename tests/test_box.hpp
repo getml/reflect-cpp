@@ -32,10 +32,10 @@ void test_box() {
 
     auto leaf2 = DecisionTree::Leaf{.value = 5.0};
 
-    auto node =
-        DecisionTree::Node{.critical_value = 10.0,
-                           .lesser = rfl::make_box<DecisionTree>(leaf1),
-                           .greater = rfl::make_box<DecisionTree>(leaf2)};
+    auto node = DecisionTree::Node{
+        .critical_value = 10.0,
+        .lesser = rfl::make_box<DecisionTree>(DecisionTree{leaf1}),
+        .greater = rfl::make_box<DecisionTree>(DecisionTree{leaf2})};
 
     const DecisionTree tree{.leaf_or_node = std::move(node)};
 

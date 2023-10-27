@@ -3,8 +3,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![Generic badge](https://img.shields.io/badge/C++-20-blue.svg)](https://shields.io/)
-[![Generic badge](https://img.shields.io/badge/gcc-10+-blue.svg)](https://shields.io/)
-[![Generic badge](https://img.shields.io/badge/clang-TODO-red.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/gcc-11+-blue.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/clang-14+-blue.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/MSVC-TODO-red.svg)](https://shields.io/)
 
 ![image](banner1.png)
@@ -19,7 +19,7 @@ Design principles for reflect-cpp include:
 
 - Close integration with containers from the C++ standard library
 - Close adherence to C++ idioms
-- Out-of-the-box support for JSON, no dependencies
+- Out-of-the-box support for JSON
 - Simple installation: If no JSON support is required, reflect-cpp is header-only. For JSON support, only a single source file needs to be compiled.
 - Simple extendability to other serialization formats
 - Simple extendability to custom classes
@@ -92,6 +92,23 @@ std::cout << "Hello, my name is " << homer2.first_name() << " "
           << homer2.last_name() << "." << std::endl;
 ```
 
+reflect-cpp returns clear and comprehensive error messages:
+
+```cpp
+const std::string faulty_json_string =
+    R"({"firstName":"Homer","lastName":12345,"birthday":"04/19/1987"})";
+const auto result = rfl::json::read<Person>(faulty_json_string);
+```
+
+Yields the following error message:
+
+```
+Found 3 errors:
+1) Failed to parse field 'lastName': Could not cast to string.
+2) Failed to parse field 'birthday': String '04/19/1987' did not match format '%Y-%m-%d'.
+3) Field named 'children' not found.
+```
+
 ## Support for containers
 
 ### C++ standard library
@@ -101,7 +118,9 @@ reflect-cpp supports the following containers from the C++ standard library:
 - `std::array` 
 - `std::deque` 
 - `std::forward_list` 
-- `std::map` 
+- `std::map`
+- `std::multimap`
+- `std::multiset`
 - `std::list` 
 - `std::optional`
 - `std::pair`
@@ -110,7 +129,9 @@ reflect-cpp supports the following containers from the C++ standard library:
 - `std::string`
 - `std::tuple`
 - `std::unique_ptr` 
-- `std::unordered_map` 
+- `std::unordered_map`
+- `std::unordered_multimap`
+- `std::unordered_multiset`
 - `std::unordered_set` 
 - `std::variant`
 - `std::vector`
@@ -149,9 +170,14 @@ At the moment, this is work-in-progress. Here are some things that are still mis
 
 - Benchmarks and optimization
 - Documentation is unfinished (missing rfl::Result, rfl::NamedTuple as well as extension to other serialization formats)
-- Support for Clang and MSVC
+- Support for MSVC
 
 ## Installation
+
+The following compilers are supported:
+- GCC 11.4 or higher
+- Clang 14.0 or higher
+- MSVC (TODO)
 
 ### Option 1: Header-only
 

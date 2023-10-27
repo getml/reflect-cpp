@@ -15,7 +15,7 @@ template <class ReaderType, class WriterType, class OriginalClass,
           class HelperStruct>
 struct CustomParser {
     static Result<OriginalClass> read(const ReaderType& _r,
-                                      auto* _var) noexcept {
+                                      const auto& _var) noexcept {
         const auto to_class = [](auto&& _h) -> Result<OriginalClass> {
             try {
                 if constexpr (internal::has_to_class_method_v<HelperStruct>) {
