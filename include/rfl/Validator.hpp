@@ -30,20 +30,31 @@ struct Annotate {
   using ReflectionType = _Type;
   ReflectionType value;
 
-  // template <typename T>
-  // Annotate(T _value) : value(static_cast<_Type>(_value)) {
-  //   std::optional<rfl::Error> validate_check = Class::validate(value);
-  //   if (!validate_check.has_value()) {
-  //     throw std::runtime_error(validate_check.value().what());
-  //   }
-  // };
-  //
-  Annotate(ReflectionType _value) : value(_value) {
+  template <class T, 
+  std::enable_if_t<std::is_convertible_v<T, _Type>, bool> = true > 
+  Annotate(const T& _value) : value(_value) {
     std::optional<rfl::Error> validate_check = Class::validate(value);
-    if (!validate_check.has_value()) {
+    if (validate_check.has_value()) {
+      throw std::runtime_error(validate_check.value().what());
+    }
+  };
+
+  template <class T, 
+  std::enable_if_t<std::is_convertible_v<T, _Type>, bool> = true > 
+  Annotate(T&& _value) : value(std::forward<T>(_value)) {
+    std::optional<rfl::Error> validate_check = Class::validate(value);
+    if (validate_check.has_value()) {
       throw std::runtime_error(validate_check.value().what());
     }
   }
+
+  Annotate(ReflectionType _value) : value(_value) {
+    std::optional<rfl::Error> validate_check = Class::validate(value);
+    if (validate_check.has_value()) {
+      throw std::runtime_error(validate_check.value().what());
+    }
+  }
+  
 };
 
 template <typename T>
@@ -101,12 +112,6 @@ struct Pattern {
     return std::nullopt;
   }
 };
-
-Annotate<std::string, Pattern<"R(\d)">> a("hello");
-Annotate<std::string, Length<1, 2>> b("hello");
-Annotate<int, Length<1, 2>> c(2);
-Annotate<uint16_t, Length<1, 2>> d(2);
-Annotate<std::vector<int>, Length<1,2>> e({1,2});
 
 }  // namespace rfl
 //
