@@ -32,6 +32,10 @@
 #include "test_unique_ptr.hpp"
 #include "test_unique_ptr2.hpp"
 #include "test_constr.hpp"
+#include "test_unordered_map.hpp"
+#include "test_unordered_set.hpp"
+#include "test_unordered_multimap.hpp"
+#include "test_unordered_multiset.hpp"
 #include "test_variant.hpp"
 
 int main() {
