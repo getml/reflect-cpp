@@ -13,8 +13,8 @@ namespace internal {
 /// for the parameters names in the NamedTuples.
 template <size_t N>
 struct StringLiteral {
-    constexpr StringLiteral(const char (&str)[N]) {
-        std::copy_n(str, N, value_);
+    constexpr StringLiteral(const char (&_str)[N]) {
+        std::copy_n(_str, N, value_);
     }
 
     char value_[N];
