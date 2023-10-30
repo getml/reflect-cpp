@@ -33,6 +33,7 @@
 #include "rfl/internal/all_fields.hpp"
 #include "rfl/internal/has_reflection_method_v.hpp"
 #include "rfl/internal/has_reflection_type_v.hpp"
+#include "rfl/internal/is_basic_type.hpp"
 #include "rfl/internal/no_duplicate_field_names.hpp"
 #include "rfl/internal/to_ptr_named_tuple.hpp"
 #include "rfl/named_tuple_t.hpp"
@@ -77,8 +78,7 @@ struct Parser {
                 };
                 return Parser<R, W, ReflectionType>::read(_r, _var).and_then(
                     wrap_in_t);
-            } else if constexpr (std::is_class_v<T> &&
-                                 !std::is_same<T, std::string>()) {
+            } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
                 using NamedTupleType = named_tuple_t<T>;
                 const auto to_struct = [](NamedTupleType&& _n) -> Result<T> {
                     try {
@@ -89,8 +89,14 @@ struct Parser {
                 };
                 return Parser<R, W, NamedTupleType>::read(_r, _var).and_then(
                     to_struct);
-            } else {
+            } else if constexpr (internal::is_basic_type_v<T>) {
                 return _r.template to_basic_type<std::decay_t<T>>(_var);
+            } else {
+                static_assert(
+                    always_false_v<T>,
+                    "Unsupported type. Please refer to the sections on custom "
+                    "classes and custom parsers for information on how add "
+                    "support for your own classes.");
             }
         }
     }
@@ -111,8 +117,14 @@ struct Parser {
             const auto ptr_named_tuple = internal::to_ptr_named_tuple(_var);
             using PtrNamedTupleType = std::decay_t<decltype(ptr_named_tuple)>;
             return Parser<R, W, PtrNamedTupleType>::write(_w, ptr_named_tuple);
-        } else {
+        } else if constexpr (internal::is_basic_type_v<T>) {
             return _w.from_basic_type(_var);
+        } else {
+            static_assert(
+                always_false_v<T>,
+                "Unsupported type. Please refer to the sections on custom "
+                "classes and custom parsers for information on how add "
+                "support for your own classes.");
         }
     }
 };
@@ -125,11 +137,12 @@ struct Parser<R, W, T*> {
 
     /// Expresses the variables as type T.
     static Result<T*> read(const R& _r, const InputVarType& _var) noexcept {
-        static_assert(
-            always_false_v<T>,
-            "Reading into raw pointers is dangerous and therefore unsupported. "
-            "Please consider using std::unique_ptr, rfl::Box, std::shared_ptr, "
-            "rfl::Ref or std::optional instead.");
+        static_assert(always_false_v<T>,
+                      "Reading into raw pointers is dangerous and "
+                      "therefore unsupported. "
+                      "Please consider using std::unique_ptr, rfl::Box, "
+                      "std::shared_ptr, "
+                      "rfl::Ref or std::optional instead.");
         return Error("Unsupported.");
     }
 
@@ -269,8 +282,8 @@ struct Parser<R, W, Literal<_fields...>> {
 
 // ----------------------------------------------------------------------------
 
-/// Used for maps for which the key type is std::string. These are represented
-/// as objects.
+/// Used for maps for which the key type is std::string. These are
+/// represented as objects.
 template <class R, class W, class MapType>
 requires AreReaderAndWriter<R, W, MapType>
 struct MapParser {
