@@ -60,7 +60,7 @@ class Timestamp {
     }
 
     /// Expresses the underlying timestamp as a string.
-    std::string str() const { return reflection; }
+    std::string str() const { return reflection(); }
 
     /// Trivial accessor to the underlying time stamp.
     std::tm& tm() { return tm_; }
