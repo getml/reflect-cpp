@@ -33,11 +33,15 @@ class Literal {
     /// can assume.
     static constexpr ValueType num_fields_ = sizeof...(fields_);
 
+    using ReflectionType = std::string;
+
     /// Constructs a Literal from another literal.
     Literal(const Literal<fields_...>& _other) = default;
 
     /// Constructs a Literal from another literal.
     Literal(Literal<fields_...>&& _other) noexcept = default;
+
+    Literal(const std::string& _str) : value_(find_value(_str).value()) {}
 
     /// A single-field literal is special because it
     /// can also have a default constructor.
@@ -149,6 +153,9 @@ class Literal {
 
     /// Inequality operator for strings.
     bool operator!=(const std::string& _str) const { return name() != _str; }
+
+    /// Alias for .name().
+    std::string reflection() const { return name(); }
 
     /// Alias for .name().
     std::string str() const { return name(); }

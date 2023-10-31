@@ -251,37 +251,6 @@ struct Parser<R, W, Box<T>> {
 
 // ----------------------------------------------------------------------------
 
-template <class R, class W, internal::StringLiteral... _fields>
-requires AreReaderAndWriter<R, W, Literal<_fields...>>
-struct Parser<R, W, Literal<_fields...>> {
-    using InputVarType = typename R::InputVarType;
-    using OutputVarType = typename W::OutputVarType;
-
-    /// Expresses the variables as type T.
-    static Result<Literal<_fields...>> read(const R& _r,
-                                            const InputVarType& _var) noexcept {
-        const auto to_type = [](const auto& _str) {
-            return Literal<_fields...>::from_string(_str);
-        };
-
-        const auto embellish_error = [](const Error& _e) {
-            return Error(std::string("Failed to parse Literal: ") + _e.what());
-        };
-
-        return _r.template to_basic_type<std::string>(_var)
-            .and_then(to_type)
-            .or_else(embellish_error);
-    }
-
-    /// Expresses the variable a a JSON.
-    static OutputVarType write(const W& _w,
-                               const Literal<_fields...>& _literal) noexcept {
-        return _w.from_basic_type(_literal.name());
-    }
-};
-
-// ----------------------------------------------------------------------------
-
 /// Used for maps for which the key type is std::string. These are
 /// represented as objects.
 template <class R, class W, class MapType>
