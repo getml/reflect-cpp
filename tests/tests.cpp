@@ -1,3 +1,4 @@
+#include "test_all_of.hpp"
 #include "test_array.hpp"
 #include "test_as.hpp"
 #include "test_as_flatten.hpp"
@@ -66,6 +67,7 @@ int main() {
     test_string_map();
     test_string_unordered_map();
     test_error_messages();
+    test_all_of();
 
     test_custom_class1();
     test_custom_class2();

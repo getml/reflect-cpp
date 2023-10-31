@@ -2,6 +2,7 @@
 #define RFL_RFL_HPP_
 
 #include "rfl/Box.hpp"
+#include "rfl/Constrained.hpp"
 #include "rfl/Field.hpp"
 #include "rfl/Flatten.hpp"
 #include "rfl/Literal.hpp"
@@ -11,6 +12,7 @@
 #include "rfl/Timestamp.hpp"
 #include "rfl/always_false.hpp"
 #include "rfl/as.hpp"
+#include "rfl/constraints.hpp"
 #include "rfl/default.hpp"
 #include "rfl/define_literal.hpp"
 #include "rfl/define_named_tuple.hpp"
