@@ -1,4 +1,5 @@
 #include "test_all_of.hpp"
+#include "test_any_of.hpp"
 #include "test_array.hpp"
 #include "test_as.hpp"
 #include "test_as_flatten.hpp"
@@ -32,57 +33,59 @@
 #include "test_timestamp.hpp"
 #include "test_unique_ptr.hpp"
 #include "test_unique_ptr2.hpp"
-#include "test_constr.hpp"
+//#include "test_constr.hpp"
 #include "test_unordered_map.hpp"
-#include "test_unordered_set.hpp"
 #include "test_unordered_multimap.hpp"
 #include "test_unordered_multiset.hpp"
+#include "test_unordered_set.hpp"
 #include "test_variant.hpp"
 
 int main() {
-    test_readme_example();
-    test_default_values();
-    test_optional_fields();
-    test_unique_ptr();
-    test_unique_ptr2();
-    test_literal();
-    test_variant();
-    test_tagged_union();
-    test_field_variant();
-    test_ref();
-    test_box();
-    test_array();
-    test_timestamp();
-    test_flatten();
-    test_deque();
-    test_forward_list();
-    test_list();
-    test_map();
-    test_unordered_map();
-    test_set();
-    test_unordered_set();
-    test_multimap();
-    test_unordered_multimap();
-    test_multiset();
-    test_unordered_multiset();
-    test_string_map();
-    test_string_unordered_map();
-    test_error_messages();
-    test_all_of();
+  test_readme_example();
+  test_default_values();
+  test_optional_fields();
+  test_unique_ptr();
+  test_unique_ptr2();
+  test_literal();
+  test_variant();
+  test_tagged_union();
+  test_field_variant();
+  test_ref();
+  test_box();
+  test_array();
+  test_timestamp();
+  test_flatten();
+  test_deque();
+  test_forward_list();
+  test_list();
+  test_map();
+  test_unordered_map();
+  test_set();
+  test_unordered_set();
+  test_multimap();
+  test_unordered_multimap();
+  test_multiset();
+  test_unordered_multiset();
+  test_string_map();
+  test_string_unordered_map();
+  test_error_messages();
 
-    test_custom_class1();
-    test_custom_class2();
-    test_custom_class3();
-    test_custom_class4();
+  test_custom_class1();
+  test_custom_class2();
+  test_custom_class3();
+  test_custom_class4();
 
-    test_replace();
-    test_replace_flatten();
-    test_replace_with_other_struct();
-    test_as();
-    test_as_flatten();
-    test_constr();
+  test_replace();
+  test_replace_flatten();
+  test_replace_with_other_struct();
+  test_as();
+  test_as_flatten();
 
-    test_custom_constructor();
+  test_custom_constructor();
 
-    return 0;
+  test_all_of();
+  test_any_of();
+  // test_constr();
+
+  return 0;
 }

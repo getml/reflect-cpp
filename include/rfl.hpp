@@ -1,8 +1,10 @@
 #ifndef RFL_RFL_HPP_
 #define RFL_RFL_HPP_
 
+#include "rfl/AllOf.hpp"
+#include "rfl/AnyOf.hpp"
 #include "rfl/Box.hpp"
-#include "rfl/Constrained.hpp"
+#include "rfl/ConStr.hpp"
 #include "rfl/Field.hpp"
 #include "rfl/Flatten.hpp"
 #include "rfl/Literal.hpp"
@@ -10,9 +12,10 @@
 #include "rfl/Ref.hpp"
 #include "rfl/TaggedUnion.hpp"
 #include "rfl/Timestamp.hpp"
+#include "rfl/Validator.hpp"
 #include "rfl/always_false.hpp"
 #include "rfl/as.hpp"
-#include "rfl/constraints.hpp"
+#include "rfl/comparisons.hpp"
 #include "rfl/default.hpp"
 #include "rfl/define_literal.hpp"
 #include "rfl/define_named_tuple.hpp"
@@ -30,7 +33,5 @@
 #include "rfl/replace.hpp"
 #include "rfl/to_named_tuple.hpp"
 #include "rfl/visit.hpp"
-#include "rfl/ConStr.hpp"
-#include "rfl/Validator.hpp"
 
 #endif

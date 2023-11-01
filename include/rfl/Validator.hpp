@@ -7,63 +7,36 @@
 #include <string>
 #include <type_traits>
 
+#include "internal/HasValidation.hpp"
 #include "internal/StringLiteral.hpp"
 #include "rfl/Result.hpp"
 
 namespace rfl {
 
-template <class Class, typename Type>
-concept HasValidation = requires(Class obj, Type value) {
-  { Class::validate(value) } -> std::same_as<std::optional<rfl::Error>>;
-};
-
-template <typename _Type>
-concept HasDescription = requires(_Type obj) {
-  { obj.description } -> std::same_as<std::optional<rfl::Error>>;
-};
-
-
-template <typename _Type, class Class>
-requires HasValidation<Class, _Type>
-struct Annotate {
+template <class T, class V>
+requires internal::HasValidation<V, T>
+struct Validator {
  public:
-  using ReflectionType = _Type;
-  ReflectionType value;
+  using ReflectionType = T;
 
-  template <class T, 
-  std::enable_if_t<std::is_convertible_v<T, _Type>, bool> = true > 
-  Annotate(const T& _value) : value(_value) {
-    std::optional<rfl::Error> validate_check = Class::validate(value);
-    if (validate_check.has_value()) {
-      throw std::runtime_error(validate_check.value().what());
-    }
-  };
+  Validator(const T& _value) : value_(V::validate(_value).value()) {}
 
-  template <class T, 
-  std::enable_if_t<std::is_convertible_v<T, _Type>, bool> = true > 
-  Annotate(T&& _value) : value(std::forward<T>(_value)) {
-    std::optional<rfl::Error> validate_check = Class::validate(value);
-    if (validate_check.has_value()) {
-      throw std::runtime_error(validate_check.value().what());
-    }
-  }
+  ~Validator() = default;
 
-  Annotate(ReflectionType _value) : value(_value) {
-    std::optional<rfl::Error> validate_check = Class::validate(value);
-    if (validate_check.has_value()) {
-      throw std::runtime_error(validate_check.value().what());
-    }
-  }
-  
+  /// Exposes the underlying value.
+  T& value() { return value_; }
+
+  /// Exposes the underlying value.
+  T value() const { return value_; }
+
+  /// Necessary for the serialization to work.
+  T reflection() const { return value_; }
+
+ private:
+  /// The underlying value.
+  T value_;
 };
-
-template <typename T>
-std::string to_string(const T& _value) {
-  std::ostringstream oss;
-  oss << _value;
-  return oss.str();
-}
-
+/*
 template <typename T>
 concept HasSize = requires(T obj) {
   { obj.size() } -> std::same_as<size_t>;
@@ -111,8 +84,8 @@ struct Pattern {
     }
     return std::nullopt;
   }
-};
+};*/
 
 }  // namespace rfl
-//
+
 #endif
