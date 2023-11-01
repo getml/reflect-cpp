@@ -30,5 +30,7 @@
 #include "rfl/replace.hpp"
 #include "rfl/to_named_tuple.hpp"
 #include "rfl/visit.hpp"
+#include "rfl/ConStr.hpp"
+#include "rfl/Validator.hpp"
 
 #endif
