@@ -181,7 +181,7 @@ The following compilers are supported:
 
 ### Option 1: Header-only
 
-If you **do not** need JSON support, then reflect-cpp is header-only. Simply copy the contents of the folder `include` into your source repository or add it to your include path.
+If you **do not** need JSON support or you want to link YYJSON yourself, then reflect-cpp is header-only. Simply copy the contents of the folder `include` into your source repository or add it to your include path.
 
 ### Option 2: Include source files into your own build
 
