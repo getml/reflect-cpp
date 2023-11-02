@@ -21,6 +21,15 @@ struct Validator {
 
   Validator(const T& _value) : value_(V::validate(_value).value()) {}
 
+  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
+                                             bool>::type = true>
+  Validator(const U& _value) : value_(V::validate(T(_value)).value()) {}
+
+  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
+                                             bool>::type = true>
+  Validator(U&& _value)
+      : value_(V::validate(T(std::forward<U>(_value))).value()) {}
+
   ~Validator() = default;
 
   /// Exposes the underlying value.
