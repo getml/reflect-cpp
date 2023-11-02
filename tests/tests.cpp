@@ -34,6 +34,7 @@
 #include "test_unique_ptr.hpp"
 #include "test_unique_ptr2.hpp"
 //#include "test_constr.hpp"
+#include "test_one_of.hpp"
 #include "test_unordered_map.hpp"
 #include "test_unordered_multimap.hpp"
 #include "test_unordered_multiset.hpp"
@@ -85,6 +86,7 @@ int main() {
 
   test_all_of();
   test_any_of();
+  test_one_of();
   // test_constr();
 
   return 0;
