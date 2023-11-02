@@ -11,8 +11,9 @@ struct EqualTo {
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
     if (_value != threshold) {
-      return Error("Value expected to be equal to" + std::to_string(threshold) +
-                   ", but got " + std::to_string(_value) + ".");
+      return Error("Value expected to be equal to " +
+                   std::to_string(threshold) + ", but got " +
+                   std::to_string(_value) + ".");
     }
     return _value;
   }
@@ -24,7 +25,7 @@ struct Minimum {
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
     if (_value < threshold) {
-      return Error("Value expected to be greater than or equal to" +
+      return Error("Value expected to be greater than or equal to " +
                    std::to_string(threshold) + ", but got " +
                    std::to_string(_value) + ".");
     }
@@ -52,7 +53,7 @@ struct Maximum {
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
     if (_value > threshold) {
-      return Error("Value expected to be less than or equal to" +
+      return Error("Value expected to be less than or equal to " +
                    std::to_string(threshold) + ", but got " +
                    std::to_string(_value) + ".");
     }
@@ -80,7 +81,7 @@ struct NotEqualTo {
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
     if (_value == threshold) {
-      return Error("Value expected to not be equal to" +
+      return Error("Value expected to not be equal to " +
                    std::to_string(threshold) + ", but got " +
                    std::to_string(_value) + ".");
     }
