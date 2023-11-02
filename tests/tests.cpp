@@ -11,6 +11,7 @@
 #include "test_custom_constructor.hpp"
 #include "test_default_values.hpp"
 #include "test_deque.hpp"
+#include "test_email.hpp"
 #include "test_error_messages.hpp"
 #include "test_field_variant.hpp"
 #include "test_flatten.hpp"
@@ -20,6 +21,7 @@
 #include "test_map.hpp"
 #include "test_multimap.hpp"
 #include "test_multiset.hpp"
+#include "test_one_of.hpp"
 #include "test_optional_fields.hpp"
 #include "test_readme_example.hpp"
 #include "test_ref.hpp"
@@ -27,15 +29,13 @@
 #include "test_replace_flatten.hpp"
 #include "test_replace_with_other_struct.hpp"
 #include "test_set.hpp"
+#include "test_size.hpp"
 #include "test_string_map.hpp"
 #include "test_string_unordered_map.hpp"
 #include "test_tagged_union.hpp"
 #include "test_timestamp.hpp"
 #include "test_unique_ptr.hpp"
 #include "test_unique_ptr2.hpp"
-//#include "test_constr.hpp"
-#include "test_email.hpp"
-#include "test_one_of.hpp"
 #include "test_unordered_map.hpp"
 #include "test_unordered_multimap.hpp"
 #include "test_unordered_multiset.hpp"
@@ -89,6 +89,7 @@ int main() {
   test_any_of();
   test_one_of();
   test_email();
+  test_size();
 
   return 0;
 }

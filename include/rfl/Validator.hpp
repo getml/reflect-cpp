@@ -19,6 +19,8 @@ struct Validator {
  public:
   using ReflectionType = T;
 
+  Validator() : value_(V::validate(T()).value()) {}
+
   Validator(const T& _value) : value_(V::validate(_value).value()) {}
 
   template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
@@ -45,55 +47,6 @@ struct Validator {
   /// The underlying value.
   T value_;
 };
-/*
-template <typename T>
-concept HasSize = requires(T obj) {
-  { obj.size() } -> std::same_as<size_t>;
-};
-
-template <typename T>
-concept HasIntLength = HasSize<T> || std::is_integral_v<T>;
-
-template <size_t _min_length, size_t _max_length>
-struct Length {
-  static constexpr const auto min_length = _min_length;
-  static constexpr const auto max_length = _max_length;
-
-  template <HasIntLength T>
-  static std::optional<rfl::Error> validate(T _value) {
-    uint16_t size;
-    if constexpr (HasSize<T>) {
-      size = _value.size();
-    } else if (std::is_integral_v<T>) {
-      size = _value;
-    }
-    if (size < _min_length) {
-      return rfl::Error("'" + to_string(_value) +
-                        "' is less than the min length requirement of '" +
-                        std::to_string(_min_length) + "'");
-    }
-    if (size > _max_length) {
-      return rfl::Error("'" + to_string(_value) +
-                        "' exceeds max length requirement of '" +
-                        std::to_string(_max_length) + "'");
-    }
-    return std::nullopt;
-  }
-};
-
-template <internal::StringLiteral _pattern>
-struct Pattern {
-  static constexpr const auto pattern = _pattern;
-
-  static std::optional<rfl::Error> validate(std::string _value) {
-    std::regex regex_pattern(_pattern.str());
-    if (!std::regex_match(_value, regex_pattern)) {
-      return rfl::Error("String '" + _value + "' did not match format '" +
-                        _pattern.str() + "'");
-    }
-    return std::nullopt;
-  }
-};*/
 
 }  // namespace rfl
 

@@ -6,10 +6,11 @@
 
 namespace rfl {
 
-// This pattern will match valid Base64 encoded strings with or without padding.
+/// This pattern will match valid Base64 encoded strings with or without
+/// padding.
 using Base64Encoded = Pattern<R"(^[A-Za-z0-9+/]*(={0,2})?$)", "Base64Encoded">;
 
-/// email
+/// This pattern will match email addresses.
 using Email =
     Pattern<R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)", "Email">;
 

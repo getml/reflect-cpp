@@ -12,6 +12,7 @@
 #include "rfl/Pattern.hpp"
 #include "rfl/PatternValidator.hpp"
 #include "rfl/Ref.hpp"
+#include "rfl/Size.hpp"
 #include "rfl/TaggedUnion.hpp"
 #include "rfl/Timestamp.hpp"
 #include "rfl/Validator.hpp"
