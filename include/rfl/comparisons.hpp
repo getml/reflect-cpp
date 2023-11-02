@@ -19,7 +19,7 @@ struct EqualTo {
 };
 
 template <double _threshold>
-struct GreaterEqual {
+struct Minimum {
   template <class T>
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
@@ -33,7 +33,7 @@ struct GreaterEqual {
 };
 
 template <double _threshold>
-struct GreaterThan {
+struct ExclusiveMinimum {
   template <class T>
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
@@ -47,7 +47,7 @@ struct GreaterThan {
 };
 
 template <double _threshold>
-struct LessEqual {
+struct Maximum {
   template <class T>
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
@@ -61,7 +61,7 @@ struct LessEqual {
 };
 
 template <double _threshold>
-struct LessThan {
+struct ExclusiveMaximum {
   template <class T>
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
