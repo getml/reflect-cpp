@@ -19,6 +19,15 @@ struct Validator {
  public:
   using ReflectionType = T;
 
+  /// Exception-free validation.
+  static Result<Validator<T, V>> from_value(const T& _value) noexcept {
+    try {
+      return Validator<T, V>(_value);
+    } catch (std::exception& e) {
+      return Error(e.what());
+    }
+  }
+
   Validator() : value_(V::validate(T()).value()) {}
 
   Validator(const T& _value) : value_(V::validate(_value).value()) {}
@@ -27,21 +36,38 @@ struct Validator {
                                              bool>::type = true>
   Validator(const U& _value) : value_(V::validate(T(_value)).value()) {}
 
+  ~Validator() = default;
+
+  /// Assigns the underlying object.
+  auto& operator=(const T& _value) {
+    value_ = V::validate(_value).value();
+    return *this;
+  }
+
+  /// Assigns the underlying object.
   template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
                                              bool>::type = true>
-  Validator(U&& _value)
-      : value_(V::validate(T(std::forward<U>(_value))).value()) {}
+  auto& operator=(U&& _value) {
+    value_ = V::validate(T(std::forward<T>(_value))).value();
+    return *this;
+  }
 
-  ~Validator() = default;
+  /// Assigns the underlying object.
+  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
+                                             bool>::type = true>
+  auto& operator=(const U& _value) {
+    value_ = V::validate(T(_value)).value();
+    return *this;
+  }
 
   /// Exposes the underlying value.
   T& value() { return value_; }
 
   /// Exposes the underlying value.
-  T value() const { return value_; }
+  const T& value() const { return value_; }
 
   /// Necessary for the serialization to work.
-  T reflection() const { return value_; }
+  const T& reflection() const { return value_; }
 
  private:
   /// The underlying value.
