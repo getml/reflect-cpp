@@ -111,7 +111,7 @@ reflect-cpp returns clear and comprehensive error messages:
 
 ```cpp
 const std::string faulty_json_string =
-    R"({"firstName":"Homer","lastName":12345,"birthday":"04/19/1987","age":145","email":"homer(at)simpson.com"})";
+    R"({"firstName":"Homer","lastName":12345,"birthday":"04/19/1987","age":145,"email":"homer(at)simpson.com"})";
 const auto result = rfl::json::read<Person>(faulty_json_string);
 ```
 
