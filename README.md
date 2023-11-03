@@ -65,7 +65,7 @@ const auto lisa = Person{
 };
 
 // Returns a deep copy of the original object,
-// replacing first_name.
+// replacing first_name, email and age.
 const auto maggie =
       rfl::replace(lisa, rfl::make_field<"firstName">(std::string("Maggie")),
                    rfl::make_field<"email">(std::string("maggie@simpson.com")),
