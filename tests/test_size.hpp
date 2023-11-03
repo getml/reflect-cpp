@@ -15,10 +15,10 @@ void test_size() {
     rfl::Field<"firstName", std::string> first_name;
     rfl::Field<"lastName", std::string> last_name;
     rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
-    rfl::Field<"children",
-               rfl::Validator<
-                   std::vector<Person>,
-                   rfl::Size<rfl::AnyOf<rfl::EqualTo<0.>, rfl::EqualTo<3.>>>>>
+    rfl::Field<
+        "children",
+        rfl::Validator<std::vector<Person>,
+                       rfl::Size<rfl::AnyOf<rfl::EqualTo<0>, rfl::EqualTo<3>>>>>
         children;
   };
 

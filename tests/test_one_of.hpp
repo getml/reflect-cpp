@@ -11,8 +11,8 @@ void test_one_of() {
 
   using Age = rfl::Validator<
       unsigned int,
-      rfl::OneOf<rfl::AllOf<rfl::Minimum<0.>, rfl::Maximum<10.>>,
-                 rfl::AllOf<rfl::Minimum<40.>, rfl::Maximum<130.>>>>;
+      rfl::OneOf<rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<10>>,
+                 rfl::AllOf<rfl::Minimum<40>, rfl::Maximum<130>>>>;
 
   struct Person {
     rfl::Field<"firstName", std::string> first_name;

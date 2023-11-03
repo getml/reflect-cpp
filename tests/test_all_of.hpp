@@ -10,7 +10,7 @@ void test_all_of() {
   std::cout << "test_all_of" << std::endl;
 
   using Age = rfl::Validator<unsigned int,
-                             rfl::AllOf<rfl::Minimum<0.>, rfl::Maximum<130.>>>;
+                             rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
 
   struct Person {
     rfl::Field<"firstName", std::string> first_name;
