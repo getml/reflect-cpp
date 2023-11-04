@@ -16,3 +16,12 @@ therein will fit the pattern. This is a very strong safeguard against SQL inject
 Note that use also have to give a reasonable name to the pattern. That is, because reflect-cpp emphasizes readable error messages and regex patterns can be somewhat hard to decipher at times.
 
 To retrieve the underlying string, you can use the `.value()` method.
+
+reflect-cpp currently contains the following predefined regex patterns:
+
+- `rfl::Base64Encoded`
+- `rfl::Email`
+- `rfl::UUIDv1`
+- `rfl::UUIDv2`
+- `rfl::UUIDv3`
+- `rfl::UUIDv4`
