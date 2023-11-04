@@ -1,19 +1,22 @@
-# `rfl::Pattern`
+# Validating numbers
 
-`rfl::Pattern` can be used to verify that a string fits a particular pattern, the latter of which is expressed as a regular expression.
-
-A common problem for backend applications or data pipelines is SQL injection. `rfl::Pattern` can be used to limit the allowed characters
-users are able to pass. For instance, for table names, we might only allow uppercase characters and
-underscores:
+reflect-cpp can also be used to impose condition on numbers. For instance, 
+if you want an integer that is greater or equal to 10, you can do the following:
 
 ```cpp
-using TableName = rfl::Pattern<R"(^[A-Z]+(?:_[A-Z]+)*$)", "TableName">;
+using IntGreaterThan10 = rfl::Validator<int, rfl::Minimum<10>>;
 ```
 
-Because the regex is encoded at compile time, you can be certain that whenever you use the type `TableName`, the string contained
-therein will fit the pattern. This is a very strong safeguard against SQL injection.
+When you then use the type `IntGreaterThan10` inside you `rfl::Field`, the condition will be automatically
+validated.
 
-Note that use also have to give a reasonable name to the pattern. That is, because reflect-cpp emphasizes readable error messages and regex patterns can be somewhat hard to decipher at times.
+The underlying value can be retrieved using the `.value()` method.
 
-To retrieve the underlying string, you can use the `.value()` method.
+The current conditions are currently supported by reflect-cpp:
 
+- `rfl::EqualTo`
+- `rfl::NotEqualTo`
+- `rfl::Minimum`
+- `rfl::ExclusiveMinimum`
+- `rfl::Maximum`
+- `rfl::ExclusiveMaximum`
