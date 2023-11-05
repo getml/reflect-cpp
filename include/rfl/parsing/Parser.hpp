@@ -31,6 +31,7 @@
 #include "rfl/from_named_tuple.hpp"
 #include "rfl/internal/StringLiteral.hpp"
 #include "rfl/internal/all_fields.hpp"
+#include "rfl/internal/has_fields.hpp"
 #include "rfl/internal/has_reflection_method_v.hpp"
 #include "rfl/internal/has_reflection_type_v.hpp"
 #include "rfl/internal/is_basic_type.hpp"
@@ -78,15 +79,18 @@ struct Parser {
         };
         return Parser<R, W, ReflectionType>::read(_r, _var).and_then(wrap_in_t);
       } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
-        using NamedTupleType = named_tuple_t<T>;
-        const auto to_struct = [](NamedTupleType&& _n) -> Result<T> {
-          try {
-            return from_named_tuple<T>(std::move(_n));
-          } catch (std::exception& e) {
-            return Error(e.what());
-          }
-        };
-        return Parser<R, W, NamedTupleType>::read(_r, _var).and_then(to_struct);
+        if constexpr (internal::has_fields<T>()) {
+          using NamedTupleType = named_tuple_t<T>;
+          const auto to_struct = [](NamedTupleType&& _n) -> Result<T> {
+            try {
+              return from_named_tuple<T>(std::move(_n));
+            } catch (std::exception& e) {
+              return Error(e.what());
+            }
+          };
+          return Parser<R, W, NamedTupleType>::read(_r, _var).and_then(
+              to_struct);
+        }
       } else if constexpr (internal::is_basic_type_v<T>) {
         return _r.template to_basic_type<std::decay_t<T>>(_var);
       } else {

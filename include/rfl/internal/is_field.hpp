@@ -20,6 +20,12 @@ class is_field : public std::false_type {};
 template <StringLiteral _name, class Type>
 class is_field<Field<_name, Type>> : public std::true_type {};
 
+template <StringLiteral _name, class Type>
+class is_field<Field<_name, Type>*> : public std::true_type {};
+
+template <StringLiteral _name, class Type>
+class is_field<const Field<_name, Type>*> : public std::true_type {};
+
 template <class T>
 constexpr bool is_field_v = is_field<T>::value;
 

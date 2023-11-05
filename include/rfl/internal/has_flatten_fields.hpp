@@ -12,13 +12,12 @@ namespace internal {
 
 template <class TupleType, int _i = 0>
 constexpr bool has_flatten_fields() {
-    if constexpr (_i == std::tuple_size_v<TupleType>) {
-        return false;
-    } else {
-        using T = std::decay_t<std::tuple_element_t<_i, TupleType>>;
-        return is_flatten_field<T>::value ||
-               has_flatten_fields<TupleType, _i + 1>();
-    }
+  if constexpr (_i == std::tuple_size_v<TupleType>) {
+    return false;
+  } else {
+    using T = std::decay_t<std::tuple_element_t<_i, TupleType>>;
+    return is_flatten_field_v<T> || has_flatten_fields<TupleType, _i + 1>();
+  }
 }
 
 }  // namespace internal
