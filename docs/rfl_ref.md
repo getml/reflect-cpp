@@ -107,7 +107,7 @@ struct DecisionTree {
 };
 ```
 
-`rfl::Box` is a thin wrapper around `std::unique_ptr`, but it is guaranteed to **never be null**. It is a `std::unique_ptr` without the `nullptr`.
+`rfl::Box` is a thin wrapper around `std::unique_ptr`, but it is guaranteed to **never be null** (unless you do something egregious such as trying to access it after calling `std::move`). It is a `std::unique_ptr` without the `nullptr`.
 
 If you want to learn more about the evils of null references, check out the 
 [Null References: The Billion Dollar Mistake](https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/)
