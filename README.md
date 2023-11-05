@@ -32,7 +32,7 @@ Design principles for reflect-cpp include:
 
 // Age must be a plausible number, between 0 and 130. This will
 // be validated automatically.
-using Age = rfl::Validator<unsigned int,
+using Age = rfl::Validator<int,
                            rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
 
 // "firstName", "lastName" and "children" are the field names
@@ -157,10 +157,10 @@ reflect-cpp supports the following containers from the C++ standard library:
 
 In addition, it supports the following custom containers:
 
-- `rfl::Box`: Similar to `std::unique_ptr`, but guaranteed to never be null.
+- `rfl::Box`: Similar to `std::unique_ptr`, but (almost) guaranteed to never be null.
 - `rfl::Literal`: An explicitly enumerated string.
 - `rfl::NamedTuple`: Similar to `std::tuple`, but with named fields that can be retrieved via their name at compile time.
-- `rfl::Ref`: Similar to `std::shared_ptr`, but guaranteed to never be null.
+- `rfl::Ref`: Similar to `std::shared_ptr`, but (almost) guaranteed to never be null.
 - `rfl::Result`: Allows for exception-free programming.
 - `rfl::TaggedUnion`: Similar to `std::variant`, but with explicit tags that make parsing more efficient.
 - `rfl::Validator`: Allows for automatic input validation.
