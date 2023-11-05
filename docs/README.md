@@ -20,27 +20,37 @@
 
 1.8) [Standard containers](https://github.com/getml/reflect-cpp/blob/main/docs/standard_containers.md) - Describes how reflect-cpp treats containers in the standard library.
 
-## 2) Custom classes
+## 2) Validation
 
-2.1) [Custom classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_classes.md) - For custom classes with private fields.
+2.1) [Regex patterns](https://github.com/getml/reflect-cpp/blob/main/docs/patterns.md) - For requiring that strings follow used-defined regex patterns.
 
-2.2) [Custom parsers for your classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_parser.md) - For custom classes with private fields that you want to leave absolutely untouched.
+2.2) [Validating numbers](https://github.com/getml/reflect-cpp/blob/main/docs/validating_numbers.md) - For imposing constraints on numbers.
 
-## 3) Useful helper functions and classes
+2.3) [Composing validators](https://github.com/getml/reflect-cpp/blob/main/docs/composing_validators.md) - For defining more complex validators using operators such as `rfl::AllOf` or `rfl::AnyOf`.
 
-3.1) [rfl::replace](https://github.com/getml/reflect-cpp/blob/main/docs/replace.md) - For replacing one or several fields in a struct.
+2.4) [Size validation](https://github.com/getml/reflect-cpp/blob/main/docs/size_validation.md) - For imposing size constraints on containers such as `std::vector` or `std::string`.
 
-3.2) [rfl::as](https://github.com/getml/reflect-cpp/blob/main/docs/as.md) - For casting structs as other structs.
+## 3) Custom classes
 
-3.3) [rfl::NamedTuple](https://github.com/getml/reflect-cpp/blob/main/docs/named_tuple.md) - For structural typing
+3.1) [Custom classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_classes.md) - For custom classes with private fields.
 
-3.4) [rfl::Result](https://github.com/getml/reflect-cpp/blob/main/docs/result.md) - For error handling without exceptions
+3.2) [Custom parsers for your classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_parser.md) - For custom classes with private fields that you want to leave absolutely untouched.
 
-## 4) Supported formats
+## 4) Useful helper functions and classes
 
-4.1) [JSON](https://github.com/getml/reflect-cpp/blob/main/docs/json.md)
+4.1) [rfl::replace](https://github.com/getml/reflect-cpp/blob/main/docs/replace.md) - For replacing one or several fields in a struct.
 
-## 5) Advanced topics
+4.2) [rfl::as](https://github.com/getml/reflect-cpp/blob/main/docs/as.md) - For casting structs as other structs.
 
-5.1) [Supporting your own format](https://github.com/getml/reflect-cpp/blob/main/docs/supporting_your_own_format.md) - For supporting your own serialization and deserialization formats.
+4.3) [rfl::NamedTuple](https://github.com/getml/reflect-cpp/blob/main/docs/named_tuple.md) - For structural typing
+
+4.4) [rfl::Result](https://github.com/getml/reflect-cpp/blob/main/docs/result.md) - For error handling without exceptions
+
+## 5) Supported formats
+
+5.1) [JSON](https://github.com/getml/reflect-cpp/blob/main/docs/json.md)
+
+## 6) Advanced topics
+
+6.1) [Supporting your own format](https://github.com/getml/reflect-cpp/blob/main/docs/supporting_your_own_format.md) - For supporting your own serialization and deserialization formats.
 
