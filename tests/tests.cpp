@@ -28,6 +28,7 @@
 #include "test_replace.hpp"
 #include "test_replace_flatten.hpp"
 #include "test_replace_with_other_struct.hpp"
+#include "test_result.hpp"
 #include "test_set.hpp"
 #include "test_size.hpp"
 #include "test_string_map.hpp"
@@ -71,6 +72,7 @@ int main() {
   test_string_map();
   test_string_unordered_map();
   test_error_messages();
+  test_result();
 
   test_custom_class1();
   test_custom_class2();
