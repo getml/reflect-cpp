@@ -7,7 +7,9 @@
 namespace rfl {
 
 /// The Ref class behaves very similarly to the shared_ptr, but unlike the
-/// shared_ptr, it is 100% guaranteed to be filled at all times.
+/// unique_ptr, it is 100% guaranteed to be filled at all times (unless the user
+/// tries to access it after calling std::move does something else that is
+/// clearly bad practice).
 template <class T>
 class Ref {
  public:

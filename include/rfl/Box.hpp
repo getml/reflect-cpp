@@ -7,7 +7,9 @@
 namespace rfl {
 
 /// The Box class behaves very similarly to the unique_ptr, but unlike the
-/// unique_ptr, it is 100% guaranteed to be filled at all times.
+/// unique_ptr, it is 100% guaranteed to be filled at all times (unless the user
+/// tries to access it after calling std::move does something else that is
+/// clearly bad practice).
 template <class T>
 class Box {
  public:
