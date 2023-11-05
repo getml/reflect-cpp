@@ -76,7 +76,6 @@ containing an error.
 `.and_then(...)` requires a function `F` of the type `T -> rfl::Result<U>`. If the `rfl::Result<T>` contains a type `T`, 
 then `r.and_then(f)` *might* return an `rfl::Result<U>` containing a type `U`, depending on whether `f` failed.
 If `r` already contained an error, then `r.and_then(f)` will surely return an `rfl::Result<U>` containing an error.
-containing an error.
 
 Throughout reflect-cpp's code, these functions are widely used by the parser. For instance, consider how we are reading
 `std::unique_ptr<T>` (note that this is somewhat simplified):
