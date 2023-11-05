@@ -18,14 +18,16 @@ might not conform to the assumptions that we have made about it and laid out in 
 in the form of various structs and containers.
 
 `rfl::json::read` handles this by returning an `rfl::Result` type. `rfl::Result` is a way of error
-handling without exceptions. Exceptions are controversial, because they add another, hidden control
+handling without exceptions. This is needed for two reasons:
+
+1) Exceptions are controversial, because they add another, hidden control
 path to your program that it hard to follow or predict. For this reasons, and others, the Google 
 C++ style guide [disallows exceptions altogether](https://google.github.io/styleguide/cppguide.html#Exceptions).
 Modern programming languages like Go and Rust don't even support them in the first place. The C++
 standards committee has recognized this and introduced [std::expected](https://en.cppreference.com/w/cpp/utility/expected)
-in C++-23.
+in C++-23. However, reflect-cpp is a library for C++-20 and until that changes, we need to implement our own result type.
 
-However, reflect-cpp is a library for C++-20 and until that changes, we need to implement our own result type.
+2) In some cases, you want to signal to the parser that is fine if some things go wrong. `rfl::Result` is the way to do that.
 
 If you do not care about these objections to exceptions, you can just call `rfl::json::read<...>(json_string).value()`,
 which throws an exception, if the result type contains an error and be done with it.
@@ -40,6 +42,26 @@ In laying out our structs an containers, about the the type system, we are makin
 JSON input we are expecting from the outside world. `rfl::json::read<T>(...)` checks whether these requirements are met. 
 If the requirements are met, `rfl::json::read<T>` returns T wrapped inside `rfl::Result`. If they are not met, it returns
 `rfl::Error` containing an error message explaining what went wrong.
+
+## Using `rfl::Result` for parsing
+
+Suppose you have a vector with 1000 user-supplied configurations:
+
+```cpp
+const auto configs = rfl::json::read<std::vector<Config>>(json_string);
+```
+
+Chances are that the user of your software has made as mistake in at least some of these configurations. If you set it up as shown above, `rfl::json::read` will fail if one or more `Config` items contain an error. But sometimes you don't want that. Sometimes you want your software to proceed with the remaining 999 configurations and gently point out to the user that some of the configurations were faulty.
+
+The solution is to this instead:
+
+```cpp
+const auto configs = rfl::json::read<std::vector<rfl::Result<Config>>>(json_string);
+```
+
+This means `rfl::json::read` is going to cut the end-users of your software some slack. But it also means that you, as the programmer, have to handle the fact that some of the configs might contain errors. 
+
+Below, we will show you how to do that.
 
 ## Monadic operations
 
