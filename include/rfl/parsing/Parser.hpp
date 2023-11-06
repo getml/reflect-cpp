@@ -37,6 +37,8 @@
 #include "rfl/internal/is_basic_type.hpp"
 #include "rfl/internal/no_duplicate_field_names.hpp"
 #include "rfl/internal/to_ptr_named_tuple.hpp"
+#include "rfl/internal/to_ptr_tuple.hpp"
+#include "rfl/internal/tuple_t.hpp"
 #include "rfl/named_tuple_t.hpp"
 #include "rfl/parsing/AreReaderAndWriter.hpp"
 #include "rfl/parsing/is_forward_list.hpp"
@@ -90,6 +92,15 @@ struct Parser {
           };
           return Parser<R, W, NamedTupleType>::read(_r, _var).and_then(
               to_struct);
+        } else {
+          using TupleType = internal::tuple_t<T>;
+          const auto make_t = [](auto&&... _f) -> T {
+            return T{std::move(_f)...};
+          };
+          const auto to_struct = [&](TupleType&& _tup) -> T {
+            return std::apply(make_t, std::move(_tup));
+          };
+          return Parser<R, W, TupleType>::read(_r, _var).transform(to_struct);
         }
       } else if constexpr (internal::is_basic_type_v<T>) {
         return _r.template to_basic_type<std::decay_t<T>>(_var);
@@ -113,11 +124,16 @@ struct Parser {
         const auto& [r] = _var;
         return Parser<R, W, ReflectionType>::write(_w, r);
       }
-    } else if constexpr (std::is_class_v<T> &&
-                         !std::is_same<T, std::string>()) {
-      const auto ptr_named_tuple = internal::to_ptr_named_tuple(_var);
-      using PtrNamedTupleType = std::decay_t<decltype(ptr_named_tuple)>;
-      return Parser<R, W, PtrNamedTupleType>::write(_w, ptr_named_tuple);
+    } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
+      if constexpr (internal::has_fields<T>()) {
+        const auto ptr_named_tuple = internal::to_ptr_named_tuple(_var);
+        using PtrNamedTupleType = std::decay_t<decltype(ptr_named_tuple)>;
+        return Parser<R, W, PtrNamedTupleType>::write(_w, ptr_named_tuple);
+      } else {
+        const auto ptr_tuple = internal::to_ptr_tuple(_var);
+        using PtrTupleType = std::decay_t<decltype(ptr_tuple)>;
+        return Parser<R, W, PtrTupleType>::write(_w, ptr_tuple);
+      }
     } else if constexpr (internal::is_basic_type_v<T>) {
       return _w.from_basic_type(_var);
     } else {

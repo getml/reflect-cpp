@@ -2,7 +2,6 @@
 #define RFL_INTERNAL_PTR_TUPLE_T_HPP_
 
 #include <functional>
-#include <tuple>
 #include <type_traits>
 
 #include "rfl/internal/to_ptr_tuple.hpp"
