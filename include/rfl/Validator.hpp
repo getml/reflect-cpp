@@ -30,6 +30,10 @@ struct Validator {
 
   Validator() : value_(V::validate(T()).value()) {}
 
+  Validator(Validator<T, V>&& _other) noexcept = default;
+
+  Validator(const Validator<T, V>& _other) = default;
+
   Validator(const T& _value) : value_(V::validate(_value).value()) {}
 
   template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
@@ -43,6 +47,18 @@ struct Validator {
     value_ = V::validate(_value).value();
     return *this;
   }
+
+  /// Assigns the underlying object.
+  auto& operator=(T&& _value) {
+    value_ = V::validate(_value).value();
+    return *this;
+  }
+
+  /// Assigns the underlying object.
+  Validator<T, V>& operator=(const Validator<T, V>& _other) = default;
+
+  /// Assigns the underlying object.
+  Validator<T, V>& operator=(Validator<T, V>&& _other) = default;
 
   /// Assigns the underlying object.
   template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
