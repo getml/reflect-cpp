@@ -6,6 +6,7 @@
 #include <regex>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 #include "internal/HasValidation.hpp"
 #include "internal/StringLiteral.hpp"
@@ -34,7 +35,14 @@ struct Validator {
 
   Validator(const Validator<T, V>& _other) = default;
 
+  Validator(T&& _value) : value_(V::validate(_value).value()) {}
+
   Validator(const T& _value) : value_(V::validate(_value).value()) {}
+
+  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
+                                             bool>::type = true>
+  Validator(U&& _value)
+      : value_(V::validate(T(std::forward<U>(_value))).value()) {}
 
   template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
                                              bool>::type = true>
@@ -50,7 +58,7 @@ struct Validator {
 
   /// Assigns the underlying object.
   auto& operator=(T&& _value) {
-    value_ = V::validate(_value).value();
+    value_ = V::validate(std::forward<T>(_value)).value();
     return *this;
   }
 
@@ -58,13 +66,13 @@ struct Validator {
   Validator<T, V>& operator=(const Validator<T, V>& _other) = default;
 
   /// Assigns the underlying object.
-  Validator<T, V>& operator=(Validator<T, V>&& _other) = default;
+  Validator<T, V>& operator=(Validator<T, V>&& _other) noexcept = default;
 
   /// Assigns the underlying object.
   template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
                                              bool>::type = true>
-  auto& operator=(U&& _value) {
-    value_ = V::validate(T(std::forward<T>(_value))).value();
+  auto& operator=(U&& _value) noexcept {
+    value_ = V::validate(T(std::forward<U>(_value))).value();
     return *this;
   }
 

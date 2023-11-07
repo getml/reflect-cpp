@@ -16,8 +16,8 @@ void test_anonymous_fields() {
     std::string first_name;
     std::string last_name;
     rfl::Timestamp<"%Y-%m-%d"> birthday;
-    unsigned int age;
-    std::string email;
+    Age age;
+    rfl::Email email;
     std::vector<Person> children;
   };
 
@@ -25,8 +25,7 @@ void test_anonymous_fields() {
                            .last_name = "Simpson",
                            .birthday = "1987-04-19",
                            .age = 10,
-                           .email = "bart@simpson.com",
-                           .children = std::vector<Person>()};
+                           .email = "bart@simpson.com"};
 
   const auto lisa = Person{.first_name = "Lisa",
                            .last_name = "Simpson",
