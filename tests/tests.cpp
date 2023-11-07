@@ -1,4 +1,5 @@
 #include "test_all_of.hpp"
+#include "test_anonymous_fields.hpp"
 #include "test_any_of.hpp"
 #include "test_array.hpp"
 #include "test_as.hpp"
@@ -73,6 +74,7 @@ int main() {
   test_string_unordered_map();
   test_error_messages();
   test_result();
+  test_anonymous_fields();
 
   test_custom_class1();
   test_custom_class2();

@@ -25,6 +25,8 @@ Design principles for reflect-cpp include:
 - Simple extendability to custom classes
 - No macros
 
+## Example
+
 ```cpp
 #include <iostream>
 #include <rfl/json.hpp>
@@ -107,6 +109,8 @@ std::cout << "Hello, my name is " << homer2.first_name() << " "
           << homer2.last_name() << "." << std::endl;
 ```
 
+## Error messages
+
 reflect-cpp returns clear and comprehensive error messages:
 
 ```cpp
@@ -125,6 +129,58 @@ Found 5 errors:
 4) Failed to parse field 'email': String 'homer(at)simpson.com' did not match format 'Email': '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'.
 5) Field named 'children' not found.
 ```
+
+## Anonymous fields
+
+`rfl::Field` is only necessary if you want to serialize field names. If you don't (possibly because you are using a binary format), you do not need to annotate your fields:
+
+```cpp
+using Age = rfl::Validator<unsigned int,
+                           rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
+
+struct Person {
+  std::string first_name;
+  std::string last_name;
+  rfl::Timestamp<"%Y-%m-%d"> birthday;
+  Age age;
+  rfl::Email email;
+  std::vector<Person> children;
+};
+
+const auto bart = Person{.first_name = "Bart",
+                         .last_name = "Simpson",
+                         .birthday = "1987-04-19",
+                         .age = 10,
+                         .email = "bart@simpson.com"};
+
+const auto lisa = Person{.first_name = "Lisa",
+                         .last_name = "Simpson",
+                         .birthday = "1987-04-19",
+                         .age = 8,
+                         .email = "lisa@simpson.com"};
+
+const auto maggie = Person{.first_name = "Maggie",
+                           .last_name = "Simpson",
+                           .birthday = "1987-04-19",
+                           .age = 0,
+                           .email = "maggie@simpson.com"};
+
+const auto homer =
+    Person{.first_name = "Homer",
+           .last_name = "Simpson",
+           .birthday = "1987-04-19",
+           .age = 45,
+           .email = "homer@simpson.com",
+           .children = std::vector<Person>({bart, lisa, maggie})};
+```
+
+This results in the following JSON string:
+
+```json
+["Homer","Simpson","1987-04-19",45,"homer@simpson.com",[["Bart","Simpson","1987-04-19",10,"bart@simpson.com",[]],["Lisa","Simpson","1987-04-19",8,"lisa@simpson.com",[]],["Maggie","Simpson","1987-04-19",0,"maggie@simpson.com",[]]]]
+```
+
+
 
 ## Support for containers
 
