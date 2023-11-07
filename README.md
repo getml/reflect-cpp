@@ -180,7 +180,45 @@ This results in the following JSON string:
 ["Homer","Simpson","1987-04-19",45,"homer@simpson.com",[["Bart","Simpson","1987-04-19",10,"bart@simpson.com",[]],["Lisa","Simpson","1987-04-19",8,"lisa@simpson.com",[]],["Maggie","Simpson","1987-04-19",0,"maggie@simpson.com",[]]]]
 ```
 
+## Algebraic data types
 
+reflect-cpp supports Pydantic-style tagged unions, which allow you to form algebraic data types:
+
+```cpp
+  // All alternatives must contain a field named "shape". The type
+  // of the field must be an rfl::Literal.
+struct Circle {
+    rfl::Field<"shape", rfl::Literal<"Circle">> shape = rfl::default_value;
+    rfl::Field<"radius", double> radius;
+};
+
+struct Rectangle {
+    rfl::Field<"shape", rfl::Literal<"Rectangle">> shape =
+        rfl::default_value;
+    rfl::Field<"height", double> height;
+    rfl::Field<"width", double> width;
+};
+
+struct Square {
+    rfl::Field<"shape", rfl::Literal<"Square">> shape = rfl::default_value;
+    rfl::Field<"width", double> width;
+};
+
+// Now you tell rfl::TaggedUnion that you want it to look for the field "shape".
+using Shapes = rfl::TaggedUnion<"shape", Circle, Square, Rectangle>;
+
+const Shapes r = Rectangle{.height = 10, .width = 5};
+
+const auto json_string = rfl::json::write(r);
+```
+
+This results in the following JSON string:
+
+```json
+{"shape":"Rectangle","height":10.0,"width":5.0}
+```
+
+Other forms of tagging are supported as well. Refer to the [documentation](https://github.com/getml/reflect-cpp/tree/main/docs) for details.
 
 ## Support for containers
 
