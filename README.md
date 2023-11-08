@@ -25,6 +25,8 @@ Design principles for reflect-cpp include:
 - Simple extendability to custom classes
 - No macros
 
+## Example
+
 ```cpp
 #include <iostream>
 #include <rfl/json.hpp>
@@ -32,7 +34,7 @@ Design principles for reflect-cpp include:
 
 // Age must be a plausible number, between 0 and 130. This will
 // be validated automatically.
-using Age = rfl::Validator<unsigned int,
+using Age = rfl::Validator<int,
                            rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
 
 // "firstName", "lastName" and "children" are the field names
@@ -107,6 +109,8 @@ std::cout << "Hello, my name is " << homer2.first_name() << " "
           << homer2.last_name() << "." << std::endl;
 ```
 
+## Error messages
+
 reflect-cpp returns clear and comprehensive error messages:
 
 ```cpp
@@ -125,6 +129,96 @@ Found 5 errors:
 4) Failed to parse field 'email': String 'homer(at)simpson.com' did not match format 'Email': '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'.
 5) Field named 'children' not found.
 ```
+
+## Anonymous fields
+
+`rfl::Field` is only necessary if you want to serialize field names. If you don't (possibly because you are using a binary format), you do not need to annotate your fields:
+
+```cpp
+using Age = rfl::Validator<unsigned int,
+                           rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
+
+struct Person {
+  std::string first_name;
+  std::string last_name;
+  rfl::Timestamp<"%Y-%m-%d"> birthday;
+  Age age;
+  rfl::Email email;
+  std::vector<Person> children;
+};
+
+const auto bart = Person{.first_name = "Bart",
+                         .last_name = "Simpson",
+                         .birthday = "1987-04-19",
+                         .age = 10,
+                         .email = "bart@simpson.com"};
+
+const auto lisa = Person{.first_name = "Lisa",
+                         .last_name = "Simpson",
+                         .birthday = "1987-04-19",
+                         .age = 8,
+                         .email = "lisa@simpson.com"};
+
+const auto maggie = Person{.first_name = "Maggie",
+                           .last_name = "Simpson",
+                           .birthday = "1987-04-19",
+                           .age = 0,
+                           .email = "maggie@simpson.com"};
+
+const auto homer =
+    Person{.first_name = "Homer",
+           .last_name = "Simpson",
+           .birthday = "1987-04-19",
+           .age = 45,
+           .email = "homer@simpson.com",
+           .children = std::vector<Person>({bart, lisa, maggie})};
+```
+
+This results in the following JSON string:
+
+```json
+["Homer","Simpson","1987-04-19",45,"homer@simpson.com",[["Bart","Simpson","1987-04-19",10,"bart@simpson.com",[]],["Lisa","Simpson","1987-04-19",8,"lisa@simpson.com",[]],["Maggie","Simpson","1987-04-19",0,"maggie@simpson.com",[]]]]
+```
+
+## Algebraic data types
+
+reflect-cpp supports Pydantic-style tagged unions, which allow you to form algebraic data types:
+
+```cpp
+  // All alternatives must contain a field named "shape". The type
+  // of the field must be an rfl::Literal.
+struct Circle {
+    rfl::Field<"shape", rfl::Literal<"Circle">> shape = rfl::default_value;
+    rfl::Field<"radius", double> radius;
+};
+
+struct Rectangle {
+    rfl::Field<"shape", rfl::Literal<"Rectangle">> shape =
+        rfl::default_value;
+    rfl::Field<"height", double> height;
+    rfl::Field<"width", double> width;
+};
+
+struct Square {
+    rfl::Field<"shape", rfl::Literal<"Square">> shape = rfl::default_value;
+    rfl::Field<"width", double> width;
+};
+
+// Now you tell rfl::TaggedUnion that you want it to look for the field "shape".
+using Shapes = rfl::TaggedUnion<"shape", Circle, Square, Rectangle>;
+
+const Shapes r = Rectangle{.height = 10, .width = 5};
+
+const auto json_string = rfl::json::write(r);
+```
+
+This results in the following JSON string:
+
+```json
+{"shape":"Rectangle","height":10.0,"width":5.0}
+```
+
+Other forms of tagging are supported as well. Refer to the [documentation](https://github.com/getml/reflect-cpp/tree/main/docs) for details.
 
 ## Support for containers
 
@@ -155,13 +249,15 @@ reflect-cpp supports the following containers from the C++ standard library:
 
 ### Additional containers
 
-In addition, it includes the following custom containers:
+In addition, it supports the following custom containers:
 
-- `rfl::Box`: Similar to `std::unique_ptr`, but guaranteed to never be null.
+- `rfl::Box`: Similar to `std::unique_ptr`, but (almost) guaranteed to never be null.
 - `rfl::Literal`: An explicitly enumerated string.
 - `rfl::NamedTuple`: Similar to `std::tuple`, but with named fields that can be retrieved via their name at compile time.
-- `rfl::Ref`: Similar to `std::shared_ptr`, but guaranteed to never be null. 
+- `rfl::Ref`: Similar to `std::shared_ptr`, but (almost) guaranteed to never be null.
+- `rfl::Result`: Allows for exception-free programming.
 - `rfl::TaggedUnion`: Similar to `std::variant`, but with explicit tags that make parsing more efficient.
+- `rfl::Validator`: Allows for automatic input validation.
 
 ### Custom classes
 
