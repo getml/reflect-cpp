@@ -11,11 +11,10 @@ Please refer to the section on optional fields for details.
 For structs with `rfl::Field` and `rfl::NamedTuple`, the following rules apply:
 
 - You *can* add optional fields.
-- You *can* remove any optional fields, if they are no longer needed.
+- You *can* remove any optional or required fields, if they are no longer needed.
 - You *can* change the field names of any optional fields.
 - You *can* change the order of any existing fields.
 - You *can not* add any required fields.
-- You *can not* remove any required fields.
 - You *can not* change the field names of any required fields.
 
 ## Structs without `rfl::Field` (anonymous fields) and `std::tuple`
