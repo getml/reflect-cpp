@@ -796,7 +796,7 @@ struct Parser<R, W, std::tuple<Ts...>> {
     const auto to_vec = [&](auto _arr) { return _r.to_vec(_arr); };
 
     const auto check_size = [](auto _vec) -> Result<std::vector<InputVarType>> {
-      if (_vec.size() != sizeof...(Ts)) {
+      if (_vec.size() > sizeof...(Ts)) {
         return Error("Expected " + std::to_string(sizeof...(Ts)) +
                      " fields, got " + std::to_string(_vec.size()) + ".");
       }
@@ -846,6 +846,19 @@ struct Parser<R, W, std::tuple<Ts...>> {
       const R& _r, const std::vector<InputVarType>& _vec) noexcept {
     using NewFieldType =
         std::decay_t<typename std::tuple_element<_i, std::tuple<Ts...>>::type>;
+
+    using ResultType = Result<NewFieldType>;
+
+    if (_i >= _vec.size()) {
+      if constexpr (is_required<NewFieldType>()) {
+        return ResultType(Error("Array is of length " +
+                                std::to_string(_vec.size()) + ", but field " +
+                                std::to_string(_i + 1) + " is required."));
+      } else {
+        return ResultType(NewFieldType());
+      }
+    }
+
     return Parser<R, W, NewFieldType>::read(_r, _vec[_i]);
   }
 
