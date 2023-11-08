@@ -4,7 +4,7 @@ If you change your structs, you probably want to be able to interact with data g
 
 For the purpose of this section, any field of type `std::optional`, `std::shared_ptr` or `std::unique_ptr` is an optional field. Any other fields are required.
 
-Please refer to the section on optional fields on details.
+Please refer to the section on optional fields for details.
 
 ## Structs with `rfl::Field` and `rfl::NamedTuple`
 
