@@ -29,6 +29,7 @@
 #include "rfl/always_false.hpp"
 #include "rfl/field_type.hpp"
 #include "rfl/from_named_tuple.hpp"
+#include "rfl/internal/Memoization.hpp"
 #include "rfl/internal/StringLiteral.hpp"
 #include "rfl/internal/all_fields.hpp"
 #include "rfl/internal/has_reflection_method_v.hpp"
@@ -462,10 +463,7 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
   /// There are some objects that we are likely to parse many times,
   /// so we only calculate these indices once.
   static const auto& field_indices() noexcept {
-    if (field_indices_.size() == 0) {
-      set_field_indices();
-    }
-    return Parser<R, W, NamedTuple<FieldTypes...>>::field_indices_;
+    return field_indices_.value(set_field_indices<0>);
   }
 
   /// Retrieves the value from the object. This is mainly needed to
@@ -482,22 +480,24 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
 
   /// Builds the object field by field.
   template <size_t _i = 0>
-  static void set_field_indices() noexcept {
+  static void set_field_indices(
+      std::unordered_map<std::string_view, std::int16_t>*
+          _field_indices) noexcept {
     if constexpr (_i >= sizeof...(FieldTypes)) {
       return;
     } else {
       using FieldType =
           typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type;
       const auto name = FieldType::name_.string_view();
-      Parser<R, W, NamedTuple<FieldTypes...>>::field_indices_[name] =
-          static_cast<std::int16_t>(_i);
-      set_field_indices<_i + 1>();
+      (*_field_indices)[name] = static_cast<std::int16_t>(_i);
+      set_field_indices<_i + 1>(_field_indices);
     }
   }
 
  private:
   /// Maps each of the field names to an index signifying their order.
-  static inline std::unordered_map<std::string_view, std::int16_t>
+  static inline internal::Memoization<
+      std::unordered_map<std::string_view, std::int16_t>>
       field_indices_;
 };
 
