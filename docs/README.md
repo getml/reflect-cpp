@@ -56,4 +56,4 @@
 
 6.1) [Supporting your own format](https://github.com/getml/reflect-cpp/blob/main/docs/supporting_your_own_format.md) - For supporting your own serialization and deserialization formats.
 
-6.2) [Maintaining backwards compatability of your API](https://github.com/getml/reflect-cpp/blob/main/docs/backwards_compatability.md) - Instructions on how to ensure that your API is backwards-compatible with older versions.
+6.2) [Maintaining backwards compatability](https://github.com/getml/reflect-cpp/blob/main/docs/backwards_compatability.md) - Instructions on how to ensure that your API is backwards-compatible with older versions.
