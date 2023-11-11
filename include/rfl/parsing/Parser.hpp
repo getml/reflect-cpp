@@ -370,7 +370,8 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
   template <class... Args>
   static Result<NamedTuple<FieldTypes...>> build_named_tuple_recursively(
       const R& _r,
-      const std::array<InputVarType, sizeof...(FieldTypes)>& _fields_vec,
+      const std::array<std::optional<InputVarType>, sizeof...(FieldTypes)>&
+          _fields_arr,
       Args&&... _args) noexcept {
     constexpr auto i = sizeof...(Args);
 
@@ -382,32 +383,32 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
 
       using ValueType = std::decay_t<typename FieldType::Type>;
 
-      const auto& f = std::get<i>(_fields_vec);
+      const auto& f = std::get<i>(_fields_arr);
 
-      if (_r.is_empty(f)) {
+      if (!f) {
         if constexpr (is_required<ValueType>()) {
           const auto key = FieldType::name_.str();
           return collect_errors<i + 1>(
-              _r, _fields_vec,
+              _r, _fields_arr,
               std::vector<Error>(
                   {Error("Field named '" + key + "' not found!")}));
         } else {
           return build_named_tuple_recursively(
-              _r, _fields_vec, std::move(_args)..., FieldType(ValueType()));
+              _r, _fields_arr, std::move(_args)..., FieldType(ValueType()));
         }
       }
 
       const auto build = [&](auto&& _value) {
         return build_named_tuple_recursively(
-            _r, _fields_vec, std::move(_args)..., FieldType(std::move(_value)));
+            _r, _fields_arr, std::move(_args)..., FieldType(std::move(_value)));
       };
 
       const auto handle_error = [&](Error&& _error) {
-        return collect_errors<i + 1>(_r, _fields_vec,
+        return collect_errors<i + 1>(_r, _fields_arr,
                                      std::vector<Error>({std::move(_error)}));
       };
 
-      return get_value<FieldType>(_r, f).or_else(handle_error).and_then(build);
+      return get_value<FieldType>(_r, *f).or_else(handle_error).and_then(build);
     }
   }
 
@@ -416,7 +417,8 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
   template <int _i>
   static Error collect_errors(
       const R& _r,
-      const std::array<InputVarType, sizeof...(FieldTypes)>& _fields_vec,
+      const std::array<std::optional<InputVarType>, sizeof...(FieldTypes)>&
+          _fields_arr,
       std::vector<Error> _errors) noexcept {
     if constexpr (_i == sizeof...(FieldTypes)) {
       if (_errors.size() == 1) {
@@ -435,14 +437,14 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
 
       using ValueType = std::decay_t<typename FieldType::Type>;
 
-      const auto& f = std::get<_i>(_fields_vec);
+      const auto& f = std::get<_i>(_fields_arr);
 
-      if (_r.is_empty(f)) {
+      if (!f) {
         if constexpr (is_required<ValueType>()) {
           const auto key = FieldType::name_.str();
           _errors.emplace_back(Error("Field named '" + key + "' not found."));
         }
-        return collect_errors<_i + 1>(_r, _fields_vec, std::move(_errors));
+        return collect_errors<_i + 1>(_r, _fields_arr, std::move(_errors));
       }
 
       const auto add_error_if_applicable =
@@ -451,9 +453,9 @@ struct Parser<R, W, NamedTuple<FieldTypes...>> {
         return _error;
       };
 
-      get_value<FieldType>(_r, f).or_else(add_error_if_applicable);
+      get_value<FieldType>(_r, *f).or_else(add_error_if_applicable);
 
-      return collect_errors<_i + 1>(_r, _fields_vec, std::move(_errors));
+      return collect_errors<_i + 1>(_r, _fields_arr, std::move(_errors));
     }
   }
 

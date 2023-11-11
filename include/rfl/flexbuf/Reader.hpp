@@ -85,9 +85,9 @@ struct Reader {
   }
 
   template <size_t size, class FunctionType>
-  std::array<InputVarType, size> to_fields_array(
+  std::array<std::optional<InputVarType>, size> to_fields_array(
       const FunctionType& _fct, const InputObjectType& _obj) const noexcept {
-    std::array<InputVarType, size> f_arr;
+    std::array<std::optional<InputVarType>, size> f_arr;
 
     const auto keys = _obj.Keys();
     const auto values = _obj.Values();
