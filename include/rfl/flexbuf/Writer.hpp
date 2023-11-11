@@ -34,14 +34,14 @@ struct Writer {
 
   ~Writer() = default;
 
-  void add(const OutputVarType _var, OutputArrayType* _arr) const noexcept {
+  void add(const OutputVarType& _var, OutputArrayType* _arr) const noexcept {
     (*_arr)->push_back(_var);
   }
 
   OutputVarType empty_var() const noexcept { return Ref<OutputNull>::make(); }
 
   template <class T>
-  OutputVarType from_basic_type(const T _var) const noexcept {
+  OutputVarType from_basic_type(const T& _var) const noexcept {
     return Ref<OutputValue<T>>::make(_var);
   }
 
