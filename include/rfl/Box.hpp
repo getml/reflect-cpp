@@ -26,10 +26,9 @@ class Box {
 
   Box(Box<T>&& _other) = default;
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
-                                             bool>::type = true>
+  template <class U>
   Box(Box<U>&& _other) noexcept
-      : ptr_(std::make_unique<T>(std::forward<U>(*_other))) {}
+      : ptr_(std::forward<std::unique_ptr<U>>(_other.ptr())) {}
 
   ~Box() = default;
 
@@ -43,10 +42,9 @@ class Box {
   Box<T>& operator=(Box<T>&& _other) noexcept = default;
 
   /// Move assignment operator
-  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
-                                             bool>::type = true>
+  template <class U>
   Box<T>& operator=(Box<U>&& _other) noexcept {
-    ptr_ = std::make_unique<T>(std::forward<U>(*_other));
+    ptr_ = std::forward<std::unique_ptr<U>>(_other.ptr());
     return *this;
   }
 
@@ -61,6 +59,9 @@ class Box {
 
   /// Returns the underlying object.
   T* operator->() const { return ptr_.get(); }
+
+  /// Returns the underlying unique_ptr
+  std::unique_ptr<T>& ptr() { return ptr_; }
 
   /// Returns the underlying unique_ptr
   const std::unique_ptr<T>& ptr() const { return ptr_; }

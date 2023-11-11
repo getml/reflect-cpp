@@ -26,14 +26,12 @@ class Ref {
 
   Ref(Ref<T>&& _other) = default;
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
-                                             bool>::type = true>
+  template <class U>
   Ref(const Ref<U>& _other) : ptr_(_other.ptr()) {}
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
-                                             bool>::type = true>
+  template <class U>
   Ref(Ref<U>&& _other) noexcept
-      : ptr_(std::make_shared<T>(std::forward<U>(*_other))) {}
+      : ptr_(std::forward<std::shared_ptr<U>>(_other.ptr())) {}
 
   ~Ref() = default;
 
@@ -53,21 +51,22 @@ class Ref {
   T* operator->() const { return ptr_.get(); }
 
   /// Returns the underlying shared_ptr
+  std::shared_ptr<T>& ptr() { return ptr_; }
+
+  /// Returns the underlying shared_ptr
   const std::shared_ptr<T>& ptr() const { return ptr_; }
 
   /// Copy assignment operator.
-  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
-                                             bool>::type = true>
+  template <class U>
   Ref<T>& operator=(const Ref<U>& _other) {
     ptr_ = _other.ptr();
     return *this;
   }
 
   /// Move assignment operator
-  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
-                                             bool>::type = true>
+  template <class U>
   Ref<T>& operator=(Ref<U>&& _other) noexcept {
-    ptr_ = std::make_shared<T>(std::forward<U>(*_other));
+    ptr_ = std::forward<std::shared_ptr<U>>(_other.ptr());
     return *this;
   }
 
