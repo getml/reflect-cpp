@@ -146,6 +146,8 @@ struct Parser {
   }
 };
 
+// ----------------------------------------------------------------------------
+
 template <class R, class W, class T>
 requires AreReaderAndWriter<R, W, T*>
 struct Parser<R, W, T*> {

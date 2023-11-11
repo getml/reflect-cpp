@@ -15,9 +15,9 @@ namespace rfl {
 template <class T>
 struct remove_ptr;
 
-template <internal::StringLiteral _name, class _Type>
-struct remove_ptr<Field<_name, _Type>> {
-    using FieldType = Field<_name, std::decay_t<std::remove_pointer_t<_Type>>>;
+template <internal::StringLiteral _name, class T>
+struct remove_ptr<Field<_name, T>> {
+  using FieldType = Field<_name, std::decay_t<std::remove_pointer_t<T>>>;
 };
 
 template <class T>
@@ -25,8 +25,8 @@ struct remove_ptrs_nt;
 
 template <class... FieldTypes>
 struct remove_ptrs_nt<NamedTuple<FieldTypes...>> {
-    using NamedTupleType =
-        NamedTuple<typename remove_ptr<FieldTypes>::FieldType...>;
+  using NamedTupleType =
+      NamedTuple<typename remove_ptr<FieldTypes>::FieldType...>;
 };
 
 /// Generates the named tuple that is equivalent to the struct T.
