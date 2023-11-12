@@ -20,6 +20,7 @@
 #include "test_list.hpp"
 #include "test_literal.hpp"
 #include "test_map.hpp"
+#include "test_monster_example.hpp"
 #include "test_multimap.hpp"
 #include "test_multiset.hpp"
 #include "test_one_of.hpp"
@@ -75,6 +76,7 @@ int main() {
   test_error_messages();
   test_result();
   test_anonymous_fields();
+  test_monster_example();
 
   test_custom_class1();
   test_custom_class2();
