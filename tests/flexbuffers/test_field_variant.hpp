@@ -23,7 +23,7 @@ void test_field_variant() {
     rfl::Field<"width", double> width;
   };
 
-  using Shapes = std::variant<rfl::Field<"circle", Circle>,
+  using Shapes = rfl::Variant<rfl::Field<"circle", Circle>,
                               rfl::Field<"rectangle", Rectangle>,
                               rfl::Field<"square", rfl::Box<Square>>>;
 
