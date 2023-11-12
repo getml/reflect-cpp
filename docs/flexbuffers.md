@@ -238,7 +238,10 @@ const rfl::Result<Person> result = rfl::flexbuf::read<Person>(bytes);
 You can also load and save to disc using a very similar syntax:
 
 ```cpp
-...
+const rfl::Result<Person> result = rfl::flexbuf::load<Person>("/path/to/file.fb");
+
+const auto person = Person{...};
+rfl::flexbuf::save("/path/to/file.fb", person);
 ```
 
 ## Custom constructors
