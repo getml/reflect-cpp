@@ -14,7 +14,7 @@ namespace json {
 
 template <class T>
 Result<Nothing> save(const std::string& _fname, const T& _obj) {
-    return rfl::io::save_string(write(_obj));
+  return rfl::io::save_string(_fname, write(_obj));
 }
 
 }  // namespace json

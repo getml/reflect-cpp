@@ -10,7 +10,8 @@ namespace json {
 
 template <class T>
 Result<T> load(const std::string& _fname) {
-    return rfl::io::load_string(_fname).and_then(read<T>);
+  const auto read_string = [](const auto& _str) { return read<T>(_str); };
+  return rfl::io::load_string(_fname).and_then(read_string);
 }
 
 }  // namespace json

@@ -38,3 +38,8 @@
 **/CMakeFiles/**
 **/reflect-cpp-tests
 **/build/**
+**/build_clang/**
+
+# Output files
+*.json
+*.fb

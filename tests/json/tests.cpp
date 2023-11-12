@@ -31,6 +31,7 @@
 #include "test_replace_flatten.hpp"
 #include "test_replace_with_other_struct.hpp"
 #include "test_result.hpp"
+#include "test_save_load.hpp"
 #include "test_set.hpp"
 #include "test_size.hpp"
 #include "test_string_map.hpp"
@@ -96,6 +97,8 @@ int main() {
   test_one_of();
   test_email();
   test_size();
+
+  test_save_load();
 
   return 0;
 }
