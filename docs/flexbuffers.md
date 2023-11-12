@@ -9,6 +9,9 @@ reflect-cpp can be used on top of flexbuffers. To see how this is advantageous, 
 ## Simple example
 
 ```cpp
+#include <rfl.hpp>
+#include <rfl/flexbuf.hpp>
+
 using Color = rfl::Literal<"Red", "Green", "Blue">;
 
 struct Weapon {
@@ -58,7 +61,7 @@ const auto orc = Monster{.pos = position,
 
 const auto bytes = rfl::flexbuf::write(orc);
 
-const auto res = rfl::flexbuf::read<Monster>(orc);
+const auto res = rfl::flexbuf::read<Monster>(bytes);
 ```
 
 ## For comparison: Standard flatbuffers
@@ -143,30 +146,91 @@ builder.Finish(orc);  // Serialize the root of the object.
 
 I think it should be fairly obvious that using reflect-cpp on top drastically reduces the amount of boilerplate code.
 
+## Adding field names
+
+But what it more, unlike "normal" flatbuffers, flexbuffers also supports field names. Field names make it a lot easier to maintain backwards compatability.
+
+```cpp
+#include <rfl.hpp>
+#include <rfl/flexbuf.hpp>
+
+  using Color = rfl::Literal<"Red", "Green", "Blue">;
+
+  struct Weapon {
+    rfl::Field<"name", std::string> name;
+    rfl::Field<"damage", short> damage;
+  };
+
+  using Equipment = rfl::Variant<rfl::Field<"weapon", Weapon>>;
+
+  struct Vec3 {
+    rfl::Field<"x", float> x;
+    rfl::Field<"y", float> y;
+    rfl::Field<"z", float> z;
+  };
+
+  struct Monster {
+    rfl::Field<"pos", Vec3> pos;
+    rfl::Field<"mana", short> mana = 150;
+    rfl::Field<"hp", short> hp = 100;
+    rfl::Field<"name", std::string> name;
+    rfl::Field<"friendly", bool> friendly = false;
+    rfl::Field<"inventory", std::vector<std::uint8_t>> inventory;
+    rfl::Field<"color", Color> color = Color::make<"Blue">();
+    rfl::Field<"weapons", std::vector<Weapon>> weapons;
+    rfl::Field<"equipped", Equipment> equipped;
+    rfl::Field<"path", std::vector<Vec3>> path;
+  };
+
+  const auto sword = Weapon{.name = "Sword", .damage = 3};
+  const auto axe = Weapon{.name = "Axe", .damage = 5};
+
+  const auto weapons = std::vector<Weapon>({sword, axe});
+
+  const auto position = Vec3{1.0f, 2.0f, 3.0f};
+
+  const auto inventory =
+      std::vector<std::uint8_t>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+
+  const auto orc = Monster{.pos = position,
+                           .mana = 150,
+                           .hp = 80,
+                           .name = "MyMonster",
+                           .inventory = inventory,
+                           .color = Color::make<"Red">(),
+                           .weapons = weapons,
+                           .equipped = rfl::make_field<"weapon">(axe),
+                           .path = rfl::default_value};
+
+const auto bytes = rfl::flexbuf::write(orc);
+
+const auto res = rfl::flexbuf::read<Monster>(bytes);
+```
+
 ## Reading and writing
 
 Suppose you have a struct like this:
 
 ```cpp
 struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
-    rfl::Field<"children", std::vector<Person>> children;
+    std::string first_name;
+    std::string last_name;
+    rfl::Timestamp<"%Y-%m-%d"> birthday;
+    std::vector<Person> children;
 };
 ```
 
-You can parse JSON strings like this:
-
-```cpp
-const rfl::Result<Person> result = rfl::json::read<Person>(json_string);
-```
-
-A person can be turned into a JSON string like this:
+A `person` can be turned into a bytes vector like this:
 
 ```cpp
 const auto person = Person{...};
-const std::string json_string = rfl::json::write(person);
+const auto bytes = rfl::flexbuf::write(person);
+```
+
+You can parse bytes like this:
+
+```cpp
+const rfl::Result<Person> result = rfl::flexbuf::read<Person>(bytes);
 ```
 
 ## Loading and saving
@@ -174,10 +238,7 @@ const std::string json_string = rfl::json::write(person);
 You can also load and save to disc using a very similar syntax:
 
 ```cpp
-const rfl::Result<Person> result = rfl::json::load<Person>("/path/to/file.json");
-
-const auto person = Person{...};
-rfl::json::save("/path/to/file.json", person);
+...
 ```
 
 ## Custom constructors
@@ -188,8 +249,8 @@ when and how you code is compiled.
 For large and complex systems of structs, it is often a good idea to split up
 your code into smaller compilation units. You can do so using custom constructors.
 
-For the JSON format, these must be a static function on your struct or class called
-`from_json_obj` that take a `rfl::json::Reader::InputVarType` as input and return
+For the flexbuffers format, these must be a static function on your struct or class called
+`from_flexbuf` that take a `rfl::flexbuf::Reader::InputVarType` as input and return
 the class or the class wrapped in `rfl::Result`.
 
 In your header file you can write something like this:
@@ -200,22 +261,22 @@ struct Person {
     rfl::Field<"lastName", std::string> last_name;
     rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
 
-    using JSONVar = typename rfl::json::Reader::InputVarType;
-    static rfl::Result<Person> from_json_obj(const JSONVar& _obj);
+    using InputVarType = typename rfl::flexbuf::Reader::InputVarType;
+    static rfl::Result<Person> from_flexbuf(const InputVarType& _obj);
 };
 ```
 
-And in your source file, you implement `from_json_obj` as follows:
+And in your source file, you implement `from_flexbuf` as follows:
 
 ```cpp
-rfl::Result<Person> Person::from_json_obj(const JSONVar& _obj) {
+rfl::Result<Person> Person::from_flexbuf(const InputVarType& _obj) {
     const auto from_nt = [](auto&& _nt) {
         return rfl::from_named_tuple<Person>(std::move(_nt));
     };
-    return rfl::json::read<rfl::named_tuple_t<Person>>(_obj)
+    return rfl::flexbuf::read<rfl::named_tuple_t<Person>>(_obj)
         .transform(from_nt);
 }
 ```
 
-This will force the compiler to only compile the JSON parsing when the
+This will force the compiler to only compile the flexbuffers parsing when the
 source file is compiled.
