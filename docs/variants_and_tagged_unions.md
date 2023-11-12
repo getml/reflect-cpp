@@ -1,6 +1,6 @@
-# `std::variant` and `rfl::TaggedUnion`
+# `std::variant`, `rfl::Variant` and `rfl::TaggedUnion`
 
-## `std::variant` (untagged)
+## `std::variant` or `rfl::Variant` (untagged)
 
 Sometimes you know that the JSON object can be one of several alternatives. For example,
 you might have several shapes like `Circle`, `Rectangle` or `Square`. For these kind of 
@@ -20,6 +20,8 @@ struct Square {
     rfl::Field<"width", double> width;
 };
 
+// NOTE: If you are using anonymous fields, 
+// you would probably have to use `rfl::Variant` instead.
 using Shapes = std::variant<Circle, Rectangle, Square>;
 
 const Shapes r = Rectangle{.height = 10, .width = 5};
@@ -36,14 +38,14 @@ several problems with this:
 2) It leads to confusing error messages: If none of the alternatives can be matched, you will get an error message telling you why each of the alternatives couldn't be matched. Such error messages are very long-winding and hard to read.
 3) It is dangerous. Imagine we had written `std::variant<Circle, Square, Rectangle>` instead of `std::variant<Circle, Rectangle, Square>`. This would mean that `Rectangle` could never be matched, because the fields in `Square` are a subset of `Rectangle`. This leads to very confusing bugs.
 
-## `std::variant` (externally tagged)
+## `std::variant` or `rfl::Variant` (externally tagged)
 
 From a functional programming point-of-view, the most straightforward way to handle these problems is to add tags. 
 
 You can do that using `rfl::Field`:
 
 ```cpp
-using TaggedVariant = std::variant<rfl::Field<"option1", Type1>, rfl::Field<"option2", Type2>, ...>;
+using TaggedVariant = rfl::Variant<rfl::Field<"option1", Type1>, rfl::Field<"option2", Type2>, ...>;
 ```
 
 The parser can now figure this out and will only try to parse the field that was indicated by the field name.
@@ -54,7 +56,7 @@ We can rewrite the example from above:
 ```cpp
 // Circle, Rectangle and Square are the same as above.
 
-using Shapes = std::variant<rfl::Field<"circle", Circle>,
+using Shapes = rfl::Variant<rfl::Field<"circle", Circle>,
                             rfl::Field<"rectangle", Rectangle>,
                             rfl::Field<"square", Square>>;
 
