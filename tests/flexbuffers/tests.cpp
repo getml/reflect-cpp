@@ -18,6 +18,7 @@
 #include "test_optional_fields.hpp"
 #include "test_readme_example.hpp"
 #include "test_ref.hpp"
+#include "test_save_load.hpp"
 #include "test_set.hpp"
 #include "test_string_map.hpp"
 #include "test_string_unordered_map.hpp"
@@ -65,6 +66,8 @@ int main() {
   test_custom_constructor();
 
   test_all_of();
+
+  test_save_load();
 
   return 0;
 }
