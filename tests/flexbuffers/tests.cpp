@@ -1,5 +1,8 @@
 #include "test_all_of.hpp"
 #include "test_anonymous_fields.hpp"
+#include "test_custom_class1.hpp"
+#include "test_custom_class2.hpp"
+#include "test_custom_class3.hpp"
 #include "test_deque.hpp"
 #include "test_field_variant.hpp"
 #include "test_forward_list.hpp"
@@ -32,6 +35,9 @@ int main() {
   test_variant();
   test_field_variant();
   test_tagged_union();
+  test_custom_class1();
+  test_custom_class2();
+  test_custom_class3();
 
   test_deque();
   test_forward_list();
