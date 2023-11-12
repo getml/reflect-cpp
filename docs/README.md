@@ -10,7 +10,7 @@
 
 1.3) [Struct flattening](https://github.com/getml/reflect-cpp/blob/main/docs/flatten_structs.md) - For making struct A "inherit" the fields of struct B.
 
-1.4) [Anonymous fields](https://github.com/getml/reflect-cpp/blob/f/anonymous_structs/docs/anonymous_fields.md) - For structs without field names or `rfl::Field`.
+1.4) [Anonymous fields](https://github.com/getml/reflect-cpp/blob/main/docs/anonymous_fields.md) - For structs without field names or `rfl::Field`.
 
 1.5) [String literals](https://github.com/getml/reflect-cpp/blob/main/docs/literals.md) - For representing strings that can only assume a limited number of enumerated values.
 
