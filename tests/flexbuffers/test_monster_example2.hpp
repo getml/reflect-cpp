@@ -6,35 +6,35 @@
 
 #include "write_and_read.hpp"
 
-void test_monster_example() {
-  std::cout << "test_monster_example" << std::endl;
+void test_monster_example2() {
+  std::cout << "test_monster_example2" << std::endl;
 
   using Color = rfl::Literal<"Red", "Green", "Blue">;
 
   struct Weapon {
-    std::string name;
-    short damage;
+    rfl::Field<"name", std::string> name;
+    rfl::Field<"damage", short> damage;
   };
 
   using Equipment = rfl::Variant<rfl::Field<"weapon", Weapon>>;
 
   struct Vec3 {
-    float x;
-    float y;
-    float z;
+    rfl::Field<"x", float> x;
+    rfl::Field<"y", float> y;
+    rfl::Field<"z", float> z;
   };
 
   struct Monster {
-    Vec3 pos;
-    short mana = 150;
-    short hp = 100;
-    std::string name;
-    bool friendly = false;
-    std::vector<std::uint8_t> inventory;
-    Color color = Color::make<"Blue">();
-    std::vector<Weapon> weapons;
-    Equipment equipped;
-    std::vector<Vec3> path;
+    rfl::Field<"pos", Vec3> pos;
+    rfl::Field<"mana", short> mana = 150;
+    rfl::Field<"hp", short> hp = 100;
+    rfl::Field<"name", std::string> name;
+    rfl::Field<"friendly", bool> friendly = false;
+    rfl::Field<"inventory", std::vector<std::uint8_t>> inventory;
+    rfl::Field<"color", Color> color = Color::make<"Blue">();
+    rfl::Field<"weapons", std::vector<Weapon>> weapons;
+    rfl::Field<"equipped", Equipment> equipped;
+    rfl::Field<"path", std::vector<Vec3>> path;
   };
 
   const auto sword = Weapon{.name = "Sword", .damage = 3};
@@ -54,7 +54,8 @@ void test_monster_example() {
                            .inventory = inventory,
                            .color = Color::make<"Red">(),
                            .weapons = weapons,
-                           .equipped = rfl::make_field<"weapon">(axe)};
+                           .equipped = rfl::make_field<"weapon">(axe),
+                           .path = rfl::default_value};
 
   write_and_read(orc);
 }

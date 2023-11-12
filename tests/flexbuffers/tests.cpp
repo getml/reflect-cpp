@@ -11,7 +11,8 @@
 #include "test_list.hpp"
 #include "test_literal.hpp"
 #include "test_map.hpp"
-#include "test_monster_example.hpp"
+#include "test_monster_example1.hpp"
+#include "test_monster_example2.hpp"
 #include "test_multimap.hpp"
 #include "test_multiset.hpp"
 #include "test_optional_fields.hpp"
@@ -31,7 +32,8 @@
 
 int main() {
   test_readme_example();
-  test_monster_example();
+  test_monster_example1();
+  test_monster_example2();
   test_anonymous_fields();
   test_optional_fields();
   test_unique_ptr();
