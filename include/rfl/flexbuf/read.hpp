@@ -13,13 +13,19 @@ namespace flexbuf {
 
 using InputVarType = typename Reader::InputVarType;
 
+/// Parses an object from flexbuf var.
+template <class T>
+Result<T> read(const InputVarType& _obj) {
+  const auto r = Reader();
+  return Parser<T>::read(r, _obj);
+}
+
 /// Parses an object from flexbuf using reflection.
 template <class T>
 Result<T> read(const unsigned char* _bytes, const size_t _size) {
   const InputVarType root =
       flexbuffers::GetRoot(reinterpret_cast<const uint8_t*>(_bytes), _size);
-  const auto r = Reader();
-  return Parser<T>::read(r, root);
+  return read<T>(root);
 }
 
 /// Parses an object from flexbuf using reflection.

@@ -1,8 +1,10 @@
 #include "test_all_of.hpp"
 #include "test_anonymous_fields.hpp"
+#include "test_box.hpp"
 #include "test_custom_class1.hpp"
 #include "test_custom_class2.hpp"
 #include "test_custom_class3.hpp"
+#include "test_custom_constructor.hpp"
 #include "test_deque.hpp"
 #include "test_field_variant.hpp"
 #include "test_forward_list.hpp"
@@ -13,6 +15,7 @@
 #include "test_multiset.hpp"
 #include "test_optional_fields.hpp"
 #include "test_readme_example.hpp"
+#include "test_ref.hpp"
 #include "test_set.hpp"
 #include "test_string_map.hpp"
 #include "test_string_unordered_map.hpp"
@@ -38,6 +41,8 @@ int main() {
   test_custom_class1();
   test_custom_class2();
   test_custom_class3();
+  test_box();
+  test_ref();
 
   test_deque();
   test_forward_list();
@@ -52,6 +57,8 @@ int main() {
   test_unordered_multimap();
   test_unordered_multiset();
   test_unordered_set();
+
+  test_custom_constructor();
 
   test_all_of();
 
