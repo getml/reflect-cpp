@@ -19,3 +19,5 @@ Run the tests:
 ```
 ./build/reflect-cpp-tests
 ```
+
+To run the scripts, you may have to run `chmod +x build_docker.sh` and `chmod +x compile.sh` first.
