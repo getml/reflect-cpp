@@ -60,6 +60,6 @@ struct API_v_1_1 {
 
 ...
 
-using APIs = std::variant<rfl::Field<"v1.0", API_v_1_0>, rfl::Field<"v1.1", API_v_1_1>, ...>;
+using APIs = rfl::Variant<rfl::Field<"v1.0", API_v_1_0>, rfl::Field<"v1.1", API_v_1_1>, ...>;
 ```
 
