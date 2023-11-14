@@ -1,9 +1,9 @@
-#ifndef RFL_INTERNAL_FLATTEN_PTR_TUPLE_HPP_
-#define RFL_INTERNAL_FLATTEN_PTR_TUPLE_HPP_
+#ifndef RFL_INTERNAL_TO_FLATTENED_PTR_TUPLE_HPP_
+#define RFL_INTERNAL_TO_FLATTENED_PTR_TUPLE_HPP_
 
 #include <tuple>
 
-#include "rfl/internal/has_flatten_field.hpp"
+#include "rfl/internal/has_flatten_fields.hpp"
 #include "rfl/internal/is_flatten_field.hpp"
 #include "rfl/internal/to_ptr_tuple.hpp"
 
@@ -29,6 +29,11 @@ auto flatten_ptr_tuple(PtrTuple&& _t, Args... _args) {
                                std::make_tuple(std::get<i>(_t)));
     }
   }
+}
+
+template <class T>
+auto to_flattened_ptr_tuple(const T& _t) {
+  return flatten_ptr_tuple(to_ptr_tuple(_t));
 }
 
 }  // namespace internal

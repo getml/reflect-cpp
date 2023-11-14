@@ -16,6 +16,7 @@
 #include "test_error_messages.hpp"
 #include "test_field_variant.hpp"
 #include "test_flatten.hpp"
+#include "test_flatten_anonymous.hpp"
 #include "test_forward_list.hpp"
 #include "test_list.hpp"
 #include "test_literal.hpp"
@@ -61,6 +62,7 @@ int main() {
   test_array();
   test_timestamp();
   test_flatten();
+  test_flatten_anonymous();
   test_deque();
   test_forward_list();
   test_list();

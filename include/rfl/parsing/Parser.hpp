@@ -32,13 +32,15 @@
 #include "rfl/internal/Memoization.hpp"
 #include "rfl/internal/StringLiteral.hpp"
 #include "rfl/internal/all_fields.hpp"
+#include "rfl/internal/flattened_tuple_t.hpp"
 #include "rfl/internal/has_fields.hpp"
 #include "rfl/internal/has_reflection_method_v.hpp"
 #include "rfl/internal/has_reflection_type_v.hpp"
 #include "rfl/internal/is_basic_type.hpp"
+#include "rfl/internal/move_from_tuple.hpp"
 #include "rfl/internal/no_duplicate_field_names.hpp"
+#include "rfl/internal/to_flattened_ptr_tuple.hpp"
 #include "rfl/internal/to_ptr_named_tuple.hpp"
-#include "rfl/internal/to_ptr_tuple.hpp"
 #include "rfl/internal/tuple_t.hpp"
 #include "rfl/named_tuple_t.hpp"
 #include "rfl/parsing/AreReaderAndWriter.hpp"
@@ -94,12 +96,9 @@ struct Parser {
           return Parser<R, W, NamedTupleType>::read(_r, _var).and_then(
               to_struct);
         } else {
-          using TupleType = internal::tuple_t<T>;
-          const auto make_t = [](auto&&... _f) -> T {
-            return T{std::move(_f)...};
-          };
-          const auto to_struct = [&](TupleType&& _tup) -> T {
-            return std::apply(make_t, std::move(_tup));
+          using TupleType = internal::flattened_tuple_t<T>;
+          const auto to_struct = [](TupleType&& _t) -> T {
+            return internal::move_from_tuple<T, TupleType>(std::move(_t));
           };
           return Parser<R, W, TupleType>::read(_r, _var).transform(to_struct);
         }
@@ -131,7 +130,7 @@ struct Parser {
         using PtrNamedTupleType = std::decay_t<decltype(ptr_named_tuple)>;
         return Parser<R, W, PtrNamedTupleType>::write(_w, ptr_named_tuple);
       } else {
-        const auto ptr_tuple = internal::to_ptr_tuple(_var);
+        const auto ptr_tuple = internal::to_flattened_ptr_tuple(_var);
         using PtrTupleType = std::decay_t<decltype(ptr_tuple)>;
         return Parser<R, W, PtrTupleType>::write(_w, ptr_tuple);
       }

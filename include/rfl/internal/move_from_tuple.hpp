@@ -4,81 +4,95 @@
 #include <functional>
 #include <type_traits>
 
-#include "rfl/internal/is_field.hpp"
+#include "rfl/internal/is_flatten_field.hpp"
 #include "rfl/internal/is_named_tuple.hpp"
-#include "rfl/internal/nt_to_ptr_named_tuple.hpp"
 #include "rfl/internal/ptr_tuple_t.hpp"
-#include "rfl/named_tuple_t.hpp"
+#include "rfl/internal/tup_to_ptr_tuple.hpp"
+#include "rfl/internal/tuple_t.hpp"
 
 namespace rfl {
 namespace internal {
 
-template <class PtrTupleType, class FlattenedPtrTupleType, class... Args>
-auto unflatten_pointers(FlattenedPtrTupleType& _n, Args... _args) {
+template <class Tuple, int _i = 0>
+constexpr int calc_flattened_size() {
+  if constexpr (_i == std::tuple_size_v<Tuple>) {
+    return 0;
+  } else {
+    using T = std::remove_pointer_t<std::tuple_element_t<_i, Tuple>>;
+    if constexpr (is_flatten_field_v<T>) {
+      return calc_flattened_size<ptr_tuple_t<typename T::Type>>() +
+             calc_flattened_size<Tuple, _i + 1>();
+    } else {
+      return 1 + calc_flattened_size<Tuple, _i + 1>();
+    }
+  }
+}
+
+template <class TargetTupleType, class PtrTupleType, int _j = 0, class... Args>
+auto unflatten_ptr_tuple(PtrTupleType& _t, Args... _args) {
   constexpr auto i = sizeof...(Args);
 
-  constexpr auto size = std::tuple_size_v<std::decay_t<PtrTupleType>>;
+  constexpr auto size = std::tuple_size_v<std::decay_t<TargetTupleType>>;
 
   if constexpr (i == size) {
     return std::make_tuple(_args...);
   } else {
-    using Field = std::decay_t<std::tuple_element_t<i, PtrTupleType>>;
-    using T = std::decay_t<std::remove_pointer_t<typename Field::Type>>;
+    using T = std::decay_t<
+        std::remove_pointer_t<std::tuple_element_t<i, TargetTupleType>>>;
 
-    if constexpr (is_flatten_field<Field>::value) {
-      using SubPtrTupleType = std::decay_t<ptr_tuple_t<T>>;
+    if constexpr (is_flatten_field_v<T>) {
+      using SubTargetTupleType =
+          ptr_tuple_t<std::remove_pointer_t<typename T::Type>>;
 
-      return unflatten_pointers<PtrTupleType>(
-          _n, _args..., unflatten_pointers<SubPtrTupleType>(_n));
+      constexpr int flattened_size = calc_flattened_size<SubTargetTupleType>();
+
+      return unflatten_ptr_tuple<TargetTupleType, PtrTupleType,
+                                 _j + flattened_size>(
+          _t, _args...,
+          unflatten_ptr_tuple<SubTargetTupleType, PtrTupleType, _j>(_t));
 
     } else {
-      return unflatten_pointers<PtrTupleType>(
-          _n, _args..., _n.template get_field<Field::name_>());
+      return unflatten_ptr_tuple<TargetTupleType, PtrTupleType, _j + 1>(
+          _t, _args..., std::get<_j>(_t));
     }
   }
 }
 
-template <class T, int _j, class Pointers, class... Args>
-auto move_from_flattened_pointers(Pointers& _ptrs, Args&&... _args) {
+template <class T, class Pointers, class... Args>
+auto move_from_pointers(Pointers& _ptrs, Args&&... _args) {
   constexpr auto i = sizeof...(Args);
   if constexpr (i == std::tuple_size_v<std::decay_t<Pointers>>) {
     return T{std::move(_args)...};
   } else {
-    if constexpr (!is_flatten_field_v<FieldType>) {
-      return move_from_flattened_pointers<T, _j + 1>(
-          _ptrs, std::move(_args)..., std::move(*std::get<_j>(_ptrs)));
+    using FieldType = std::tuple_element_t<i, std::decay_t<Pointers>>;
+
+    if constexpr (std::is_pointer_v<FieldType>) {
+      return move_from_pointers<T>(_ptrs, std::move(_args)...,
+                                   std::move(*std::get<i>(_ptrs)));
 
     } else {
-      // TODO
-      /*using PtrTupleType = std::decay_t<unflattened_ptr_tuple_t<T>>;
+      using PtrTupleType = ptr_tuple_t<std::decay_t<T>>;
 
-      using U = std::decay_t<
-          std::remove_pointer_t<std::tuple_element_t<i, PtrTupleType>>>;
+      using U = std::decay_t<typename std::remove_pointer_t<
+          typename std::tuple_element_t<i, PtrTupleType>>::Type>;
 
       return move_from_pointers<T>(_ptrs, std::move(_args)...,
-                                   move_from_pointers<U>(std::get<i>(_ptrs)));*/
+                                   move_from_pointers<U>(std::get<i>(_ptrs)));
     }
   }
 }
 
-/// Creates a struct of type T from a named tuple by moving the underlying
+/// Creates a struct of type T from a tuple by moving the underlying
 /// fields.
 template <class T, class TupleType>
-T move_from_tuple(TupleType&& _n) {
-  using RequiredType = std::decay_t<tuple_t<T>>;
+T move_from_tuple(TupleType&& _t) {
+  auto ptr_tuple = tup_to_ptr_tuple(_t);
 
-  if constexpr (is_named_tuple_v<std::decay_t<T>>) {
-    return std::move(_n);
+  using TargetTupleType = tuple_t<std::decay_t<T>>;
 
-  } else {
-    auto flattened_ptr_tuple = tuple_to_ptr_tuple(_n);
+  auto pointers = unflatten_ptr_tuple<TargetTupleType>(ptr_tuple);
 
-    using PtrTupleType = std::decay_t<unflattened_ptr_tuple_t<T>>;
-
-    auto pointers = make_pointers<PtrTupleType>(flattened_ptr_tuple);
-
-    return move_from_flattened_pointers<T, 0>(pointers);
-  }
+  return move_from_pointers<T>(pointers);
 }
 
 }  // namespace internal
