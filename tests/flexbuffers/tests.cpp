@@ -7,6 +7,7 @@
 #include "test_custom_constructor.hpp"
 #include "test_deque.hpp"
 #include "test_field_variant.hpp"
+#include "test_flatten_anonymous.hpp"
 #include "test_forward_list.hpp"
 #include "test_list.hpp"
 #include "test_literal.hpp"
@@ -36,6 +37,7 @@ int main() {
   test_monster_example1();
   test_monster_example2();
   test_anonymous_fields();
+  test_flatten_anonymous();
   test_optional_fields();
   test_unique_ptr();
   test_unique_ptr2();
