@@ -16,5 +16,7 @@ This can be fully serialized and deserialized using `rfl::json::read` and `rfl::
 
 However, there are a two things you have to keep in mind:
 
-1) If you annotate *some* of the fields using either `rfl::Field` or `rfl::Flatten`, then you must annotate *all* of them using one of these two.
-2) If you are combining structs using `rfl::Flatten`, then all fields in all structs must be annotated using either using either `rfl::Field` or `rfl::Flatten`.
+1) If you annotate *some* of the fields using either `rfl::Field`, then you must annotate *all* of them using one of these two.
+2) If you are combining structs using `rfl::Flatten`, then they structs combined like this must either be annotated or not.
+
+
