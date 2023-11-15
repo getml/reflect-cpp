@@ -52,6 +52,8 @@
 
 5.1) [JSON](https://github.com/getml/reflect-cpp/blob/main/docs/json.md)
 
+5.2) [flexbuffers](https://github.com/getml/reflect-cpp/blob/main/docs/flexbuffers.md)
+
 ## 6) Advanced topics
 
 6.1) [Supporting your own format](https://github.com/getml/reflect-cpp/blob/main/docs/supporting_your_own_format.md) - For supporting your own serialization and deserialization formats.

@@ -281,8 +281,7 @@ Finally, it is very easy to extend full support to your own classes, refer to th
 reflect-cpp currently supports the following serialization formats:
 
 - **JSON**: Out-of-the-box support, no additional dependencies required.
-- **XML**: Requires [libxml2](https://github.com/GNOME/libxml2) (TODO).
-- **flexbuffers**: Requires [flatbuffers](https://github.com/google/flatbuffers) (TODO).
+- **flexbuffers**: Requires [flatbuffers](https://github.com/google/flatbuffers).
 
 reflect-cpp is deliberately designed in a very modular format, using [concepts](https://en.cppreference.com/w/cpp/language/constraints), to make it as easy as possible to support additional serialization formats. Refer to the [documentation](https://github.com/getml/reflect-cpp/tree/main/docs) for details. PRs related to serialization formats are welcome.
 
