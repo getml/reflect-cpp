@@ -328,7 +328,7 @@ make
 To compile the tests, do the following:
 
 ```
-cd tests
+cd tests/json
 mkdir build
 cd build
 cmake ..
