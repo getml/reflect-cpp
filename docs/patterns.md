@@ -19,6 +19,7 @@ To retrieve the underlying string, you can use the `.value()` method.
 
 reflect-cpp currently contains the following predefined regex patterns:
 
+- `rfl::AlphaNumeric`
 - `rfl::Base64Encoded`
 - `rfl::Email`
 - `rfl::UUIDv1`
