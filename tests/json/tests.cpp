@@ -21,6 +21,8 @@
 #include "test_forward_list.hpp"
 #include "test_list.hpp"
 #include "test_literal.hpp"
+#include "test_literal_map.hpp"
+#include "test_literal_unordered_map.hpp"
 #include "test_map.hpp"
 #include "test_monster_example.hpp"
 #include "test_multimap.hpp"
@@ -78,6 +80,8 @@ int main() {
   test_unordered_multiset();
   test_string_map();
   test_string_unordered_map();
+  test_literal_map();
+  test_literal_unordered_map();
   test_error_messages();
   test_result();
   test_anonymous_fields();
