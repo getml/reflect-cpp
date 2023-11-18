@@ -1,4 +1,6 @@
 #include "test_all_of.hpp"
+#include "test_alphanumeric_map.hpp"
+#include "test_alphanumeric_unordered_map.hpp"
 #include "test_anonymous_fields.hpp"
 #include "test_any_of.hpp"
 #include "test_array.hpp"
@@ -80,6 +82,8 @@ int main() {
   test_unordered_multiset();
   test_string_map();
   test_string_unordered_map();
+  test_alphanumeric_map();
+  test_alphanumeric_unordered_map();
   test_literal_map();
   test_literal_unordered_map();
   test_error_messages();

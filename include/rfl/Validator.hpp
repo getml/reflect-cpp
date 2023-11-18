@@ -2,6 +2,7 @@
 #define RFL_VALIDATOR_HPP_
 
 #include <concepts>
+#include <functional>
 #include <optional>
 #include <regex>
 #include <string>
@@ -84,6 +85,11 @@ struct Validator {
     return *this;
   }
 
+  /// Equality operator other Validators.
+  bool operator==(const Validator<T, V>& _other) const {
+    return value() == _other.value();
+  }
+
   /// Exposes the underlying value.
   T& value() { return value_; }
 
@@ -98,6 +104,28 @@ struct Validator {
   T value_;
 };
 
+template <class T, class V>
+inline auto operator<=>(const Validator<T, V>& _v1,
+                        const Validator<T, V>& _v2) {
+  return _v1.value() <=> _v2.value();
+}
+
+template <class T, class V>
+inline auto operator<=>(const Validator<T, V>& _v, const T& _t) {
+  return _v.value() <=> _t;
+}
+
 }  // namespace rfl
+
+namespace std {
+
+template <class T, class V>
+struct hash<rfl::Validator<T, V>> {
+  size_t operator()(const rfl::Validator<T, V>& _v) const {
+    return hash<T>()(_v.value());
+  }
+};
+
+}  // namespace std
 
 #endif

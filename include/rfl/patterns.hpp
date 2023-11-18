@@ -6,6 +6,9 @@
 
 namespace rfl {
 
+/// This pattern only matches alphanumeric characters.
+using AlphaNumeric = Pattern<R"(^[a-zA-Z0-9]*$)", "AlphaNumeric">;
+
 /// This pattern will match valid Base64 encoded strings with or without
 /// padding.
 using Base64Encoded = Pattern<R"(^[A-Za-z0-9+/]*(={0,2})?$)", "Base64Encoded">;
