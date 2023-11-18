@@ -47,8 +47,7 @@ For a more in-depth theoretical discussions of these topics, the following books
 
 // Age must be a plausible number, between 0 and 130. This will
 // be validated automatically.
-using Age = rfl::Validator<int,
-                           rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
+using Age = rfl::Validator<int, rfl::Minimum<0>, rfl::Maximum<130>>;
 
 // "firstName", "lastName" and "children" are the field names
 // as they will appear in the JSON. The C++ standard is
