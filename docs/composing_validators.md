@@ -19,6 +19,15 @@ struct Person {
 };
 ```
 
+However, if you pass more than one constraint to `rfl::Validator`, they will be automatically connected using `rfl::AllOf`,
+so you might as well write:
+
+```cpp
+using Age = rfl::Validator<int, rfl::Minimum<0>, rfl::Maximum<130>>;
+
+...
+```
+
 You can also nest composed validators. For instance, in this case the age must either be 0-10 or 40-130.
 
 ```cpp
