@@ -3,6 +3,7 @@
 
 #include <flatbuffers/flexbuffers.h>
 
+#include <istream>
 #include <vector>
 
 #include "rfl/Result.hpp"
@@ -22,7 +23,7 @@ Result<T> read(const InputVarType& _obj) {
 
 /// Parses an object from flexbuf using reflection.
 template <class T>
-Result<T> read(const unsigned char* _bytes, const size_t _size) {
+Result<T> read(const char* _bytes, const size_t _size) {
   const InputVarType root =
       flexbuffers::GetRoot(reinterpret_cast<const uint8_t*>(_bytes), _size);
   return read<T>(root);
@@ -30,8 +31,16 @@ Result<T> read(const unsigned char* _bytes, const size_t _size) {
 
 /// Parses an object from flexbuf using reflection.
 template <class T>
-Result<T> read(const std::vector<unsigned char>& _bytes) {
+Result<T> read(const std::vector<char>& _bytes) {
   return read<T>(_bytes.data(), _bytes.size());
+}
+
+/// Parses an object directly from a stream.
+template <class T>
+Result<T> read(std::istream& _stream) {
+  std::istreambuf_iterator<char> begin(_stream), end;
+  const auto bytes = std::vector<char>(begin, end);
+  return read<T>(bytes.data(), bytes.size());
 }
 
 }  // namespace flexbuf

@@ -3,6 +3,7 @@
 
 #include <yyjson.h>
 
+#include <istream>
 #include <string>
 
 #include "rfl/json/Parser.hpp"
@@ -17,17 +18,25 @@ using InputVarType = typename Reader::InputVarType;
 /// Parses an object from a JSON var.
 template <class T>
 Result<T> read(const InputVarType& _obj) {
-    const auto r = Reader();
-    return Parser<T>::read(r, _obj);
+  const auto r = Reader();
+  return Parser<T>::read(r, _obj);
 }
 
 /// Parses an object from JSON using reflection.
 template <class T>
 Result<T> read(const std::string& _json_str) {
-    using PtrType = std::unique_ptr<yyjson_doc, void (*)(yyjson_doc*)>;
-    yyjson_doc* doc = yyjson_read(_json_str.c_str(), _json_str.size(), 0);
-    const auto ptr = PtrType(doc, yyjson_doc_free);
-    return read<T>(InputVarType(yyjson_doc_get_root(doc)));
+  using PtrType = std::unique_ptr<yyjson_doc, void (*)(yyjson_doc*)>;
+  yyjson_doc* doc = yyjson_read(_json_str.c_str(), _json_str.size(), 0);
+  const auto ptr = PtrType(doc, yyjson_doc_free);
+  return read<T>(InputVarType(yyjson_doc_get_root(doc)));
+}
+
+/// Parses an object from a stringstream.
+template <class T>
+Result<T> read(std::istream& _stream) {
+  const auto json_str = std::string(std::istreambuf_iterator<char>(_stream),
+                                    std::istreambuf_iterator<char>());
+  return read<T>(json_str);
 }
 
 }  // namespace json

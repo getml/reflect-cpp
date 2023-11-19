@@ -11,11 +11,12 @@
 namespace rfl {
 namespace io {
 
-Result<Nothing> save_bytes(const std::string& _fname,
-                           const std::vector<unsigned char>& _bytes) {
+template <class T, class WriteFunction>
+Result<Nothing> save_bytes(const std::string& _fname, const T& _obj,
+                           const WriteFunction& _write) {
   try {
     std::ofstream output(_fname, std::ios::out | std::ios::binary);
-    output.write(reinterpret_cast<const char*>(_bytes.data()), _bytes.size());
+    _write(_obj, output);
     output.close();
   } catch (std::exception& e) {
     return Error(e.what());

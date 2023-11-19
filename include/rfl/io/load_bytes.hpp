@@ -11,11 +11,11 @@
 namespace rfl {
 namespace io {
 
-Result<std::vector<unsigned char>> load_bytes(const std::string& _fname) {
+Result<std::vector<char>> load_bytes(const std::string& _fname) {
   std::ifstream input(_fname, std::ios::binary);
   if (input.is_open()) {
     std::istreambuf_iterator<char> begin(input), end;
-    const auto bytes = std::vector<unsigned char>(begin, end);
+    const auto bytes = std::vector<char>(begin, end);
     input.close();
     return bytes;
   } else {

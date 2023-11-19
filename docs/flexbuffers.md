@@ -244,6 +244,25 @@ const auto person = Person{...};
 rfl::flexbuf::save("/path/to/file.fb", person);
 ```
 
+## Reading from and writing into streams
+
+You can also read from and write into any `std::istream` and `std::ostream` respectively.
+
+```cpp
+const rfl::Result<Person> result = rfl::flexbuf::read<Person>(my_istream);
+
+const auto person = Person{...};
+rfl::flexbuf::write(person, my_ostream);
+```
+
+Note that `std::cout` is also an ostream, so this works as well:
+
+```cpp
+rfl::flexbuf::write(person, std::cout) << std::endl;
+```
+
+(Since flexbuffers is a binary format, the readability of this will be limited, but it might be useful for debugging).
+
 ## Custom constructors
 
 One of the great things about C++ is that it gives you control over

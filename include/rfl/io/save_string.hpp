@@ -10,17 +10,18 @@
 namespace rfl {
 namespace io {
 
-Result<Nothing> save_string(const std::string& _fname,
-                            const std::string& _str) {
-    try {
-        std::ofstream outfile;
-        outfile.open(_fname);
-        outfile << _str;
-        outfile.close();
-    } catch (std::exception& e) {
-        return Error(e.what());
-    }
-    return Nothing{};
+template <class T, class WriteFunction>
+Result<Nothing> save_string(const std::string& _fname, const T& _obj,
+                            const WriteFunction& _write) {
+  try {
+    std::ofstream outfile;
+    outfile.open(_fname);
+    _write(_obj, outfile);
+    outfile.close();
+  } catch (std::exception& e) {
+    return Error(e.what());
+  }
+  return Nothing{};
 }
 
 }  // namespace io

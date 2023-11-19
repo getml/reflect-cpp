@@ -95,8 +95,10 @@ const auto homer =
 
 // We can now transform this into a JSON string.
 const std::string json_string = rfl::json::write(homer);
-
 std::cout << json_string << std::endl;
+
+// We can also directly write into the stream.
+rfl::json::write(homer, std::cout) << std::endl;
 ```
 
 This results in the following JSON string:

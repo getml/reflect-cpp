@@ -39,6 +39,23 @@ const auto person = Person{...};
 rfl::json::save("/path/to/file.json", person);
 ```
 
+## Reading from and writing into streams
+
+You can also read from and write into any `std::istream` and `std::ostream` respectively.
+
+```cpp
+const rfl::Result<Person> result = rfl::json::read<Person>(my_istream);
+
+const auto person = Person{...};
+rfl::json::write(person, my_ostream);
+```
+
+Note that `std::cout` is also an ostream, so this works as well:
+
+```cpp
+rfl::json::write(person, std::cout) << std::endl;
+```
+
 ## Custom constructors
 
 One of the great things about C++ is that it gives you control over
