@@ -335,6 +335,9 @@ cd build
 cmake ..
 make
 ```
+## Related projects
+
+reflect-cpp was originally developed for [getml-community](https://github.com/getml/getml-community), the fastest open-source tool for feature engineering on relational data and time series. If you are interested in Data Science and/or Machine Learning, please check it out.
 
 ## Authors
 
