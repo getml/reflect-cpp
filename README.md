@@ -97,7 +97,7 @@ const auto homer =
 const std::string json_string = rfl::json::write(homer);
 std::cout << json_string << std::endl;
 
-// We can also directly write into the stream.
+// We can also directly write into std::cout (or any other std::ostream).
 rfl::json::write(homer, std::cout) << std::endl;
 ```
 
