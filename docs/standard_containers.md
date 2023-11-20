@@ -53,4 +53,4 @@ This will also be represented as follows:
 All other supported standard containers 
 (other than `std::variant`, `std::optional`, `std::unique_ptr` and `std::shared_ptr`) 
 will be represented as arrays. Containers for which the `value_type`
-is a key-value-pair, will be represented as arrays of pairs. 
+is a key-value-pair will be represented as arrays of pairs. 
