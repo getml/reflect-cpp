@@ -26,6 +26,7 @@
 #include "test_literal_map.hpp"
 #include "test_literal_unordered_map.hpp"
 #include "test_map.hpp"
+#include "test_map_with_key_validation.hpp"
 #include "test_monster_example.hpp"
 #include "test_multimap.hpp"
 #include "test_multiset.hpp"
@@ -73,6 +74,7 @@ int main() {
   test_forward_list();
   test_list();
   test_map();
+  test_map_with_key_validation();
   test_unordered_map();
   test_set();
   test_unordered_set();

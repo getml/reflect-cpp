@@ -6,17 +6,20 @@
 
 #include "write_and_read.hpp"
 
-void test_map() {
-  std::cout << "test_map" << std::endl;
+void test_map_with_key_validation() {
+  std::cout << "test_map_with_key_validation" << std::endl;
+
+  using Between1and3 = rfl::Validator<int, rfl::Minimum<1>, rfl::Maximum<3>>;
 
   struct Person {
     rfl::Field<"firstName", std::string> first_name;
     rfl::Field<"lastName", std::string> last_name = "Simpson";
-    rfl::Field<"children", std::unique_ptr<std::map<int, Person>>> children =
-        rfl::default_value;
+    rfl::Field<"children", std::unique_ptr<std::map<Between1and3, Person>>>
+        children = rfl::default_value;
   };
 
-  auto children = std::make_unique<std::map<int, Person>>();
+  auto children = std::make_unique<std::map<Between1and3, Person>>();
+
   children->insert(std::make_pair(1, Person{.first_name = "Bart"}));
   children->insert(std::make_pair(2, Person{.first_name = "Lisa"}));
   children->insert(std::make_pair(3, Person{.first_name = "Maggie"}));

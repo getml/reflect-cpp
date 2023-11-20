@@ -282,28 +282,7 @@ struct MapParser {
   using ValueType = std::decay_t<typename MapType::value_type::second_type>;
 
   static Result<MapType> read(const R& _r, const InputVarType& _var) noexcept {
-    const auto get_pair = [&](auto& _pair) {
-      const auto to_pair = [&](ValueType&& _val) {
-        return std::make_pair(KeyType(std::move(_pair.first)), std::move(_val));
-      };
-      return Parser<R, W, std::decay_t<ValueType>>::read(_r, _pair.second)
-          .transform(to_pair)
-          .value();
-    };
-
-    const auto to_map = [&_r, get_pair](const auto& _obj) -> Result<MapType> {
-      auto m = _r.to_map(_obj);
-      MapType res;
-      try {
-        for (auto& p : m) {
-          res.insert(get_pair(p));
-        }
-      } catch (std::exception& e) {
-        return Error(e.what());
-      }
-      return res;
-    };
-
+    const auto to_map = [&](const auto& _obj) { return make_map(_r, _obj); };
     return _r.to_object(_var).and_then(to_map);
   }
 
@@ -312,12 +291,87 @@ struct MapParser {
     for (const auto& [k, v] : _m) {
       auto parsed_val = Parser<R, W, std::decay_t<ValueType>>::write(_w, v);
       if constexpr (internal::has_reflection_type_v<KeyType>) {
-        _w.set_field(k.reflection(), std::move(parsed_val), &obj);
+        using ReflT = typename KeyType::ReflectionType;
+
+        if constexpr (std::is_integral_v<ReflT> ||
+                      std::is_floating_point_v<ReflT>) {
+          _w.set_field(std::to_string(k.reflection()), std::move(parsed_val),
+                       &obj);
+        } else {
+          _w.set_field(k.reflection(), std::move(parsed_val), &obj);
+        }
+
+      } else if constexpr (std::is_integral_v<KeyType> ||
+                           std::is_floating_point_v<KeyType>) {
+        _w.set_field(std::to_string(k), std::move(parsed_val), &obj);
       } else {
         _w.set_field(k, std::move(parsed_val), &obj);
       }
     }
     return obj;
+  }
+
+ private:
+  template <class T>
+  static Result<T> key_to_numeric(auto& _pair) noexcept {
+    try {
+      if constexpr (std::is_integral_v<T>) {
+        return static_cast<T>(std::stoi(_pair.first));
+      } else if constexpr (std::is_floating_point_v<T>) {
+        return static_cast<T>(std::stod(_pair.first));
+      } else {
+        static_assert(always_false_v<T>, "Unsupported type");
+      }
+    } catch (std::exception& e) {
+      return Error(e.what());
+    }
+  }
+
+  static Result<std::pair<KeyType, ValueType>> make_key(auto& _pair) noexcept {
+    const auto to_pair = [&](auto _key) {
+      return std::make_pair(KeyType(std::move(_key)), std::move(_pair.second));
+    };
+
+    if constexpr (std::is_integral_v<KeyType> ||
+                  std::is_floating_point_v<KeyType>) {
+      return key_to_numeric<KeyType>(_pair).transform(to_pair);
+
+    } else if constexpr (internal::has_reflection_type_v<KeyType>) {
+      using ReflT = typename KeyType::ReflectionType;
+
+      if constexpr (std::is_integral_v<ReflT> ||
+                    std::is_floating_point_v<ReflT>) {
+        return key_to_numeric<ReflT>(_pair).transform(to_pair);
+      } else {
+        return to_pair(_pair.first);
+      }
+
+    } else {
+      return std::move(_pair);
+    }
+  }
+
+  static std::pair<KeyType, ValueType> get_pair(const R& _r, auto& _pair) {
+    const auto to_pair = [&](ValueType&& _val) {
+      auto pair = std::make_pair(std::move(_pair.first), std::move(_val));
+      return make_key(pair);
+    };
+    return Parser<R, W, std::decay_t<ValueType>>::read(_r, _pair.second)
+        .and_then(to_pair)
+        .value();
+  }
+
+  static Result<MapType> make_map(const R& _r, const auto& _obj) noexcept {
+    auto m = _r.to_map(_obj);
+    MapType res;
+    try {
+      for (auto& p : m) {
+        res.insert(get_pair(_r, p));
+      }
+    } catch (std::exception& e) {
+      return Error(e.what());
+    }
+    return res;
   }
 };
 
@@ -1179,9 +1233,15 @@ struct VectorParser {
   static constexpr bool treat_as_map() {
     if constexpr (is_map_like_not_multimap<VecType>()) {
       if constexpr (internal::has_reflection_type_v<typename T::first_type>) {
-        return std::is_same<
-            std::decay_t<typename T::first_type::ReflectionType>,
-            std::string>();
+        using U = std::decay_t<typename T::first_type::ReflectionType>;
+        return std::is_same<U, std::string>() || std::is_integral_v<U> ||
+               std::is_floating_point_v<U>;
+
+        // We do not need std::string here, it is already caught by the template
+        // specialization.
+      } else if constexpr (std::is_integral_v<typename T::first_type> ||
+                           std::is_floating_point_v<typename T::first_type>) {
+        return true;
       } else {
         return false;
       }
