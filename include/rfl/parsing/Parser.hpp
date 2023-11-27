@@ -1,6 +1,8 @@
 #ifndef RFL_PARSING_PARSER_HPP_
 #define RFL_PARSING_PARSER_HPP_
 
+#include <math.h>
+
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -29,10 +31,13 @@
 #include "rfl/always_false.hpp"
 #include "rfl/field_type.hpp"
 #include "rfl/from_named_tuple.hpp"
+#include "rfl/internal/Fields.hpp"
 #include "rfl/internal/Memoization.hpp"
 #include "rfl/internal/StringLiteral.hpp"
 #include "rfl/internal/all_fields.hpp"
+#include "rfl/internal/flattened_ptr_tuple_t.hpp"
 #include "rfl/internal/flattened_tuple_t.hpp"
+#include "rfl/internal/get_field_names.hpp"
 #include "rfl/internal/has_fields.hpp"
 #include "rfl/internal/has_reflection_method_v.hpp"
 #include "rfl/internal/has_reflection_type_v.hpp"
@@ -44,6 +49,7 @@
 #include "rfl/internal/tuple_t.hpp"
 #include "rfl/named_tuple_t.hpp"
 #include "rfl/parsing/AreReaderAndWriter.hpp"
+#include "rfl/parsing/TaggedUnionWrapper.hpp"
 #include "rfl/parsing/is_forward_list.hpp"
 #include "rfl/parsing/is_map_like.hpp"
 #include "rfl/parsing/is_map_like_not_multimap.hpp"
@@ -71,7 +77,7 @@ struct StructParser {
   using OutputObjectType = typename W::OutputObjectType;
   using OutputVarType = typename W::OutputVarType;
 
-  using PtrTupleType = internal::ptr_tuple_t<T>;
+  using PtrTupleType = internal::flattened_ptr_tuple_t<T>;
   using TupleType = internal::flattened_tuple_t<T>;
 
   static constexpr auto tuple_size = std::tuple_size_v<TupleType>;
@@ -90,7 +96,7 @@ struct StructParser {
       return _r.template to_fields_array<tuple_size>(fct, _obj);
     };
 
-    const auto build_tuple = [&](auto _fields_vec) -> TupleType {
+    const auto build_tuple = [&](auto _fields_vec) -> Result<TupleType> {
       return build_tuple_recursively(_r, _fields_vec);
     };
 
@@ -218,7 +224,7 @@ struct StructParser {
       using ValueType =
           std::decay_t<typename std::tuple_element<_i, PtrTupleType>::type>;
 
-      auto value = Parser<R, W, ValueType>::write(_w, rfl::get<_i>(_tup));
+      auto value = Parser<R, W, ValueType>::write(_w, std::get<_i>(_tup));
 
       const auto& key = std::get<_i>(field_names());
 
@@ -238,16 +244,14 @@ struct StructParser {
   /// There are some objects that we are likely to parse many times,
   /// so we only calculate these indices once.
   static const auto& field_indices() noexcept {
-    // return field_indices_.value(set_field_indices<0>);
-    return field_indices_;
+    return fields_.value(make_fields).indices_;
   }
 
   /// Uses a memoization pattern to retrieve the field names.
   /// There are some objects that we are likely to parse many times,
   /// so we only calculate these indices once.
   static const auto& field_names() noexcept {
-    // return field_indices_.value(set_field_indices<0>);
-    return field_names_;
+    return fields_.value(make_fields).names_;
   }
 
   /// Retrieves the value from the object. This is mainly needed to
@@ -262,31 +266,17 @@ struct StructParser {
   }
 
   /// Builds the object field by field.
-  /*template <size_t _i = 0>
-  static void set_field_indices(
-      std::unordered_map<std::string_view, std::int16_t>*
-          _field_indices) noexcept {
-    if constexpr (_i >= sizeof...(FieldTypes)) {
-      return;
-    } else {
-      using FieldType =
-          typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type;
-      const auto name = FieldType::name_.string_view();
-      (*_field_indices)[name] = static_cast<std::int16_t>(_i);
-      set_field_indices<_i + 1>(_field_indices);
+  static void make_fields(internal::Fields<tuple_size>* _fields) noexcept {
+    _fields->names_ = internal::get_field_names<T>();
+    for (size_t i = 0; i < tuple_size; ++i) {
+      _fields->indices_[_fields->names_[i]] = static_cast<std::int16_t>(i);
     }
-  }*/
+  }
 
  private:
-  /// Maps each of the field names to an index signifying their order.
-  /*static inline internal::Memoization<
-      std::unordered_map<std::string_view, std::int16_t>>
-      field_indices_;*/
-
-  static inline std::array<std::string, tuple_size> field_names_;
-
-  static inline std::unordered_map<std::string_view, std::int16_t>
-      field_indices_;
+  /// Maps each of the field names to an index signifying their order and
+  /// vice-versa.
+  static inline internal::Memoization<internal::Fields<tuple_size>> fields_;
 };
 
 // ----------------------------------------------------------------------------
@@ -326,11 +316,7 @@ struct Parser {
           return Parser<R, W, NamedTupleType>::read(_r, _var).and_then(
               to_struct);
         } else {
-          using TupleType = internal::flattened_tuple_t<T>;
-          const auto to_struct = [](TupleType&& _t) -> T {
-            return internal::move_from_tuple<T, TupleType>(std::move(_t));
-          };
-          return Parser<R, W, TupleType>::read(_r, _var).transform(to_struct);
+          return StructParser<R, W, T>::read(_r, _var);
         }
       } else if constexpr (internal::is_basic_type_v<T>) {
         return _r.template to_basic_type<std::decay_t<T>>(_var);
@@ -360,9 +346,7 @@ struct Parser {
         using PtrNamedTupleType = std::decay_t<decltype(ptr_named_tuple)>;
         return Parser<R, W, PtrNamedTupleType>::write(_w, ptr_named_tuple);
       } else {
-        const auto ptr_tuple = internal::to_flattened_ptr_tuple(_var);
-        using PtrTupleType = std::decay_t<decltype(ptr_tuple)>;
-        return Parser<R, W, PtrTupleType>::write(_w, ptr_tuple);
+        return StructParser<R, W, T>::write(_w, _var);
       }
     } else if constexpr (internal::is_basic_type_v<T>) {
       return _w.from_basic_type(_var);
@@ -862,6 +846,28 @@ struct Parser<R, W, Ref<T>> {
 
 // ----------------------------------------------------------------------------
 
+template <class R, class W, class T, internal::StringLiteral _name>
+requires AreReaderAndWriter<R, W, Rename<_name, T>>
+struct Parser<R, W, Rename<_name, T>> {
+  using InputVarType = typename R::InputVarType;
+  using OutputVarType = typename W::OutputVarType;
+
+  static Result<Rename<_name, T>> read(const R& _r,
+                                       const InputVarType& _var) noexcept {
+    const auto to_rename = [](auto&& _t) {
+      return Rename<_name, T>(std::move(_t));
+    };
+    return Parser<R, W, std::decay_t<T>>::read(_r, _var).transform(to_rename);
+  }
+
+  static OutputVarType write(const W& _w,
+                             const Rename<_name, T>& _rename) noexcept {
+    return Parser<R, W, std::decay_t<T>>::write(_w, _rename.value());
+  }
+};
+
+// ----------------------------------------------------------------------------
+
 template <class R, class W, class T>
 requires AreReaderAndWriter<R, W, Result<T>>
 struct Parser<R, W, Result<T>> {
@@ -997,9 +1003,10 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
   static OutputVarType write(
       const W& _w, const TaggedUnion<_discriminator, AlternativeTypes...>&
                        _tagged_union) noexcept {
-    using VariantType =
-        typename TaggedUnion<_discriminator, AlternativeTypes...>::VariantType;
-    return Parser<R, W, VariantType>::write(_w, _tagged_union.variant_);
+    const auto handle = [&](const auto& _val) -> OutputVarType {
+      return write_wrapped(_w, _val);
+    };
+    return std::visit(handle, _tagged_union.variant_);
   }
 
  private:
@@ -1061,12 +1068,40 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
   static inline bool contains_disc_value(
       const std::string& _disc_value) noexcept {
     if constexpr (!internal::has_reflection_type_v<T>) {
-      using LiteralType = field_type_t<_discriminator, T>;
+      using LiteralType = typename T::Tag;
       return LiteralType::contains(_disc_value);
     } else {
-      using LiteralType =
-          field_type_t<_discriminator, typename T::ReflectionType>;
+      using LiteralType = typename T::ReflectionType::Tag;
       return LiteralType::contains(_disc_value);
+    }
+  }
+
+  template <class T>
+  static inline auto make_tag() noexcept {
+    if constexpr (!internal::has_reflection_type_v<T>) {
+      using LiteralType = typename T::Tag;
+      return LiteralType::template name_of<0>();
+    } else {
+      using LiteralType = typename T::ReflectionType::Tag;
+      return LiteralType::template name_of<0>();
+    }
+  }
+
+  /// Writes a wrapped version of the original object, which contains the tag.
+  template <class T>
+  static OutputVarType write_wrapped(const W& _w, const T& _val) noexcept {
+    const auto tag = make_tag<T>();
+    using TagType = std::decay_t<decltype(tag)>;
+    if constexpr (internal::has_fields<std::decay_t<T>>()) {
+      using WrapperType =
+          TaggedUnionWrapperWithFields<T, TagType, _discriminator>;
+      const auto wrapper = WrapperType{.tag = tag, .fields = &_val};
+      return Parser<R, W, WrapperType>::write(_w, wrapper);
+    } else {
+      using WrapperType =
+          TaggedUnionWrapperNoFields<T, TagType, _discriminator>;
+      const auto wrapper = WrapperType{.tag = tag, .fields = &_val};
+      return Parser<R, W, WrapperType>::write(_w, wrapper);
     }
   }
 };

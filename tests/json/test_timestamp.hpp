@@ -7,27 +7,30 @@
 
 #include "write_and_read.hpp"
 
-void test_timestamp() {
-    std::cout << "test_timestamp" << std::endl;
+namespace test_timestamp {
 
-    using TS = rfl::Timestamp<"%Y-%m-%d">;
+using TS = rfl::Timestamp<"%Y-%m-%d">;
 
-    struct Person {
-        rfl::Field<"firstName", std::string> first_name;
-        rfl::Field<"lastName", std::string> last_name = "Simpson";
-        rfl::Field<"birthday", TS> birthday;
-    };
+struct Person {
+  rfl::Rename<"firstName", std::string> first_name;
+  rfl::Rename<"lastName", std::string> last_name = "Simpson";
+  TS birthday;
+};
 
-    const auto result = TS::from_string("nonsense");
+void test() {
+  std::cout << "test_timestamp" << std::endl;
 
-    if (result) {
-        std::cout << "Failed: Expected an error, but got none." << std::endl;
-        return;
-    }
+  const auto result = TS::from_string("nonsense");
 
-    const auto bart = Person{.first_name = "Bart", .birthday = "1987-04-19"};
+  if (result) {
+    std::cout << "Failed: Expected an error, but got none." << std::endl;
+    return;
+  }
 
-    write_and_read(
-        bart,
-        R"({"firstName":"Bart","lastName":"Simpson","birthday":"1987-04-19"})");
+  const auto bart = Person{.first_name = "Bart", .birthday = "1987-04-19"};
+
+  write_and_read(
+      bart,
+      R"({"firstName":"Bart","lastName":"Simpson","birthday":"1987-04-19"})");
 }
+}  // namespace test_timestamp

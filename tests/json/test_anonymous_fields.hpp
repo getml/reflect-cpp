@@ -6,20 +6,22 @@
 
 #include "write_and_read.hpp"
 
-void test_anonymous_fields() {
+namespace test_anonymous_fields {
+
+using Age = rfl::Validator<unsigned int,
+                           rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
+
+struct Person {
+  std::string first_name;
+  std::string last_name;
+  rfl::Timestamp<"%Y-%m-%d"> birthday;
+  Age age;
+  rfl::Email email;
+  std::vector<Person> children;
+};
+
+void test() {
   std::cout << "test_anonymous_fields" << std::endl;
-
-  using Age = rfl::Validator<unsigned int,
-                             rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
-
-  struct Person {
-    std::string first_name;
-    std::string last_name;
-    rfl::Timestamp<"%Y-%m-%d"> birthday;
-    Age age;
-    rfl::Email email;
-    std::vector<Person> children;
-  };
 
   const auto bart = Person{.first_name = "Bart",
                            .last_name = "Simpson",
@@ -49,5 +51,6 @@ void test_anonymous_fields() {
 
   write_and_read(
       homer,
-      R"(["Homer","Simpson","1987-04-19",45,"homer@simpson.com",[["Bart","Simpson","1987-04-19",10,"bart@simpson.com",[]],["Lisa","Simpson","1987-04-19",8,"lisa@simpson.com",[]],["Maggie","Simpson","1987-04-19",0,"maggie@simpson.com",[]]]])");
+      R"({"first_name":"Homer","last_name":"Simpson","birthday":"1987-04-19","age":45,"email":"homer@simpson.com","children":[{"first_name":"Bart","last_name":"Simpson","birthday":"1987-04-19","age":10,"email":"bart@simpson.com","children":[]},{"first_name":"Lisa","last_name":"Simpson","birthday":"1987-04-19","age":8,"email":"lisa@simpson.com","children":[]},{"first_name":"Maggie","last_name":"Simpson","birthday":"1987-04-19","age":0,"email":"maggie@simpson.com","children":[]}]})");
 }
+}  // namespace test_anonymous_fields

@@ -1,11 +1,12 @@
-#include <cassert>
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
 #include <string>
 #include <vector>
 
-namespace test_save_load {
+#include "write_and_read.hpp"
+
+namespace test_rename {
 
 using Age = rfl::Validator<unsigned int,
                            rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
@@ -20,14 +21,13 @@ struct Person {
 };
 
 void test() {
-  std::cout << "test_save_load" << std::endl;
+  std::cout << "test_anonymous_fields" << std::endl;
 
   const auto bart = Person{.first_name = "Bart",
                            .last_name = "Simpson",
                            .birthday = "1987-04-19",
                            .age = 10,
-                           .email = "bart@simpson.com",
-                           .children = std::vector<Person>()};
+                           .email = "bart@simpson.com"};
 
   const auto lisa = Person{.first_name = "Lisa",
                            .last_name = "Simpson",
@@ -41,7 +41,7 @@ void test() {
                              .age = 0,
                              .email = "maggie@simpson.com"};
 
-  const auto homer1 =
+  const auto homer =
       Person{.first_name = "Homer",
              .last_name = "Simpson",
              .birthday = "1987-04-19",
@@ -49,19 +49,8 @@ void test() {
              .email = "homer@simpson.com",
              .children = std::vector<Person>({bart, lisa, maggie})};
 
-  rfl::json::save("homer.json", homer1);
-
-  const auto homer2 = rfl::json::load<Person>("homer.json").value();
-
-  const auto string1 = rfl::json::write(homer1);
-  const auto string2 = rfl::json::write(homer2);
-
-  if (string1 != string2) {
-    std::cout << "Test failed. Content was not identical." << std::endl
-              << std::endl;
-    return;
-  }
-
-  std::cout << "OK" << std::endl << std::endl;
+  write_and_read(
+      homer,
+      R"({"firstName":"Homer","lastName":"Simpson","birthday":"1987-04-19","age":45,"email":"homer@simpson.com","children":[{"firstName":"Bart","lastName":"Simpson","birthday":"1987-04-19","age":10,"email":"bart@simpson.com","children":[]},{"firstName":"Lisa","lastName":"Simpson","birthday":"1987-04-19","age":8,"email":"lisa@simpson.com","children":[]},{"firstName":"Maggie","lastName":"Simpson","birthday":"1987-04-19","age":0,"email":"maggie@simpson.com","children":[]}]})");
 }
-}  // namespace test_save_load
+}  // namespace test_rename

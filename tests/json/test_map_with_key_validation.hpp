@@ -6,17 +6,18 @@
 
 #include "write_and_read.hpp"
 
-void test_map_with_key_validation() {
+namespace test_map_with_key_validation {
+
+using Between1and3 = rfl::Validator<int, rfl::Minimum<1>, rfl::Maximum<3>>;
+
+struct Person {
+  rfl::Rename<"firstName", std::string> first_name;
+  rfl::Rename<"lastName", std::string> last_name = "Simpson";
+  std::unique_ptr<std::map<Between1and3, Person>> children;
+};
+
+void test() {
   std::cout << "test_map_with_key_validation" << std::endl;
-
-  using Between1and3 = rfl::Validator<int, rfl::Minimum<1>, rfl::Maximum<3>>;
-
-  struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name = "Simpson";
-    rfl::Field<"children", std::unique_ptr<std::map<Between1and3, Person>>>
-        children = rfl::default_value;
-  };
 
   auto children = std::make_unique<std::map<Between1and3, Person>>();
 
@@ -31,3 +32,4 @@ void test_map_with_key_validation() {
       homer,
       R"({"firstName":"Homer","lastName":"Simpson","children":{"1":{"firstName":"Bart","lastName":"Simpson"},"2":{"firstName":"Lisa","lastName":"Simpson"},"3":{"firstName":"Maggie","lastName":"Simpson"}}})");
 }
+}  // namespace test_map_with_key_validation

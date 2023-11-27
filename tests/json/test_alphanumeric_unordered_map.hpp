@@ -7,7 +7,8 @@
 
 #include "write_and_read.hpp"
 
-void test_alphanumeric_unordered_map() {
+namespace test_alphanumeric_unordered_map {
+void test() {
   std::cout << "test_alphanumeric_unordered_map" << std::endl;
 
   using Map =
@@ -24,3 +25,4 @@ void test_alphanumeric_unordered_map() {
   const auto homer2 = rfl::json::read<Map>(json_string);
   std::cout << "OK" << std::endl << std::endl;
 }
+}  // namespace test_alphanumeric_unordered_map

@@ -7,22 +7,23 @@
 
 #include "write_and_read.hpp"
 
-// Makes sure that we can set default values.
-void test_literal() {
-    std::cout << "test_literal" << std::endl;
+namespace test_literal {
 
-    using FirstName = rfl::Literal<"Homer", "Marge", "Bart", "Lisa", "Maggie">;
-    using LastName = rfl::Literal<"Simpson">;
+using FirstName = rfl::Literal<"Homer", "Marge", "Bart", "Lisa", "Maggie">;
+using LastName = rfl::Literal<"Simpson">;
 
-    struct Person {
-        rfl::Field<"firstName", FirstName> first_name;
-        rfl::Field<"lastName", LastName> last_name = rfl::default_value;
-        rfl::Field<"children", std::vector<Person>> children =
-            rfl::default_value;
-    };
+struct Person {
+  rfl::Rename<"firstName", FirstName> first_name;
+  rfl::Rename<"lastName", LastName> last_name;
+  std::vector<Person> children;
+};
 
-    const auto bart = Person{.first_name = FirstName::make<"Bart">()};
+void test() {
+  std::cout << "test_literal" << std::endl;
 
-    write_and_read(
-        bart, R"({"firstName":"Bart","lastName":"Simpson","children":[]})");
+  const auto bart = Person{.first_name = FirstName::make<"Bart">()};
+
+  write_and_read(bart,
+                 R"({"firstName":"Bart","lastName":"Simpson","children":[]})");
 }
+}  // namespace test_literal

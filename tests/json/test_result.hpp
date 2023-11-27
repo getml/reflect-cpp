@@ -6,15 +6,16 @@
 
 #include "write_and_read.hpp"
 
-void test_result() {
-  std::cout << "test_result" << std::endl;
+namespace test_result {
 
-  struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name = "Simpson";
-    rfl::Field<"children", std::vector<rfl::Result<Person>>> children =
-        rfl::default_value;
-  };
+struct Person {
+  rfl::Rename<"firstName", std::string> first_name;
+  rfl::Rename<"lastName", std::string> last_name = "Simpson";
+  std::vector<rfl::Result<Person>> children;
+};
+
+void test() {
+  std::cout << "test_result" << std::endl;
 
   const rfl::Result<Person> bart = Person{.first_name = "Bart"};
 
@@ -30,3 +31,4 @@ void test_result() {
       homer,
       R"({"firstName":"Homer","lastName":"Simpson","children":[{"firstName":"Bart","lastName":"Simpson","children":[]},{"firstName":"Lisa","lastName":"Simpson","children":[]},{"error":"Some error occurred."}]})");
 }
+}  // namespace test_result

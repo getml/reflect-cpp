@@ -6,23 +6,25 @@
 
 #include "write_and_read.hpp"
 
-void test_multiset() {
-    std::cout << "test_multiset" << std::endl;
+namespace test_multiset {
 
-    struct Person {
-        rfl::Field<"firstName", std::string> first_name;
-        rfl::Field<"lastName", std::string> last_name = "Simpson";
-        rfl::Field<"children", std::unique_ptr<std::multiset<std::string>>>
-            children = rfl::default_value;
-    };
+struct Person {
+  rfl::Rename<"firstName", std::string> first_name;
+  rfl::Rename<"lastName", std::string> last_name = "Simpson";
+  std::unique_ptr<std::multiset<std::string>> children;
+};
 
-    auto children = std::make_unique<std::multiset<std::string>>(
-        std::multiset<std::string>({"Bart", "Lisa", "Maggie"}));
+void test() {
+  std::cout << "test_multiset" << std::endl;
 
-    const auto homer =
-        Person{.first_name = "Homer", .children = std::move(children)};
+  auto children = std::make_unique<std::multiset<std::string>>(
+      std::multiset<std::string>({"Bart", "Lisa", "Maggie"}));
 
-    write_and_read(
-        homer,
-        R"({"firstName":"Homer","lastName":"Simpson","children":["Bart","Lisa","Maggie"]})");
+  const auto homer =
+      Person{.first_name = "Homer", .children = std::move(children)};
+
+  write_and_read(
+      homer,
+      R"({"firstName":"Homer","lastName":"Simpson","children":["Bart","Lisa","Maggie"]})");
 }
+}  // namespace test_multiset

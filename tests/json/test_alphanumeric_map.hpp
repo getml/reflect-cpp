@@ -7,7 +7,9 @@
 
 #include "write_and_read.hpp"
 
-void test_alphanumeric_map() {
+namespace test_alphanumeric_map {
+
+void test() {
   std::cout << "test_alphanumeric_map" << std::endl;
 
   std::map<rfl::AlphaNumeric, std::unique_ptr<std::string>> homer;
@@ -18,3 +20,5 @@ void test_alphanumeric_map() {
 
   write_and_read(homer, R"({"firstName":"Homer","lastName":"Simpson"})");
 }
+
+}  // namespace test_alphanumeric_map

@@ -7,26 +7,28 @@
 
 #include "write_and_read.hpp"
 
-// Makes sure that we can set default values.
-void test_variant() {
-    std::cout << "test_variant" << std::endl;
+namespace test_variant {
 
-    struct Circle {
-        rfl::Field<"radius", double> radius;
-    };
+struct Circle {
+  double radius;
+};
 
-    struct Rectangle {
-        rfl::Field<"height", double> height;
-        rfl::Field<"width", double> width;
-    };
+struct Rectangle {
+  double height;
+  double width;
+};
 
-    struct Square {
-        rfl::Field<"width", double> width;
-    };
+struct Square {
+  double width;
+};
 
-    using Shapes = std::variant<Circle, Rectangle, std::unique_ptr<Square>>;
+using Shapes = std::variant<Circle, Rectangle, std::unique_ptr<Square>>;
 
-    const Shapes r = Rectangle{.height = 10, .width = 5};
+void test() {
+  std::cout << "test_variant" << std::endl;
 
-    write_and_read(r, R"({"height":10.0,"width":5.0})");
+  const Shapes r = Rectangle{.height = 10, .width = 5};
+
+  write_and_read(r, R"({"height":10.0,"width":5.0})");
 }
+}  // namespace test_variant

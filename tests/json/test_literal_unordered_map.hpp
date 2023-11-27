@@ -9,12 +9,14 @@
 
 #include "write_and_read.hpp"
 
-void test_literal_unordered_map() {
+namespace test_literal_unordered_map {
+
+using FieldName = rfl::Literal<"firstName", "lastName">;
+
+using Map = std::unordered_map<FieldName, std::unique_ptr<std::string>>;
+
+void test() {
   std::cout << "test_literal_unordered_map" << std::endl;
-
-  using FieldName = rfl::Literal<"firstName", "lastName">;
-
-  using Map = std::unordered_map<FieldName, std::unique_ptr<std::string>>;
 
   Map homer;
 
@@ -29,3 +31,4 @@ void test_literal_unordered_map() {
   const auto homer2 = rfl::json::read<Map>(json_string);
   std::cout << "OK" << std::endl << std::endl;
 }
+}  // namespace test_literal_unordered_map

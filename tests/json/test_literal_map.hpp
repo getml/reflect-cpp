@@ -8,10 +8,12 @@
 
 #include "write_and_read.hpp"
 
-void test_literal_map() {
-  std::cout << "test_literal_map" << std::endl;
+namespace test_literal_map {
 
-  using FieldName = rfl::Literal<"firstName", "lastName">;
+using FieldName = rfl::Literal<"firstName", "lastName">;
+
+void test() {
+  std::cout << "test_literal_map" << std::endl;
 
   std::map<FieldName, std::unique_ptr<std::string>> homer;
   homer.insert(std::make_pair(FieldName::make<"firstName">(),
@@ -21,3 +23,4 @@ void test_literal_map() {
 
   write_and_read(homer, R"({"firstName":"Homer","lastName":"Simpson"})");
 }
+}  // namespace test_literal_map

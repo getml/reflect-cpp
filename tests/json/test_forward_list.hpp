@@ -6,25 +6,27 @@
 
 #include "write_and_read.hpp"
 
-void test_forward_list() {
-    std::cout << "test_forward_list" << std::endl;
+namespace test_forward_list {
 
-    struct Person {
-        rfl::Field<"firstName", std::string> first_name;
-        rfl::Field<"lastName", std::string> last_name = "Simpson";
-        rfl::Field<"children", std::unique_ptr<std::forward_list<Person>>>
-            children = rfl::default_value;
-    };
+struct Person {
+  rfl::Rename<"firstName", std::string> first_name;
+  rfl::Rename<"lastName", std::string> last_name = "Simpson";
+  std::unique_ptr<std::forward_list<Person>> children;
+};
 
-    auto children = std::make_unique<std::forward_list<Person>>();
-    children->emplace_front(Person{.first_name = "Maggie"});
-    children->emplace_front(Person{.first_name = "Lisa"});
-    children->emplace_front(Person{.first_name = "Bart"});
+void test() {
+  std::cout << "test_forward_list" << std::endl;
 
-    const auto homer =
-        Person{.first_name = "Homer", .children = std::move(children)};
+  auto children = std::make_unique<std::forward_list<Person>>();
+  children->emplace_front(Person{.first_name = "Maggie"});
+  children->emplace_front(Person{.first_name = "Lisa"});
+  children->emplace_front(Person{.first_name = "Bart"});
 
-    write_and_read(
-        homer,
-        R"({"firstName":"Homer","lastName":"Simpson","children":[{"firstName":"Bart","lastName":"Simpson"},{"firstName":"Lisa","lastName":"Simpson"},{"firstName":"Maggie","lastName":"Simpson"}]})");
+  const auto homer =
+      Person{.first_name = "Homer", .children = std::move(children)};
+
+  write_and_read(
+      homer,
+      R"({"firstName":"Homer","lastName":"Simpson","children":[{"firstName":"Bart","lastName":"Simpson"},{"firstName":"Lisa","lastName":"Simpson"},{"firstName":"Maggie","lastName":"Simpson"}]})");
 }
+}  // namespace test_forward_list

@@ -19,7 +19,6 @@
 #include "test_field_variant.hpp"
 #include "test_flatten.hpp"
 #include "test_flatten_anonymous.hpp"
-#include "test_flatten_tuple.hpp"
 #include "test_forward_list.hpp"
 #include "test_list.hpp"
 #include "test_literal.hpp"
@@ -34,6 +33,7 @@
 #include "test_optional_fields.hpp"
 #include "test_readme_example.hpp"
 #include "test_ref.hpp"
+#include "test_rename.hpp"
 #include "test_replace.hpp"
 #include "test_replace_flatten.hpp"
 #include "test_replace_with_other_struct.hpp"
@@ -54,65 +54,65 @@
 #include "test_variant.hpp"
 
 int main() {
-  test_readme_example();
-  test_default_values();
-  test_optional_fields();
-  test_unique_ptr();
-  test_unique_ptr2();
-  test_literal();
-  test_variant();
-  test_tagged_union();
-  test_field_variant();
-  test_ref();
-  test_box();
-  test_array();
-  test_timestamp();
-  test_flatten();
-  test_flatten_anonymous();
-  test_flatten_tuple();
-  test_deque();
-  test_forward_list();
-  test_list();
-  test_map();
-  test_map_with_key_validation();
-  test_unordered_map();
-  test_set();
-  test_unordered_set();
-  test_multimap();
-  test_unordered_multimap();
-  test_multiset();
-  test_unordered_multiset();
-  test_string_map();
-  test_string_unordered_map();
-  test_alphanumeric_map();
-  test_alphanumeric_unordered_map();
-  test_literal_map();
-  test_literal_unordered_map();
-  test_error_messages();
-  test_result();
-  test_anonymous_fields();
-  test_monster_example();
+  test_readme_example::test();
+  test_default_values::test();
+  test_optional_fields::test();
+  test_unique_ptr::test();
+  test_unique_ptr2::test();
+  test_literal::test();
+  test_variant::test();
+  test_tagged_union::test();
+  test_field_variant::test();
+  test_ref::test();
+  test_box::test();
+  test_array::test();
+  test_timestamp::test();
+  test_flatten::test();
+  test_flatten_anonymous::test();
+  test_rename::test();
+  test_deque::test();
+  test_forward_list::test();
+  test_list::test();
+  test_map::test();
+  test_map_with_key_validation::test();
+  test_unordered_map::test();
+  test_set::test();
+  test_unordered_set::test();
+  test_multimap::test();
+  test_unordered_multimap::test();
+  test_multiset::test();
+  test_unordered_multiset::test();
+  test_string_map::test();
+  test_string_unordered_map::test();
+  test_alphanumeric_map::test();
+  test_alphanumeric_unordered_map::test();
+  test_literal_map::test();
+  test_literal_unordered_map::test();
+  test_error_messages::test();
+  test_result::test();
+  test_anonymous_fields::test();
+  test_monster_example::test();
 
-  test_custom_class1();
-  test_custom_class2();
-  test_custom_class3();
-  test_custom_class4();
+  test_custom_class1::test();
+  test_custom_class2::test();
+  test_custom_class3::test();
+  test_custom_class4::test();
 
-  test_replace();
-  test_replace_flatten();
-  test_replace_with_other_struct();
-  test_as();
+  test_replace::test();
+  test_replace_flatten::test();
+  test_replace_with_other_struct::test();
+  test_as::test();
   test_as_flatten();
 
-  test_custom_constructor();
+  test_custom_constructor::test();
 
-  test_all_of();
-  test_any_of();
-  test_one_of();
-  test_email();
-  test_size();
+  test_all_of::test();
+  test_any_of::test();
+  test_one_of::test();
+  test_email::test();
+  test_size::test();
 
-  test_save_load();
+  test_save_load::test();
 
   return 0;
 }

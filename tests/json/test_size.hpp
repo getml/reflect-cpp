@@ -6,38 +6,28 @@
 
 #include "write_and_read.hpp"
 
-// Makes sure that the example in the README works as expected.
-// It would be embarrassing if it didn't...
-void test_size() {
+namespace test_size {
+
+struct Person {
+  rfl::Rename<"firstName", std::string> first_name;
+  rfl::Rename<"lastName", std::string> last_name;
+  rfl::Timestamp<"%Y-%m-%d"> birthday;
+  rfl::Validator<std::vector<Person>,
+                 rfl::Size<rfl::AnyOf<rfl::EqualTo<0>, rfl::EqualTo<3>>>>
+      children;
+};
+
+void test() {
   std::cout << "test_size" << std::endl;
 
-  struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
-    rfl::Field<
-        "children",
-        rfl::Validator<std::vector<Person>,
-                       rfl::Size<rfl::AnyOf<rfl::EqualTo<0>, rfl::EqualTo<3>>>>>
-        children;
-  };
-
-  const auto bart = Person{.first_name = "Bart",
-                           .last_name = "Simpson",
-                           .birthday = "1987-04-19",
-                           .children = std::vector<Person>()};
+  const auto bart = Person{
+      .first_name = "Bart", .last_name = "Simpson", .birthday = "1987-04-19"};
 
   const auto lisa = Person{
-      .first_name = "Lisa",
-      .last_name = "Simpson",
-      .birthday = "1987-04-19",
-      .children = rfl::default_value  // same as std::vector<Person>()
-  };
+      .first_name = "Lisa", .last_name = "Simpson", .birthday = "1987-04-19"};
 
-  // Returns a deep copy of the original object,
-  // replacing first_name.
-  const auto maggie =
-      rfl::replace(lisa, rfl::make_field<"firstName">(std::string("Maggie")));
+  const auto maggie = Person{
+      .first_name = "Maggie", .last_name = "Simpson", .birthday = "1987-04-19"};
 
   const auto homer =
       Person{.first_name = "Homer",
@@ -49,3 +39,4 @@ void test_size() {
       homer,
       R"({"firstName":"Homer","lastName":"Simpson","birthday":"1987-04-19","children":[{"firstName":"Bart","lastName":"Simpson","birthday":"1987-04-19","children":[]},{"firstName":"Lisa","lastName":"Simpson","birthday":"1987-04-19","children":[]},{"firstName":"Maggie","lastName":"Simpson","birthday":"1987-04-19","children":[]}]})");
 }
+}  // namespace test_size
