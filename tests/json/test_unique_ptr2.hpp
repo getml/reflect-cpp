@@ -12,14 +12,14 @@ namespace test_unique_ptr2 {
 struct DecisionTree {
   struct Leaf {
     using Tag = rfl::Literal<"Leaf">;
-    rfl::Field<"value", double> value;
+    double value;
   };
 
   struct Node {
     using Tag = rfl::Literal<"Node">;
-    rfl::Field<"criticalValue", double> critical_value;
-    rfl::Field<"left", std::unique_ptr<DecisionTree>> lesser;
-    rfl::Field<"right", std::unique_ptr<DecisionTree>> greater;
+    rfl::Rename<"criticalValue", double> critical_value;
+    std::unique_ptr<DecisionTree> lesser;
+    std::unique_ptr<DecisionTree> greater;
   };
 
   using LeafOrNode = rfl::TaggedUnion<"type", Leaf, Node>;
@@ -43,6 +43,6 @@ void test() {
 
   write_and_read(
       tree,
-      R"({"leafOrNode":{"type":"Node","criticalValue":10.0,"left":{"leafOrNode":{"type":"Leaf","value":3.0}},"right":{"leafOrNode":{"type":"Leaf","value":5.0}}}})");
+      R"({"leafOrNode":{"type":"Node","criticalValue":10.0,"lesser":{"leafOrNode":{"type":"Leaf","value":3.0}},"greater":{"leafOrNode":{"type":"Leaf","value":5.0}}}})");
 }
 }  // namespace test_unique_ptr2

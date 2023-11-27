@@ -115,7 +115,9 @@ with open("generated_code5.cpp", "w", encoding="utf-8") as codefile:
 
 template <class T>
 auto get_field_names() {
-  if constexpr (has_n_fields<T, 0>) {
+  if constexpr (std::is_pointer_v<std::decay_t<T>>) {
+    return get_field_names<std::remove_pointer_t<T>>();
+  } else if constexpr (has_n_fields<T, 0>) {
     return std::array<std::string, 0>{};
   } else if constexpr (has_n_fields<T, 1>) {
     auto& [f1] = fake_object<T>;
