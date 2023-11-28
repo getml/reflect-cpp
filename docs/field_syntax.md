@@ -21,7 +21,7 @@ which are otherwise impossible. It also allows for functionalities like `rfl::re
 
 There are a two things you have to keep in mind:
 
-1) If you annotate *some* of the fields using either `rfl::Field`, then you must annotate *all* of them using one of these two.
+1) If you annotate *some* of the fields using `rfl::Field`, then you must annotate *all* of them.
 2) If you are combining structs using `rfl::Flatten`, then they structs combined like this must either be annotated or not.
 
 You can initilize your struct like this:
