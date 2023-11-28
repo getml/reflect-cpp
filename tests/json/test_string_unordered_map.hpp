@@ -2,6 +2,7 @@
 #include <memory>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <source_location>
 #include <string>
 #include <unordered_map>
 
@@ -9,7 +10,7 @@
 
 namespace test_string_unordered_map {
 void test() {
-  std::cout << "test_string_unordered_map" << std::endl;
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   using Map = std::unordered_map<std::string, std::unique_ptr<std::string>>;
   Map homer;

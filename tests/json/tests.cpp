@@ -33,7 +33,6 @@
 #include "test_optional_fields.hpp"
 #include "test_readme_example.hpp"
 #include "test_ref.hpp"
-#include "test_rename.hpp"
 #include "test_replace.hpp"
 #include "test_replace_flatten.hpp"
 #include "test_replace_with_other_struct.hpp"
@@ -71,7 +70,6 @@ int main() {
   test_timestamp::test();
   test_flatten::test();
   test_flatten_anonymous::test();
-  test_rename::test();
   test_deque::test();
   test_forward_list::test();
   test_list::test();
@@ -104,7 +102,7 @@ int main() {
   test_replace_flatten::test();
   test_replace_with_other_struct::test();
   test_as::test();
-  test_as_flatten();
+  test_as_flatten::test();
 
   test_custom_constructor::test();
 

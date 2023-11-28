@@ -1,6 +1,7 @@
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <source_location>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,7 @@ struct Person {
 };
 
 void test() {
-  std::cout << "test_deque" << std::endl;
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   auto children = std::make_unique<std::deque<Person>>();
   children->emplace_back(Person{.first_name = "Bart"});

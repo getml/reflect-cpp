@@ -2,6 +2,7 @@
 #include <map>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <source_location>
 #include <string>
 
 #include "write_and_read.hpp"
@@ -17,7 +18,7 @@ struct Person {
 };
 
 void test() {
-  std::cout << "test_map_with_key_validation" << std::endl;
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   auto children = std::make_unique<std::map<Between1and3, Person>>();
 

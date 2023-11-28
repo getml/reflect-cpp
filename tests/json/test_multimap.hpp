@@ -2,6 +2,7 @@
 #include <map>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <source_location>
 #include <string>
 
 #include "write_and_read.hpp"
@@ -15,7 +16,7 @@ struct Person {
 };
 
 void test() {
-  std::cout << "test_multimap" << std::endl;
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   auto children = std::make_unique<std::multimap<int, Person>>();
   children->insert(std::make_pair(1, Person{.first_name = "Bart"}));

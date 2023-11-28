@@ -3,6 +3,7 @@
 #include <memory>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <source_location>
 #include <string>
 
 #include "write_and_read.hpp"
@@ -16,7 +17,7 @@ struct Person {
 };
 
 void test() {
-  std::cout << "test_array" << std::endl;
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   auto bart = Person{.first_name = "Bart"};
 

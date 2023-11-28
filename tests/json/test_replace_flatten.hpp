@@ -2,6 +2,7 @@
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <source_location>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,7 @@ struct Employee {
 };
 
 void test() {
-  std::cout << "test_replace_flatten" << std::endl;
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   auto employee = Employee{
       .person = Person{.first_name = "Homer",

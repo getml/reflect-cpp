@@ -2,6 +2,7 @@
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <source_location>
 #include <string>
 #include <vector>
 
@@ -26,7 +27,7 @@ struct C {
 };
 
 void test() {
-  std::cout << "test_as" << std::endl;
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   auto a = A{.f1 = "Hello", .f2 = rfl::make_box<std::string>("World")};
 

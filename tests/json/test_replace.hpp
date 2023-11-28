@@ -2,6 +2,7 @@
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <source_location>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,7 @@ struct Person {
 };
 
 void test() {
-  std::cout << "test_replace" << std::endl;
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   auto lisa = Person{.first_name = "Lisa",
                      .last_name = "Simpson",

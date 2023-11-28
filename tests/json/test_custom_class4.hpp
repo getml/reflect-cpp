@@ -2,6 +2,7 @@
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <source_location>
 #include <string>
 #include <vector>
 
@@ -56,7 +57,7 @@ struct Parser<ReaderType, WriterType, test_custom_class4::Person>
 namespace test_custom_class4 {
 
 void test() {
-  std::cout << "test_custom_class4" << std::endl;
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   const auto bart = test_custom_class4::Person(
       "Bart", rfl::make_box<std::string>("Simpson"), 10);

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <source_location>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,7 @@ struct Square {
 using Shapes = std::variant<Circle, Rectangle, std::unique_ptr<Square>>;
 
 void test() {
-  std::cout << "test_variant" << std::endl;
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   const Shapes r = Rectangle{.height = 10, .width = 5};
 
