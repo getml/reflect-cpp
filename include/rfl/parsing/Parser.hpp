@@ -38,9 +38,11 @@
 #include "rfl/internal/flattened_ptr_tuple_t.hpp"
 #include "rfl/internal/flattened_tuple_t.hpp"
 #include "rfl/internal/get_field_names.hpp"
+#include "rfl/internal/get_struct_name.hpp"
 #include "rfl/internal/has_fields.hpp"
 #include "rfl/internal/has_reflection_method_v.hpp"
 #include "rfl/internal/has_reflection_type_v.hpp"
+#include "rfl/internal/has_tag_v.hpp"
 #include "rfl/internal/is_basic_type.hpp"
 #include "rfl/internal/move_from_tuple.hpp"
 #include "rfl/internal/no_duplicate_field_names.hpp"
@@ -1067,23 +1069,26 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
   template <class T>
   static inline bool contains_disc_value(
       const std::string& _disc_value) noexcept {
-    if constexpr (!internal::has_reflection_type_v<T>) {
+    if constexpr (internal::has_reflection_type_v<T>) {
+      return contains_disc_value<typename T::ReflectionType>(_disc_value);
+    } else if constexpr (internal::has_tag_v<T>) {
       using LiteralType = typename T::Tag;
       return LiteralType::contains(_disc_value);
-    } else {
-      using LiteralType = typename T::ReflectionType::Tag;
       return LiteralType::contains(_disc_value);
+    } else {
+      return _disc_value == internal::get_struct_name<T>();
     }
   }
 
   template <class T>
-  static inline auto make_tag() noexcept {
-    if constexpr (!internal::has_reflection_type_v<T>) {
+  static inline std::string make_tag() noexcept {
+    if constexpr (internal::has_reflection_type_v<T>) {
+      return make_tag<typename T::ReflectionType>();
+    } else if constexpr (internal::has_tag_v<T>) {
       using LiteralType = typename T::Tag;
-      return LiteralType::template name_of<0>();
+      return LiteralType::template name_of<0>().str();
     } else {
-      using LiteralType = typename T::ReflectionType::Tag;
-      return LiteralType::template name_of<0>();
+      return internal::get_struct_name<T>();
     }
   }
 

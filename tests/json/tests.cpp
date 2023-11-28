@@ -44,6 +44,7 @@
 #include "test_string_map.hpp"
 #include "test_string_unordered_map.hpp"
 #include "test_tagged_union.hpp"
+#include "test_tagged_union2.hpp"
 #include "test_timestamp.hpp"
 #include "test_unique_ptr.hpp"
 #include "test_unique_ptr2.hpp"
@@ -62,6 +63,7 @@ int main() {
   test_literal::test();
   test_variant::test();
   test_tagged_union::test();
+  test_tagged_union2::test();
   test_field_variant::test();
   test_ref::test();
   test_box::test();

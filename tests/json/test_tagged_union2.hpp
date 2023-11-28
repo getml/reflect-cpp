@@ -7,28 +7,31 @@
 
 #include "write_and_read.hpp"
 
-namespace test_tagged_union {
+namespace test_tagged_union2 {
 
 struct Circle {
-  double radius;
+  using Tag = rfl::Literal<"Circle">;
+  rfl::Field<"radius", double> radius;
 };
 
 struct Rectangle {
-  double height;
-  double width;
+  using Tag = rfl::Literal<"Rectangle">;
+  rfl::Field<"height", double> height;
+  rfl::Field<"width", double> width;
 };
 
 struct Square {
-  double width;
+  using Tag = rfl::Literal<"Square">;
+  rfl::Field<"width", double> width;
 };
 
 using Shapes = rfl::TaggedUnion<"shape", Circle, Square, Rectangle>;
 
 void test() {
-  std::cout << "test_tagged_union" << std::endl;
+  std::cout << "test_tagged_union2" << std::endl;
 
   const Shapes r = Rectangle{.height = 10, .width = 5};
 
   write_and_read(r, R"({"shape":"Rectangle","height":10.0,"width":5.0})");
 }
-}  // namespace test_tagged_union
+}  // namespace test_tagged_union2
