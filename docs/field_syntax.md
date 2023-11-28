@@ -1,8 +1,8 @@
-# Structs
+# The `rfl::Field`-syntax 
 
-In order to setup a struct, all of its fields need to be an `rfl::Field`. The `rfl::Field` contains the type and the name. 
-The name is a compile-time string and won't have any runtime overhead. The compile-time string is what will eventually
-appear in the JSON (or any other format).
+As we have shown, reflect-cpp can automatically detect field names from structs.
+
+However, it also possible to annotate the fields using `rfl::Field`, like this:
 
 ```cpp
 struct Person {
@@ -11,6 +11,13 @@ struct Person {
     rfl::Field<"children", std::vector<Person>> children;
 };
 ```
+
+Even though this requires slightly more effort from the programmer, it has an important
+advantage: These field names are known at *compile time*, whereas the field names which
+are retrieved automatically are only known at *runtime*. Even though the runtime overhead
+should be negligible in most cases, this allows for compile-time checks
+which are otherwise impossible. It also allows for functionalities like `rfl::replace`,
+`rfl::as` or interactions with `rfl::NamedTuple` which we will see later in the documentation.
 
 You can initilize your struct like this:
 
@@ -71,17 +78,3 @@ And you can parse it back into a struct:
 const auto homer = rfl::json::read<Person>(json_string).value();
 ```
 
-## Important note
-
-**Do not create custom constructors on the structs.**
-
-reflect-cpp needs to be able to create the structs like this:
-
-```cpp
-Person{rfl::Field<"firstName", std::string>("Bart"), rfl::Field<"lastName", std::string>("Simpson"), ...};
-```
-
-But if you create a custom constructor, then C++ will no longer allow this kind of constructions.
-
-If you want to create the struct from one of your classes (the most like reason, you want to create custom constructors in the first place),
-you might want to check out the section on [custom classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_classes.md) or [custom parsers](https://github.com/getml/reflect-cpp/blob/main/docs/custom_parser.md).
