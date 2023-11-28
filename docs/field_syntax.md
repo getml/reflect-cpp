@@ -19,6 +19,11 @@ should be negligible in most cases, this allows for compile-time checks
 which are otherwise impossible. It also allows for functionalities like `rfl::replace`,
 `rfl::as` or interactions with `rfl::NamedTuple` which we will see later in the documentation.
 
+There are a two things you have to keep in mind:
+
+1) If you annotate *some* of the fields using either `rfl::Field`, then you must annotate *all* of them using one of these two.
+2) If you are combining structs using `rfl::Flatten`, then they structs combined like this must either be annotated or not.
+
 You can initilize your struct like this:
 
 ```cpp
