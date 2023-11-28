@@ -26,12 +26,12 @@ You can either use `rfl::TaggedUnion` or externally tagged variants:
 
 ```cpp
 struct API_v_1_0 {
-  rfl::Field<"version", rfl::Literal<"v1.0">> version;
+  using Tag = rfl::Literal<"v1.0">;
   ...
 };
 
 struct API_v_1_1 {
-  rfl::Field<"version", rfl::Literal<"v1.1">> version;
+  using Tag = rfl::Literal<"v1.1">;
   ...
 };
 
