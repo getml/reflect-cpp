@@ -3,6 +3,8 @@
 `rfl::as` allows you to cast structs as other structs. This is useful if the fields in `B` are a subset of the fields in `A`
 or we need the fields in `A` and `B` to produce `C`.
 
+This only works for the `rfl::Field`-syntax.
+
 For example:
 
 ```cpp

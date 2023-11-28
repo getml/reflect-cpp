@@ -8,10 +8,10 @@ Suppose you have a struct like this:
 
 ```cpp
 struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
-    rfl::Field<"children", std::vector<Person>> children;
+    rfl::Rename<"firstName", std::string> first_name;
+    rfl::Rename<"lastName", std::string> last_name;
+    rfl::Timestamp<"%Y-%m-%d"> birthday;
+    std::vector<Person> children;
 };
 ```
 
@@ -72,9 +72,9 @@ In your header file you can write something like this:
 
 ```cpp
 struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
+    rfl::Rename<"firstName", std::string> first_name;
+    rfl::Rename<"lastName", std::string> last_name;
+    rfl::Timestamp<"%Y-%m-%d"> birthday;
 
     using JSONVar = typename rfl::json::Reader::InputVarType;
     static rfl::Result<Person> from_json_obj(const JSONVar& _obj);

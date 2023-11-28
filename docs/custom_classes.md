@@ -18,9 +18,9 @@ If you absolutely do not want to make any changes to your original class, you ca
 
 ```cpp
 struct PersonImpl {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"age", int> age;
+    rfl::Rename<"firstName", std::string> first_name;
+    rfl::Rename<"lastName", std::string> last_name;
+    int age;
 };
 
 class Person {
@@ -107,7 +107,7 @@ initialized or face runtime errors.
 
 ```cpp
 struct PersonImpl {
-    // ... same as in Example 2
+    // ... same as in Example 1 or 2
 };
 
 class Person {

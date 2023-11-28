@@ -57,10 +57,9 @@ using FirstName = rfl::Literal<"Homer", "Marge", "Bart", "Lisa", "Maggie">;
 using LastName = rfl::Literal<"Simpson">;
 
 struct Person {
-    rfl::Field<"firstName", FirstName> first_name;
-    rfl::Field<"lastName", LastName> last_name = rfl::default_value;
-    rfl::Field<"children", std::vector<Person>> children =
-        rfl::default_value;
+    rfl::Rename<"firstName", FirstName> first_name;
+    rfl::Rename<"lastName", LastName> last_name;
+    std::vector<Person> children;
 };
 
 // Leads to a runtime error, if the field "lastName" is not "Simpson"

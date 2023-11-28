@@ -53,9 +53,9 @@ You can then write a helper struct:
 
 ```cpp
 struct PersonImpl {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"age", int> age;
+    rfl::Rename<"firstName", std::string> first_name;
+    rfl::Rename<"lastName", std::string> last_name;
+    int age;
 
     // 1) Static method that takes your original class as an input and
     //    returns the helper struct.
@@ -70,7 +70,7 @@ struct PersonImpl {
     //    into your original class.
     //    In this case, the `to_class` method is actually optional, because
     //    you can directly create Person from the field values.
-    Person to_class() const { return Person(first_name(), last_name(), age()); }
+    Person to_class() const { return Person(first_name(), last_name(), age); }
 };
 ```
 
@@ -100,9 +100,9 @@ As we have noted, in this particular example, the `Person` class can be construc
 
 ```cpp
 struct PersonImpl {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"age", int> age;
+    rfl::Rename<"firstName", std::string> first_name;
+    rfl::Rename<"lastName", std::string> last_name;
+    int age;
 
     static PersonImpl from_class(const Person& _p) noexcept {
         return PersonImpl{.first_name = _p.first_name(),
