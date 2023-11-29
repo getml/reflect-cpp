@@ -1,6 +1,6 @@
 # The `rfl::Field`-syntax 
 
-As we have shown, reflect-cpp can automatically detect field names from structs.
+As we have shown, reflect-cpp can automatically retrieve field names from structs.
 
 However, it also possible to annotate the fields using `rfl::Field`, like this:
 
