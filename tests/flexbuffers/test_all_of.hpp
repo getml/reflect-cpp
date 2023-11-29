@@ -1,13 +1,16 @@
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/flexbuf.hpp>
+#include <source_location>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
 
-void test_all_of() {
-  std::cout << "test_all_of" << std::endl;
+namespace test_all_of {
+
+void test() {
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   using Age = rfl::Validator<unsigned int,
                              rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
@@ -23,3 +26,4 @@ void test_all_of() {
 
   write_and_read(homer);
 }
+}  // namespace test_all_of

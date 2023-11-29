@@ -2,25 +2,28 @@
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/flexbuf.hpp>
+#include <source_location>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
 
-void test_flatten_anonymous() {
-  std::cout << "test_flatten_anonymous" << std::endl;
+namespace test_flatten_anonymous {
 
-  struct Person {
-    std::string first_name;
-    rfl::Box<std::string> last_name;
-    int age;
-  };
+struct Person {
+  std::string first_name;
+  rfl::Box<std::string> last_name;
+  int age;
+};
 
-  struct Employee {
-    rfl::Flatten<Person> person;
-    rfl::Box<std::string> employer;
-    float salary;
-  };
+struct Employee {
+  rfl::Flatten<Person> person;
+  rfl::Box<std::string> employer;
+  float salary;
+};
+
+void test() {
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   const auto employee = Employee{
       .person = Person{.first_name = "Homer",
@@ -31,3 +34,4 @@ void test_flatten_anonymous() {
 
   write_and_read(employee);
 }
+}  // namespace test_flatten_anonymous

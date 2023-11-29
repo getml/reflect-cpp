@@ -1,41 +1,44 @@
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/flexbuf.hpp>
+#include <source_location>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
 
-void test_monster_example2() {
-  std::cout << "test_monster_example2" << std::endl;
+namespace test_monster_example2 {
 
-  using Color = rfl::Literal<"Red", "Green", "Blue">;
+using Color = rfl::Literal<"Red", "Green", "Blue">;
 
-  struct Weapon {
-    rfl::Field<"name", std::string> name;
-    rfl::Field<"damage", short> damage;
-  };
+struct Weapon {
+  rfl::Field<"name", std::string> name;
+  rfl::Field<"damage", short> damage;
+};
 
-  using Equipment = rfl::Variant<rfl::Field<"weapon", Weapon>>;
+using Equipment = rfl::Variant<rfl::Field<"weapon", Weapon>>;
 
-  struct Vec3 {
-    rfl::Field<"x", float> x;
-    rfl::Field<"y", float> y;
-    rfl::Field<"z", float> z;
-  };
+struct Vec3 {
+  rfl::Field<"x", float> x;
+  rfl::Field<"y", float> y;
+  rfl::Field<"z", float> z;
+};
 
-  struct Monster {
-    rfl::Field<"pos", Vec3> pos;
-    rfl::Field<"mana", short> mana = 150;
-    rfl::Field<"hp", short> hp = 100;
-    rfl::Field<"name", std::string> name;
-    rfl::Field<"friendly", bool> friendly = false;
-    rfl::Field<"inventory", std::vector<std::uint8_t>> inventory;
-    rfl::Field<"color", Color> color = Color::make<"Blue">();
-    rfl::Field<"weapons", std::vector<Weapon>> weapons;
-    rfl::Field<"equipped", Equipment> equipped;
-    rfl::Field<"path", std::vector<Vec3>> path;
-  };
+struct Monster {
+  rfl::Field<"pos", Vec3> pos;
+  rfl::Field<"mana", short> mana = 150;
+  rfl::Field<"hp", short> hp = 100;
+  rfl::Field<"name", std::string> name;
+  rfl::Field<"friendly", bool> friendly = false;
+  rfl::Field<"inventory", std::vector<std::uint8_t>> inventory;
+  rfl::Field<"color", Color> color = Color::make<"Blue">();
+  rfl::Field<"weapons", std::vector<Weapon>> weapons;
+  rfl::Field<"equipped", Equipment> equipped;
+  rfl::Field<"path", std::vector<Vec3>> path;
+};
+
+void test() {
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   const auto sword = Weapon{.name = "Sword", .damage = 3};
   const auto axe = Weapon{.name = "Axe", .damage = 5};
@@ -59,4 +62,4 @@ void test_monster_example2() {
 
   write_and_read(orc);
 }
-
+}  // namespace test_monster_example2

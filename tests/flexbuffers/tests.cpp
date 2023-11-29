@@ -33,43 +33,43 @@
 #include "test_variant.hpp"
 
 int main() {
-  test_readme_example();
-  test_monster_example1();
-  test_monster_example2();
-  test_anonymous_fields();
-  test_flatten_anonymous();
-  test_optional_fields();
-  test_unique_ptr();
-  test_unique_ptr2();
-  test_literal();
-  test_variant();
-  test_field_variant();
-  test_tagged_union();
-  test_custom_class1();
-  test_custom_class2();
-  test_custom_class3();
-  test_box();
-  test_ref();
+  test_readme_example::test();
+  test_monster_example1::test();
+  test_monster_example2::test();
+  test_anonymous_fields::test();
+  test_flatten_anonymous::test();
+  test_optional_fields::test();
+  test_unique_ptr::test();
+  test_unique_ptr2::test();
+  test_literal::test();
+  test_variant::test();
+  test_field_variant::test();
+  test_tagged_union::test();
+  test_custom_class1::test();
+  test_custom_class2::test();
+  test_custom_class3::test();
+  test_box::test();
+  test_ref::test();
 
-  test_deque();
-  test_forward_list();
-  test_list();
-  test_map();
-  test_multimap();
-  test_multiset();
-  test_set();
-  test_string_map();
-  test_string_unordered_map();
-  test_unordered_map();
-  test_unordered_multimap();
-  test_unordered_multiset();
-  test_unordered_set();
+  test_deque::test();
+  test_forward_list::test();
+  test_list::test();
+  test_map::test();
+  test_multimap::test();
+  test_multiset::test();
+  test_set::test();
+  test_string_map::test();
+  test_string_unordered_map::test();
+  test_unordered_map::test();
+  test_unordered_multimap::test();
+  test_unordered_multiset::test();
+  test_unordered_set::test();
 
-  test_custom_constructor();
+  test_custom_constructor::test();
 
-  test_all_of();
+  test_all_of::test();
 
-  test_save_load();
+  test_save_load::test();
 
   return 0;
 }

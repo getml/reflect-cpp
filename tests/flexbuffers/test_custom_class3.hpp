@@ -2,12 +2,13 @@
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/flexbuf.hpp>
+#include <source_location>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
 
-namespace tcc3 {
+namespace test_custom_class3 {
 
 struct Person {
   Person(const std::string& _first_name,
@@ -40,24 +41,28 @@ struct PersonImpl {
   }
 };
 
-}  // namespace tcc3
+}  // namespace test_custom_class3
 
 namespace rfl {
 namespace parsing {
 
 template <class ReaderType, class WriterType>
-struct Parser<ReaderType, WriterType, tcc3::Person>
-    : public CustomParser<ReaderType, WriterType, tcc3::Person,
-                          tcc3::PersonImpl> {};
+struct Parser<ReaderType, WriterType, test_custom_class3::Person>
+    : public CustomParser<ReaderType, WriterType, test_custom_class3::Person,
+                          test_custom_class3::PersonImpl> {};
 
 }  // namespace parsing
 }  // namespace rfl
 
-void test_custom_class3() {
-  std::cout << "test_custom_class3" << std::endl;
+namespace test_custom_class3 {
 
-  const auto bart =
-      tcc3::Person("Bart", rfl::make_box<std::string>("Simpson"), 10);
+void test() {
+  std::cout << std::source_location::current().function_name() << std::endl;
+
+  const auto bart = test_custom_class3::Person(
+      "Bart", rfl::make_box<std::string>("Simpson"), 10);
 
   write_and_read(bart);
 }
+
+}  // namespace test_custom_class3
