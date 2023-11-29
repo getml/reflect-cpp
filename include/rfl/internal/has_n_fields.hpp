@@ -8,8 +8,8 @@ namespace rfl {
 namespace internal {
 
 struct any {
-    template <typename T>
-    constexpr operator T() const noexcept;
+  template <typename T>
+  constexpr operator T() const noexcept;
 };
 
 template <typename T, typename Is, typename = void>

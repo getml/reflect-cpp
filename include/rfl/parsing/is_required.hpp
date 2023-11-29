@@ -5,6 +5,9 @@
 #include <optional>
 #include <type_traits>
 
+#include "rfl/Rename.hpp"
+#include "rfl/internal/StringLiteral.hpp"
+
 namespace rfl {
 namespace parsing {
 
@@ -27,6 +30,9 @@ class is_required<std::shared_ptr<T>> : public std::false_type {};
 
 template <class T>
 class is_required<std::unique_ptr<T>> : public std::false_type {};
+
+template <class T, internal::StringLiteral _name>
+class is_required<Rename<_name, T>> : public is_required<T> {};
 
 }  // namespace parsing
 }  // namespace rfl
