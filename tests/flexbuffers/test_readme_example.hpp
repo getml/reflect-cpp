@@ -1,25 +1,28 @@
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/flexbuf.hpp>
+#include <source_location>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
 
-void test_readme_example() {
-  std::cout << "test_readme_example" << std::endl;
+namespace test_readme_example {
 
-  using Age = rfl::Validator<unsigned int,
-                             rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
+using Age = rfl::Validator<unsigned int,
+                           rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
 
-  struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
-    rfl::Field<"age", Age> age;
-    rfl::Field<"email", rfl::Email> email;
-    rfl::Field<"children", std::vector<Person>> children;
-  };
+struct Person {
+  rfl::Field<"firstName", std::string> first_name;
+  rfl::Field<"lastName", std::string> last_name;
+  rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
+  rfl::Field<"age", Age> age;
+  rfl::Field<"email", rfl::Email> email;
+  rfl::Field<"children", std::vector<Person>> children;
+};
+
+void test() {
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   const auto bart = Person{.first_name = "Bart",
                            .last_name = "Simpson",
@@ -52,3 +55,4 @@ void test_readme_example() {
 
   write_and_read(homer);
 }
+}  // namespace test_readme_example

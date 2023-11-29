@@ -6,9 +6,9 @@ For the purpose of this section, any field of type `std::optional`, `std::shared
 
 Please refer to the section on optional fields for details.
 
-## Structs with `rfl::Field` and `rfl::NamedTuple`
+## Rules 
 
-For structs with `rfl::Field` and `rfl::NamedTuple`, the following rules apply:
+The following rules apply:
 
 - You *can* add optional fields.
 - You *can* remove any optional or required fields, if they are no longer needed.
@@ -16,15 +16,6 @@ For structs with `rfl::Field` and `rfl::NamedTuple`, the following rules apply:
 - You *can* change the order of any existing fields.
 - You *can not* add any required fields.
 - You *can not* change the field names of any required fields.
-
-## Structs without `rfl::Field` (anonymous fields) and `std::tuple`
-
-For structs without `rfl::Field` and `std::tuple`, the following rules apply:
-
-- You *can* add optional fields at the end of your struct or tuple.
-- You *can not* remove any optional or required fields, even if they are no longer needed.
-- You *can not* change the order of any existing fields.
-- You *can not* add any required fields.
 
 ## API versioning
 
@@ -35,12 +26,12 @@ You can either use `rfl::TaggedUnion` or externally tagged variants:
 
 ```cpp
 struct API_v_1_0 {
-  rfl::Field<"version", rfl::Literal<"v1.0">> version;
+  using Tag = rfl::Literal<"v1.0">;
   ...
 };
 
 struct API_v_1_1 {
-  rfl::Field<"version", rfl::Literal<"v1.1">> version;
+  using Tag = rfl::Literal<"v1.1">;
   ...
 };
 

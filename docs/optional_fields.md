@@ -19,11 +19,11 @@ So this is how we could rewrite the previous example:
 
 ```cpp
 struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name = "Simpson";
+    rfl::Rename<"firstName", std::string> first_name;
+    rfl::Rename<"lastName", std::string> last_name = "Simpson";
 
     // Indicates to the library that the field is optional.
-    rfl::Field<"children", std::optional<std::vector<Person>>> children = rfl::default_value;
+    std::optional<std::vector<Person>> children;
 };
 
 const auto bart = Person{.first_name = "Bart"};

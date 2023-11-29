@@ -3,18 +3,21 @@
 #include <memory>
 #include <rfl.hpp>
 #include <rfl/flexbuf.hpp>
+#include <source_location>
 #include <string>
 
 #include "write_and_read.hpp"
 
-void test_string_map() {
-    std::cout << "test_string_map" << std::endl;
+namespace test_string_map {
+void test() {
+  std::cout << std::source_location::current().function_name() << std::endl;
 
-    std::map<std::string, std::unique_ptr<std::string>> homer;
-    homer.insert(
-        std::make_pair("firstName", std::make_unique<std::string>("Homer")));
-    homer.insert(
-        std::make_pair("lastName", std::make_unique<std::string>("Simpson")));
+  std::map<std::string, std::unique_ptr<std::string>> homer;
+  homer.insert(
+      std::make_pair("firstName", std::make_unique<std::string>("Homer")));
+  homer.insert(
+      std::make_pair("lastName", std::make_unique<std::string>("Simpson")));
 
-    write_and_read(homer);
+  write_and_read(homer);
 }
+}  // namespace test_string_map

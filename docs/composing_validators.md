@@ -13,9 +13,9 @@ using Age = rfl::Validator<int,
                            rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
 
 struct Person {
-  rfl::Field<"firstName", std::string> first_name;
-  rfl::Field<"lastName", std::string> last_name;
-  rfl::Field<"age", Age> age;
+  rfl::Rename<"firstName", std::string> first_name;
+  rfl::Rename<"lastName", std::string> last_name;
+  Age age;
 };
 ```
 

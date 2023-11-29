@@ -1,14 +1,12 @@
 # Structs
 
-In order to setup a struct, all of its fields need to be an `rfl::Field`. The `rfl::Field` contains the type and the name. 
-The name is a compile-time string and won't have any runtime overhead. The compile-time string is what will eventually
-appear in the JSON (or any other format).
+Structs can be set up as follows:
 
 ```cpp
 struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"children", std::vector<Person>> children;
+    std::string first_name;
+    std::string last_name;
+    std::vector<Person> children;
 };
 ```
 
@@ -20,28 +18,28 @@ const auto bart = Person{.first_name = "Bart",
                          .children = std::vector<Person>()};
 ```
 
-Note that all fields must be explicitly set. This is on purpose, because it prevents you from accidentally forgetting fields,
-which can lead to tricky runtime errors.
-
-You can initialize a field using `rfl::default_value`:
+JSON uses Hungarian case, but C++ uses snake case, so you might want to rename your fields:
 
 ```cpp
-const auto bart = Person{.first_name = "Bart",
-                         .last_name = "Simpson",
-                         .children = rfl::default_value};
+struct Person {
+    rfl::Rename<"firstName", std::string> first_name;
+    rfl::Rename<"lastName", std::string> last_name;
+    std::vector<Person> children;
+};
 ```
+
 
 You can also initialize fields in the struct declaration itself:
 
 ```cpp
 struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name = "Simpson";
-    rfl::Field<"children", std::vector<Person>> children = rfl::default_value;
+    rfl::Rename<"firstName", std::string> first_name;
+    rfl::Rename<"lastName", std::string> last_name = "Simpson";
+    std::vector<Person> children;
 };
 ```
 
-Because you now have explicitly set those fields, you do not have to do this every time:
+Because you now have explicitly set this field, you do not have to do this every time:
 
 ```cpp
 const auto bart = Person{.first_name = "Bart"};
@@ -78,7 +76,7 @@ const auto homer = rfl::json::read<Person>(json_string).value();
 reflect-cpp needs to be able to create the structs like this:
 
 ```cpp
-Person{rfl::Field<"firstName", std::string>("Bart"), rfl::Field<"lastName", std::string>("Simpson"), ...};
+Person{"Bart", "Simpson", ...};
 ```
 
 But if you create a custom constructor, then C++ will no longer allow this kind of constructions.

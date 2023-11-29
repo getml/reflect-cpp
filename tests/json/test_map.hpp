@@ -2,19 +2,21 @@
 #include <map>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <source_location>
 #include <string>
 
 #include "write_and_read.hpp"
 
-void test_map() {
-  std::cout << "test_map" << std::endl;
+namespace test_map {
 
-  struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name = "Simpson";
-    rfl::Field<"children", std::unique_ptr<std::map<int, Person>>> children =
-        rfl::default_value;
-  };
+struct Person {
+  rfl::Rename<"firstName", std::string> first_name;
+  rfl::Rename<"lastName", std::string> last_name = "Simpson";
+  std::unique_ptr<std::map<int, Person>> children;
+};
+
+void test() {
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   auto children = std::make_unique<std::map<int, Person>>();
   children->insert(std::make_pair(1, Person{.first_name = "Bart"}));
@@ -28,3 +30,4 @@ void test_map() {
       homer,
       R"({"firstName":"Homer","lastName":"Simpson","children":{"1":{"firstName":"Bart","lastName":"Simpson"},"2":{"firstName":"Lisa","lastName":"Simpson"},"3":{"firstName":"Maggie","lastName":"Simpson"}}})");
 }
+}  // namespace test_map

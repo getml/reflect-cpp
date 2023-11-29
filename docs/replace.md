@@ -1,7 +1,8 @@
 # `rfl::replace`
 
-`rfl::replace` creates a deep copy of the original struct or moves the original struct, replacing one or several
-fields in the process.
+`rfl::replace` creates a deep copy of the original struct or moves the original struct, replacing one or several fields in the process.
+
+This only works for the `rfl::Field`-syntax.
 
 In some cases, we really only want to change one or a few fields, to get from one struct to another:
 

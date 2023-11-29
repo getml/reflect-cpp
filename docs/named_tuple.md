@@ -125,26 +125,6 @@ using Shapes = std::variant<rfl::Field<"circle", Circle>,
                             rfl::Field<"square", Square>>;
 ```
 
-They can also be inserted into `rfl::TaggedUnion`:
-
-```cpp
-using Circle = rfl::NamedTuple<
-    rfl::Field<"shape", rfl::Literal<"Circle">>,
-    rfl::Field<"radius", double>>;
-
-using Rectangle = rfl::NamedTuple<
-    rfl::Field<"shape", rfl::Literal<"Rectangle">>,
-    rfl::Field<"height", double>,
-    rfl::Field<"width", double>>;
-
-using Square rfl::NamedTuple<
-    rfl::Field<"shape", rfl::Literal<"Square">>,
-    rfl::Field<"width", double>>;
-
-// Tell rfl::TaggedUnion that you want it to look for the field "shape".
-using Shapes = rfl::TaggedUnion<"shape", Circle, Square, Rectangle>;
-```
-
 ### `rfl::replace`
 
 `rfl::replace` works for `rfl::NamedTuple` as well:
@@ -214,7 +194,7 @@ const auto employee = Employee(
 
 ## Transforming structs to named tuples and vice versa
 
-You can transform structs to named tuples and vice versa:
+You can transform structs to named tuples and vice versa (this will only work with the `rfl::Field`-syntax:
 
 ```cpp
 auto bart = Person{.first_name = "Bart",
@@ -235,16 +215,4 @@ PersonNamedTuple bart_nt = rfl::to_named_tuple(std::move(bart_nt));
 const auto bart_struct = rfl::from_named_tuple<Person>(bart_nt);
 const auto bart_struct = rfl::from_named_tuple<Person>(std::move(bart_nt));
 ```
-
-## rfl::NamedTuple is central to reflect-cpp
-
-`rfl::NamedTuple` is basically at the heart of how the reflect-cpp reflection
-is actually implemented. If you look at how reflect-cpp is implemented you will find that 
-structs are transformed from and to `rfl::NamedTuple`s
-all the time (using zero-copy operations wherever possible). 
-That is because `rfl::NamedTuple` actually support reflection,
-where as structs don't.
-
-
-
 

@@ -1,41 +1,44 @@
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <source_location>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
 
-void test_monster_example() {
-  std::cout << "test_monster_example" << std::endl;
+namespace test_monster_example {
 
-  using Color = rfl::Literal<"Red", "Green", "Blue">;
+using Color = rfl::Literal<"Red", "Green", "Blue">;
 
-  struct Weapon {
-    std::string name;
-    short damage;
-  };
+struct Weapon {
+  std::string name;
+  short damage;
+};
 
-  using Equipment = rfl::Variant<rfl::Field<"weapon", Weapon>>;
+using Equipment = rfl::Variant<rfl::Field<"weapon", Weapon>>;
 
-  struct Vec3 {
-    float x;
-    float y;
-    float z;
-  };
+struct Vec3 {
+  float x;
+  float y;
+  float z;
+};
 
-  struct Monster {
-    Vec3 pos;
-    short mana = 150;
-    short hp = 100;
-    std::string name;
-    bool friendly = false;
-    std::vector<std::uint8_t> inventory;
-    Color color = Color::make<"Blue">();
-    std::vector<Weapon> weapons;
-    Equipment equipped;
-    std::vector<Vec3> path;
-  };
+struct Monster {
+  Vec3 pos;
+  short mana = 150;
+  short hp = 100;
+  std::string name;
+  bool friendly = false;
+  std::vector<std::uint8_t> inventory;
+  Color color = Color::make<"Blue">();
+  std::vector<Weapon> weapons;
+  Equipment equipped;
+  std::vector<Vec3> path;
+};
+
+void test() {
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   const auto sword = Weapon{.name = "Sword", .damage = 3};
   const auto axe = Weapon{.name = "Axe", .damage = 5};
@@ -58,6 +61,6 @@ void test_monster_example() {
 
   write_and_read(
       orc,
-      R"([[1.0,2.0,3.0],150,80,"MyMonster",false,[0,1,2,3,4,5,6,7,8,9],"Red",[["Sword",3],["Axe",5]],{"weapon":["Axe",5]},[]])");
+      R"({"pos":{"x":1.0,"y":2.0,"z":3.0},"mana":150,"hp":80,"name":"MyMonster","friendly":false,"inventory":[0,1,2,3,4,5,6,7,8,9],"color":"Red","weapons":[{"name":"Sword","damage":3},{"name":"Axe","damage":5}],"equipped":{"weapon":{"name":"Axe","damage":5}},"path":[]})");
 }
-
+}  // namespace test_monster_example

@@ -4,9 +4,9 @@ In previous sections, we have defined the `Person` class recursively:
 
 ```cpp
 struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"children", std::vector<Person>> children;
+    rfl::Rename<"firstName", std::string> first_name;
+    rfl::Rename<"lastName", std::string> last_name;
+    std::vector<Person> children;
 };
 ```
 
@@ -15,9 +15,9 @@ This works, because `std::vector` contains a pointer under-the-hood. But what wo
 ```cpp
 // WILL NOT COMPILE
 struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"child", Person> child;
+    rfl::Rename<"firstName", std::string> first_name;
+    rfl::Rename<"lastName", std::string> last_name;
+    Person child;
 };
 ```
 
@@ -33,15 +33,15 @@ A naive implementation might look like this:
 // WILL NOT COMPILE
 struct DecisionTree {
     struct Leaf {
-        rfl::Field<"type", rfl::Literal<"Leaf">> type = rfl::default_value;
-        rfl::Field<"prediction", double> prediction;
+        using Tag = rfl::Literal<"Leaf">;
+        double prediction;
     };
 
     struct Node {
-        rfl::Field<"type", rfl::Literal<"Node">> type = rfl::default_value;
-        rfl::Field<"criticalValue", double> critical_value;
-        rfl::Field<"lesser", DecisionTree> lesser;
-        rfl::Field<"greater", DecisionTree> greater;
+        using Tag = rfl::Literal<"Node">;
+        rfl::Rename<"criticalValue", double> critical_value;
+        DecisionTree lesser;
+        DecisionTree greater;
     };
 
     using LeafOrNode = rfl::TaggedUnion<"type", Leaf, Node>;
@@ -58,15 +58,15 @@ A possible solution might be to use `std::unique_ptr`:
 // Will compile, but not an ideal design.
 struct DecisionTree {
     struct Leaf {
-        rfl::Field<"type", rfl::Literal<"Leaf">> type = rfl::default_value;
-        rfl::Field<"prediction", double> prediction;
+        using Tag = rfl::Literal<"Leaf">;
+        double prediction;
     };
 
     struct Node {
-        rfl::Field<"type", rfl::Literal<"Node">> type = rfl::default_value;
-        rfl::Field<"criticalValue", double> critical_value;
-        rfl::Field<"lesser", std::unique_ptr<DecisionTree>> lesser;
-        rfl::Field<"greater", std::unique_ptr<DecisionTree>> greater;
+        using Tag = rfl::Literal<"Node">;
+        rfl::Rename<"criticalValue", double> critical_value;
+        std::unique_ptr<DecisionTree> lesser;
+        std::unique_ptr<DecisionTree> greater;
     };
 
     using LeafOrNode = rfl::TaggedUnion<"type", Leaf, Node>;
@@ -90,15 +90,15 @@ still have code that compiles? By using `rfl::Box` instead of `std::unique_ptr`:
 ```cpp
 struct DecisionTree {
     struct Leaf {
-        rfl::Field<"type", rfl::Literal<"Leaf">> type = rfl::default_value;
-        rfl::Field<"prediction", double> prediction;
+        using Tag = rfl::Literal<"Leaf">;
+        double prediction;
     };
 
     struct Node {
-        rfl::Field<"type", rfl::Literal<"Node">> type = rfl::default_value;
-        rfl::Field<"criticalValue", double> critical_value;
-        rfl::Field<"lesser", rfl::Box<DecisionTree>> lesser;
-        rfl::Field<"greater", rfl::Box<DecisionTree>> greater;
+        using Tag = rfl::Literal<"Node">;
+        rfl::Rename<"criticalValue", double> critical_value;
+        rfl::Box<DecisionTree> lesser;
+        rfl::Box<DecisionTree> greater;
     };
 
     using LeafOrNode = rfl::TaggedUnion<"type", Leaf, Node>;
@@ -144,15 +144,15 @@ If you want to use reference-counted pointers, instead of unique pointers, you c
 ```cpp
 struct DecisionTree {
     struct Leaf {
-        rfl::Field<"type", rfl::Literal<"Leaf">> type = rfl::default_value;
-        rfl::Field<"value", double> value;
+        using Tag = rfl::Literal<"Leaf">;
+        double value;
     };
 
     struct Node {
-        rfl::Field<"type", rfl::Literal<"Node">> type = rfl::default_value;
-        rfl::Field<"criticalValue", double> critical_value;
-        rfl::Field<"left", rfl::Ref<DecisionTree>> lesser;
-        rfl::Field<"right", rfl::Ref<DecisionTree>> greater;
+        using Tag = rfl::Literal<"Node">;
+        rfl::Rename<"criticalValue", double> critical_value;
+        rfl::Ref<DecisionTree> lesser;
+        rfl::Ref<DecisionTree> greater;
     };
 
     using LeafOrNode = rfl::TaggedUnion<"type", Leaf, Node>;

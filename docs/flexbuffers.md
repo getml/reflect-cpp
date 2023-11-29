@@ -146,66 +146,8 @@ builder.Finish(orc);  // Serialize the root of the object.
 
 I think it should be fairly obvious that using reflect-cpp on top drastically reduces the amount of boilerplate code.
 
-## Adding field names
 
 But what it more, unlike "normal" flatbuffers, flexbuffers also supports field names. Field names make it a lot easier to maintain backwards compatability.
-
-```cpp
-#include <rfl.hpp>
-#include <rfl/flexbuf.hpp>
-
-using Color = rfl::Literal<"Red", "Green", "Blue">;
-
-struct Weapon {
-  rfl::Field<"name", std::string> name;
-  rfl::Field<"damage", short> damage;
-};
-
-using Equipment = rfl::Variant<rfl::Field<"weapon", Weapon>>;
-
-struct Vec3 {
-  rfl::Field<"x", float> x;
-  rfl::Field<"y", float> y;
-  rfl::Field<"z", float> z;
-};
-
-struct Monster {
-  rfl::Field<"pos", Vec3> pos;
-  rfl::Field<"mana", short> mana = 150;
-  rfl::Field<"hp", short> hp = 100;
-  rfl::Field<"name", std::string> name;
-  rfl::Field<"friendly", bool> friendly = false;
-  rfl::Field<"inventory", std::vector<std::uint8_t>> inventory;
-  rfl::Field<"color", Color> color = Color::make<"Blue">();
-  rfl::Field<"weapons", std::vector<Weapon>> weapons;
-  rfl::Field<"equipped", Equipment> equipped;
-  rfl::Field<"path", std::vector<Vec3>> path;
-};
-
-const auto sword = Weapon{.name = "Sword", .damage = 3};
-const auto axe = Weapon{.name = "Axe", .damage = 5};
-
-const auto weapons = std::vector<Weapon>({sword, axe});
-
-const auto position = Vec3{1.0f, 2.0f, 3.0f};
-
-const auto inventory =
-    std::vector<std::uint8_t>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
-
-const auto orc = Monster{.pos = position,
-                         .mana = 150,
-                         .hp = 80,
-                         .name = "MyMonster",
-                         .inventory = inventory,
-                         .color = Color::make<"Red">(),
-                         .weapons = weapons,
-                         .equipped = rfl::make_field<"weapon">(axe),
-                         .path = rfl::default_value};
-
-const auto bytes = rfl::flexbuf::write(orc);
-
-const auto res = rfl::flexbuf::read<Monster>(bytes);
-```
 
 ## Reading and writing
 
@@ -279,9 +221,9 @@ In your header file you can write something like this:
 
 ```cpp
 struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
+    rfl::Rename<"firstName", std::string> first_name;
+    rfl::Rename<"lastName", std::string> last_name;
+    rfl::Timestamp<"%Y-%m-%d"> birthday;
 
     using InputVarType = typename rfl::flexbuf::Reader::InputVarType;
     static rfl::Result<Person> from_flexbuf(const InputVarType& _obj);

@@ -1,21 +1,24 @@
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <source_location>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
 
-void test_all_of() {
-  std::cout << "test_all_of" << std::endl;
+namespace test_all_of {
 
-  using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
+using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
 
-  struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"age", Age> age;
-  };
+struct Person {
+  rfl::Rename<"firstName", std::string> first_name;
+  rfl::Rename<"lastName", std::string> last_name;
+  Age age;
+};
+
+void test() {
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   const auto homer =
       Person{.first_name = "Homer", .last_name = "Simpson", .age = 45};
@@ -23,3 +26,4 @@ void test_all_of() {
   write_and_read(homer,
                  R"({"firstName":"Homer","lastName":"Simpson","age":45})");
 }
+}  // namespace test_all_of

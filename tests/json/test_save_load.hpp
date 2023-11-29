@@ -2,23 +2,26 @@
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <source_location>
 #include <string>
 #include <vector>
 
-void test_save_load() {
-  std::cout << "test_save_load" << std::endl;
+namespace test_save_load {
 
-  using Age = rfl::Validator<unsigned int,
-                             rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
+using Age = rfl::Validator<unsigned int,
+                           rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
 
-  struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
-    rfl::Field<"age", Age> age;
-    rfl::Field<"email", rfl::Email> email;
-    rfl::Field<"children", std::vector<Person>> children;
-  };
+struct Person {
+  rfl::Rename<"firstName", std::string> first_name;
+  rfl::Rename<"lastName", std::string> last_name;
+  rfl::Timestamp<"%Y-%m-%d"> birthday;
+  Age age;
+  rfl::Email email;
+  std::vector<Person> children;
+};
+
+void test() {
+  std::cout << std::source_location::current().function_name() << std::endl;
 
   const auto bart = Person{.first_name = "Bart",
                            .last_name = "Simpson",
@@ -27,19 +30,17 @@ void test_save_load() {
                            .email = "bart@simpson.com",
                            .children = std::vector<Person>()};
 
-  const auto lisa = Person{
-      .first_name = "Lisa",
-      .last_name = "Simpson",
-      .birthday = "1987-04-19",
-      .age = 8,
-      .email = "lisa@simpson.com",
-      .children = rfl::default_value  // same as std::vector<Person>()
-  };
+  const auto lisa = Person{.first_name = "Lisa",
+                           .last_name = "Simpson",
+                           .birthday = "1987-04-19",
+                           .age = 8,
+                           .email = "lisa@simpson.com"};
 
-  const auto maggie =
-      rfl::replace(lisa, rfl::make_field<"firstName">(std::string("Maggie")),
-                   rfl::make_field<"email">(std::string("maggie@simpson.com")),
-                   rfl::make_field<"age">(0));
+  const auto maggie = Person{.first_name = "Maggie",
+                             .last_name = "Simpson",
+                             .birthday = "1987-04-19",
+                             .age = 0,
+                             .email = "maggie@simpson.com"};
 
   const auto homer1 =
       Person{.first_name = "Homer",
@@ -64,3 +65,4 @@ void test_save_load() {
 
   std::cout << "OK" << std::endl << std::endl;
 }
+}  // namespace test_save_load

@@ -2,27 +2,31 @@
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
+#include <source_location>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
 
-void test_replace() {
-    std::cout << "test_replace" << std::endl;
+namespace test_replace {
 
-    struct Person {
-        rfl::Field<"firstName", std::string> first_name;
-        rfl::Field<"lastName", std::string> last_name;
-        rfl::Field<"children", rfl::Box<std::vector<Person>>> children;
-    };
+struct Person {
+  rfl::Field<"firstName", std::string> first_name;
+  rfl::Field<"lastName", std::string> last_name;
+  rfl::Field<"children", rfl::Box<std::vector<Person>>> children;
+};
 
-    auto lisa = Person{.first_name = "Lisa",
-                       .last_name = "Simpson",
-                       .children = rfl::make_box<std::vector<Person>>()};
+void test() {
+  std::cout << std::source_location::current().function_name() << std::endl;
 
-    const auto maggie = rfl::replace(
-        std::move(lisa), rfl::make_field<"firstName">(std::string("Maggie")));
+  auto lisa = Person{.first_name = "Lisa",
+                     .last_name = "Simpson",
+                     .children = rfl::make_box<std::vector<Person>>()};
 
-    write_and_read(
-        maggie, R"({"firstName":"Maggie","lastName":"Simpson","children":[]})");
+  const auto maggie = rfl::replace(
+      std::move(lisa), rfl::make_field<"firstName">(std::string("Maggie")));
+
+  write_and_read(
+      maggie, R"({"firstName":"Maggie","lastName":"Simpson","children":[]})");
 }
+}  // namespace test_replace
