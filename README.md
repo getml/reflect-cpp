@@ -29,7 +29,7 @@ Suppose your C++ program has complex data structures it needs to save and load. 
 
 reflect-cpp is not just a reflection library, it is for **serialization, deserialization and validation** through reflection.
 
-That means that you can encode your assumptions about the input data in the type system and have them validated upfront. This is why the library also includes algebraic data types like tagged unions and numerous validation routines. Having your assumptions encoded in the type system is the most reliable way of ensuring they are fullfilled. It also makes it a lot easier for anyone reading your code. If your assumptions are violated, the user of your software gets a very clear error message.
+That means that you can encode your requirements about the input data in the type system and have them validated upfront. This is why the library also includes algebraic data types like tagged unions and numerous validation routines. Having your requirements encoded in the type system is the most reliable way of ensuring they are met. It also makes it a lot easier for anyone reading your code. If your requirements are not met, the user of your software gets a very clear error message.
 
 This increases user experience and developer experience, it makes your code safer (fewer bugs) and more secure (less prone to malicious attacks).
 
@@ -38,7 +38,35 @@ For a more in-depth theoretical discussions of these topics, the following books
 - *Category Theory for Programmers* by Bartosz Milewski (https://github.com/hmemcpy/milewski-ctfp-pdf/releases) 
 - *Domain Modeling Made Functional* by Scott Wlaschin
 
-## Basic Example
+## Simple Example
+
+```cpp
+#include <rfl/json.hpp>
+#include <rfl.hpp>
+
+struct Person {
+  std::string first_name;
+  std::string last_name;
+  int age;
+};
+
+const auto homer =
+    Person{.first_name = "Homer",
+           .last_name = "Simpson",
+           .age = 45};
+
+// We can now write into and read from a JSON string.
+const std::string json_string = rfl::json::write(homer);
+auto homer2 = rfl::json::read<Person>(json_string).value();
+```
+
+The resulting JSON string looks like this:
+
+```json
+{"first_name":"Homer","last_name":"Simpson","age":45}
+```
+
+## More Comprehensive Example
 
 ```cpp
 #include <iostream>
