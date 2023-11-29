@@ -12,7 +12,7 @@ namespace test_optional_fields {
 struct Person {
   rfl::Rename<"firstName", std::string> first_name;
   rfl::Rename<"lastName", std::string> last_name = "Simpson";
-  std::optional<std::vector<Person>> children;
+  rfl::Rename<"children", std::optional<std::vector<Person>>> children;
 };
 
 void test() {
