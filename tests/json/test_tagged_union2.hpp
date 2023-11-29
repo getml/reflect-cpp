@@ -11,18 +11,18 @@
 namespace test_tagged_union2 {
 
 struct Circle {
-  using Tag = rfl::Literal<"Circle">;
+  using Tag = rfl::Literal<"circle", "Circle">;
   rfl::Field<"radius", double> radius;
 };
 
 struct Rectangle {
-  using Tag = rfl::Literal<"Rectangle">;
+  using Tag = rfl::Literal<"rectangle", "Rectangle">;
   rfl::Field<"height", double> height;
   rfl::Field<"width", double> width;
 };
 
 struct Square {
-  using Tag = rfl::Literal<"Square">;
+  using Tag = rfl::Literal<"square", "Square">;
   rfl::Field<"width", double> width;
 };
 
@@ -33,6 +33,6 @@ void test() {
 
   const Shapes r = Rectangle{.height = 10, .width = 5};
 
-  write_and_read(r, R"({"shape":"Rectangle","height":10.0,"width":5.0})");
+  write_and_read(r, R"({"shape":"rectangle","height":10.0,"width":5.0})");
 }
 }  // namespace test_tagged_union2
