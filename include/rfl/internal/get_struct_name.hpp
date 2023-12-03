@@ -8,7 +8,7 @@
 namespace rfl {
 namespace internal {
 
-std::string remove_namespaces(const std::string& _name) {
+inline std::string remove_namespaces(const std::string& _name) {
   const size_t pos = _name.find_last_of(":");
   if (pos == std::string::npos) {
     return _name;

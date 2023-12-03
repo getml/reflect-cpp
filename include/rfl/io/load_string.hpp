@@ -10,7 +10,7 @@
 namespace rfl {
 namespace io {
 
-Result<std::string> load_string(const std::string& _fname) {
+inline Result<std::string> load_string(const std::string& _fname) {
   std::ifstream infile(_fname);
   if (infile.is_open()) {
     auto r = std::string(std::istreambuf_iterator<char>(infile),
