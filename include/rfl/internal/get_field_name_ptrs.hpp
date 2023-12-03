@@ -1126,4 +1126,8 @@ constexpr auto get_field_name_ptrs() {
 }  // namespace internal
 }  // namespace rfl
 
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
 #endif

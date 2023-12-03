@@ -1,6 +1,12 @@
 #ifndef RFL_RFL_HPP_
 #define RFL_RFL_HPP_
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4244)
+#pragma warning(disable : 4101)
+#endif
+
 #include "rfl/AllOf.hpp"
 #include "rfl/AnyOf.hpp"
 #include "rfl/Box.hpp"
@@ -39,5 +45,9 @@
 #include "rfl/replace.hpp"
 #include "rfl/to_named_tuple.hpp"
 #include "rfl/visit.hpp"
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#endif
 
 #endif
