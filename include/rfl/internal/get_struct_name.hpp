@@ -16,10 +16,21 @@ inline std::string remove_namespaces(const std::string& _name) {
   return _name.substr(pos + 1);
 }
 
+inline size_t find_begin(const std::string& _func_name) {
+  const size_t pos1 = _func_name.find("T = ");
+  if (pos1 != std::string::npos) {
+    // clang and gcc
+    return pos1 + 4;
+  }
+  // MSVC
+  const size_t pos2 = _func_name.find_last_of(" ");
+  return (pos2 != std::string::npos) ? pos2 + 1 : pos2;
+}
+
 template <class T>
 std::string get_struct_name_impl() {
   const std::string func_name = std::source_location::current().function_name();
-  const size_t begin = func_name.find("T = ") + 4;
+  const size_t begin = find_begin(func_name);
   if (begin == std::string::npos) {
     return "AnonymousStruct";
   }
