@@ -250,14 +250,6 @@ reflect-cpp is deliberately designed in a very modular format, using [concepts](
 
 Click [here](https://github.com/getml/reflect-cpp/tree/main/docs).
 
-## Current status
-
-At the moment, this is work-in-progress. Here are some things that are still missing：
-
-- Benchmarks and optimization
-- Documentation is unfinished (missing rfl::Result, rfl::NamedTuple as well as extension to other serialization formats)
-- Support for MSVC
-
 ## Installation
 
 The following compilers are supported:
