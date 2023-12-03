@@ -23,7 +23,7 @@ std::string get_struct_name_impl() {
   if (begin == std::string::npos) {
     return "AnonymousStruct";
   }
-  const size_t end = func_name.find_first_of("])};", begin);
+  const size_t end = func_name.find_first_of("])}>;", begin);
   if (end == std::string::npos) {
     return "AnonymousStruct";
   }
