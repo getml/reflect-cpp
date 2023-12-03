@@ -5,7 +5,7 @@
 [![Generic badge](https://img.shields.io/badge/C++-20-blue.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/gcc-11+-blue.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/clang-16+-blue.svg)](https://shields.io/)
-[![Generic badge](https://img.shields.io/badge/MSVC-TODO-red.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/MSVC-17+-blue.svg)](https://shields.io/)
 
 ![image](banner1.png)
 
@@ -263,7 +263,7 @@ At the moment, this is work-in-progress. Here are some things that are still mis
 The following compilers are supported:
 - GCC 11.4 or higher
 - Clang 16.0 or higher
-- MSVC (TODO)
+- MSVC 17.8 or higher
 
 ### Option 1: Header-only
 
@@ -277,24 +277,43 @@ If you need support for other serialization formats like XML or flexbuffers, you
 
 ### Option 3: Compilation using cmake 
 
+For clang and GCC:
+
 ```
 mkdir build
 cd build
 cmake ..
-make
+make -j4
 ```
+
+For MSVC replace `make -j4` with:
+
+```
+cmake --build . --config Release
+```
+
 
 ## Compiling the tests
 
 To compile the tests, do the following:
+
+For clang and GCC:
 
 ```
 cd tests/json
 mkdir build
 cd build
 cmake ..
-make
+make -j4
 ```
+
+For MSVC replace `make -j4` with:
+
+```
+cmake --build . --config Release
+```
+
+
 ## Related projects
 
 reflect-cpp was originally developed for [getml-community](https://github.com/getml/getml-community), the fastest open-source tool for feature engineering on relational data and time series. If you are interested in Data Science and/or Machine Learning, please check it out.
