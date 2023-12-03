@@ -2,7 +2,11 @@
 #define RFL_TIMESTAMP_HPP_
 
 #include <ctime>
+#include <iomanip>
+#include <iostream>
 #include <iterator>
+#include <locale>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -22,7 +26,7 @@ class Timestamp {
   using ReflectionType = std::string;
 
   Timestamp(const char* _str) {
-    const auto r = strptime(_str, format_.value_, &tm_);
+    const auto r = strptime(_str, _format.value_, &tm_);
     if (r == NULL) {
       throw std::runtime_error("String '" + std::string(_str) +
                                "' did not match format '" + Format().str() +
@@ -71,14 +75,14 @@ class Timestamp {
  private:
 #ifdef _MSC_VER
   // This workaround is necessary, because MSVC doesn't support strptime.
-  char* strptime(const char* _s, const char* _f, struct tm* _tm) {
+  char* strptime(const char* _s, const char* _f, std::tm* _tm) {
     std::istringstream input(_s);
     input.imbue(std::locale(setlocale(LC_ALL, nullptr)));
     input >> std::get_time(_tm, _f);
     if (input.fail()) {
       return NULL;
     }
-    return (char*)(s + input.tellg());
+    return (char*)(_s + input.tellg());
   }
 #endif
 
