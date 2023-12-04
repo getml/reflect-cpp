@@ -29,7 +29,7 @@ Suppose your C++ program has complex data structures it needs to save and load. 
 
 reflect-cpp is not just a reflection library, it is for **serialization, deserialization and validation** through reflection.
 
-That means that you can encode your requirements about the input data in the type system and have them validated upfront. This is why the library also includes algebraic data types like tagged unions and numerous validation routines. Having your requirements encoded in the type system is the most reliable way of ensuring they are met. It also makes it a lot easier for anyone reading your code. If your requirements are not met, the user of your software gets a very clear error message.
+That means that you can encode your requirements about the input data in the type system and have them validated upfront. This is why the library also includes algebraic data types like tagged unions and numerous validation routines. Having your requirements encoded in the type system is the most reliable way of ensuring they are met. If your requirements are not met, the user of your software gets a very clear error message. Encoding your requirements in the type system also makes it a lot easier for anyone reading your code.
 
 This increases user experience and developer experience, it makes your code safer (fewer bugs) and more secure (less prone to malicious attacks).
 
