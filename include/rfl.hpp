@@ -47,7 +47,7 @@
 #include "rfl/visit.hpp"
 
 #ifdef _MSC_VER
-#pragma warning(push)
+#pragma warning(pop)
 #endif
 
 #endif
