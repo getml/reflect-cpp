@@ -37,7 +37,7 @@ with open("generated_code4.cpp", "w", encoding="utf-8") as codefile:
 */
 
 template <class T>
-auto to_ptr_tuple(const T& _t) {
+constexpr auto to_ptr_tuple(const T& _t) {
   if constexpr (std::is_pointer_v<std::decay_t<T>>) {
     return to_ptr_tuple(*_t);
   } else if constexpr (has_n_fields<T, 0>) {
