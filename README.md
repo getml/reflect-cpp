@@ -195,7 +195,9 @@ Other forms of tagging are supported as well. Refer to the [documentation](https
 
 ## Reflective programming
 
-Beyond serialization and deserialization through, reflect-cpp also supports reflective programming in general. For instance:
+Beyond serialization and deserialization through, reflect-cpp also supports reflective programming in general. 
+
+For instance:
 
 ```cpp
 struct Person {
@@ -210,6 +212,8 @@ const auto lisa = Person{.first_name = "Lisa", .last_name = "Simpson"};
 const auto maggie = rfl::replace(
     lisa, rfl::make_field<"first_name">(std::string("Maggie")));
 ```
+
+Or you can create structs from other structs:
 
 ```cpp
 struct A {
@@ -235,6 +239,9 @@ const auto b = B{.f3 = "Hello", .f4 = "World"};
 // f1 and f2 are taken from a, f4 is taken from b, f3 is ignored.
 const auto c = rfl::as<C>(a, b);
 ```
+
+You can also replace fields in structs using fields from other structs:
+
 ```cpp
 const auto a = A{.f1 = "Hello", .f2 = "World"};
 
