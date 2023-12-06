@@ -53,6 +53,26 @@ class Literal {
 
   ~Literal() = default;
 
+  /// Constructs a new Literal.
+  template <internal::StringLiteral _name>
+  static Literal<fields_...> make() {
+    return Literal(Literal<fields_...>::template value_of<_name>());
+  }
+
+  /// Constructs a new Literal, equivalent to make, for reasons of consistency.
+  template <internal::StringLiteral _name>
+  static Literal<fields_...> from_name() {
+    return Literal<fields_...>::template make<_name>();
+  }
+
+  /// Constructs a new Literal.
+  template <ValueType _value>
+  static Literal<fields_...> from_value() {
+    static_assert(_value < num_fields_,
+                  "Value cannot exceed number of fields.");
+    return Literal<fields_...>(_value);
+  }
+
   /// Determines whether the literal contains the string.
   static bool contains(const std::string& _str) { return has_value(_str); }
 
@@ -104,12 +124,6 @@ class Literal {
     return find_value(_str).transform(to_literal);
   };
 
-  /// Constructs a new Literal.
-  template <internal::StringLiteral _name>
-  static Literal<fields_...> make() {
-    return Literal(Literal<fields_...>::template value_of<_name>());
-  }
-
   /// The name defined by the Literal.
   std::string name() const { return find_name(); }
 
@@ -141,6 +155,9 @@ class Literal {
   /// Alias for .name().
   std::string reflection() const { return name(); }
 
+  /// Returns the number of fields in the Literal.
+  static constexpr size_t size() { return num_fields_; }
+
   /// Alias for .name().
   std::string str() const { return name(); }
 
@@ -156,7 +173,7 @@ class Literal {
   }
 
  private:
-  /// Only make is allowed to use this constructor.
+  /// Only the static methods are allowed to access this.
   Literal(const ValueType _value) : value_(_value) {}
 
   /// Returns all of the allowed fields.

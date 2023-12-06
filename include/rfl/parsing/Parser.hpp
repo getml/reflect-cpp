@@ -70,219 +70,6 @@ struct Parser;
 
 // ----------------------------------------------------------------------------
 
-/// Used for any structs that are aggregates.
-template <class R, class W, class T>
-struct StructParser {
-  using InputObjectType = typename R::InputObjectType;
-  using InputVarType = typename R::InputVarType;
-
-  using OutputObjectType = typename W::OutputObjectType;
-  using OutputVarType = typename W::OutputVarType;
-
-  using PtrTupleType = internal::flattened_ptr_tuple_t<T>;
-  using TupleType = internal::flattened_tuple_t<T>;
-
-  static constexpr auto tuple_size = std::tuple_size_v<TupleType>;
-
- public:
-  /// Generates a NamedTuple from a JSON Object.
-  static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
-    const auto& indices = field_indices();
-
-    const auto fct = [&](const std::string_view& _str) -> std::int16_t {
-      const auto it = indices.find(_str);
-      return it != indices.end() ? it->second : static_cast<std::uint16_t>(-1);
-    };
-
-    const auto to_fields_array = [&](auto _obj) {
-      return _r.template to_fields_array<tuple_size>(fct, _obj);
-    };
-
-    const auto build_tuple = [&](auto _fields_vec) -> Result<TupleType> {
-      return build_tuple_recursively(_r, _fields_vec);
-    };
-
-    const auto to_struct = [](TupleType&& _t) -> T {
-      return internal::move_from_tuple<T, TupleType>(std::move(_t));
-    };
-
-    return _r.to_object(_var)
-        .transform(to_fields_array)
-        .and_then(build_tuple)
-        .transform(to_struct);
-  }
-
-  /// Transforms a NamedTuple into a JSON object.
-  static OutputVarType write(const W& _w, const T& _var) noexcept {
-    const auto ptr_tuple = internal::to_flattened_ptr_tuple(_var);
-
-    auto obj = _w.new_object();
-
-    build_object_recursively(_w, ptr_tuple, &obj);
-
-    return OutputVarType(obj);
-  }
-
- private:
-  /// Builds the tuple field by field containing the values for the structs
-  /// recursively.
-  template <class... Args>
-  static Result<TupleType> build_tuple_recursively(
-      const R& _r,
-      const std::array<std::optional<InputVarType>, tuple_size>& _fields_arr,
-      Args&&... _args) noexcept {
-    constexpr auto i = sizeof...(Args);
-
-    if constexpr (i == std::tuple_size_v<TupleType>) {
-      return std::make_tuple(std::move(_args)...);
-    } else {
-      using ValueType =
-          std::decay_t<typename std::tuple_element<i, TupleType>::type>;
-
-      const auto& f = std::get<i>(_fields_arr);
-
-      const auto key = std::get<i>(field_names());
-
-      if (!f) {
-        if constexpr (is_required<ValueType>()) {
-          return collect_errors<i + 1>(
-              _r, _fields_arr,
-              std::vector<Error>(
-                  {Error("Field named '" + key + "' not found!")}));
-        } else {
-          return build_tuple_recursively(_r, _fields_arr, std::move(_args)...,
-                                         ValueType());
-        }
-      }
-
-      const auto handle_error = [&](Error&& _error) {
-        return collect_errors<i + 1>(_r, _fields_arr,
-                                     std::vector<Error>({std::move(_error)}));
-      };
-
-      const auto build_tuple = [&](auto&& _value) {
-        return build_tuple_recursively(_r, _fields_arr, std::move(_args)...,
-                                       std::move(_value));
-      };
-
-      return get_value<ValueType>(_r, *f, key)
-          .or_else(handle_error)
-          .and_then(build_tuple);
-    }
-  }
-
-  /// If something went wrong, we want to collect all of the errors - it's
-  /// just good UX.
-  template <int _i>
-  static Error collect_errors(
-      const R& _r,
-      const std::array<std::optional<InputVarType>, tuple_size>& _fields_arr,
-      std::vector<Error> _errors) noexcept {
-    if constexpr (_i == tuple_size) {
-      if (_errors.size() == 1) {
-        return std::move(_errors[0]);
-      } else {
-        std::string msg =
-            "Found " + std::to_string(_errors.size()) + " errors:";
-        for (size_t i = 0; i < _errors.size(); ++i) {
-          msg += "\n" + std::to_string(i + 1) + ") " + _errors.at(i).what();
-        }
-        return Error(msg);
-      }
-    } else {
-      using ValueType =
-          std::decay_t<typename std::tuple_element<_i, TupleType>::type>;
-
-      const auto& f = std::get<_i>(_fields_arr);
-
-      const auto key = std::get<_i>(field_names());
-
-      if (!f) {
-        if constexpr (is_required<ValueType>()) {
-          _errors.emplace_back(Error("Field named '" + key + "' not found."));
-        }
-        return collect_errors<_i + 1>(_r, _fields_arr, std::move(_errors));
-      }
-
-      const auto add_error_if_applicable =
-          [&](Error&& _error) -> Result<ValueType> {
-        _errors.emplace_back(std::move(_error));
-        return _error;
-      };
-
-      get_value<ValueType>(_r, *f, key).or_else(add_error_if_applicable);
-
-      return collect_errors<_i + 1>(_r, _fields_arr, std::move(_errors));
-    }
-  }
-
-  /// Builds the object field by field.
-  template <int _i = 0>
-  static void build_object_recursively(const W& _w, const PtrTupleType& _tup,
-                                       OutputObjectType* _ptr) noexcept {
-    if constexpr (_i >= tuple_size) {
-      return;
-    } else {
-      using ValueType =
-          std::decay_t<typename std::tuple_element<_i, PtrTupleType>::type>;
-
-      auto value = Parser<R, W, ValueType>::write(_w, std::get<_i>(_tup));
-
-      const auto& key = std::get<_i>(field_names());
-
-      if constexpr (!is_required<ValueType>()) {
-        if (!_w.is_empty(value)) {
-          _w.set_field(key, value, _ptr);
-        }
-      } else {
-        _w.set_field(key, value, _ptr);
-      }
-
-      return build_object_recursively<_i + 1>(_w, _tup, _ptr);
-    }
-  }
-
-  /// Uses a memoization pattern to retrieve the field indices.
-  /// There are some objects that we are likely to parse many times,
-  /// so we only calculate these indices once.
-  static const auto& field_indices() noexcept {
-    return fields_.value(make_fields).indices_;
-  }
-
-  /// Uses a memoization pattern to retrieve the field names.
-  /// There are some objects that we are likely to parse many times,
-  /// so we only calculate these indices once.
-  static const auto& field_names() noexcept {
-    return fields_.value(make_fields).names_;
-  }
-
-  /// Retrieves the value from the object. This is mainly needed to
-  /// generate a better error message.
-  template <class ValueType>
-  static auto get_value(const R& _r, const InputVarType _var,
-                        const std::string& _key) noexcept {
-    const auto embellish_error = [&](const Error& _e) {
-      return Error("Failed to parse field '" + _key + "': " + _e.what());
-    };
-    return Parser<R, W, ValueType>::read(_r, _var).or_else(embellish_error);
-  }
-
-  /// Builds the object field by field.
-  static void make_fields(internal::Fields<tuple_size>* _fields) noexcept {
-    _fields->names_ = internal::get_field_names<T>();
-    for (size_t i = 0; i < tuple_size; ++i) {
-      _fields->indices_[_fields->names_[i]] = static_cast<std::int16_t>(i);
-    }
-  }
-
- private:
-  /// Maps each of the field names to an index signifying their order and
-  /// vice-versa.
-  static inline internal::Memoization<internal::Fields<tuple_size>> fields_;
-};
-
-// ----------------------------------------------------------------------------
-
 /// Default case - anything that cannot be explicitly matched.
 template <class R, class W, class T>
 requires AreReaderAndWriter<R, W, T>
@@ -306,20 +93,15 @@ struct Parser {
         };
         return Parser<R, W, ReflectionType>::read(_r, _var).and_then(wrap_in_t);
       } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
-        if constexpr (internal::has_fields<T>()) {
-          using NamedTupleType = named_tuple_t<T>;
-          const auto to_struct = [](NamedTupleType&& _n) -> Result<T> {
-            try {
-              return from_named_tuple<T>(std::move(_n));
-            } catch (std::exception& e) {
-              return Error(e.what());
-            }
-          };
-          return Parser<R, W, NamedTupleType>::read(_r, _var).and_then(
-              to_struct);
-        } else {
-          return StructParser<R, W, T>::read(_r, _var);
-        }
+        using NamedTupleType = named_tuple_t<T>;
+        const auto to_struct = [](NamedTupleType&& _n) -> Result<T> {
+          try {
+            return from_named_tuple<T>(std::move(_n));
+          } catch (std::exception& e) {
+            return Error(e.what());
+          }
+        };
+        return Parser<R, W, NamedTupleType>::read(_r, _var).and_then(to_struct);
       } else if constexpr (internal::is_basic_type_v<T>) {
         return _r.template to_basic_type<std::decay_t<T>>(_var);
       } else {
@@ -343,13 +125,9 @@ struct Parser {
         return Parser<R, W, ReflectionType>::write(_w, r);
       }
     } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
-      if constexpr (internal::has_fields<T>()) {
-        const auto ptr_named_tuple = internal::to_ptr_named_tuple(_var);
-        using PtrNamedTupleType = std::decay_t<decltype(ptr_named_tuple)>;
-        return Parser<R, W, PtrNamedTupleType>::write(_w, ptr_named_tuple);
-      } else {
-        return StructParser<R, W, T>::write(_w, _var);
-      }
+      const auto ptr_named_tuple = internal::to_ptr_named_tuple(_var);
+      using PtrNamedTupleType = std::decay_t<decltype(ptr_named_tuple)>;
+      return Parser<R, W, PtrNamedTupleType>::write(_w, ptr_named_tuple);
     } else if constexpr (internal::is_basic_type_v<T>) {
       return _w.from_basic_type(_var);
     } else {

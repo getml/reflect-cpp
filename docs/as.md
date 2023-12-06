@@ -9,25 +9,27 @@ For example:
 
 ```cpp
 struct A {
-    rfl::Field<"f1", std::string> f1;
-    rfl::Field<"f2", std::string> f2;
+    std::string f1;
+    std::string f2;
 };
 
 struct B {
-    rfl::Field<"f3", std::string> f3;
-    rfl::Field<"f4", std::string> f4;
+    std::string f3;
+    std::string f4;
 };
 
 struct C {
-    rfl::Field<"f1", std::string> f1;
-    rfl::Field<"f2", std::string> f2;
-    rfl::Field<"f4", std::string> f4;
+    std::string f1;
+    std::string f2;
+    std::string f4;
 };
 
 const auto a = A{.f1 = "Hello", .f2 = "World"};
 
 const auto b = B{.f3 = "Hello", .f4 = "World"};
 
+// Creates c by retrieving f1 and f2 from a and f4 from b. 
+// Ignores f3.
 const auto c = rfl::as<C>(a, b);
 ```
 
@@ -49,19 +51,19 @@ In this case, `f1`, `f2` and `f4` are now moved into the newly created `c` of ty
 
 ```cpp
 struct A {
-    rfl::Field<"f1", std::string> f1;
-    rfl::Field<"f2", std::string> f2;
+    std::string f1;
+    std::string f2;
 };
 
 struct B {
-    rfl::Field<"f3", std::string> f3;
-    rfl::Field<"f4", std::string> f4;
+    std::string f3;
+    std::string f4;
 };
 
 struct C {
     rfl::Flatten<A> a;
     rfl::Flatten<B> b;
-    rfl::Field<"f5", int> f5;
+    int f5;
 };
 
 const auto a = A{.f1 = "Hello", .f2 = "World"};

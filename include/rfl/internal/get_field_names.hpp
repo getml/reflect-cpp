@@ -6,13 +6,16 @@
 #include <memory>
 #include <source_location>
 #include <string>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
+#include "rfl/Literal.hpp"
 #include "rfl/internal/fake_object.hpp"
 #include "rfl/internal/is_flatten_field.hpp"
 #include "rfl/internal/is_rename.hpp"
 #include "rfl/internal/num_fields.hpp"
+#include "rfl/internal/to_ptr_tuple.hpp"
 
 namespace rfl {
 namespace internal {
@@ -32,72 +35,95 @@ constexpr auto wrap(const T& arg) noexcept {
   return Wrapper{arg};
 }
 
+template <auto ptr>
+consteval auto get_field_name_str_view() {
+  const auto func_name =
+      std::string_view{std::source_location::current().function_name()};
+#if defined(__clang__)
+  const auto split = func_name.substr(0, func_name.find("}]"));
+  return split.substr(split.find_last_of(".") + 1);
+#elif defined(__GNUC__)
+  const auto split = func_name.substr(0, func_name.find(")}"));
+  return split.substr(split.find_last_of(":") + 1);
+#elif defined(_MSC_VER)
+  const auto split = func_name.substr(0, func_name.find_last_of("}"));
+  return split.substr(split.find_last_of(">") + 1);
+#else
+  static_assert(false,
+                "You are using an unsupported compiler. Please use GCC, Clang "
+                "or MSVC or switch to the rfl::Field-syntax.");
+#endif
+}
+
+template <auto ptr>
+consteval auto get_field_name_str_lit() {
+  constexpr auto name = get_field_name_str_view<ptr>();
+  const auto to_str_lit = [&]<auto... Ns>(std::index_sequence<Ns...>) {
+    return StringLiteral<sizeof...(Ns) + 1>{name[Ns]...};
+  };
+  return to_str_lit(std::make_index_sequence<name.size()>{});
+}
+
 template <class T>
 auto get_field_names();
 
-template <int i, auto ptr>
+template <auto ptr>
 auto get_field_name() {
   using Type = std::decay_t<std::remove_pointer_t<
       typename std::remove_pointer_t<decltype(ptr)>::Type>>;
   if constexpr (is_rename_v<Type>) {
     using Name = typename Type::Name;
-    return std::array<std::string, 1>{Name().str()};
+    return Name();
   } else if constexpr (is_flatten_field_v<Type>) {
     return get_field_names<std::decay_t<typename Type::Type>>();
   } else {
-    const std::string func_name =
-        std::source_location::current().function_name();
-    const size_t pos = func_name.find(">->");
-    const size_t begin =
-        (pos != std::string::npos) ? pos + 3 : func_name.find_last_of(":.") + 1;
-    if (begin == std::string::npos) {
-      return std::array<std::string, 1>{"f_" + std::to_string(i)};
-    }
-    const size_t end = func_name.find_first_of("])}>", begin);
-    if (end == std::string::npos) {
-      return std::array<std::string, 1>{"f_" + std::to_string(i)};
-    }
-    return std::array<std::string, 1>{func_name.substr(begin, end - begin)};
+    return rfl::Literal<get_field_name_str_lit<ptr>()>();
   }
 }
 
-template <auto N1, auto N2>
-auto concat_two_arrays(std::array<std::string, N1>&& _arr1,
-                       std::array<std::string, N2>&& _arr2) {
-  std::array<std::string, N1 + N2> res;
-  for (size_t i = 0; i < N1; ++i) {
-    res[i] = std::move(_arr1[i]);
-  }
-  for (size_t i = 0; i < N2; ++i) {
-    res[i + N1] = std::move(_arr2[i]);
-  }
-  return res;
+template <StringLiteral... _names1, StringLiteral... _names2>
+auto concat_two_literals(const rfl::Literal<_names1...>& _lit1,
+                         const rfl::Literal<_names2...>& _lit2) {
+  return rfl::Literal<_names1..., _names2...>::template from_value<0>();
 }
 
 template <class Head, class... Tail>
-auto concat_arrays(Head&& _head, Tail&&... _tail) {
+auto concat_literals(const Head& _head, const Tail&... _tail) {
   if constexpr (sizeof...(_tail) == 0) {
-    return std::move(_head);
+    return _head;
   } else {
-    return concat_two_arrays(std::move(_head),
-                             concat_arrays(std::move(_tail)...));
+    return concat_two_literals(_head, concat_literals(_tail...));
   }
 }
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundefined-var-template"
+#endif
+
 template <class T>
 #if __GNUC__
+#ifndef __clang__
 [[gnu::no_sanitize_undefined]]
+#endif
 #endif
 auto get_field_names() {
   if constexpr (std::is_pointer_v<std::decay_t<T>>) {
     return get_field_names<std::remove_pointer_t<T>>();
-  } else
-    return []<std::size_t... Is>(std::index_sequence<Is...>) {
-      return concat_arrays(
-          get_field_name<Is + 1, wrap(std::get<Is>(
-                                     to_ptr_tuple(fake_object<T>)))>()...);
-    }(std::make_index_sequence<num_fields<T>>());
+  } else {
+    constexpr auto ptr_tuple = to_ptr_tuple(fake_object<T>);
+    const auto get = [&]<std::size_t... Is>(std::index_sequence<Is...>) {
+      return concat_literals(
+          get_field_name<wrap(std::get<Is>(ptr_tuple))>()...);
+    };
+    return get(
+        std::make_index_sequence<std::tuple_size_v<decltype(ptr_tuple)>>());
+  }
 }
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 }  // namespace internal
 }  // namespace rfl

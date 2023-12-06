@@ -10,13 +10,13 @@ In some cases, we really only want to change one or a few fields, to get from on
 const auto lisa = Person{
     .first_name = "Lisa",
     .last_name = "Simpson",
-    .children = rfl::default_value  // same as std::vector<Person>()
+    .children = std::vector<Person>()
 };
 
 // Returns a deep copy of the original object,
 // replacing first_name.
 const auto maggie =
-    rfl::replace(lisa, rfl::make_field<"firstName">(std::string("Maggie")));
+    rfl::replace(lisa, rfl::make_field<"first_name">(std::string("Maggie")));
 ```
 
 `maggie` is now a deep copy of `lisa`, but with a new `first_name`.
@@ -27,9 +27,9 @@ For instance, suppose we had put the field `children` into a `rfl::Box`:
 
 ```cpp
 struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"children", rfl::Box<std::vector<Person>>> children;
+    std::string first_name;
+    std::string last_name;
+    rfl::Box<std::vector<Person>> children;
 };
 ```
 
@@ -67,15 +67,15 @@ as if they were on the main level:
 
 ```cpp
 struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", rfl::Box<std::string>> last_name;
-    rfl::Field<"age", int> age;
+    std::string first_name;
+    rfl::Box<std::string> last_name;
+    int age;
 };
 
 struct Employee {
     rfl::Flatten<Person> person;
-    rfl::Field<"employer", rfl::Box<std::string>> employer;
-    rfl::Field<"salary", float> salary;
+    rfl::Box<std::string> employer;
+    float salary;
 };
 
 auto employee = Employee{
@@ -98,15 +98,15 @@ You can also replace structs with other structs. Consider the following example:
 
 ```cpp
 struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"age", int> age;
+    std::string first_name;
+    std::string last_name;
+    int age;
 };
 
 struct Employee {
     rfl::Flatten<Person> person;
-    rfl::Field<"employer", std::string> employer;
-    rfl::Field<"salary", float> salary;
+    std::string employer;
+    float salary;
 };
 
 const auto employee = Employee{
@@ -125,7 +125,7 @@ This code flattens the employee structs and then replaces all relevant fields wi
 Finally, we get this JSON string:
 
 ```json
-{"firstName":"Carl","lastName":"","age":45,"employer":"Mr. Burns","salary":60000.0}
+{"first_name":"Carl","last_name":"","age":45,"employer":"Mr. Burns","salary":60000.0}
 ```
 
 Don't worry, this is fairly optimized and makes heavy use of forwarding. It does not make any copies than it absolutely has to.

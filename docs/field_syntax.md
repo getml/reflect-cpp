@@ -12,12 +12,7 @@ struct Person {
 };
 ```
 
-Even though this requires slightly more effort from the programmer, it has an important
-advantage: These field names are known at *compile time*, whereas the field names which
-are retrieved automatically are only known at *runtime*. Even though the runtime overhead
-should be negligible in most cases, this allows for compile-time checks
-which are otherwise impossible. It also allows for functionalities like `rfl::replace`,
-`rfl::as` or interactions with `rfl::NamedTuple` which we will see later in the documentation.
+These annotations are required if you are planning to use a compiler other than MSVC, GCC or clang.
 
 There are a two things you have to keep in mind:
 

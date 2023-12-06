@@ -2,6 +2,7 @@
 #define RFL_INTERNAL_STRINGLITERAL_HPP_
 
 #include <algorithm>
+#include <array>
 #include <string>
 #include <string_view>
 
@@ -13,35 +14,36 @@ namespace internal {
 /// for the parameters names in the NamedTuples.
 template <size_t N>
 struct StringLiteral {
-    constexpr StringLiteral(const char (&_str)[N]) {
-        std::copy_n(_str, N, value_);
-    }
+  constexpr StringLiteral(const auto... _chars) : arr_{_chars...} {}
 
-    char value_[N];
+  constexpr StringLiteral(const char (&_str)[N]) {
+    std::copy_n(_str, N - 1, std::data(arr_));
+  }
 
-    /// Returns the value as a string.
-    std::string str() const { return std::string(value_); }
+  /// Returns the value as a string.
+  std::string str() const { return std::string(std::data(arr_), N - 1); }
 
-    /// Returns the value as a string.
-    std::string_view string_view() const {
-        return std::string_view(value_, N - 1);
-    }
+  /// Returns the value as a string.
+  constexpr std::string_view string_view() const {
+    return std::string_view(std::data(arr_), N - 1);
+  }
+
+  std::array<char, N - 1> arr_;
 };
 
 template <size_t N1, size_t N2>
 constexpr inline bool operator==(const StringLiteral<N1>& _first,
                                  const StringLiteral<N2>& _second) {
-    if constexpr (N1 != N2) {
-        return false;
-    }
-    return std::string_view(_first.value_, N1) ==
-           std::string_view(_second.value_, N2);
+  if constexpr (N1 != N2) {
+    return false;
+  }
+  return _first.string_view() == _second.string_view();
 }
 
 template <size_t N1, size_t N2>
 constexpr inline bool operator!=(const StringLiteral<N1>& _first,
                                  const StringLiteral<N2>& _second) {
-    return !(_first == _second);
+  return !(_first == _second);
 }
 
 }  // namespace internal

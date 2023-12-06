@@ -26,7 +26,7 @@ class Timestamp {
   using ReflectionType = std::string;
 
   Timestamp(const char* _str) {
-    const auto r = strptime(_str, _format.value_, &tm_);
+    const auto r = strptime(_str, _format.str().c_str(), &tm_);
     if (r == NULL) {
       throw std::runtime_error("String '" + std::string(_str) +
                                "' did not match format '" + Format().str() +
@@ -59,7 +59,7 @@ class Timestamp {
   /// Necessary for the serialization to work.
   ReflectionType reflection() const {
     char outstr[200];
-    strftime(outstr, 200, format_.value_, &tm_);
+    strftime(outstr, 200, format_.str().c_str(), &tm_);
     return std::string(outstr);
   }
 

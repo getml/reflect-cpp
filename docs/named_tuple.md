@@ -1,14 +1,14 @@
 # `rfl::NamedTuple`
 
-`rfl::NamedTuple` is very similar to `std::tuple`, but unlike `std::tuple` the fields have names.
+`rfl::NamedTuple` is very similar to `std::tuple`, but unlike `std::tuple`, the fields have names.
 
 In other words, consider the following struct:
 
 ```cpp
 struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
+    std::string first_name;
+    std::string last_name;
+    rfl::Timestamp<"%Y-%m-%d"> birthday;
 };
 ```
 
@@ -16,8 +16,8 @@ You might as well define the following `rfl::NamedTuple`:
 
 ```cpp
 using Person = rfl::NamedTuple<
-    rfl::Field<"firstName", std::string>,
-    rfl::Field<"lastName", std::string>,
+    rfl::Field<"first_name", std::string>,
+    rfl::Field<"last_name", std::string>,
     rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">>>;
 ```
 
@@ -34,8 +34,8 @@ In plain language, that means that the compiler will regard this as absolutely e
 
 ```cpp
 using Person2 = rfl::NamedTuple<
-    rfl::Field<"firstName", std::string>,
-    rfl::Field<"lastName", std::string>,
+    rfl::Field<"first_name", std::string>,
+    rfl::Field<"last_name", std::string>,
     rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">>>;
 ```
 
@@ -43,9 +43,9 @@ However, this will be seen as a type that is different from `Person`, the struct
 
 ```cpp
 struct Person2 {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
+    std::string first_name;
+    std::string last_name;
+    rfl::Timestamp<"%Y-%m-%d"> birthday;
 };
 ```
 
@@ -53,8 +53,8 @@ Structural typing also means that you can declare new types on-the-fly. For inst
 to create a `Person` named tuple, you don't actually have to declare it at all. The following will do:
 
 ```cpp
-const auto person = rfl::Field<"firstName", std::string>("Homer") *
-                    rfl::Field<"lastName", std::string>("Simpson") *
+const auto person = rfl::Field<"first_name", std::string>("Homer") *
+                    rfl::Field<"last_name", std::string>("Simpson") *
                     rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">>("1987-04-19");
 ```
 
@@ -66,9 +66,9 @@ For instance, consider something like this:
 
 ```cpp
 struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"children", std::vector<Person>> children;
+    std::string first_name;
+    std::string last_name;
+    std::vector<Person> children;
 };
 ```
 
@@ -80,8 +80,8 @@ This is impossible to accomplish using structural typing and `rfl::NamedTuple`, 
 Fields inside the named tuple can be accessed using `rfl::get` or the `.get` method:
 
 ```cpp
-const auto person = rfl::Field<"firstName", std::string>("Homer") *
-                    rfl::Field<"lastName", std::string>("Simpson") *
+const auto person = rfl::Field<"first_name", std::string>("Homer") *
+                    rfl::Field<"last_name", std::string>("Simpson") *
                     rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">>("1987-04-19");
 
 // OK in most circumstances (there are restrictions
@@ -93,36 +93,6 @@ const auto first_name = person.template get<"firstName">();
 
 // Always OK
 const auto first_name = rfl::get<"firstName">(person);
-```
-
-## Similarity to structs
-
-Most of the functionality we have described also work for `rfl::NamedTuple`. 
-It should be noted that you are free to mix `rfl::NamedTuple` and structs.
-For instance, you can build a `rfl::TaggedUnion` from a combination of 
-`rfl::NamedTuple` and structs or you could construct a struct from named tuples using
-`rfl::as`.
-
-### `std::variant` and `rfl::TaggedUnion`
-
-`rfl::NamedTuple`s can be inserted into `std::variant`:
-
-```cpp
-using Circle = rfl::NamedTuple<rfl::Field<"radius", double>>;
-
-using Rectangle = rfl::NamedTuple<
-    rfl::Field<"height", double>,
-    rfl::Field<"width", double>>;
-
-using Square rfl::NamedTuple<rfl::Field<"width", double>>;
-
-// Untagged variant - OK
-using Shapes = std::variant<Circle, Rectangle, Square>;
-
-// Externally tagged variant - also OK:
-using Shapes = std::variant<rfl::Field<"circle", Circle>,
-                            rfl::Field<"rectangle", Rectangle>,
-                            rfl::Field<"square", Square>>;
 ```
 
 ### `rfl::replace`

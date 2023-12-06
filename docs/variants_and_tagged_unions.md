@@ -82,18 +82,18 @@ It is also possible to set the tag explicitly:
 ```cpp
 struct Circle {
   using Tag = rfl::Literal<"circle", "Circle">;
-  rfl::Field<"radius", double> radius;
+  double radius;
 };
 
 struct Rectangle {
   using Tag = rfl::Literal<"rectangle", "Rectangle">;
-  rfl::Field<"height", double> height;
-  rfl::Field<"width", double> width;
+  double height;
+  double width;
 };
 
 struct Square {
   using Tag = rfl::Literal<"square", "Square">;
-  rfl::Field<"width", double> width;
+  double width;
 };
 
 using Shapes = rfl::TaggedUnion<"shape", Circle, Square, Rectangle>;

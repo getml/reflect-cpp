@@ -193,6 +193,58 @@ This results in the following JSON string:
 
 Other forms of tagging are supported as well. Refer to the [documentation](https://github.com/getml/reflect-cpp/tree/main/docs) for details.
 
+## Reflective programming
+
+Beyond serialization and deserialization through, reflect-cpp also supports reflective programming in general. For instance:
+
+```cpp
+struct Person {
+  std::string first_name;
+  std::string last_name;
+  std::vector<Person> children;
+};
+
+const auto lisa = Person{.first_name = "Lisa", .last_name = "Simpson"};
+
+// Returns a deep copy of "lisa" with the first_name replaced.
+const auto maggie = rfl::replace(
+    lisa, rfl::make_field<"first_name">(std::string("Maggie")));
+```
+
+```cpp
+struct A {
+  std::string f1;
+  std::string f2;
+};
+
+struct B {
+  std::string f3;
+  std::string f4;
+};
+
+struct C {
+  std::string f1;
+  std::string f2;
+  std::string f4;
+};
+
+const auto a = A{.f1 = "Hello", .f2 = "World"};
+
+const auto b = B{.f3 = "Hello", .f4 = "World"};
+
+// f1 and f2 are taken from a, f4 is taken from b, f3 is ignored.
+const auto c = rfl::as<C>(a, b);
+```
+```cpp
+const auto a = A{.f1 = "Hello", .f2 = "World"};
+
+const auto c = C{.f1 = "C++", .f2 = "is", .f4 = "great"};
+
+// The fields f1 and f2 are replaced with the fields f1 and f2 in a.
+const auto c2 = rfl::replace(c, a);
+```
+
+
 ## Support for containers
 
 ### C++ standard library

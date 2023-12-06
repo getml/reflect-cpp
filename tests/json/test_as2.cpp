@@ -1,4 +1,4 @@
-#include "test_as_flatten.hpp"
+#include "test_as2.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -10,7 +10,7 @@
 
 #include "write_and_read.hpp"
 
-namespace test_as_flatten {
+namespace test_as2 {
 
 struct A {
   std::string f1;
@@ -23,9 +23,9 @@ struct B {
 };
 
 struct C {
-  rfl::Flatten<A> a;
-  rfl::Flatten<B> b;
-  int f5;
+  std::string f1;
+  rfl::Box<std::string> f2;
+  rfl::Box<std::string> f4;
 };
 
 void test() {
@@ -35,10 +35,9 @@ void test() {
 
   auto b = B{.f3 = "Hello", .f4 = rfl::make_box<std::string>("World")};
 
-  const auto c =
-      rfl::as<C>(std::move(a), std::move(b), rfl::make_field<"f5">(5));
+  const auto c = rfl::as<C>(std::move(a), std::move(b));
 
-  write_and_read(
-      c, R"({"f1":"Hello","f2":"World","f3":"Hello","f4":"World","f5":5})");
+  write_and_read(c, R"({"f1":"Hello","f2":"World","f4":"World"})");
 }
-}  // namespace test_as_flatten
+
+}  // namespace test_as2

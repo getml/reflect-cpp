@@ -5,6 +5,7 @@
 #include "test_any_of.hpp"
 #include "test_array.hpp"
 #include "test_as.hpp"
+#include "test_as2.hpp"
 #include "test_as_flatten.hpp"
 #include "test_box.hpp"
 #include "test_custom_class1.hpp"
@@ -34,8 +35,11 @@
 #include "test_readme_example.hpp"
 #include "test_ref.hpp"
 #include "test_replace.hpp"
+#include "test_replace2.hpp"
 #include "test_replace_flatten.hpp"
+#include "test_replace_flatten2.hpp"
 #include "test_replace_with_other_struct.hpp"
+#include "test_replace_with_other_struct2.hpp"
 #include "test_result.hpp"
 #include "test_save_load.hpp"
 #include "test_set.hpp"
@@ -99,9 +103,13 @@ int main() {
   test_custom_class4::test();
 
   test_replace::test();
+  test_replace2::test();
   test_replace_flatten::test();
+  test_replace_flatten2::test();
   test_replace_with_other_struct::test();
+  test_replace_with_other_struct2::test();
   test_as::test();
+  test_as2::test();
   test_as_flatten::test();
 
   test_custom_constructor::test();
