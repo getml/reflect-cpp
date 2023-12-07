@@ -10,15 +10,15 @@
 namespace rfl {
 namespace parsing {
 
-template <class T, class LiteralType, internal::StringLiteral _discriminator>
+template <class T, class TagType, internal::StringLiteral _discriminator>
 struct TaggedUnionWrapperNoFields {
-  rfl::Rename<_discriminator, std::string> tag;
+  rfl::Rename<_discriminator, TagType> tag;
   rfl::Flatten<const T*> fields;
 };
 
-template <class T, class LiteralType, internal::StringLiteral _discriminator>
+template <class T, class TagType, internal::StringLiteral _discriminator>
 struct TaggedUnionWrapperWithFields {
-  rfl::Field<_discriminator, std::string> tag;
+  rfl::Field<_discriminator, TagType> tag;
   rfl::Flatten<const T*> fields;
 };
 

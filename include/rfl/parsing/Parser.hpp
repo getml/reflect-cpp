@@ -38,14 +38,16 @@
 #include "rfl/internal/flattened_ptr_tuple_t.hpp"
 #include "rfl/internal/flattened_tuple_t.hpp"
 #include "rfl/internal/get_field_names.hpp"
-#include "rfl/internal/get_struct_name.hpp"
+#include "rfl/internal/get_type_name.hpp"
 #include "rfl/internal/has_fields.hpp"
 #include "rfl/internal/has_reflection_method_v.hpp"
 #include "rfl/internal/has_reflection_type_v.hpp"
 #include "rfl/internal/has_tag_v.hpp"
 #include "rfl/internal/is_basic_type.hpp"
+#include "rfl/internal/make_tag.hpp"
 #include "rfl/internal/move_from_tuple.hpp"
 #include "rfl/internal/no_duplicate_field_names.hpp"
+#include "rfl/internal/tag_t.hpp"
 #include "rfl/internal/to_flattened_ptr_tuple.hpp"
 #include "rfl/internal/to_ptr_named_tuple.hpp"
 #include "rfl/internal/tuple_t.hpp"
@@ -847,33 +849,13 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
   template <class T>
   static inline bool contains_disc_value(
       const std::string& _disc_value) noexcept {
-    if constexpr (internal::has_reflection_type_v<T>) {
-      return contains_disc_value<typename T::ReflectionType>(_disc_value);
-    } else if constexpr (internal::has_tag_v<T>) {
-      using LiteralType = typename T::Tag;
-      return LiteralType::contains(_disc_value);
-      return LiteralType::contains(_disc_value);
-    } else {
-      return _disc_value == internal::get_struct_name<T>();
-    }
-  }
-
-  template <class T>
-  static inline std::string make_tag() noexcept {
-    if constexpr (internal::has_reflection_type_v<T>) {
-      return make_tag<typename T::ReflectionType>();
-    } else if constexpr (internal::has_tag_v<T>) {
-      using LiteralType = typename T::Tag;
-      return LiteralType::template name_of<0>().str();
-    } else {
-      return internal::get_struct_name<T>();
-    }
+    return internal::tag_t<T>::contains(_disc_value);
   }
 
   /// Writes a wrapped version of the original object, which contains the tag.
   template <class T>
   static OutputVarType write_wrapped(const W& _w, const T& _val) noexcept {
-    const auto tag = make_tag<T>();
+    const auto tag = internal::make_tag<T>();
     using TagType = std::decay_t<decltype(tag)>;
     if constexpr (internal::has_fields<std::decay_t<T>>()) {
       using WrapperType =
