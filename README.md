@@ -195,9 +195,29 @@ Other forms of tagging are supported as well. Refer to the [documentation](https
 
 ## Reflective programming
 
-Beyond serialization and deserialization through, reflect-cpp also supports reflective programming in general. 
+Beyond serialization and deserialization, reflect-cpp also supports reflective programming in general. 
 
 For instance:
+
+```cpp
+struct Person {
+  std::string first_name;
+  std::string last_name = "Simpson";
+  std::string town = "Springfield";
+  unsigned int age;
+  std::vector<Person> children;
+};
+
+const auto fields = rfl::fields<Person>();
+
+std::cout << "Fields in " << rfl::type_name_t<Person>().str() << ":"
+            << std::endl;
+for (const auto& f : fields) {
+  std::cout << "name: " << f.name() << ", type: " << f.type() << std::endl;
+}
+```
+
+It also possible to replace fields:
 
 ```cpp
 struct Person {
