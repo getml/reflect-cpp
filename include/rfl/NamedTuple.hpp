@@ -286,6 +286,9 @@ class NamedTuple {
         std::forward<Tail>(_tail)...);
   }
 
+  /// Returns the size of the named tuple
+  static constexpr size_t size() { return std::tuple_size_v<Values>; }
+
   /// Returns the underlying std::tuple.
   Values& values() { return values_; }
 

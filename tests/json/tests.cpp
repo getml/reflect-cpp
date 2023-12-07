@@ -27,6 +27,7 @@
 #include "test_literal_unordered_map.hpp"
 #include "test_map.hpp"
 #include "test_map_with_key_validation.hpp"
+#include "test_meta_fields.hpp"
 #include "test_monster_example.hpp"
 #include "test_multimap.hpp"
 #include "test_multiset.hpp"
@@ -121,6 +122,8 @@ int main() {
   test_size::test();
 
   test_save_load::test();
+
+  test_meta_fields::test();
 
   return 0;
 }

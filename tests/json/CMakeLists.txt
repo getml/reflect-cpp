@@ -38,6 +38,7 @@ add_executable(
     "test_literal_unordered_map.cpp"
     "test_map.cpp"
     "test_map_with_key_validation.cpp"
+    "test_meta_fields.cpp"
     "test_monster_example.cpp"
     "test_move_replace.cpp"
     "test_multimap.cpp"

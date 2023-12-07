@@ -34,6 +34,7 @@
 #include "rfl/define_variant.hpp"
 #include "rfl/extract_discriminators.hpp"
 #include "rfl/field_type.hpp"
+#include "rfl/fields.hpp"
 #include "rfl/from_named_tuple.hpp"
 #include "rfl/get.hpp"
 #include "rfl/make_named_tuple.hpp"
@@ -44,6 +45,7 @@
 #include "rfl/remove_fields.hpp"
 #include "rfl/replace.hpp"
 #include "rfl/to_named_tuple.hpp"
+#include "rfl/type_name_t.hpp"
 #include "rfl/visit.hpp"
 
 #ifdef _MSC_VER
