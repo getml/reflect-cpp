@@ -5,12 +5,12 @@
 #include <type_traits>
 
 #include "rfl/field_names_t.hpp"
+#include "rfl/internal/bind_to_tuple.hpp"
 #include "rfl/internal/flattened_ptr_tuple_t.hpp"
 #include "rfl/internal/has_fields.hpp"
 #include "rfl/internal/is_flatten_field.hpp"
 #include "rfl/internal/is_named_tuple.hpp"
 #include "rfl/internal/lit_name.hpp"
-#include "rfl/internal/move_to_field_tuple_impl.hpp"
 
 namespace rfl {
 namespace internal {
@@ -21,7 +21,6 @@ auto wrap_in_fields(auto&& _tuple, Fields&&... _fields) {
   constexpr auto i = sizeof...(_fields);
   if constexpr (i == size) {
     return std::make_tuple(std::move(_fields)...);
-
   } else {
     auto value = std::move(std::get<i>(_tuple));
     using Type = std::decay_t<decltype(value)>;
@@ -49,10 +48,10 @@ auto move_to_field_tuple(OriginalStruct&& _t) {
   if constexpr (internal::is_named_tuple_v<T>) {
     return _t.fields();
   } else if constexpr (has_fields<T>()) {
-    return move_to_field_tuple_impl(std::move(_t));
+    return bind_to_tuple(_t, [](auto& x) { return std::move(x); });
   } else {
     using FieldNames = field_names_t<T>;
-    auto tup = move_to_field_tuple_impl(std::move(_t));
+    auto tup = bind_to_tuple(_t, [](auto& x) { return std::move(x); });
     return wrap_in_fields<FieldNames>(std::move(tup));
   }
 }
