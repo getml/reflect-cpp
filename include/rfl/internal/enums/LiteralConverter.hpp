@@ -44,6 +44,7 @@ struct LiteralConverter {
   }
 
   static EnumType literal_to_enum(const NamesLiteral _lit) {
+    static_assert(names_.size != 0, "This does not work for empty enums.");
     return names_.enums_[_lit.value()];
   }
 

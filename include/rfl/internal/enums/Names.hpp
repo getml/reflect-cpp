@@ -24,9 +24,6 @@ struct Names {
   /// A list of all the possible enums
   std::array<EnumType, N> enums_;
 
-  /// The integer values underlying the enum.
-  std::array<std::underlying_type_t<EnumType>, N> integers_;
-
   static_assert(N == 0 || LiteralType::size() == N,
                 "Size of literal and enum do not match.");
 };

@@ -68,9 +68,8 @@ consteval auto get_enum_name() {
 }
 
 template <class EnumType>
-constexpr auto start_value = Names<EnumType, rfl::Literal<"">, 0>{
-    .enums_ = std::array<EnumType, 0>{},
-    .integers_ = std::array<std::underlying_type_t<EnumType>, 0>{}};
+constexpr auto start_value =
+    Names<EnumType, rfl::Literal<"">, 0>{.enums_ = std::array<EnumType, 0>{}};
 
 template <class EnumType, auto _names = start_value<EnumType>, int _i = 0>
 consteval auto get_enum_names() {
@@ -98,12 +97,6 @@ consteval auto get_enum_names() {
             _names.enums_[Ns]..., static_cast<EnumType>(_i)};
       };
 
-      const auto update_integers = [&]<auto... Ns>(std::index_sequence<Ns...>) {
-        return std::array<std::underlying_type_t<EnumType>, sizeof...(Ns) + 1>{
-            _names.integers_[Ns]...,
-            static_cast<std::underlying_type_t<EnumType>>(_i)};
-      };
-
       using NewNames = std::conditional_t<
           decltype(_names)::size == 0,
           Names<EnumType, Literal<remove_namespaces<name>()>, 1>,
@@ -112,11 +105,9 @@ consteval auto get_enum_names() {
                                  Literal<remove_namespaces<name>()>>,
                 decltype(_names)::size + 1>>;
 
-      constexpr auto new_names = NewNames{
-          .enums_ =
-              update_enums(std::make_index_sequence<decltype(_names)::size>{}),
-          .integers_ = update_integers(
-              std::make_index_sequence<decltype(_names)::size>{})};
+      constexpr auto new_names =
+          NewNames{.enums_ = update_enums(
+                       std::make_index_sequence<decltype(_names)::size>{})};
 
       return get_enum_names<EnumType, new_names, _i + 1>();
     }
