@@ -10,8 +10,7 @@ namespace rfl {
 namespace internal {
 
 template <class T>
-using ptr_tuple_t =
-    typename std::invoke_result<decltype(to_ptr_tuple<T>), T>::type;
+using ptr_tuple_t = decltype(to_ptr_tuple(std::declval<T&>()));
 
 }  // namespace internal
 }  // namespace rfl
