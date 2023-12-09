@@ -16,6 +16,7 @@
 #include "test_default_values.hpp"
 #include "test_deque.hpp"
 #include "test_email.hpp"
+#include "test_enum.hpp"
 #include "test_error_messages.hpp"
 #include "test_field_variant.hpp"
 #include "test_flatten.hpp"
@@ -65,6 +66,7 @@ int main() {
   test_unique_ptr::test();
   test_unique_ptr2::test();
   test_literal::test();
+  test_enum::test();
   test_variant::test();
   test_tagged_union::test();
   test_tagged_union2::test();

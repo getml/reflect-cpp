@@ -160,6 +160,29 @@ Found 5 errors:
 5) Field named 'children' not found.
 ```
 
+## Enums
+
+reflect-cpp supports scoped enumerations:
+
+```cpp
+enum class Color { red, green, blue, yellow };
+
+struct Circle {
+  float radius;
+  Color color;
+};
+
+const auto circle = Circle{.radius = 2.0, .color = Color::green};
+
+rfl::json::write(circle);
+```
+
+This results in the following JSON string:
+
+```json
+{"radius":2.0,"color":"green"}
+```
+
 ## Algebraic data types
 
 reflect-cpp supports Pydantic-style tagged unions, which allow you to form algebraic data types:

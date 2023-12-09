@@ -73,6 +73,14 @@ class Literal {
     return Literal<fields_...>(_value);
   }
 
+  /// Constructs a new Literal.
+  static Result<Literal<fields_...>> from_value(ValueType _value) {
+    if (_value >= num_fields_) {
+      return Error("Value cannot exceed number of fields.");
+    }
+    return Literal<fields_...>(_value);
+  }
+
   /// Determines whether the literal contains the string.
   static bool contains(const std::string& _str) { return has_value(_str); }
 

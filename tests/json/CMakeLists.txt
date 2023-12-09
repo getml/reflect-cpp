@@ -27,6 +27,7 @@ add_executable(
     "test_default_values.cpp"
     "test_deque.cpp"
     "test_email.cpp"
+    "test_enum.cpp"
     "test_error_messages.cpp"
     "test_field_variant.cpp"
     "test_flatten.cpp"
