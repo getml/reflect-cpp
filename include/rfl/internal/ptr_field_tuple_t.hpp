@@ -5,15 +5,13 @@
 #include <tuple>
 #include <type_traits>
 
-#include "rfl/internal/is_named_tuple.hpp"
 #include "rfl/internal/to_ptr_field_tuple.hpp"
 
 namespace rfl {
 namespace internal {
 
 template <class T>
-using ptr_field_tuple_t =
-    typename std::invoke_result<decltype(to_ptr_field_tuple<T>), T>::type;
+using ptr_field_tuple_t = decltype(to_ptr_field_tuple(std::declval<T&>()));
 
 }  // namespace internal
 }  // namespace rfl
