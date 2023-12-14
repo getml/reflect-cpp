@@ -19,6 +19,8 @@
 #include "test_enum.hpp"
 #include "test_error_messages.hpp"
 #include "test_field_variant.hpp"
+#include "test_flag_enum.hpp"
+#include "test_flag_enum_with_int.hpp"
 #include "test_flatten.hpp"
 #include "test_flatten_anonymous.hpp"
 #include "test_forward_list.hpp"
@@ -67,6 +69,8 @@ int main() {
   test_unique_ptr2::test();
   test_literal::test();
   test_enum::test();
+  test_flag_enum::test();
+  test_flag_enum_with_int::test();
   test_variant::test();
   test_tagged_union::test();
   test_tagged_union2::test();

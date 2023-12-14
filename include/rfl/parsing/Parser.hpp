@@ -35,7 +35,7 @@
 #include "rfl/internal/Memoization.hpp"
 #include "rfl/internal/StringLiteral.hpp"
 #include "rfl/internal/all_fields.hpp"
-#include "rfl/internal/enums/LiteralConverter.hpp"
+#include "rfl/internal/enums/StringConverter.hpp"
 #include "rfl/internal/flattened_ptr_tuple_t.hpp"
 #include "rfl/internal/flattened_tuple_t.hpp"
 #include "rfl/internal/get_field_names.hpp"
@@ -106,9 +106,9 @@ struct Parser {
         };
         return Parser<R, W, NamedTupleType>::read(_r, _var).and_then(to_struct);
       } else if constexpr (std::is_enum_v<T>) {
-        using LiteralConverter = internal::enums::LiteralConverter<T>;
+        using StringConverter = internal::enums::StringConverter<T>;
         return _r.template to_basic_type<std::string>(_var).and_then(
-            LiteralConverter::string_to_enum);
+            StringConverter::string_to_enum);
       } else if constexpr (internal::is_basic_type_v<T>) {
         return _r.template to_basic_type<std::decay_t<T>>(_var);
       } else {
@@ -136,12 +136,8 @@ struct Parser {
       using PtrNamedTupleType = std::decay_t<decltype(ptr_named_tuple)>;
       return Parser<R, W, PtrNamedTupleType>::write(_w, ptr_named_tuple);
     } else if constexpr (std::is_enum_v<T>) {
-      using LiteralConverter = internal::enums::LiteralConverter<T>;
-      const auto handle_error = [](const auto& _err) -> std::string {
-        return _err.what();
-      };
-      const auto str =
-          LiteralConverter::enum_to_string(_var).or_else(handle_error).value();
+      using StringConverter = internal::enums::StringConverter<T>;
+      const auto str = StringConverter::enum_to_string(_var);
       return _w.from_basic_type(str);
     } else if constexpr (internal::is_basic_type_v<T>) {
       return _w.from_basic_type(_var);

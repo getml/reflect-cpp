@@ -30,6 +30,8 @@ add_executable(
     "test_enum.cpp"
     "test_error_messages.cpp"
     "test_field_variant.cpp"
+    "test_flag_enum.cpp"
+    "test_flag_enum_with_int.cpp"
     "test_flatten.cpp"
     "test_flatten_anonymous.cpp"
     "test_forward_list.cpp"

@@ -8,6 +8,7 @@
 #include "rfl/Literal.hpp"
 #include "rfl/define_literal.hpp"
 #include "rfl/internal/enums/Names.hpp"
+#include "rfl/internal/enums/is_scoped_enum.hpp"
 #include "rfl/internal/remove_namespaces.hpp"
 
 // https://en.cppreference.com/w/cpp/language/static_cast:
@@ -67,51 +68,74 @@ consteval auto get_enum_name() {
   return to_str_lit(std::make_index_sequence<name.size()>{});
 }
 
-template <class EnumType>
-constexpr auto start_value =
-    Names<EnumType, rfl::Literal<"">, 0>{.enums_ = std::array<EnumType, 0>{}};
+template <class T>
+consteval T calc_greatest_power_of_two() {
+  if constexpr (std::is_signed_v<T>) {
+    return static_cast<T>(1) << (sizeof(T) * 8 - 2);
+  } else {
+    return static_cast<T>(1) << (sizeof(T) * 8 - 1);
+  }
+}
 
-template <class EnumType, auto _names = start_value<EnumType>, int _i = 0>
+template <class T, bool _is_flag>
+consteval T get_max() {
+  if constexpr (_is_flag) {
+    return calc_greatest_power_of_two<T>();
+  } else {
+    return std::numeric_limits<T>::max() > 127 ? static_cast<T>(127)
+                                               : std::numeric_limits<T>::max();
+  }
+}
+
+template <class T, bool _is_flag, int _i>
+consteval T calc_j() {
+  if constexpr (_is_flag) {
+    return static_cast<T>(1) << _i;
+  } else {
+    return static_cast<T>(_i);
+  }
+}
+
+template <class EnumType, class NamesType, auto _max, bool _is_flag, int _i>
+consteval auto get_enum_names_impl() {
+  using T = std::underlying_type_t<EnumType>;
+
+  constexpr T j = calc_j<T, _is_flag, _i>();
+
+  constexpr auto name = get_enum_name<static_cast<EnumType>(j)>();
+
+  if constexpr (std::get<0>(name.arr_) == '(') {
+    if constexpr (j == _max) {
+      return NamesType{};
+    } else {
+      return get_enum_names_impl<EnumType, NamesType, _max, _is_flag, _i + 1>();
+    }
+  } else {
+    using NewNames = typename NamesType::template AddOneType<
+        Literal<remove_namespaces<name>()>, static_cast<EnumType>(j)>;
+
+    if constexpr (j == _max) {
+      return NewNames{};
+    } else {
+      return get_enum_names_impl<EnumType, NewNames, _max, _is_flag, _i + 1>();
+    }
+  }
+}
+
+template <class EnumType, bool _is_flag>
 consteval auto get_enum_names() {
-  static_assert(
-      std::is_enum_v<EnumType> &&
-          !std::is_convertible_v<EnumType, std::underlying_type_t<EnumType>>,
-      "You must use scoped enums (using class or struct) for the "
-      "parsing to work!");
+  static_assert(is_scoped_enum<EnumType>,
+                "You must use scoped enums (using class or struct) for the "
+                "parsing to work!");
 
   static_assert(std::is_integral_v<std::underlying_type_t<EnumType>>,
                 "The underlying type of any Enum must be integral!");
 
-  constexpr auto max =
-      std::numeric_limits<std::underlying_type_t<EnumType>>::max();
+  constexpr auto max = get_max<std::underlying_type_t<EnumType>, _is_flag>();
 
-  if constexpr (_i == 100 || _i > max) {
-    return _names;
-  } else {
-    constexpr auto name = get_enum_name<static_cast<EnumType>(_i)>();
-    if constexpr (std::get<0>(name.arr_) == '(') {
-      return get_enum_names<EnumType, _names, _i + 1>();
-    } else {
-      const auto update_enums = [&]<auto... Ns>(std::index_sequence<Ns...>) {
-        return std::array<EnumType, sizeof...(Ns) + 1>{
-            _names.enums_[Ns]..., static_cast<EnumType>(_i)};
-      };
+  using EmptyNames = Names<EnumType, rfl::Literal<"">, 0>;
 
-      using NewNames = std::conditional_t<
-          decltype(_names)::size == 0,
-          Names<EnumType, Literal<remove_namespaces<name>()>, 1>,
-          Names<EnumType,
-                define_literal_t<typename decltype(_names)::Literal,
-                                 Literal<remove_namespaces<name>()>>,
-                decltype(_names)::size + 1>>;
-
-      constexpr auto new_names =
-          NewNames{.enums_ = update_enums(
-                       std::make_index_sequence<decltype(_names)::size>{})};
-
-      return get_enum_names<EnumType, new_names, _i + 1>();
-    }
-  }
+  return get_enum_names_impl<EnumType, EmptyNames, max, _is_flag, 0>();
 }
 
 }  // namespace enums
