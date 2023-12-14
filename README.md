@@ -367,7 +367,7 @@ If you **do not** need JSON support or you want to link YYJSON yourself, then re
 
 Simply copy the contents of the folder `include` into your source repository or add it to your include path and also add `src/yyjson.c` to your source files for compilation.
 
-If you need support for other serialization formats like XML or flexbuffers, you should also include and link the respective libraries, as listed in the previous section.
+If you need support for other serialization formats like flexbuffers, you should also include and link the respective libraries, as listed in the previous section.
 
 ### Option 3: Compilation using cmake 
 
