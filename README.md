@@ -363,48 +363,32 @@ The following compilers are supported:
 
 If you **do not** need JSON support or you want to link YYJSON yourself, then reflect-cpp is header-only. Simply copy the contents of the folder `include` into your source repository or add it to your include path.
 
-### Option 2: Include source files into your own build
+### Option 2 Compilation using cmake
 
-Simply copy the contents of the folder `include` into your source repository or add it to your include path and also add `src/yyjson.c` to your source files for compilation.
+Boostrap vcpkg:
 
-If you need support for other serialization formats like flexbuffers, you should also include and link the respective libraries, as listed in the previous section.
-
-### Option 3: Compilation using cmake 
-
-For clang and GCC:
-
-```
-mkdir build
-cd build
-cmake ..
-make -j4
+```bash
+git submodule update --init
+./vcpkg/bootstrap-vcpkg.sh # Linux
+./vcpkg/bootstrap-vcpkg.bat # Windows
 ```
 
-For MSVC replace `make -j4` with:
+Build:
 
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_JSON=ON -DREFLECTCPP_FLATBUFFERS=ON
+cmake --build build -j 4 # Linux
+cmake --build build --config Release # Windows
 ```
-cmake --build . --config Release
-```
-
 
 ## Compiling the tests
 
 To compile the tests, do the following:
 
-For clang and GCC:
-
 ```
-cd tests/json
-mkdir build
-cd build
-cmake ..
-make -j4
-```
-
-For MSVC replace `make -j4` with:
-
-```
-cmake --build . --config Release
+cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=ON -DREFLECTCPP_FLATBUFFERS=ON
+cmake --build build -j 4 # Linux
+cmake --build build --config Release # Windows
 ```
 
 

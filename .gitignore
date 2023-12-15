@@ -43,3 +43,4 @@
 # Output files
 *.json
 *.fb
+!vcpkg.json

@@ -1,0 +1,63 @@
+name: test
+
+on: [ push, pull_request ]
+
+jobs:
+  linux-gcc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Run vcpkg
+        uses: lukka/run-vcpkg@v11
+      - name: install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y g++
+      - name: Run test
+        run: |
+          g++ --version
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=ON -DREFLECTCPP_FLATBUFFERS=ON
+          cmake --build build -j 4
+          ./build/tests/flatbuffers/reflect-cpp-flatbuffers-tests
+          ./build/tests/json/reflect-cpp-json-tests
+
+  linux-clang:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Run vcpkg
+        uses: lukka/run-vcpkg@v11
+      - name: install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y clang
+      - name: Run test
+        run: |
+          clang --version
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=ON -DREFLECTCPP_FLATBUFFERS=ON
+          cmake --build build -j 4
+          ./build/tests/flatbuffers/reflect-cpp-flatbuffers-tests
+          ./build/tests/json/reflect-cpp-json-tests
+
+  windows-msvc:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Run vcpkg
+        uses: lukka/run-vcpkg@v11
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          vsversion: '2022'
+      - name: Run test
+        run: |
+          cl
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=ON -DREFLECTCPP_FLATBUFFERS=ON
+          cmake --build build --config Release
+          .\build\tests\flatbuffers\Release\reflect-cpp-flatbuffers-tests.exe
+          .\build\tests\json\Release\reflect-cpp-json-tests.exe
