@@ -8,4 +8,7 @@ endif()
 
 
 add_subdirectory(json)
-add_subdirectory(flexbuffers)
+
+if (REFLECTCPP_FLEXBUFFERS)
+    add_subdirectory(flexbuffers)
+endif()
