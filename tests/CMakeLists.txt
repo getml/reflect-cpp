@@ -7,10 +7,5 @@ else()
 endif()
 
 
-if (REFLECTCPP_JSON)
-    add_subdirectory(json)
-endif ()
-
-if (REFLECTCPP_FLATBUFFERS)
-    add_subdirectory(flatbuffers)
-endif ()
+add_subdirectory(json)
+add_subdirectory(flatbuffers)

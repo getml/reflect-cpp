@@ -4,8 +4,20 @@ set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/
 
 project(reflectcpp)
 
+option(REFLECTCPP_ENABLE_ALL "Enable all features" OFF)
 option(REFLECTCPP_JSON "Enable JSON support" OFF)
 option(REFLECTCPP_FLATBUFFERS "Enable FlatBuffers support" OFF)
+
+option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
+
+if (REFLECTCPP_BUILD_TESTS)
+    set(REFLECTCPP_ENABLE_ALL ON)
+endif ()
+
+if (REFLECTCPP_ENABLE_ALL)
+    set(REFLECTCPP_JSON ON)
+    set(REFLECTCPP_FLATBUFFERS ON)
+endif ()
 
 add_library(reflectcpp INTERFACE)
 
@@ -23,9 +35,6 @@ endif ()
 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -O2")
-
-
-option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
 
 if (REFLECTCPP_BUILD_TESTS)
     add_subdirectory(tests)

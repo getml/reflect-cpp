@@ -373,12 +373,15 @@ git submodule update --init
 ./vcpkg/bootstrap-vcpkg.bat # Windows
 ```
 
-Build:
+Use in your project:
 
-```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_JSON=ON -DREFLECTCPP_FLATBUFFERS=ON
-cmake --build build -j 4 # Linux
-cmake --build build --config Release # Windows
+```cmake
+add_subdirectory(reflect-cpp) # Add this project as a subdirectory
+
+set(REFLECTCPP_JSON ON) # Optional
+set(REFLECTCPP_FLATBUFFERS ON) # Optional
+
+target_link_libraries(your_project PRIVATE reflectcpp) # Link against the library
 ```
 
 ## Compiling the tests
@@ -386,9 +389,8 @@ cmake --build build --config Release # Windows
 To compile the tests, do the following:
 
 ```
-cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=ON -DREFLECTCPP_FLATBUFFERS=ON
-cmake --build build -j 4 # Linux
-cmake --build build --config Release # Windows
+cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON
+cmake --build build -j 4
 ```
 
 

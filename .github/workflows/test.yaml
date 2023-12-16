@@ -44,7 +44,7 @@ jobs:
           ./build/tests/json/reflect-cpp-json-tests
 
   windows-msvc:
-    runs-on: windows-latest
+    runs-on: windows-2019 # not using windows-latest because its MSVC has a bug which prevents it from building reflect-cpp
     steps:
       - uses: actions/checkout@v3
         with:
@@ -53,11 +53,11 @@ jobs:
         uses: lukka/run-vcpkg@v11
       - uses: ilammy/msvc-dev-cmd@v1
         with:
-          vsversion: '2022'
+          toolset: 14
       - name: Run test
         run: |
           cl
           cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=ON -DREFLECTCPP_FLATBUFFERS=ON
-          cmake --build build --config Release
+          cmake --build build -j 4
           .\build\tests\flatbuffers\Release\reflect-cpp-flatbuffers-tests.exe
           .\build\tests\json\Release\reflect-cpp-json-tests.exe
