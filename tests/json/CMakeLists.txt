@@ -60,6 +60,7 @@ add_executable(
     "test_save_load.cpp"
     "test_set.cpp"
     "test_size.cpp"
+    "test_std_ref.cpp"
     "test_string_map.cpp"
     "test_string_unordered_map.cpp"
     "test_tagged_union.cpp"

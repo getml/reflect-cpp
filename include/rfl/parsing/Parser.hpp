@@ -9,6 +9,7 @@
 #include <deque>
 #include <exception>
 #include <forward_list>
+#include <functional>
 #include <list>
 #include <map>
 #include <memory>
@@ -175,6 +176,31 @@ struct Parser<R, W, T*> {
       return _w.empty_var();
     }
     return Parser<R, W, std::decay_t<T>>::write(_w, *_ptr);
+  }
+};
+
+// ----------------------------------------------------------------------------
+
+template <class R, class W, class T>
+requires AreReaderAndWriter<R, W, std::reference_wrapper<T>>
+struct Parser<R, W, std::reference_wrapper<T>> {
+  using InputVarType = typename R::InputVarType;
+  using OutputVarType = typename W::OutputVarType;
+
+  static Result<std::reference_wrapper<T>> read(
+      const R& _r, const InputVarType& _var) noexcept {
+    static_assert(always_false_v<T>,
+                  "Reading into std::reference_wrapper is dangerous and "
+                  "therefore unsupported. "
+                  "Please consider using std::unique_ptr, rfl::Box, "
+                  "std::shared_ptr, or"
+                  "rfl::Ref instead.");
+    return Error("Unsupported.");
+  }
+
+  static OutputVarType write(const W& _w,
+                             const std::reference_wrapper<T> _ref) noexcept {
+    return Parser<R, W, std::decay_t<T>>::write(_w, _ref.get());
   }
 };
 
