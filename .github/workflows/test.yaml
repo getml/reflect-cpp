@@ -18,7 +18,7 @@ jobs:
       - name: Run test
         run: |
           g++ --version
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=ON -DREFLECTCPP_FLATBUFFERS=ON
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON
           cmake --build build -j 4
           ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
           ./build/tests/json/reflect-cpp-json-tests
@@ -38,7 +38,7 @@ jobs:
       - name: Run test
         run: |
           clang --version
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=ON -DREFLECTCPP_FLATBUFFERS=ON
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON
           cmake --build build -j 4
           ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
           ./build/tests/json/reflect-cpp-json-tests
@@ -49,15 +49,17 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
+      - uses: TheMrMilchmann/setup-msvc-dev@v3
+        with:
+          arch: x64
+          toolset: 14.38
+          export-path-to-vcvarsall: VCVARSALL_PATH
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
-      - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          toolset: 14.1 # not using windows-latest because its MSVC has a bug which prevents it from building reflect-cpp
       - name: Run test
         run: |
-          cl
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=ON -DREFLECTCPP_FLATBUFFERS=ON
+          .\$env:VCVARSALL_PATH\vcvarsall.bat x64
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON
           cmake --build build -j 4
           .\build\tests\flexbuffers\Release\reflect-cpp-flexbuffers-tests.exe
           .\build\tests\json\Release\reflect-cpp-json-tests.exe
