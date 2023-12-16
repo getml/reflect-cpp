@@ -8,4 +8,4 @@ endif()
 
 
 add_subdirectory(json)
-add_subdirectory(flatbuffers)
+add_subdirectory(flexbuffers)
