@@ -20,7 +20,7 @@ jobs:
           g++ --version
           cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=ON -DREFLECTCPP_FLATBUFFERS=ON
           cmake --build build -j 4
-          ./build/tests/flatbuffers/reflect-cpp-flatbuffers-tests
+          ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
           ./build/tests/json/reflect-cpp-json-tests
 
   linux-clang:
@@ -40,11 +40,11 @@ jobs:
           clang --version
           cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=ON -DREFLECTCPP_FLATBUFFERS=ON
           cmake --build build -j 4
-          ./build/tests/flatbuffers/reflect-cpp-flatbuffers-tests
+          ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
           ./build/tests/json/reflect-cpp-json-tests
 
   windows-msvc:
-    runs-on: windows-2019 # not using windows-latest because its MSVC has a bug which prevents it from building reflect-cpp
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -53,11 +53,11 @@ jobs:
         uses: lukka/run-vcpkg@v11
       - uses: ilammy/msvc-dev-cmd@v1
         with:
-          toolset: 14
+          toolset: 14.1 # not using windows-latest because its MSVC has a bug which prevents it from building reflect-cpp
       - name: Run test
         run: |
           cl
           cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=ON -DREFLECTCPP_FLATBUFFERS=ON
           cmake --build build -j 4
-          .\build\tests\flatbuffers\Release\reflect-cpp-flatbuffers-tests.exe
+          .\build\tests\flexbuffers\Release\reflect-cpp-flexbuffers-tests.exe
           .\build\tests\json\Release\reflect-cpp-json-tests.exe
