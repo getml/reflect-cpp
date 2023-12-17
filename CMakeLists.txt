@@ -13,6 +13,8 @@ endif ()
 
 project(reflectcpp)
 
+set(CMAKE_CXX_STANDARD 20)
+
 if (REFLECTCPP_BUILD_SHARED)
     add_library(reflectcpp SHARED src/yyjson.c)
 else ()

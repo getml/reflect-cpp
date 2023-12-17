@@ -18,7 +18,7 @@ jobs:
       - name: Run test
         run: |
           g++ --version
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build -j 4
           ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
           ./build/tests/json/reflect-cpp-json-tests
@@ -31,14 +31,21 @@ jobs:
           submodules: true
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
-      - name: install dependencies
+      - uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "16"
+      - name: link clang lib
         run: |
-          sudo apt update
-          sudo apt install -y clang
+          sudo mkdir -p /usr/lib/llvm-16/lib
+          sudo ln -s clang /usr/lib/llvm-16/lib/clang
+        working-directory: ${{ env.LLVM_PATH }}/lib
       - name: Run test
+        env:
+          CC: clang
+          CXX: clang++
         run: |
           clang --version
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build -j 4
           ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
           ./build/tests/json/reflect-cpp-json-tests

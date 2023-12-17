@@ -393,7 +393,7 @@ target_link_libraries(your_project PRIVATE reflectcpp) # Link against the librar
 To compile the tests, do the following:
 
 ```
-cmake -S . -B build
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j 4
 ```
 
