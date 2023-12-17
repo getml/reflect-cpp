@@ -26,7 +26,7 @@ if (REFLECTCPP_FLEXBUFFERS)
     target_link_libraries(reflectcpp INTERFACE flatbuffers::flatbuffers)
 endif ()
 
-target_compile_options(reflectcpp PRIVATE -Wall -O2)
+target_compile_options(reflectcpp PRIVATE -Wall)
 
 if (REFLECTCPP_BUILD_TESTS)
     add_subdirectory(tests)
