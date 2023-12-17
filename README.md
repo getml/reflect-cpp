@@ -35,7 +35,7 @@ This increases user experience and developer experience, it makes your code safe
 
 For a more in-depth theoretical discussions of these topics, the following books are warmly recommended:
 
-- *Category Theory for Programmers* by Bartosz Milewski (https://github.com/hmemcpy/milewski-ctfp-pdf/releases) 
+- *Category Theory for Programmers* by Bartosz Milewski (https://github.com/hmemcpy/milewski-ctfp-pdf/releases)
 - *Domain Modeling Made Functional* by Scott Wlaschin
 
 ## Simple Example
@@ -218,7 +218,7 @@ Other forms of tagging are supported as well. Refer to the [documentation](https
 
 ## Reflective programming
 
-Beyond serialization and deserialization, reflect-cpp also supports reflective programming in general. 
+Beyond serialization and deserialization, reflect-cpp also supports reflective programming in general.
 
 For instance:
 
@@ -301,24 +301,24 @@ const auto c2 = rfl::replace(c, a);
 
 reflect-cpp supports the following containers from the C++ standard library:
 
-- `std::array` 
-- `std::deque` 
-- `std::forward_list` 
+- `std::array`
+- `std::deque`
+- `std::forward_list`
 - `std::map`
 - `std::multimap`
 - `std::multiset`
-- `std::list` 
+- `std::list`
 - `std::optional`
 - `std::pair`
 - `std::set`
 - `std::shared_ptr`
 - `std::string`
 - `std::tuple`
-- `std::unique_ptr` 
+- `std::unique_ptr`
 - `std::unordered_map`
 - `std::unordered_multimap`
 - `std::unordered_multiset`
-- `std::unordered_set` 
+- `std::unordered_set`
 - `std::variant`
 - `std::vector`
 
@@ -364,13 +364,13 @@ The following compilers are supported:
 If you **do not** need JSON support or you want to link YYJSON yourself, then reflect-cpp is header-only. Simply copy the contents of the folder `include` into your source repository or add it to your include path.
 
 ### Option 2: Include source files into your own build
-Simply copy the contents of the folder include into your source repository or add it to your include path and also add src/yyjson.c to your source files for compilation.
+Simply copy the contents of the folder `include` into your source repository or add it to your include path and also add `src/yyjson.c` to your source files for compilation.
 
 If you need support for other serialization formats like flexbuffers, you should also include and link the respective libraries, as listed in the previous section.
 
 ### Option 3 Compilation using cmake
 
-Vcpkg is used to manage dependencies. If you need features other than the out-of-the-box JSON support, you need to bootstrap vcpkg first:
+If you need features other than the out-of-the-box JSON support, you need to bootstrap vcpkg first:
 
 ```bash
 git submodule update --init
@@ -378,7 +378,7 @@ git submodule update --init
 ./vcpkg/bootstrap-vcpkg.bat # Windows
 ```
 
-Use in your project:
+To use reflect-cpp in your project:
 
 ```cmake
 add_subdirectory(reflect-cpp) # Add this project as a subdirectory
