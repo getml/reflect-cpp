@@ -48,6 +48,7 @@
 #include "test_save_load.hpp"
 #include "test_set.hpp"
 #include "test_size.hpp"
+#include "test_std_ref.hpp"
 #include "test_string_map.hpp"
 #include "test_string_unordered_map.hpp"
 #include "test_tagged_union.hpp"
@@ -93,6 +94,7 @@ int main() {
   test_unordered_multimap::test();
   test_multiset::test();
   test_unordered_multiset::test();
+  test_std_ref::test();
   test_string_map::test();
   test_string_unordered_map::test();
   test_alphanumeric_map::test();
