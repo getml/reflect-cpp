@@ -320,7 +320,7 @@ class NamedTuple {
   template <int num_additional_fields = 0, class... Args>
   auto make_fields(Args&&... _args) {
     constexpr auto size = sizeof...(Args) - num_additional_fields;
-    constexpr auto num_fields = std::tuple_size<Fields>{};
+    constexpr auto num_fields = std::tuple_size_v<Fields>;
     constexpr auto i = num_fields - size - 1;
 
     constexpr bool retrieved_all_fields = size == num_fields;
@@ -342,7 +342,7 @@ class NamedTuple {
   template <int num_additional_fields = 0, class... Args>
   auto make_fields(Args&&... _args) const {
     constexpr auto size = sizeof...(Args) - num_additional_fields;
-    constexpr auto num_fields = std::tuple_size<Fields>{};
+    constexpr auto num_fields = std::tuple_size_v<Fields>;
     constexpr auto i = num_fields - size - 1;
 
     constexpr bool retrieved_all_fields = size == num_fields;
@@ -363,7 +363,7 @@ class NamedTuple {
   auto make_replaced(V&& _values, T&& _val, Args&&... _args) const {
     constexpr auto size = sizeof...(Args);
 
-    constexpr bool retrieved_all_fields = size == std::tuple_size<Fields>{};
+    constexpr bool retrieved_all_fields = size == std::tuple_size_v<Fields>;
 
     if constexpr (retrieved_all_fields) {
       return NamedTuple<FieldTypes...>(std::forward<Args>(_args)...);
@@ -434,7 +434,7 @@ class NamedTuple {
       std::tuple<OtherFieldTypes...>&& _other_fields, Args&&... _args) {
     constexpr auto size = sizeof...(Args);
 
-    constexpr bool retrieved_all_fields = size == std::tuple_size<Fields>{};
+    constexpr bool retrieved_all_fields = size == std::tuple_size_v<Fields>;
 
     if constexpr (retrieved_all_fields) {
       return std::make_tuple(std::forward<Args>(_args)...);

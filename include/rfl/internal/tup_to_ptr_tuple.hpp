@@ -14,7 +14,7 @@ namespace internal {
 template <class TupleType, class... AlreadyExtracted>
 auto tup_to_ptr_tuple(TupleType& _t, AlreadyExtracted... _a) {
   constexpr auto i = sizeof...(AlreadyExtracted);
-  constexpr auto size = std::tuple_size<TupleType>{};
+  constexpr auto size = std::tuple_size_v<TupleType>;
 
   if constexpr (i == size) {
     return std::make_tuple(_a...);

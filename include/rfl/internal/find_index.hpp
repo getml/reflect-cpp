@@ -19,7 +19,7 @@ constexpr static int find_index() {
   if constexpr (name_i_matches) {
     return I;
   } else {
-    constexpr bool out_of_range = I + 1 == std::tuple_size<Fields>{};
+    constexpr bool out_of_range = I + 1 == std::tuple_size_v<Fields>;
 
     static_assert(!out_of_range, "Field name not found!");
 
