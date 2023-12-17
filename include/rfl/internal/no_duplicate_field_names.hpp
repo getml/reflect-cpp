@@ -8,7 +8,7 @@ namespace internal {
 
 template <class Fields, int _i = 1, int _j = 0>
 constexpr inline bool no_duplicate_field_names() {
-    constexpr auto num_fields = std::tuple_size<Fields>{};
+    constexpr auto num_fields = std::tuple_size_v<Fields>;
 
     if constexpr (num_fields <= 1) {
         return true;
