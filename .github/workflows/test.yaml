@@ -43,22 +43,21 @@ jobs:
           ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
           ./build/tests/json/reflect-cpp-json-tests
 
-  windows-msvc:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: true
-      - name: Run vcpkg
-        uses: lukka/run-vcpkg@v11
-      - uses: TheMrMilchmann/setup-msvc-dev@v3
-        with:
-          arch: x64
-          toolset: 14.38
-      - name: Run test
-        run: |
-          cl
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DCMAKE_C_COMPILER="C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.38.33130/bin/Hostx64/x64/cl.exe" -DCMAKE_CXX_COMPILER="C:/Program Files/Microsoft Visual Studio/2022/Enterprise/VC/Tools/MSVC/14.38.33130/bin/Hostx64/x64/cl.exe" -T version=14.38.33130
-          cmake --build build -j 4
-          .\build\tests\flexbuffers\Release\reflect-cpp-flexbuffers-tests.exe
-          .\build\tests\json\Release\reflect-cpp-json-tests.exe
+
+#  The latest MSVC version on GitHub Actions has a bug, and it's difficult to switch to another version.
+#  Re-enable this when the bug is fixed.
+
+#  windows-msvc:
+#    runs-on: windows-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#        with:
+#          submodules: true
+#      - uses: ilammy/msvc-dev-cmd@v1
+#      - uses: lukka/run-vcpkg@v11
+#      - name: Run test
+#        run: |
+#          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON
+#          cmake --build build -j 4
+#          .\build\tests\flexbuffers\Release\reflect-cpp-flexbuffers-tests.exe
+#          .\build\tests\json\Release\reflect-cpp-json-tests.exe

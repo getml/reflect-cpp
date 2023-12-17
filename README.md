@@ -363,9 +363,14 @@ The following compilers are supported:
 
 If you **do not** need JSON support or you want to link YYJSON yourself, then reflect-cpp is header-only. Simply copy the contents of the folder `include` into your source repository or add it to your include path.
 
-### Option 2 Compilation using cmake
+### Option 2: Include source files into your own build
+Simply copy the contents of the folder include into your source repository or add it to your include path and also add src/yyjson.c to your source files for compilation.
 
-Boostrap vcpkg:
+If you need support for other serialization formats like flexbuffers, you should also include and link the respective libraries, as listed in the previous section.
+
+### Option 3 Compilation using cmake
+
+Vcpkg is used to manage dependencies. If you need features other than the out-of-the-box JSON support, you need to bootstrap vcpkg first:
 
 ```bash
 git submodule update --init
@@ -378,7 +383,6 @@ Use in your project:
 ```cmake
 add_subdirectory(reflect-cpp) # Add this project as a subdirectory
 
-set(REFLECTCPP_JSON ON) # Optional
 set(REFLECTCPP_FLATBUFFERS ON) # Optional
 
 target_link_libraries(your_project PRIVATE reflectcpp) # Link against the library
@@ -389,7 +393,7 @@ target_link_libraries(your_project PRIVATE reflectcpp) # Link against the librar
 To compile the tests, do the following:
 
 ```
-cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON
+cmake -S . -B build
 cmake --build build -j 4
 ```
 
