@@ -368,14 +368,24 @@ Simply copy the contents of the folder `include` into your source repository or 
 
 If you need support for other serialization formats like flexbuffers, you should also include and link the respective libraries, as listed in the previous section.
 
-### Option 3 Compilation using cmake
+### Option 3: Compilation using cmake
 
-If you need features other than the out-of-the-box JSON support, you need to bootstrap vcpkg first:
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j 4
+```
+
+### Option 4: Compilation using cmake and vcpkg
+
+If you want serialization formats other than JSON, you can either install them manually or use vcpkg.
+
+To install vcpkg:
 
 ```bash
 git submodule update --init
 ./vcpkg/bootstrap-vcpkg.sh # Linux
 ./vcpkg/bootstrap-vcpkg.bat # Windows
+# You may be prompted to install additional dependencies.
 ```
 
 To use reflect-cpp in your project:
@@ -383,7 +393,7 @@ To use reflect-cpp in your project:
 ```cmake
 add_subdirectory(reflect-cpp) # Add this project as a subdirectory
 
-set(REFLECTCPP_FLATBUFFERS ON) # Optional
+set(REFLECTCPP_FLEXBUFFERS ON) # Optional
 
 target_link_libraries(your_project PRIVATE reflectcpp) # Link against the library
 ```
@@ -393,8 +403,24 @@ target_link_libraries(your_project PRIVATE reflectcpp) # Link against the librar
 To compile the tests, do the following:
 
 ```
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_BUILD_TESTS=ON
 cmake --build build -j 4
+./build/tests/json/reflect-cpp-json-tests
+```
+
+To compile the tests with serialization formats other than JSON, do the following:
+
+```bash
+# bootstrap vcpkg if you haven't done so already 
+git submodule update --init
+./vcpkg/bootstrap-vcpkg.sh # Linux
+./vcpkg/bootstrap-vcpkg.bat # Windows
+# You may be prompted to install additional dependencies.
+
+cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j 4
+./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
+./build/tests/json/reflect-cpp-json-tests
 ```
 
 
