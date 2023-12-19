@@ -11,6 +11,8 @@ namespace flexbuf {
 
 class OutputVar {
  public:
+  virtual ~OutputVar() = default;
+
   /// Inserts the value into the buffer.
   virtual void insert(const std::optional<std::string>& _key,
                       flexbuffers::Builder* _fbb) = 0;
