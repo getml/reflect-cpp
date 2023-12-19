@@ -372,7 +372,8 @@ If you need support for other serialization formats like flexbuffers, you should
 
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j 4
+cmake --build build -j 4  # gcc, clang
+cmake --build build --config Release -j 4  # MSVC
 ```
 
 ### Option 4: Compilation using cmake and vcpkg
@@ -418,7 +419,8 @@ git submodule update --init
 # You may be prompted to install additional dependencies.
 
 cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j 4
+cmake --build build -j 4 # gcc, clang
+cmake --build build --config Release -j 4 # MSVC
 ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
 ./build/tests/json/reflect-cpp-json-tests
 ```
