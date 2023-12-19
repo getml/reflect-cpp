@@ -1,0 +1,70 @@
+name: test
+
+on: [ push, pull_request ]
+
+jobs:
+  linux-gcc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Run vcpkg
+        uses: lukka/run-vcpkg@v11
+      - name: install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y g++
+      - name: Run test
+        run: |
+          g++ --version
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build build -j 4
+          ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
+          ./build/tests/json/reflect-cpp-json-tests
+
+  linux-clang:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Run vcpkg
+        uses: lukka/run-vcpkg@v11
+      - uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "16"
+      - name: link clang lib
+        run: |
+          sudo mkdir -p /usr/lib/llvm-16/lib
+          sudo ln -s clang /usr/lib/llvm-16/lib/clang
+        working-directory: ${{ env.LLVM_PATH }}/lib
+      - name: Run test
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          clang --version
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build build -j 4
+          ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
+          ./build/tests/json/reflect-cpp-json-tests
+
+
+#  The latest MSVC version on GitHub Actions has a bug, and it's difficult to switch to another version.
+#  Re-enable this when the bug is fixed.
+
+#  windows-msvc:
+#    runs-on: windows-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#        with:
+#          submodules: true
+#      - uses: ilammy/msvc-dev-cmd@v1
+#      - uses: lukka/run-vcpkg@v11
+#      - name: Run test
+#        run: |
+#          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON
+#          cmake --build build -j 4
+#          .\build\tests\flexbuffers\Release\reflect-cpp-flexbuffers-tests.exe
+#          .\build\tests\json\Release\reflect-cpp-json-tests.exe

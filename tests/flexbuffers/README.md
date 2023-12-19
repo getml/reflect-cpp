@@ -17,7 +17,7 @@ Compile the tests:
 Run the tests:
 
 ```
-./build/reflect-cpp-tests
+./build/reflect-cpp-flatbuffers-tests
 ```
 
 To run the scripts, you may have to run `chmod +x build_docker.sh` and `chmod +x compile.sh` first.

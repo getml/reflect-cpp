@@ -35,7 +35,7 @@ This increases user experience and developer experience, it makes your code safe
 
 For a more in-depth theoretical discussions of these topics, the following books are warmly recommended:
 
-- *Category Theory for Programmers* by Bartosz Milewski (https://github.com/hmemcpy/milewski-ctfp-pdf/releases) 
+- *Category Theory for Programmers* by Bartosz Milewski (https://github.com/hmemcpy/milewski-ctfp-pdf/releases)
 - *Domain Modeling Made Functional* by Scott Wlaschin
 
 ## Simple Example
@@ -218,7 +218,7 @@ Other forms of tagging are supported as well. Refer to the [documentation](https
 
 ## Reflective programming
 
-Beyond serialization and deserialization, reflect-cpp also supports reflective programming in general. 
+Beyond serialization and deserialization, reflect-cpp also supports reflective programming in general.
 
 For instance:
 
@@ -301,24 +301,24 @@ const auto c2 = rfl::replace(c, a);
 
 reflect-cpp supports the following containers from the C++ standard library:
 
-- `std::array` 
-- `std::deque` 
-- `std::forward_list` 
+- `std::array`
+- `std::deque`
+- `std::forward_list`
 - `std::map`
 - `std::multimap`
 - `std::multiset`
-- `std::list` 
+- `std::list`
 - `std::optional`
 - `std::pair`
 - `std::set`
 - `std::shared_ptr`
 - `std::string`
 - `std::tuple`
-- `std::unique_ptr` 
+- `std::unique_ptr`
 - `std::unordered_map`
 - `std::unordered_multimap`
 - `std::unordered_multiset`
-- `std::unordered_set` 
+- `std::unordered_set`
 - `std::variant`
 - `std::vector`
 
@@ -364,47 +364,65 @@ The following compilers are supported:
 If you **do not** need JSON support or you want to link YYJSON yourself, then reflect-cpp is header-only. Simply copy the contents of the folder `include` into your source repository or add it to your include path.
 
 ### Option 2: Include source files into your own build
-
 Simply copy the contents of the folder `include` into your source repository or add it to your include path and also add `src/yyjson.c` to your source files for compilation.
 
 If you need support for other serialization formats like flexbuffers, you should also include and link the respective libraries, as listed in the previous section.
 
-### Option 3: Compilation using cmake 
+### Option 3: Compilation using cmake
 
-For clang and GCC:
-
-```
-mkdir build
-cd build
-cmake ..
-make -j4
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j 4  # gcc, clang
+cmake --build build --config Release -j 4  # MSVC
 ```
 
-For MSVC replace `make -j4` with:
+### Option 4: Compilation using cmake and vcpkg
 
-```
-cmake --build . --config Release
+If you want serialization formats other than JSON, you can either install them manually or use vcpkg.
+
+To install vcpkg:
+
+```bash
+git submodule update --init
+./vcpkg/bootstrap-vcpkg.sh # Linux
+./vcpkg/bootstrap-vcpkg.bat # Windows
+# You may be prompted to install additional dependencies.
 ```
 
+To use reflect-cpp in your project:
+
+```cmake
+add_subdirectory(reflect-cpp) # Add this project as a subdirectory
+
+set(REFLECTCPP_FLEXBUFFERS ON) # Optional
+
+target_link_libraries(your_project PRIVATE reflectcpp) # Link against the library
+```
 
 ## Compiling the tests
 
 To compile the tests, do the following:
 
-For clang and GCC:
-
 ```
-cd tests/json
-mkdir build
-cd build
-cmake ..
-make -j4
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_BUILD_TESTS=ON
+cmake --build build -j 4
+./build/tests/json/reflect-cpp-json-tests
 ```
 
-For MSVC replace `make -j4` with:
+To compile the tests with serialization formats other than JSON, do the following:
 
-```
-cmake --build . --config Release
+```bash
+# bootstrap vcpkg if you haven't done so already 
+git submodule update --init
+./vcpkg/bootstrap-vcpkg.sh # Linux
+./vcpkg/bootstrap-vcpkg.bat # Windows
+# You may be prompted to install additional dependencies.
+
+cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j 4 # gcc, clang
+cmake --build build --config Release -j 4 # MSVC
+./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
+./build/tests/json/reflect-cpp-json-tests
 ```
 
 
