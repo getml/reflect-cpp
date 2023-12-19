@@ -364,11 +364,15 @@ The following compilers are supported:
 If you **do not** need JSON support or you want to link YYJSON yourself, then reflect-cpp is header-only. Simply copy the contents of the folder `include` into your source repository or add it to your include path.
 
 ### Option 2: Include source files into your own build
+
 Simply copy the contents of the folder `include` into your source repository or add it to your include path and also add `src/yyjson.c` to your source files for compilation.
 
 If you need support for other serialization formats like flexbuffers, you should also include and link the respective libraries, as listed in the previous section.
 
 ### Option 3: Compilation using cmake
+
+This will simply compile YYJSON, which is the JSON library underlying reflect-cpp. You can then include reflect-cpp in your project and link to the binary
+to get reflect-cpp with JSON support.
 
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -384,7 +388,7 @@ To install vcpkg:
 
 ```bash
 git submodule update --init
-./vcpkg/bootstrap-vcpkg.sh # Linux
+./vcpkg/bootstrap-vcpkg.sh # Linux, macOS
 ./vcpkg/bootstrap-vcpkg.bat # Windows
 # You may be prompted to install additional dependencies.
 ```
@@ -399,13 +403,24 @@ set(REFLECTCPP_FLEXBUFFERS ON) # Optional
 target_link_libraries(your_project PRIVATE reflectcpp) # Link against the library
 ```
 
+## Troubleshooting vcpkg
+
+vcpkg is a great, but very ambitious and complex project (just like C++ is a great, but very ambitious and complex language). Here are some of the you might run into and how to resolve them:
+
+1. A lot of problems can simply be resolved by deleting the build directory using `rm -rf build`.
+
+2. *Environment variable VCPKG_FORCE_SYSTEM_BINARIES must be set on arm, s390x, ppc64le and riscv platforms.* - This usually happens on arm platforms like the Apple Silicon chips and can be resolved by simply preceding your build with `export VCPKG_FORCE_SYSTEM_BINARIES=arm` or `export VCPKG_FORCE_SYSTEM_BINARIES=1`.
+
+3. On some occasions you might be asked to specify a compiler. You can do so by simply adding it to the cmake command as follows: `cmake -S . -B build ... -DCMAKE_C_COMPILER=gcc -DCMAKE_C_COMPILER=g++` or `cmake -S . -B build ... -DCMAKE_C_COMPILER=clang-17 -DCMAKE_C_COMPILER=clang++-17` (or whatever supported compiler you would like to use).
+
 ## Compiling the tests
 
 To compile the tests, do the following:
 
-```
+```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_BUILD_TESTS=ON
-cmake --build build -j 4
+cmake --build build -j 4 # gcc, clang
+cmake --build build --config Release -j 4 # MSVC
 ./build/tests/json/reflect-cpp-json-tests
 ```
 
@@ -414,7 +429,7 @@ To compile the tests with serialization formats other than JSON, do the followin
 ```bash
 # bootstrap vcpkg if you haven't done so already 
 git submodule update --init
-./vcpkg/bootstrap-vcpkg.sh # Linux
+./vcpkg/bootstrap-vcpkg.sh # Linux, macOS
 ./vcpkg/bootstrap-vcpkg.bat # Windows
 # You may be prompted to install additional dependencies.
 
@@ -424,7 +439,6 @@ cmake --build build --config Release -j 4 # MSVC
 ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
 ./build/tests/json/reflect-cpp-json-tests
 ```
-
 
 ## Related projects
 
