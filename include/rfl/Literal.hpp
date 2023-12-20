@@ -9,7 +9,6 @@
 #include <tuple>
 #include <type_traits>
 
-#include "internal/StringLiteral.hpp"
 #include "rfl/Result.hpp"
 #include "rfl/internal/StringLiteral.hpp"
 #include "rfl/internal/VisitTree.hpp"

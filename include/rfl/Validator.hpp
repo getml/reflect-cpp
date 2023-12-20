@@ -9,10 +9,10 @@
 #include <type_traits>
 #include <utility>
 
-#include "internal/HasValidation.hpp"
-#include "internal/StringLiteral.hpp"
 #include "rfl/AllOf.hpp"
 #include "rfl/Result.hpp"
+#include "rfl/internal/HasValidation.hpp"
+#include "rfl/internal/StringLiteral.hpp"
 
 namespace rfl {
 
