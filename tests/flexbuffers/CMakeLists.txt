@@ -1,4 +1,4 @@
-project(reflect-cpp-json-tests)
+project(reflect-cpp-flexbuffer-tests)
 
 file(GLOB_RECURSE SOURCES "*.cpp")
 

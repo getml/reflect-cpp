@@ -26,6 +26,10 @@ class is_map_like<std::unordered_map<K, V>> : public std::true_type {};
 template <class K, class V>
 class is_map_like<std::unordered_multimap<K, V>> : public std::true_type {};
 
+template <class T>
+constexpr bool is_map_like_v =
+    is_map_like<std::decay_t<std::remove_pointer_t<T>>>::value;
+
 }  // namespace parsing
 }  // namespace rfl
 

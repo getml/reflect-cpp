@@ -9,6 +9,7 @@
 
 #include "rfl/AllOf.hpp"
 #include "rfl/AnyOf.hpp"
+#include "rfl/Attribute.hpp"
 #include "rfl/Box.hpp"
 #include "rfl/Field.hpp"
 #include "rfl/Flatten.hpp"

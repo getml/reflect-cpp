@@ -1,15 +1,23 @@
 {
-  "name" : "reflectcpp",
-  "version-string" : "1.0.0",
-  "builtin-baseline" : "50bffcc62d7f6571eb32bc1a0b1807e77af1166c",
-  "dependencies" : [ {
-    "name" : "vcpkg-cmake-config",
-    "version>=" : "2022-02-06#1"
-  }, {
-    "name" : "vcpkg-cmake",
-    "version>=" : "2023-05-04"
-  }, {
-    "name" : "flatbuffers",
-    "version>=" : "23.5.26#1"
-  } ]
+  "name": "reflectcpp",
+  "version-string": "0.3.0",
+  "builtin-baseline": "50bffcc62d7f6571eb32bc1a0b1807e77af1166c",
+  "dependencies": [
+    {
+      "name": "flatbuffers",
+      "version>=": "23.5.26#1"
+    },
+    {
+      "name": "pugixml",
+      "version>=": "1.14"
+    },
+    {
+      "name": "vcpkg-cmake",
+      "version>=": "2023-05-04"
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "version>=": "2022-02-06#1"
+    }
+  ]
 }

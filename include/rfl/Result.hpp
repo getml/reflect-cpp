@@ -309,13 +309,13 @@ class Result {
   }
 
   /// Returns the value or a default.
-  T value_or(const T& _default) noexcept {
-    const auto handle_variant =
-        [&]<class TOrError>(const TOrError& _t_or_err) -> T {
-      if constexpr (!std::is_same<TOrError, Error>()) {
+  T value_or(T&& _default) noexcept {
+    const auto handle_variant = [&]<class TOrError>(TOrError&& _t_or_err) -> T {
+      using Type = std::decay_t<TOrError>;
+      if constexpr (!std::is_same<Type, Error>()) {
         return std::forward<T>(_t_or_err);
       } else {
-        return _default;
+        return std::forward<T>(_default);
       }
     };
     return std::visit(handle_variant, t_or_err_);

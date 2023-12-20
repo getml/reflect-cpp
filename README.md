@@ -341,12 +341,17 @@ Finally, it is very easy to extend full support to your own classes, refer to th
 
 ## Serialization formats
 
-reflect-cpp currently supports the following serialization formats:
+reflect-cpp is deliberately designed in a very modular way, using [concepts](https://en.cppreference.com/w/cpp/language/constraints), to make it as easy as possible to interface C or C++ libraries for various serialization formats. Refer to the [documentation](https://github.com/getml/reflect-cpp/tree/main/docs) for details. PRs related to serialization formats are welcome.
 
-- **JSON**: Out-of-the-box support, no additional dependencies required.
-- **flexbuffers**: Requires [flatbuffers](https://github.com/google/flatbuffers).
+The following table lists the serialization formats currently supported by reflect-cpp and the underlying libraries used:
 
-reflect-cpp is deliberately designed in a very modular format, using [concepts](https://en.cppreference.com/w/cpp/language/constraints), to make it as easy as possible to support additional serialization formats. Refer to the [documentation](https://github.com/getml/reflect-cpp/tree/main/docs) for details. PRs related to serialization formats are welcome.
+| Format       | Library                                              | Version      | License    | Remarks                                              |
+|--------------|------------------------------------------------------|--------------|------------| -----------------------------------------------------|
+| JSON         | [YYJSON](https://github.com/ibireme/yyjson)          | >= 0.8.0     | MIT        | out-of-the-box support, included in this repository  |
+| flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26#1 | Apache 2.0 |                                                      |
+| XML          | [pugixml](https://github.com/zeux/pugixml)           | >= 1.14      | MIT        |                                                      |
+
+Please also refer to the *vcpkg.json* in this repository.
 
 ## Documentation
 
@@ -367,7 +372,7 @@ If you **do not** need JSON support or you want to link YYJSON yourself, then re
 
 Simply copy the contents of the folder `include` into your source repository or add it to your include path and also add `src/yyjson.c` to your source files for compilation.
 
-If you need support for other serialization formats like flexbuffers, you should also include and link the respective libraries, as listed in the previous section.
+If you need support for other serialization formats like flexbuffers or XML, you should also include and link the respective libraries, as listed in the section on serialization formats.
 
 ### Option 3: Compilation using cmake
 
@@ -399,6 +404,7 @@ To use reflect-cpp in your project:
 add_subdirectory(reflect-cpp) # Add this project as a subdirectory
 
 set(REFLECTCPP_FLEXBUFFERS ON) # Optional
+set(REFLECTCPP_XML ON) # Optional
 
 target_link_libraries(your_project PRIVATE reflectcpp) # Link against the library
 ```
@@ -413,7 +419,9 @@ vcpkg is a great, but very ambitious and complex project (just like C++ is a gre
 
 3. On some occasions you might be asked to specify a compiler. You can do so by simply adding it to the cmake command as follows: `cmake -S . -B build ... -DCMAKE_C_COMPILER=gcc -DCMAKE_C_COMPILER=g++` or `cmake -S . -B build ... -DCMAKE_C_COMPILER=clang-17 -DCMAKE_C_COMPILER=clang++-17` (or whatever supported compiler you would like to use).
 
-## Compiling the tests
+## Compiling and running the tests
+
+### JSON only
 
 To compile the tests, do the following:
 
@@ -421,8 +429,15 @@ To compile the tests, do the following:
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_BUILD_TESTS=ON
 cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
+```
+
+To run the tests, do the following:
+
+```
 ./build/tests/json/reflect-cpp-json-tests
 ```
+
+### All serialization formats
 
 To compile the tests with serialization formats other than JSON, do the following:
 
@@ -433,11 +448,17 @@ git submodule update --init
 ./vcpkg/bootstrap-vcpkg.bat # Windows
 # You may be prompted to install additional dependencies.
 
-cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
+```
+
+To run the tests, do the following:
+
+```
 ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
 ./build/tests/json/reflect-cpp-json-tests
+./build/tests/xml/reflect-cpp-xml-tests
 ```
 
 ## Related projects
@@ -453,7 +474,3 @@ reflect-cpp has been developed by [scaleML](https://www.scaleml.de), a company s
 reflect-cpp is released under the MIT License. Refer to the LICENSE file for details.
 
 reflect-cpp includes [YYJSON](https://github.com/ibireme/yyjson), the fastest JSON library currently in existence. YYJSON is written by YaoYuan and also released under the MIT License.
-
-
-
-
