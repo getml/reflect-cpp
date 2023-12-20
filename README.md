@@ -165,22 +165,29 @@ Found 5 errors:
 reflect-cpp supports scoped enumerations:
 
 ```cpp
-enum class Color { red, green, blue, yellow };
+enum class Shape { circle, square, rectangle };
 
-struct Circle {
-  float radius;
+enum class Color { red = 256, green = 512, blue = 1024, yellow = 2048 };
+
+struct Item {
+  float pos_x;
+  float pos_y;
+  Shape shape;
   Color color;
 };
 
-const auto circle = Circle{.radius = 2.0, .color = Color::green};
+const auto item = Item{.pos_x = 2.0,  
+                       .pos_y = 3.0,
+                       .shape = Shape::square,
+                       .color = Color::red | Color::blue};
 
-rfl::json::write(circle);
+rfl::json::write(item);
 ```
 
 This results in the following JSON string:
 
 ```json
-{"radius":2.0,"color":"green"}
+{"pos_x":2.0,"pos_y":3.0,"shape":"square","color":"red|blue"}
 ```
 
 ## Algebraic data types
