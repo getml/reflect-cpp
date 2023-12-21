@@ -71,11 +71,15 @@ struct Parser {
   /// Converts the variable to a JSON type.
   static auto write(const W& _w, const T& _var) noexcept {
     if constexpr (supports_attributes<W> && internal::is_attribute_v<T>) {
-      const auto r = resolve_reflection_type(_var);
-      return _w.from_basic_type(r, true);
+      return _w.from_basic_type(resolve_reflection_type(_var), true);
     } else if constexpr (internal::has_reflection_type_v<T>) {
-      const auto r = resolve_reflection_type(_var);
-      return Parser<R, W, std::decay_t<decltype(r)>>::write(_w, r);
+      using ReflectionType = std::decay_t<typename T::ReflectionType>;
+      if constexpr (internal::has_reflection_method_v<T>) {
+        return Parser<R, W, ReflectionType>::write(_w, _var.reflection());
+      } else {
+        const auto& [r] = _var;
+        return Parser<R, W, ReflectionType>::write(_w, r);
+      }
     } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
       const auto ptr_named_tuple = internal::to_ptr_named_tuple(_var);
       using PtrNamedTupleType = std::decay_t<decltype(ptr_named_tuple)>;
