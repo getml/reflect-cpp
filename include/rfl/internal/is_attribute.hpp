@@ -26,7 +26,7 @@ template <class Type>
 class is_attribute<const Attribute<Type>*> : public std::true_type {};
 
 template <class T>
-constexpr bool is_attribute_v = is_attribute<T>::value;
+constexpr bool is_attribute_v = is_attribute<std::decay_t<T>>::value;
 
 }  // namespace internal
 }  // namespace rfl
