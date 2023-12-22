@@ -8,7 +8,7 @@
 #include <sstream>
 #include <vector>
 
-#include "rfl/flexbuf/Parser.hpp"
+#include "Parser.hpp"
 
 namespace rfl {
 namespace flexbuf {

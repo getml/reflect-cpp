@@ -7,7 +7,7 @@
 #include <sstream>
 #include <string>
 
-#include "rfl/json/Parser.hpp"
+#include "Parser.hpp"
 
 namespace rfl {
 namespace json {

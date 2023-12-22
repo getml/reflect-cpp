@@ -5,14 +5,14 @@
 #include <tuple>
 #include <type_traits>
 
-#include "rfl/always_false.hpp"
-#include "rfl/internal/copy_to_field_tuple.hpp"
-#include "rfl/internal/has_flatten_fields.hpp"
-#include "rfl/internal/is_field.hpp"
-#include "rfl/internal/is_named_tuple.hpp"
-#include "rfl/internal/move_field_tuple_to_named_tuple.hpp"
-#include "rfl/internal/move_to_field_tuple.hpp"
-#include "rfl/make_named_tuple.hpp"
+#include "always_false.hpp"
+#include "internal/copy_to_field_tuple.hpp"
+#include "internal/has_flatten_fields.hpp"
+#include "internal/is_field.hpp"
+#include "internal/is_named_tuple.hpp"
+#include "internal/move_field_tuple_to_named_tuple.hpp"
+#include "internal/move_to_field_tuple.hpp"
+#include "make_named_tuple.hpp"
 
 namespace rfl {
 

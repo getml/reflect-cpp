@@ -1,7 +1,7 @@
 #ifndef RFL_PARSING_PARSER_BASE_HPP_
 #define RFL_PARSING_PARSER_BASE_HPP_
 
-#include "rfl/parsing/AreReaderAndWriter.hpp"
+#include "AreReaderAndWriter.hpp"
 
 namespace rfl {
 namespace parsing {

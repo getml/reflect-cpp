@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "rfl/internal/is_flatten_field.hpp"
+#include "is_flatten_field.hpp"
 
 namespace rfl {
 namespace internal {

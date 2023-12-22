@@ -3,11 +3,11 @@
 
 #include <type_traits>
 
-#include "rfl/Result.hpp"
-#include "rfl/TaggedUnion.hpp"
-#include "rfl/always_false.hpp"
-#include "rfl/parsing/Parser_base.hpp"
-#include "rfl/parsing/TaggedUnionWrapper.hpp"
+#include "../Result.hpp"
+#include "../TaggedUnion.hpp"
+#include "../always_false.hpp"
+#include "Parser_base.hpp"
+#include "TaggedUnionWrapper.hpp"
 
 namespace rfl {
 namespace parsing {

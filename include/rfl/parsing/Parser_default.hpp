@@ -4,18 +4,18 @@
 #include <stdexcept>
 #include <type_traits>
 
-#include "rfl/Result.hpp"
-#include "rfl/always_false.hpp"
-#include "rfl/from_named_tuple.hpp"
-#include "rfl/internal/enums/StringConverter.hpp"
-#include "rfl/internal/has_reflection_method_v.hpp"
-#include "rfl/internal/has_reflection_type_v.hpp"
-#include "rfl/internal/is_attribute.hpp"
-#include "rfl/internal/is_basic_type.hpp"
-#include "rfl/internal/to_ptr_named_tuple.hpp"
-#include "rfl/parsing/AreReaderAndWriter.hpp"
-#include "rfl/parsing/Parser_base.hpp"
-#include "rfl/parsing/supports_attributes.hpp"
+#include "../Result.hpp"
+#include "../always_false.hpp"
+#include "../from_named_tuple.hpp"
+#include "../internal/enums/StringConverter.hpp"
+#include "../internal/has_reflection_method_v.hpp"
+#include "../internal/has_reflection_type_v.hpp"
+#include "../internal/is_attribute.hpp"
+#include "../internal/is_basic_type.hpp"
+#include "../internal/to_ptr_named_tuple.hpp"
+#include "AreReaderAndWriter.hpp"
+#include "Parser_base.hpp"
+#include "supports_attributes.hpp"
 
 namespace rfl {
 namespace parsing {

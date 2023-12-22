@@ -3,8 +3,8 @@
 
 #include <tuple>
 
-#include "rfl/Field.hpp"
-#include "rfl/make_named_tuple.hpp"
+#include "../Field.hpp"
+#include "../make_named_tuple.hpp"
 
 namespace rfl {
 namespace internal {

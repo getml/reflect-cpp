@@ -5,13 +5,13 @@
 #include <tuple>
 #include <type_traits>
 
-#include "rfl/field_names_t.hpp"
-#include "rfl/internal/bind_to_tuple.hpp"
-#include "rfl/internal/has_fields.hpp"
-#include "rfl/internal/is_named_tuple.hpp"
-#include "rfl/internal/nt_to_ptr_named_tuple.hpp"
-#include "rfl/internal/to_ptr_field.hpp"
-#include "rfl/internal/wrap_in_fields.hpp"
+#include "../field_names_t.hpp"
+#include "bind_to_tuple.hpp"
+#include "has_fields.hpp"
+#include "is_named_tuple.hpp"
+#include "nt_to_ptr_named_tuple.hpp"
+#include "to_ptr_field.hpp"
+#include "wrap_in_fields.hpp"
 
 namespace rfl {
 namespace internal {
