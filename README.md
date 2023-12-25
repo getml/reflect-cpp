@@ -483,6 +483,22 @@ To run the tests, do the following:
 ./build/tests/xml/reflect-cpp-xml-tests
 ```
 
+## How to contribute
+
+### Make sure includes are relative
+
+In order for the library to be able to function header-only, we need internal includes to be relative and not depend on any externally set include directory.
+
+That is, for example, if you are within any file in `rfl/internal`, prefer
+```cpp
+#include "to_ptr_named_tuple.hpp"
+```
+over
+```cpp
+#include "rfl/internal/to_ptr_named_tuple.hpp"
+```
+For further details and reasoning, please refer to [#30](https://github.com/getml/reflect-cpp/issues/30).
+
 ## Related projects
 
 reflect-cpp was originally developed for [getml-community](https://github.com/getml/getml-community), the fastest open-source tool for feature engineering on relational data and time series. If you are interested in Data Science and/or Machine Learning, please check it out.
