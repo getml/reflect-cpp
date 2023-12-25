@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "../always_false.hpp"
-#include "has_n_fields.hpp"
 #include "is_named_tuple.hpp"
 
 namespace rfl {
@@ -22,1006 +21,13 @@ constexpr auto bind_to_tuple(T& _t, const F& _f) {
   auto view = tuple_view(_t);
   return [&]<std::size_t... Is>(std::index_sequence<Is...>) {
     return std::make_tuple(_f(std::get<Is>(view))...);
-  }
-  (std::make_index_sequence<std::tuple_size_v<decltype(view)>>());
+  }(std::make_index_sequence<std::tuple_size_v<decltype(view)>>());
 }
 
-/*The following boilerplate code was generated using a Python script:
-def make_field_template(num: int) -> str:
-    fields = ", ".join([f"f{i+1}" for i in range(num)])
-    ref_fields = ", ".join([f"f{i+1}" for i in range(num)])
-    return (
-        """
-  } else if constexpr (has_n_fields<T, """
-        + str(num)
-        + """>) {"""
-        + ("auto& [" + fields + "] = _t;" if num > 0 else "")
-        + """
-  return std::tie("""
-        + ref_fields
-        + ");"
-    )
-
-code = "".join((make_field_template(i) for i in range(101)))
-
-with open("generated_code4.cpp", "w", encoding="utf-8") as codefile:
-    codefile.write(code)
-*/
-
-template <class T>
-constexpr auto tuple_view(T& _t) {
-  if constexpr (has_n_fields<T, 0>) {
-    return std::tie();
-  } else if constexpr (has_n_fields<T, 1>) {
-    auto& [f1] = _t;
-    return std::tie(f1);
-  } else if constexpr (has_n_fields<T, 2>) {
-    auto& [f1, f2] = _t;
-    return std::tie(f1, f2);
-  } else if constexpr (has_n_fields<T, 3>) {
-    auto& [f1, f2, f3] = _t;
-    return std::tie(f1, f2, f3);
-  } else if constexpr (has_n_fields<T, 4>) {
-    auto& [f1, f2, f3, f4] = _t;
-    return std::tie(f1, f2, f3, f4);
-  } else if constexpr (has_n_fields<T, 5>) {
-    auto& [f1, f2, f3, f4, f5] = _t;
-    return std::tie(f1, f2, f3, f4, f5);
-  } else if constexpr (has_n_fields<T, 6>) {
-    auto& [f1, f2, f3, f4, f5, f6] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6);
-  } else if constexpr (has_n_fields<T, 7>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7);
-  } else if constexpr (has_n_fields<T, 8>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8);
-  } else if constexpr (has_n_fields<T, 9>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9);
-  } else if constexpr (has_n_fields<T, 10>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10);
-  } else if constexpr (has_n_fields<T, 11>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11);
-  } else if constexpr (has_n_fields<T, 12>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12);
-  } else if constexpr (has_n_fields<T, 13>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13);
-  } else if constexpr (has_n_fields<T, 14>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13,
-                    f14);
-  } else if constexpr (has_n_fields<T, 15>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15] =
-        _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15);
-  } else if constexpr (has_n_fields<T, 16>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16);
-  } else if constexpr (has_n_fields<T, 17>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17);
-  } else if constexpr (has_n_fields<T, 18>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18);
-  } else if constexpr (has_n_fields<T, 19>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19);
-  } else if constexpr (has_n_fields<T, 20>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20);
-  } else if constexpr (has_n_fields<T, 21>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21);
-  } else if constexpr (has_n_fields<T, 22>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22);
-  } else if constexpr (has_n_fields<T, 23>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23);
-  } else if constexpr (has_n_fields<T, 24>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24);
-  } else if constexpr (has_n_fields<T, 25>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25);
-  } else if constexpr (has_n_fields<T, 26>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26);
-  } else if constexpr (has_n_fields<T, 27>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27);
-  } else if constexpr (has_n_fields<T, 28>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28] =
-        _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28);
-  } else if constexpr (has_n_fields<T, 29>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28,
-           f29] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29);
-  } else if constexpr (has_n_fields<T, 30>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30);
-  } else if constexpr (has_n_fields<T, 31>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31);
-  } else if constexpr (has_n_fields<T, 32>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32);
-  } else if constexpr (has_n_fields<T, 33>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33);
-  } else if constexpr (has_n_fields<T, 34>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34);
-  } else if constexpr (has_n_fields<T, 35>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35);
-  } else if constexpr (has_n_fields<T, 36>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36);
-  } else if constexpr (has_n_fields<T, 37>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37);
-  } else if constexpr (has_n_fields<T, 38>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38);
-  } else if constexpr (has_n_fields<T, 39>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39);
-  } else if constexpr (has_n_fields<T, 40>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40);
-  } else if constexpr (has_n_fields<T, 41>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41);
-  } else if constexpr (has_n_fields<T, 42>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42] =
-        _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42);
-  } else if constexpr (has_n_fields<T, 43>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42,
-           f43] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43);
-  } else if constexpr (has_n_fields<T, 44>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44);
-  } else if constexpr (has_n_fields<T, 45>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45);
-  } else if constexpr (has_n_fields<T, 46>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46);
-  } else if constexpr (has_n_fields<T, 47>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47);
-  } else if constexpr (has_n_fields<T, 48>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48);
-  } else if constexpr (has_n_fields<T, 49>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49);
-  } else if constexpr (has_n_fields<T, 50>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50);
-  } else if constexpr (has_n_fields<T, 51>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51);
-  } else if constexpr (has_n_fields<T, 52>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52);
-  } else if constexpr (has_n_fields<T, 53>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53);
-  } else if constexpr (has_n_fields<T, 54>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54);
-  } else if constexpr (has_n_fields<T, 55>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55);
-  } else if constexpr (has_n_fields<T, 56>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56] =
-        _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56);
-  } else if constexpr (has_n_fields<T, 57>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56,
-           f57] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57);
-  } else if constexpr (has_n_fields<T, 58>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58);
-  } else if constexpr (has_n_fields<T, 59>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59);
-  } else if constexpr (has_n_fields<T, 60>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60);
-  } else if constexpr (has_n_fields<T, 61>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61);
-  } else if constexpr (has_n_fields<T, 62>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62);
-  } else if constexpr (has_n_fields<T, 63>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63);
-  } else if constexpr (has_n_fields<T, 64>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64);
-  } else if constexpr (has_n_fields<T, 65>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65);
-  } else if constexpr (has_n_fields<T, 66>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66);
-  } else if constexpr (has_n_fields<T, 67>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67);
-  } else if constexpr (has_n_fields<T, 68>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68);
-  } else if constexpr (has_n_fields<T, 69>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69);
-  } else if constexpr (has_n_fields<T, 70>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70] =
-        _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70);
-  } else if constexpr (has_n_fields<T, 71>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70,
-           f71] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71);
-  } else if constexpr (has_n_fields<T, 72>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72);
-  } else if constexpr (has_n_fields<T, 73>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73);
-  } else if constexpr (has_n_fields<T, 74>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74);
-  } else if constexpr (has_n_fields<T, 75>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75);
-  } else if constexpr (has_n_fields<T, 76>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76);
-  } else if constexpr (has_n_fields<T, 77>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77);
-  } else if constexpr (has_n_fields<T, 78>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78);
-  } else if constexpr (has_n_fields<T, 79>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79);
-  } else if constexpr (has_n_fields<T, 80>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80);
-  } else if constexpr (has_n_fields<T, 81>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81);
-  } else if constexpr (has_n_fields<T, 82>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82);
-  } else if constexpr (has_n_fields<T, 83>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82, f83);
-  } else if constexpr (has_n_fields<T, 84>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84] =
-        _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82, f83, f84);
-  } else if constexpr (has_n_fields<T, 85>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84,
-           f85] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85);
-  } else if constexpr (has_n_fields<T, 86>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85,
-           f86] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86);
-  } else if constexpr (has_n_fields<T, 87>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85,
-           f86, f87] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86,
-                    f87);
-  } else if constexpr (has_n_fields<T, 88>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85,
-           f86, f87, f88] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86,
-                    f87, f88);
-  } else if constexpr (has_n_fields<T, 89>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85,
-           f86, f87, f88, f89] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86,
-                    f87, f88, f89);
-  } else if constexpr (has_n_fields<T, 90>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85,
-           f86, f87, f88, f89, f90] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86,
-                    f87, f88, f89, f90);
-  } else if constexpr (has_n_fields<T, 91>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85,
-           f86, f87, f88, f89, f90, f91] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86,
-                    f87, f88, f89, f90, f91);
-  } else if constexpr (has_n_fields<T, 92>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85,
-           f86, f87, f88, f89, f90, f91, f92] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86,
-                    f87, f88, f89, f90, f91, f92);
-  } else if constexpr (has_n_fields<T, 93>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85,
-           f86, f87, f88, f89, f90, f91, f92, f93] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86,
-                    f87, f88, f89, f90, f91, f92, f93);
-  } else if constexpr (has_n_fields<T, 94>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85,
-           f86, f87, f88, f89, f90, f91, f92, f93, f94] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86,
-                    f87, f88, f89, f90, f91, f92, f93, f94);
-  } else if constexpr (has_n_fields<T, 95>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85,
-           f86, f87, f88, f89, f90, f91, f92, f93, f94, f95] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86,
-                    f87, f88, f89, f90, f91, f92, f93, f94, f95);
-  } else if constexpr (has_n_fields<T, 96>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85,
-           f86, f87, f88, f89, f90, f91, f92, f93, f94, f95, f96] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86,
-                    f87, f88, f89, f90, f91, f92, f93, f94, f95, f96);
-  } else if constexpr (has_n_fields<T, 97>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85,
-           f86, f87, f88, f89, f90, f91, f92, f93, f94, f95, f96, f97] = _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86,
-                    f87, f88, f89, f90, f91, f92, f93, f94, f95, f96, f97);
-  } else if constexpr (has_n_fields<T, 98>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85,
-           f86, f87, f88, f89, f90, f91, f92, f93, f94, f95, f96, f97, f98] =
-        _t;
-    return std::tie(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14,
-                    f15, f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26,
-                    f27, f28, f29, f30, f31, f32, f33, f34, f35, f36, f37, f38,
-                    f39, f40, f41, f42, f43, f44, f45, f46, f47, f48, f49, f50,
-                    f51, f52, f53, f54, f55, f56, f57, f58, f59, f60, f61, f62,
-                    f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74,
-                    f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86,
-                    f87, f88, f89, f90, f91, f92, f93, f94, f95, f96, f97, f98);
-  } else if constexpr (has_n_fields<T, 99>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85,
-           f86, f87, f88, f89, f90, f91, f92, f93, f94, f95, f96, f97, f98,
-           f99] = _t;
-    return std::tie(
-        f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16,
-        f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
-        f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44,
-        f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58,
-        f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72,
-        f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86,
-        f87, f88, f89, f90, f91, f92, f93, f94, f95, f96, f97, f98, f99);
-  } else if constexpr (has_n_fields<T, 100>) {
-    auto& [f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
-           f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29,
-           f30, f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43,
-           f44, f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57,
-           f58, f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71,
-           f72, f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85,
-           f86, f87, f88, f89, f90, f91, f92, f93, f94, f95, f96, f97, f98, f99,
-           f100] = _t;
-    return std::tie(
-        f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16,
-        f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
-        f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44,
-        f45, f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58,
-        f59, f60, f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72,
-        f73, f74, f75, f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86,
-        f87, f88, f89, f90, f91, f92, f93, f94, f95, f96, f97, f98, f99, f100);
-
-    // ---------------------------------
-    // End of generated boilerplate code
-    // ---------------------------------
-  } else {
+template <std::size_t n>
+struct tuple_view_helper {
+  template <class T>
+  static constexpr auto tuple_view(T&) {
     static_assert(
         rfl::always_false_v<T>,
         "\n\nThis error occurs for one of two reasons:\n\n"
@@ -1035,6 +41,561 @@ constexpr auto tuple_view(T& _t) {
         "classes or custom parsers in the documentation "
         "for solutions to this problem.\n\n");
   }
+};
+
+template <>
+struct tuple_view_helper<0> {
+  static constexpr auto tuple_view(auto&) { return std::tie(); }
+};
+
+#define RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(n, ...) \
+  template <>                                         \
+  struct tuple_view_helper<n> {                       \
+    static constexpr auto tuple_view(auto& t) {       \
+      auto& [__VA_ARGS__] = t;                        \
+      return std::tie(__VA_ARGS__);                   \
+    }                                                 \
+  }
+
+/*The following boilerplate code was generated using a Python script:
+macro = "RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER"
+with open("generated_code4.cpp", "w", encoding="utf-8") as codefile:
+    codefile.write(
+        "\n".join(
+            [
+                f"{macro}({i}, {', '.join([f'f{j}' for j in range(i)])});"
+                for i in range(1, 101)
+            ]
+        )
+    )
+*/
+
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(1, f0);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(2, f0, f1);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(3, f0, f1, f2);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(4, f0, f1, f2, f3);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(5, f0, f1, f2, f3, f4);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(6, f0, f1, f2, f3, f4, f5);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(7, f0, f1, f2, f3, f4, f5, f6);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(8, f0, f1, f2, f3, f4, f5, f6, f7);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(9, f0, f1, f2, f3, f4, f5, f6, f7, f8);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(10, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(11, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(12, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(13, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(14, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(15, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(16, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(17, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(18, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(19, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(20, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(21, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(22, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(23, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(24, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(25, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(26, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(27, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(28, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(29, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(30, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(31, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(32, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(33, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(34, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(35, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(36, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(37, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(38, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(39, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(40, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(41, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(42, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(43, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(44, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(45, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(46, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44, f45);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(47, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44, f45, f46);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(48, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44, f45, f46, f47);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(49, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44, f45, f46, f47, f48);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(50, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44, f45, f46, f47, f48,
+                                      f49);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(51, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44, f45, f46, f47, f48,
+                                      f49, f50);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(52, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44, f45, f46, f47, f48,
+                                      f49, f50, f51);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(53, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44, f45, f46, f47, f48,
+                                      f49, f50, f51, f52);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(54, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44, f45, f46, f47, f48,
+                                      f49, f50, f51, f52, f53);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(55, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44, f45, f46, f47, f48,
+                                      f49, f50, f51, f52, f53, f54);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(56, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44, f45, f46, f47, f48,
+                                      f49, f50, f51, f52, f53, f54, f55);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(57, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44, f45, f46, f47, f48,
+                                      f49, f50, f51, f52, f53, f54, f55, f56);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    58, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    59, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    60, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    61, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(62, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44, f45, f46, f47, f48,
+                                      f49, f50, f51, f52, f53, f54, f55, f56,
+                                      f57, f58, f59, f60, f61);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(63, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44, f45, f46, f47, f48,
+                                      f49, f50, f51, f52, f53, f54, f55, f56,
+                                      f57, f58, f59, f60, f61, f62);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(64, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44, f45, f46, f47, f48,
+                                      f49, f50, f51, f52, f53, f54, f55, f56,
+                                      f57, f58, f59, f60, f61, f62, f63);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(65, f0, f1, f2, f3, f4, f5, f6, f7, f8,
+                                      f9, f10, f11, f12, f13, f14, f15, f16,
+                                      f17, f18, f19, f20, f21, f22, f23, f24,
+                                      f25, f26, f27, f28, f29, f30, f31, f32,
+                                      f33, f34, f35, f36, f37, f38, f39, f40,
+                                      f41, f42, f43, f44, f45, f46, f47, f48,
+                                      f49, f50, f51, f52, f53, f54, f55, f56,
+                                      f57, f58, f59, f60, f61, f62, f63, f64);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    66, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    67, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    68, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    69, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    70, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    71, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    72, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    73, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    74, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    75, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    76, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    77, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    78, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    79, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    80, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    81, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    82, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    83, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    84, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    85, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83, f84);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    86, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83, f84, f85);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    87, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    88, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86, f87);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    89, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86, f87, f88);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    90, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86, f87, f88, f89);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    91, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86, f87, f88, f89, f90);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    92, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86, f87, f88, f89, f90,
+    f91);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    93, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86, f87, f88, f89, f90,
+    f91, f92);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    94, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86, f87, f88, f89, f90,
+    f91, f92, f93);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    95, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86, f87, f88, f89, f90,
+    f91, f92, f93, f94);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    96, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86, f87, f88, f89, f90,
+    f91, f92, f93, f94, f95);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    97, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86, f87, f88, f89, f90,
+    f91, f92, f93, f94, f95, f96);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    98, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86, f87, f88, f89, f90,
+    f91, f92, f93, f94, f95, f96, f97);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    99, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86, f87, f88, f89, f90,
+    f91, f92, f93, f94, f95, f96, f97, f98);
+RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
+    100, f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15,
+    f16, f17, f18, f19, f20, f21, f22, f23, f24, f25, f26, f27, f28, f29, f30,
+    f31, f32, f33, f34, f35, f36, f37, f38, f39, f40, f41, f42, f43, f44, f45,
+    f46, f47, f48, f49, f50, f51, f52, f53, f54, f55, f56, f57, f58, f59, f60,
+    f61, f62, f63, f64, f65, f66, f67, f68, f69, f70, f71, f72, f73, f74, f75,
+    f76, f77, f78, f79, f80, f81, f82, f83, f84, f85, f86, f87, f88, f89, f90,
+    f91, f92, f93, f94, f95, f96, f97, f98, f99);
+
+#undef RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER
+
+template <class T>
+constexpr auto tuple_view(T& t) {
+  return tuple_view_helper<num_fields<T>>::tuple_view(t);
 }
 
 }  // namespace internal
