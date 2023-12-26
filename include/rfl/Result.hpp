@@ -3,6 +3,7 @@
 
 #include <optional>
 #include <ranges>
+#include <span>
 #include <stdexcept>
 #include <tuple>
 #include <type_traits>
@@ -338,6 +339,10 @@ class Result {
   /// The underlying variant, can either be T or Error.
   std::variant<T, Error> t_or_err_;
 };
+
+/// This is simply to get the compilation to pass.
+template <class T, std::size_t _n>
+class Result<T[_n]> : public Result<std::span<T, _n>> {};
 
 }  // namespace rfl
 

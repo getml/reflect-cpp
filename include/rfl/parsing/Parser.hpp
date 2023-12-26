@@ -4,6 +4,7 @@
 #include "Parser_array.hpp"
 #include "Parser_base.hpp"
 #include "Parser_box.hpp"
+#include "Parser_c_array.hpp"
 #include "Parser_default.hpp"
 #include "Parser_map_like.hpp"
 #include "Parser_named_tuple.hpp"
