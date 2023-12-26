@@ -12,22 +12,22 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class T>
-requires AreReaderAndWriter<R, W, Result<T>>
+  requires AreReaderAndWriter<R, W, Result<T>>
 struct Parser<R, W, Result<T>> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
 
   using ErrorType = NamedTuple<Field<"error", std::string>>;
-  using VariantType = std::variant<std::decay_t<T>, ErrorType>;
+  using VariantType = std::variant<std::remove_cvref_t<T>, ErrorType>;
 
   static Result<Result<T>> read(const R& _r,
                                 const InputVarType& _var) noexcept {
     const auto handle = [](auto&& _t) -> Result<T> {
-      using Type = std::decay_t<decltype(_t)>;
+      using Type = std::remove_cvref_t<decltype(_t)>;
       if constexpr (std::is_same<Type, ErrorType>()) {
         return Error(_t.template get<"error">());
       } else {
-        return std::forward<std::decay_t<T>>(_t);
+        return std::forward<std::remove_cvref_t<T>>(_t);
       }
     };
 
@@ -41,7 +41,7 @@ struct Parser<R, W, Result<T>> {
 
   static OutputVarType write(const W& _w, const Result<T>& _r) noexcept {
     const auto write_t = [&](const auto& _t) -> OutputVarType {
-      return Parser<R, W, std::decay_t<T>>::write(_w, _t);
+      return Parser<R, W, std::remove_cvref_t<T>>::write(_w, _t);
     };
 
     const auto write_err = [&](const auto& _err) -> OutputVarType {

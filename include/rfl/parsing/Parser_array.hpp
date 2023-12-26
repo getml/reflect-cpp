@@ -12,7 +12,7 @@
 namespace rfl {
 namespace parsing {
 template <class R, class W, class T, size_t _size>
-requires AreReaderAndWriter<R, W, std::array<T, _size>>
+  requires AreReaderAndWriter<R, W, std::array<T, _size>>
 struct Parser<R, W, std::array<T, _size>> {
  public:
   using InputArrayType = typename R::InputArrayType;
@@ -47,7 +47,7 @@ struct Parser<R, W, std::array<T, _size>> {
                              const std::array<T, _size>& _arr) noexcept {
     auto arr = _w.new_array();
     for (auto it = _arr.begin(); it != _arr.end(); ++it) {
-      _w.add(Parser<R, W, std::decay_t<T>>::write(_w, *it), &arr);
+      _w.add(Parser<R, W, std::remove_cvref_t<T>>::write(_w, *it), &arr);
     }
     return OutputVarType(arr);
   }

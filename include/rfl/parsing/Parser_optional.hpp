@@ -12,7 +12,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class T>
-requires AreReaderAndWriter<R, W, std::optional<T>>
+  requires AreReaderAndWriter<R, W, std::optional<T>>
 struct Parser<R, W, std::optional<T>> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
@@ -23,14 +23,15 @@ struct Parser<R, W, std::optional<T>> {
       return std::optional<T>();
     }
     const auto to_opt = [](auto&& _t) { return std::make_optional<T>(_t); };
-    return Parser<R, W, std::decay_t<T>>::read(_r, _var).transform(to_opt);
+    return Parser<R, W, std::remove_cvref_t<T>>::read(_r, _var).transform(
+        to_opt);
   }
 
   static OutputVarType write(const W& _w, const std::optional<T>& _o) noexcept {
     if (!_o) {
       return _w.empty_var();
     }
-    return Parser<R, W, std::decay_t<T>>::write(_w, *_o);
+    return Parser<R, W, std::remove_cvref_t<T>>::write(_w, *_o);
   }
 };
 

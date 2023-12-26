@@ -24,25 +24,25 @@ class OutputValue : public OutputVar {
   /// Inserts all elements into the builder.
   void insert(const std::optional<std::string>& _key,
               flexbuffers::Builder* _fbb) final {
-    if constexpr (std::is_same<std::decay_t<T>, std::string>()) {
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       if (_key) {
         _fbb->String(_key->c_str(), val_);
       } else {
         _fbb->String(val_);
       }
-    } else if constexpr (std::is_same<std::decay_t<T>, bool>()) {
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (_key) {
         _fbb->Bool(_key->c_str(), val_);
       } else {
         _fbb->Bool(val_);
       }
-    } else if constexpr (std::is_floating_point<std::decay_t<T>>()) {
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       if (_key) {
         _fbb->Double(_key->c_str(), val_);
       } else {
         _fbb->Double(val_);
       }
-    } else if constexpr (std::is_integral<std::decay_t<T>>()) {
+    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       if (_key) {
         _fbb->Int(_key->c_str(), val_);
       } else {

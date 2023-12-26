@@ -14,8 +14,8 @@ namespace parsing {
 
 template <class R, class W, internal::StringLiteral _discriminator,
           class... AlternativeTypes>
-requires AreReaderAndWriter<R, W,
-                            TaggedUnion<_discriminator, AlternativeTypes...>>
+  requires AreReaderAndWriter<R, W,
+                              TaggedUnion<_discriminator, AlternativeTypes...>>
 struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
   using ResultType = Result<TaggedUnion<_discriminator, AlternativeTypes...>>;
 
@@ -56,7 +56,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
       return Error("Could not parse tagged union, could not match " +
                    _discriminator.str() + " '" + _disc_value + "'.");
     } else {
-      using AlternativeType = std::decay_t<
+      using AlternativeType = std::remove_cvref_t<
           std::variant_alternative_t<_i, std::variant<AlternativeTypes...>>>;
 
       if (contains_disc_value<AlternativeType>(_disc_value)) {
@@ -112,8 +112,8 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
   template <class T>
   static OutputVarType write_wrapped(const W& _w, const T& _val) noexcept {
     const auto tag = internal::make_tag<T>();
-    using TagType = std::decay_t<decltype(tag)>;
-    if constexpr (internal::has_fields<std::decay_t<T>>()) {
+    using TagType = std::remove_cvref_t<decltype(tag)>;
+    if constexpr (internal::has_fields<std::remove_cvref_t<T>>()) {
       using WrapperType =
           TaggedUnionWrapperWithFields<T, TagType, _discriminator>;
       const auto wrapper = WrapperType{.tag = tag, .fields = &_val};

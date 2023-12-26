@@ -19,7 +19,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, bool _ignore_empty_containers, class... FieldTypes>
-requires AreReaderAndWriter<R, W, NamedTuple<FieldTypes...>>
+  requires AreReaderAndWriter<R, W, NamedTuple<FieldTypes...>>
 struct NamedTupleParser {
   using InputObjectType = typename R::InputObjectType;
   using InputVarType = typename R::InputVarType;
@@ -69,7 +69,7 @@ struct NamedTupleParser {
       using FieldType = typename std::tuple_element<
           i, typename NamedTuple<FieldTypes...>::Fields>::type;
 
-      using ValueType = std::decay_t<typename FieldType::Type>;
+      using ValueType = std::remove_cvref_t<typename FieldType::Type>;
 
       const auto& f = std::get<i>(_fields_arr);
 
@@ -125,7 +125,7 @@ struct NamedTupleParser {
       using FieldType = typename std::tuple_element<
           _i, typename NamedTuple<FieldTypes...>::Fields>::type;
 
-      using ValueType = std::decay_t<typename FieldType::Type>;
+      using ValueType = std::remove_cvref_t<typename FieldType::Type>;
 
       const auto& f = std::get<_i>(_fields_arr);
 
@@ -159,7 +159,7 @@ struct NamedTupleParser {
     } else {
       using FieldType =
           typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type;
-      using ValueType = std::decay_t<typename FieldType::Type>;
+      using ValueType = std::remove_cvref_t<typename FieldType::Type>;
       auto value = Parser<R, W, ValueType>::write(_w, rfl::get<_i>(_tup));
       const auto name = FieldType::name_.str();
       if constexpr (!is_required<ValueType, _ignore_empty_containers>()) {
@@ -192,7 +192,7 @@ struct NamedTupleParser {
       const auto key = FieldType::name_.str();
       return Error("Failed to parse field '" + key + "': " + _e.what());
     };
-    using ValueType = std::decay_t<typename FieldType::Type>;
+    using ValueType = std::remove_cvref_t<typename FieldType::Type>;
     return Parser<R, W, ValueType>::read(_r, _var).or_else(embellish_error);
   }
 

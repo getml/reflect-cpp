@@ -21,20 +21,23 @@ namespace rfl {
 template <class... FieldTypes>
 class NamedTuple {
  public:
-  using Fields = std::tuple<std::decay_t<FieldTypes>...>;
-  using Values = std::tuple<typename std::decay<FieldTypes>::type::Type...>;
+  using Fields = std::tuple<std::remove_cvref_t<FieldTypes>...>;
+  using Values =
+      std::tuple<typename std::remove_cvref<FieldTypes>::type::Type...>;
 
  public:
   /// Construct from the values.
-  NamedTuple(typename std::decay<FieldTypes>::type::Type&&... _values)
-      : values_(std::forward<typename std::decay<FieldTypes>::type::Type>(
-            _values)...) {
+  NamedTuple(typename std::remove_cvref<FieldTypes>::type::Type&&... _values)
+      : values_(
+            std::forward<typename std::remove_cvref<FieldTypes>::type::Type>(
+                _values)...) {
     static_assert(no_duplicate_field_names(),
                   "Duplicate field names are not allowed");
   }
 
   /// Construct from the values.
-  NamedTuple(const typename std::decay<FieldTypes>::type::Type&... _values)
+  NamedTuple(
+      const typename std::remove_cvref<FieldTypes>::type::Type&... _values)
       : values_(std::make_tuple(_values...)) {
     static_assert(no_duplicate_field_names(),
                   "Duplicate field names are not allowed");
@@ -97,11 +100,11 @@ class NamedTuple {
   template <class Head, class... Tail>
   auto add(Head&& _head, Tail&&... _tail) {
     if constexpr (sizeof...(Tail) > 0) {
-      return NamedTuple<FieldTypes..., std::decay_t<Head>>(
+      return NamedTuple<FieldTypes..., std::remove_cvref_t<Head>>(
                  make_fields<1, Head>(std::forward<Head>(_head)))
           .add(std::forward<Tail>(_tail)...);
     } else {
-      return NamedTuple<FieldTypes..., std::decay_t<Head>>(
+      return NamedTuple<FieldTypes..., std::remove_cvref_t<Head>>(
           make_fields<1, Head>(std::forward<Head>(_head)));
     }
   }
@@ -110,11 +113,11 @@ class NamedTuple {
   template <class Head, class... Tail>
   auto add(Head&& _head, Tail&&... _tail) const {
     if constexpr (sizeof...(Tail) > 0) {
-      return NamedTuple<FieldTypes..., std::decay_t<Head>>(
+      return NamedTuple<FieldTypes..., std::remove_cvref_t<Head>>(
                  make_fields<1, Head>(std::forward<Head>(_head)))
           .add(std::forward<Tail>(_tail)...);
     } else {
-      return NamedTuple<FieldTypes..., std::decay_t<Head>>(
+      return NamedTuple<FieldTypes..., std::remove_cvref_t<Head>>(
           make_fields<1, Head>(std::forward<Head>(_head)));
     }
   }
@@ -331,7 +334,7 @@ class NamedTuple {
       // When we add additional fields, it is more intuitive to add
       // them to the end, that is why we do it like this.
       using FieldType = typename std::tuple_element<i, Fields>::type;
-      using T = std::decay_t<typename FieldType::Type>;
+      using T = std::remove_cvref_t<typename FieldType::Type>;
       return make_fields<num_additional_fields>(
           FieldType(std::forward<T>(std::get<i>(values_))),
           std::forward<Args>(_args)...);
@@ -392,7 +395,7 @@ class NamedTuple {
   /// Replaced the field signified by the field type.
   template <class Field, class T>
   NamedTuple<FieldTypes...> replace_value(T&& _val) {
-    using FieldType = std::decay_t<Field>;
+    using FieldType = std::remove_cvref_t<Field>;
     constexpr auto index = internal::find_index<FieldType::name_, Fields>();
     return make_replaced<index, Values, T>(std::forward<Values>(values_),
                                            std::forward<T>(_val));
@@ -401,7 +404,7 @@ class NamedTuple {
   /// Replaced the field signified by the field type.
   template <class Field, class T>
   NamedTuple<FieldTypes...> replace_value(T&& _val) const {
-    using FieldType = std::decay_t<Field>;
+    using FieldType = std::remove_cvref_t<Field>;
     constexpr auto index = internal::find_index<FieldType::name_, Fields>();
     auto values = values_;
     return make_replaced<index, Values, T>(std::move(values),
@@ -446,7 +449,7 @@ class NamedTuple {
 
       using FieldType = typename std::tuple_element<size, Fields>::type;
 
-      using T = std::decay_t<typename FieldType::Type>;
+      using T = std::remove_cvref_t<typename FieldType::Type>;
 
       return retrieve_fields(
           std::forward<std::tuple<OtherFieldTypes...>>(_other_fields),

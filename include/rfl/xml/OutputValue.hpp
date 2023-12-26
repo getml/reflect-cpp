@@ -41,12 +41,12 @@ class OutputValue : public OutputVar {
  private:
   /// Transforms the underlying value into a string.
   std::string to_string() {
-    if constexpr (std::is_same<std::decay_t<T>, std::string>()) {
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       return val_;
-    } else if constexpr (std::is_same<std::decay_t<T>, bool>()) {
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       return val_ ? "true" : "false";
-    } else if constexpr (std::is_floating_point<std::decay_t<T>>() ||
-                         std::is_integral<std::decay_t<T>>()) {
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
+                         std::is_integral<std::remove_cvref_t<T>>()) {
       return std::to_string(val_);
     } else {
       static_assert(always_false_v<T>, "Unsupported type");

@@ -14,7 +14,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class... FieldTypes>
-requires AreReaderAndWriter<R, W, std::variant<FieldTypes...>>
+  requires AreReaderAndWriter<R, W, std::variant<FieldTypes...>>
 struct Parser<R, W, std::variant<FieldTypes...>> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
@@ -40,7 +40,7 @@ struct Parser<R, W, std::variant<FieldTypes...>> {
         return read<_i + 1>(_r, _var, errors);
       };
 
-      using AltType = std::decay_t<
+      using AltType = std::remove_cvref_t<
           std::variant_alternative_t<_i, std::variant<FieldTypes...>>>;
 
       return Parser<R, W, AltType>::read(_r, _var)
@@ -55,7 +55,7 @@ struct Parser<R, W, std::variant<FieldTypes...>> {
       return FieldVariantParser<R, W, FieldTypes...>::write(_w, _variant);
     } else {
       const auto handle = [&](const auto& _v) {
-        using Type = std::decay_t<decltype(_v)>;
+        using Type = std::remove_cvref_t<decltype(_v)>;
         return Parser<R, W, Type>::write(_w, _v);
       };
       return std::visit(handle, _variant);

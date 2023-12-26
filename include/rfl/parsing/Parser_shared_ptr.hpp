@@ -12,7 +12,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class T>
-requires AreReaderAndWriter<R, W, std::shared_ptr<T>>
+  requires AreReaderAndWriter<R, W, std::shared_ptr<T>>
 struct Parser<R, W, std::shared_ptr<T>> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
@@ -26,7 +26,8 @@ struct Parser<R, W, std::shared_ptr<T>> {
     const auto to_ptr = [](auto&& _t) {
       return std::make_shared<T>(std::move(_t));
     };
-    return Parser<R, W, std::decay_t<T>>::read(_r, _var).transform(to_ptr);
+    return Parser<R, W, std::remove_cvref_t<T>>::read(_r, _var).transform(
+        to_ptr);
   }
 
   /// Expresses the variable a a JSON.
@@ -35,7 +36,7 @@ struct Parser<R, W, std::shared_ptr<T>> {
     if (!_s) {
       return _w.empty_var();
     }
-    return Parser<R, W, std::decay_t<T>>::write(_w, *_s);
+    return Parser<R, W, std::remove_cvref_t<T>>::write(_w, *_s);
   }
 };
 

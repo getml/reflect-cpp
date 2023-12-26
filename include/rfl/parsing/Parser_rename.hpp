@@ -13,7 +13,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class T, internal::StringLiteral _name>
-requires AreReaderAndWriter<R, W, Rename<_name, T>>
+  requires AreReaderAndWriter<R, W, Rename<_name, T>>
 struct Parser<R, W, Rename<_name, T>> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
@@ -23,12 +23,13 @@ struct Parser<R, W, Rename<_name, T>> {
     const auto to_rename = [](auto&& _t) {
       return Rename<_name, T>(std::move(_t));
     };
-    return Parser<R, W, std::decay_t<T>>::read(_r, _var).transform(to_rename);
+    return Parser<R, W, std::remove_cvref_t<T>>::read(_r, _var).transform(
+        to_rename);
   }
 
   static OutputVarType write(const W& _w,
                              const Rename<_name, T>& _rename) noexcept {
-    return Parser<R, W, std::decay_t<T>>::write(_w, _rename.value());
+    return Parser<R, W, std::remove_cvref_t<T>>::write(_w, _rename.value());
   }
 };
 

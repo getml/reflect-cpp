@@ -12,7 +12,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class T>
-requires AreReaderAndWriter<R, W, std::reference_wrapper<T>>
+  requires AreReaderAndWriter<R, W, std::reference_wrapper<T>>
 struct Parser<R, W, std::reference_wrapper<T>> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
@@ -30,7 +30,7 @@ struct Parser<R, W, std::reference_wrapper<T>> {
 
   static OutputVarType write(const W& _w,
                              const std::reference_wrapper<T> _ref) noexcept {
-    return Parser<R, W, std::decay_t<T>>::write(_w, _ref.get());
+    return Parser<R, W, std::remove_cvref_t<T>>::write(_w, _ref.get());
   }
 };
 

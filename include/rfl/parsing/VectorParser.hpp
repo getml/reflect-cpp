@@ -22,7 +22,7 @@ namespace parsing {
 /// but also includes map-like types, when the key is not of type
 /// std::string.
 template <class R, class W, class VecType>
-requires AreReaderAndWriter<R, W, VecType>
+  requires AreReaderAndWriter<R, W, VecType>
 struct VectorParser {
  public:
   using InputArrayType = typename R::InputArrayType;
@@ -50,7 +50,7 @@ struct VectorParser {
     } else {
       auto arr = _w.new_array();
       for (const auto& v : _vec) {
-        _w.add(Parser<R, W, std::decay_t<T>>::write(_w, v), &arr);
+        _w.add(Parser<R, W, std::remove_cvref_t<T>>::write(_w, v), &arr);
       }
       return OutputVarType(arr);
     }
@@ -58,13 +58,14 @@ struct VectorParser {
 
  private:
   static auto get_elem(const R& _r, auto& _v) {
-    return Parser<R, W, std::decay_t<T>>::read(_r, _v).value();
+    return Parser<R, W, std::remove_cvref_t<T>>::read(_r, _v).value();
   };
 
   static auto get_pair(const R& _r, auto& _v) {
-    using K = std::decay_t<typename T::first_type>;
-    using V = std::decay_t<typename T::second_type>;
-    return Parser<R, W, std::decay_t<std::pair<K, V>>>::read(_r, _v).value();
+    using K = std::remove_cvref_t<typename T::first_type>;
+    using V = std::remove_cvref_t<typename T::second_type>;
+    return Parser<R, W, std::remove_cvref_t<std::pair<K, V>>>::read(_r, _v)
+        .value();
   }
 
   static Result<VecType> to_container(const R& _r, InputArrayType&& _arr) {
@@ -101,7 +102,7 @@ struct VectorParser {
   static constexpr bool treat_as_map() {
     if constexpr (is_map_like_not_multimap<VecType>()) {
       if constexpr (internal::has_reflection_type_v<typename T::first_type>) {
-        using U = std::decay_t<typename T::first_type::ReflectionType>;
+        using U = std::remove_cvref_t<typename T::first_type::ReflectionType>;
         return std::is_same<U, std::string>() || std::is_integral_v<U> ||
                std::is_floating_point_v<U>;
 

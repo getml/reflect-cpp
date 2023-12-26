@@ -16,7 +16,7 @@ namespace parsing {
 /// To be used when all options of the variants are rfl::Field. Essentially,
 /// this is an externally tagged union.
 template <class R, class W, class... FieldTypes>
-requires AreReaderAndWriter<R, W, std::variant<FieldTypes...>>
+  requires AreReaderAndWriter<R, W, std::variant<FieldTypes...>>
 struct FieldVariantParser {
   using ResultType = Result<std::variant<FieldTypes...>>;
 
@@ -60,7 +60,7 @@ struct FieldVariantParser {
 
     const auto handle = [&](const auto& _field) {
       const auto named_tuple = make_named_tuple(internal::to_ptr_field(_field));
-      using NamedTupleType = std::decay_t<decltype(named_tuple)>;
+      using NamedTupleType = std::remove_cvref_t<decltype(named_tuple)>;
       return Parser<R, W, NamedTupleType>::write(_w, named_tuple);
     };
 
@@ -78,10 +78,10 @@ struct FieldVariantParser {
           "'" +
           _disc_value + "'.");
     } else {
-      using FieldType = std::decay_t<
+      using FieldType = std::remove_cvref_t<
           typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type>;
 
-      using ValueType = std::decay_t<typename FieldType::Type>;
+      using ValueType = std::remove_cvref_t<typename FieldType::Type>;
 
       const auto key = FieldType::name_.str();
 

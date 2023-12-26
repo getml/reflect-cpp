@@ -14,7 +14,7 @@ namespace xml {
 // lax rules when things are required.
 template <class T>
 consteval bool is_required_for_xml() {
-  using Type = std::decay_t<std::remove_pointer_t<T>>;
+  using Type = std::remove_cvref_t<std::remove_pointer_t<T>>;
   if constexpr (internal::has_reflection_type_v<T>) {
     return is_required_for_xml<typename T::ReflectionType>();
   } else {

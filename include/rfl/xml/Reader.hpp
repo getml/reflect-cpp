@@ -53,7 +53,7 @@ struct Reader {
       const std::variant<pugi::xml_node, pugi::xml_attribute>&
           _node_or_attribute) {
     const auto cast = [](const auto& _n) -> Result<pugi::xml_node> {
-      using Type = std::decay_t<decltype(_n)>;
+      using Type = std::remove_cvref_t<decltype(_n)>;
       if constexpr (std::is_same<Type, pugi::xml_node>()) {
         return _n;
       } else {
@@ -82,7 +82,7 @@ struct Reader {
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType _var) const noexcept {
     const auto get_value = [](const auto& _n) -> std::string {
-      using Type = std::decay_t<decltype(_n)>;
+      using Type = std::remove_cvref_t<decltype(_n)>;
       if constexpr (std::is_same<Type, pugi::xml_node>()) {
         return std::string(_n.child_value());
       } else {
@@ -90,11 +90,11 @@ struct Reader {
       }
     };
 
-    if constexpr (std::is_same<std::decay_t<T>, std::string>()) {
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       return std::visit(get_value, _var.node_or_attribute_);
-    } else if constexpr (std::is_same<std::decay_t<T>, bool>()) {
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       return std::visit(get_value, _var.node_or_attribute_) == "true";
-    } else if constexpr (std::is_floating_point<std::decay_t<T>>()) {
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       const auto str = std::visit(get_value, _var.node_or_attribute_);
       try {
         return static_cast<T>(std::stod(str));
@@ -102,7 +102,7 @@ struct Reader {
         return Error("Could not cast '" + std::string(str) +
                      "' to floating point value.");
       }
-    } else if constexpr (std::is_integral<std::decay_t<T>>()) {
+    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       const auto str = std::visit(get_value, _var.node_or_attribute_);
       try {
         return static_cast<T>(std::stoi(str));

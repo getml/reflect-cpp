@@ -11,7 +11,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, bool _ignore_empty_containers, class... Ts>
-requires AreReaderAndWriter<R, W, std::tuple<Ts...>>
+  requires AreReaderAndWriter<R, W, std::tuple<Ts...>>
 struct TupleParser {
  public:
   using InputArrayType = typename R::InputArrayType;
@@ -71,8 +71,8 @@ struct TupleParser {
   template <int _i>
   static auto extract_single_field(
       const R& _r, const std::vector<InputVarType>& _vec) noexcept {
-    using NewFieldType =
-        std::decay_t<typename std::tuple_element<_i, std::tuple<Ts...>>::type>;
+    using NewFieldType = std::remove_cvref_t<
+        typename std::tuple_element<_i, std::tuple<Ts...>>::type>;
 
     using ResultType = Result<NewFieldType>;
 
@@ -93,7 +93,7 @@ struct TupleParser {
   static void to_array(const W& _w, const std::tuple<Ts...>& _tup,
                        OutputArrayType* _ptr) noexcept {
     if constexpr (_i < sizeof...(Ts)) {
-      using NewFieldType = std::decay_t<
+      using NewFieldType = std::remove_cvref_t<
           typename std::tuple_element<_i, std::tuple<Ts...>>::type>;
 
       const auto val =
