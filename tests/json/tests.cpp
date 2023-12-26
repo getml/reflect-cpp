@@ -61,6 +61,7 @@
 #include "test_unordered_multiset.hpp"
 #include "test_unordered_set.hpp"
 #include "test_variant.hpp"
+#include "test_view.hpp"
 
 int main() {
   test_readme_example::test();
@@ -120,6 +121,7 @@ int main() {
   test_as::test();
   test_as2::test();
   test_as_flatten::test();
+  test_view::test();
 
   test_custom_constructor::test();
 

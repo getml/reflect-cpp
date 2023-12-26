@@ -32,7 +32,7 @@ auto flatten_ptr_tuple(PtrTuple&& _t, Args... _args) {
 }
 
 template <class T>
-auto to_flattened_ptr_tuple(const T& _t) {
+auto to_flattened_ptr_tuple(T&& _t) {
   return flatten_ptr_tuple(to_ptr_tuple(_t));
 }
 

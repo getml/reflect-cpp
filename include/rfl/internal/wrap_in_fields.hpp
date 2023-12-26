@@ -19,7 +19,7 @@ auto wrap_in_fields(auto&& _tuple, Fields&&... _fields) {
     return std::make_tuple(std::move(_fields)...);
   } else {
     auto value = std::move(std::get<i>(_tuple));
-    using Type = std::decay_t<decltype(value)>;
+    using Type = std::decay_t<std::remove_pointer_t<decltype(value)>>;
     if constexpr (is_flatten_field_v<Type>) {
       // The problem here is that the FieldNames are already flattened, but this
       // is not, so we need to determine how many field names to skip.
