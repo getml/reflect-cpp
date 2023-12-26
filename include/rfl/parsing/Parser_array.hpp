@@ -60,7 +60,7 @@ struct Parser<R, W, std::array<T, _size>> {
       AlreadyExtracted&&... _already_extracted) noexcept {
     constexpr size_t i = sizeof...(AlreadyExtracted);
     if constexpr (i == _size) {
-      return std::array<T, _size>({std::move(_already_extracted)...});
+      return std::array<T, _size>{std::move(_already_extracted)...};
     } else {
       const auto extract_next = [&](auto&& new_entry) {
         return extract_field_by_field(_r, std::move(_vec),
