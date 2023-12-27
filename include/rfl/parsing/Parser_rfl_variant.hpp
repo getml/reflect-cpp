@@ -30,10 +30,11 @@ struct Parser<R, W, rfl::Variant<FieldTypes...>> {
         to_rfl_variant);
   }
 
-  static OutputVarType write(
-      const W& _w, const rfl::Variant<FieldTypes...>& _variant) noexcept {
-    return Parser<R, W, std::variant<FieldTypes...>>::write(_w,
-                                                            _variant.variant());
+  template <class P>
+  static void write(const W& _w, const rfl::Variant<FieldTypes...>& _variant,
+                    const P& _parent) noexcept {
+    Parser<R, W, std::variant<FieldTypes...>>::write(_w, _variant.variant(),
+                                                     _parent);
   }
 };
 

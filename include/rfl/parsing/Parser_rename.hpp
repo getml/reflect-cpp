@@ -26,9 +26,10 @@ struct Parser<R, W, Rename<_name, T>> {
     return Parser<R, W, std::decay_t<T>>::read(_r, _var).transform(to_rename);
   }
 
-  static OutputVarType write(const W& _w,
-                             const Rename<_name, T>& _rename) noexcept {
-    return Parser<R, W, std::decay_t<T>>::write(_w, _rename.value());
+  template <class P>
+  static void write(const W& _w, const Rename<_name, T>& _rename,
+                    const P& _parent) noexcept {
+    Parser<R, W, std::decay_t<T>>::write(_w, _rename.value(), _parent);
   }
 };
 

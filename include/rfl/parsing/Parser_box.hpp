@@ -21,8 +21,10 @@ struct Parser<R, W, Box<T>> {
     return Parser<R, W, std::decay_t<T>>::read(_r, _var).transform(to_box);
   }
 
-  static OutputVarType write(const W& _w, const Box<T>& _box) noexcept {
-    return Parser<R, W, std::decay_t<T>>::write(_w, *_box);
+  template <class P>
+  static void write(const W& _w, const Box<T>& _box,
+                    const P& _parent) noexcept {
+    Parser<R, W, std::decay_t<T>>::write(_w, *_box, _parent);
   }
 };
 

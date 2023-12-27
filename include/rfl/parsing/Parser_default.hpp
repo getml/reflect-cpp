@@ -13,6 +13,7 @@
 #include "rfl/internal/is_basic_type.hpp"
 #include "rfl/internal/to_ptr_named_tuple.hpp"
 #include "rfl/parsing/AreReaderAndWriter.hpp"
+#include "rfl/parsing/Parent.hpp"
 #include "rfl/parsing/Parser_base.hpp"
 
 namespace rfl {
@@ -24,6 +25,8 @@ requires AreReaderAndWriter<R, W, T>
 struct Parser {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
+
+  using ParentType = Parent<W>;
 
   /// Expresses the variables as type T.
   static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
@@ -66,26 +69,26 @@ struct Parser {
     }
   }
 
-  /// Converts the variable to a JSON type.
-  static auto write(const W& _w, const T& _var) noexcept {
+  template <class P>
+  static void write(const W& _w, const T& _var, const P& _parent) noexcept {
     if constexpr (internal::has_reflection_type_v<T>) {
       using ReflectionType = std::decay_t<typename T::ReflectionType>;
       if constexpr (internal::has_reflection_method_v<T>) {
-        return Parser<R, W, ReflectionType>::write(_w, _var.reflection());
+        Parser<R, W, ReflectionType>::write(_w, _var.reflection(), _parent);
       } else {
         const auto& [r] = _var;
-        return Parser<R, W, ReflectionType>::write(_w, r);
+        Parser<R, W, ReflectionType>::write(_w, r, _parent);
       }
     } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
       const auto ptr_named_tuple = internal::to_ptr_named_tuple(_var);
       using PtrNamedTupleType = std::decay_t<decltype(ptr_named_tuple)>;
-      return Parser<R, W, PtrNamedTupleType>::write(_w, ptr_named_tuple);
+      Parser<R, W, PtrNamedTupleType>::write(_w, ptr_named_tuple, _parent);
     } else if constexpr (std::is_enum_v<T>) {
       using StringConverter = internal::enums::StringConverter<T>;
       const auto str = StringConverter::enum_to_string(_var);
-      return _w.from_basic_type(str);
+      ParentType::add_value(_w, str, _parent);
     } else if constexpr (internal::is_basic_type_v<T>) {
-      return _w.from_basic_type(_var);
+      ParentType::add_value(_w, _var, _parent);
     } else {
       static_assert(always_false_v<T>,
                     "Unsupported type. Please refer to the sections on custom "

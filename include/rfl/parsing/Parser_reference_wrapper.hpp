@@ -28,9 +28,10 @@ struct Parser<R, W, std::reference_wrapper<T>> {
     return Error("Unsupported.");
   }
 
-  static OutputVarType write(const W& _w,
-                             const std::reference_wrapper<T> _ref) noexcept {
-    return Parser<R, W, std::decay_t<T>>::write(_w, _ref.get());
+  template <class P>
+  static void write(const W& _w, const std::reference_wrapper<T> _ref,
+                    const P& _p) noexcept {
+    Parser<R, W, std::decay_t<T>>::write(_w, _ref.get(), _p);
   }
 };
 

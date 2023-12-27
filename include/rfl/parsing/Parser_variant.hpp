@@ -49,14 +49,15 @@ struct Parser<R, W, std::variant<FieldTypes...>> {
     }
   }
 
-  static OutputVarType write(
-      const W& _w, const std::variant<FieldTypes...>& _variant) noexcept {
+  template <class P>
+  static void write(const W& _w, const std::variant<FieldTypes...>& _variant,
+                    const P& _parent) noexcept {
     if constexpr (internal::all_fields<std::tuple<FieldTypes...>>()) {
-      return FieldVariantParser<R, W, FieldTypes...>::write(_w, _variant);
+      FieldVariantParser<R, W, FieldTypes...>::write(_w, _variant, _parent);
     } else {
       const auto handle = [&](const auto& _v) {
         using Type = std::decay_t<decltype(_v)>;
-        return Parser<R, W, Type>::write(_w, _v);
+        Parser<R, W, Type>::write(_w, _v, _parent);
       };
       return std::visit(handle, _variant);
     }

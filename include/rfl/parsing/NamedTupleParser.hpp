@@ -10,6 +10,7 @@
 #include "rfl/always_false.hpp"
 #include "rfl/internal/is_basic_type.hpp"
 #include "rfl/internal/strings/replace_all.hpp"
+#include "rfl/parsing/Parent.hpp"
 #include "rfl/parsing/is_required.hpp"
 
 namespace rfl {
@@ -24,8 +25,9 @@ struct NamedTupleParser {
   using OutputObjectType = typename W::OutputObjectType;
   using OutputVarType = typename W::OutputVarType;
 
+  using ParentType = Parent<W>;
+
  public:
-  /// Generates a NamedTuple from a JSON Object.
   static Result<NamedTuple<FieldTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
     const auto& indices = field_indices();
@@ -42,12 +44,12 @@ struct NamedTupleParser {
     return _r.to_object(_var).transform(to_fields_array).and_then(build);
   }
 
-  /// Transforms a NamedTuple into a JSON object.
-  static OutputVarType write(const W& _w,
-                             const NamedTuple<FieldTypes...>& _tup) noexcept {
-    auto obj = _w.new_object();
+  template <class P>
+  static void write(const W& _w, const NamedTuple<FieldTypes...>& _tup,
+                    const P& _parent) noexcept {
+    auto obj = ParentType::add_object(_w, _tup.size(), _parent);
     build_object_recursively(_w, _tup, &obj);
-    return OutputVarType(obj);
+    _w.end_object(&obj);
   }
 
  private:
@@ -157,14 +159,15 @@ struct NamedTupleParser {
       using FieldType =
           typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type;
       using ValueType = std::decay_t<typename FieldType::Type>;
-      auto value = Parser<R, W, ValueType>::write(_w, rfl::get<_i>(_tup));
+      const auto& value = rfl::get<_i>(_tup);
       const auto name = FieldType::name_.str();
+      const auto new_parent = typename ParentType::Object{name, _ptr};
       if constexpr (!is_required<ValueType, _ignore_empty_containers>()) {
-        if (!_w.is_empty(value)) {
-          _w.set_field(name, value, _ptr);
+        if (value) {
+          Parser<R, W, ValueType>::write(_w, value, new_parent);
         }
       } else {
-        _w.set_field(name, value, _ptr);
+        Parser<R, W, ValueType>::write(_w, value, new_parent);
       }
       return build_object_recursively<_i + 1>(_w, _tup, _ptr);
     }

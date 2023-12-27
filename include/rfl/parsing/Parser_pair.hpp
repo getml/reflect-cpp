@@ -29,12 +29,12 @@ struct Parser<R, W, std::pair<FirstType, SecondType>> {
         .transform(to_pair);
   }
 
-  /// Transform a std::pair into an array
-  static OutputVarType write(
-      const W& _w, const std::pair<FirstType, SecondType>& _p) noexcept {
+  template <class P>
+  static void write(const W& _w, const std::pair<FirstType, SecondType>& _p,
+                    const P& _parent) noexcept {
     const auto tup = std::make_tuple(&_p.first, &_p.second);
-    return Parser<R, W, std::tuple<const FirstType*, const SecondType*>>::write(
-        _w, tup);
+    Parser<R, W, std::tuple<const FirstType*, const SecondType*>>::write(
+        _w, tup, _parent);
   }
 };
 

@@ -29,13 +29,14 @@ struct Parser<R, W, std::shared_ptr<T>> {
     return Parser<R, W, std::decay_t<T>>::read(_r, _var).transform(to_ptr);
   }
 
-  /// Expresses the variable a a JSON.
-  static OutputVarType write(const W& _w,
-                             const std::shared_ptr<T>& _s) noexcept {
+  template <class P>
+  static OutputVarType write(const W& _w, const std::shared_ptr<T>& _s,
+                             const P& _parent) noexcept {
     if (!_s) {
-      return _w.empty_var();
+      // TODO
+      return;
     }
-    return Parser<R, W, std::decay_t<T>>::write(_w, *_s);
+    Parser<R, W, std::decay_t<T>>::write(_w, *_s, _parent);
   }
 };
 

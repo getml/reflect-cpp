@@ -26,11 +26,14 @@ struct Parser<R, W, std::optional<T>> {
     return Parser<R, W, std::decay_t<T>>::read(_r, _var).transform(to_opt);
   }
 
-  static OutputVarType write(const W& _w, const std::optional<T>& _o) noexcept {
+  template <class P>
+  static void write(const W& _w, const std::optional<T>& _o,
+                    const P& _parent) noexcept {
     if (!_o) {
-      return _w.empty_var();
+      // TODO
+      return;
     }
-    return Parser<R, W, std::decay_t<T>>::write(_w, *_o);
+    Parser<R, W, std::decay_t<T>>::write(_w, *_o, _parent);
   }
 };
 

@@ -38,13 +38,15 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
     return _r.to_object(_var).and_then(get_disc).and_then(to_result);
   }
 
-  static OutputVarType write(
-      const W& _w, const TaggedUnion<_discriminator, AlternativeTypes...>&
-                       _tagged_union) noexcept {
-    const auto handle = [&](const auto& _val) -> OutputVarType {
-      return write_wrapped(_w, _val);
+  template <class P>
+  static void write(
+      const W& _w,
+      const TaggedUnion<_discriminator, AlternativeTypes...>& _tagged_union,
+      const P& _parent) noexcept {
+    const auto handle = [&](const auto& _val) {
+      write_wrapped(_w, _val, _parent);
     };
-    return std::visit(handle, _tagged_union.variant_);
+    std::visit(handle, _tagged_union.variant_);
   }
 
  private:
@@ -109,20 +111,21 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
   }
 
   /// Writes a wrapped version of the original object, which contains the tag.
-  template <class T>
-  static OutputVarType write_wrapped(const W& _w, const T& _val) noexcept {
+  template <class T, class P>
+  static void write_wrapped(const W& _w, const T& _val,
+                            const P& _parent) noexcept {
     const auto tag = internal::make_tag<T>();
     using TagType = std::decay_t<decltype(tag)>;
     if constexpr (internal::has_fields<std::decay_t<T>>()) {
       using WrapperType =
           TaggedUnionWrapperWithFields<T, TagType, _discriminator>;
       const auto wrapper = WrapperType{.tag = tag, .fields = &_val};
-      return Parser<R, W, WrapperType>::write(_w, wrapper);
+      Parser<R, W, WrapperType>::write(_w, wrapper, _parent);
     } else {
       using WrapperType =
           TaggedUnionWrapperNoFields<T, TagType, _discriminator>;
       const auto wrapper = WrapperType{.tag = tag, .fields = &_val};
-      return Parser<R, W, WrapperType>::write(_w, wrapper);
+      Parser<R, W, WrapperType>::write(_w, wrapper, _parent);
     }
   }
 };
