@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "rfl/Result.hpp"
+#include "../Result.hpp"
 
 namespace rfl {
 namespace io {

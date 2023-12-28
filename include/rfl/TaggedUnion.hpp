@@ -3,9 +3,9 @@
 
 #include <variant>
 
-#include "rfl/define_literal.hpp"
-#include "rfl/internal/StringLiteral.hpp"
-#include "rfl/internal/tag_t.hpp"
+#include "define_literal.hpp"
+#include "internal/StringLiteral.hpp"
+#include "internal/tag_t.hpp"
 
 namespace rfl {
 

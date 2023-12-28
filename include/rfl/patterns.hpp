@@ -1,8 +1,8 @@
 #ifndef RFL_PATTERNS_HPP_
 #define RFL_PATTERNS_HPP_
 
-#include "rfl/Pattern.hpp"
-#include "rfl/Validator.hpp"
+#include "Pattern.hpp"
+#include "Validator.hpp"
 
 namespace rfl {
 

@@ -5,9 +5,9 @@
 #include <tuple>
 #include <type_traits>
 
-#include "rfl/Field.hpp"
-#include "rfl/internal/lit_name.hpp"
-#include "rfl/make_named_tuple.hpp"
+#include "../Field.hpp"
+#include "lit_name.hpp"
+#include "../make_named_tuple.hpp"
 
 namespace rfl {
 namespace internal {

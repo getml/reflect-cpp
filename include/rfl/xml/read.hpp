@@ -5,10 +5,10 @@
 #include <pugixml.hpp>
 #include <string>
 
-#include "rfl/internal/get_type_name.hpp"
-#include "rfl/internal/remove_namespaces.hpp"
-#include "rfl/xml/Parser.hpp"
-#include "rfl/xml/Reader.hpp"
+#include "../internal/get_type_name.hpp"
+#include "../internal/remove_namespaces.hpp"
+#include "Parser.hpp"
+#include "Reader.hpp"
 
 namespace rfl {
 namespace xml {

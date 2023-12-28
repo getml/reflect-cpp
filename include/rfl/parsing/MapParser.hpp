@@ -5,9 +5,9 @@
 #include <string>
 #include <type_traits>
 
-#include "rfl/Result.hpp"
-#include "rfl/always_false.hpp"
-#include "rfl/parsing/Parser_base.hpp"
+#include "../Result.hpp"
+#include "../always_false.hpp"
+#include "Parser_base.hpp"
 
 namespace rfl {
 namespace parsing {

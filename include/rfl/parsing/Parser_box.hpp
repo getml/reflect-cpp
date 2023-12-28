@@ -3,9 +3,9 @@
 
 #include <type_traits>
 
-#include "rfl/Box.hpp"
-#include "rfl/Result.hpp"
-#include "rfl/parsing/Parser_base.hpp"
+#include "../Box.hpp"
+#include "../Result.hpp"
+#include "Parser_base.hpp"
 
 namespace rfl {
 namespace parsing {

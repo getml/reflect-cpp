@@ -3,11 +3,11 @@
 
 #include <variant>
 
-#include "rfl/Literal.hpp"
-#include "rfl/TaggedUnion.hpp"
-#include "rfl/internal/StringLiteral.hpp"
-#include "rfl/internal/VisitTree.hpp"
-#include "rfl/internal/VisitorWrapper.hpp"
+#include "Literal.hpp"
+#include "TaggedUnion.hpp"
+#include "internal/StringLiteral.hpp"
+#include "internal/VisitTree.hpp"
+#include "internal/VisitorWrapper.hpp"
 
 namespace rfl {
 

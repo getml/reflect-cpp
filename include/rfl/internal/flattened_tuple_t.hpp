@@ -5,9 +5,9 @@
 #include <tuple>
 #include <type_traits>
 
-#include "rfl/internal/flattened_ptr_tuple_t.hpp"
-#include "rfl/internal/remove_ptrs_tup.hpp"
-#include "rfl/to_named_tuple.hpp"
+#include "flattened_ptr_tuple_t.hpp"
+#include "remove_ptrs_tup.hpp"
+#include "../to_named_tuple.hpp"
 
 namespace rfl {
 namespace internal {

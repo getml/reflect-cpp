@@ -1,7 +1,7 @@
 #ifndef RFL_INTERNAL_DEFINELITERAL_HPP_
 #define RFL_INTERNAL_DEFINELITERAL_HPP_
 
-#include "rfl/Literal.hpp"
+#include "../Literal.hpp"
 
 namespace rfl {
 namespace internal {

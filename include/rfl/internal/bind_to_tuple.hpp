@@ -7,9 +7,9 @@
 #include <type_traits>
 #include <utility>
 
-#include "rfl/always_false.hpp"
-#include "rfl/internal/has_n_fields.hpp"
-#include "rfl/internal/is_named_tuple.hpp"
+#include "../always_false.hpp"
+#include "has_n_fields.hpp"
+#include "is_named_tuple.hpp"
 
 namespace rfl {
 namespace internal {

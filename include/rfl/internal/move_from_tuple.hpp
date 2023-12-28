@@ -4,11 +4,11 @@
 #include <functional>
 #include <type_traits>
 
-#include "rfl/internal/is_flatten_field.hpp"
-#include "rfl/internal/is_named_tuple.hpp"
-#include "rfl/internal/ptr_tuple_t.hpp"
-#include "rfl/internal/tup_to_ptr_tuple.hpp"
-#include "rfl/internal/tuple_t.hpp"
+#include "is_flatten_field.hpp"
+#include "is_named_tuple.hpp"
+#include "ptr_tuple_t.hpp"
+#include "tup_to_ptr_tuple.hpp"
+#include "tuple_t.hpp"
 
 namespace rfl {
 namespace internal {

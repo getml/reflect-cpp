@@ -10,12 +10,12 @@
 #include <type_traits>
 #include <utility>
 
-#include "rfl/Literal.hpp"
-#include "rfl/internal/fake_object.hpp"
-#include "rfl/internal/is_flatten_field.hpp"
-#include "rfl/internal/is_rename.hpp"
-#include "rfl/internal/num_fields.hpp"
-#include "rfl/internal/to_ptr_tuple.hpp"
+#include "../Literal.hpp"
+#include "fake_object.hpp"
+#include "is_flatten_field.hpp"
+#include "is_rename.hpp"
+#include "num_fields.hpp"
+#include "to_ptr_tuple.hpp"
 
 #if __GNUC__
 #ifndef __clang__

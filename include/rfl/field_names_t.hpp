@@ -4,7 +4,7 @@
 #include <functional>
 #include <type_traits>
 
-#include "rfl/internal/get_field_names.hpp"
+#include "internal/get_field_names.hpp"
 
 namespace rfl {
 

@@ -3,9 +3,9 @@
 
 #include <tuple>
 
-#include "rfl/internal/has_flatten_fields.hpp"
-#include "rfl/internal/is_flatten_field.hpp"
-#include "rfl/internal/to_ptr_tuple.hpp"
+#include "has_flatten_fields.hpp"
+#include "is_flatten_field.hpp"
+#include "to_ptr_tuple.hpp"
 
 namespace rfl {
 namespace internal {

@@ -1,7 +1,7 @@
 #ifndef RFL_ALLOF_HPP_
 #define RFL_ALLOF_HPP_
 
-#include "rfl/Result.hpp"
+#include "Result.hpp"
 
 namespace rfl {
 

@@ -3,12 +3,12 @@
 
 #include <type_traits>
 
-#include "rfl/internal/copy_from_named_tuple.hpp"
-#include "rfl/internal/copy_from_tuple.hpp"
-#include "rfl/internal/has_fields.hpp"
-#include "rfl/internal/move_from_named_tuple.hpp"
-#include "rfl/internal/move_from_tuple.hpp"
-#include "rfl/named_tuple_t.hpp"
+#include "internal/copy_from_named_tuple.hpp"
+#include "internal/copy_from_tuple.hpp"
+#include "internal/has_fields.hpp"
+#include "internal/move_from_named_tuple.hpp"
+#include "internal/move_from_tuple.hpp"
+#include "named_tuple_t.hpp"
 
 namespace rfl {
 

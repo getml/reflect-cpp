@@ -5,8 +5,8 @@
 #include <type_traits>
 #include <utility>
 
-#include "rfl/Field.hpp"
-#include "rfl/internal/StringLiteral.hpp"
+#include "../Field.hpp"
+#include "StringLiteral.hpp"
 
 namespace rfl {
 namespace internal {

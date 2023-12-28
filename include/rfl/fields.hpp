@@ -1,8 +1,8 @@
 #ifndef RFL_FIELDS_HPP_
 #define RFL_FIELDS_HPP_
 
-#include "rfl/internal/get_meta_fields.hpp"
-#include "rfl/named_tuple_t.hpp"
+#include "internal/get_meta_fields.hpp"
+#include "named_tuple_t.hpp"
 
 namespace rfl {
 
