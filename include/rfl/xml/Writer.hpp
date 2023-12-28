@@ -14,49 +14,73 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
-#include "OutputArray.hpp"
-#include "OutputNull.hpp"
-#include "OutputObject.hpp"
-#include "OutputValue.hpp"
 
 namespace rfl {
 namespace xml {
 
 struct Writer {
-  using OutputArrayType = Ref<OutputArray>;
-  using OutputObjectType = Ref<OutputObject>;
-  using OutputVarType = Ref<OutputVar>;
+  struct XMLOutputArray {
+    XMLOutputArray(const pugi::xml_node& _val) : val_(_val) {}
+    pugi::xml_node val_;
+  };
 
-  Writer() {}
+  struct XMLOutputObject {
+    XMLOutputObject(const pugi::xml_node& _val) : val_(_val) {}
+    pugi::xml_node val_;
+  };
+
+  struct XMLOutputVar {
+    XMLOutputVar(const pugi::xml_node& _val) : val_(_val) {}
+    pugi::xml_node val_;
+  };
+
+  using OutputArrayType = XMLOutputArray;
+  using OutputObjectType = XMLOutputObject;
+  using OutputVarType = XMLOutputVar;
+
+  Writer(const pugi::xml_node& _root) : root_(_root) {}
 
   ~Writer() = default;
 
-  void add(const OutputVarType _var, OutputArrayType* _arr) const noexcept {
-    (*_arr)->push_back(_var);
+  OutputArrayType array_as_root(const size_t _size) const noexcept {
+    return OutputArrayType(root_);
   }
 
-  OutputVarType empty_var() const noexcept { return make_ref<OutputNull>(); }
+  OutputObjectType object_as_root(const size_t _size) const noexcept {
+    return OutputObjectType(root_);
+  }
+
+  OutputVarType null_as_root() const noexcept { return OutputVarType(root_); }
 
   template <class T>
-  OutputVarType from_basic_type(
-      const T& _var, const bool _is_attribute = false) const noexcept {
-    return make_ref<OutputValue<T>>(_var, _is_attribute);
+  OutputVarType value_as_root(const T& _var) const noexcept {
+    const auto str = to_string(_var);
+    root_.append_child(pugi::node_pcdata).set_value(str.c_str());
+    return OutputVarType(root_);
   }
 
-  OutputArrayType new_array() const noexcept { return make_ref<OutputArray>(); }
-
-  OutputObjectType new_object() const noexcept {
-    return make_ref<OutputObject>();
+  OutputArrayType add_array_to_array(const size_t _size,
+                                     OutputArrayType* _parent) const noexcept {
+    return OutputArrayType(_parent->val_);
   }
 
-  bool is_empty(const OutputVarType& _var) const noexcept {
-    return _var->is_null();
+ private:
+  template <class T>
+  std::string to_string(const T& _val) const noexcept {
+    if constexpr (std::is_same<std::decay_t<T>, std::string>()) {
+      return _val;
+    } else if constexpr (std::is_same<std::decay_t<T>, bool>()) {
+      return _val ? "true" : "false";
+    } else if constexpr (std::is_floating_point<std::decay_t<T>>() ||
+                         std::is_integral<std::decay_t<T>>()) {
+      return std::to_string(_val);
+    } else {
+      static_assert(always_false_v<T>, "Unsupported type");
+    }
   }
 
-  void set_field(const std::string& _name, const OutputVarType& _var,
-                 OutputObjectType* _obj) const noexcept {
-    (*_obj)->push_back(_name, _var);
-  }
+ public:
+  pugi::xml_node root_;
 };
 
 }  // namespace xml
