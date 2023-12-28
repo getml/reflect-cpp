@@ -10,6 +10,8 @@
 #include <variant>
 #include <vector>
 
+#include "internal/to_std_array.hpp"
+
 namespace rfl {
 
 /// To be returned
@@ -342,7 +344,14 @@ class Result {
 
 /// This is simply to get the compilation to pass.
 template <class T, std::size_t _n>
-class Result<T[_n]> : public Result<std::span<T, _n>> {};
+struct Result<T[_n]> : public Result<internal::to_std_array_t<T[_n]>> {
+  using StdArray = internal::to_std_array_t<T[_n]>;
+  using Base = Result<StdArray>;
+  using Base::Base;
+
+  Result(const Base& other) : Base(other) {}
+  Result(Base&& other) : Base(std::move(other)) {}
+};
 
 }  // namespace rfl
 

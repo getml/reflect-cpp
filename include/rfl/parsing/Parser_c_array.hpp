@@ -5,6 +5,8 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/to_std_array.hpp"
+#include "Parser_array.hpp"
 #include "Parser_base.hpp"
 
 namespace rfl {
@@ -21,8 +23,10 @@ struct Parser<R, W, T[_size]> {
   using OutputVarType = typename W::OutputVarType;
 
   using CArray = T[_size];
-  static Result<CArray> read(const R& _r, const InputVarType& _var) noexcept {
-    static_assert(always_false_v<T>, "Unimplemented");
+  using StdArray = internal::to_std_array_t<T[_size]>;
+
+  static auto read(const R& _r, const InputVarType& _var) noexcept {
+    return Parser<R, W, StdArray>::read(_r, _var);
   }
 
   static OutputVarType write(const W& _w, const CArray& _arr) noexcept {
