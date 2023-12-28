@@ -4,7 +4,7 @@
 #include <tuple>
 #include <type_traits>
 
-#include "rfl/internal/StringLiteral.hpp"
+#include "StringLiteral.hpp"
 
 namespace rfl {
 namespace internal {

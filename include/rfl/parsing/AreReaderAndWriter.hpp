@@ -1,8 +1,8 @@
 #ifndef RFL_PARSING_AREREADERANDWRITER_HPP_
 #define RFL_PARSING_AREREADERANDWRITER_HPP_
 
-#include "rfl/parsing/IsReader.hpp"
-#include "rfl/parsing/IsWriter.hpp"
+#include "IsReader.hpp"
+#include "IsWriter.hpp"
 
 namespace rfl {
 namespace parsing {

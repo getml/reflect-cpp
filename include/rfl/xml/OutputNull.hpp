@@ -5,8 +5,8 @@
 #include <pugixml.hpp>
 #include <string>
 
-#include "rfl/Ref.hpp"
-#include "rfl/xml/OutputVar.hpp"
+#include "../Ref.hpp"
+#include "OutputVar.hpp"
 
 namespace rfl {
 namespace xml {

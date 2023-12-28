@@ -1,9 +1,9 @@
 #ifndef RFL_INTERNAL_VISITORWRAPPER_HPP_
 #define RFL_INTERNAL_VISITORWRAPPER_HPP_
 
-#include "rfl/Literal.hpp"
-#include "rfl/TaggedUnion.hpp"
-#include "rfl/internal/StringLiteral.hpp"
+#include "../Literal.hpp"
+#include "../TaggedUnion.hpp"
+#include "StringLiteral.hpp"
 
 namespace rfl {
 namespace internal {

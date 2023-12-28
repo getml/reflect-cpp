@@ -3,10 +3,10 @@
 
 #include <type_traits>
 
-#include "rfl/Field.hpp"
-#include "rfl/Flatten.hpp"
-#include "rfl/always_false.hpp"
-#include "rfl/internal/StringLiteral.hpp"
+#include "../Field.hpp"
+#include "../Flatten.hpp"
+#include "../always_false.hpp"
+#include "StringLiteral.hpp"
 
 namespace rfl {
 namespace internal {

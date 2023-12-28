@@ -3,10 +3,10 @@
 
 #include <type_traits>
 
-#include "rfl/TaggedUnion.hpp"
-#include "rfl/define_literal.hpp"
-#include "rfl/field_type.hpp"
-#include "rfl/internal/extract_discriminators.hpp"
+#include "TaggedUnion.hpp"
+#include "define_literal.hpp"
+#include "field_type.hpp"
+#include "internal/extract_discriminators.hpp"
 
 namespace rfl {
 

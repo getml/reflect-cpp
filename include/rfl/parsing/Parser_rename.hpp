@@ -3,11 +3,11 @@
 
 #include <type_traits>
 
-#include "rfl/Rename.hpp"
-#include "rfl/Result.hpp"
-#include "rfl/always_false.hpp"
-#include "rfl/internal/StringLiteral.hpp"
-#include "rfl/parsing/Parser_base.hpp"
+#include "../Rename.hpp"
+#include "../Result.hpp"
+#include "../always_false.hpp"
+#include "../internal/StringLiteral.hpp"
+#include "Parser_base.hpp"
 
 namespace rfl {
 namespace parsing {

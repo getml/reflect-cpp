@@ -4,9 +4,9 @@
 #include <tuple>
 #include <variant>
 
-#include "rfl/TaggedUnion.hpp"
-#include "rfl/internal/StringLiteral.hpp"
-#include "rfl/internal/find_index.hpp"
+#include "../TaggedUnion.hpp"
+#include "StringLiteral.hpp"
+#include "find_index.hpp"
 
 namespace rfl {
 namespace internal {

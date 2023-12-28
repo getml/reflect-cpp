@@ -7,9 +7,9 @@
 #include <string>
 #include <utility>
 
-#include "rfl/Ref.hpp"
-#include "rfl/always_false.hpp"
-#include "rfl/flexbuf/OutputVar.hpp"
+#include "../Ref.hpp"
+#include "../always_false.hpp"
+#include "OutputVar.hpp"
 
 namespace rfl {
 namespace flexbuf {

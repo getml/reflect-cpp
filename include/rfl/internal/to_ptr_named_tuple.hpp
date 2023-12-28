@@ -4,16 +4,16 @@
 #include <iostream>
 #include <tuple>
 
-#include "rfl/always_false.hpp"
-#include "rfl/field_names_t.hpp"
-#include "rfl/internal/copy_flattened_tuple_to_named_tuple.hpp"
-#include "rfl/internal/has_fields.hpp"
-#include "rfl/internal/has_flatten_fields.hpp"
-#include "rfl/internal/is_field.hpp"
-#include "rfl/internal/is_named_tuple.hpp"
-#include "rfl/internal/to_flattened_ptr_tuple.hpp"
-#include "rfl/internal/to_ptr_field_tuple.hpp"
-#include "rfl/make_named_tuple.hpp"
+#include "../always_false.hpp"
+#include "../field_names_t.hpp"
+#include "copy_flattened_tuple_to_named_tuple.hpp"
+#include "has_fields.hpp"
+#include "has_flatten_fields.hpp"
+#include "is_field.hpp"
+#include "is_named_tuple.hpp"
+#include "to_flattened_ptr_tuple.hpp"
+#include "to_ptr_field_tuple.hpp"
+#include "../make_named_tuple.hpp"
 
 namespace rfl {
 namespace internal {

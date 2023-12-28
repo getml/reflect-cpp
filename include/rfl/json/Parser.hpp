@@ -1,9 +1,9 @@
 #ifndef RFL_JSON_PARSER_HPP_
 #define RFL_JSON_PARSER_HPP_
 
-#include "rfl/json/Reader.hpp"
-#include "rfl/json/Writer.hpp"
-#include "rfl/parsing/Parser.hpp"
+#include "Reader.hpp"
+#include "Writer.hpp"
+#include "../parsing/Parser.hpp"
 
 namespace rfl {
 namespace json {

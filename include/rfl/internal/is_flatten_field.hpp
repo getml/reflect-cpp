@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "rfl/Flatten.hpp"
+#include "../Flatten.hpp"
 
 namespace rfl {
 namespace internal {

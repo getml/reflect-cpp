@@ -7,8 +7,8 @@
 #include <string_view>
 #include <type_traits>
 
-#include "rfl/Literal.hpp"
-#include "rfl/define_literal.hpp"
+#include "../../Literal.hpp"
+#include "../../define_literal.hpp"
 
 namespace rfl {
 namespace internal {

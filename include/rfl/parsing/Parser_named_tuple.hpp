@@ -1,8 +1,8 @@
 #ifndef RFL_PARSING_PARSER_NAMED_TUPLE_HPP_
 #define RFL_PARSING_PARSER_NAMED_TUPLE_HPP_
 
-#include "rfl/parsing/NamedTupleParser.hpp"
-#include "rfl/parsing/Parser_base.hpp"
+#include "NamedTupleParser.hpp"
+#include "Parser_base.hpp"
 
 namespace rfl {
 namespace parsing {

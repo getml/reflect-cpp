@@ -7,11 +7,11 @@
 #include <type_traits>
 #include <utility>
 
-#include "rfl/Field.hpp"
-#include "rfl/get.hpp"
-#include "rfl/internal/StringLiteral.hpp"
-#include "rfl/internal/find_index.hpp"
-#include "rfl/internal/no_duplicate_field_names.hpp"
+#include "Field.hpp"
+#include "get.hpp"
+#include "internal/StringLiteral.hpp"
+#include "internal/find_index.hpp"
+#include "internal/no_duplicate_field_names.hpp"
 
 namespace rfl {
 

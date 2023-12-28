@@ -1,8 +1,8 @@
 #ifndef RFL_DEFINELITERAL_HPP_
 #define RFL_DEFINELITERAL_HPP_
 
-#include "rfl/Literal.hpp"
-#include "rfl/internal/define_literal.hpp"
+#include "Literal.hpp"
+#include "internal/define_literal.hpp"
 
 namespace rfl {
 

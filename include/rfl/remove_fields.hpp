@@ -5,8 +5,8 @@
 #include <tuple>
 #include <type_traits>
 
-#include "rfl/internal/StringLiteral.hpp"
-#include "rfl/internal/remove_fields.hpp"
+#include "internal/StringLiteral.hpp"
+#include "internal/remove_fields.hpp"
 
 namespace rfl {
 

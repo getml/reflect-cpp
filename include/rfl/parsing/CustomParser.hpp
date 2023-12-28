@@ -4,9 +4,9 @@
 #include <exception>
 #include <tuple>
 
-#include "rfl/internal/has_to_class_method_v.hpp"
-#include "rfl/internal/to_ptr_field_tuple.hpp"
-#include "rfl/parsing/Parser.hpp"
+#include "../internal/has_to_class_method_v.hpp"
+#include "../internal/to_ptr_field_tuple.hpp"
+#include "Parser.hpp"
 
 namespace rfl {
 namespace parsing {

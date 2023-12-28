@@ -1,9 +1,9 @@
 #ifndef RFL_FLEXBUF_LOAD_HPP_
 #define RFL_FLEXBUF_LOAD_HPP_
 
-#include "rfl/Result.hpp"
-#include "rfl/flexbuf/read.hpp"
-#include "rfl/io/load_bytes.hpp"
+#include "../Result.hpp"
+#include "read.hpp"
+#include "../io/load_bytes.hpp"
 
 namespace rfl {
 namespace flexbuf {
