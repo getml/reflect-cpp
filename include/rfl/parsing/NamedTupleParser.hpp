@@ -8,6 +8,7 @@
 #include "../NamedTuple.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/Memoization.hpp"
 #include "../internal/is_basic_type.hpp"
 #include "../internal/strings/replace_all.hpp"
 #include "is_required.hpp"

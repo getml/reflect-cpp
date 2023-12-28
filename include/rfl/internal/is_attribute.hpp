@@ -8,6 +8,9 @@
 #include "../Field.hpp"
 
 namespace rfl {
+
+template <class T> struct Attribute;
+
 namespace internal {
 
 template <class T>
