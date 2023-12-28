@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_VECTORPARSER_HPP_
 #define RFL_PARSING_VECTORPARSER_HPP_
 
+#include <iterator>
 #include <stdexcept>
 #include <string>
 #include <type_traits>

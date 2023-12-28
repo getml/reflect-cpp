@@ -60,6 +60,12 @@ class Writer {
     return OutputObjectType(obj);
   }
 
+  OutputVarType null_as_root() const noexcept {
+    const auto null = yyjson_mut_null(doc_);
+    yyjson_mut_doc_set_root(doc_, null);
+    return OutputVarType(null);
+  }
+
   template <class T>
   OutputVarType value_as_root(const T& _var) const noexcept {
     const auto val = from_basic_type(_var);
@@ -116,17 +122,23 @@ class Writer {
     return OutputVarType(val);
   }
 
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept {
+    const auto null = yyjson_mut_null(doc_);
+    yyjson_mut_arr_add_val(_parent->val_, null);
+    return OutputVarType(null);
+  }
+
+  OutputVarType add_null_to_object(const std::string& _name,
+                                   OutputObjectType* _parent) const noexcept {
+    const auto null = yyjson_mut_null(doc_);
+    yyjson_mut_obj_add(_parent->val_, yyjson_mut_strcpy(doc_, _name.c_str()),
+                       null);
+    return OutputVarType(null);
+  }
+
   void end_array(OutputArrayType* _arr) const noexcept {}
 
   void end_object(OutputObjectType* _obj) const noexcept {}
-
-  OutputVarType empty_var() const noexcept {
-    return OutputVarType(yyjson_mut_null(doc_));
-  }
-
-  bool is_empty(const OutputVarType& _var) const noexcept {
-    return yyjson_mut_is_null(_var.val_);
-  }
 
  private:
   template <class T>

@@ -6,6 +6,7 @@
 
 #include "rfl/Result.hpp"
 #include "rfl/always_false.hpp"
+#include "rfl/parsing/Parent.hpp"
 #include "rfl/parsing/Parser_base.hpp"
 
 namespace rfl {
@@ -16,6 +17,8 @@ requires AreReaderAndWriter<R, W, std::optional<T>>
 struct Parser<R, W, std::optional<T>> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
+
+  using ParentType = Parent<W>;
 
   static Result<std::optional<T>> read(const R& _r,
                                        const InputVarType& _var) noexcept {
@@ -30,7 +33,7 @@ struct Parser<R, W, std::optional<T>> {
   static void write(const W& _w, const std::optional<T>& _o,
                     const P& _parent) noexcept {
     if (!_o) {
-      // TODO
+      ParentType::add_null(_w, _parent);
       return;
     }
     Parser<R, W, std::decay_t<T>>::write(_w, *_o, _parent);

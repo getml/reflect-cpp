@@ -46,6 +46,7 @@
 #include "rfl/remove_fields.hpp"
 #include "rfl/replace.hpp"
 #include "rfl/to_named_tuple.hpp"
+#include "rfl/to_view.hpp"
 #include "rfl/type_name_t.hpp"
 #include "rfl/visit.hpp"
 

@@ -56,6 +56,20 @@ struct Parent {
     }
   }
 
+  template <class ParentType>
+  static OutputVarType add_null(const W& _w, const ParentType& _parent) {
+    using Type = std::decay_t<ParentType>;
+    if constexpr (std::is_same<Type, Array>()) {
+      return _w.add_null_to_array(_parent.arr_);
+    } else if constexpr (std::is_same<Type, Object>()) {
+      return _w.add_null_to_object(_parent.name_, _parent.obj_);
+    } else if constexpr (std::is_same<Type, Root>()) {
+      return _w.null_as_root();
+    } else {
+      static_assert(always_false_v<Type>, "Unsupported option.");
+    }
+  }
+
   template <class ParentType, class T>
   static OutputVarType add_value(const W& _w, const T& _var,
                                  const ParentType& _parent) {

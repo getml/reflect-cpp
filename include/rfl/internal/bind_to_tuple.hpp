@@ -18,11 +18,12 @@ template <class T>
 constexpr auto tuple_view(T&);
 
 template <class T, typename F>
-constexpr auto bind_to_tuple(T& _t, F&& f) {
+constexpr auto bind_to_tuple(T& _t, const F& _f) {
   auto view = tuple_view(_t);
   return [&]<std::size_t... Is>(std::index_sequence<Is...>) {
-    return std::make_tuple(std::forward<F>(f)(std::get<Is>(view))...);
-  }(std::make_index_sequence<std::tuple_size_v<decltype(view)>>());
+    return std::make_tuple(_f(std::get<Is>(view))...);
+  }
+  (std::make_index_sequence<std::tuple_size_v<decltype(view)>>());
 }
 
 /*The following boilerplate code was generated using a Python script:

@@ -19,7 +19,7 @@ namespace rfl {
 namespace internal {
 
 template <class PtrFieldTuple, class... Args>
-auto flatten_ptr_field_tuple(const PtrFieldTuple& _t, Args&&... _args) {
+auto flatten_ptr_field_tuple(PtrFieldTuple& _t, Args&&... _args) {
   constexpr auto i = sizeof...(Args);
   if constexpr (i == std::tuple_size_v<std::decay_t<PtrFieldTuple>>) {
     return std::tuple_cat(std::forward<Args>(_args)...);
@@ -38,7 +38,7 @@ auto flatten_ptr_field_tuple(const PtrFieldTuple& _t, Args&&... _args) {
 }
 
 template <class PtrFieldTuple>
-auto field_tuple_to_named_tuple(const PtrFieldTuple& _ptr_field_tuple) {
+auto field_tuple_to_named_tuple(PtrFieldTuple& _ptr_field_tuple) {
   const auto ft_to_nt = []<class... Fields>(const Fields&... _fields) {
     return make_named_tuple(_fields...);
   };
@@ -54,19 +54,19 @@ auto field_tuple_to_named_tuple(const PtrFieldTuple& _ptr_field_tuple) {
 /// Generates a named tuple that contains pointers to the original values in
 /// the struct.
 template <class T>
-auto to_ptr_named_tuple(const T& _t) {
+auto to_ptr_named_tuple(T&& _t) {
   if constexpr (has_fields<std::decay_t<T>>()) {
     if constexpr (std::is_pointer_v<std::decay_t<T>>) {
       return to_ptr_named_tuple(*_t);
     } else if constexpr (is_named_tuple_v<std::decay_t<T>>) {
       return nt_to_ptr_named_tuple(_t);
     } else {
-      const auto ptr_field_tuple = to_ptr_field_tuple(_t);
+      auto ptr_field_tuple = to_ptr_field_tuple(_t);
       return field_tuple_to_named_tuple(ptr_field_tuple);
     }
   } else {
     using FieldNames = rfl::field_names_t<T>;
-    const auto flattened_ptr_tuple = to_flattened_ptr_tuple(_t);
+    auto flattened_ptr_tuple = to_flattened_ptr_tuple(_t);
     return copy_flattened_tuple_to_named_tuple<FieldNames>(flattened_ptr_tuple);
   }
 }

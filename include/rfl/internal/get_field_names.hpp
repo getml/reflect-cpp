@@ -17,6 +17,12 @@
 #include "rfl/internal/num_fields.hpp"
 #include "rfl/internal/to_ptr_tuple.hpp"
 
+#if __GNUC__
+#ifndef __clang__
+#pragma GCC system_header
+#endif
+#endif
+
 namespace rfl {
 namespace internal {
 

@@ -238,13 +238,28 @@ struct Person {
   std::vector<Person> children;
 };
 
-const auto fields = rfl::fields<Person>();
-
-std::cout << "Fields in " << rfl::type_name_t<Person>().str() << ":"
-            << std::endl;
-for (const auto& f : fields) {
+for (const auto& f : rfl::fields<Person>()) {
   std::cout << "name: " << f.name() << ", type: " << f.type() << std::endl;
 }
+```
+
+You can also create a view and then access these fields using `std::get` or `rfl::get`:
+
+```cpp
+auto lisa = Person{.first_name = "Lisa", .last_name = "Simpson", .age = 8};
+
+const auto view = rfl::to_view(lisa);
+
+// view.values() is a std::tuple containing
+// pointers to the original fields.
+// This will modify the struct `lisa`:
+*std::get<0>(view.values()) = "Maggie";
+
+// All of this is supported as well:
+*view.get<1>() = "Simpson";
+*view.get<"age">() = 0;
+*rfl::get<0>(view) = "Maggie";
+*rfl::get<"first_name">(view) = "Maggie";
 ```
 
 It also possible to replace fields:

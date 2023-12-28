@@ -11,6 +11,7 @@
 #include "rfl/internal/is_basic_type.hpp"
 #include "rfl/internal/strings/replace_all.hpp"
 #include "rfl/parsing/Parent.hpp"
+#include "rfl/parsing/is_empty.hpp"
 #include "rfl/parsing/is_required.hpp"
 
 namespace rfl {
@@ -163,7 +164,7 @@ struct NamedTupleParser {
       const auto name = FieldType::name_.str();
       const auto new_parent = typename ParentType::Object{name, _ptr};
       if constexpr (!is_required<ValueType, _ignore_empty_containers>()) {
-        if (value) {
+        if (!is_empty(value)) {
           Parser<R, W, ValueType>::write(_w, value, new_parent);
         }
       } else {

@@ -25,7 +25,7 @@ class Timestamp {
 
   using ReflectionType = std::string;
 
-  Timestamp(const char* _str) {
+  Timestamp(const char* _str) : tm_(std::tm{}) {
     const auto r = strptime(_str, _format.str().c_str(), &tm_);
     if (r == NULL) {
       throw std::runtime_error("String '" + std::string(_str) +

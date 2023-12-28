@@ -10,11 +10,13 @@
 #include "rfl/internal/enums/StringConverter.hpp"
 #include "rfl/internal/has_reflection_method_v.hpp"
 #include "rfl/internal/has_reflection_type_v.hpp"
+#include "rfl/internal/is_attribute.hpp"
 #include "rfl/internal/is_basic_type.hpp"
 #include "rfl/internal/to_ptr_named_tuple.hpp"
 #include "rfl/parsing/AreReaderAndWriter.hpp"
 #include "rfl/parsing/Parent.hpp"
 #include "rfl/parsing/Parser_base.hpp"
+#include "rfl/parsing/supports_attributes.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -71,7 +73,9 @@ struct Parser {
 
   template <class P>
   static void write(const W& _w, const T& _var, const P& _parent) noexcept {
-    if constexpr (internal::has_reflection_type_v<T>) {
+    if constexpr (supports_attributes<W> && internal::is_attribute_v<T>) {
+      return _w.from_basic_type(resolve_reflection_type(_var), true);
+    } else if constexpr (internal::has_reflection_type_v<T>) {
       using ReflectionType = std::decay_t<typename T::ReflectionType>;
       if constexpr (internal::has_reflection_method_v<T>) {
         Parser<R, W, ReflectionType>::write(_w, _var.reflection(), _parent);
@@ -94,6 +98,20 @@ struct Parser {
                     "Unsupported type. Please refer to the sections on custom "
                     "classes and custom parsers for information on how add "
                     "support for your own classes.");
+    }
+  }
+
+  template <class V>
+  static const auto resolve_reflection_type(const V& _var) {
+    if constexpr (internal::has_reflection_type_v<V>) {
+      if constexpr (internal::has_reflection_method_v<V>) {
+        return resolve_reflection_type(_var.reflection());
+      } else {
+        const auto& [r] = _var;
+        return resolve_reflection_type(r);
+      }
+    } else {
+      return _var;
     }
   }
 };

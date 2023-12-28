@@ -5,6 +5,12 @@
 #include <type_traits>
 #include <utility>
 
+#if __GNUC__
+#ifndef __clang__
+#pragma GCC system_header
+#endif
+#endif
+
 namespace rfl {
 namespace internal {
 
