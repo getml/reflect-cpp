@@ -3,10 +3,13 @@
 #include <array>
 #include <iostream>
 #include <memory>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
+#include <rfl/xml.hpp>
 #include <source_location>
 #include <string>
+
+// Make sure things still compile when
+// rfl.hpp is included after rfl/xml.hpp.
+#include <rfl.hpp>
 
 #include "write_and_read.hpp"
 

@@ -5,11 +5,10 @@
 #include <type_traits>
 #include <utility>
 
+#include "../Attribute.hpp"
 #include "../Field.hpp"
 
 namespace rfl {
-
-template <class T> struct Attribute;
 
 namespace internal {
 
