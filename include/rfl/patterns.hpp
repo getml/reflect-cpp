@@ -15,7 +15,7 @@ using Base64Encoded = Pattern<R"(^[A-Za-z0-9+/]*(={0,2})?$)", "Base64Encoded">;
 
 /// This pattern will match email addresses.
 using Email =
-    Pattern<R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)", "Email">;
+    Pattern<R"(^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$)", "Email">;
 
 using UUIDv1 = Pattern<
     R"(^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-1[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$)",

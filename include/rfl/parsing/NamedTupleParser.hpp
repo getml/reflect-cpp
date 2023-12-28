@@ -11,6 +11,7 @@
 #include "rfl/internal/is_basic_type.hpp"
 #include "rfl/internal/strings/replace_all.hpp"
 #include "rfl/parsing/is_required.hpp"
+#include "../internal/Memoization.hpp"
 
 namespace rfl {
 namespace parsing {
