@@ -7,12 +7,12 @@
 #include <string_view>
 #include <type_traits>
 
-#include "rfl/Result.hpp"
-#include "rfl/internal/enums/get_enum_names.hpp"
-#include "rfl/internal/enums/is_flag_enum.hpp"
-#include "rfl/internal/strings/join.hpp"
-#include "rfl/internal/strings/split.hpp"
-#include "rfl/type_name_t.hpp"
+#include "../../Result.hpp"
+#include "get_enum_names.hpp"
+#include "is_flag_enum.hpp"
+#include "../../internal/strings/join.hpp"
+#include "../../internal/strings/split.hpp"
+#include "../../type_name_t.hpp"
 
 namespace rfl {
 namespace internal {

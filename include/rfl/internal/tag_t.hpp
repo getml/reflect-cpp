@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-#include "rfl/internal/make_tag.hpp"
+#include "make_tag.hpp"
 
 namespace rfl {
 namespace internal {

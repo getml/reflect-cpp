@@ -1,7 +1,7 @@
 #ifndef RFL_INTERNAL_DEFINENAMEDTUPLE_HPP_
 #define RFL_INTERNAL_DEFINENAMEDTUPLE_HPP_
 
-#include "rfl/NamedTuple.hpp"
+#include "../NamedTuple.hpp"
 
 namespace rfl {
 namespace internal {

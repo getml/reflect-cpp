@@ -5,10 +5,10 @@
 #include <type_traits>
 #include <utility>
 
-#include "rfl/internal/all_fields.hpp"
-#include "rfl/internal/is_field.hpp"
-#include "rfl/internal/is_flatten_field.hpp"
-#include "rfl/internal/ptr_tuple_t.hpp"
+#include "all_fields.hpp"
+#include "is_field.hpp"
+#include "is_flatten_field.hpp"
+#include "ptr_tuple_t.hpp"
 
 namespace rfl {
 namespace internal {

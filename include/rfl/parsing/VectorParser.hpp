@@ -5,14 +5,14 @@
 #include <string>
 #include <type_traits>
 
-#include "rfl/Result.hpp"
-#include "rfl/always_false.hpp"
-#include "rfl/parsing/MapParser.hpp"
-#include "rfl/parsing/Parser_base.hpp"
-#include "rfl/parsing/is_forward_list.hpp"
-#include "rfl/parsing/is_map_like.hpp"
-#include "rfl/parsing/is_map_like_not_multimap.hpp"
-#include "rfl/parsing/is_set_like.hpp"
+#include "../Result.hpp"
+#include "../always_false.hpp"
+#include "MapParser.hpp"
+#include "Parser_base.hpp"
+#include "is_forward_list.hpp"
+#include "is_map_like.hpp"
+#include "is_map_like_not_multimap.hpp"
+#include "is_set_like.hpp"
 
 namespace rfl {
 namespace parsing {

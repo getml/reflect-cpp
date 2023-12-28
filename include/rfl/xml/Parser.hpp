@@ -4,12 +4,12 @@
 #include <type_traits>
 
 #include "is_required_for_xml.hpp"
-#include "rfl/internal/is_attribute.hpp"
-#include "rfl/parsing/NamedTupleParser.hpp"
-#include "rfl/parsing/Parser.hpp"
-#include "rfl/xml/Reader.hpp"
-#include "rfl/xml/Writer.hpp"
-#include "rfl/xml/is_required_for_xml.hpp"
+#include "../internal/is_attribute.hpp"
+#include "../parsing/NamedTupleParser.hpp"
+#include "../parsing/Parser.hpp"
+#include "Reader.hpp"
+#include "Writer.hpp"
+#include "is_required_for_xml.hpp"
 
 namespace rfl {
 namespace parsing {

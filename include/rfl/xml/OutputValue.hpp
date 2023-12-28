@@ -5,8 +5,8 @@
 #include <string>
 #include <utility>
 
-#include "rfl/always_false.hpp"
-#include "rfl/xml/OutputVar.hpp"
+#include "../always_false.hpp"
+#include "OutputVar.hpp"
 
 namespace rfl {
 namespace xml {

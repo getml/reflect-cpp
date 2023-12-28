@@ -3,8 +3,8 @@
 
 #include <type_traits>
 
-#include "rfl/Literal.hpp"
-#include "rfl/internal/get_type_name.hpp"
+#include "Literal.hpp"
+#include "internal/get_type_name.hpp"
 
 namespace rfl {
 

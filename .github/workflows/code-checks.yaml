@@ -1,0 +1,27 @@
+name: code-checks
+
+on: [ push, pull_request ]
+
+jobs:
+  check-includes-are-relative:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - shell : bash
+        run: |
+          cd include
+          errors=0
+          for file in $(find . -name '*.hpp'); do
+            while read -r line; do
+              if [[ "$line" = "" ]]; then continue; fi 
+              what=$(printf "$line" | sed -n 's/^.*"\(.*\)"\s*$/\1/p')
+              pushd $(dirname $(readlink -f "$file" )) > /dev/null
+              if ! [[ -e "$what" ]]; then
+                  where=$(printf "$line" | grep -oP '^.*:[0-9]+')
+                  echo Non-relative include of $what @ $where 
+                  ((errors++))
+              fi
+              popd > /dev/null
+            done <<< $(grep -HnoP '#include ".*"' $file)
+          done
+          exit $errors

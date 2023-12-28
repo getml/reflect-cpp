@@ -7,10 +7,10 @@
 #include <type_traits>
 #include <unordered_map>
 
-#include "rfl/Result.hpp"
-#include "rfl/always_false.hpp"
-#include "rfl/parsing/MapParser.hpp"
-#include "rfl/parsing/Parser_base.hpp"
+#include "../Result.hpp"
+#include "../always_false.hpp"
+#include "MapParser.hpp"
+#include "Parser_base.hpp"
 
 namespace rfl {
 namespace parsing {

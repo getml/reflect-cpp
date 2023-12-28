@@ -4,8 +4,8 @@
 #include <string>
 
 #include "../ctre.hpp"
-#include "rfl/Result.hpp"
-#include "rfl/internal/StringLiteral.hpp"
+#include "Result.hpp"
+#include "internal/StringLiteral.hpp"
 
 namespace rfl {
 

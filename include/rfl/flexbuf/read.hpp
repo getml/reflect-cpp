@@ -6,8 +6,8 @@
 #include <istream>
 #include <vector>
 
-#include "rfl/Result.hpp"
-#include "rfl/flexbuf/Parser.hpp"
+#include "../Result.hpp"
+#include "Parser.hpp"
 
 namespace rfl {
 namespace flexbuf {

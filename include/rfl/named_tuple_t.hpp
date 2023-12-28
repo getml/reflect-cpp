@@ -5,10 +5,10 @@
 #include <tuple>
 #include <type_traits>
 
-#include "rfl/NamedTuple.hpp"
-#include "rfl/internal/is_named_tuple.hpp"
-#include "rfl/internal/ptr_named_tuple_t.hpp"
-#include "rfl/to_named_tuple.hpp"
+#include "NamedTuple.hpp"
+#include "internal/is_named_tuple.hpp"
+#include "internal/ptr_named_tuple_t.hpp"
+#include "to_named_tuple.hpp"
 
 namespace rfl {
 
