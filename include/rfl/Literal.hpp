@@ -9,9 +9,9 @@
 #include <tuple>
 #include <type_traits>
 
-#include "rfl/Result.hpp"
-#include "rfl/internal/StringLiteral.hpp"
-#include "rfl/internal/VisitTree.hpp"
+#include "Result.hpp"
+#include "internal/StringLiteral.hpp"
+#include "internal/VisitTree.hpp"
 
 namespace rfl {
 

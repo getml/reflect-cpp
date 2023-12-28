@@ -5,11 +5,11 @@
 #include <optional>
 #include <type_traits>
 
-#include "rfl/Rename.hpp"
-#include "rfl/internal/StringLiteral.hpp"
-#include "rfl/internal/is_rename.hpp"
-#include "rfl/parsing/is_map_like.hpp"
-#include "rfl/parsing/is_vector_like.hpp"
+#include "../Rename.hpp"
+#include "../internal/StringLiteral.hpp"
+#include "../internal/is_rename.hpp"
+#include "is_map_like.hpp"
+#include "is_vector_like.hpp"
 
 namespace rfl {
 namespace parsing {

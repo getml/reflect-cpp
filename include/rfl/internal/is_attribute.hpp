@@ -5,9 +5,11 @@
 #include <type_traits>
 #include <utility>
 
-#include "rfl/Field.hpp"
+#include "../Attribute.hpp"
+#include "../Field.hpp"
 
 namespace rfl {
+
 namespace internal {
 
 template <class T>

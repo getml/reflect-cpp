@@ -1,8 +1,8 @@
 #ifndef RFL_INTERNAL_DEFINETAGGEDUNION_HPP_
 #define RFL_INTERNAL_DEFINETAGGEDUNION_HPP_
 
-#include "rfl/TaggedUnion.hpp"
-#include "rfl/internal/StringLiteral.hpp"
+#include "../TaggedUnion.hpp"
+#include "StringLiteral.hpp"
 
 namespace rfl {
 namespace internal {

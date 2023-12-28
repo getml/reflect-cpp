@@ -5,11 +5,11 @@
 #include <type_traits>
 #include <variant>
 
-#include "rfl/NamedTuple.hpp"
-#include "rfl/TaggedUnion.hpp"
-#include "rfl/internal/StringLiteral.hpp"
-#include "rfl/internal/find_index.hpp"
-#include "rfl/named_tuple_t.hpp"
+#include "../NamedTuple.hpp"
+#include "../TaggedUnion.hpp"
+#include "StringLiteral.hpp"
+#include "find_index.hpp"
+#include "../named_tuple_t.hpp"
 
 namespace rfl {
 namespace internal {

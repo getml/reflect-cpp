@@ -3,8 +3,8 @@
 
 #include <tuple>
 
-#include "rfl/internal/is_flatten_field.hpp"
-#include "rfl/internal/move_to_field_tuple.hpp"
+#include "is_flatten_field.hpp"
+#include "move_to_field_tuple.hpp"
 
 namespace rfl {
 namespace internal {

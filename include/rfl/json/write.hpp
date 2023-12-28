@@ -7,8 +7,8 @@
 #include <sstream>
 #include <string>
 
+#include "../parsing/Parent.hpp"
 #include "rfl/json/Parser.hpp"
-#include "rfl/parsing/Parent.hpp"
 
 namespace rfl {
 namespace json {

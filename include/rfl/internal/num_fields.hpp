@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include "rfl/internal/has_n_fields.hpp"
+#include "has_n_fields.hpp"
 
 namespace rfl {
 namespace internal {

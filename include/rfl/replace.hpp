@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-#include "rfl/from_named_tuple.hpp"
+#include "from_named_tuple.hpp"
 
 namespace rfl {
 

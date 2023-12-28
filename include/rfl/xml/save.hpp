@@ -5,10 +5,10 @@
 #include <iostream>
 #include <string>
 
-#include "rfl/Result.hpp"
-#include "rfl/internal/StringLiteral.hpp"
-#include "rfl/io/save_string.hpp"
-#include "rfl/xml/write.hpp"
+#include "../Result.hpp"
+#include "../internal/StringLiteral.hpp"
+#include "../io/save_string.hpp"
+#include "write.hpp"
 
 namespace rfl {
 namespace xml {

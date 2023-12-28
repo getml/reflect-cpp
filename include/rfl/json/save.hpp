@@ -5,9 +5,9 @@
 #include <iostream>
 #include <string>
 
-#include "rfl/Result.hpp"
-#include "rfl/io/save_string.hpp"
-#include "rfl/json/write.hpp"
+#include "../Result.hpp"
+#include "../io/save_string.hpp"
+#include "write.hpp"
 
 namespace rfl {
 namespace json {

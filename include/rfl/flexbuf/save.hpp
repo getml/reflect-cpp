@@ -5,9 +5,9 @@
 #include <iostream>
 #include <string>
 
-#include "rfl/Result.hpp"
-#include "rfl/flexbuf/write.hpp"
-#include "rfl/io/save_bytes.hpp"
+#include "../Result.hpp"
+#include "write.hpp"
+#include "../io/save_bytes.hpp"
 
 namespace rfl {
 namespace flexbuf {

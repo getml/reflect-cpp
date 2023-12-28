@@ -3,9 +3,9 @@
 
 #include <string>
 
-#include "rfl/Flatten.hpp"
-#include "rfl/Rename.hpp"
-#include "rfl/internal/StringLiteral.hpp"
+#include "../Flatten.hpp"
+#include "../Rename.hpp"
+#include "../internal/StringLiteral.hpp"
 
 namespace rfl {
 namespace parsing {

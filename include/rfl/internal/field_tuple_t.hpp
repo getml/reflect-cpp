@@ -5,7 +5,7 @@
 #include <tuple>
 #include <type_traits>
 
-#include "rfl/internal/copy_to_field_tuple.hpp"
+#include "copy_to_field_tuple.hpp"
 
 namespace rfl {
 namespace internal {

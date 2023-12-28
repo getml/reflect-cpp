@@ -1,11 +1,11 @@
 #ifndef RFL_INTERNAL_MAKE_TAG_HPP_
 #define RFL_INTERNAL_MAKE_TAG_HPP_
 
-#include "rfl/Literal.hpp"
-#include "rfl/internal/get_type_name.hpp"
-#include "rfl/internal/has_reflection_type_v.hpp"
-#include "rfl/internal/has_tag_v.hpp"
-#include "rfl/internal/remove_namespaces.hpp"
+#include "../Literal.hpp"
+#include "get_type_name.hpp"
+#include "has_reflection_type_v.hpp"
+#include "has_tag_v.hpp"
+#include "remove_namespaces.hpp"
 
 namespace rfl {
 namespace internal {

@@ -1,8 +1,8 @@
 #ifndef RFL_GET_HPP_
 #define RFL_GET_HPP_
 
-#include "rfl/internal/Getter.hpp"
-#include "rfl/internal/StringLiteral.hpp"
+#include "internal/Getter.hpp"
+#include "internal/StringLiteral.hpp"
 
 namespace rfl {
 

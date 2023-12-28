@@ -11,13 +11,13 @@
 #include <type_traits>
 #include <vector>
 
-#include "rfl/Ref.hpp"
-#include "rfl/Result.hpp"
-#include "rfl/always_false.hpp"
-#include "rfl/xml/OutputArray.hpp"
-#include "rfl/xml/OutputNull.hpp"
-#include "rfl/xml/OutputObject.hpp"
-#include "rfl/xml/OutputValue.hpp"
+#include "../Ref.hpp"
+#include "../Result.hpp"
+#include "../always_false.hpp"
+#include "OutputArray.hpp"
+#include "OutputNull.hpp"
+#include "OutputObject.hpp"
+#include "OutputValue.hpp"
 
 namespace rfl {
 namespace xml {

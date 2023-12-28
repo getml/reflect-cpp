@@ -13,10 +13,10 @@
 #include <unordered_set>
 #include <vector>
 
-#include "rfl/Result.hpp"
-#include "rfl/always_false.hpp"
-#include "rfl/parsing/Parser_base.hpp"
-#include "rfl/parsing/VectorParser.hpp"
+#include "../Result.hpp"
+#include "../always_false.hpp"
+#include "Parser_base.hpp"
+#include "VectorParser.hpp"
 
 namespace rfl {
 namespace parsing {

@@ -1,7 +1,7 @@
 #ifndef RFL_COPY_FROM_TUPLE_HPP_
 #define RFL_COPY_FROM_TUPLE_HPP_
 
-#include "rfl/internal/move_from_tuple.hpp"
+#include "move_from_tuple.hpp"
 
 namespace rfl {
 namespace internal {

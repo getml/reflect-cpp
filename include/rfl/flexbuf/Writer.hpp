@@ -14,13 +14,13 @@
 #include <type_traits>
 #include <vector>
 
-#include "rfl/Ref.hpp"
-#include "rfl/Result.hpp"
-#include "rfl/flexbuf/OutputArray.hpp"
-#include "rfl/flexbuf/OutputNull.hpp"
-#include "rfl/flexbuf/OutputObject.hpp"
-#include "rfl/flexbuf/OutputValue.hpp"
-#include "rfl/flexbuf/OutputVar.hpp"
+#include "../Ref.hpp"
+#include "../Result.hpp"
+#include "OutputArray.hpp"
+#include "OutputNull.hpp"
+#include "OutputObject.hpp"
+#include "OutputValue.hpp"
+#include "OutputVar.hpp"
 
 namespace rfl {
 namespace flexbuf {

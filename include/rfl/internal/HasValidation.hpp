@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-#include "rfl/Result.hpp"
+#include "../Result.hpp"
 
 namespace rfl {
 namespace internal {

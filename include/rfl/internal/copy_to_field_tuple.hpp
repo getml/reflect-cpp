@@ -1,7 +1,7 @@
 #ifndef RFL_INTERNAL_COPY_TO_FIELD_TUPLE_HPP_
 #define RFL_INTERNAL_COPY_TO_FIELD_TUPLE_HPP_
 
-#include "rfl/internal/move_to_field_tuple.hpp"
+#include "move_to_field_tuple.hpp"
 
 namespace rfl {
 namespace internal {

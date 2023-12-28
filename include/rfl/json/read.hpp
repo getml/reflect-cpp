@@ -6,8 +6,8 @@
 #include <istream>
 #include <string>
 
-#include "rfl/json/Parser.hpp"
-#include "rfl/json/Reader.hpp"
+#include "Parser.hpp"
+#include "Reader.hpp"
 
 namespace rfl {
 namespace json {

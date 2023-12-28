@@ -1,11 +1,14 @@
 #include "test_all_of.hpp"
 
 #include <iostream>
-#include <rfl.hpp>
 #include <rfl/flexbuf.hpp>
 #include <source_location>
 #include <string>
 #include <vector>
+
+// Make sure things still compile when
+// rfl.hpp is included after rfl/flexbuf.hpp.
+#include <rfl.hpp>
 
 #include "write_and_read.hpp"
 

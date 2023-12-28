@@ -1,7 +1,7 @@
 #ifndef RFL_INTERNAL_COPY_FROM_NAMED_TUPLE_HPP_
 #define RFL_INTERNAL_COPY_FROM_NAMED_TUPLE_HPP_
 
-#include "rfl/internal/move_from_named_tuple.hpp"
+#include "move_from_named_tuple.hpp"
 
 namespace rfl {
 namespace internal {

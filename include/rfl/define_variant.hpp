@@ -3,7 +3,7 @@
 
 #include <variant>
 
-#include "rfl/internal/define_variant.hpp"
+#include "internal/define_variant.hpp"
 
 namespace rfl {
 

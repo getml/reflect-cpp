@@ -4,9 +4,9 @@
 #include <tuple>
 #include <type_traits>
 
-#include "rfl/Field.hpp"
-#include "rfl/internal/has_flatten_fields.hpp"
-#include "rfl/internal/move_and_flatten_field_tuple.hpp"
+#include "../Field.hpp"
+#include "has_flatten_fields.hpp"
+#include "move_and_flatten_field_tuple.hpp"
 
 namespace rfl {
 namespace internal {

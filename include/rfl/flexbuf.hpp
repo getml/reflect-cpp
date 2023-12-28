@@ -1,12 +1,12 @@
 #ifndef FLEXBUF_FLEXBUF_HPP_
 #define FLEXBUF_FLEXBUF_HPP_
 
-#include "rfl/flexbuf/Parser.hpp"
-#include "rfl/flexbuf/Reader.hpp"
-#include "rfl/flexbuf/Writer.hpp"
-#include "rfl/flexbuf/load.hpp"
-#include "rfl/flexbuf/read.hpp"
-#include "rfl/flexbuf/save.hpp"
-#include "rfl/flexbuf/write.hpp"
+#include "flexbuf/Parser.hpp"
+#include "flexbuf/Reader.hpp"
+#include "flexbuf/Writer.hpp"
+#include "flexbuf/load.hpp"
+#include "flexbuf/read.hpp"
+#include "flexbuf/save.hpp"
+#include "flexbuf/write.hpp"
 
 #endif

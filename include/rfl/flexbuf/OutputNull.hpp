@@ -6,8 +6,8 @@
 #include <optional>
 #include <string>
 
-#include "rfl/Ref.hpp"
-#include "rfl/flexbuf/OutputVar.hpp"
+#include "../Ref.hpp"
+#include "OutputVar.hpp"
 
 namespace rfl {
 namespace flexbuf {

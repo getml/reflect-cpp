@@ -1,8 +1,8 @@
 #ifndef RFL_DEFINENAMEDTUPLE_HPP_
 #define RFL_DEFINENAMEDTUPLE_HPP_
 
-#include "rfl/NamedTuple.hpp"
-#include "rfl/internal/define_named_tuple.hpp"
+#include "NamedTuple.hpp"
+#include "internal/define_named_tuple.hpp"
 
 namespace rfl {
 

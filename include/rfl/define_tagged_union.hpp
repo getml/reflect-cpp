@@ -1,9 +1,9 @@
 #ifndef RFL_DEFINETAGGEDUNION_HPP_
 #define RFL_DEFINETAGGEDUNION_HPP_
 
-#include "rfl/TaggedUnion.hpp"
-#include "rfl/internal/StringLiteral.hpp"
-#include "rfl/internal/define_tagged_union.hpp"
+#include "TaggedUnion.hpp"
+#include "internal/StringLiteral.hpp"
+#include "internal/define_tagged_union.hpp"
 
 namespace rfl {
 

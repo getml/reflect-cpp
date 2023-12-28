@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-#include "rfl/Result.hpp"
+#include "Result.hpp"
 
 namespace rfl {
 

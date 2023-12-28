@@ -4,11 +4,11 @@
 #include <functional>
 #include <type_traits>
 
-#include "rfl/internal/is_field.hpp"
-#include "rfl/internal/is_named_tuple.hpp"
-#include "rfl/internal/nt_to_ptr_named_tuple.hpp"
-#include "rfl/internal/ptr_field_tuple_t.hpp"
-#include "rfl/named_tuple_t.hpp"
+#include "is_field.hpp"
+#include "is_named_tuple.hpp"
+#include "nt_to_ptr_named_tuple.hpp"
+#include "ptr_field_tuple_t.hpp"
+#include "../named_tuple_t.hpp"
 
 namespace rfl {
 namespace internal {

@@ -5,8 +5,8 @@
 #include <type_traits>
 #include <variant>
 
-#include "rfl/internal/StringLiteral.hpp"
-#include "rfl/internal/field_type.hpp"
+#include "internal/StringLiteral.hpp"
+#include "internal/field_type.hpp"
 
 namespace rfl {
 

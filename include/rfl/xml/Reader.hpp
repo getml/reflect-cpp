@@ -15,8 +15,8 @@
 #include <variant>
 #include <vector>
 
-#include "rfl/Result.hpp"
-#include "rfl/always_false.hpp"
+#include "../Result.hpp"
+#include "../always_false.hpp"
 
 namespace rfl {
 namespace xml {

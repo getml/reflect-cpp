@@ -1,9 +1,9 @@
 #ifndef RFL_JSON_LOAD_HPP_
 #define RFL_JSON_LOAD_HPP_
 
-#include "rfl/Result.hpp"
-#include "rfl/io/load_string.hpp"
-#include "rfl/json/read.hpp"
+#include "../Result.hpp"
+#include "../io/load_string.hpp"
+#include "read.hpp"
 
 namespace rfl {
 namespace json {

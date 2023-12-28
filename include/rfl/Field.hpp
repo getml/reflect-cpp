@@ -7,9 +7,9 @@
 #include <type_traits>
 #include <utility>
 
-#include "rfl/Literal.hpp"
-#include "rfl/default.hpp"
-#include "rfl/internal/StringLiteral.hpp"
+#include "Literal.hpp"
+#include "default.hpp"
+#include "internal/StringLiteral.hpp"
 
 namespace rfl {
 

@@ -5,8 +5,8 @@
 #include <tuple>
 #include <utility>
 
-#include "rfl/MetaField.hpp"
-#include "rfl/type_name_t.hpp"
+#include "../MetaField.hpp"
+#include "../type_name_t.hpp"
 
 namespace rfl {
 namespace internal {

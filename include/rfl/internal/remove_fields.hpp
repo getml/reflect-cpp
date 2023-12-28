@@ -5,9 +5,9 @@
 #include <tuple>
 #include <type_traits>
 
-#include "rfl/NamedTuple.hpp"
-#include "rfl/define_named_tuple.hpp"
-#include "rfl/internal/StringLiteral.hpp"
+#include "../NamedTuple.hpp"
+#include "../define_named_tuple.hpp"
+#include "StringLiteral.hpp"
 
 namespace rfl {
 namespace internal {

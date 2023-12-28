@@ -5,8 +5,8 @@
 #include <type_traits>
 #include <utility>
 
-#include "rfl/Rename.hpp"
-#include "rfl/internal/StringLiteral.hpp"
+#include "../Rename.hpp"
+#include "StringLiteral.hpp"
 
 namespace rfl {
 namespace internal {

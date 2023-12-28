@@ -5,7 +5,7 @@
 #include <tuple>
 #include <type_traits>
 
-#include "rfl/internal/bind_to_tuple.hpp"
+#include "bind_to_tuple.hpp"
 
 namespace rfl {
 namespace internal {

@@ -4,9 +4,9 @@
 #include <tuple>
 #include <type_traits>
 
-#include "rfl/Result.hpp"
-#include "rfl/always_false.hpp"
-#include "rfl/parsing/Parent.hpp"
+#include "../Result.hpp"
+#include "../always_false.hpp"
+#include "Parent.hpp"
 
 namespace rfl {
 namespace parsing {

@@ -3,7 +3,7 @@
 
 #include <concepts>
 
-#include "rfl/internal/enums/is_scoped_enum.hpp"
+#include "is_scoped_enum.hpp"
 
 namespace rfl {
 namespace internal {

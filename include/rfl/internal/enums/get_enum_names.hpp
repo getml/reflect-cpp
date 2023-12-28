@@ -5,11 +5,11 @@
 #include <source_location>
 #include <type_traits>
 
-#include "rfl/Literal.hpp"
-#include "rfl/define_literal.hpp"
-#include "rfl/internal/enums/Names.hpp"
-#include "rfl/internal/enums/is_scoped_enum.hpp"
-#include "rfl/internal/remove_namespaces.hpp"
+#include "../../Literal.hpp"
+#include "../../define_literal.hpp"
+#include "Names.hpp"
+#include "is_scoped_enum.hpp"
+#include "../../internal/remove_namespaces.hpp"
 
 // https://en.cppreference.com/w/cpp/language/static_cast:
 

@@ -5,7 +5,7 @@
 #include <tuple>
 #include <type_traits>
 
-#include "rfl/internal/to_ptr_field_tuple.hpp"
+#include "to_ptr_field_tuple.hpp"
 
 namespace rfl {
 namespace internal {

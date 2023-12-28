@@ -1,7 +1,7 @@
 #ifndef RFL_INTERNAL_LIT_NAME_HPP_
 #define RFL_INTERNAL_LIT_NAME_HPP_
 
-#include "rfl/Literal.hpp"
+#include "../Literal.hpp"
 
 namespace rfl {
 namespace internal {

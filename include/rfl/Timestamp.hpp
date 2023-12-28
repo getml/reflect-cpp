@@ -10,8 +10,8 @@
 #include <stdexcept>
 #include <string>
 
-#include "rfl/Result.hpp"
-#include "rfl/internal/StringLiteral.hpp"
+#include "Result.hpp"
+#include "internal/StringLiteral.hpp"
 
 namespace rfl {
 

@@ -5,14 +5,17 @@
 #include <type_traits>
 #include <unordered_map>
 
-#include "rfl/NamedTuple.hpp"
-#include "rfl/Result.hpp"
-#include "rfl/always_false.hpp"
-#include "rfl/internal/is_basic_type.hpp"
-#include "rfl/internal/strings/replace_all.hpp"
-#include "rfl/parsing/Parent.hpp"
-#include "rfl/parsing/is_empty.hpp"
-#include "rfl/parsing/is_required.hpp"
+#include "../NamedTuple.hpp"
+#include "../Result.hpp"
+#include "../always_false.hpp"
+#include "../internal/Memoization.hpp"
+#include "../internal/is_basic_type.hpp"
+#include "../internal/strings/replace_all.hpp"
+#include "AreReaderAndWriter.hpp"
+#include "Parent.hpp"
+#include "Parser_base.hpp"
+#include "is_empty.hpp"
+#include "is_required.hpp"
 
 namespace rfl {
 namespace parsing {

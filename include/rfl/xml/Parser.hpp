@@ -3,11 +3,11 @@
 
 #include <type_traits>
 
-#include "rfl/internal/is_attribute.hpp"
-#include "rfl/parsing/NamedTupleParser.hpp"
-#include "rfl/parsing/Parser.hpp"
-#include "rfl/xml/Reader.hpp"
-#include "rfl/xml/Writer.hpp"
+#include "../internal/is_attribute.hpp"
+#include "../parsing/NamedTupleParser.hpp"
+#include "../parsing/Parser.hpp"
+#include "Reader.hpp"
+#include "Writer.hpp"
 
 namespace rfl {
 namespace parsing {

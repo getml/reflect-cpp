@@ -4,7 +4,7 @@
 #include <functional>
 #include <type_traits>
 
-#include "rfl/internal/to_flattened_ptr_tuple.hpp"
+#include "to_flattened_ptr_tuple.hpp"
 
 namespace rfl {
 namespace internal {
