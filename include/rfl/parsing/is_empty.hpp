@@ -3,11 +3,11 @@
 
 #include <type_traits>
 
-#include "rfl/internal/has_reflection_method_v.hpp"
-#include "rfl/internal/has_reflection_type_v.hpp"
-#include "rfl/internal/is_rename.hpp"
-#include "rfl/parsing/is_map_like.hpp"
-#include "rfl/parsing/is_vector_like.hpp"
+#include "../internal/has_reflection_method_v.hpp"
+#include "../internal/has_reflection_type_v.hpp"
+#include "../internal/is_rename.hpp"
+#include "is_map_like.hpp"
+#include "is_vector_like.hpp"
 
 namespace rfl {
 namespace parsing {
