@@ -73,29 +73,82 @@ struct Writer {
     using OutputObjectType = ...;
     using OutputVarType = ...;
 
-    /// Appends `_var` to the end of `_arr`, thus mutating it.
-    void add(const OutputVarType _var, OutputArrayType* _arr) const noexcept {...}
+  /// Sets an empty array as the root element of the document.
+  /// Some serialization formats require you to pass the expected size in
+  /// advance. If you are not working with such a format, you can ignore the
+  /// parameter `_size`. Returns the new array for further modification.
+  OutputArrayType array_as_root(const size_t _size) const noexcept;
 
-    /// Returns an empty OutputVarType, the NULL type of the format.
-    OutputVarType empty_var() const noexcept {...}
+  /// Sets an empty object as the root element of the document.
+  /// Some serialization formats require you to pass the expected size in
+  /// advance. If you are not working with such a format, you can ignore the
+  /// parameter `_size`.
+  /// Returns the new object for further modification.
+  OutputObjectType object_as_root(const size_t _size) const noexcept;
 
-    /// Generates an OutputVarType from a basic type
-    /// (std::string, bool, floating point or integral).
-    template <class T>
-    OutputVarType from_basic_type(const T& _var) const noexcept {...}
+  /// Sets a null as the root element of the document. Returns OutputVarType
+  /// containing the null value.
+  OutputVarType null_as_root() const noexcept;
 
-    /// Generates a new, empty array.
-    OutputArrayType new_array() const noexcept {...}
+  /// Sets a basic value (bool, numeric, string) as the root element of the
+  /// document. Returns an OutputVarType containing the new value.
+  template <class T>
+  OutputVarType value_as_root(const T& _var) const noexcept;
 
-    /// Generates a new, empty object.
-    OutputObjectType new_object() const noexcept {...}
+  /// Adds an empty array to an existing array. Returns the new
+  /// array for further modification.
+  OutputArrayType add_array_to_array(const size_t _size,
+                                     OutputArrayType* _parent) const noexcept;
 
-    /// Determines whether the var is empty (whether it is the NULL type).
-    bool is_empty(const OutputVarType& _var) const noexcept {...}
+  /// Adds an empty array to an existing object. The key or name of the field is
+  /// signified by `_name`. Returns the new array for further modification.
+  OutputArrayType add_array_to_object(
+      const std::string& _name, const size_t _size,
+      OutputObjectType* _parent) const noexcept;
 
-    /// Adds a new field to obj, thus mutating it.
-    void set_field(const std::string& _name, const OutputVarType& _var,
-                   OutputObjectType* _obj) const noexcept {...}
+  /// Adds an empty object to an existing array. Returns the new
+  /// object for further modification.
+  OutputObjectType add_object_to_array(
+      const size_t _size, OutputArrayType* _parent) const noexcept;
+
+  /// Adds an empty object to an existing object. The key or name of the field
+  /// is signified by `_name`. Returns the new object for further modification.
+  OutputObjectType add_object_to_object(
+      const std::string& _name, const size_t _size,
+      OutputObjectType* _parent) const noexcept;
+
+  /// Adds a basic value (bool, numeric, string) to an array. Returns an
+  /// OutputVarType containing the new value.
+  template <class T>
+  OutputVarType add_value_to_array(const T& _var,
+                                   OutputArrayType* _parent) const noexcept;
+
+  /// Adds a basic value (bool, numeric, string) to an existing object. The key
+  /// or name of the field is signified by `name`. Returns an
+  /// OutputVarType containing the new value.
+  template <class T>
+  OutputVarType add_value_to_object(const std::string& _name, const T& _var,
+                                    OutputObjectType* _parent) const noexcept;
+
+  /// Adds a null value to an array. Returns an
+  /// OutputVarType containing the null value.
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept;
+
+  /// Adds a null value to an existing object. The key
+  /// or name of the field is signified by `name`. Returns an
+  /// OutputVarType containing the null value.
+  OutputVarType add_null_to_object(const std::string& _name,
+                                   OutputObjectType* _parent) const noexcept;
+
+  /// Signifies to the writer that we do not want to add any further elements to
+  /// this array. Some serialization formats require this. If you are working
+  /// with a serialization format that doesn't, just leave the function empty.
+  void end_array(OutputArrayType* _arr) const noexcept;
+
+  /// Signifies to the writer that we do not want to add any further elements to
+  /// this object. Some serialization formats require this. If you are working
+  /// with a serialization format that doesn't, just leave the function empty.
+  void end_object(OutputObjectType* _obj) const noexcept;
 };
 ```
 

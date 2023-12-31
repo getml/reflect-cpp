@@ -43,7 +43,7 @@ concept IsReader = requires(R r, std::string name,
   /// floating point, std::string)
   { r.template to_basic_type<T>(var) } -> std::same_as<rfl::Result<T>>;
 
-  /// fct is a function that turns the field name into the field index of the
+  /// _fct is a function that turns the field name into the field index of the
   /// struct. It returns -1, if the fields does not exist on the struct. This
   /// returns an std::array that can be used to build up the struct.
   {
