@@ -145,12 +145,12 @@ struct Reader {
     /// Returns an rfl::Error if `_var` cannot be cast as an array.
     rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept {...}
 
-    /// fct is a function that turns the field name into the field index of the
+    /// _fct is a function that turns the field name into the field index of the
     /// struct. It returns -1, if the fields does not exist on the struct. This
     /// returns an std::array that can be used to build up the struct.
     /// See below for a more comprehensive explanation.
     template <size_t size, class FunctionType>
-    std::array<InputVarType, size> to_fields_array(
+    std::array<std::optional<InputVarType>, size> to_fields_array(
         const FunctionType _fct, const InputObjectType& _obj) const noexcept {...}
 
     /// Iterates through an object and writes the contained key-value pairs into
@@ -187,15 +187,15 @@ Consider the following struct:
 
 ```cpp
 struct Person {
-    rfl::Field<"firstName", std::string> first_name;
-    rfl::Field<"lastName", std::string> last_name;
-    rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
-    rfl::Field<"children", std::vector<Person>> children;
+    rfl::Rename<"firstName", std::string> first_name;
+    rfl::Rename<"lastName", std::string> last_name;
+    rfl::Timestamp<"%Y-%m-%d"> birthday;
+    std::vector<Person> children;
 };
 ```
 
 This struct contains four fields. `rfl::parsing::Parser` expects `to_fields_array`
-to return an `std::array<InputVarType, 4>` containing the field "firstName" in the
+to return an `std::array<std::optional<InputVarType>, 4>` containing the field "firstName" in the
 first position, "lastName" in the second position, "birthday" in the third position
 and "children" in the fourth position.
 
@@ -214,6 +214,4 @@ Your job is to implement the following:
 1. Iterate through `_obj`.
 2. Identify the required index of the field name using `_fct`.
 3. Set the corresponding field in `std::array` to the field value associated with the field name.
-4. Any field that could not be set in steps 1-3 must be set to the NULL value,
-   such that `Reader.is_empty(...)` would return `true`.
-
+4. Any field that could not be set in steps 1-3 must be set to `std::nullopt`.
