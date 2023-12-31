@@ -8,7 +8,7 @@
 #include <string>
 
 #include "../parsing/Parent.hpp"
-#include "rfl/json/Parser.hpp"
+#include "Parser.hpp"
 
 namespace rfl {
 namespace json {
