@@ -105,10 +105,6 @@ struct Reader {
 
   rfl::Result<InputArrayType> to_array(
       const InputVarType& _var) const noexcept {
-    // Necessary, because we write empty vectors as null.
-    if (_var.IsNull()) {
-      return flexbuffers::Vector::EmptyVector();
-    }
     if (!_var.IsVector()) {
       return rfl::Error("Could not cast to Vector.");
     }
@@ -133,10 +129,6 @@ struct Reader {
 
   rfl::Result<InputObjectType> to_object(
       const InputVarType& _var) const noexcept {
-    // Necessary, because we write empty maps as null.
-    if (_var.IsNull()) {
-      return flexbuffers::Map::EmptyMap();
-    }
     if (!_var.IsMap()) {
       return rfl::Error("Could not cast to Map!");
     }

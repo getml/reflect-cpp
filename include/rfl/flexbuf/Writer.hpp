@@ -16,51 +16,157 @@
 
 #include "../Ref.hpp"
 #include "../Result.hpp"
-#include "OutputArray.hpp"
-#include "OutputNull.hpp"
-#include "OutputObject.hpp"
-#include "OutputValue.hpp"
-#include "OutputVar.hpp"
+#include "../always_false.hpp"
 
 namespace rfl {
 namespace flexbuf {
 
 struct Writer {
-  using OutputArrayType = Ref<OutputArray>;
-  using OutputObjectType = Ref<OutputObject>;
-  using OutputVarType = Ref<OutputVar>;
+  struct OutputArray {
+    size_t start_;
+  };
 
-  Writer() {}
+  struct OutputObject {
+    size_t start_;
+  };
+
+  struct OutputVar {};
+
+  using OutputArrayType = OutputArray;
+  using OutputObjectType = OutputObject;
+  using OutputVarType = OutputVar;
+
+  Writer(const Ref<flexbuffers::Builder>& _fbb) : fbb_(_fbb) {}
 
   ~Writer() = default;
 
-  void add(const OutputVarType& _var, OutputArrayType* _arr) const noexcept {
-    (*_arr)->push_back(_var);
+  OutputArrayType array_as_root(const size_t _size) const noexcept {
+    return new_array();
   }
 
-  OutputVarType empty_var() const noexcept { return Ref<OutputNull>::make(); }
+  OutputObjectType object_as_root(const size_t _size) const noexcept {
+    return new_object();
+  }
+
+  OutputVarType null_as_root() const noexcept {
+    fbb_->Null();
+    return OutputVarType{};
+  }
 
   template <class T>
-  OutputVarType from_basic_type(const T& _var) const noexcept {
-    return Ref<OutputValue<T>>::make(_var);
+  OutputVarType value_as_root(const T& _var) const noexcept {
+    return insert_value(_var);
+  }
+
+  OutputArrayType add_array_to_array(const size_t _size,
+                                     OutputArrayType* _parent) const noexcept {
+    return new_array();
+  }
+
+  OutputArrayType add_array_to_object(
+      const std::string& _name, const size_t _size,
+      OutputObjectType* _parent) const noexcept {
+    return new_array(_name);
+  }
+
+  OutputObjectType add_object_to_array(
+      const size_t _size, OutputArrayType* _parent) const noexcept {
+    return new_object();
+  }
+
+  OutputObjectType add_object_to_object(
+      const std::string& _name, const size_t _size,
+      OutputObjectType* _parent) const noexcept {
+    return new_object(_name);
+  }
+
+  template <class T>
+  OutputVarType add_value_to_array(const T& _var,
+                                   OutputArrayType* _parent) const noexcept {
+    return insert_value(_var);
+  }
+
+  template <class T>
+  OutputVarType add_value_to_object(const std::string& _name, const T& _var,
+                                    OutputObjectType* _parent) const noexcept {
+    return insert_value(_name, _var);
+  }
+
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept {
+    fbb_->Null();
+    return OutputVarType{};
+  }
+
+  OutputVarType add_null_to_object(const std::string& _name,
+                                   OutputObjectType* _parent) const noexcept {
+    fbb_->Null(_name.c_str());
+    return OutputVarType{};
+  }
+
+  void end_array(OutputArrayType* _arr) const noexcept {
+    fbb_->EndVector(_arr->start_, false, false);
+  }
+
+  void end_object(OutputObjectType* _obj) const noexcept {
+    fbb_->EndMap(_obj->start_);
+  }
+
+ private:
+  template <class T>
+  OutputVarType insert_value(const std::string& _name,
+                             const T& _var) const noexcept {
+    if constexpr (std::is_same<std::decay_t<T>, std::string>()) {
+      fbb_->String(_name.c_str(), _var);
+    } else if constexpr (std::is_same<std::decay_t<T>, bool>()) {
+      fbb_->Bool(_name.c_str(), _var);
+    } else if constexpr (std::is_floating_point<std::decay_t<T>>()) {
+      fbb_->Double(_name.c_str(), _var);
+    } else if constexpr (std::is_integral<std::decay_t<T>>()) {
+      fbb_->Int(_name.c_str(), _var);
+    } else {
+      static_assert(always_false_v<T>, "Unsupported type");
+    }
+    return OutputVarType{};
+  }
+
+  template <class T>
+  OutputVarType insert_value(const T& _var) const noexcept {
+    if constexpr (std::is_same<std::decay_t<T>, std::string>()) {
+      fbb_->String(_var);
+    } else if constexpr (std::is_same<std::decay_t<T>, bool>()) {
+      fbb_->Bool(_var);
+    } else if constexpr (std::is_floating_point<std::decay_t<T>>()) {
+      fbb_->Double(_var);
+    } else if constexpr (std::is_integral<std::decay_t<T>>()) {
+      fbb_->Int(_var);
+    } else {
+      static_assert(always_false_v<T>, "Unsupported type");
+    }
+    return OutputVarType{};
+  }
+
+  OutputArrayType new_array(const std::string& _name) const noexcept {
+    const auto start = fbb_->StartVector(_name.c_str());
+    return OutputArrayType{start};
   }
 
   OutputArrayType new_array() const noexcept {
-    return Ref<OutputArray>::make();
+    const auto start = fbb_->StartVector();
+    return OutputArrayType{start};
+  }
+
+  OutputObjectType new_object(const std::string& _name) const noexcept {
+    const auto start = fbb_->StartMap(_name.c_str());
+    return OutputObjectType{start};
   }
 
   OutputObjectType new_object() const noexcept {
-    return Ref<OutputObject>::make();
+    const auto start = fbb_->StartMap();
+    return OutputObjectType{start};
   }
 
-  bool is_empty(const OutputVarType& _var) const noexcept {
-    return _var->is_null();
-  }
-
-  void set_field(const std::string& _name, const OutputVarType& _var,
-                 OutputObjectType* _obj) const noexcept {
-    (*_obj)->push_back(_name, _var);
-  }
+ private:
+  Ref<flexbuffers::Builder> fbb_;
 };
 
 }  // namespace flexbuf

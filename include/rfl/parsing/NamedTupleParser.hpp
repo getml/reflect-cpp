@@ -9,6 +9,7 @@
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../internal/Memoization.hpp"
+#include "../internal/is_attribute.hpp"
 #include "../internal/is_basic_type.hpp"
 #include "../internal/strings/replace_all.hpp"
 #include "AreReaderAndWriter.hpp"
@@ -168,10 +169,19 @@ struct NamedTupleParser {
       const auto new_parent = typename ParentType::Object{name, _ptr};
       if constexpr (!is_required<ValueType, _ignore_empty_containers>()) {
         if (!is_empty(value)) {
-          Parser<R, W, ValueType>::write(_w, value, new_parent);
+          if constexpr (internal::is_attribute_v<ValueType>) {
+            Parser<R, W, ValueType>::write(_w, value,
+                                           new_parent.as_attribute());
+          } else {
+            Parser<R, W, ValueType>::write(_w, value, new_parent);
+          }
         }
       } else {
-        Parser<R, W, ValueType>::write(_w, value, new_parent);
+        if constexpr (internal::is_attribute_v<ValueType>) {
+          Parser<R, W, ValueType>::write(_w, value, new_parent.as_attribute());
+        } else {
+          Parser<R, W, ValueType>::write(_w, value, new_parent);
+        }
       }
       return build_object_recursively<_i + 1>(_w, _tup, _ptr);
     }

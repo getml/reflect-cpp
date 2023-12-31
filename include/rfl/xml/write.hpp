@@ -10,6 +10,7 @@
 #include "../internal/StringLiteral.hpp"
 #include "../internal/get_type_name.hpp"
 #include "../internal/remove_namespaces.hpp"
+#include "../parsing/Parent.hpp"
 #include "Parser.hpp"
 
 namespace rfl {
@@ -29,6 +30,8 @@ consteval auto get_root_name() {
 template <internal::StringLiteral _root = internal::StringLiteral(""), class T>
 std::ostream& write(const T& _obj, std::ostream& _stream,
                     const std::string& _indent = "    ") {
+  using ParentType = parsing::Parent<Writer>;
+
   constexpr auto root_name = get_root_name<_root, T>();
 
   static_assert(root_name.string_view().find("<") == std::string_view::npos &&
@@ -38,18 +41,17 @@ std::ostream& write(const T& _obj, std::ostream& _stream,
                 "explicit root name to rfl::xml::write(...) like this: "
                 "rfl::xml::write<\"root_name\">(...).");
 
-  auto w = Writer();
-  const auto xml_obj = Parser<T>::write(w, _obj);
+  const auto doc = rfl::Ref<pugi::xml_document>::make();
 
-  pugi::xml_document doc;
-
-  auto declaration_node = doc.append_child(pugi::node_declaration);
+  auto declaration_node = doc->append_child(pugi::node_declaration);
   declaration_node.append_attribute("version") = "1.0";
   declaration_node.append_attribute("encoding") = "UTF-8";
 
-  xml_obj->insert(root_name.str(), &doc);
+  auto w = Writer(doc, root_name.str());
 
-  doc.save(_stream, _indent.c_str());
+  Parser<T>::write(w, _obj, typename ParentType::Root{});
+
+  doc->save(_stream, _indent.c_str());
 
   return _stream;
 }

@@ -4,7 +4,8 @@
 #include <string>
 #include <type_traits>
 
-#include "rfl/always_false.hpp"
+#include "../always_false.hpp"
+#include "supports_attributes.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -22,6 +23,8 @@ struct Parent {
   struct Object {
     std::string name_;
     OutputObjectType* obj_;
+    bool is_attribute_ = false;
+    Object as_attribute() const { return Object{name_, obj_, true}; }
   };
 
   struct Root {};
@@ -62,7 +65,12 @@ struct Parent {
     if constexpr (std::is_same<Type, Array>()) {
       return _w.add_null_to_array(_parent.arr_);
     } else if constexpr (std::is_same<Type, Object>()) {
-      return _w.add_null_to_object(_parent.name_, _parent.obj_);
+      if constexpr (supports_attributes<std::decay_t<W>>) {
+        return _w.add_null_to_object(_parent.name_, _parent.obj_,
+                                     _parent.is_attribute_);
+      } else {
+        return _w.add_null_to_object(_parent.name_, _parent.obj_);
+      }
     } else if constexpr (std::is_same<Type, Root>()) {
       return _w.null_as_root();
     } else {
@@ -77,7 +85,12 @@ struct Parent {
     if constexpr (std::is_same<Type, Array>()) {
       return _w.add_value_to_array(_var, _parent.arr_);
     } else if constexpr (std::is_same<Type, Object>()) {
-      return _w.add_value_to_object(_parent.name_, _var, _parent.obj_);
+      if constexpr (supports_attributes<std::decay_t<W>>) {
+        return _w.add_value_to_object(_parent.name_, _var, _parent.obj_,
+                                      _parent.is_attribute_);
+      } else {
+        return _w.add_value_to_object(_parent.name_, _var, _parent.obj_);
+      }
     } else if constexpr (std::is_same<Type, Root>()) {
       return _w.value_as_root(_var);
     } else {

@@ -11,7 +11,7 @@
 
 namespace test_monster_example1 {
 
-using Color = rfl::Literal<"Red", "Green", "Blue">;
+enum class Color { Red, Green, Blue };
 
 struct Weapon {
   std::string name;
@@ -33,7 +33,7 @@ struct Monster {
   std::string name;
   bool friendly = false;
   std::vector<std::uint8_t> inventory;
-  Color color = Color::make<"Blue">();
+  Color color = Color::Blue;
   std::vector<Weapon> weapons;
   Equipment equipped;
   std::vector<Vec3> path;
@@ -57,7 +57,7 @@ void test() {
                            .hp = 80,
                            .name = "MyMonster",
                            .inventory = inventory,
-                           .color = Color::make<"Red">(),
+                           .color = Color::Red,
                            .weapons = weapons,
                            .equipped = rfl::make_field<"weapon">(axe)};
 
