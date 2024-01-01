@@ -44,5 +44,7 @@
 *.json
 *.fb
 *.xml
+*.yml
+*.yaml
 
 !vcpkg.json
