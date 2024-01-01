@@ -44,9 +44,10 @@ struct Reader {
   template <class T, class = void>
   struct has_from_json_obj : std::false_type {};
 
-  // TODO
   template <class T>
-  static constexpr bool has_custom_constructor = false;
+  static constexpr bool has_custom_constructor = (requires(InputVarType var) {
+    T::from_yaml_obj(var);
+  });
 
   rfl::Result<InputVarType> get_field(
       const std::string& _name, const InputObjectType& _obj) const noexcept {
@@ -136,7 +137,11 @@ struct Reader {
   template <class T>
   rfl::Result<T> use_custom_constructor(
       const InputVarType _var) const noexcept {
-    return rfl::Error("TODO");
+    try {
+      return T::from_yaml_obj(_var);
+    } catch (std::exception& e) {
+      return rfl::Error(e.what());
+    }
   }
 };
 

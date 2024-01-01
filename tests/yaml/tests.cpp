@@ -3,6 +3,7 @@
 #include "test_custom_class1.hpp"
 #include "test_custom_class3.hpp"
 #include "test_custom_class4.hpp"
+#include "test_custom_constructor.hpp"
 #include "test_default_values.hpp"
 #include "test_deque.hpp"
 #include "test_enum.hpp"
@@ -59,6 +60,7 @@ int main() {
   test_custom_class3::test();
   test_custom_class4::test();
   test_default_values::test();
+  test_custom_constructor::test();
   test_save_load::test();
 
   return 0;
