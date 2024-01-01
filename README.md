@@ -32,7 +32,7 @@ The following table lists the serialization formats currently supported by refle
 | Format       | Library                                              | Version      | License    | Remarks                                              |
 |--------------|------------------------------------------------------|--------------|------------| -----------------------------------------------------|
 | JSON         | [YYJSON](https://github.com/ibireme/yyjson)          | >= 0.8.0     | MIT        | out-of-the-box support, included in this repository  |
-| flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26#1 | Apache 2.0 |                                                      |
+| flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 |                                                      |
 | XML          | [pugixml](https://github.com/zeux/pugixml)           | >= 1.14      | MIT        |                                                      |
 | YAML         | [yaml-cpp](https://github.com/jbeder/yaml-cpp)       | >= 0.8.0     | MIT        |                                                      |
 
