@@ -427,6 +427,7 @@ add_subdirectory(reflect-cpp) # Add this project as a subdirectory
 
 set(REFLECTCPP_FLEXBUFFERS ON) # Optional
 set(REFLECTCPP_XML ON) # Optional
+set(REFLECTCPP_YAML ON) # Optional
 
 target_link_libraries(your_project PRIVATE reflectcpp) # Link against the library
 ```
@@ -470,7 +471,7 @@ git submodule update --init
 ./vcpkg/bootstrap-vcpkg.bat # Windows
 # You may be prompted to install additional dependencies.
 
-cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
 ```
@@ -481,6 +482,7 @@ To run the tests, do the following:
 ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
 ./build/tests/json/reflect-cpp-json-tests
 ./build/tests/xml/reflect-cpp-xml-tests
+./build/tests/xml/reflect-cpp-yaml-tests
 ```
 
 ## How to contribute
