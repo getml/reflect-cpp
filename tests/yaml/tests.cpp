@@ -1,6 +1,9 @@
 #include <iostream>
 #include <rfl.hpp>
-#include <rfl/yaml.hpp>
+#include <string>
+#include <vector>
+
+#include "write_and_read.hpp"
 
 using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
 
@@ -37,7 +40,7 @@ int main() {
              .email = "homer@simpson.com",
              .children = std::vector<Person>({bart, lisa, maggie})};
 
-  rfl::yaml::write(homer, std::cout) << std::endl << std::endl;
+  write_and_read(homer);
 
   return 0;
 }

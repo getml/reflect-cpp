@@ -2,7 +2,6 @@
 #define RFL_YAML_READER_HPP_
 
 #include <yaml-cpp/yaml.h>
-#include <yyjson.h>  // TODO: Remove
 
 #include <array>
 #include <exception>
@@ -23,139 +22,113 @@ namespace rfl {
 namespace yaml {
 
 struct Reader {
-  struct YYJSONInputArray {
-    YYJSONInputArray(yyjson_val* _val) : val_(_val) {}
-    yyjson_val* val_;
+  struct YAMLInputArray {
+    YAMLInputArray(const YAML::Node& _node) : node_(_node) {}
+    YAML::Node node_;
   };
 
-  struct YYJSONInputObject {
-    YYJSONInputObject(yyjson_val* _val) : val_(_val) {}
-    yyjson_val* val_;
+  struct YAMLInputObject {
+    YAMLInputObject(const YAML::Node& _node) : node_(_node) {}
+    YAML::Node node_;
   };
 
-  struct YYJSONInputVar {
-    YYJSONInputVar() : val_(nullptr) {}
-    YYJSONInputVar(yyjson_val* _val) : val_(_val) {}
-    yyjson_val* val_;
+  struct YAMLInputVar {
+    YAMLInputVar(const YAML::Node& _node) : node_(_node) {}
+    YAML::Node node_;
   };
 
-  using InputArrayType = YYJSONInputArray;
-  using InputObjectType = YYJSONInputObject;
-  using InputVarType = YYJSONInputVar;
+  using InputArrayType = YAMLInputArray;
+  using InputObjectType = YAMLInputObject;
+  using InputVarType = YAMLInputVar;
 
   template <class T, class = void>
   struct has_from_json_obj : std::false_type {};
 
+  // TODO
   template <class T>
-  struct has_from_json_obj<
-      T,
-      std::enable_if_t<std::is_invocable_r<
-          T, decltype(T::from_json_obj), typename Reader::InputVarType>::value>>
-      : std::true_type {};
-
-  template <class T>
-  struct has_from_json_obj<T, std::enable_if_t<std::is_invocable_r<
-                                  rfl::Result<T>, decltype(T::from_json_obj),
-                                  typename Reader::InputVarType>::value>>
-      : std::true_type {};
-
-  template <class T>
-  static constexpr bool has_custom_constructor = has_from_json_obj<T>::value;
+  static constexpr bool has_custom_constructor = false;
 
   rfl::Result<InputVarType> get_field(
-      const std::string& _name, const InputObjectType _obj) const noexcept {
-    const auto var = InputVarType(yyjson_obj_get(_obj.val_, _name.c_str()));
-    if (!var.val_) {
+      const std::string& _name, const InputObjectType& _obj) const noexcept {
+    auto var = InputVarType(_obj.node_[_name]);
+    if (!var.node_) {
       return rfl::Error("Object contains no field named '" + _name + "'.");
     }
     return var;
   }
 
-  bool is_empty(const InputVarType _var) const noexcept {
-    return !_var.val_ || yyjson_is_null(_var.val_);
+  bool is_empty(const InputVarType& _var) const noexcept {
+    return !_var.node_ && true;
   }
 
   template <class T>
-  rfl::Result<T> to_basic_type(const InputVarType _var) const noexcept {
-    if constexpr (std::is_same<std::decay_t<T>, std::string>()) {
-      const auto r = yyjson_get_str(_var.val_);
-      if (r == NULL) {
-        return rfl::Error("Could not cast to string.");
+  rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
+    try {
+      if constexpr (std::is_same<std::decay_t<T>, std::string>() ||
+                    std::is_same<std::decay_t<T>, bool>() ||
+                    std::is_floating_point<std::decay_t<T>>() ||
+                    std::is_integral<std::decay_t<T>>()) {
+        return _var.node_.as<std::decay_t<T>>();
+      } else {
+        static_assert(rfl::always_false_v<T>, "Unsupported type.");
       }
-      return std::string(r);
-    } else if constexpr (std::is_same<std::decay_t<T>, bool>()) {
-      if (!yyjson_is_bool(_var.val_)) {
-        return rfl::Error("Could not cast to boolean.");
-      }
-      return yyjson_get_bool(_var.val_);
-    } else if constexpr (std::is_floating_point<std::decay_t<T>>()) {
-      if (!yyjson_is_num(_var.val_)) {
-        return rfl::Error("Could not cast to double.");
-      }
-      return static_cast<T>(yyjson_get_num(_var.val_));
-    } else if constexpr (std::is_integral<std::decay_t<T>>()) {
-      if (!yyjson_is_int(_var.val_)) {
-        return rfl::Error("Could not cast to int.");
-      }
-      return static_cast<T>(yyjson_get_int(_var.val_));
-    } else {
-      static_assert(rfl::always_false_v<T>, "Unsupported type.");
+    } catch (std::exception& e) {
+      return rfl::Error(e.what());
     }
   }
 
-  rfl::Result<InputArrayType> to_array(const InputVarType _var) const noexcept {
-    if (!yyjson_is_arr(_var.val_)) {
-      return rfl::Error("Could not cast to array!");
+  rfl::Result<InputArrayType> to_array(
+      const InputVarType& _var) const noexcept {
+    if (!_var.node_.IsSequence()) {
+      return rfl::Error("Could not cast to sequence!");
     }
-    return InputArrayType(_var.val_);
+    return InputArrayType(_var.node_);
   }
 
   template <size_t size, class FunctionType>
   std::array<std::optional<InputVarType>, size> to_fields_array(
-      const FunctionType _fct, const InputObjectType _obj) const noexcept {
+      const FunctionType& _fct, const InputObjectType& _obj) const noexcept {
     std::array<std::optional<InputVarType>, size> f_arr;
-    yyjson_obj_iter iter;
-    yyjson_obj_iter_init(_obj.val_, &iter);
-    yyjson_val* key;
-    while ((key = yyjson_obj_iter_next(&iter))) {
-      const char* k = yyjson_get_str(key);
-      const auto ix = _fct(std::string_view(k));
-      if (ix != -1) {
-        f_arr[ix] = InputVarType(yyjson_obj_iter_get_val(key));
+    for (const auto& p : _obj.node_) {
+      try {
+        const auto k = p.first.as<std::string>();
+        const auto ix = _fct(std::string_view(k));
+        if (ix != -1) {
+          f_arr[ix] = InputVarType(p.second);
+        }
+      } catch (std::exception& e) {
+        continue;
       }
     }
     return f_arr;
   }
 
   std::vector<std::pair<std::string, InputVarType>> to_map(
-      const InputObjectType _obj) const noexcept {
+      const InputObjectType& _obj) const noexcept {
     std::vector<std::pair<std::string, InputVarType>> m;
-    yyjson_obj_iter iter;
-    yyjson_obj_iter_init(_obj.val_, &iter);
-    yyjson_val* key;
-    while ((key = yyjson_obj_iter_next(&iter))) {
-      auto p = std::make_pair(yyjson_get_str(key),
-                              InputVarType(yyjson_obj_iter_get_val(key)));
-      m.emplace_back(std::move(p));
+    for (const auto& p : _obj.node_) {
+      try {
+        auto k = p.first.as<std::string>();
+        m.emplace_back(std::make_pair(k, p.second));
+      } catch (std::exception& e) {
+        continue;
+      }
     }
     return m;
   }
 
   rfl::Result<InputObjectType> to_object(
-      const InputVarType _var) const noexcept {
-    if (!yyjson_is_obj(_var.val_)) {
-      return rfl::Error("Could not cast to object!");
+      const InputVarType& _var) const noexcept {
+    if (!_var.node_.IsMap()) {
+      return rfl::Error("Could not cast to map!");
     }
-    return InputObjectType(_var.val_);
+    return InputObjectType(_var.node_);
   }
 
-  std::vector<InputVarType> to_vec(const InputArrayType _arr) const noexcept {
+  std::vector<InputVarType> to_vec(const InputArrayType& _arr) const noexcept {
     std::vector<InputVarType> vec;
-    yyjson_val* val;
-    yyjson_arr_iter iter;
-    yyjson_arr_iter_init(_arr.val_, &iter);
-    while ((val = yyjson_arr_iter_next(&iter))) {
-      vec.push_back(InputVarType(val));
+    for (size_t i = 0; i < _arr.node_.size(); ++i) {
+      vec.push_back(InputVarType(_arr.node_[i]));
     }
     return vec;
   }
@@ -163,11 +136,7 @@ struct Reader {
   template <class T>
   rfl::Result<T> use_custom_constructor(
       const InputVarType _var) const noexcept {
-    try {
-      return T::from_json_obj(_var);
-    } catch (std::exception& e) {
-      return rfl::Error(e.what());
-    }
+    return rfl::Error("TODO");
   }
 };
 

@@ -5,7 +5,7 @@
 #include "yaml/Reader.hpp"
 #include "yaml/Writer.hpp"
 // TODO #include "yaml/load.hpp"
-// TODO #include "yaml/read.hpp"
+#include "yaml/read.hpp"
 // TODO #include "yaml/save.hpp"
 #include "yaml/write.hpp"
 
