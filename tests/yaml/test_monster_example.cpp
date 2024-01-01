@@ -31,7 +31,7 @@ struct Monster {
   short hp = 100;
   std::string name;
   bool friendly = false;
-  std::vector<std::uint8_t> inventory;
+  std::vector<int> inventory;
   Color color = Color::make<"Blue">();
   std::vector<Weapon> weapons;
   Equipment equipped;
@@ -48,8 +48,7 @@ void test() {
 
   const auto position = Vec3{1.0f, 2.0f, 3.0f};
 
-  const auto inventory =
-      std::vector<std::uint8_t>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+  const auto inventory = std::vector<int>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
 
   const auto orc = Monster{.pos = position,
                            .mana = 150,
@@ -61,6 +60,5 @@ void test() {
                            .equipped = rfl::make_field<"weapon">(axe)};
 
   write_and_read(orc);
-  
 }
 }  // namespace test_monster_example

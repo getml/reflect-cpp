@@ -18,7 +18,9 @@
 #include "test_map_with_key_validation.hpp"
 #include "test_monster_example.hpp"
 #include "test_readme_example.hpp"
+#include "test_readme_example2.hpp"
 #include "test_ref.hpp"
+#include "test_save_load.hpp"
 #include "test_set.hpp"
 #include "test_size.hpp"
 #include "test_tagged_union.hpp"
@@ -29,6 +31,7 @@
 
 int main() {
   test_readme_example::test();
+  test_readme_example2::test();
   test_flatten::test();
   test_flatten_anonymous::test();
   test_enum::test();
@@ -56,6 +59,7 @@ int main() {
   test_custom_class3::test();
   test_custom_class4::test();
   test_default_values::test();
+  test_save_load::test();
 
   return 0;
 }
