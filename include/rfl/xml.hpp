@@ -1,5 +1,5 @@
-#ifndef FLEXBUF_XML_HPP_
-#define FLEXBUF_XML_HPP_
+#ifndef RFL_XML_HPP_
+#define RFL_XML_HPP_
 
 #include "xml/Parser.hpp"
 #include "xml/Reader.hpp"
