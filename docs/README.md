@@ -60,6 +60,8 @@
 
 5.3) [XML](https://github.com/getml/reflect-cpp/blob/main/docs/xml.md)
 
+5.4) [YAML](https://github.com/getml/reflect-cpp/blob/main/docs/yaml.md)
+
 ## 6) Advanced topics
 
 6.1) [Supporting your own format](https://github.com/getml/reflect-cpp/blob/main/docs/supporting_your_own_format.md) - For supporting your own serialization and deserialization formats.
