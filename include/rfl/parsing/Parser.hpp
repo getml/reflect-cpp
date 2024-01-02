@@ -15,6 +15,7 @@
 #include "Parser_reference_wrapper.hpp"
 #include "Parser_rename.hpp"
 #include "Parser_result.hpp"
+#include "Parser_rfl_array.hpp"
 #include "Parser_rfl_variant.hpp"
 #include "Parser_shared_ptr.hpp"
 #include "Parser_tagged_union.hpp"

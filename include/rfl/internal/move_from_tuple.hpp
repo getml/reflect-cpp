@@ -4,6 +4,7 @@
 #include <functional>
 #include <type_traits>
 
+#include "../Array.hpp"
 #include "is_flatten_field.hpp"
 #include "is_named_tuple.hpp"
 #include "ptr_tuple_t.hpp"
@@ -95,14 +96,18 @@ auto make_tuple_from_element(T (*arr)[n]) {
   }
 }
 
-auto make_tuple_from_element(auto &e) {
-  return std::make_tuple(e);
+template <class T>
+auto make_tuple_from_element(Array<T>* arr) {
+  return make_tuple_from_element(reinterpret_cast<T*>(arr));
 }
 
-auto flatten_c_arrays(const auto &tuple) {
+auto make_tuple_from_element(auto& e) { return std::make_tuple(e); }
+
+auto flatten_c_arrays(const auto& tuple) {
   return [&]<std::size_t... i>(std::index_sequence<i...>) {
     return std::tuple_cat(make_tuple_from_element(std::get<i>(tuple))...);
-  }(std::make_index_sequence<std::tuple_size_v<std::remove_cvref_t<decltype(tuple)>>>());
+  }(std::make_index_sequence<
+             std::tuple_size_v<std::remove_cvref_t<decltype(tuple)>>>());
 }
 
 /// Creates a struct of type T from a tuple by moving the underlying
@@ -113,7 +118,8 @@ T move_from_tuple(TupleType&& _t) {
 
   using TargetTupleType = tuple_t<std::remove_cvref_t<T>>;
 
-  auto pointers = flatten_c_arrays(unflatten_ptr_tuple<TargetTupleType>(ptr_tuple));
+  auto pointers =
+      flatten_c_arrays(unflatten_ptr_tuple<TargetTupleType>(ptr_tuple));
   return move_from_pointers<T>(pointers);
 }
 

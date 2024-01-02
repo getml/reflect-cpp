@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "Array.hpp"
 #include "Literal.hpp"
 #include "default.hpp"
 #include "internal/StringLiteral.hpp"
@@ -134,31 +135,14 @@ struct Field {
   Type value_;
 };
 
-/// Used to define a field in the NamedTuple.
-template <internal::StringLiteral _name, class T, std::size_t _n>
-struct Field<_name, T[_n]> : Field<_name, internal::to_std_array_t<T[_n]>> {
-  /// The underlying type.
-  using Type = T[_n];
-
-  using StdArray = internal::to_std_array_t<T[_n]>;
-
-  using Field<_name, StdArray>::Field;
-
-  Type& c_array() { return reinterpret_cast<Type&>(this->value_); }
-
-  const Type& c_array() const {
-    return reinterpret_cast<const Type&>(this->value_);
-  }
-};
-
 template <internal::StringLiteral _name, class T>
 inline auto make_field(T&& _value) {
-  return Field<_name, T>(std::forward<T>(_value));
-}
-
-template <internal::StringLiteral _name, class T>
-inline auto make_field(const T& _value) {
-  return Field<_name, T>(_value);
+  using T0 = std::remove_cvref_t<T>;
+  if constexpr (std::is_array_v<T0>) {
+    return Field<_name, T0>(rfl::Array<T0>(std::forward<T>(_value)));
+  } else {
+    return Field<_name, T0>(std::forward<T>(_value));
+  }
 }
 
 }  // namespace rfl

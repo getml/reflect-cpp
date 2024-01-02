@@ -43,20 +43,16 @@ class NamedTuple {
                   "Duplicate field names are not allowed");
   }
 
-  static auto get(auto &&tuple) {
-    return reinterpret_cast<std::tuple<typename std::remove_cvref<FieldTypes>::type::Type...>&&>(tuple);
-  }
-
   /// Construct from the fields.
   NamedTuple(FieldTypes&&... _fields)
-      : values_(get(std::make_tuple(std::move(_fields.value_)...))) {
+      : values_(std::make_tuple(std::move(_fields.value_)...)) {
     static_assert(no_duplicate_field_names(),
                   "Duplicate field names are not allowed");
   }
 
   /// Construct from the fields.
   NamedTuple(const FieldTypes&... _fields)
-      : values_(get(std::make_tuple(_fields.value_...))) {
+      : values_(std::make_tuple(_fields.value_...)) {
     static_assert(no_duplicate_field_names(),
                   "Duplicate field names are not allowed");
   }

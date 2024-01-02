@@ -3,6 +3,7 @@
 
 #include <type_traits>
 
+#include "../Array.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../internal/to_std_array.hpp"
@@ -25,7 +26,8 @@ struct Parser<R, W, T[_size]> {
   using CArray = T[_size];
   using StdArray = internal::to_std_array_t<T[_size]>;
 
-  static auto read(const R& _r, const InputVarType& _var) noexcept {
+  static Result<Array<T[_size]>> read(const R& _r,
+                                      const InputVarType& _var) noexcept {
     return Parser<R, W, StdArray>::read(_r, _var);
   }
 
