@@ -57,7 +57,7 @@ struct Parser<R, W, std::variant<FieldTypes...>> {
     } else {
       const auto handle = [&](const auto& _v) {
         using Type = std::remove_cvref_t<decltype(_v)>;
-        return Parser<R, W, Type>::write(_w, _v);
+        Parser<R, W, Type>::write(_w, _v, _parent);
       };
       return std::visit(handle, _variant);
     }
