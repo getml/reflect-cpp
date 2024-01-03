@@ -37,7 +37,7 @@ struct Parser<R, W, std::optional<T>> {
       ParentType::add_null(_w, _parent);
       return;
     }
-    Parser<R, W, std::decay_t<T>>::write(_w, *_o, _parent);
+    Parser<R, W, std::remove_cvref_t<T>>::write(_w, *_o, _parent);
   }
 };
 

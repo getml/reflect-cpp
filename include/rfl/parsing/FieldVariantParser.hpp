@@ -61,7 +61,7 @@ struct FieldVariantParser {
 
     const auto handle = [&](const auto& _field) {
       const auto named_tuple = make_named_tuple(internal::to_ptr_field(_field));
-      using NamedTupleType = std::decay_t<decltype(named_tuple)>;
+      using NamedTupleType = std::remove_cvref_t<decltype(named_tuple)>;
       Parser<R, W, NamedTupleType>::write(_w, named_tuple, _parent);
     };
 

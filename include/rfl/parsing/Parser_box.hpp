@@ -25,7 +25,7 @@ struct Parser<R, W, Box<T>> {
   template <class P>
   static void write(const W& _w, const Box<T>& _box,
                     const P& _parent) noexcept {
-    Parser<R, W, std::decay_t<T>>::write(_w, *_box, _parent);
+    Parser<R, W, std::remove_cvref_t<T>>::write(_w, *_box, _parent);
   }
 };
 

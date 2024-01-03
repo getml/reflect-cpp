@@ -58,7 +58,7 @@ struct VectorParser {
           _w, std::distance(_vec.begin(), _vec.end()), _parent);
       const auto new_parent = typename ParentType::Array{&arr};
       for (const auto& v : _vec) {
-        Parser<R, W, std::decay_t<T>>::write(_w, v, new_parent);
+        Parser<R, W, std::remove_cvref_t<T>>::write(_w, v, new_parent);
       }
       _w.end_array(&arr);
     }

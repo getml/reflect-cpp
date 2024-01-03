@@ -32,7 +32,7 @@ struct Parent {
   template <class ParentType>
   static OutputArrayType add_array(const W& _w, const size_t _size,
                                    const ParentType& _parent) {
-    using Type = std::decay_t<ParentType>;
+    using Type = std::remove_cvref_t<ParentType>;
     if constexpr (std::is_same<Type, Array>()) {
       return _w.add_array_to_array(_size, _parent.arr_);
     } else if constexpr (std::is_same<Type, Object>()) {
@@ -47,7 +47,7 @@ struct Parent {
   template <class ParentType>
   static OutputObjectType add_object(const W& _w, const size_t _size,
                                      const ParentType& _parent) {
-    using Type = std::decay_t<ParentType>;
+    using Type = std::remove_cvref_t<ParentType>;
     if constexpr (std::is_same<Type, Array>()) {
       return _w.add_object_to_array(_size, _parent.arr_);
     } else if constexpr (std::is_same<Type, Object>()) {
@@ -61,11 +61,11 @@ struct Parent {
 
   template <class ParentType>
   static OutputVarType add_null(const W& _w, const ParentType& _parent) {
-    using Type = std::decay_t<ParentType>;
+    using Type = std::remove_cvref_t<ParentType>;
     if constexpr (std::is_same<Type, Array>()) {
       return _w.add_null_to_array(_parent.arr_);
     } else if constexpr (std::is_same<Type, Object>()) {
-      if constexpr (supports_attributes<std::decay_t<W>>) {
+      if constexpr (supports_attributes<std::remove_cvref_t<W>>) {
         return _w.add_null_to_object(_parent.name_, _parent.obj_,
                                      _parent.is_attribute_);
       } else {
@@ -81,11 +81,11 @@ struct Parent {
   template <class ParentType, class T>
   static OutputVarType add_value(const W& _w, const T& _var,
                                  const ParentType& _parent) {
-    using Type = std::decay_t<ParentType>;
+    using Type = std::remove_cvref_t<ParentType>;
     if constexpr (std::is_same<Type, Array>()) {
       return _w.add_value_to_array(_var, _parent.arr_);
     } else if constexpr (std::is_same<Type, Object>()) {
-      if constexpr (supports_attributes<std::decay_t<W>>) {
+      if constexpr (supports_attributes<std::remove_cvref_t<W>>) {
         return _w.add_value_to_object(_parent.name_, _var, _parent.obj_,
                                       _parent.is_attribute_);
       } else {

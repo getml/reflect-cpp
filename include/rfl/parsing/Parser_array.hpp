@@ -52,7 +52,7 @@ struct Parser<R, W, std::array<T, _size>> {
     auto arr = ParentType::add_array(_w, _size, _parent);
     const auto new_parent = typename ParentType::Array{&arr};
     for (auto it = _arr.begin(); it != _arr.end(); ++it) {
-      Parser<R, W, std::decay_t<T>>::write(_w, *it, new_parent);
+      Parser<R, W, std::remove_cvref_t<T>>::write(_w, *it, new_parent);
     }
     _w.end_array(&arr);
   }
