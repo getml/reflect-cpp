@@ -16,8 +16,6 @@ struct Array {
   Array() = default;
   Array(const StdArrayType &_arr) : arr_(_arr) {}
   Array(StdArrayType &&_arr) : arr_(std::move(_arr)) {}
-  Array(const T &_t) : arr_(reinterpret_cast<const StdArrayType &>(_t)) {}
-  Array(T &&_t) : arr_(reinterpret_cast<StdArrayType &&>(_t)) {}
 
   ~Array() = default;
 
