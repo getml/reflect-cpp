@@ -15,7 +15,7 @@ namespace internal {
 
 template <class OriginalStruct>
 auto move_to_field_tuple(OriginalStruct&& _t) {
-  using T = std::decay_t<OriginalStruct>;
+  using T = std::remove_cvref_t<OriginalStruct>;
   if constexpr (is_named_tuple_v<T>) {
     return _t.fields();
   } else if constexpr (has_fields<T>()) {

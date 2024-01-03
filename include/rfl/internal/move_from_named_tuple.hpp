@@ -17,13 +17,15 @@ template <class PtrFieldTupleType, class PtrNamedTupleType, class... Args>
 auto make_ptr_fields(PtrNamedTupleType& _n, Args... _args) {
   constexpr auto i = sizeof...(Args);
 
-  constexpr auto size = std::tuple_size_v<std::decay_t<PtrFieldTupleType>>;
+  constexpr auto size =
+      std::tuple_size_v<std::remove_cvref_t<PtrFieldTupleType>>;
 
   if constexpr (i == size) {
     return std::make_tuple(_args...);
   } else {
-    using Field = std::decay_t<std::tuple_element_t<i, PtrFieldTupleType>>;
-    using T = std::decay_t<std::remove_pointer_t<typename Field::Type>>;
+    using Field =
+        std::remove_cvref_t<std::tuple_element_t<i, PtrFieldTupleType>>;
+    using T = std::remove_cvref_t<std::remove_pointer_t<typename Field::Type>>;
 
     if constexpr (is_named_tuple_v<T>) {
       using SubPtrNamedTupleType =
@@ -34,7 +36,7 @@ auto make_ptr_fields(PtrNamedTupleType& _n, Args... _args) {
           _n, _args..., SubPtrNamedTupleType(_n).fields());
 
     } else if constexpr (is_flatten_field<Field>::value) {
-      using SubPtrFieldTupleType = std::decay_t<ptr_field_tuple_t<T>>;
+      using SubPtrFieldTupleType = std::remove_cvref_t<ptr_field_tuple_t<T>>;
 
       return make_ptr_fields<PtrFieldTupleType>(
           _n, _args..., make_ptr_fields<SubPtrFieldTupleType>(_n));
@@ -49,10 +51,10 @@ auto make_ptr_fields(PtrNamedTupleType& _n, Args... _args) {
 template <class T, class Pointers, class... Args>
 auto move_from_ptr_fields(Pointers& _ptrs, Args&&... _args) {
   constexpr auto i = sizeof...(Args);
-  if constexpr (i == std::tuple_size_v<std::decay_t<Pointers>>) {
+  if constexpr (i == std::tuple_size_v<std::remove_cvref_t<Pointers>>) {
     return T{std::move(_args)...};
   } else {
-    using FieldType = std::tuple_element_t<i, std::decay_t<Pointers>>;
+    using FieldType = std::tuple_element_t<i, std::remove_cvref_t<Pointers>>;
 
     if constexpr (is_field_v<FieldType>) {
       return move_from_ptr_fields<T>(
@@ -61,9 +63,9 @@ auto move_from_ptr_fields(Pointers& _ptrs, Args&&... _args) {
               std::move(*std::get<i>(_ptrs).value())));
 
     } else {
-      using PtrFieldTupleType = std::decay_t<ptr_field_tuple_t<T>>;
+      using PtrFieldTupleType = std::remove_cvref_t<ptr_field_tuple_t<T>>;
 
-      using U = std::decay_t<std::remove_pointer_t<
+      using U = std::remove_cvref_t<std::remove_pointer_t<
           typename std::tuple_element_t<i, PtrFieldTupleType>::Type>>;
 
       return move_from_ptr_fields<T>(
@@ -77,16 +79,16 @@ auto move_from_ptr_fields(Pointers& _ptrs, Args&&... _args) {
 /// fields.
 template <class T, class NamedTupleType>
 T move_from_named_tuple(NamedTupleType&& _n) {
-  using RequiredType = std::decay_t<named_tuple_t<T>>;
+  using RequiredType = std::remove_cvref_t<named_tuple_t<T>>;
 
-  if constexpr (is_named_tuple_v<std::decay_t<T>>) {
+  if constexpr (is_named_tuple_v<std::remove_cvref_t<T>>) {
     return std::move(_n);
 
-  } else if constexpr (std::is_same<std::decay_t<NamedTupleType>,
+  } else if constexpr (std::is_same<std::remove_cvref_t<NamedTupleType>,
                                     RequiredType>()) {
     auto ptr_named_tuple = nt_to_ptr_named_tuple(_n);
 
-    using PtrFieldTupleType = std::decay_t<ptr_field_tuple_t<T>>;
+    using PtrFieldTupleType = std::remove_cvref_t<ptr_field_tuple_t<T>>;
 
     auto pointers = make_ptr_fields<PtrFieldTupleType>(ptr_named_tuple);
 

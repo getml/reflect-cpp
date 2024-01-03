@@ -143,13 +143,13 @@ class Writer {
  private:
   template <class T>
   OutputVarType from_basic_type(const T& _var) const noexcept {
-    if constexpr (std::is_same<std::decay_t<T>, std::string>()) {
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       return OutputVarType(yyjson_mut_strcpy(doc_, _var.c_str()));
-    } else if constexpr (std::is_same<std::decay_t<T>, bool>()) {
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       return OutputVarType(yyjson_mut_bool(doc_, _var));
-    } else if constexpr (std::is_floating_point<std::decay_t<T>>()) {
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       return OutputVarType(yyjson_mut_real(doc_, static_cast<double>(_var)));
-    } else if constexpr (std::is_integral<std::decay_t<T>>()) {
+    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       return OutputVarType(yyjson_mut_int(doc_, static_cast<int>(_var)));
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");

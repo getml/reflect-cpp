@@ -8,6 +8,10 @@
 #include "test_as2.hpp"
 #include "test_as_flatten.hpp"
 #include "test_box.hpp"
+#include "test_c_array_class1.hpp"
+#include "test_c_array_class2.hpp"
+#include "test_c_array_class3.hpp"
+#include "test_c_array_class4.hpp"
 #include "test_custom_class1.hpp"
 #include "test_custom_class2.hpp"
 #include "test_custom_class3.hpp"
@@ -135,5 +139,9 @@ int main() {
 
   test_meta_fields::test();
 
+  test_c_array_class1::test();
+  test_c_array_class2::test();
+  test_c_array_class3::test();
+  test_c_array_class4::test();
   return 0;
 }

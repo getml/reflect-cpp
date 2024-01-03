@@ -79,10 +79,10 @@ struct FieldVariantParser {
           "'" +
           _disc_value + "'.");
     } else {
-      using FieldType = std::decay_t<
+      using FieldType = std::remove_cvref_t<
           typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type>;
 
-      using ValueType = std::decay_t<typename FieldType::Type>;
+      using ValueType = std::remove_cvref_t<typename FieldType::Type>;
 
       const auto key = FieldType::name_.str();
 

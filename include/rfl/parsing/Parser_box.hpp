@@ -18,7 +18,8 @@ struct Parser<R, W, Box<T>> {
 
   static Result<Box<T>> read(const R& _r, const InputVarType& _var) noexcept {
     const auto to_box = [](auto&& _t) { return Box<T>::make(std::move(_t)); };
-    return Parser<R, W, std::decay_t<T>>::read(_r, _var).transform(to_box);
+    return Parser<R, W, std::remove_cvref_t<T>>::read(_r, _var).transform(
+        to_box);
   }
 
   template <class P>

@@ -34,7 +34,7 @@ struct Parser {
       return _r.template use_custom_constructor<T>(_var);
     } else {
       if constexpr (internal::has_reflection_type_v<T>) {
-        using ReflectionType = std::decay_t<typename T::ReflectionType>;
+        using ReflectionType = std::remove_cvref_t<typename T::ReflectionType>;
         const auto wrap_in_t = [](auto _named_tuple) -> Result<T> {
           try {
             return T(_named_tuple);
@@ -58,7 +58,7 @@ struct Parser {
         return _r.template to_basic_type<std::string>(_var).and_then(
             StringConverter::string_to_enum);
       } else if constexpr (internal::is_basic_type_v<T>) {
-        return _r.template to_basic_type<std::decay_t<T>>(_var);
+        return _r.template to_basic_type<std::remove_cvref_t<T>>(_var);
       } else {
         static_assert(
             always_false_v<T>,

@@ -59,22 +59,22 @@ struct Reader {
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
-    if constexpr (std::is_same<std::decay_t<T>, std::string>()) {
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       if (!_var.IsString()) {
         return rfl::Error("Could not cast to string.");
       }
       return std::string(_var.AsString().c_str());
-    } else if constexpr (std::is_same<std::decay_t<T>, bool>()) {
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var.IsBool()) {
         return rfl::Error("Could not cast to boolean.");
       }
       return _var.AsBool();
-    } else if constexpr (std::is_floating_point<std::decay_t<T>>()) {
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       if (!_var.IsNumeric()) {
         return rfl::Error("Could not cast to double.");
       }
       return static_cast<T>(_var.AsDouble());
-    } else if constexpr (std::is_integral<std::decay_t<T>>()) {
+    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       if (!_var.IsNumeric()) {
         return rfl::Error("Could not cast to int.");
       }

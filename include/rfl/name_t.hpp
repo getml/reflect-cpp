@@ -7,7 +7,7 @@ namespace rfl {
 
 /// Convenience class to retrieve the name of a field.
 template <class FieldType>
-using name_t = typename std::decay_t<FieldType>::Name;
+using name_t = typename std::remove_cvref_t<FieldType>::Name;
 
 }  // namespace rfl
 

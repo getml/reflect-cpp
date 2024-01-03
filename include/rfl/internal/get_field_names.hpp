@@ -75,13 +75,13 @@ auto get_field_names();
 
 template <auto ptr>
 auto get_field_name() {
-  using Type = std::decay_t<std::remove_pointer_t<
+  using Type = std::remove_cvref_t<std::remove_pointer_t<
       typename std::remove_pointer_t<decltype(ptr)>::Type>>;
   if constexpr (is_rename_v<Type>) {
     using Name = typename Type::Name;
     return Name();
   } else if constexpr (is_flatten_field_v<Type>) {
-    return get_field_names<std::decay_t<typename Type::Type>>();
+    return get_field_names<std::remove_cvref_t<typename Type::Type>>();
   } else {
     return rfl::Literal<get_field_name_str_lit<ptr>()>();
   }
@@ -114,7 +114,7 @@ template <class T>
 #endif
 #endif
 auto get_field_names() {
-  if constexpr (std::is_pointer_v<std::decay_t<T>>) {
+  if constexpr (std::is_pointer_v<std::remove_cvref_t<T>>) {
     return get_field_names<std::remove_pointer_t<T>>();
   } else {
     constexpr auto ptr_tuple = to_ptr_tuple(fake_object<T>);

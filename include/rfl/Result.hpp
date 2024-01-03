@@ -3,11 +3,14 @@
 
 #include <optional>
 #include <ranges>
+#include <span>
 #include <stdexcept>
 #include <tuple>
 #include <type_traits>
 #include <variant>
 #include <vector>
+
+#include "internal/to_std_array.hpp"
 
 namespace rfl {
 
@@ -79,7 +82,7 @@ class Result {
 
     const auto handle_variant =
         [&]<class TOrError>(TOrError&& _t_or_err) -> Result_U {
-      if constexpr (!std::is_same<std::decay_t<TOrError>, Error>()) {
+      if constexpr (!std::is_same<std::remove_cvref_t<TOrError>, Error>()) {
         return _f(std::forward<TOrError>(_t_or_err));
       } else {
         return std::forward<TOrError>(_t_or_err);
@@ -212,7 +215,7 @@ class Result {
   Result<T> or_else(const F& _f) {
     const auto handle_variant =
         [&]<class TOrError>(TOrError&& _t_or_err) -> Result<T> {
-      if constexpr (std::is_same<std::decay_t<TOrError>, Error>()) {
+      if constexpr (std::is_same<std::remove_cvref_t<TOrError>, Error>()) {
         return _f(std::forward<Error>(_t_or_err));
       } else {
         return std::forward<T>(_t_or_err);
@@ -252,7 +255,7 @@ class Result {
 
     const auto handle_variant =
         [&]<class TOrError>(TOrError&& _t_or_err) -> rfl::Result<U> {
-      if constexpr (!std::is_same<std::decay_t<TOrError>, Error>()) {
+      if constexpr (!std::is_same<std::remove_cvref_t<TOrError>, Error>()) {
         return _f(std::forward<TOrError>(_t_or_err));
       } else {
         return std::forward<TOrError>(_t_or_err);
@@ -311,7 +314,7 @@ class Result {
   /// Returns the value or a default.
   T value_or(T&& _default) noexcept {
     const auto handle_variant = [&]<class TOrError>(TOrError&& _t_or_err) -> T {
-      using Type = std::decay_t<TOrError>;
+      using Type = std::remove_cvref_t<TOrError>;
       if constexpr (!std::is_same<Type, Error>()) {
         return std::forward<T>(_t_or_err);
       } else {
@@ -342,4 +345,3 @@ class Result {
 }  // namespace rfl
 
 #endif
-

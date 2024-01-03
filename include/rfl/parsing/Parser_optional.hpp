@@ -26,7 +26,8 @@ struct Parser<R, W, std::optional<T>> {
       return std::optional<T>();
     }
     const auto to_opt = [](auto&& _t) { return std::make_optional<T>(_t); };
-    return Parser<R, W, std::decay_t<T>>::read(_r, _var).transform(to_opt);
+    return Parser<R, W, std::remove_cvref_t<T>>::read(_r, _var).transform(
+        to_opt);
   }
 
   template <class P>
