@@ -84,57 +84,33 @@ auto move_from_pointers(Pointers& _ptrs, Args&&... _args) {
 }
 
 template <class T>
-struct is_std_array : public std::false_type {};
-
-template <class T, size_t _n>
-struct is_std_array<std::array<T, _n>> : public std::true_type {};
-
-template <class T>
-constexpr bool is_std_array_v = is_std_array<T>::value;
-
-template <class T, std::size_t _n>
-auto make_tuple_from_element(T (*_arr)[_n]) {
-  if constexpr (std::is_array_v<T> || is_std_array_v<T>) {
-    return [&]<std::size_t... i>(std::index_sequence<i...>) {
-      return std::tuple_cat(make_tuple_from_element(&(*_arr)[i])...);
-    }
-    (std::make_index_sequence<_n>());
-  } else {
-    return [&]<std::size_t... i>(std::index_sequence<i...>) {
-      return std::make_tuple(&(*_arr)[i]...);
-    }
-    (std::make_index_sequence<_n>());
-  }
+auto flatten_array(T* _v) {
+  return std::make_tuple(_v);
 }
 
 template <class T, std::size_t _n>
-auto make_tuple_from_element(std::array<T, _n>* _arr) {
-  if constexpr (std::is_array_v<T> || is_std_array_v<T>) {
-    return [&]<std::size_t... i>(std::index_sequence<i...>) {
-      return std::tuple_cat(make_tuple_from_element(&(*_arr)[i])...);
-    }
-    (std::make_index_sequence<_n>());
-  } else {
-    return [&]<std::size_t... i>(std::index_sequence<i...>) {
-      return std::make_tuple(&(*_arr)[i]...);
-    }
-    (std::make_index_sequence<_n>());
-  }
+auto flatten_array(std::array<T, _n>* _arr) {
+  const auto fct = [](auto&... _v) {
+    return std::tuple_cat(flatten_array(&_v)...);
+  };
+  return std::apply(fct, *_arr);
+}
+
+template <class T>
+auto make_tuple_from_element(T _v) {
+  return std::make_tuple(_v);
 }
 
 template <class T>
 auto make_tuple_from_element(Array<T>* _arr) {
-  return make_tuple_from_element(&(_arr->arr_));
+  return flatten_array(&(_arr->arr_));
 }
 
-auto make_tuple_from_element(auto& e) { return std::make_tuple(e); }
-
-auto flatten_c_arrays(const auto& tuple) {
-  return [&]<std::size_t... i>(std::index_sequence<i...>) {
-    return std::tuple_cat(make_tuple_from_element(std::get<i>(tuple))...);
-  }
-  (std::make_index_sequence<
-      std::tuple_size_v<std::remove_cvref_t<decltype(tuple)>>>());
+auto flatten_c_arrays(const auto& _tup) {
+  const auto fct = [](auto... _v) {
+    return std::tuple_cat(make_tuple_from_element(_v)...);
+  };
+  return std::apply(fct, _tup);
 }
 
 /// Creates a struct of type T from a tuple by moving the underlying
@@ -147,6 +123,7 @@ T move_from_tuple(TupleType&& _t) {
 
   auto pointers =
       flatten_c_arrays(unflatten_ptr_tuple<TargetTupleType>(ptr_tuple));
+
   return move_from_pointers<T>(pointers);
 }
 
