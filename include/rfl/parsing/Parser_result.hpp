@@ -39,17 +39,21 @@ struct Parser<R, W, Result<T>> {
         Parser<R, W, VariantType>::read(_r, _var).transform(to_res));
   }
 
-  static OutputVarType write(const W& _w, const Result<T>& _r) noexcept {
-    const auto write_t = [&](const auto& _t) -> OutputVarType {
-      return Parser<R, W, std::decay_t<T>>::write(_w, _t);
+  template <class P>
+  static void write(const W& _w, const Result<T>& _r,
+                    const P& _parent) noexcept {
+    const auto write_t = [&](const auto& _t) -> Nothing {
+      Parser<R, W, std::decay_t<T>>::write(_w, _t, _parent);
+      return Nothing{};
     };
 
-    const auto write_err = [&](const auto& _err) -> OutputVarType {
-      return Parser<R, W, ErrorType>::write(
-          _w, ErrorType(make_field<"error">(_err.what())));
+    const auto write_err = [&](const auto& _err) -> Nothing {
+      Parser<R, W, ErrorType>::write(
+          _w, ErrorType(make_field<"error">(_err.what())), _parent);
+      return Nothing{};
     };
 
-    return *_r.transform(write_t).or_else(write_err);
+    _r.transform(write_t).or_else(write_err);
   }
 };
 

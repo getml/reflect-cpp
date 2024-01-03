@@ -6,6 +6,7 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "Parent.hpp"
 #include "Parser_base.hpp"
 
 namespace rfl {
@@ -17,7 +18,8 @@ struct Parser<R, W, std::shared_ptr<T>> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
 
-  /// Expresses the variables as type T.
+  using ParentType = Parent<W>;
+
   static Result<std::shared_ptr<T>> read(const R& _r,
                                          const InputVarType& _var) noexcept {
     if (_r.is_empty(*_var)) {
@@ -29,13 +31,14 @@ struct Parser<R, W, std::shared_ptr<T>> {
     return Parser<R, W, std::decay_t<T>>::read(_r, _var).transform(to_ptr);
   }
 
-  /// Expresses the variable a a JSON.
-  static OutputVarType write(const W& _w,
-                             const std::shared_ptr<T>& _s) noexcept {
+  template <class P>
+  static OutputVarType write(const W& _w, const std::shared_ptr<T>& _s,
+                             const P& _parent) noexcept {
     if (!_s) {
-      return _w.empty_var();
+      ParentType::add_null(_w, _parent);
+      return;
     }
-    return Parser<R, W, std::decay_t<T>>::write(_w, *_s);
+    Parser<R, W, std::decay_t<T>>::write(_w, *_s, _parent);
   }
 };
 

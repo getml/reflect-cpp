@@ -12,6 +12,10 @@
       "version>=": "1.14"
     },
     {
+      "name": "yaml-cpp",
+      "version>=": "0.8.0#1"
+    },
+    {
       "name": "vcpkg-cmake",
       "version>=": "2023-05-04"
     },

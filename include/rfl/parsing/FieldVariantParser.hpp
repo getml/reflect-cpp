@@ -51,8 +51,9 @@ struct FieldVariantParser {
     return _r.to_object(_var).transform(to_map).and_then(to_result);
   }
 
-  static OutputVarType write(const W& _w,
-                             const std::variant<FieldTypes...>& _v) noexcept {
+  template <class P>
+  static void write(const W& _w, const std::variant<FieldTypes...>& _v,
+                    const P& _parent) noexcept {
     static_assert(
         internal::no_duplicate_field_names<std::tuple<FieldTypes...>>(),
         "Externally tagged variants cannot have duplicate field "
@@ -61,10 +62,10 @@ struct FieldVariantParser {
     const auto handle = [&](const auto& _field) {
       const auto named_tuple = make_named_tuple(internal::to_ptr_field(_field));
       using NamedTupleType = std::decay_t<decltype(named_tuple)>;
-      return Parser<R, W, NamedTupleType>::write(_w, named_tuple);
+      Parser<R, W, NamedTupleType>::write(_w, named_tuple, _parent);
     };
 
-    return std::visit(handle, _v);
+    std::visit(handle, _v);
   }
 
  private:

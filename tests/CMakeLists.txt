@@ -15,3 +15,7 @@ endif()
 if (REFLECTCPP_XML)
     add_subdirectory(xml)
 endif()
+
+if (REFLECTCPP_YAML)
+    add_subdirectory(yaml)
+endif()

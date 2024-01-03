@@ -8,6 +8,8 @@
 #include <sstream>
 #include <vector>
 
+#include "../Ref.hpp"
+#include "../parsing/Parent.hpp"
 #include "Parser.hpp"
 
 namespace rfl {
@@ -15,12 +17,12 @@ namespace flexbuf {
 
 template <class T>
 std::vector<uint8_t> to_buffer(const T& _obj) {
-  auto w = Writer();
-  const auto flexbuf_obj = Parser<T>::write(w, _obj);
-  flexbuffers::Builder fbb;
-  flexbuf_obj->insert(std::nullopt, &fbb);
-  fbb.Finish();
-  return fbb.GetBuffer();
+  using ParentType = parsing::Parent<Writer>;
+  const auto fbb = Ref<flexbuffers::Builder>::make();
+  auto w = Writer(fbb);
+  Parser<T>::write(w, _obj, typename ParentType::Root{});
+  fbb->Finish();
+  return fbb->GetBuffer();
 }
 
 /// Writes an object to flexbuf.

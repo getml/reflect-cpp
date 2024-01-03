@@ -5,6 +5,7 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "Parent.hpp"
 #include "Parser_base.hpp"
 
 namespace rfl {
@@ -15,6 +16,8 @@ requires AreReaderAndWriter<R, W, T*>
 struct Parser<R, W, T*> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
+
+  using ParentType = Parent<W>;
 
   /// Expresses the variables as type T.
   static Result<T*> read(const R& _r, const InputVarType& _var) noexcept {
@@ -27,12 +30,13 @@ struct Parser<R, W, T*> {
     return Error("Unsupported.");
   }
 
-  /// Expresses the variable a a JSON.
-  static OutputVarType write(const W& _w, const T* _ptr) noexcept {
+  template <class P>
+  static void write(const W& _w, const T* _ptr, const P& _parent) noexcept {
     if (!_ptr) {
-      return _w.empty_var();
+      ParentType::add_null(_w, _parent);
+      return;
     }
-    return Parser<R, W, std::decay_t<T>>::write(_w, *_ptr);
+    Parser<R, W, std::decay_t<T>>::write(_w, *_ptr, _parent);
   }
 };
 

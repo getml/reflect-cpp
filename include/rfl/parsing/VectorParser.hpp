@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_VECTORPARSER_HPP_
 #define RFL_PARSING_VECTORPARSER_HPP_
 
+#include <iterator>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -8,6 +9,7 @@
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "MapParser.hpp"
+#include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "is_forward_list.hpp"
 #include "is_map_like.hpp"
@@ -31,6 +33,8 @@ struct VectorParser {
   using OutputArrayType = typename W::OutputArrayType;
   using OutputVarType = typename W::OutputVarType;
 
+  using ParentType = Parent<W>;
+
   using T = typename VecType::value_type;
 
   static Result<VecType> read(const R& _r, const InputVarType& _var) noexcept {
@@ -44,15 +48,19 @@ struct VectorParser {
     }
   }
 
-  static OutputVarType write(const W& _w, const VecType& _vec) noexcept {
+  template <class P>
+  static void write(const W& _w, const VecType& _vec,
+                    const P& _parent) noexcept {
     if constexpr (treat_as_map()) {
-      return MapParser<R, W, VecType>::write(_w, _vec);
+      MapParser<R, W, VecType>::write(_w, _vec, _parent);
     } else {
-      auto arr = _w.new_array();
+      auto arr = ParentType::add_array(
+          _w, std::distance(_vec.begin(), _vec.end()), _parent);
+      const auto new_parent = typename ParentType::Array{&arr};
       for (const auto& v : _vec) {
-        _w.add(Parser<R, W, std::decay_t<T>>::write(_w, v), &arr);
+        Parser<R, W, std::decay_t<T>>::write(_w, v, new_parent);
       }
-      return OutputVarType(arr);
+      _w.end_array(&arr);
     }
   }
 

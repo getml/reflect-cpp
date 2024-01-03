@@ -18,11 +18,12 @@ jobs:
       - name: Run test
         run: |
           g++ --version
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build -j 4
           ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
           ./build/tests/json/reflect-cpp-json-tests
           ./build/tests/xml/reflect-cpp-xml-tests
+          ./build/tests/yaml/reflect-cpp-yaml-tests
 
   linux-clang:
     runs-on: ubuntu-latest
@@ -46,11 +47,12 @@ jobs:
           CXX: clang++
         run: |
           clang --version
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build -j 4
           ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
           ./build/tests/json/reflect-cpp-json-tests
           ./build/tests/xml/reflect-cpp-xml-tests
+          ./build/tests/yaml/reflect-cpp-yaml-tests
 
 
 #  The latest MSVC version on GitHub Actions has a bug, and it's difficult to switch to another version.

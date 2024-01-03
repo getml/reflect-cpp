@@ -7,6 +7,7 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "Parent.hpp"
 #include "Parser_base.hpp"
 
 namespace rfl {
@@ -20,6 +21,8 @@ struct Parser<R, W, std::array<T, _size>> {
 
   using OutputArrayType = typename W::OutputArrayType;
   using OutputVarType = typename W::OutputVarType;
+
+  using ParentType = Parent<W>;
 
   static Result<std::array<T, _size>> read(const R& _r,
                                            const InputVarType& _var) noexcept {
@@ -43,13 +46,15 @@ struct Parser<R, W, std::array<T, _size>> {
         .and_then(extract);
   }
 
-  static OutputVarType write(const W& _w,
-                             const std::array<T, _size>& _arr) noexcept {
-    auto arr = _w.new_array();
+  template <class P>
+  static void write(const W& _w, const std::array<T, _size>& _arr,
+                    const P& _parent) noexcept {
+    auto arr = ParentType::add_array(_w, _size, _parent);
+    const auto new_parent = typename ParentType::Array{&arr};
     for (auto it = _arr.begin(); it != _arr.end(); ++it) {
-      _w.add(Parser<R, W, std::decay_t<T>>::write(_w, *it), &arr);
+      Parser<R, W, std::decay_t<T>>::write(_w, *it, new_parent);
     }
-    return OutputVarType(arr);
+    _w.end_array(&arr);
   }
 
  private:

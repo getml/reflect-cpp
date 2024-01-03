@@ -2,6 +2,7 @@
 #define RFL_PARSING_SUPPORTSATTRIBUTES_HPP_
 
 #include <concepts>
+#include <string>
 
 #include "../Result.hpp"
 
@@ -10,9 +11,15 @@ namespace parsing {
 
 /// Determines whether a writer supports attributes.
 template <class W>
-concept supports_attributes = requires(W w, int val, bool _is_attribute) {
+concept supports_attributes = requires(W w, std::string name,
+                                       typename W::OutputObjectType obj,
+                                       bool is_attribute) {
   {
-    w.from_basic_type(val, _is_attribute)
+    w.add_value_to_object(name, name, &obj, is_attribute)
+    } -> std::same_as<typename W::OutputVarType>;
+
+  {
+    w.add_null_to_object(name, &obj, is_attribute)
     } -> std::same_as<typename W::OutputVarType>;
 };
 

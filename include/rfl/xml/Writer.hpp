@@ -14,49 +14,164 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
-#include "OutputArray.hpp"
-#include "OutputNull.hpp"
-#include "OutputObject.hpp"
-#include "OutputValue.hpp"
 
 namespace rfl {
 namespace xml {
 
 struct Writer {
-  using OutputArrayType = Ref<OutputArray>;
-  using OutputObjectType = Ref<OutputObject>;
-  using OutputVarType = Ref<OutputVar>;
+  static constexpr const char* XML_CONTENT = "xml_content";
 
-  Writer() {}
+  struct XMLOutputArray {
+    XMLOutputArray(const std::string& _name, const Ref<pugi::xml_node>& _node)
+        : name_(_name), node_(_node) {}
+    std::string name_;
+    Ref<pugi::xml_node> node_;
+  };
+
+  struct XMLOutputObject {
+    XMLOutputObject(const Ref<pugi::xml_node>& _node) : node_(_node) {}
+    Ref<pugi::xml_node> node_;
+  };
+
+  struct XMLOutputVar {
+    XMLOutputVar(const Ref<pugi::xml_node>& _node) : node_(_node) {}
+    Ref<pugi::xml_node> node_;
+  };
+
+  using OutputArrayType = XMLOutputArray;
+  using OutputObjectType = XMLOutputObject;
+  using OutputVarType = XMLOutputVar;
+
+  Writer(const Ref<pugi::xml_node>& _root, const std::string& _root_name)
+      : root_(_root), root_name_(_root_name) {}
 
   ~Writer() = default;
 
-  void add(const OutputVarType _var, OutputArrayType* _arr) const noexcept {
-    (*_arr)->push_back(_var);
+  OutputArrayType array_as_root(const size_t _size) const noexcept {
+    auto node_child =
+        Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
+    return OutputArrayType(root_name_, node_child);
   }
 
-  OutputVarType empty_var() const noexcept { return make_ref<OutputNull>(); }
+  OutputObjectType object_as_root(const size_t _size) const noexcept {
+    auto node_child =
+        Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
+    return OutputObjectType(node_child);
+  }
+
+  OutputVarType null_as_root() const noexcept {
+    auto node_child =
+        Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
+    return OutputVarType(node_child);
+  }
 
   template <class T>
-  OutputVarType from_basic_type(
-      const T& _var, const bool _is_attribute = false) const noexcept {
-    return make_ref<OutputValue<T>>(_var, _is_attribute);
+  OutputVarType value_as_root(const T& _var) const noexcept {
+    const auto str = to_string(_var);
+    auto node_child =
+        Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
+    node_child->append_child(pugi::node_pcdata).set_value(str.c_str());
+    return OutputVarType(node_child);
   }
 
-  OutputArrayType new_array() const noexcept { return make_ref<OutputArray>(); }
-
-  OutputObjectType new_object() const noexcept {
-    return make_ref<OutputObject>();
+  OutputArrayType add_array_to_array(const size_t _size,
+                                     OutputArrayType* _parent) const noexcept {
+    return *_parent;
   }
 
-  bool is_empty(const OutputVarType& _var) const noexcept {
-    return _var->is_null();
+  OutputArrayType add_array_to_object(
+      const std::string& _name, const size_t _size,
+      OutputObjectType* _parent) const noexcept {
+    return OutputArrayType(_name, _parent->node_);
   }
 
-  void set_field(const std::string& _name, const OutputVarType& _var,
-                 OutputObjectType* _obj) const noexcept {
-    (*_obj)->push_back(_name, _var);
+  OutputObjectType add_object_to_array(
+      const size_t _size, OutputArrayType* _parent) const noexcept {
+    auto node_child = Ref<pugi::xml_node>::make(
+        _parent->node_->append_child(_parent->name_.c_str()));
+    return OutputObjectType(node_child);
   }
+
+  OutputObjectType add_object_to_object(
+      const std::string& _name, const size_t _size,
+      OutputObjectType* _parent) const noexcept {
+    auto node_child =
+        Ref<pugi::xml_node>::make(_parent->node_->append_child(_name.c_str()));
+    return OutputObjectType(node_child);
+  }
+
+  template <class T>
+  OutputVarType add_value_to_array(const T& _var,
+                                   OutputArrayType* _parent) const noexcept {
+    const auto str = to_string(_var);
+    auto node_child = Ref<pugi::xml_node>::make(
+        _parent->node_->append_child(_parent->name_.c_str()));
+    node_child->append_child(pugi::node_pcdata).set_value(str.c_str());
+    return OutputVarType(node_child);
+  }
+
+  template <class T>
+  OutputVarType add_value_to_object(
+      const std::string& _name, const T& _var, OutputObjectType* _parent,
+      const bool _is_attribute = false) const noexcept {
+    const auto str = to_string(_var);
+    if (_is_attribute) {
+      _parent->node_->append_attribute(_name.c_str()) = str.c_str();
+      return OutputVarType(_parent->node_);
+    } else if (_name == XML_CONTENT) {
+      _parent->node_->append_child(pugi::node_pcdata).set_value(str.c_str());
+      return OutputVarType(_parent->node_);
+    } else {
+      auto node_child = Ref<pugi::xml_node>::make(
+          _parent->node_->append_child(_name.c_str()));
+      node_child->append_child(pugi::node_pcdata).set_value(str.c_str());
+      return OutputVarType(node_child);
+    }
+  }
+
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept {
+    auto node_child = Ref<pugi::xml_node>::make(
+        _parent->node_->append_child(_parent->name_.c_str()));
+    return OutputVarType(node_child);
+  }
+
+  OutputVarType add_null_to_object(
+      const std::string& _name, OutputObjectType* _parent,
+      const bool _is_attribute = false) const noexcept {
+    if (_is_attribute) {
+      return OutputVarType(_parent->node_);
+    } else if (_name == XML_CONTENT) {
+      return OutputVarType(_parent->node_);
+    } else {
+      auto node_child = Ref<pugi::xml_node>::make(
+          _parent->node_->append_child(_name.c_str()));
+      return OutputVarType(node_child);
+    }
+  }
+
+  void end_array(OutputArrayType* _arr) const noexcept {}
+
+  void end_object(OutputObjectType* _obj) const noexcept {}
+
+ private:
+  template <class T>
+  std::string to_string(const T& _val) const noexcept {
+    if constexpr (std::is_same<std::decay_t<T>, std::string>()) {
+      return _val;
+    } else if constexpr (std::is_same<std::decay_t<T>, bool>()) {
+      return _val ? "true" : "false";
+    } else if constexpr (std::is_floating_point<std::decay_t<T>>() ||
+                         std::is_integral<std::decay_t<T>>()) {
+      return std::to_string(_val);
+    } else {
+      static_assert(always_false_v<T>, "Unsupported type");
+    }
+  }
+
+ public:
+  Ref<pugi::xml_node> root_;
+
+  std::string root_name_;
 };
 
 }  // namespace xml

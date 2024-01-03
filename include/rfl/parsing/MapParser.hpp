@@ -7,6 +7,7 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "Parent.hpp"
 #include "Parser_base.hpp"
 
 namespace rfl {
@@ -25,34 +26,42 @@ struct MapParser {
   using KeyType = std::decay_t<typename MapType::value_type::first_type>;
   using ValueType = std::decay_t<typename MapType::value_type::second_type>;
 
+  using ParentType = Parent<W>;
+
   static Result<MapType> read(const R& _r, const InputVarType& _var) noexcept {
     const auto to_map = [&](const auto& _obj) { return make_map(_r, _obj); };
     return _r.to_object(_var).and_then(to_map);
   }
 
-  static OutputVarType write(const W& _w, const MapType& _m) noexcept {
-    auto obj = _w.new_object();
+  template <class P>
+  static void write(const W& _w, const MapType& _m, const P& _parent) noexcept {
+    auto obj = ParentType::add_object(_w, _m.size(), _parent);
     for (const auto& [k, v] : _m) {
-      auto parsed_val = Parser<R, W, std::decay_t<ValueType>>::write(_w, v);
       if constexpr (internal::has_reflection_type_v<KeyType>) {
         using ReflT = typename KeyType::ReflectionType;
 
         if constexpr (std::is_integral_v<ReflT> ||
                       std::is_floating_point_v<ReflT>) {
-          _w.set_field(std::to_string(k.reflection()), std::move(parsed_val),
-                       &obj);
+          const auto new_parent =
+              typename ParentType::Object{std::to_string(k.reflection()), &obj};
+          Parser<R, W, std::decay_t<ValueType>>::write(_w, v, new_parent);
         } else {
-          _w.set_field(k.reflection(), std::move(parsed_val), &obj);
+          const auto new_parent =
+              typename ParentType::Object{k.reflection(), &obj};
+          Parser<R, W, std::decay_t<ValueType>>::write(_w, v, new_parent);
         }
 
       } else if constexpr (std::is_integral_v<KeyType> ||
                            std::is_floating_point_v<KeyType>) {
-        _w.set_field(std::to_string(k), std::move(parsed_val), &obj);
+        const auto new_parent =
+            typename ParentType::Object{std::to_string(k), &obj};
+        Parser<R, W, std::decay_t<ValueType>>::write(_w, v, new_parent);
       } else {
-        _w.set_field(k, std::move(parsed_val), &obj);
+        const auto new_parent = typename ParentType::Object{k, &obj};
+        Parser<R, W, std::decay_t<ValueType>>::write(_w, v, new_parent);
       }
     }
-    return obj;
+    _w.end_object(&obj);
   }
 
  private:

@@ -6,6 +6,7 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "Parent.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -19,6 +20,8 @@ struct TupleParser {
 
   using OutputArrayType = typename W::OutputArrayType;
   using OutputVarType = typename W::OutputVarType;
+
+  using ParentType = Parent<W>;
 
   static Result<std::tuple<Ts...>> read(const R& _r,
                                         const InputVarType& _var) noexcept {
@@ -42,11 +45,13 @@ struct TupleParser {
         .and_then(extract);
   }
 
-  static OutputVarType write(const W& _w,
-                             const std::tuple<Ts...>& _tup) noexcept {
-    auto arr = _w.new_array();
-    to_array<0>(_w, _tup, &arr);
-    return arr;
+  template <class P>
+  static void write(const W& _w, const std::tuple<Ts...>& _tup,
+                    const P& _parent) noexcept {
+    auto arr = ParentType::add_array(_w, sizeof...(Ts), _parent);
+    const auto new_parent = typename ParentType::Array{&arr};
+    to_array<0>(_w, _tup, new_parent);
+    _w.end_array(&arr);
   }
 
  private:
@@ -89,17 +94,14 @@ struct TupleParser {
     return Parser<R, W, NewFieldType>::read(_r, _vec[_i]);
   }
 
-  template <int _i>
+  template <int _i, class P>
   static void to_array(const W& _w, const std::tuple<Ts...>& _tup,
-                       OutputArrayType* _ptr) noexcept {
+                       const P& _parent) noexcept {
     if constexpr (_i < sizeof...(Ts)) {
       using NewFieldType = std::decay_t<
           typename std::tuple_element<_i, std::tuple<Ts...>>::type>;
-
-      const auto val =
-          Parser<R, W, NewFieldType>::write(_w, std::get<_i>(_tup));
-      _w.add(val, _ptr);
-      to_array<_i + 1>(_w, _tup, _ptr);
+      Parser<R, W, NewFieldType>::write(_w, std::get<_i>(_tup), _parent);
+      to_array<_i + 1>(_w, _tup, _parent);
     }
   }
 };

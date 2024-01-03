@@ -23,20 +23,22 @@ Design principles for reflect-cpp include:
 - Simple extendability to custom classes
 - Standard C++ only, no compiler-specific macros
 
-## Why do we need this?
+## Serialization formats
 
-Suppose your C++ program has complex data structures it needs to save and load. Or maybe it needs to interact with some kind of external API. If you do this the traditional way, you will have a lot of boilerplate code. This is annoying and error-prone.
+reflect-cpp provides a unified reflection-based interface across different serialization formats. It is deliberately designed in a very modular way, using [concepts](https://en.cppreference.com/w/cpp/language/constraints), to make it as easy as possible to interface various C or C++ libraries related to serialization. Refer to the [documentation](https://github.com/getml/reflect-cpp/tree/main/docs) for details.
 
-reflect-cpp is not just a reflection library, it is for **serialization, deserialization and validation** through reflection.
+The following table lists the serialization formats currently supported by reflect-cpp and the underlying libraries used:
 
-That means that you can encode your requirements about the input data in the type system and have them validated upfront. This is why the library also includes algebraic data types like tagged unions and numerous validation routines. Having your requirements encoded in the type system is the most reliable way of ensuring they are met. If your requirements are not met, the user of your software gets a very clear error message. Encoding your requirements in the type system also makes it a lot easier for anyone reading your code.
+| Format       | Library                                              | Version      | License    | Remarks                                              |
+|--------------|------------------------------------------------------|--------------|------------| -----------------------------------------------------|
+| JSON         | [YYJSON](https://github.com/ibireme/yyjson)          | >= 0.8.0     | MIT        | out-of-the-box support, included in this repository  |
+| flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 |                                                      |
+| XML          | [pugixml](https://github.com/zeux/pugixml)           | >= 1.14      | MIT        |                                                      |
+| YAML         | [yaml-cpp](https://github.com/jbeder/yaml-cpp)       | >= 0.8.0     | MIT        |                                                      |
 
-This increases user experience and developer experience, it makes your code safer (fewer bugs) and more secure (less prone to malicious attacks).
+Support for more serialization formats is in development. Refer to the [issues](https://github.com/getml/reflect-cpp/issues) for details.
 
-For a more in-depth theoretical discussions of these topics, the following books are warmly recommended:
-
-- *Category Theory for Programmers* by Bartosz Milewski (https://github.com/hmemcpy/milewski-ctfp-pdf/releases)
-- *Domain Modeling Made Functional* by Scott Wlaschin
+Please also refer to the *vcpkg.json* in this repository.
 
 ## Simple Example
 
@@ -64,6 +66,26 @@ The resulting JSON string looks like this:
 
 ```json
 {"first_name":"Homer","last_name":"Simpson","age":45}
+```
+
+Or you can use another format, such as YAML. This will work for just about 
+any example in the entire documentation or any supported format.
+
+```cpp
+#include <rfl/yaml.hpp>
+
+// ... (same as above)
+
+const std::string yaml_string = rfl::yaml::write(homer);
+auto homer2 = rfl::yaml::read<Person>(yaml_string).value();
+```
+
+The resulting YAML string looks like this:
+
+```yaml
+first_name: Homer
+last_name: Simpson
+age: 45
 ```
 
 ## More Comprehensive Example
@@ -361,19 +383,20 @@ In addition, it supports the following custom containers:
 
 Finally, it is very easy to extend full support to your own classes, refer to the [documentation](https://github.com/getml/reflect-cpp/tree/main/docs) for details.
 
-## Serialization formats
+## Why do we need this?
 
-reflect-cpp is deliberately designed in a very modular way, using [concepts](https://en.cppreference.com/w/cpp/language/constraints), to make it as easy as possible to interface C or C++ libraries for various serialization formats. Refer to the [documentation](https://github.com/getml/reflect-cpp/tree/main/docs) for details. PRs related to serialization formats are welcome.
+Suppose your C++ program has complex data structures it needs to save and load. Or maybe it needs to interact with some kind of external API. If you do this the traditional way, you will have a lot of boilerplate code. This is annoying and error-prone.
 
-The following table lists the serialization formats currently supported by reflect-cpp and the underlying libraries used:
+reflect-cpp is not just a reflection library, it is for **serialization, deserialization and validation** through reflection.
 
-| Format       | Library                                              | Version      | License    | Remarks                                              |
-|--------------|------------------------------------------------------|--------------|------------| -----------------------------------------------------|
-| JSON         | [YYJSON](https://github.com/ibireme/yyjson)          | >= 0.8.0     | MIT        | out-of-the-box support, included in this repository  |
-| flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26#1 | Apache 2.0 |                                                      |
-| XML          | [pugixml](https://github.com/zeux/pugixml)           | >= 1.14      | MIT        |                                                      |
+That means that you can encode your requirements about the input data in the type system and have them validated upfront. This is why the library also includes algebraic data types like tagged unions and numerous validation routines. Having your requirements encoded in the type system is the most reliable way of ensuring they are met. If your requirements are not met, the user of your software gets a very clear error message. Encoding your requirements in the type system also makes it a lot easier for anyone reading your code.
 
-Please also refer to the *vcpkg.json* in this repository.
+This increases user experience and developer experience, it makes your code safer (fewer bugs) and more secure (less prone to malicious attacks).
+
+For a more in-depth theoretical discussions of these topics, the following books are warmly recommended:
+
+- *Category Theory for Programmers* by Bartosz Milewski (https://github.com/hmemcpy/milewski-ctfp-pdf/releases)
+- *Domain Modeling Made Functional* by Scott Wlaschin
 
 ## Documentation
 
@@ -427,6 +450,7 @@ add_subdirectory(reflect-cpp) # Add this project as a subdirectory
 
 set(REFLECTCPP_FLEXBUFFERS ON) # Optional
 set(REFLECTCPP_XML ON) # Optional
+set(REFLECTCPP_YAML ON) # Optional
 
 target_link_libraries(your_project PRIVATE reflectcpp) # Link against the library
 ```
@@ -470,7 +494,7 @@ git submodule update --init
 ./vcpkg/bootstrap-vcpkg.bat # Windows
 # You may be prompted to install additional dependencies.
 
-cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
 ```
@@ -481,6 +505,7 @@ To run the tests, do the following:
 ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
 ./build/tests/json/reflect-cpp-json-tests
 ./build/tests/xml/reflect-cpp-xml-tests
+./build/tests/xml/reflect-cpp-yaml-tests
 ```
 
 ## How to contribute
