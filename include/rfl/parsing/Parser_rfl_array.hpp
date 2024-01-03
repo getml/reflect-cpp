@@ -32,7 +32,7 @@ struct Parser<R, W, Array<T>> {
   template <class P>
   static void write(const W& _w, const Array<T>& _arr,
                     const P& _parent) noexcept {
-    Parser<R, W, StdArray>::write(_w, _arr, _parent);
+    Parser<R, W, StdArray>::write(_w, _arr.arr_, _parent);
   }
 };
 
