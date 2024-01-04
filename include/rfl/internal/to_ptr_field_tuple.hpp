@@ -18,7 +18,7 @@ namespace internal {
 
 template <class T>
 auto to_ptr_field_tuple(T& _t) {
-  if constexpr (std::is_pointer_v<std::decay_t<T>>) {
+  if constexpr (std::is_pointer_v<std::remove_cvref_t<T>>) {
     return to_ptr_field_tuple(*_t);
   } else if constexpr (is_named_tuple_v<T>) {
     return nt_to_ptr_named_tuple(_t).fields();

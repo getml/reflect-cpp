@@ -65,11 +65,11 @@ struct Reader {
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
     try {
-      if constexpr (std::is_same<std::decay_t<T>, std::string>() ||
-                    std::is_same<std::decay_t<T>, bool>() ||
-                    std::is_floating_point<std::decay_t<T>>() ||
-                    std::is_integral<std::decay_t<T>>()) {
-        return _var.node_.as<std::decay_t<T>>();
+      if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>() ||
+                    std::is_same<std::remove_cvref_t<T>, bool>() ||
+                    std::is_floating_point<std::remove_cvref_t<T>>() ||
+                    std::is_integral<std::remove_cvref_t<T>>()) {
+        return _var.node_.as<std::remove_cvref_t<T>>();
       } else {
         static_assert(rfl::always_false_v<T>, "Unsupported type.");
       }

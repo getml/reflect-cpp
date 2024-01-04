@@ -1,0 +1,51 @@
+#ifndef RFL_PARSING_PARSER_C_ARRAY_HPP_
+#define RFL_PARSING_PARSER_C_ARRAY_HPP_
+
+#include <type_traits>
+
+#include "../Result.hpp"
+#include "../always_false.hpp"
+#include "../internal/Array.hpp"
+#include "../internal/to_std_array.hpp"
+#include "Parent.hpp"
+#include "Parser_array.hpp"
+#include "Parser_base.hpp"
+
+namespace rfl {
+namespace parsing {
+
+template <class R, class W, class T, size_t _size>
+requires AreReaderAndWriter<R, W, T[_size]>
+struct Parser<R, W, T[_size]> {
+ public:
+  using InputArrayType = typename R::InputArrayType;
+  using InputVarType = typename R::InputVarType;
+
+  using OutputArrayType = typename W::OutputArrayType;
+  using OutputVarType = typename W::OutputVarType;
+
+  using ParentType = Parent<W>;
+  using CArray = T[_size];
+
+  static Result<internal::Array<CArray>> read(
+      const R& _r, const InputVarType& _var) noexcept {
+    using StdArray = internal::to_std_array_t<CArray>;
+    return Parser<R, W, StdArray>::read(_r, _var);
+  }
+
+  template <class P>
+  static void write(const W& _w, const CArray& _arr,
+                    const P& _parent) noexcept {
+    auto arr = ParentType::add_array(_w, _size, _parent);
+    const auto new_parent = typename ParentType::Array{&arr};
+    for (const auto& e : _arr) {
+      Parser<R, W, std::remove_cvref_t<T>>::write(_w, e, new_parent);
+    }
+    _w.end_array(&arr);
+  }
+};
+
+}  // namespace parsing
+}  // namespace rfl
+
+#endif

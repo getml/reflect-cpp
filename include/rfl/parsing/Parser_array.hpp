@@ -51,8 +51,8 @@ struct Parser<R, W, std::array<T, _size>> {
                     const P& _parent) noexcept {
     auto arr = ParentType::add_array(_w, _size, _parent);
     const auto new_parent = typename ParentType::Array{&arr};
-    for (auto it = _arr.begin(); it != _arr.end(); ++it) {
-      Parser<R, W, std::decay_t<T>>::write(_w, *it, new_parent);
+    for (const auto& e : _arr) {
+      Parser<R, W, std::remove_cvref_t<T>>::write(_w, e, new_parent);
     }
     _w.end_array(&arr);
   }
@@ -65,7 +65,7 @@ struct Parser<R, W, std::array<T, _size>> {
       AlreadyExtracted&&... _already_extracted) noexcept {
     constexpr size_t i = sizeof...(AlreadyExtracted);
     if constexpr (i == _size) {
-      return std::array<T, _size>({std::move(_already_extracted)...});
+      return std::array<T, _size>{std::move(_already_extracted)...};
     } else {
       const auto extract_next = [&](auto&& new_entry) {
         return extract_field_by_field(_r, std::move(_vec),

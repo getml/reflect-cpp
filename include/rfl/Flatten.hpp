@@ -13,7 +13,7 @@ namespace rfl {
 template <class T>
 struct Flatten {
   /// The underlying type.
-  using Type = std::decay_t<T>;
+  using Type = std::remove_cvref_t<T>;
 
   Flatten(const Type& _value) : value_(_value) {}
 

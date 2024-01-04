@@ -23,13 +23,14 @@ struct Parser<R, W, Rename<_name, T>> {
     const auto to_rename = [](auto&& _t) {
       return Rename<_name, T>(std::move(_t));
     };
-    return Parser<R, W, std::decay_t<T>>::read(_r, _var).transform(to_rename);
+    return Parser<R, W, std::remove_cvref_t<T>>::read(_r, _var).transform(
+        to_rename);
   }
 
   template <class P>
   static void write(const W& _w, const Rename<_name, T>& _rename,
                     const P& _parent) noexcept {
-    Parser<R, W, std::decay_t<T>>::write(_w, _rename.value(), _parent);
+    Parser<R, W, std::remove_cvref_t<T>>::write(_w, _rename.value(), _parent);
   }
 };
 

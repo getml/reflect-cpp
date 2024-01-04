@@ -22,7 +22,7 @@ consteval auto get_root_name() {
     return _root;
   } else {
     return internal::remove_namespaces<
-        internal::get_type_name<std::decay_t<T>>()>();
+        internal::get_type_name<std::remove_cvref_t<T>>()>();
   }
 }
 

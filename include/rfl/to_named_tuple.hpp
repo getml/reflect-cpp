@@ -21,9 +21,9 @@ namespace rfl {
 /// All fields of the struct must be an rfl::Field.
 template <class T>
 auto to_named_tuple(T&& _t) {
-  if constexpr (internal::is_named_tuple_v<std::decay_t<T>>) {
+  if constexpr (internal::is_named_tuple_v<std::remove_cvref_t<T>>) {
     return _t;
-  } else if constexpr (internal::is_field_v<std::decay_t<T>>) {
+  } else if constexpr (internal::is_field_v<std::remove_cvref_t<T>>) {
     return make_named_tuple(std::forward<T>(_t));
   } else if constexpr (std::is_lvalue_reference<T>{}) {
     auto field_tuple = internal::copy_to_field_tuple(_t);
@@ -39,9 +39,9 @@ auto to_named_tuple(T&& _t) {
 /// All fields of the struct must be an rfl::Field.
 template <class T>
 auto to_named_tuple(const T& _t) {
-  if constexpr (internal::is_named_tuple_v<std::decay_t<T>>) {
+  if constexpr (internal::is_named_tuple_v<std::remove_cvref_t<T>>) {
     return _t;
-  } else if constexpr (internal::is_field_v<std::decay_t<T>>) {
+  } else if constexpr (internal::is_field_v<std::remove_cvref_t<T>>) {
     return make_named_tuple(_t);
   } else {
     auto field_tuple = internal::copy_to_field_tuple(_t);

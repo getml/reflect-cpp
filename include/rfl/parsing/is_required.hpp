@@ -36,7 +36,7 @@ constexpr bool is_never_required_v = is_never_required<T>::value;
 
 template <class T, bool _ignore_empty_containers>
 consteval bool is_required() {
-  using Type = std::decay_t<std::remove_pointer_t<T>>;
+  using Type = std::remove_cvref_t<std::remove_pointer_t<T>>;
   if constexpr (internal::has_reflection_type_v<Type>) {
     return is_required<typename Type::ReflectionType,
                        _ignore_empty_containers>();

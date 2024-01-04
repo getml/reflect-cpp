@@ -17,7 +17,7 @@ using InputVarType = typename Reader::InputVarType;
 
 /// Parses an object from a XML var.
 template <class T>
-Result<T> read(const InputVarType& _var) {
+auto read(const InputVarType& _var) {
   const auto r = Reader();
   return Parser<T>::read(r, _var);
 }
@@ -37,7 +37,7 @@ Result<T> read(const std::string& _xml_str) {
 
 /// Parses an object from a stringstream.
 template <class T>
-Result<T> read(std::istream& _stream) {
+auto read(std::istream& _stream) {
   const auto xml_str = std::string(std::istreambuf_iterator<char>(_stream),
                                    std::istreambuf_iterator<char>());
   return read<T>(xml_str);

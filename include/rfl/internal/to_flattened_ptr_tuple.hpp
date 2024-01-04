@@ -15,10 +15,10 @@ auto flatten_ptr_tuple(PtrTuple&& _t, Args... _args) {
   constexpr auto i = sizeof...(Args);
   if constexpr (i == 0 && !has_flatten_fields<PtrTuple>()) {
     return std::forward<PtrTuple>(_t);
-  } else if constexpr (i == std::tuple_size_v<std::decay_t<PtrTuple>>) {
+  } else if constexpr (i == std::tuple_size_v<std::remove_cvref_t<PtrTuple>>) {
     return std::tuple_cat(std::forward<Args>(_args)...);
   } else {
-    using T = std::tuple_element_t<i, std::decay_t<PtrTuple>>;
+    using T = std::tuple_element_t<i, std::remove_cvref_t<PtrTuple>>;
     if constexpr (is_flatten_field_v<T>) {
       return flatten_ptr_tuple(
           std::forward<PtrTuple>(_t), std::forward<Args>(_args)...,

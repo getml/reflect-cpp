@@ -9,7 +9,10 @@
 
 #include "Literal.hpp"
 #include "default.hpp"
+#include "internal/Array.hpp"
 #include "internal/StringLiteral.hpp"
+#include "internal/to_std_array.hpp"
+#include "internal/wrap_in_rfl_array_t.hpp"
 
 namespace rfl {
 
@@ -17,7 +20,7 @@ namespace rfl {
 template <internal::StringLiteral _name, class T>
 struct Field {
   /// The underlying type.
-  using Type = T;
+  using Type = internal::wrap_in_rfl_array_t<T>;
 
   /// The name of the field.
   using Name = rfl::Literal<_name>;
@@ -28,7 +31,7 @@ struct Field {
 
   Field(Field<_name, T>&& _field) noexcept = default;
 
-  Field(const Field<_name, Type>& _field) = default;
+  Field(const Field<_name, T>& _field) = default;
 
   template <class U>
   Field(const Field<_name, U>& _field) : value_(_field.get()) {}
@@ -135,12 +138,12 @@ struct Field {
 
 template <internal::StringLiteral _name, class T>
 inline auto make_field(T&& _value) {
-  return Field<_name, T>(std::forward<T>(_value));
-}
-
-template <internal::StringLiteral _name, class T>
-inline auto make_field(const T& _value) {
-  return Field<_name, T>(_value);
+  using T0 = std::remove_cvref_t<T>;
+  if constexpr (std::is_array_v<T0>) {
+    return Field<_name, T0>(internal::Array<T0>(std::forward<T>(_value)));
+  } else {
+    return Field<_name, T0>(std::forward<T>(_value));
+  }
 }
 
 }  // namespace rfl

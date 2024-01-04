@@ -8,6 +8,7 @@
 #include "NamedTuple.hpp"
 #include "internal/is_named_tuple.hpp"
 #include "internal/ptr_named_tuple_t.hpp"
+#include "internal/wrap_in_rfl_array_t.hpp"
 #include "to_named_tuple.hpp"
 
 namespace rfl {
@@ -17,7 +18,9 @@ struct remove_ptr;
 
 template <internal::StringLiteral _name, class T>
 struct remove_ptr<Field<_name, T>> {
-  using FieldType = Field<_name, std::decay_t<std::remove_pointer_t<T>>>;
+  using FieldType =
+      Field<_name, internal::wrap_in_rfl_array_t<
+                       std::remove_cvref_t<std::remove_pointer_t<T>>>>;
 };
 
 template <class T>

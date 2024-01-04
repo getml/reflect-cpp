@@ -5,6 +5,7 @@
 #include <type_traits>
 
 #include "../field_names_t.hpp"
+#include "Array.hpp"
 #include "bind_to_tuple.hpp"
 #include "has_fields.hpp"
 #include "is_named_tuple.hpp"
@@ -15,14 +16,22 @@ namespace internal {
 
 template <class OriginalStruct>
 auto move_to_field_tuple(OriginalStruct&& _t) {
-  using T = std::decay_t<OriginalStruct>;
+  using T = std::remove_cvref_t<OriginalStruct>;
   if constexpr (is_named_tuple_v<T>) {
     return _t.fields();
   } else if constexpr (has_fields<T>()) {
     return bind_to_tuple(_t, [](auto& x) { return std::move(x); });
   } else {
     using FieldNames = field_names_t<T>;
-    auto tup = bind_to_tuple(_t, [](auto& x) { return std::move(x); });
+    const auto fct = []<class T>(T& _v) {
+      using Type = std::remove_cvref_t<T>;
+      if constexpr (std::is_array_v<Type>) {
+        return Array<Type>(_v);
+      } else {
+        return std::move(_v);
+      }
+    };
+    auto tup = bind_to_tuple(_t, fct);
     return wrap_in_fields<FieldNames>(std::move(tup));
   }
 }

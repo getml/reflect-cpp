@@ -23,8 +23,9 @@ struct MapParser {
   using OutputObjectType = typename W::OutputObjectType;
   using OutputVarType = typename W::OutputVarType;
 
-  using KeyType = std::decay_t<typename MapType::value_type::first_type>;
-  using ValueType = std::decay_t<typename MapType::value_type::second_type>;
+  using KeyType = std::remove_cvref_t<typename MapType::value_type::first_type>;
+  using ValueType =
+      std::remove_cvref_t<typename MapType::value_type::second_type>;
 
   using ParentType = Parent<W>;
 
@@ -44,21 +45,23 @@ struct MapParser {
                       std::is_floating_point_v<ReflT>) {
           const auto new_parent =
               typename ParentType::Object{std::to_string(k.reflection()), &obj};
-          Parser<R, W, std::decay_t<ValueType>>::write(_w, v, new_parent);
+          Parser<R, W, std::remove_cvref_t<ValueType>>::write(_w, v,
+                                                              new_parent);
         } else {
           const auto new_parent =
               typename ParentType::Object{k.reflection(), &obj};
-          Parser<R, W, std::decay_t<ValueType>>::write(_w, v, new_parent);
+          Parser<R, W, std::remove_cvref_t<ValueType>>::write(_w, v,
+                                                              new_parent);
         }
 
       } else if constexpr (std::is_integral_v<KeyType> ||
                            std::is_floating_point_v<KeyType>) {
         const auto new_parent =
             typename ParentType::Object{std::to_string(k), &obj};
-        Parser<R, W, std::decay_t<ValueType>>::write(_w, v, new_parent);
+        Parser<R, W, std::remove_cvref_t<ValueType>>::write(_w, v, new_parent);
       } else {
         const auto new_parent = typename ParentType::Object{k, &obj};
-        Parser<R, W, std::decay_t<ValueType>>::write(_w, v, new_parent);
+        Parser<R, W, std::remove_cvref_t<ValueType>>::write(_w, v, new_parent);
       }
     }
     _w.end_object(&obj);
@@ -109,7 +112,7 @@ struct MapParser {
       auto pair = std::make_pair(std::move(_pair.first), std::move(_val));
       return make_key(pair);
     };
-    return Parser<R, W, std::decay_t<ValueType>>::read(_r, _pair.second)
+    return Parser<R, W, std::remove_cvref_t<ValueType>>::read(_r, _pair.second)
         .and_then(to_pair)
         .value();
   }

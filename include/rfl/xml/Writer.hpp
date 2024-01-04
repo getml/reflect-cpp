@@ -156,12 +156,12 @@ struct Writer {
  private:
   template <class T>
   std::string to_string(const T& _val) const noexcept {
-    if constexpr (std::is_same<std::decay_t<T>, std::string>()) {
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       return _val;
-    } else if constexpr (std::is_same<std::decay_t<T>, bool>()) {
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       return _val ? "true" : "false";
-    } else if constexpr (std::is_floating_point<std::decay_t<T>>() ||
-                         std::is_integral<std::decay_t<T>>()) {
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
+                         std::is_integral<std::remove_cvref_t<T>>()) {
       return std::to_string(_val);
     } else {
       static_assert(always_false_v<T>, "Unsupported type");

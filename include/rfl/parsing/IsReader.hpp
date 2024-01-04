@@ -10,6 +10,8 @@
 #include <string_view>
 
 #include "../Result.hpp"
+#include "../internal/is_basic_type.hpp"
+#include "../internal/wrap_in_rfl_array_t.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -41,7 +43,9 @@ concept IsReader = requires(R r, std::string name,
 
   /// Transforms var to a basic type (bool, integral,
   /// floating point, std::string)
-  { r.template to_basic_type<T>(var) } -> std::same_as<rfl::Result<T>>;
+  {
+    r.template to_basic_type<internal::wrap_in_rfl_array_t<T>>(var)
+    } -> std::same_as<rfl::Result<internal::wrap_in_rfl_array_t<T>>>;
 
   /// _fct is a function that turns the field name into the field index of the
   /// struct. It returns -1, if the fields does not exist on the struct. This
@@ -71,7 +75,9 @@ concept IsReader = requires(R r, std::string name,
 
   /// Uses the custom constructor, if it has been determined that T has one
   /// (see above).
-  { r.template use_custom_constructor<T>(var) } -> std::same_as<rfl::Result<T>>;
+  {
+    r.template use_custom_constructor<internal::wrap_in_rfl_array_t<T>>(var)
+    } -> std::same_as<rfl::Result<internal::wrap_in_rfl_array_t<T>>>;
 };
 
 }  // namespace parsing

@@ -34,7 +34,7 @@ struct Parser {
       return _r.template use_custom_constructor<T>(_var);
     } else {
       if constexpr (internal::has_reflection_type_v<T>) {
-        using ReflectionType = std::decay_t<typename T::ReflectionType>;
+        using ReflectionType = std::remove_cvref_t<typename T::ReflectionType>;
         const auto wrap_in_t = [](auto _named_tuple) -> Result<T> {
           try {
             return T(_named_tuple);
@@ -58,7 +58,7 @@ struct Parser {
         return _r.template to_basic_type<std::string>(_var).and_then(
             StringConverter::string_to_enum);
       } else if constexpr (internal::is_basic_type_v<T>) {
-        return _r.template to_basic_type<std::decay_t<T>>(_var);
+        return _r.template to_basic_type<std::remove_cvref_t<T>>(_var);
       } else {
         static_assert(
             always_false_v<T>,
@@ -72,7 +72,7 @@ struct Parser {
   template <class P>
   static void write(const W& _w, const T& _var, const P& _parent) noexcept {
     if constexpr (internal::has_reflection_type_v<T>) {
-      using ReflectionType = std::decay_t<typename T::ReflectionType>;
+      using ReflectionType = std::remove_cvref_t<typename T::ReflectionType>;
       if constexpr (internal::has_reflection_method_v<T>) {
         Parser<R, W, ReflectionType>::write(_w, _var.reflection(), _parent);
       } else {
@@ -81,7 +81,7 @@ struct Parser {
       }
     } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
       const auto ptr_named_tuple = internal::to_ptr_named_tuple(_var);
-      using PtrNamedTupleType = std::decay_t<decltype(ptr_named_tuple)>;
+      using PtrNamedTupleType = std::remove_cvref_t<decltype(ptr_named_tuple)>;
       Parser<R, W, PtrNamedTupleType>::write(_w, ptr_named_tuple, _parent);
     } else if constexpr (std::is_enum_v<T>) {
       using StringConverter = internal::enums::StringConverter<T>;

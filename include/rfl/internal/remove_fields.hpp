@@ -29,12 +29,12 @@ struct remove_single_field<_OldNamedTupleType, _name, _NewNamedTupleType, 0> {
 template <class _OldNamedTupleType, StringLiteral _name,
           class _NewNamedTupleType, int _i>
 struct remove_single_field {
-  using OldNamedTupleType = std::decay_t<_OldNamedTupleType>;
+  using OldNamedTupleType = std::remove_cvref_t<_OldNamedTupleType>;
 
   constexpr static int num_fields =
       std::tuple_size_v<typename OldNamedTupleType::Fields>;
 
-  using FieldType = std::decay_t<typename std::tuple_element<
+  using FieldType = std::remove_cvref_t<typename std::tuple_element<
       num_fields - _i, typename OldNamedTupleType::Fields>::type>;
 
   using NewNamedTupleType =
@@ -53,7 +53,7 @@ struct remove_fields;
 /// Special case - only head is left.
 template <class _NamedTupleType, StringLiteral _head>
 struct remove_fields<_NamedTupleType, _head> {
-  using NamedTupleType = std::decay_t<_NamedTupleType>;
+  using NamedTupleType = std::remove_cvref_t<_NamedTupleType>;
 
   constexpr static int num_fields =
       std::tuple_size_v<typename NamedTupleType::Fields>;
@@ -65,7 +65,7 @@ struct remove_fields<_NamedTupleType, _head> {
 /// General case.
 template <class _NamedTupleType, StringLiteral _head, StringLiteral... _tail>
 struct remove_fields {
-  using NamedTupleType = std::decay_t<_NamedTupleType>;
+  using NamedTupleType = std::remove_cvref_t<_NamedTupleType>;
 
   constexpr static int num_fields =
       std::tuple_size_v<typename NamedTupleType::Fields>;

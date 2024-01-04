@@ -115,13 +115,13 @@ struct Writer {
   template <class T>
   OutputVarType insert_value(const std::string& _name,
                              const T& _var) const noexcept {
-    if constexpr (std::is_same<std::decay_t<T>, std::string>()) {
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       fbb_->String(_name.c_str(), _var);
-    } else if constexpr (std::is_same<std::decay_t<T>, bool>()) {
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       fbb_->Bool(_name.c_str(), _var);
-    } else if constexpr (std::is_floating_point<std::decay_t<T>>()) {
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       fbb_->Double(_name.c_str(), _var);
-    } else if constexpr (std::is_integral<std::decay_t<T>>()) {
+    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       fbb_->Int(_name.c_str(), _var);
     } else {
       static_assert(always_false_v<T>, "Unsupported type");
@@ -131,13 +131,13 @@ struct Writer {
 
   template <class T>
   OutputVarType insert_value(const T& _var) const noexcept {
-    if constexpr (std::is_same<std::decay_t<T>, std::string>()) {
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       fbb_->String(_var);
-    } else if constexpr (std::is_same<std::decay_t<T>, bool>()) {
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       fbb_->Bool(_var);
-    } else if constexpr (std::is_floating_point<std::decay_t<T>>()) {
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       fbb_->Double(_var);
-    } else if constexpr (std::is_integral<std::decay_t<T>>()) {
+    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       fbb_->Int(_var);
     } else {
       static_assert(always_false_v<T>, "Unsupported type");

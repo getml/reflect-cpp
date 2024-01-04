@@ -63,23 +63,23 @@ struct Reader {
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType _var) const noexcept {
-    if constexpr (std::is_same<std::decay_t<T>, std::string>()) {
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       const auto r = yyjson_get_str(_var.val_);
       if (r == NULL) {
         return rfl::Error("Could not cast to string.");
       }
       return std::string(r);
-    } else if constexpr (std::is_same<std::decay_t<T>, bool>()) {
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!yyjson_is_bool(_var.val_)) {
         return rfl::Error("Could not cast to boolean.");
       }
       return yyjson_get_bool(_var.val_);
-    } else if constexpr (std::is_floating_point<std::decay_t<T>>()) {
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       if (!yyjson_is_num(_var.val_)) {
         return rfl::Error("Could not cast to double.");
       }
       return static_cast<T>(yyjson_get_num(_var.val_));
-    } else if constexpr (std::is_integral<std::decay_t<T>>()) {
+    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       if (!yyjson_is_int(_var.val_)) {
         return rfl::Error("Could not cast to int.");
       }
