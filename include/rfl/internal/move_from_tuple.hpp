@@ -4,7 +4,7 @@
 #include <functional>
 #include <type_traits>
 
-#include "../Array.hpp"
+#include "Array.hpp"
 #include "is_flatten_field.hpp"
 #include "is_named_tuple.hpp"
 #include "ptr_tuple_t.hpp"

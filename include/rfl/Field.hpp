@@ -7,9 +7,9 @@
 #include <type_traits>
 #include <utility>
 
-#include "Array.hpp"
 #include "Literal.hpp"
 #include "default.hpp"
+#include "internal/Array.hpp"
 #include "internal/StringLiteral.hpp"
 #include "internal/to_std_array.hpp"
 
@@ -139,7 +139,7 @@ template <internal::StringLiteral _name, class T>
 inline auto make_field(T&& _value) {
   using T0 = std::remove_cvref_t<T>;
   if constexpr (std::is_array_v<T0>) {
-    return Field<_name, T0>(rfl::Array<T0>(std::forward<T>(_value)));
+    return Field<_name, T0>(internal::Array<T0>(std::forward<T>(_value)));
   } else {
     return Field<_name, T0>(std::forward<T>(_value));
   }

@@ -1,11 +1,12 @@
-#ifndef RFL_WRAP_IN_RFL_ARRAY_T_
-#define RFL_WRAP_IN_RFL_ARRAY_T_
+#ifndef RFL_INTERNAL_WRAP_IN_RFL_ARRAY_T_
+#define RFL_INTERNAL_WRAP_IN_RFL_ARRAY_T_
 
 #include <type_traits>
 
 #include "Array.hpp"
 
 namespace rfl {
+namespace internal {
 
 template <class T>
 struct wrap_in_rfl_array {
@@ -13,7 +14,7 @@ struct wrap_in_rfl_array {
 };
 
 template <class T>
-  requires std::is_array_v<T>
+requires std::is_array_v<T>
 struct wrap_in_rfl_array<T> {
   using type = Array<T>;
 };
@@ -21,6 +22,7 @@ struct wrap_in_rfl_array<T> {
 template <class T>
 using wrap_in_rfl_array_t = typename wrap_in_rfl_array<T>::type;
 
+}  // namespace internal
 }  // namespace rfl
 
 #endif

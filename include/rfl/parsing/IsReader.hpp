@@ -11,16 +11,17 @@
 
 #include "../Result.hpp"
 #include "../internal/is_basic_type.hpp"
-#include "../wrap_in_rfl_array_t.hpp"
+#include "../internal/wrap_in_rfl_array_t.hpp"
 
 namespace rfl {
 namespace parsing {
 
 template <class R, class T>
-concept IsReader = requires(
-    R r, std::string name, std::function<std::int16_t(std::string_view)> fct,
-    typename R::InputArrayType arr, typename R::InputObjectType obj,
-    typename R::InputVarType var) {
+concept IsReader = requires(R r, std::string name,
+                            std::function<std::int16_t(std::string_view)> fct,
+                            typename R::InputArrayType arr,
+                            typename R::InputObjectType obj,
+                            typename R::InputVarType var) {
   /// Any Reader needs to define the following:
   ///
   /// 1) An InputArrayType, which must be an array-like data structure.
@@ -35,7 +36,7 @@ concept IsReader = requires(
   /// Retrieves a particular field from an object.
   {
     r.get_field(name, obj)
-  } -> std::same_as<rfl::Result<typename R::InputVarType>>;
+    } -> std::same_as<rfl::Result<typename R::InputVarType>>;
 
   /// Determines whether a variable is empty (the NULL type).
   { r.is_empty(var) } -> std::same_as<bool>;
@@ -43,15 +44,15 @@ concept IsReader = requires(
   /// Transforms var to a basic type (bool, integral,
   /// floating point, std::string)
   {
-    r.template to_basic_type<wrap_in_rfl_array_t<T>>(var)
-  } -> std::same_as<rfl::Result<wrap_in_rfl_array_t<T>>>;
+    r.template to_basic_type<internal::wrap_in_rfl_array_t<T>>(var)
+    } -> std::same_as<rfl::Result<internal::wrap_in_rfl_array_t<T>>>;
 
   /// _fct is a function that turns the field name into the field index of the
   /// struct. It returns -1, if the fields does not exist on the struct. This
   /// returns an std::array that can be used to build up the struct.
   {
     r.template to_fields_array<6>(fct, obj)
-  } -> std::same_as<std::array<std::optional<typename R::InputVarType>, 6>>;
+    } -> std::same_as<std::array<std::optional<typename R::InputVarType>, 6>>;
 
   /// Casts var as an InputArrayType.
   { r.to_array(var) } -> std::same_as<rfl::Result<typename R::InputArrayType>>;
@@ -60,13 +61,13 @@ concept IsReader = requires(
   /// a vector.
   {
     r.to_map(obj)
-  } -> std::same_as<
-      std::vector<std::pair<std::string, typename R::InputVarType>>>;
+    } -> std::same_as<
+        std::vector<std::pair<std::string, typename R::InputVarType>>>;
 
   /// Casts var as an InputObjectType.
   {
     r.to_object(var)
-  } -> std::same_as<rfl::Result<typename R::InputObjectType>>;
+    } -> std::same_as<rfl::Result<typename R::InputObjectType>>;
 
   /// Iterates through an array and writes the contained vars into
   /// a vector.
@@ -75,8 +76,8 @@ concept IsReader = requires(
   /// Uses the custom constructor, if it has been determined that T has one
   /// (see above).
   {
-    r.template use_custom_constructor<wrap_in_rfl_array_t<T>>(var)
-  } -> std::same_as<rfl::Result<wrap_in_rfl_array_t<T>>>;
+    r.template use_custom_constructor<internal::wrap_in_rfl_array_t<T>>(var)
+    } -> std::same_as<rfl::Result<internal::wrap_in_rfl_array_t<T>>>;
 };
 
 }  // namespace parsing

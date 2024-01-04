@@ -3,9 +3,9 @@
 
 #include <type_traits>
 
-#include "../Array.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/Array.hpp"
 #include "../internal/to_std_array.hpp"
 #include "Parent.hpp"
 #include "Parser_array.hpp"
@@ -27,9 +27,9 @@ struct Parser<R, W, T[_size]> {
   using ParentType = Parent<W>;
   using CArray = T[_size];
 
-  static Result<Array<T[_size]>> read(const R& _r,
-                                      const InputVarType& _var) noexcept {
-    using StdArray = internal::to_std_array_t<T[_size]>;
+  static Result<internal::Array<CArray>> read(
+      const R& _r, const InputVarType& _var) noexcept {
+    using StdArray = internal::to_std_array_t<CArray>;
     return Parser<R, W, StdArray>::read(_r, _var);
   }
 
