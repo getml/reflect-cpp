@@ -12,6 +12,7 @@
 #include "test_c_array_class2.hpp"
 #include "test_c_array_class3.hpp"
 #include "test_c_array_class4.hpp"
+#include "test_c_array_class5.hpp"
 #include "test_custom_class1.hpp"
 #include "test_custom_class2.hpp"
 #include "test_custom_class3.hpp"
@@ -116,6 +117,12 @@ int main() {
   test_custom_class3::test();
   test_custom_class4::test();
 
+  test_c_array_class1::test();
+  test_c_array_class2::test();
+  test_c_array_class3::test();
+  test_c_array_class4::test();
+  test_c_array_class5::test();
+
   test_replace::test();
   test_replace2::test();
   test_replace_flatten::test();
@@ -139,9 +146,5 @@ int main() {
 
   test_meta_fields::test();
 
-  test_c_array_class1::test();
-  test_c_array_class2::test();
-  test_c_array_class3::test();
-  test_c_array_class4::test();
   return 0;
 }

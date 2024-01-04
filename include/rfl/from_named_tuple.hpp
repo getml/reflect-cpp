@@ -14,7 +14,7 @@ namespace rfl {
 
 /// Generates the struct T from a named tuple.
 template <class T, class NamedTupleType>
-T from_named_tuple(NamedTupleType&& _n) {
+auto from_named_tuple(NamedTupleType&& _n) {
   using RequiredType = std::remove_cvref_t<rfl::named_tuple_t<T>>;
   if constexpr (!std::is_same<std::remove_cvref_t<NamedTupleType>,
                               RequiredType>()) {
@@ -36,7 +36,7 @@ T from_named_tuple(NamedTupleType&& _n) {
 
 /// Generates the struct T from a named tuple.
 template <class T, class NamedTupleType>
-T from_named_tuple(const NamedTupleType& _n) {
+auto from_named_tuple(const NamedTupleType& _n) {
   using RequiredType = std::remove_cvref_t<rfl::named_tuple_t<T>>;
   if constexpr (!std::is_same<std::remove_cvref_t<NamedTupleType>,
                               RequiredType>()) {

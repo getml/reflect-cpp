@@ -63,7 +63,7 @@ template <class T, class Pointers, class... Args>
 auto move_from_pointers(Pointers& _ptrs, Args&&... _args) {
   constexpr auto i = sizeof...(Args);
   if constexpr (i == std::tuple_size_v<std::remove_cvref_t<Pointers>>) {
-    return T{std::move(_args)...};
+    return std::remove_cvref_t<T>{std::move(_args)...};
   } else {
     using FieldType = std::tuple_element_t<i, std::remove_cvref_t<Pointers>>;
 
@@ -116,7 +116,7 @@ auto flatten_c_arrays(const auto& _tup) {
 /// Creates a struct of type T from a tuple by moving the underlying
 /// fields.
 template <class T, class TupleType>
-T move_from_tuple(TupleType&& _t) {
+auto move_from_tuple(TupleType&& _t) {
   auto ptr_tuple = tup_to_ptr_tuple(_t);
 
   using TargetTupleType = tuple_t<std::remove_cvref_t<T>>;

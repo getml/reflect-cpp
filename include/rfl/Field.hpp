@@ -12,6 +12,7 @@
 #include "internal/Array.hpp"
 #include "internal/StringLiteral.hpp"
 #include "internal/to_std_array.hpp"
+#include "internal/wrap_in_rfl_array_t.hpp"
 
 namespace rfl {
 
@@ -19,7 +20,7 @@ namespace rfl {
 template <internal::StringLiteral _name, class T>
 struct Field {
   /// The underlying type.
-  using Type = T;
+  using Type = internal::wrap_in_rfl_array_t<T>;
 
   /// The name of the field.
   using Name = rfl::Literal<_name>;
@@ -30,7 +31,7 @@ struct Field {
 
   Field(Field<_name, T>&& _field) noexcept = default;
 
-  Field(const Field<_name, Type>& _field) = default;
+  Field(const Field<_name, T>& _field) = default;
 
   template <class U>
   Field(const Field<_name, U>& _field) : value_(_field.get()) {}

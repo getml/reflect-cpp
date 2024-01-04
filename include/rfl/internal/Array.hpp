@@ -1,6 +1,7 @@
 #ifndef RFL_INTERNAL_ARRAY_HPP_
 #define RFL_INTERNAL_ARRAY_HPP_
 
+#include <array>
 #include <type_traits>
 
 #include "to_std_array.hpp"
@@ -17,6 +18,8 @@ struct Array {
   Array() = default;
   Array(const StdArrayType &_arr) : arr_(_arr) {}
   Array(StdArrayType &&_arr) : arr_(std::move(_arr)) {}
+  Array(const T &_arr) : arr_(to_std_array(_arr)) {}
+  Array(T &&_arr) : arr_(to_std_array(_arr)) {}
 
   ~Array() = default;
 
