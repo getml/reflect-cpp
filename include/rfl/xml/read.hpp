@@ -24,7 +24,7 @@ auto read(const InputVarType& _var) {
 
 /// Parses an object from XML using reflection.
 template <class T>
-auto read(const std::string& _xml_str) {
+Result<T> read(const std::string& _xml_str) {
   pugi::xml_document doc;
   const auto result = doc.load_string(_xml_str.c_str());
   if (!result) {
