@@ -117,7 +117,7 @@ auto get_field_names() {
   if constexpr (std::is_pointer_v<std::remove_cvref_t<T>>) {
     return get_field_names<std::remove_pointer_t<T>>();
   } else {
-    constexpr auto ptr_tuple = to_ptr_tuple(fake_object<T>);
+    constexpr auto ptr_tuple = to_ptr_tuple(get_fake_object<T>());
     const auto get = [&]<std::size_t... Is>(std::index_sequence<Is...>) {
       return concat_literals(
           get_field_name<wrap(std::get<Is>(ptr_tuple))>()...);
