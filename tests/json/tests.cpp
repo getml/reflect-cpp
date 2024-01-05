@@ -61,6 +61,7 @@
 #include "test_timestamp.hpp"
 #include "test_unique_ptr.hpp"
 #include "test_unique_ptr2.hpp"
+#include "test_unnamed_namespace.hpp"
 #include "test_unordered_map.hpp"
 #include "test_unordered_multimap.hpp"
 #include "test_unordered_multiset.hpp"
@@ -111,6 +112,7 @@ int main() {
   test_result::test();
   test_anonymous_fields::test();
   test_monster_example::test();
+  test_unnamed_namespace::test();
 
   test_custom_class1::test();
   test_custom_class2::test();
