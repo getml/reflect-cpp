@@ -16,6 +16,11 @@ namespace internal {
 #pragma clang diagnostic ignored "-Wundefined-internal"
 #endif
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 7631)
+#endif
+
 template <class T>
 struct wrapper {
   const T value;
@@ -29,6 +34,10 @@ consteval const T& get_fake_object() noexcept {
 
 #ifdef __clang__
 #pragma clang diagnostic pop
+#endif
+
+#ifdef _MSC_VER
+#pragma warning(pop)
 #endif
 
 }  // namespace internal
