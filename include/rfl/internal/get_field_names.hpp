@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "../Literal.hpp"
-#include "fake_object.hpp"
+#include "get_fake_object.hpp"
 #include "is_flatten_field.hpp"
 #include "is_rename.hpp"
 #include "num_fields.hpp"

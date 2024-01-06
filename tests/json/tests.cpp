@@ -29,6 +29,7 @@
 #include "test_flatten.hpp"
 #include "test_flatten_anonymous.hpp"
 #include "test_forward_list.hpp"
+#include "test_inside_function.hpp"
 #include "test_list.hpp"
 #include "test_literal.hpp"
 #include "test_literal_map.hpp"
@@ -113,6 +114,7 @@ int main() {
   test_anonymous_fields::test();
   test_monster_example::test();
   test_unnamed_namespace::test();
+  test_inside_function::test();
 
   test_custom_class1::test();
   test_custom_class2::test();
