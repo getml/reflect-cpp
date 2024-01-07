@@ -41,7 +41,7 @@ constexpr auto wrap(const T& arg) noexcept {
   return Wrapper{arg};
 }
 
-template <auto ptr>
+template <class T, auto ptr>
 consteval auto get_field_name_str_view() {
   const auto func_name =
       std::string_view{std::source_location::current().function_name()};
@@ -61,9 +61,9 @@ consteval auto get_field_name_str_view() {
 #endif
 }
 
-template <auto ptr>
+template <class T, auto ptr>
 consteval auto get_field_name_str_lit() {
-  constexpr auto name = get_field_name_str_view<ptr>();
+  constexpr auto name = get_field_name_str_view<T, ptr>();
   const auto to_str_lit = [&]<auto... Ns>(std::index_sequence<Ns...>) {
     return StringLiteral<sizeof...(Ns) + 1>{name[Ns]...};
   };
@@ -73,7 +73,7 @@ consteval auto get_field_name_str_lit() {
 template <class T>
 auto get_field_names();
 
-template <auto ptr>
+template <class T, auto ptr>
 auto get_field_name() {
 #if defined(__clang__)
   using Type = std::remove_cvref_t<std::remove_pointer_t<
@@ -87,7 +87,7 @@ auto get_field_name() {
   } else if constexpr (is_flatten_field_v<Type>) {
     return get_field_names<std::remove_cvref_t<typename Type::Type>>();
   } else {
-    return rfl::Literal<get_field_name_str_lit<ptr>()>();
+    return rfl::Literal<get_field_name_str_lit<T, ptr>()>();
   }
 }
 
@@ -118,18 +118,21 @@ template <class T>
 #endif
 #endif
 auto get_field_names() {
-  if constexpr (std::is_pointer_v<std::remove_cvref_t<T>>) {
+  using Type = std::remove_cvref_t<T>;
+  if constexpr (std::is_pointer_v<Type>) {
     return get_field_names<std::remove_pointer_t<T>>();
   } else {
 #if defined(__clang__)
     const auto get = []<std::size_t... Is>(std::index_sequence<Is...>) {
-      return concat_literals(get_field_name<wrap(std::get<Is>(
-                                 bind_fake_object_to_tuple<T>()))>()...);
+      return concat_literals(
+          get_field_name<Type, wrap(std::get<Is>(
+                                   bind_fake_object_to_tuple<T>()))>()...);
     };
 #else
     const auto get = []<std::size_t... Is>(std::index_sequence<Is...>) {
       return concat_literals(
-          get_field_name<std::get<Is>(bind_fake_object_to_tuple<T>())>()...);
+          get_field_name<Type,
+                         std::get<Is>(bind_fake_object_to_tuple<T>())>()...);
     };
 #endif
     return get(std::make_index_sequence<num_fields<T>>());
