@@ -1,5 +1,5 @@
-#ifndef RFL_INTERNAL_BIND_TO_TUPLE_HPP_
-#define RFL_INTERNAL_BIND_TO_TUPLE_HPP_
+#ifndef RFL_INTERNAL_TO_PTR_TUPLE_HPP_
+#define RFL_INTERNAL_TO_PTR_TUPLE_HPP_
 
 #include <iostream>
 #include <tuple>
