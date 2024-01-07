@@ -52,8 +52,8 @@ consteval auto get_field_name_str_view() {
   const auto split = func_name.substr(0, func_name.size() - 2);
   return split.substr(split.find_last_of(":") + 1);
 #elif defined(_MSC_VER)
-  const auto split = func_name.substr(0, func_name.find("value->") + 7);
-  return split.substr(split.find_last_of(">") + 1);
+  const auto split = func_name.substr(0, func_name.size() - 7);
+  return split.substr(split.find("value->") + 7);
 #else
   static_assert(false,
                 "You are using an unsupported compiler. Please use GCC, Clang "
