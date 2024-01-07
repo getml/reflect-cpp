@@ -46,13 +46,13 @@ consteval auto get_field_name_str_view() {
   const auto func_name =
       std::string_view{std::source_location::current().function_name()};
 #if defined(__clang__)
-  const auto split = func_name.substr(0, func_name.find("}]"));
+  const auto split = func_name.substr(0, func_name.size() - 2);
   return split.substr(split.find_last_of(".") + 1);
 #elif defined(__GNUC__)
-  const auto split = func_name.substr(0, func_name.find(")}"));
+  const auto split = func_name.substr(0, func_name.size() - 2);
   return split.substr(split.find_last_of(":") + 1);
 #elif defined(_MSC_VER)
-  const auto split = func_name.substr(0, func_name.find_last_of("}"));
+  const auto split = func_name.substr(0, func_name.find("value->") + 7);
   return split.substr(split.find_last_of(">") + 1);
 #else
   static_assert(false,
@@ -75,8 +75,12 @@ auto get_field_names();
 
 template <auto ptr>
 auto get_field_name() {
+#if defined(__clang__)
   using Type = std::remove_cvref_t<std::remove_pointer_t<
       typename std::remove_pointer_t<decltype(ptr)>::Type>>;
+#else
+  using Type = std::remove_cvref_t<std::remove_pointer_t<decltype(ptr)>>;
+#endif
   if constexpr (is_rename_v<Type>) {
     using Name = typename Type::Name;
     return Name();
@@ -117,10 +121,17 @@ auto get_field_names() {
   if constexpr (std::is_pointer_v<std::remove_cvref_t<T>>) {
     return get_field_names<std::remove_pointer_t<T>>();
   } else {
+#if defined(__clang__)
     const auto get = []<std::size_t... Is>(std::index_sequence<Is...>) {
       return concat_literals(get_field_name<wrap(std::get<Is>(
                                  bind_fake_object_to_tuple<T>()))>()...);
     };
+#else
+    const auto get = []<std::size_t... Is>(std::index_sequence<Is...>) {
+      return concat_literals(
+          get_field_name<std::get<Is>(bind_fake_object_to_tuple<T>())>()...);
+    };
+#endif
     return get(std::make_index_sequence<num_fields<T>>());
   }
 }
