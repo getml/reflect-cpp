@@ -117,13 +117,11 @@ auto get_field_names() {
   if constexpr (std::is_pointer_v<std::remove_cvref_t<T>>) {
     return get_field_names<std::remove_pointer_t<T>>();
   } else {
-    constexpr auto ptr_tuple = bind_fake_object_to_tuple<T>();
-    const auto get = [&]<std::size_t... Is>(std::index_sequence<Is...>) {
-      return concat_literals(
-          get_field_name<wrap(std::get<Is>(ptr_tuple))>()...);
+    const auto get = []<std::size_t... Is>(std::index_sequence<Is...>) {
+      return concat_literals(get_field_name<wrap(std::get<Is>(
+                                 bind_fake_object_to_tuple<T>()))>()...);
     };
-    return get(
-        std::make_index_sequence<std::tuple_size_v<decltype(ptr_tuple)>>());
+    return get(std::make_index_sequence<num_fields<T>>());
   }
 }
 
