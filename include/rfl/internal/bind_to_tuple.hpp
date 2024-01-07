@@ -1,5 +1,5 @@
-#ifndef RFL_INTERNAL_BIND_TO_TUPLE_HELPER_HPP_
-#define RFL_INTERNAL_BIND_TO_TUPLE_HELPER_HPP_
+#ifndef RFL_INTERNAL_BIND_TO_TUPLE_HPP_
+#define RFL_INTERNAL_BIND_TO_TUPLE_HPP_
 
 #include <cstddef>
 #include <iostream>
@@ -12,17 +12,6 @@
 
 namespace rfl {
 namespace internal {
-
-template <class T>
-constexpr auto tuple_view(T&);
-
-template <class T, typename F>
-constexpr auto bind_to_tuple(T& _t, const F& _f) {
-  auto view = tuple_view(_t);
-  return [&]<std::size_t... Is>(std::index_sequence<Is...>) {
-    return std::make_tuple(_f(std::get<Is>(view))...);
-  }(std::make_index_sequence<std::tuple_size_v<decltype(view)>>());
-}
 
 template <std::size_t n>
 struct tuple_view_helper {
@@ -596,6 +585,15 @@ RFL_INTERNAL_DEFINE_TUPLE_VIEW_HELPER(
 template <class T>
 constexpr auto tuple_view(T& t) {
   return tuple_view_helper<num_fields<T>>::tuple_view(t);
+}
+
+template <class T, typename F>
+constexpr auto bind_to_tuple(T& _t, const F& _f) {
+  auto view = tuple_view(_t);
+  return [&]<std::size_t... Is>(std::index_sequence<Is...>) {
+    return std::make_tuple(_f(std::get<Is>(view))...);
+  }
+  (std::make_index_sequence<std::tuple_size_v<decltype(view)>>());
 }
 
 }  // namespace internal
