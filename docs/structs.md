@@ -69,7 +69,7 @@ And you can parse it back into a struct:
 const auto homer = rfl::json::read<Person>(json_string).value();
 ```
 
-## Important notes
+## Important note
 
 **Do not create custom constructors on the structs.**
 
@@ -83,37 +83,4 @@ But if you create a custom constructor, then C++ will no longer allow this kind 
 
 If you want to create the struct from one of your classes (the most like reason, you want to create custom constructors in the first place),
 you might want to check out the section on [custom classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_classes.md) or [custom parsers](https://github.com/getml/reflect-cpp/blob/main/docs/custom_parser.md).
-
-**Do not define the struct inside a function.**
-
-Another limitation is that you cannot declare the struct inside a function. For instance:
-
-```cpp
-// WILL NOT COMPILE
-void my_function() {
-
-    struct Person {
-        std::string first_name;
-        std::string last_name;
-        std::vector<Person> children;
-    };
-
-    // ...
-}
-```
-
-Instead, do this:
-
-```cpp
-struct Person {
-    std::string first_name;
-    std::string last_name;
-    std::vector<Person> children;
-};
-
-void my_function() {
-
-    // ...
-}
-```
 
