@@ -76,26 +76,25 @@ class Result {
 
   /// Monadic operation - F must be a function of type T -> Result<U>.
   template <class F>
-  auto and_then(const F& _f) {
+  auto and_then(const F& _f) & {
     /// Result_U is expected to be of type Result<U>.
-    using Result_U = typename std::invoke_result<F, T>::type;
+    using Result_U = typename std::invoke_result<F, T&>::type;
 
     const auto handle_variant =
-        [&]<class TOrError>(TOrError&& _t_or_err) -> Result_U {
-      if constexpr (!std::is_same<std::remove_cvref_t<TOrError>, Error>()) {
-        return _f(std::forward<TOrError>(_t_or_err));
+        [&]<class TOrError>(TOrError& _t_or_err) -> Result_U {
+      if constexpr (!std::is_same<TOrError, Error>()) {
+        return _f(_t_or_err);
       } else {
-        return std::forward<TOrError>(_t_or_err);
+        return _t_or_err;
       }
     };
 
-    return std::visit(handle_variant,
-                      std::forward<std::variant<T, Error>>(t_or_err_));
+    return std::visit(handle_variant, t_or_err_);
   }
 
   /// Monadic operation - F must be a function of type T -> Result<U>.
   template <class F>
-  auto and_then(const F& _f) const {
+  auto and_then(const F& _f) const& {
     /// Result_U is expected to be of type Result<U>.
     using Result_U = typename std::invoke_result<F, T>::type;
 
@@ -109,6 +108,42 @@ class Result {
     };
 
     return std::visit(handle_variant, t_or_err_);
+  }
+
+  /// Monadic operation - F must be a function of type T -> Result<U>.
+  template <class F>
+  auto and_then(const F& _f) && {
+    /// Result_U is expected to be of type Result<U>.
+    using Result_U = typename std::invoke_result<F, T>::type;
+
+    const auto handle_variant =
+        [&]<class TOrError>(TOrError&& _t_or_err) -> Result_U {
+      if constexpr (!std::is_same<std::remove_cv_t<TOrError>, Error>()) {
+        return _f(std::forward<TOrError>(_t_or_err));
+      } else {
+        return std::forward<TOrError>(_t_or_err);
+      }
+    };
+
+    return std::visit(handle_variant, std::move(t_or_err_));
+  }
+
+  /// Monadic operation - F must be a function of type T -> Result<U>.
+  template <class F>
+  auto and_then(const F& _f) const&& {
+    /// Result_U is expected to be of type Result<U>.
+    using Result_U = typename std::invoke_result<F, T>::type;
+
+    const auto handle_variant =
+        [&]<class TOrError>(TOrError&& _t_or_err) -> Result_U {
+      if constexpr (!std::is_same<std::remove_cv_t<TOrError>, Error>()) {
+        return _f(std::forward<TOrError>(_t_or_err));
+      } else {
+        return std::forward<TOrError>(_t_or_err);
+      }
+    };
+
+    return std::visit(handle_variant, std::move(t_or_err_));
   }
 
   /// Results types can be iterated over, which even make it possible to use
@@ -194,6 +229,14 @@ class Result {
   /// undefined behavior, if the result contains an error.
   const T& operator*() const { return *std::get_if<T>(&t_or_err_); }
 
+  /// Allows access to the underlying value. Careful: Will result in undefined
+  /// behavior, if the result contains an error.
+  T* operator->() { return std::get_if<T>(&t_or_err_); }
+
+  /// Allows access to the underlying value. Careful: Will result in undefined
+  /// behavior, if the result contains an error.
+  const T* operator->() const { return std::get_if<T>(&t_or_err_); }
+
   /// Assigns the underlying object.
   Result<T>& operator=(const Result<T>& _other) = default;
 
@@ -212,25 +255,9 @@ class Result {
   /// Expects a function that takes of type Error -> Result<T> and returns
   /// Result<T>.
   template <class F>
-  Result<T> or_else(const F& _f) {
+  Result<T> or_else(const F& _f) & {
     const auto handle_variant =
-        [&]<class TOrError>(TOrError&& _t_or_err) -> Result<T> {
-      if constexpr (std::is_same<std::remove_cvref_t<TOrError>, Error>()) {
-        return _f(std::forward<Error>(_t_or_err));
-      } else {
-        return std::forward<T>(_t_or_err);
-      }
-    };
-    return std::visit(handle_variant,
-                      std::forward<std::variant<T, Error>>(t_or_err_));
-  }
-
-  /// Expects a function that takes of type Error -> Result<T> and returns
-  /// Result<T>.
-  template <class F>
-  Result<T> or_else(const F& _f) const {
-    const auto handle_variant =
-        [&_f]<class TOrError>(const TOrError& _t_or_err) -> Result<T> {
+        [&]<class TOrError>(TOrError& _t_or_err) -> Result<T> {
       if constexpr (std::is_same<TOrError, Error>()) {
         return _f(_t_or_err);
       } else {
@@ -238,6 +265,51 @@ class Result {
       }
     };
     return std::visit(handle_variant, t_or_err_);
+  }
+
+  /// Expects a function that takes of type Error -> Result<T> and returns
+  /// Result<T>.
+  template <class F>
+  Result<T> or_else(const F& _f) const& {
+    const auto handle_variant =
+        [&]<class TOrError>(const TOrError& _t_or_err) -> Result<T> {
+      if constexpr (std::is_same<TOrError, Error>()) {
+        return _f(_t_or_err);
+      } else {
+        return _t_or_err;
+      }
+    };
+    return std::visit(handle_variant, t_or_err_);
+  }
+
+  /// Expects a function that takes of type Error -> Result<T> and returns
+  /// Result<T>.
+  template <class F>
+  Result<T> or_else(const F& _f) && {
+    const auto handle_variant =
+        [&]<class TOrError>(TOrError&& _t_or_err) -> Result<T> {
+      if constexpr (std::is_same<std::remove_cvref_t<TOrError>, Error>()) {
+        return _f(std::forward<TOrError>(_t_or_err));
+      } else {
+        return std::forward<TOrError>(_t_or_err);
+      }
+    };
+    return std::visit(handle_variant, std::move(t_or_err_));
+  }
+
+  /// Expects a function that takes of type Error -> Result<T> and returns
+  /// Result<T>.
+  template <class F>
+  Result<T> or_else(const F& _f) const&& {
+    const auto handle_variant =
+        [&]<class TOrError>(TOrError&& _t_or_err) -> Result<T> {
+      if constexpr (std::is_same<std::remove_cvref_t<TOrError>, Error>()) {
+        return _f(std::forward<TOrError>(_t_or_err));
+      } else {
+        return std::forward<TOrError>(_t_or_err);
+      }
+    };
+    return std::visit(handle_variant, std::move(t_or_err_));
   }
 
   /// Returns the value contained if successful or the provided result r if
@@ -249,26 +321,25 @@ class Result {
 
   /// Functor operation - F must be a function of type T -> U.
   template <class F>
-  auto transform(const F& _f) {
+  auto transform(const F& _f) & {
     /// Result_U is expected to be of type Result<U>.
-    using U = typename std::invoke_result<F, T>::type;
+    using U = typename std::invoke_result<F, T&>::type;
 
     const auto handle_variant =
-        [&]<class TOrError>(TOrError&& _t_or_err) -> rfl::Result<U> {
-      if constexpr (!std::is_same<std::remove_cvref_t<TOrError>, Error>()) {
-        return _f(std::forward<TOrError>(_t_or_err));
+        [&]<class TOrError>(TOrError& _t_or_err) -> rfl::Result<U> {
+      if constexpr (!std::is_same<TOrError, Error>()) {
+        return _f(_t_or_err);
       } else {
-        return std::forward<TOrError>(_t_or_err);
+        return _t_or_err;
       }
     };
 
-    return std::visit(handle_variant,
-                      std::forward<std::variant<T, Error>>(t_or_err_));
+    return std::visit(handle_variant, t_or_err_);
   }
 
   /// Functor operation - F must be a function of type T -> U.
   template <class F>
-  auto transform(const F& _f) const {
+  auto transform(const F& _f) const& {
     /// Result_U is expected to be of type Result<U>.
     using U = typename std::invoke_result<F, T>::type;
 
@@ -282,6 +353,41 @@ class Result {
     };
 
     return std::visit(handle_variant, t_or_err_);
+  }
+
+  template <class F>
+  auto transform(const F& _f) && {
+    /// Result_U is expected to be of type Result<U>.
+    using U = typename std::invoke_result<F, T>::type;
+
+    const auto handle_variant =
+        [&]<class TOrError>(TOrError&& _t_or_err) -> rfl::Result<U> {
+      if constexpr (!std::is_same<std::remove_cvref_t<TOrError>, Error>()) {
+        return _f(std::forward<TOrError>(_t_or_err));
+      } else {
+        return std::forward<TOrError>(_t_or_err);
+      }
+    };
+
+    return std::visit(handle_variant, std::move(t_or_err_));
+  }
+
+  /// Functor operation - F must be a function of type T -> U.
+  template <class F>
+  auto transform(const F& _f) const&& {
+    /// Result_U is expected to be of type Result<U>.
+    using U = typename std::invoke_result<F, T>::type;
+
+    const auto handle_variant =
+        [&]<class TOrError>(TOrError&& _t_or_err) -> rfl::Result<U> {
+      if constexpr (!std::is_same<std::remove_cvref_t<TOrError>, Error>()) {
+        return _f(std::forward<TOrError>(_t_or_err));
+      } else {
+        return std::forward<TOrError>(_t_or_err);
+      }
+    };
+
+    return std::visit(handle_variant, std::move(t_or_err_));
   }
 
   /// Returns the value if the result does not contain an error, throws an

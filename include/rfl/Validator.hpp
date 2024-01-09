@@ -102,6 +102,18 @@ struct Validator {
   /// Exposes the underlying value.
   const T& value() const { return value_; }
 
+  /// Exposes the underlying value, equivalent to value().
+  T& operator*() { return value_; }
+
+  /// Exposes the underlying value, equivalent to value().
+  const T& operator*() const { return value_; }
+
+  /// Exposes the underlying value, equivalent to addressof(value()).
+  T* operator->() { return &value_; }
+
+  /// Exposes the underlying value, equivalent to addressof(value()).
+  const T& operator->() const { return &value_; }
+
   /// Necessary for the serialization to work.
   const T& reflection() const { return value_; }
 
