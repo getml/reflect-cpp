@@ -28,7 +28,7 @@ struct StringLiteral {
     return std::string_view(std::data(arr_), N - 1);
   }
 
-  std::array<char, N - 1> arr_;
+    std::array<char, N - 1> arr_{};
 };
 
 template <size_t N1, size_t N2>
