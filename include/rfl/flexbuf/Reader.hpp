@@ -111,7 +111,7 @@ struct Reader {
     return _var.AsVector();
   }
 
-  std::vector<std::pair<std::string, InputVarType>> to_map(
+  rfl::Result<std::vector<std::pair<std::string, InputVarType>>> to_map(
       const InputObjectType& _obj) const noexcept {
     std::vector<std::pair<std::string, InputVarType>> m;
 

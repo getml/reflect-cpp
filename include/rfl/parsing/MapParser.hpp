@@ -117,17 +117,23 @@ struct MapParser {
         .value();
   }
 
-  static Result<MapType> make_map(const R& _r, const auto& _obj) noexcept {
-    auto m = _r.to_map(_obj);
+  static Result<MapType> iterate_map(const R& _r, const auto& _map) noexcept {
     MapType res;
     try {
-      for (auto& p : m) {
+      for (auto& p : _map) {
         res.insert(get_pair(_r, p));
       }
     } catch (std::exception& e) {
       return Error(e.what());
     }
     return res;
+  };
+
+  static Result<MapType> make_map(const R& _r, const auto& _obj) noexcept {
+    const auto iterate = [&](const auto& _map) {
+      return iterate_map(_r, _map);
+    };
+    return _r.to_map(_obj).and_then(iterate);
   }
 };
 

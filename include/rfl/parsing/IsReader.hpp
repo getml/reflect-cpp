@@ -61,8 +61,8 @@ concept IsReader = requires(R r, std::string name,
   /// a vector.
   {
     r.to_map(obj)
-    } -> std::same_as<
-        std::vector<std::pair<std::string, typename R::InputVarType>>>;
+    } -> std::same_as<rfl::Result<
+        std::vector<std::pair<std::string, typename R::InputVarType>>>>;
 
   /// Casts var as an InputObjectType.
   {

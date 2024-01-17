@@ -154,7 +154,7 @@ struct Reader {
     return f_arr;
   }
 
-  std::vector<std::pair<std::string, InputVarType>> to_map(
+  rfl::Result<std::vector<std::pair<std::string, InputVarType>>> to_map(
       const InputObjectType _obj) const noexcept {
     std::vector<std::pair<std::string, InputVarType>> m;
     for (auto child = _obj.node_.first_child(); child;

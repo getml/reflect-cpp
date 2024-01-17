@@ -48,7 +48,7 @@ struct FieldVariantParser {
       return find_matching_alternative(_r, disc_value, var);
     };
 
-    return _r.to_object(_var).transform(to_map).and_then(to_result);
+    return _r.to_object(_var).and_then(to_map).and_then(to_result);
   }
 
   template <class P>
