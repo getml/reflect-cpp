@@ -31,7 +31,8 @@ The following table lists the serialization formats currently supported by refle
 
 | Format       | Library                                              | Version      | License    | Remarks                                              |
 |--------------|------------------------------------------------------|--------------|------------| -----------------------------------------------------|
-| JSON         | [YYJSON](https://github.com/ibireme/yyjson)          | >= 0.8.0     | MIT        | out-of-the-box support, included in this repository  |
+| JSON         | [yyjson](https://github.com/ibireme/yyjson)          | >= 0.8.0     | MIT        | out-of-the-box support, included in this repository  |
+| BSON         | [libbson](https://github.com/mongodb/libbson)        | >= 1.25.1    | Apache 2.0 |                                                      |
 | flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 |                                                      |
 | XML          | [pugixml](https://github.com/zeux/pugixml)           | >= 1.14      | MIT        |                                                      |
 | YAML         | [yaml-cpp](https://github.com/jbeder/yaml-cpp)       | >= 0.8.0     | MIT        |                                                      |
@@ -448,6 +449,7 @@ To use reflect-cpp in your project:
 ```cmake
 add_subdirectory(reflect-cpp) # Add this project as a subdirectory
 
+set(REFLECTCPP_BSON ON) # Optional
 set(REFLECTCPP_FLEXBUFFERS ON) # Optional
 set(REFLECTCPP_XML ON) # Optional
 set(REFLECTCPP_YAML ON) # Optional
@@ -494,7 +496,7 @@ git submodule update --init
 ./vcpkg/bootstrap-vcpkg.bat # Windows
 # You may be prompted to install additional dependencies.
 
-cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
 ```

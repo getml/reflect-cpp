@@ -8,6 +8,10 @@ endif()
 
 add_subdirectory(json)
 
+if (REFLECTCPP_BSON)
+    add_subdirectory(bson)
+endif()
+
 if (REFLECTCPP_FLEXBUFFERS)
     add_subdirectory(flexbuffers)
 endif()

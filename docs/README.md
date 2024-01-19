@@ -56,11 +56,13 @@
 
 5.1) [JSON](https://github.com/getml/reflect-cpp/blob/main/docs/json.md)
 
-5.2) [flexbuffers](https://github.com/getml/reflect-cpp/blob/main/docs/flexbuffers.md)
+5.2) [BSON](https://github.com/getml/reflect-cpp/blob/main/docs/bson.md)
 
-5.3) [XML](https://github.com/getml/reflect-cpp/blob/main/docs/xml.md)
+5.3) [flexbuffers](https://github.com/getml/reflect-cpp/blob/main/docs/flexbuffers.md)
 
-5.4) [YAML](https://github.com/getml/reflect-cpp/blob/main/docs/yaml.md)
+5.4) [XML](https://github.com/getml/reflect-cpp/blob/main/docs/xml.md)
+
+5.5) [YAML](https://github.com/getml/reflect-cpp/blob/main/docs/yaml.md)
 
 ## 6) Advanced topics
 

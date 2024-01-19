@@ -8,6 +8,10 @@
       "version>=": "23.5.26#1"
     },
     {
+      "name": "libbson",
+      "version>=": "1.25.1"
+    },
+    {
       "name": "pugixml",
       "version>=": "1.14"
     },

@@ -41,6 +41,7 @@
 **/build_clang/**
 
 # Output files
+*.bson
 *.json
 *.fb
 *.xml
