@@ -20,7 +20,7 @@ requires AreReaderAndWriter<xml::Reader, xml::Writer, NamedTuple<FieldTypes...>>
 struct Parser<xml::Reader, xml::Writer, NamedTuple<FieldTypes...>>
     : public NamedTupleParser<xml::Reader, xml::Writer,
                               /*_ignore_empty_containers=*/true,
-                              FieldTypes...> {
+                              /*_all_required=*/false, FieldTypes...> {
 };
 
 }  // namespace parsing

@@ -20,9 +20,10 @@ jobs:
       - name: Run test
         run: |
           g++ --version
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build -j 4
           ./build/tests/bson/reflect-cpp-bson-tests
+          ./build/tests/cbor/reflect-cpp-cbor-tests
           ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
           ./build/tests/json/reflect-cpp-json-tests
           ./build/tests/xml/reflect-cpp-xml-tests
@@ -52,9 +53,10 @@ jobs:
           CXX: clang++
         run: |
           clang --version
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build -j 4
           ./build/tests/bson/reflect-cpp-bson-tests
+          ./build/tests/cbor/reflect-cpp-cbor-tests
           ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
           ./build/tests/json/reflect-cpp-json-tests
           ./build/tests/xml/reflect-cpp-xml-tests

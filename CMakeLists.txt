@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 
 option(REFLECTCPP_BUILD_SHARED "Build shared library" OFF)
 option(REFLECTCPP_BSON "Enable BSON support" OFF)
+option(REFLECTCPP_CBOR "Enable CBOR support" OFF)
 option(REFLECTCPP_FLEXBUFFERS "Enable flexbuffers support" OFF)
 option(REFLECTCPP_XML "Enable XML support" OFF)
 option(REFLECTCPP_YAML "Enable YAML support" OFF)
@@ -9,7 +10,7 @@ option(REFLECTCPP_YAML "Enable YAML support" OFF)
 option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
 
 # enable vcpkg if require features other than JSON
-if (REFLECTCPP_BSON OR REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_XML OR REFLECTCPP_YAML)
+if (REFLECTCPP_BSON OR REFLECTCPP_CBOR OR REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_XML OR REFLECTCPP_YAML)
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
 endif ()
 
@@ -28,6 +29,14 @@ target_include_directories(reflectcpp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
 if (REFLECTCPP_BSON)
     find_package(bson-1.0 CONFIG REQUIRED)
     target_link_libraries(reflectcpp PRIVATE $<IF:$<TARGET_EXISTS:mongo::bson_static>,mongo::bson_static,mongo::bson_shared>) 
+endif ()
+
+if (REFLECTCPP_CBOR)
+    if (MSVC)
+        target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/tinycbor${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    else ()
+        target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libtinycbor${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    endif ()
 endif ()
 
 if (REFLECTCPP_FLEXBUFFERS)

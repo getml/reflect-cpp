@@ -12,6 +12,10 @@ if (REFLECTCPP_BSON)
     add_subdirectory(bson)
 endif()
 
+if (REFLECTCPP_CBOR)
+    add_subdirectory(cbor)
+endif()
+
 if (REFLECTCPP_FLEXBUFFERS)
     add_subdirectory(flexbuffers)
 endif()

@@ -16,6 +16,10 @@
       "version>=": "1.14"
     },
     {
+      "name": "tinycbor",
+      "version>=": "0.6.0"
+    },
+    {
       "name": "yaml-cpp",
       "version>=": "0.8.0#1"
     },

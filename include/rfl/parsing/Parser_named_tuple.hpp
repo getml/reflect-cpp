@@ -11,7 +11,7 @@ template <class R, class W, class... FieldTypes>
 requires AreReaderAndWriter<R, W, NamedTuple<FieldTypes...>>
 struct Parser<R, W, NamedTuple<FieldTypes...>>
     : public NamedTupleParser<R, W, /*_ignore_empty_containers=*/false,
-                              FieldTypes...> {
+                              /*_all_required=*/false, FieldTypes...> {
 };
 
 }  // namespace parsing

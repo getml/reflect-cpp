@@ -21,7 +21,8 @@
 namespace rfl {
 namespace parsing {
 
-template <class R, class W, bool _ignore_empty_containers, class... FieldTypes>
+template <class R, class W, bool _ignore_empty_containers, bool _all_required,
+          class... FieldTypes>
 requires AreReaderAndWriter<R, W, NamedTuple<FieldTypes...>>
 struct NamedTupleParser {
   using InputObjectType = typename R::InputObjectType;
@@ -78,7 +79,8 @@ struct NamedTupleParser {
       const auto& f = std::get<i>(_fields_arr);
 
       if (!f) {
-        if constexpr (is_required<ValueType, _ignore_empty_containers>()) {
+        if constexpr (_all_required ||
+                      is_required<ValueType, _ignore_empty_containers>()) {
           const auto key = FieldType::name_.str();
           return collect_errors<i + 1>(
               _r, _fields_arr,
@@ -134,7 +136,8 @@ struct NamedTupleParser {
       const auto& f = std::get<_i>(_fields_arr);
 
       if (!f) {
-        if constexpr (is_required<ValueType, _ignore_empty_containers>()) {
+        if constexpr (_all_required ||
+                      is_required<ValueType, _ignore_empty_containers>()) {
           const auto key = FieldType::name_.str();
           _errors.emplace_back(Error("Field named '" + key + "' not found."));
         }
@@ -167,7 +170,8 @@ struct NamedTupleParser {
       const auto& value = rfl::get<_i>(_tup);
       const auto name = FieldType::name_.str();
       const auto new_parent = typename ParentType::Object{name, _ptr};
-      if constexpr (!is_required<ValueType, _ignore_empty_containers>()) {
+      if constexpr (!_all_required &&
+                    !is_required<ValueType, _ignore_empty_containers>()) {
         if (!is_empty(value)) {
           if constexpr (internal::is_attribute_v<ValueType>) {
             Parser<R, W, ValueType>::write(_w, value,

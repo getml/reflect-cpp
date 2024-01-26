@@ -11,8 +11,9 @@
 namespace rfl {
 namespace parsing {
 
-template <class R, class W, bool _ignore_empty_containers, class... Ts>
-  requires AreReaderAndWriter<R, W, std::tuple<Ts...>>
+template <class R, class W, bool _ignore_empty_containers, bool _all_required,
+          class... Ts>
+requires AreReaderAndWriter<R, W, std::tuple<Ts...>>
 struct TupleParser {
  public:
   using InputArrayType = typename R::InputArrayType;
@@ -82,7 +83,8 @@ struct TupleParser {
     using ResultType = Result<NewFieldType>;
 
     if (_i >= _vec.size()) {
-      if constexpr (is_required<NewFieldType, _ignore_empty_containers>()) {
+      if constexpr (_all_required ||
+                    is_required<NewFieldType, _ignore_empty_containers>()) {
         return ResultType(Error("Array is of length " +
                                 std::to_string(_vec.size()) + ", but field " +
                                 std::to_string(_i + 1) + " is required."));

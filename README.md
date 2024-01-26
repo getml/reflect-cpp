@@ -32,10 +32,11 @@ The following table lists the serialization formats currently supported by refle
 | Format       | Library                                              | Version      | License    | Remarks                                              |
 |--------------|------------------------------------------------------|--------------|------------| -----------------------------------------------------|
 | JSON         | [yyjson](https://github.com/ibireme/yyjson)          | >= 0.8.0     | MIT        | out-of-the-box support, included in this repository  |
-| BSON         | [libbson](https://github.com/mongodb/libbson)        | >= 1.25.1    | Apache 2.0 |                                                      |
-| flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 |                                                      |
-| XML          | [pugixml](https://github.com/zeux/pugixml)           | >= 1.14      | MIT        |                                                      |
-| YAML         | [yaml-cpp](https://github.com/jbeder/yaml-cpp)       | >= 0.8.0     | MIT        |                                                      |
+| BSON         | [libbson](https://github.com/mongodb/libbson)        | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
+| CBOR         | [tinycbor](https://github.com/intel/tinycbor)        | >= 0.6.0     | MIT        | JSON-like binary format                              |
+| flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 | Schema-less version of flatbuffers, binary format    |
+| XML          | [pugixml](https://github.com/zeux/pugixml)           | >= 1.14      | MIT        | Textual format used in many legacy projects          |
+| YAML         | [yaml-cpp](https://github.com/jbeder/yaml-cpp)       | >= 0.8.0     | MIT        | Textual format with an emphasis on readability       |
 
 Support for more serialization formats is in development. Refer to the [issues](https://github.com/getml/reflect-cpp/issues) for details.
 
@@ -69,8 +70,7 @@ The resulting JSON string looks like this:
 {"first_name":"Homer","last_name":"Simpson","age":45}
 ```
 
-Or you can use another format, such as YAML. This will work for just about 
-any example in the entire documentation or any supported format.
+Or you can use another format, such as YAML.
 
 ```cpp
 #include <rfl/yaml.hpp>
@@ -87,6 +87,21 @@ The resulting YAML string looks like this:
 first_name: Homer
 last_name: Simpson
 age: 45
+```
+
+This will work for just about any example in the entire documentation 
+and any supported format:
+
+```cpp
+rfl::bson::write(homer);
+rfl::cbor::write(homer);
+rfl::flexbuf::write(homer);
+rfl::xml::write(homer);
+
+rfl::bson::read<Person>(bson_bytes);
+rfl::cbor::read<Person>(cbor_bytes);
+rfl::flexbuf::read<Person>(flexbuf_bytes);
+rfl::xml::read<Person>(xml_string);
 ```
 
 ## More Comprehensive Example
@@ -450,6 +465,7 @@ To use reflect-cpp in your project:
 add_subdirectory(reflect-cpp) # Add this project as a subdirectory
 
 set(REFLECTCPP_BSON ON) # Optional
+set(REFLECTCPP_CBOR ON) # Optional
 set(REFLECTCPP_FLEXBUFFERS ON) # Optional
 set(REFLECTCPP_XML ON) # Optional
 set(REFLECTCPP_YAML ON) # Optional
@@ -496,7 +512,7 @@ git submodule update --init
 ./vcpkg/bootstrap-vcpkg.bat # Windows
 # You may be prompted to install additional dependencies.
 
-cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
 ```
@@ -504,6 +520,8 @@ cmake --build build --config Release -j 4 # MSVC
 To run the tests, do the following:
 
 ```
+./build/tests/bson/reflect-cpp-bson-tests
+./build/tests/cbor/reflect-cpp-cbor-tests
 ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
 ./build/tests/json/reflect-cpp-json-tests
 ./build/tests/xml/reflect-cpp-xml-tests

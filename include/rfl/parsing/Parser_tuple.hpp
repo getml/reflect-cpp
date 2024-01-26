@@ -10,7 +10,8 @@ namespace parsing {
 template <class R, class W, class... Ts>
 requires AreReaderAndWriter<R, W, std::tuple<Ts...>>
 struct Parser<R, W, std::tuple<Ts...>>
-    : public TupleParser<R, W, /*_ignore_empty_containers=*/false, Ts...> {
+    : public TupleParser<R, W, /*_ignore_empty_containers=*/false,
+                         /*_all_required=*/false, Ts...> {
 };
 
 }  // namespace parsing

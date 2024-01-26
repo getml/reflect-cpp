@@ -42,6 +42,7 @@
 
 # Output files
 *.bson
+*.cbor
 *.json
 *.fb
 *.xml
