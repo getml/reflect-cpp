@@ -1,6 +1,6 @@
 {
   "name": "reflectcpp",
-  "version-string": "0.6.0",
+  "version-string": "0.7.0",
   "builtin-baseline": "50bffcc62d7f6571eb32bc1a0b1807e77af1166c",
   "dependencies": [
     {
