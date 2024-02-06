@@ -43,8 +43,12 @@ constexpr auto wrap(const T& arg) noexcept {
 
 template <class T, auto ptr>
 consteval auto get_field_name_str_view() {
+#if defined(__clang__) && defined(_MSC_VER)
+  const auto func_name = std::string_view{__PRETTY_FUNCTION__};
+#else
   const auto func_name =
       std::string_view{std::source_location::current().function_name()};
+#endif
 #if defined(__clang__)
   const auto split = func_name.substr(0, func_name.size() - 2);
   return split.substr(split.find_last_of(".") + 1);
