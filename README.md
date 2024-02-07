@@ -301,7 +301,6 @@ const auto view = rfl::to_view(lisa);
 
 view.apply([](const auto& f) {
   // f is a an rfl::Field pointing to the original field.
-  // f.name() is a compile-time constant.
   std::cout << f.name() << ": " << rfl::json::write(*f.value()) << std::endl;
 });
 ```

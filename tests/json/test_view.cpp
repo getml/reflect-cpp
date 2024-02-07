@@ -34,15 +34,15 @@ void test() {
 
   view.apply([]<typename Field>(const Field& field) {
     using field_type = std::remove_pointer_t<typename Field::Type>;
-    if constexpr (field.name() == "age") {
+    if constexpr (Field::name() == "age") {
       static_assert(std::is_same_v<field_type, int>);
     } else {
       static_assert(std::is_same_v<field_type, std::string>);
     }
   });
 
-  rfl::to_view(lisa).apply([](auto&& field) {
-    if constexpr (field.name() == "first_name") {
+  rfl::to_view(lisa).apply([](auto field) {
+    if constexpr (decltype(field)::name() == "first_name") {
       *field.value() = "Bart";
     }
   });
