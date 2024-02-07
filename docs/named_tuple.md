@@ -95,6 +95,23 @@ const auto first_name = person.template get<"firstName">();
 const auto first_name = rfl::get<"firstName">(person);
 ```
 
+Fields can also be iterated over at compile-time using the `apply()` method:
+
+```cpp
+auto person = rfl::Field<"first_name", std::string>("Bart") *
+              rfl::Field<"last_name", std::string>("Simpson");
+
+person.apply([](const auto& f) {
+  constexpr auto field_name = f.name();
+  const auto& value = *f.value();
+});
+
+person.apply([]<typename Field>(Field& f) {
+  using field_pointer_type = typename Field::Type;
+  field_pointer_type* value = f.value();
+});
+```
+
 ### `rfl::replace`
 
 `rfl::replace` works for `rfl::NamedTuple` as well:
