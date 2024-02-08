@@ -281,7 +281,7 @@ for (const auto& f : rfl::fields<Person>()) {
 }
 ```
 
-You can also create a view and then access these fields using `std::get` or `rfl::get`:
+You can also create a view and then access these fields using `std::get` or `rfl::get`, or iterate over the fields at compile-time:
 
 ```cpp
 auto lisa = Person{.first_name = "Lisa", .last_name = "Simpson", .age = 8};
@@ -298,6 +298,11 @@ const auto view = rfl::to_view(lisa);
 *view.get<"age">() = 0;
 *rfl::get<0>(view) = "Maggie";
 *rfl::get<"first_name">(view) = "Maggie";
+
+view.apply([](const auto& f) {
+  // f is a an rfl::Field pointing to the original field.
+  std::cout << f.name() << ": " << rfl::json::write(*f.value()) << std::endl;
+});
 ```
 
 It also possible to replace fields:
