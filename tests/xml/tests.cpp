@@ -29,6 +29,7 @@
 #include "test_unique_ptr2.hpp"
 #include "test_variant.hpp"
 #include "test_xml_content.hpp"
+#include "test_wstring.hpp"
 
 int main() {
   test_readme_example::test();
@@ -62,6 +63,7 @@ int main() {
   test_custom_class4::test();
   test_default_values::test();
   test_save_load::test();
+  test_wstring::test();
 
   return 0;
 }
