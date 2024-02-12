@@ -31,6 +31,7 @@
 #include "test_unordered_multiset.hpp"
 #include "test_unordered_set.hpp"
 #include "test_variant.hpp"
+#include "test_wstring.hpp"
 
 int main() {
   test_readme_example::test();
@@ -70,6 +71,7 @@ int main() {
   test_all_of::test();
 
   test_save_load::test();
+  test_wstring::test();
 
   return 0;
 }
