@@ -37,7 +37,7 @@ struct Parser<R, W, std::wstring> {
     std::wstring outStr(val.size() * 2, L'\0');
 
     // Explicitly set the size so we don't empty it when we truncate
-    outStr.resize(val.size());
+    outStr.resize(val.size() * 2);
 
     auto* ptr = val.c_str();
 
@@ -57,8 +57,8 @@ struct Parser<R, W, std::wstring> {
     }
 
     std::mbstate_t state = std::mbstate_t();
-    std::string outStr(_str.size(), '\0');
-    outStr.resize(_str.size());
+    std::string outStr(_str.size() + 1, '\0');
+    outStr.resize(_str.size() + 1);
 
     auto* ptr = _str.c_str();
     auto len = std::wcsrtombs(outStr.data(), &ptr, _str.size(), &state) + 1;
