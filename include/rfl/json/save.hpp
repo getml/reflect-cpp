@@ -13,9 +13,10 @@ namespace rfl {
 namespace json {
 
 template <class T>
-Result<Nothing> save(const std::string& _fname, const T& _obj) {
-  const auto write_func = [](const auto& _obj, auto& _stream) -> auto& {
-    return write(_obj, _stream);
+Result<Nothing> save(const std::string& _fname, const T& _obj,
+                     const yyjson_write_flag _flag = 0) {
+  const auto write_func = [_flag](const auto& _obj, auto& _stream) -> auto& {
+    return write(_obj, _stream, _flag);
   };
   return rfl::io::save_string(_fname, _obj, write_func);
 }

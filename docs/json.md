@@ -21,11 +21,17 @@ You can parse JSON strings like this:
 const rfl::Result<Person> result = rfl::json::read<Person>(json_string);
 ```
 
-A person can be turned into a JSON string like this:
+A `Person` struct can be written into a JSON string like this:
 
 ```cpp
 const auto person = Person{...};
 const std::string json_string = rfl::json::write(person);
+```
+
+If you want a "pretty" JSON representation, you can do this:
+
+```cpp
+const std::string json_string = rfl::json::write(person, rfl::json::pretty);
 ```
 
 ## Loading and saving
@@ -39,6 +45,12 @@ const auto person = Person{...};
 rfl::json::save("/path/to/file.json", person);
 ```
 
+`rfl::json::pretty` will work here as well:
+
+```cpp
+rfl::json::save("/path/to/file.json", person, rfl::json::pretty);
+```
+
 ## Reading from and writing into streams
 
 You can also read from and write into any `std::istream` and `std::ostream` respectively.
@@ -48,6 +60,12 @@ const rfl::Result<Person> result = rfl::json::read<Person>(my_istream);
 
 const auto person = Person{...};
 rfl::json::write(person, my_ostream);
+```
+
+`rfl::json::pretty` will work here as well:
+
+```cpp
+rfl::json::write(person, my_ostream, rfl::json::pretty);
 ```
 
 Note that `std::cout` is also an ostream, so this works as well:
