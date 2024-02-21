@@ -118,7 +118,7 @@ class Result {
 
     const auto handle_variant =
         [&]<class TOrError>(TOrError&& _t_or_err) -> Result_U {
-      if constexpr (!std::is_same<std::remove_cv_t<TOrError>, Error>()) {
+      if constexpr (!std::is_same<std::remove_cvref_t<TOrError>, Error>()) {
         return _f(std::forward<TOrError>(_t_or_err));
       } else {
         return std::forward<TOrError>(_t_or_err);
@@ -136,7 +136,7 @@ class Result {
 
     const auto handle_variant =
         [&]<class TOrError>(TOrError&& _t_or_err) -> Result_U {
-      if constexpr (!std::is_same<std::remove_cv_t<TOrError>, Error>()) {
+      if constexpr (!std::is_same<std::remove_cvref_t<TOrError>, Error>()) {
         return _f(std::forward<TOrError>(_t_or_err));
       } else {
         return std::forward<TOrError>(_t_or_err);

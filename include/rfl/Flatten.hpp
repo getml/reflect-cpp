@@ -15,6 +15,9 @@ struct Flatten {
   /// The underlying type.
   using Type = std::remove_cvref_t<T>;
 
+  /// Default constructor with the underlying object value-initialized
+  Flatten() = default;
+
   Flatten(const Type& _value) : value_(_value) {}
 
   Flatten(Type&& _value) noexcept : value_(std::forward<Type>(_value)) {}
@@ -38,6 +41,21 @@ struct Flatten {
   Flatten(U&& _value) : value_(_value) {}
 
   ~Flatten() = default;
+
+  /// Returns the underlying object.
+  Type& operator*() { return value_; }
+
+  /// Returns the underlying object.
+  const Type& operator*() const { return value_; }
+
+  /// Returns the underlying object.
+  Type* operator->() { return &value_; }
+
+  /// Returns the underlying object.
+  const Type* operator->() const { return &value_; }
+
+  /// Returns the underlying object.
+  Type& get() { return value_; }
 
   /// Returns the underlying object.
   const Type& get() const { return value_; }
