@@ -35,6 +35,14 @@ void test() {
       Circle{.radius = 2.0, .color = Color::blue | Color::orange};
 
   write_and_read(circle, R"({"radius":2.0,"color":"red|blue|yellow"})");
+
+  auto mutable_circle = circle;
+  rfl::get_enumerators<Color>().apply([&](auto field) {
+    if constexpr (decltype(field)::name() == "green") {
+      mutable_circle.color = field.value();
+    }
+  });
+  write_and_read(mutable_circle, R"({"radius":2.0,"color":"green"})");
 }
 
 }  // namespace test_flag_enum
