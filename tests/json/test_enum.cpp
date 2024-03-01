@@ -50,6 +50,13 @@ void test() {
   });
   write_and_read(mutable_circle, R"({"radius":2.0,"color":"green"})");
 
+  rfl::get_enumerators_underlying<Color>().apply([&](auto field) {
+    if constexpr (decltype(field)::name() == "blue") {
+      mutable_circle.color = static_cast<Color>(field.value());
+    }
+  });
+  write_and_read(mutable_circle, R"({"radius":2.0,"color":"blue"})");
+
   constexpr auto enumerator_array = rfl::get_enumerator_array<Color>();
   static_assert(enumerator_array[0].first == "red");
   static_assert(enumerator_array[1].first == "green");
@@ -59,6 +66,16 @@ void test() {
   static_assert(enumerator_array[1].second == Color::green);
   static_assert(enumerator_array[2].second == Color::blue);
   static_assert(enumerator_array[3].second == Color::yellow);
+
+  constexpr auto enumerator_array_underlying = rfl::get_enumerator_array_underlying<Color>();
+  static_assert(enumerator_array_underlying[0].first == "red");
+  static_assert(enumerator_array_underlying[1].first == "green");
+  static_assert(enumerator_array_underlying[2].first == "blue");
+  static_assert(enumerator_array_underlying[3].first == "yellow");
+  static_assert(enumerator_array_underlying[0].second == 0);
+  static_assert(enumerator_array_underlying[1].second == 1);
+  static_assert(enumerator_array_underlying[2].second == 2);
+  static_assert(enumerator_array_underlying[3].second == 3);
 }
 
 }  // namespace test_enum
