@@ -146,3 +146,39 @@ This will be represented as follows:
 
 This works, because 16 + 256 + 512 + 1024 + 8192 = 10000. Flag enums are *always* represented in terms of 2^N-numbers.
 
+## General-purpose enumeration utilities
+
+reflect-cpp also allows you to directly convert between enumeration values and strings:
+
+```cpp
+enum class Color { red, green, blue };
+
+auto name = rfl::enum_to_string(Color::red);       // "red"
+auto value = rfl::string_to_enum<Color>("red");    // result containing Color::red
+auto value = rfl::string_to_enum<Color>("greem");  // error result
+```
+
+This works with normal and flag enums, and behaves just like serialization of types containing enumerations as described above.
+
+You can also inspect the defined enumerators of an enum type (including at compile-time):
+
+```cpp
+enum class Color { red, green, blue };
+
+// This produces a named tuple where the keys are "red", "green", and "blue", with corresponding
+// values Color::red, Color::green, and Color::blue.
+auto enumerators_named_tuple = rfl::get_enumerators<Color>();
+
+// You can iterate over the enumerators like this:
+enumerators_named_tuple.apply([&](const auto& field) {
+  // field.name() will be "red", "green", "blue"
+  // field.value() will be Color::red, Color::green, Color::blue
+});
+
+// This produces the same data as an std::array containing std::pair<std::string_view, Color>,
+// which can be inspected at compile-time.
+constexpr auto enumerator_array = rfl::get_enumerator_array<Color>();
+```
+
+In case it's more convenient to get the enumerator values as values of the enum's underlying type rather than values of the enum type itself,
+there is also `rfl::get_underlying_enumerators<EnumType>()` and `rfl::get_underlying_enumerator_array<EnumType>()`.

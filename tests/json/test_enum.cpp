@@ -50,8 +50,8 @@ void test() {
   });
   write_and_read(mutable_circle, R"({"radius":2.0,"color":"green"})");
 
-  rfl::get_underlying_enumerators<Color>().apply([&](auto field) {
-    if constexpr (decltype(field)::name() == "blue") {
+  rfl::get_underlying_enumerators<Color>().apply([&](const auto& field) {
+    if (field.name() == "blue") {
       mutable_circle.color = static_cast<Color>(field.value());
     }
   });
