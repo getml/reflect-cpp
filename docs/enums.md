@@ -148,7 +148,7 @@ This works, because 16 + 256 + 512 + 1024 + 8192 = 10000. Flag enums are *always
 
 ## General-purpose enumeration utilities
 
-reflect-cpp also allows you to directly convert between enumeration values and strings:
+reflect-cpp also allows you to directly convert between enumerator values and strings:
 
 ```cpp
 enum class Color { red, green, blue };
