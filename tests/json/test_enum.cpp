@@ -67,7 +67,8 @@ void test() {
   static_assert(enumerator_array[2].second == Color::blue);
   static_assert(enumerator_array[3].second == Color::yellow);
 
-  constexpr auto enumerator_array_underlying = rfl::get_underlying_enumerator_array<Color>();
+  constexpr auto enumerator_array_underlying =
+      rfl::get_underlying_enumerator_array<Color>();
   static_assert(enumerator_array_underlying[0].first == "red");
   static_assert(enumerator_array_underlying[1].first == "green");
   static_assert(enumerator_array_underlying[2].first == "blue");
