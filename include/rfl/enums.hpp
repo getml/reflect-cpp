@@ -35,10 +35,10 @@ auto get_enumerators() {
 // Returns a named tuple mapping names of enumerators of the given enum type to
 // their underlying values.
 template <internal::enums::is_scoped_enum EnumType>
-auto get_enumerators_underlying() {
+auto get_underlying_enumerators() {
   constexpr auto names = internal::enums::get_enum_names<
       EnumType, internal::enums::is_flag_enum<EnumType>>();
-  return internal::enums::names_to_enumerator_named_tuple_underlying(names);
+  return internal::enums::names_to_underlying_enumerator_named_tuple(names);
 }
 
 // Returns an std::array containing pairs of enumerator names (as
@@ -53,10 +53,10 @@ constexpr auto get_enumerator_array() {
 // Returns an std::array containing pairs of enumerator names (as
 // std::string_view) and underlying values.
 template <internal::enums::is_scoped_enum EnumType>
-constexpr auto get_enumerator_array_underlying() {
+constexpr auto get_underlying_enumerator_array() {
   constexpr auto names = internal::enums::get_enum_names<
       EnumType, internal::enums::is_flag_enum<EnumType>>();
-  return internal::enums::names_to_enumerator_array_underlying(names);
+  return internal::enums::names_to_underlying_enumerator_array(names);
 }
 
 }  // namespace rfl

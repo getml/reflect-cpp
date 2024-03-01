@@ -46,7 +46,7 @@ auto names_to_enumerator_named_tuple(
 }
 
 template <class EnumType, size_t N, StringLiteral... _names, auto... _enums>
-auto names_to_enumerator_named_tuple_underlying(
+auto names_to_underlying_enumerator_named_tuple(
     Names<EnumType, Literal<_names...>, N, _enums...>) {
   return make_named_tuple(Field<_names, std::underlying_type_t<EnumType>>{
       static_cast<std::underlying_type_t<EnumType>>(_enums)}...);
@@ -62,7 +62,7 @@ names_to_enumerator_array(Names<EnumType, Literal<_names...>, N, _enums...>) {
 template <class EnumType, size_t N, StringLiteral... _names, auto... _enums>
 constexpr std::array<
     std::pair<std::string_view, std::underlying_type_t<EnumType>>, N>
-names_to_enumerator_array_underlying(
+names_to_underlying_enumerator_array(
     Names<EnumType, Literal<_names...>, N, _enums...>) {
   return {
       std::make_pair(LiteralHelper<_names>::field_.string_view(),
