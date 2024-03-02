@@ -33,6 +33,7 @@
 #include "rfl/define_named_tuple.hpp"
 #include "rfl/define_tagged_union.hpp"
 #include "rfl/define_variant.hpp"
+#include "rfl/enums.hpp"
 #include "rfl/extract_discriminators.hpp"
 #include "rfl/field_type.hpp"
 #include "rfl/fields.hpp"

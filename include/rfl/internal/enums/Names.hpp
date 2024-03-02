@@ -6,9 +6,12 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 
 #include "../../Literal.hpp"
 #include "../../define_literal.hpp"
+#include "../../make_named_tuple.hpp"
+#include "../StringLiteral.hpp"
 
 namespace rfl {
 namespace internal {
@@ -35,6 +38,36 @@ struct Names {
       Names<EnumType, define_literal_t<LiteralType, NewLiteral>, N + 1,
             _enums..., _new_enum>>;
 };
+
+template <class EnumType, size_t N, StringLiteral... _names, auto... _enums>
+auto names_to_enumerator_named_tuple(
+    Names<EnumType, Literal<_names...>, N, _enums...>) {
+  return make_named_tuple(Field<_names, EnumType>{_enums}...);
+}
+
+template <class EnumType, size_t N, StringLiteral... _names, auto... _enums>
+auto names_to_underlying_enumerator_named_tuple(
+    Names<EnumType, Literal<_names...>, N, _enums...>) {
+  return make_named_tuple(Field<_names, std::underlying_type_t<EnumType>>{
+      static_cast<std::underlying_type_t<EnumType>>(_enums)}...);
+}
+
+template <class EnumType, size_t N, StringLiteral... _names, auto... _enums>
+constexpr std::array<std::pair<std::string_view, EnumType>, N>
+names_to_enumerator_array(Names<EnumType, Literal<_names...>, N, _enums...>) {
+  return {
+      std::make_pair(LiteralHelper<_names>::field_.string_view(), _enums)...};
+}
+
+template <class EnumType, size_t N, StringLiteral... _names, auto... _enums>
+constexpr std::array<
+    std::pair<std::string_view, std::underlying_type_t<EnumType>>, N>
+names_to_underlying_enumerator_array(
+    Names<EnumType, Literal<_names...>, N, _enums...>) {
+  return {
+      std::make_pair(LiteralHelper<_names>::field_.string_view(),
+                     static_cast<std::underlying_type_t<EnumType>>(_enums))...};
+}
 
 }  // namespace enums
 }  // namespace internal

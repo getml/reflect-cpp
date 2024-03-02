@@ -228,6 +228,9 @@ This results in the following JSON string:
 {"pos_x":2.0,"pos_y":3.0,"shape":"square","color":"red|blue"}
 ```
 
+You can also directly convert between enumerator values and strings with `rfl::enum_to_string()` and `rfl::string_to_enum()`, or
+obtain list of enumerator name and value pairs with `rfl::get_enumerators<EnumType>()` or `rfl::get_enumerator_array<EnumType>()`.
+
 ## Algebraic data types
 
 reflect-cpp supports Pydantic-style tagged unions, which allow you to form algebraic data types:
