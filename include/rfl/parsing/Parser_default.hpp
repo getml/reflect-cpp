@@ -30,6 +30,7 @@ namespace parsing {
 template <class R, class W, class T>
 requires AreReaderAndWriter<R, W, T>
 struct Parser {
+ public:
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
 
@@ -159,6 +160,7 @@ struct Parser {
     }
   }
 
+ private:
   template <class U>
   static schema::Type make_description(
       std::map<std::string, schema::Type>* _definitions) {
