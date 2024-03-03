@@ -17,7 +17,7 @@ struct Person {
 };
 ```
 
-A `person` can be turned into a bytes vector like this:
+A `person` can be serialized like this:
 
 ```cpp
 const auto person = Person{...};
@@ -28,6 +28,12 @@ You can parse bytes like this:
 
 ```cpp
 const rfl::Result<Person> result = rfl::bson::read<Person>(bytes);
+```
+
+You can also parse raw pointers (either `const char*` or `const uint8_t*`):
+
+```cpp
+const rfl::Result<Person> result = rfl::bson::read<Person>(ptr, length);
 ```
 
 ## Loading and saving
