@@ -27,7 +27,7 @@ void test() {
   // The exact content is somewhat unpredictable, we just want to make sure it
   // compiles.
   if (fields.size() == 5) {
-    std::cout << "OK" << std::endl;
+    std::cout << "OK" << std::endl << std::endl;
   }
 }
 }  // namespace test_meta_fields

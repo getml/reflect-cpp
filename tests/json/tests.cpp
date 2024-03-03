@@ -3,6 +3,7 @@
 #include "test_alphanumeric_unordered_map.hpp"
 #include "test_anonymous_fields.hpp"
 #include "test_any_of.hpp"
+#include "test_apply.hpp"
 #include "test_array.hpp"
 #include "test_as.hpp"
 #include "test_as2.hpp"
@@ -139,6 +140,7 @@ int main() {
   test_as2::test();
   test_as_flatten::test();
   test_view::test();
+  test_apply::test();
 
   test_custom_constructor::test();
 
