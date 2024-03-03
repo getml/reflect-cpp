@@ -21,7 +21,6 @@ Design principles for reflect-cpp include:
 - Simple installation: If no JSON support is required, reflect-cpp is header-only. For JSON support, only a single source file needs to be compiled.
 - Simple extendability to other serialization formats
 - Simple extendability to custom classes
-- Standard C++ only, no compiler-specific macros
 
 ## Serialization formats
 

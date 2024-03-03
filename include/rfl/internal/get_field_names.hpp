@@ -43,6 +43,8 @@ constexpr auto wrap(const T& arg) noexcept {
 
 template <class T, auto ptr>
 consteval auto get_field_name_str_view() {
+  // Unfortunately, we cannot avoid the use of a compiler-specific macro for
+  // Clang on Windows. For all other compilers, function_name works as intended.
 #if defined(__clang__) && defined(_MSC_VER)
   const auto func_name = std::string_view{__PRETTY_FUNCTION__};
 #else

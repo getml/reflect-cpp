@@ -7,9 +7,9 @@
 
 #include "../../Literal.hpp"
 #include "../../define_literal.hpp"
+#include "../../internal/remove_namespaces.hpp"
 #include "Names.hpp"
 #include "is_scoped_enum.hpp"
-#include "../../internal/remove_namespaces.hpp"
 
 // https://en.cppreference.com/w/cpp/language/static_cast:
 
@@ -41,6 +41,8 @@ namespace enums {
 
 template <auto e>
 consteval auto get_enum_name_str_view() {
+  // Unfortunately, we cannot avoid the use of a compiler-specific macro for
+  // Clang on Windows. For all other compilers, function_name works as intended.
 #if defined(__clang__) && defined(_MSC_VER)
   const auto func_name = std::string_view{__PRETTY_FUNCTION__};
 #else
