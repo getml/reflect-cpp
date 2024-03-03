@@ -1,3 +1,5 @@
+#include "test_enum5.hpp"
+
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -6,22 +8,11 @@
 #include <string>
 #include <vector>
 
-#include "test_enum.hpp"
 #include "write_and_read.hpp"
 
-namespace test_flag_enum {
+namespace test_enum5 {
 
-enum class Color {
-  red = 256,
-  green = 512,
-  blue = 1024,
-  yellow = 2048,
-  orange = (256 | 2048)  // red + yellow = orange
-};
-
-inline Color operator|(Color c1, Color c2) {
-  return static_cast<Color>(static_cast<int>(c1) | static_cast<int>(c2));
-}
+enum class Color { red, green, blue, yellow };
 
 struct Circle {
   float radius;
@@ -31,12 +22,8 @@ struct Circle {
 void test() {
   std::cout << std::source_location::current().function_name() << std::endl;
 
-  const auto circle =
-      Circle{.radius = 2.0, .color = Color::blue | Color::orange};
+  auto mutable_circle = Circle{.radius = 2.0, .color = Color::blue};
 
-  write_and_read(circle, R"({"radius":2.0,"color":"red|blue|yellow"})");
-
-  auto mutable_circle = circle;
   rfl::get_enumerators<Color>().apply([&](auto field) {
     if constexpr (decltype(field)::name() == "green") {
       mutable_circle.color = field.value();
@@ -45,4 +32,4 @@ void test() {
   write_and_read(mutable_circle, R"({"radius":2.0,"color":"green"})");
 }
 
-}  // namespace test_flag_enum
+}  // namespace test_enum5

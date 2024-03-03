@@ -1,4 +1,4 @@
-#include "test_enum.hpp"
+#include "test_enum7.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -10,7 +10,7 @@
 
 #include "write_and_read.hpp"
 
-namespace test_enum {
+namespace test_enum7 {
 
 enum class Color { red, green, blue, yellow };
 
@@ -21,41 +21,6 @@ struct Circle {
 
 void test() {
   std::cout << std::source_location::current().function_name() << std::endl;
-
-  const auto circle = Circle{.radius = 2.0, .color = Color::green};
-
-  write_and_read(circle, R"({"radius":2.0,"color":"green"})");
-
-  auto mutable_circle = circle;
-  if (auto color = rfl::string_to_enum<Color>("red"); color) {
-    mutable_circle.color = *color;
-  }
-  write_and_read(mutable_circle, R"({"radius":2.0,"color":"red"})");
-
-  if (auto color = rfl::string_to_enum<Color>("bart"); color) {
-    mutable_circle.color = *color;
-  }
-  write_and_read(mutable_circle, R"({"radius":2.0,"color":"red"})");
-
-  if (auto color = rfl::string_to_enum<Color>(rfl::enum_to_string(Color::blue));
-      color) {
-    mutable_circle.color = *color;
-  }
-  write_and_read(mutable_circle, R"({"radius":2.0,"color":"blue"})");
-
-  rfl::get_enumerators<Color>().apply([&](auto field) {
-    if constexpr (decltype(field)::name() == "green") {
-      mutable_circle.color = field.value();
-    }
-  });
-  write_and_read(mutable_circle, R"({"radius":2.0,"color":"green"})");
-
-  rfl::get_underlying_enumerators<Color>().apply([&](const auto& field) {
-    if (field.name() == "blue") {
-      mutable_circle.color = static_cast<Color>(field.value());
-    }
-  });
-  write_and_read(mutable_circle, R"({"radius":2.0,"color":"blue"})");
 
   constexpr auto enumerator_array = rfl::get_enumerator_array<Color>();
   static_assert(enumerator_array[0].first == "red");
@@ -77,6 +42,9 @@ void test() {
   static_assert(enumerator_array_underlying[1].second == 1);
   static_assert(enumerator_array_underlying[2].second == 2);
   static_assert(enumerator_array_underlying[3].second == 3);
+
+  // This is a compile-time test
+  std::cout << "OK" << std::endl << std::endl;
 }
 
-}  // namespace test_enum
+}  // namespace test_enum7

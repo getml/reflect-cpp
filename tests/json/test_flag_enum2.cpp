@@ -1,4 +1,4 @@
-#include "test_flag_enum_with_int.hpp"
+#include "test_flag_enum2.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -10,7 +10,7 @@
 
 #include "write_and_read.hpp"
 
-namespace test_flag_enum_with_int {
+namespace test_flag_enum2 {
 
 enum class Color {
   red = 256,
@@ -32,9 +32,16 @@ struct Circle {
 void test() {
   std::cout << std::source_location::current().function_name() << std::endl;
 
-  const auto circle = Circle{.radius = 2.0, .color = static_cast<Color>(10000)};
+  auto mutable_circle =
+      Circle{.radius = 2.0, .color = Color::blue | Color::orange};
 
-  write_and_read(circle, R"({"radius":2.0,"color":"16|red|green|blue|8192"})");
+  rfl::get_enumerators<Color>().apply([&](auto field) {
+    if constexpr (decltype(field)::name() == "green") {
+      mutable_circle.color = field.value();
+    }
+  });
+
+  write_and_read(mutable_circle, R"({"radius":2.0,"color":"green"})");
 }
 
-}  // namespace test_flag_enum_with_int
+}  // namespace test_flag_enum2

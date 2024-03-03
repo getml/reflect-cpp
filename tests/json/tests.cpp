@@ -22,10 +22,17 @@
 #include "test_default_values.hpp"
 #include "test_deque.hpp"
 #include "test_email.hpp"
-#include "test_enum.hpp"
+#include "test_enum1.hpp"
+#include "test_enum2.hpp"
+#include "test_enum3.hpp"
+#include "test_enum4.hpp"
+#include "test_enum5.hpp"
+#include "test_enum6.hpp"
+#include "test_enum7.hpp"
 #include "test_error_messages.hpp"
 #include "test_field_variant.hpp"
-#include "test_flag_enum.hpp"
+#include "test_flag_enum1.hpp"
+#include "test_flag_enum2.hpp"
 #include "test_flag_enum_with_int.hpp"
 #include "test_flatten.hpp"
 #include "test_flatten_anonymous.hpp"
@@ -80,9 +87,6 @@ int main() {
   test_unique_ptr::test();
   test_unique_ptr2::test();
   test_literal::test();
-  test_enum::test();
-  test_flag_enum::test();
-  test_flag_enum_with_int::test();
   test_variant::test();
   test_tagged_union::test();
   test_tagged_union2::test();
@@ -118,6 +122,17 @@ int main() {
   test_monster_example::test();
   test_unnamed_namespace::test();
   test_inside_function::test();
+
+  test_enum1::test();
+  test_enum2::test();
+  test_enum3::test();
+  test_enum4::test();
+  test_enum5::test();
+  test_enum6::test();
+  test_enum7::test();
+  test_flag_enum1::test();
+  test_flag_enum2::test();
+  test_flag_enum_with_int::test();
 
   test_custom_class1::test();
   test_custom_class2::test();
