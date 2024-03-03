@@ -1,5 +1,5 @@
-#ifndef RFL_RENAME_HPP_
-#define RFL_RENAME_HPP_
+#ifndef RFL_DESCRIPTION_HPP_
+#define RFL_DESCRIPTION_HPP_
 
 #include <algorithm>
 #include <string_view>
@@ -13,54 +13,58 @@
 
 namespace rfl {
 
-/// Used to assign a new name to a field, which is different from the name
-/// inside the struct.
-template <internal::StringLiteral _name, class T>
-struct Rename {
+/// Used to add a description to the field - this is only relevant for the JSON
+/// schema and will be ignored by the normal serialization routines.
+template <internal::StringLiteral _description, class T>
+struct Description {
   /// The underlying type.
   using Type = T;
 
-  /// The name of the field.
-  using Name = rfl::Literal<_name>;
+  /// The description of the field.
+  using Content = rfl::Literal<_description>;
 
-  Rename() : value_(Type()) {}
+  using ReflectionType = Type;
 
-  Rename(const Type& _value) : value_(_value) {}
+  Description() : value_(Type()) {}
 
-  Rename(Type&& _value) noexcept : value_(std::move(_value)) {}
+  Description(const Type& _value) : value_(_value) {}
 
-  Rename(Rename<_name, T>&& _field) noexcept = default;
+  Description(Type&& _value) noexcept : value_(std::move(_value)) {}
 
-  Rename(const Rename<_name, Type>& _field) = default;
+  Description(Description<_description, T>&& _field) noexcept = default;
+
+  Description(const Description<_description, Type>& _field) = default;
 
   template <class U>
-  Rename(const Rename<_name, U>& _field) : value_(_field.get()) {}
+  Description(const Description<_description, U>& _field)
+      : value_(_field.get()) {}
 
   template <class U>
-  Rename(Rename<_name, U>&& _field) : value_(_field.get()) {}
+  Description(Description<_description, U>&& _field) : value_(_field.get()) {}
 
   template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
                                              bool>::type = true>
-  Rename(const U& _value) : value_(_value) {}
+  Description(const U& _value) : value_(_value) {}
 
   template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
                                              bool>::type = true>
-  Rename(U&& _value) noexcept : value_(std::forward<U>(_value)) {}
+  Description(U&& _value) noexcept : value_(std::forward<U>(_value)) {}
 
   template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
                                              bool>::type = true>
-  Rename(const Rename<_name, U>& _field) : value_(_field.value()) {}
+  Description(const Description<_description, U>& _field)
+      : value_(_field.value()) {}
 
   /// Assigns the underlying object to its default value.
   template <class U = Type,
             typename std::enable_if<std::is_default_constructible_v<U>,
                                     bool>::type = true>
-  Rename(const Default& _default) : value_(Type()) {}
+  Description(const Default& _default) : value_(Type()) {}
 
-  ~Rename() = default;
+  ~Description() = default;
 
-  /// The name of the field, for internal use.
-  constexpr static const internal::StringLiteral name_ = _name;
+  /// The description of the field, for internal use.
+  constexpr static const internal::StringLiteral description_ = _description;
 
   /// Returns the underlying object.
   const Type& get() const { return value_; }
@@ -101,24 +105,29 @@ struct Rename {
   }
 
   /// Assigns the underlying object.
-  Rename<_name, T>& operator=(const Rename<_name, T>& _field) = default;
+  Description<_description, T>& operator=(
+      const Description<_description, T>& _field) = default;
 
   /// Assigns the underlying object.
-  Rename<_name, T>& operator=(Rename<_name, T>&& _field) = default;
+  Description<_description, T>& operator=(
+      Description<_description, T>&& _field) = default;
 
   /// Assigns the underlying object.
   template <class U>
-  auto& operator=(const Rename<_name, U>& _field) {
+  auto& operator=(const Description<_description, U>& _field) {
     value_ = _field.get();
     return *this;
   }
 
   /// Assigns the underlying object.
   template <class U>
-  auto& operator=(Rename<_name, U>&& _field) {
+  auto& operator=(Description<_description, U>&& _field) {
     value_ = std::forward<T>(_field.value_);
     return *this;
   }
+
+  /// Returns the underlying object - necessary for the reflection to work.
+  const Type& reflection() const { return value_; }
 
   /// Assigns the underlying object.
   void set(const Type& _value) { value_ = _value; }

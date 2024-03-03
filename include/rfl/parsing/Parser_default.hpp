@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_PARSER_DEFAULT_HPP_
 #define RFL_PARSING_PARSER_DEFAULT_HPP_
 
+#include <map>
 #include <stdexcept>
 #include <type_traits>
 
@@ -11,10 +12,16 @@
 #include "../internal/has_reflection_method_v.hpp"
 #include "../internal/has_reflection_type_v.hpp"
 #include "../internal/is_basic_type.hpp"
+#include "../internal/is_description.hpp"
+#include "../internal/is_literal.hpp"
+#include "../internal/is_validator.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
+#include "../type_name_t.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
+#include "is_tagged_union_wrapper.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -95,6 +102,127 @@ struct Parser {
                     "classes and custom parsers for information on how add "
                     "support for your own classes.");
     }
+  }
+
+  /// Generates a schema for the underlying type.
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions) {
+    using U = std::remove_cvref_t<T>;
+    using Type = schema::Type;
+    if constexpr (std::is_same<U, bool>()) {
+      return Type{Type::Boolean{}};
+
+    } else if constexpr (std::is_same<U, std::int32_t>()) {
+      return Type{Type::Int32{}};
+
+    } else if constexpr (std::is_same<U, std::int64_t>()) {
+      return Type{Type::Int64{}};
+
+    } else if constexpr (std::is_same<U, std::uint32_t>()) {
+      return Type{Type::UInt32{}};
+
+    } else if constexpr (std::is_same<U, std::uint64_t>()) {
+      return Type{Type::UInt64{}};
+
+    } else if constexpr (std::is_integral<U>()) {
+      return Type{Type::Integer{}};
+
+    } else if constexpr (std::is_same<U, float>()) {
+      return Type{Type::Float{}};
+
+    } else if constexpr (std::is_floating_point_v<U>) {
+      return Type{Type::Double{}};
+
+    } else if constexpr (std::is_same<U, std::string>()) {
+      return Type{Type::String{}};
+
+    } else if constexpr (rfl::internal::is_description_v<U>) {
+      return make_description<U>(_definitions);
+
+    } else if constexpr (std::is_enum_v<U>) {
+      return make_enum<U>(_definitions);
+
+    } else if constexpr (std::is_class_v<U> && std::is_aggregate_v<U>) {
+      return make_reference<U>(_definitions);
+
+    } else if constexpr (internal::is_literal_v<U>) {
+      return Type{Type::Literal{.values_ = U::strings()}};
+
+    } else if constexpr (internal::is_validator_v<U>) {
+      return make_validated<U>(_definitions);
+
+    } else if constexpr (internal::has_reflection_type_v<U>) {
+      return Parser<R, W, typename U::ReflectionType>::to_schema(_definitions);
+
+    } else {
+      static_assert(rfl::always_false_v<U>, "Unsupported type.");
+    }
+  }
+
+  template <class U>
+  static schema::Type make_description(
+      std::map<std::string, schema::Type>* _definitions) {
+    using Type = schema::Type;
+    return Type{Type::Description{
+        .description_ = typename U::Content().str(),
+        .type_ = Ref<Type>::make(
+            Parser<R, W, std::remove_cvref_t<typename U::Type>>::to_schema(
+                _definitions))}};
+  }
+
+  template <class U>
+  static schema::Type make_enum(
+      std::map<std::string, schema::Type>* _definitions) {
+    using Type = schema::Type;
+    using S = internal::enums::StringConverter<U>;
+    if constexpr (S::is_flag_enum_) {
+      return Type{Type::String{}};
+    } else {
+      return Parser<R, W, typename S::NamesLiteral>::to_schema(_definitions);
+    }
+  }
+
+  template <class U>
+  static schema::Type make_reference(
+      std::map<std::string, schema::Type>* _definitions) {
+    using Type = schema::Type;
+    const auto name = make_type_name<U>();
+    if (_definitions->find(name) == _definitions->end()) {
+      (*_definitions)[name] =
+          Type{Type::Integer{}};  // Placeholder to avoid infinite loop.
+      (*_definitions)[name] =
+          Parser<R, W, named_tuple_t<U>>::to_schema(_definitions);
+    }
+    return Type{Type::Reference{name}};
+  }
+
+  template <class U>
+  static schema::Type make_validated(
+      std::map<std::string, schema::Type>* _definitions) {
+    using Type = schema::Type;
+    using ReflectionType = std::remove_cvref_t<typename U::ReflectionType>;
+    using ValidationType = std::remove_cvref_t<typename U::ValidationType>;
+    return Type{Type::Validated{
+        .type_ = Ref<Type>::make(
+            Parser<R, W, ReflectionType>::to_schema(_definitions)),
+        .validation_ = ValidationType::template to_schema<ReflectionType>()}};
+  }
+
+  template <class U>
+  static std::string make_type_name() {
+    if constexpr (is_tagged_union_wrapper_v<U>) {
+      return replace_non_alphanumeric(type_name_t<typename U::Type>().str() +
+                                      "__tagged");
+    } else {
+      return replace_non_alphanumeric(type_name_t<U>().str());
+    }
+  }
+
+  static std::string replace_non_alphanumeric(std::string _str) {
+    for (auto& ch : _str) {
+      ch = std::isalnum(ch) ? ch : '_';
+    }
+    return _str;
   }
 };
 

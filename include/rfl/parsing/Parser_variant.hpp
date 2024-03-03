@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_PARSER_VARIANT_HPP_
 #define RFL_PARSING_PARSER_VARIANT_HPP_
 
+#include <map>
 #include <type_traits>
 #include <variant>
 
@@ -9,6 +10,7 @@
 #include "../always_false.hpp"
 #include "FieldVariantParser.hpp"
 #include "Parser_base.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -60,6 +62,26 @@ struct Parser<R, W, std::variant<FieldTypes...>> {
         Parser<R, W, Type>::write(_w, _v, _parent);
       };
       return std::visit(handle, _variant);
+    }
+  }
+
+  template <size_t _i = 0>
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions,
+      std::vector<schema::Type> _types = {}) {
+    if constexpr (internal::all_fields<std::tuple<FieldTypes...>>()) {
+      return FieldVariantParser<R, W, FieldTypes...>::to_schema(_definitions);
+    } else {
+      using Type = schema::Type;
+      constexpr size_t size = sizeof...(FieldTypes);
+      if constexpr (_i == size) {
+        return Type{Type::AnyOf{.types_ = _types}};
+      } else {
+        using U = std::remove_cvref_t<
+            std::variant_alternative_t<_i, std::variant<FieldTypes...>>>;
+        _types.push_back(Parser<R, W, U>::to_schema(_definitions));
+        return to_schema<_i + 1>(_definitions, std::move(_types));
+      }
     }
   }
 };

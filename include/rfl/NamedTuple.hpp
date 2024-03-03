@@ -162,6 +162,26 @@ class NamedTuple {
                std::forward<Tail>(_tail)...);
   }
 
+  /// Invokes a callable object once for each field in order.
+  template <typename F>
+  void apply(F&& f) {
+    std::apply(
+        [&f]<typename... AFields>(AFields&&... fields) {
+          ((f(std::forward<AFields>(fields))), ...);
+        },
+        fields());
+  }
+
+  /// Invokes a callable object once for each field in order.
+  template <typename F>
+  void apply(F&& f) const {
+    std::apply(
+        [&f]<typename... AFields>(AFields&&... fields) {
+          ((f(std::forward<AFields>(fields))), ...);
+        },
+        fields());
+  }
+
   /// Returns a tuple containing the fields.
   Fields fields() { return make_fields(); }
 
@@ -208,26 +228,6 @@ class NamedTuple {
   template <internal::StringLiteral _field_name>
   auto get_field() const {
     return rfl::make_field<_field_name>(rfl::get<_field_name>(*this));
-  }
-
-  /// Invokes a callable object once for each field in order.
-  template <typename F>
-  void apply(F&& f) {
-    std::apply(
-        [&f]<typename... AFields>(AFields&&... fields) {
-          ((f(std::forward<AFields>(fields))), ...);
-        },
-        fields());
-  }
-
-  /// Invokes a callable object once for each field in order.
-  template <typename F>
-  void apply(F&& f) const {
-    std::apply(
-        [&f]<typename... AFields>(AFields&&... fields) {
-          ((f(std::forward<AFields>(fields))), ...);
-        },
-        fields());
   }
 
   /// Copy assignment operator.

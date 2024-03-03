@@ -11,6 +11,7 @@
 #include "rfl/AnyOf.hpp"
 #include "rfl/Attribute.hpp"
 #include "rfl/Box.hpp"
+#include "rfl/Description.hpp"
 #include "rfl/Field.hpp"
 #include "rfl/Flatten.hpp"
 #include "rfl/Literal.hpp"

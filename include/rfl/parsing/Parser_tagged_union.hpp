@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_PARSER_TAGGED_UNION_HPP_
 #define RFL_PARSING_PARSER_TAGGED_UNION_HPP_
 
+#include <map>
 #include <type_traits>
 
 #include "../Result.hpp"
@@ -8,14 +9,15 @@
 #include "../always_false.hpp"
 #include "Parser_base.hpp"
 #include "TaggedUnionWrapper.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
 
 template <class R, class W, internal::StringLiteral _discriminator,
           class... AlternativeTypes>
-  requires AreReaderAndWriter<R, W,
-                              TaggedUnion<_discriminator, AlternativeTypes...>>
+requires AreReaderAndWriter<R, W,
+                            TaggedUnion<_discriminator, AlternativeTypes...>>
 struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
   using ResultType = Result<TaggedUnion<_discriminator, AlternativeTypes...>>;
 
@@ -47,6 +49,14 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
       write_wrapped(_w, _val, _parent);
     };
     std::visit(handle, _tagged_union.variant_);
+  }
+
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions) {
+    using VariantType =
+        std::variant<std::invoke_result_t<decltype(wrap<AlternativeTypes>),
+                                          AlternativeTypes>...>;
+    return Parser<R, W, VariantType>::to_schema(_definitions);
   }
 
  private:
@@ -114,18 +124,25 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
   template <class T, class P>
   static void write_wrapped(const W& _w, const T& _val,
                             const P& _parent) noexcept {
+    const auto wrapped = wrap(_val);
+    Parser<R, W, std::remove_cvref_t<decltype(wrapped)>>::write(_w, wrapped,
+                                                                _parent);
+  }
+
+  /// Generates a wrapped version of the original object, which contains the
+  /// tag.
+  template <class T>
+  static auto wrap(const T& _val) noexcept {
     const auto tag = internal::make_tag<T>();
     using TagType = std::remove_cvref_t<decltype(tag)>;
     if constexpr (internal::has_fields<std::remove_cvref_t<T>>()) {
       using WrapperType =
           TaggedUnionWrapperWithFields<T, TagType, _discriminator>;
-      const auto wrapper = WrapperType{.tag = tag, .fields = &_val};
-      Parser<R, W, WrapperType>::write(_w, wrapper, _parent);
+      return WrapperType{.tag = tag, .fields = &_val};
     } else {
       using WrapperType =
           TaggedUnionWrapperNoFields<T, TagType, _discriminator>;
-      const auto wrapper = WrapperType{.tag = tag, .fields = &_val};
-      Parser<R, W, WrapperType>::write(_w, wrapper, _parent);
+      return WrapperType{.tag = tag, .fields = &_val};
     }
   }
 };

@@ -1,12 +1,14 @@
 #ifndef RFL_PARSING_PARSER_REF_HPP_
 #define RFL_PARSING_PARSER_REF_HPP_
 
+#include <map>
 #include <type_traits>
 
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "Parser_base.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -27,6 +29,11 @@ struct Parser<R, W, Ref<T>> {
   static void write(const W& _w, const Ref<T>& _ref,
                     const P& _parent) noexcept {
     Parser<R, W, std::remove_cvref_t<T>>::write(_w, *_ref, _parent);
+  }
+
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions) {
+    return Parser<R, W, std::remove_cvref_t<T>>::to_schema(_definitions);
   }
 };
 

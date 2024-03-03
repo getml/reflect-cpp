@@ -1,18 +1,20 @@
 #ifndef RFL_PARSING_PARSER_WSTRING_HPP_
 #define RFL_PARSING_PARSER_WSTRING_HPP_
 
+#include <map>
 #include <type_traits>
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
 
 template <class R, class W>
-  requires AreReaderAndWriter<R, W, std::wstring>
+requires AreReaderAndWriter<R, W, std::wstring>
 struct Parser<R, W, std::wstring> {
  public:
   using InputVarType = typename R::InputVarType;
@@ -65,6 +67,11 @@ struct Parser<R, W, std::wstring> {
     outStr.resize(len);
 
     ParentType::add_value(_w, outStr, _parent);
+  }
+
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions) {
+    return Parser<R, W, std::string>::to_schema(_definitions);
   }
 };
 

@@ -8,11 +8,11 @@
 #include <type_traits>
 
 #include "../../Result.hpp"
-#include "get_enum_names.hpp"
-#include "is_flag_enum.hpp"
 #include "../../internal/strings/join.hpp"
 #include "../../internal/strings/split.hpp"
 #include "../../type_name_t.hpp"
+#include "get_enum_names.hpp"
+#include "is_flag_enum.hpp"
 
 namespace rfl {
 namespace internal {
@@ -20,7 +20,7 @@ namespace enums {
 
 template <class EnumType>
 class StringConverter {
- private:
+ public:
   static constexpr bool is_flag_enum_ = is_flag_enum<EnumType>;
 
   static constexpr auto names_ = get_enum_names<EnumType, is_flag_enum_>();

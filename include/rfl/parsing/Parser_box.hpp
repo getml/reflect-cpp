@@ -1,11 +1,13 @@
 #ifndef RFL_PARSING_PARSER_BOX_HPP_
 #define RFL_PARSING_PARSER_BOX_HPP_
 
+#include <map>
 #include <type_traits>
 
 #include "../Box.hpp"
 #include "../Result.hpp"
 #include "Parser_base.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -26,6 +28,11 @@ struct Parser<R, W, Box<T>> {
   static void write(const W& _w, const Box<T>& _box,
                     const P& _parent) noexcept {
     Parser<R, W, std::remove_cvref_t<T>>::write(_w, *_box, _parent);
+  }
+
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions) {
+    return Parser<R, W, std::remove_cvref_t<T>>::to_schema(_definitions);
   }
 };
 

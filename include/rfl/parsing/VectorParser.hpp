@@ -2,6 +2,7 @@
 #define RFL_PARSING_VECTORPARSER_HPP_
 
 #include <iterator>
+#include <map>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -15,6 +16,7 @@
 #include "is_map_like.hpp"
 #include "is_map_like_not_multimap.hpp"
 #include "is_set_like.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -62,6 +64,14 @@ struct VectorParser {
       }
       _w.end_array(&arr);
     }
+  }
+
+  /// Generates a schema for the underlying type.
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions) {
+    using Type = schema::Type;
+    return Type{Type::TypedArray{
+        .type_ = Ref<Type>::make(Parser<R, W, T>::to_schema(_definitions))}};
   }
 
  private:

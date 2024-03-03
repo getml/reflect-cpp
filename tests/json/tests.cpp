@@ -30,6 +30,7 @@
 #include "test_flatten_anonymous.hpp"
 #include "test_forward_list.hpp"
 #include "test_inside_function.hpp"
+#include "test_json_schema.hpp"
 #include "test_list.hpp"
 #include "test_literal.hpp"
 #include "test_literal_map.hpp"
@@ -152,6 +153,7 @@ int main() {
   test_meta_fields::test();
 
   test_wstring::test();
+  test_json_schema::test();
 
   return 0;
 }

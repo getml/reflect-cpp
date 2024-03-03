@@ -1,12 +1,14 @@
 #ifndef RFL_PARSING_TUPLEPARSER_HPP_
 #define RFL_PARSING_TUPLEPARSER_HPP_
 
+#include <map>
 #include <tuple>
 #include <type_traits>
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "Parent.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -55,6 +57,22 @@ struct TupleParser {
     _w.end_array(&arr);
   }
 
+  template <size_t _i = 0>
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions,
+      std::vector<schema::Type> _types = {}) {
+    using Type = schema::Type;
+    constexpr size_t size = sizeof...(Ts);
+    if constexpr (_i == size) {
+      return Type{Type::Tuple{.types_ = _types}};
+    } else {
+      using U =
+          std::remove_cvref_t<std::tuple_element_t<_i, std::tuple<Ts...>>>;
+      _types.push_back(Parser<R, W, U>::to_schema(_definitions));
+      return to_schema<_i + 1>(_definitions, std::move(_types));
+    }
+  }
+
  private:
   template <class... AlreadyExtracted>
   static Result<std::tuple<Ts...>> extract_field_by_field(
@@ -77,8 +95,8 @@ struct TupleParser {
   template <int _i>
   static auto extract_single_field(
       const R& _r, const std::vector<InputVarType>& _vec) noexcept {
-    using NewFieldType = std::remove_cvref_t<
-        typename std::tuple_element<_i, std::tuple<Ts...>>::type>;
+    using NewFieldType =
+        std::remove_cvref_t<std::tuple_element_t<_i, std::tuple<Ts...>>>;
 
     using ResultType = Result<NewFieldType>;
 

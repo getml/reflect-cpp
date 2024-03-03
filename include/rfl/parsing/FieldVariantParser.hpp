@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_FIELD_VARIANT_PARSER_HPP_
 #define RFL_PARSING_FIELD_VARIANT_PARSER_HPP_
 
+#include <map>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -9,6 +10,7 @@
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "Parser_base.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -66,6 +68,13 @@ struct FieldVariantParser {
     };
 
     std::visit(handle, _v);
+  }
+
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions,
+      std::vector<schema::Type> _types = {}) {
+    using VariantType = std::variant<NamedTuple<FieldTypes>...>;
+    return Parser<R, W, VariantType>::to_schema(_definitions);
   }
 
  private:

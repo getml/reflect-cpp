@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_PARSER_PAIR_HPP_
 #define RFL_PARSING_PARSER_PAIR_HPP_
 
+#include <map>
 #include <type_traits>
 #include <utility>
 
@@ -8,6 +9,7 @@
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "Parser_base.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -35,6 +37,12 @@ struct Parser<R, W, std::pair<FirstType, SecondType>> {
     const auto tup = std::make_tuple(&_p.first, &_p.second);
     Parser<R, W, std::tuple<const FirstType*, const SecondType*>>::write(
         _w, tup, _parent);
+  }
+
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions) {
+    return Parser<R, W, std::tuple<FirstType, SecondType>>::to_schema(
+        _definitions);
   }
 };
 

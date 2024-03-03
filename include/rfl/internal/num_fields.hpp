@@ -39,6 +39,12 @@ This is the purpose of get_nested_array_size().
 #endif
 #endif
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundefined-var-template"
+#pragma clang diagnostic ignored "-Wundefined-inline"
+#endif
+
 namespace rfl {
 namespace internal {
 
@@ -113,5 +119,9 @@ constexpr std::size_t num_fields = CountFieldsHelper<T>::count_fields();
 
 }  // namespace internal
 }  // namespace rfl
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef RFL_JSON_SAVE_HPP_
 #define RFL_JSON_SAVE_HPP_
 
+#include <yyjson.h>
+
 #include <fstream>
 #include <iostream>
 #include <string>

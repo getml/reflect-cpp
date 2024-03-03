@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_PARSER_C_ARRAY_HPP_
 #define RFL_PARSING_PARSER_C_ARRAY_HPP_
 
+#include <map>
 #include <type_traits>
 
 #include "../Result.hpp"
@@ -10,6 +11,7 @@
 #include "Parent.hpp"
 #include "Parser_array.hpp"
 #include "Parser_base.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -42,6 +44,12 @@ struct Parser<R, W, T[_size]> {
       Parser<R, W, std::remove_cvref_t<T>>::write(_w, e, new_parent);
     }
     _w.end_array(&arr);
+  }
+
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions) {
+    using StdArray = internal::to_std_array_t<CArray>;
+    return Parser<R, W, std::remove_cvref_t<StdArray>>::to_schema(_definitions);
   }
 };
 

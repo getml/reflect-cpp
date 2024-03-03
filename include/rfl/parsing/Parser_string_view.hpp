@@ -1,0 +1,47 @@
+#ifndef RFL_PARSING_PARSER_STRING_VIEW_HPP_
+#define RFL_PARSING_PARSER_STRING_VIEW_HPP_
+
+#include <map>
+#include <string>
+#include <string_view>
+#include <type_traits>
+
+#include "../Result.hpp"
+#include "../always_false.hpp"
+#include "Parser_base.hpp"
+#include "schema/Type.hpp"
+
+namespace rfl {
+namespace parsing {
+
+template <class R, class W>
+requires AreReaderAndWriter<R, W, std::string_view>
+struct Parser<R, W, std::string_view> {
+  using InputVarType = typename R::InputVarType;
+  using OutputVarType = typename W::OutputVarType;
+
+  static Result<std::string_view> read(const R& _r,
+                                       const InputVarType& _var) noexcept {
+    static_assert(always_false_v<R>,
+                  "Reading into std::string_view is dangerous and "
+                  "therefore unsupported. "
+                  "Please consider using std::string instead.");
+    return Error("Unsupported.");
+  }
+
+  template <class P>
+  static void write(const W& _w, const std::string_view& _str,
+                    const P& _p) noexcept {
+    Parser<R, W, std::string_view>::write(_w, std::string(_str), _p);
+  }
+
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions) {
+    return Parser<R, W, std::string>::to_schema(_definitions);
+  }
+};
+
+}  // namespace parsing
+}  // namespace rfl
+
+#endif

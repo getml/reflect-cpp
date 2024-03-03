@@ -1,12 +1,14 @@
 #ifndef RFL_PARSING_PARSER_RESULT_HPP_
 #define RFL_PARSING_PARSER_RESULT_HPP_
 
+#include <map>
 #include <type_traits>
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../internal/StringLiteral.hpp"
 #include "Parser_base.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -54,6 +56,11 @@ struct Parser<R, W, Result<T>> {
     };
 
     _r.transform(write_t).or_else(write_err);
+  }
+
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions) {
+    return Parser<R, W, std::remove_cvref_t<T>>::to_schema(_definitions);
   }
 };
 

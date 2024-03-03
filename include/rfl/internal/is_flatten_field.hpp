@@ -20,13 +20,8 @@ template <class T>
 class is_flatten_field<Flatten<T>> : public std::true_type {};
 
 template <class T>
-class is_flatten_field<Flatten<T>*> : public std::true_type {};
-
-template <class T>
-class is_flatten_field<const Flatten<T>*> : public std::true_type {};
-
-template <class T>
-constexpr bool is_flatten_field_v = is_flatten_field<T>::value;
+constexpr bool is_flatten_field_v =
+    is_flatten_field<std::remove_cvref_t<std::remove_pointer_t<T>>>::value;
 
 }  // namespace internal
 }  // namespace rfl

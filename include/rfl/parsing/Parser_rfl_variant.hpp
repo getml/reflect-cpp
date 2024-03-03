@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_PARSER_RFL_VARIANT_HPP_
 #define RFL_PARSING_PARSER_RFL_VARIANT_HPP_
 
+#include <map>
 #include <type_traits>
 #include <variant>
 
@@ -9,6 +10,7 @@
 #include "../always_false.hpp"
 #include "FieldVariantParser.hpp"
 #include "Parser_base.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -35,6 +37,11 @@ struct Parser<R, W, rfl::Variant<FieldTypes...>> {
                     const P& _parent) noexcept {
     Parser<R, W, std::variant<FieldTypes...>>::write(_w, _variant.variant(),
                                                      _parent);
+  }
+
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions) {
+    return Parser<R, W, std::variant<FieldTypes...>>::to_schema(_definitions);
   }
 };
 

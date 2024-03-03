@@ -1,7 +1,10 @@
 #ifndef RFL_ALLOF_HPP_
 #define RFL_ALLOF_HPP_
 
+#include <vector>
+
 #include "Result.hpp"
+#include "parsing/schema/ValidationType.hpp"
 
 namespace rfl {
 
@@ -11,6 +14,14 @@ struct AllOf {
   template <class T>
   static rfl::Result<T> validate(T _value) noexcept {
     return validate_impl<T, C, Cs...>(_value);
+  }
+
+  template <class T>
+  static parsing::schema::ValidationType to_schema() {
+    using ValidationType = parsing::schema::ValidationType;
+    const auto types = std::vector<ValidationType>(
+        {C::template to_schema<T>(), Cs::template to_schema<T>()...});
+    return ValidationType{ValidationType::AllOf{.types_ = types}};
   }
 
  private:

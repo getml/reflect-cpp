@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_PARSER_RENAME_HPP_
 #define RFL_PARSING_PARSER_RENAME_HPP_
 
+#include <map>
 #include <type_traits>
 
 #include "../Rename.hpp"
@@ -8,6 +9,7 @@
 #include "../always_false.hpp"
 #include "../internal/StringLiteral.hpp"
 #include "Parser_base.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -31,6 +33,11 @@ struct Parser<R, W, Rename<_name, T>> {
   static void write(const W& _w, const Rename<_name, T>& _rename,
                     const P& _parent) noexcept {
     Parser<R, W, std::remove_cvref_t<T>>::write(_w, _rename.value(), _parent);
+  }
+
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions) {
+    return Parser<R, W, std::remove_cvref_t<T>>::to_schema(_definitions);
   }
 };
 

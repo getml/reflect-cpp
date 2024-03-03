@@ -134,6 +134,9 @@ class Literal {
   /// The name defined by the Literal.
   std::string name() const { return find_name(); }
 
+  /// Returns all possible values of the literal as a std::vector<std::string>.
+  static std::vector<std::string> names() { return allowed_strings_vec(); }
+
   /// Helper function to retrieve a name at compile time.
   template <int _value>
   constexpr static auto name_of() {
@@ -168,6 +171,9 @@ class Literal {
   /// Alias for .name().
   std::string str() const { return name(); }
 
+  /// Alias for .names().
+  static std::vector<std::string> strings() { return allowed_strings_vec(); }
+
   /// Returns the value actually contained in the Literal.
   ValueType value() const { return value_; }
 
@@ -184,15 +190,27 @@ class Literal {
   Literal(const ValueType _value) : value_(_value) {}
 
   /// Returns all of the allowed fields.
+  static std::string allowed_strings() {
+    const auto vec = allowed_strings_vec();
+    std::string str;
+    for (size_t i = 0; i < vec.size(); ++i) {
+      const auto head = "'" + vec[i] + "'";
+      str += i == 0 ? head : (", " + head);
+    }
+    return str;
+  }
+
+  /// Returns all of the allowed fields.
   template <int _i = 0>
-  static std::string allowed_strings(const std::string& _values = "") {
+  static std::vector<std::string> allowed_strings_vec(
+      std::vector<std::string> _values = {}) {
     using FieldType = typename std::tuple_element<_i, FieldsType>::type;
-    const auto head = "'" + FieldType::field_.str() + "'";
-    const auto values = _values.size() == 0 ? head : _values + ", " + head;
+    const auto head = FieldType::field_.str();
+    _values.push_back(head);
     if constexpr (_i + 1 < num_fields_) {
-      return allowed_strings<_i + 1>(values);
+      return allowed_strings_vec<_i + 1>(std::move(_values));
     } else {
-      return values;
+      return _values;
     }
   }
 

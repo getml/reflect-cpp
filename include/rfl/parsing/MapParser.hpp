@@ -1,14 +1,17 @@
 #ifndef RFL_PARSING_MAPPARSER_HPP_
 #define RFL_PARSING_MAPPARSER_HPP_
 
+#include <map>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
 
+#include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -65,6 +68,12 @@ struct MapParser {
       }
     }
     _w.end_object(&obj);
+  }
+
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions) {
+    return schema::Type{schema::Type::StringMap{Ref<schema::Type>::make(
+        Parser<R, W, ValueType>::to_schema(_definitions))}};
   }
 
  private:

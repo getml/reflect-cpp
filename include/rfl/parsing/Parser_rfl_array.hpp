@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_PARSER_RFL_ARRAY_HPP_
 #define RFL_PARSING_PARSER_RFL_ARRAY_HPP_
 
+#include <map>
 #include <type_traits>
 
 #include "../Result.hpp"
@@ -9,6 +10,7 @@
 #include "../internal/to_std_array.hpp"
 #include "Parser_array.hpp"
 #include "Parser_base.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -34,6 +36,11 @@ struct Parser<R, W, internal::Array<T>> {
   static void write(const W& _w, const internal::Array<T>& _arr,
                     const P& _parent) noexcept {
     Parser<R, W, StdArray>::write(_w, _arr.arr_, _parent);
+  }
+
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions) {
+    return Parser<R, W, StdArray>::to_schema(_definitions);
   }
 };
 

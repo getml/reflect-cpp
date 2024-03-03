@@ -62,11 +62,11 @@ struct Field {
   /// The name of the field, for internal use.
   constexpr static const internal::StringLiteral name_ = _name;
 
-  /// The name of the field.
-  constexpr static std::string_view name() { return name_.string_view(); }
-
   /// Returns the underlying object.
   const Type& get() const { return value_; }
+
+  /// The name of the field.
+  constexpr static std::string_view name() { return name_.string_view(); }
 
   /// Returns the underlying object.
   Type& operator()() { return value_; }

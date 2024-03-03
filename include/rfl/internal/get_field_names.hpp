@@ -113,6 +113,7 @@ auto concat_literals(const Head& _head, const Tail&... _tail) {
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundefined-var-template"
+#pragma clang diagnostic ignored "-Wundefined-inline"
 #endif
 
 template <class T>

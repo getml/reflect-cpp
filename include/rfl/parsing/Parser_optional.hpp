@@ -1,13 +1,16 @@
 #ifndef RFL_PARSING_PARSER_OPTIONAL_HPP_
 #define RFL_PARSING_PARSER_OPTIONAL_HPP_
 
+#include <map>
 #include <optional>
 #include <type_traits>
 
+#include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -38,6 +41,13 @@ struct Parser<R, W, std::optional<T>> {
       return;
     }
     Parser<R, W, std::remove_cvref_t<T>>::write(_w, *_o, _parent);
+  }
+
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions) {
+    using U = std::remove_cvref_t<T>;
+    return schema::Type{schema::Type::Optional{
+        Ref<schema::Type>::make(Parser<R, W, U>::to_schema(_definitions))}};
   }
 };
 

@@ -1,7 +1,10 @@
 #ifndef RFL_COMPARISONS_HPP_
 #define RFL_COMPARISONS_HPP_
 
+#include <type_traits>
+
 #include "Result.hpp"
+#include "parsing/schema/ValidationType.hpp"
 
 namespace rfl {
 
@@ -17,6 +20,16 @@ struct EqualTo {
     }
     return _value;
   }
+
+  template <class T>
+  static parsing::schema::ValidationType to_schema() {
+    using ValidationType = parsing::schema::ValidationType;
+    const auto value =
+        std::is_floating_point_v<T>
+            ? std::variant<double, int>(static_cast<double>(_threshold))
+            : std::variant<double, int>(static_cast<int>(_threshold));
+    return ValidationType{ValidationType::EqualTo{.value_ = value}};
+  }
 };
 
 template <auto _threshold>
@@ -30,6 +43,16 @@ struct Minimum {
                    std::to_string(_value) + ".");
     }
     return _value;
+  }
+
+  template <class T>
+  static parsing::schema::ValidationType to_schema() {
+    using ValidationType = parsing::schema::ValidationType;
+    const auto value =
+        std::is_floating_point_v<T>
+            ? std::variant<double, int>(static_cast<double>(_threshold))
+            : std::variant<double, int>(static_cast<int>(_threshold));
+    return ValidationType{ValidationType::Minimum{.value_ = value}};
   }
 };
 
@@ -45,6 +68,16 @@ struct ExclusiveMinimum {
     }
     return _value;
   }
+
+  template <class T>
+  static parsing::schema::ValidationType to_schema() {
+    using ValidationType = parsing::schema::ValidationType;
+    const auto value =
+        std::is_floating_point_v<T>
+            ? std::variant<double, int>(static_cast<double>(_threshold))
+            : std::variant<double, int>(static_cast<int>(_threshold));
+    return ValidationType{ValidationType::ExclusiveMinimum{.value_ = value}};
+  }
 };
 
 template <auto _threshold>
@@ -58,6 +91,16 @@ struct Maximum {
                    std::to_string(_value) + ".");
     }
     return _value;
+  }
+
+  template <class T>
+  static parsing::schema::ValidationType to_schema() {
+    using ValidationType = parsing::schema::ValidationType;
+    const auto value =
+        std::is_floating_point_v<T>
+            ? std::variant<double, int>(static_cast<double>(_threshold))
+            : std::variant<double, int>(static_cast<int>(_threshold));
+    return ValidationType{ValidationType::Maximum{.value_ = value}};
   }
 };
 
@@ -73,6 +116,16 @@ struct ExclusiveMaximum {
     }
     return _value;
   }
+
+  template <class T>
+  static parsing::schema::ValidationType to_schema() {
+    using ValidationType = parsing::schema::ValidationType;
+    const auto value =
+        std::is_floating_point_v<T>
+            ? std::variant<double, int>(static_cast<double>(_threshold))
+            : std::variant<double, int>(static_cast<int>(_threshold));
+    return ValidationType{ValidationType::ExclusiveMaximum{.value_ = value}};
+  }
 };
 
 template <auto _threshold>
@@ -86,6 +139,16 @@ struct NotEqualTo {
                    std::to_string(_value) + ".");
     }
     return _value;
+  }
+
+  template <class T>
+  static parsing::schema::ValidationType to_schema() {
+    using ValidationType = parsing::schema::ValidationType;
+    const auto value =
+        std::is_floating_point_v<T>
+            ? std::variant<double, int>(static_cast<double>(_threshold))
+            : std::variant<double, int>(static_cast<int>(_threshold));
+    return ValidationType{ValidationType::NotEqualTo{.value_ = value}};
   }
 };
 

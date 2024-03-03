@@ -2,13 +2,16 @@
 #define RFL_PARSING_PARSER_ARRAY_HPP_
 
 #include <array>
+#include <map>
 #include <type_traits>
 #include <vector>
 
+#include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -55,6 +58,15 @@ struct Parser<R, W, std::array<T, _size>> {
       Parser<R, W, std::remove_cvref_t<T>>::write(_w, e, new_parent);
     }
     _w.end_array(&arr);
+  }
+
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions) {
+    using U = std::remove_cvref_t<T>;
+    return schema::Type{schema::Type::FixedSizeTypedArray{
+        .size_ = _size,
+        .type_ =
+            Ref<schema::Type>::make(Parser<R, W, U>::to_schema(_definitions))}};
   }
 
  private:

@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_NAMEDTUPLEPARSER_HPP_
 #define RFL_PARSING_NAMEDTUPLEPARSER_HPP_
 
+#include <map>
 #include <tuple>
 #include <type_traits>
 #include <unordered_map>
@@ -17,6 +18,7 @@
 #include "Parser_base.hpp"
 #include "is_empty.hpp"
 #include "is_required.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -57,6 +59,23 @@ struct NamedTupleParser {
     build_object_recursively(_w, _tup, &obj);
     _w.end_object(&obj);
   }
+
+  template <size_t _i = 0>
+  static schema::Type to_schema(
+      std::map<std::string, schema::Type>* _definitions,
+      std::map<std::string, schema::Type> _values = {}) {
+    using Type = schema::Type;
+    using T = NamedTuple<FieldTypes...>;
+    constexpr size_t size = T::size();
+    if constexpr (_i == size) {
+      return Type{Type::Object{_values}};
+    } else {
+      using F = std::tuple_element_t<_i, typename T::Fields>;
+      _values[std::string(F::name())] =
+          Parser<R, W, typename F::Type>::to_schema(_definitions);
+      return to_schema<_i + 1>(_definitions, _values);
+    }
+  };
 
  private:
   /// Builds the named tuple field by field.

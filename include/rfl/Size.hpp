@@ -1,7 +1,12 @@
 #ifndef RFL_SIZE_HPP_
 #define RFL_SIZE_HPP_
 
+#include <map>
+
+#include "Ref.hpp"
 #include "Result.hpp"
+#include "parsing/Parser.hpp"
+#include "parsing/schema/ValidationType.hpp"
 
 namespace rfl {
 
@@ -14,6 +19,11 @@ struct Size {
       return Error("Size validation failed: " + _err.what());
     };
     return V::validate(_t.size()).transform(to_t).or_else(embellish_error);
+  }
+
+  template <class T>
+  static parsing::schema::ValidationType to_schema() {
+    return V::template to_schema<size_t>();
   }
 };
 
