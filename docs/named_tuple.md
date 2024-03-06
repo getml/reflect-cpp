@@ -114,6 +114,65 @@ person.apply([]<typename Field>(Field& f) {
 });
 ```
 
+### Monadic operations: `.transform` and `.and_then`
+
+Named tuples also contain compile-time monadic operations. 
+
+`.transform(f)` expects a function `f` of type `Field -> Field`. 
+`transform` then applies that function to each field of the named tuple.
+It can be used to change either the values or the names of the fields, but
+not their overall number.
+
+```cpp
+const auto lisa =
+    Person{.first_name = "Lisa", .last_name = "Simpson", .age = 8};
+
+const auto to_bart = [](auto field) {
+if constexpr (decltype(field)::name() == "first_name") {
+    field = "Bart";
+    return field;
+} else if constexpr (decltype(field)::name() == "age") {
+    field = 10;
+    return field;
+} else {
+    return field;
+}
+};
+
+// bart will now be a named tuple with first_name="Bart",
+// last_name="Simpson", age=10
+const auto bart = rfl::to_named_tuple(lisa).transform(to_bart);
+```
+
+`.and_then(f)` expects a function `f` of type `Field -> NamedTuple`. 
+`and_then` then applies that function to each field of the named tuple
+and finally concatenates the resulting named tuple to form a new named tuple. 
+Note that the named tuple returned by `f` may be empty. `.and_then(f)` can be used 
+to change either the values or the names of the fields, and can also affect
+their overall number.
+
+```cpp
+const auto lisa =
+    Person{.first_name = "Lisa", .last_name = "Simpson", .age = 8};
+
+const auto to_bart = [](auto field) {
+if constexpr (decltype(field)::name() == "first_name") {
+    field = "Bart";
+    return rfl::make_named_tuple(field);
+} else if constexpr (decltype(field)::name() == "age") {
+    return rfl::make_named_tuple();
+} else {
+    return rfl::make_named_tuple(field);
+}
+};
+
+// bart will now be a named tuple with first_name="Bart",
+// last_name="Simpson". Since we have returned and empty
+// named tuple for the field "age", there will be no such
+// field in bart.
+const auto bart = rfl::to_named_tuple(lisa).and_then(to_bart);
+```
+
 ### `rfl::replace`
 
 `rfl::replace` works for `rfl::NamedTuple` as well:

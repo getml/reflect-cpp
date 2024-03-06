@@ -18,6 +18,13 @@ namespace rfl {
 /// A named tuple behaves like std::tuple,
 /// but the fields have explicit names, which
 /// allows for reflection.
+/// IMPORTANT: We have two template specializations. One with fields, one
+/// without fields.
+template <class... FieldTypes>
+class NamedTuple;
+
+// ----------------------------------------------------------------------------
+
 template <class... FieldTypes>
 class NamedTuple {
  public:
@@ -162,24 +169,51 @@ class NamedTuple {
                std::forward<Tail>(_tail)...);
   }
 
-  /// Invokes a callable object once for each field in order.
+  /// Creates a new named tuple by applying the supplied function to
+  /// field. The function is expected to return a named tuple itself.
   template <typename F>
-  void apply(F&& f) {
-    std::apply(
-        [&f]<typename... AFields>(AFields&&... fields) {
-          ((f(std::forward<AFields>(fields))), ...);
-        },
-        fields());
+  auto and_then(const F& _f) {
+    const auto transform_field = [&_f](auto... _fields) {
+      return std::tuple_cat(_f(std::move(_fields)).fields()...);
+    };
+    const auto to_nt = []<class... NewFields>(std::tuple<NewFields...>&& _tup) {
+      return NamedTuple<NewFields...>(_tup);
+    };
+    auto new_fields = std::apply(transform_field, std::move(fields()));
+    return to_nt(std::move(new_fields));
+  }
+
+  /// Creates a new named tuple by applying the supplied function to
+  /// field. The function is expected to return a named tuple itself.
+  template <typename F>
+  auto and_then(const F& _f) const {
+    const auto transform_field = [&_f](auto... _fields) {
+      return std::tuple_cat(_f(std::move(_fields)).fields()...);
+    };
+    const auto to_nt = []<class... NewFields>(std::tuple<NewFields...>&& _tup) {
+      return NamedTuple<NewFields...>(_tup);
+    };
+    auto new_fields = std::apply(transform_field, std::move(fields()));
+    return to_nt(std::move(new_fields));
   }
 
   /// Invokes a callable object once for each field in order.
   template <typename F>
-  void apply(F&& f) const {
-    std::apply(
-        [&f]<typename... AFields>(AFields&&... fields) {
-          ((f(std::forward<AFields>(fields))), ...);
-        },
-        fields());
+  void apply(const F& _f) {
+    const auto apply_to_field =
+        [&_f]<typename... AFields>(AFields&&... fields) {
+          ((_f(std::forward<AFields>(fields))), ...);
+        };
+    std::apply(apply_to_field, fields());
+  }
+
+  /// Invokes a callable object once for each field in order.
+  template <typename F>
+  void apply(const F& _f) const {
+    const auto apply_to_field = [&_f](const auto&... fields) {
+      ((_f(fields)), ...);
+    };
+    std::apply(apply_to_field, fields());
   }
 
   /// Returns a tuple containing the fields.
@@ -311,6 +345,34 @@ class NamedTuple {
 
   /// Returns the size of the named tuple
   static constexpr size_t size() { return std::tuple_size_v<Values>; }
+
+  /// Creates a new named tuple by applying the supplied function to every
+  /// field.
+  template <typename F>
+  auto transform(const F& _f) {
+    const auto transform_field = [&_f](auto... fields) {
+      return std::make_tuple(_f(std::move(fields))...);
+    };
+    const auto to_nt = []<class... NewFields>(std::tuple<NewFields...>&& _tup) {
+      return NamedTuple<NewFields...>(_tup);
+    };
+    auto new_fields = std::apply(transform_field, std::move(fields()));
+    return to_nt(std::move(new_fields));
+  }
+
+  /// Creates a new named tuple by applying the supplied function to every
+  /// field.
+  template <typename F>
+  auto transform(const F& _f) const {
+    const auto transform_field = [&_f](auto... fields) {
+      return std::make_tuple(_f(std::move(fields))...);
+    };
+    const auto to_nt = []<class... NewFields>(std::tuple<NewFields...>&& _tup) {
+      return NamedTuple<NewFields...>(_tup);
+    };
+    auto new_fields = std::apply(transform_field, std::move(fields()));
+    return to_nt(std::move(new_fields));
+  }
 
   /// Returns the underlying std::tuple.
   Values& values() { return values_; }
@@ -484,6 +546,78 @@ class NamedTuple {
   /// everything else is resolved at compile time. It should have no
   /// runtime overhead over a normal std::tuple.
   Values values_;
+};
+
+// ----------------------------------------------------------------------------
+
+/// We need a special template instantiation for empty named tuples.
+template <>
+class NamedTuple<> {
+ public:
+  using Fields = std::tuple<>;
+  using Values = std::tuple<>;
+
+  NamedTuple(){};
+
+  ~NamedTuple() = default;
+
+  /// Returns a new named tuple with additional fields.
+  template <class Head, class... Tail>
+  auto add(Head&& _head, Tail&&... _tail) const {
+    if constexpr (sizeof...(Tail) > 0) {
+      return NamedTuple<std::remove_cvref_t<Head>>(std::forward<Head>(_head))
+          .add(std::forward<Tail>(_tail)...);
+    } else {
+      return NamedTuple<std::remove_cvref_t<Head>>(std::forward<Head>(_head));
+    }
+  }
+
+  /// Template specialization for std::tuple, so we can pass fields from other
+  /// named tuples.
+  template <class... TupContent, class... Tail>
+  auto add(std::tuple<TupContent...>&& _tuple, Tail&&... _tail) const {
+    if constexpr (sizeof...(Tail) > 0) {
+      return NamedTuple<TupContent...>(
+                 std::forward<std::tuple<TupContent...>>(_tuple))
+          .add(std::forward<Tail>(_tail)...);
+    } else {
+      return NamedTuple<TupContent...>(
+          std::forward<std::tuple<TupContent...>>(_tuple));
+    }
+  }
+
+  /// Template specialization for NamedTuple, so we can pass fields from other
+  /// named tuples.
+  template <class... TupContent, class... Tail>
+  auto add(NamedTuple<TupContent...>&& _named_tuple, Tail&&... _tail) const {
+    return add(std::forward<std::tuple<TupContent...>>(_named_tuple.fields()),
+               std::forward<Tail>(_tail)...);
+  }
+
+  /// Returns an empty named tuple.
+  template <typename F>
+  auto and_then(const F& _f) const {
+    return NamedTuple<>();
+  }
+
+  /// Does nothing at all.
+  template <typename F>
+  void apply(const F& _f) const {}
+
+  /// Returns an empty tuple.
+  auto fields() const { return std::tuple(); }
+
+  /// Must always be 0.
+  static constexpr size_t size() { return 0; }
+
+  /// Returns an empty named tuple.
+  template <typename F>
+  auto transform(const F& _f) const {
+    return NamedTuple<>();
+  }
+
+  /// Returns an empty tuple.
+  auto values() const { return std::tuple(); }
 };
 
 // ----------------------------------------------------------------------------

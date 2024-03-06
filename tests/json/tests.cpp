@@ -1,6 +1,7 @@
 #include "test_all_of.hpp"
 #include "test_alphanumeric_map.hpp"
 #include "test_alphanumeric_unordered_map.hpp"
+#include "test_and_then.hpp"
 #include "test_anonymous_fields.hpp"
 #include "test_any_of.hpp"
 #include "test_apply.hpp"
@@ -69,6 +70,7 @@
 #include "test_tagged_union.hpp"
 #include "test_tagged_union2.hpp"
 #include "test_timestamp.hpp"
+#include "test_transform.hpp"
 #include "test_unique_ptr.hpp"
 #include "test_unique_ptr2.hpp"
 #include "test_unnamed_namespace.hpp"
@@ -154,8 +156,11 @@ int main() {
   test_as::test();
   test_as2::test();
   test_as_flatten::test();
+
   test_view::test();
   test_apply::test();
+  test_transform::test();
+  test_and_then::test();
 
   test_custom_constructor::test();
 

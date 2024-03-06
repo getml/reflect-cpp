@@ -8,19 +8,22 @@
 namespace rfl {
 
 /// Convenience constructor that doesn't require you
-/// to explitly defined the field types.
+/// to explitly define the field types.
 template <class... FieldTypes>
-auto make_named_tuple(FieldTypes&&... _args) {
+inline auto make_named_tuple(FieldTypes&&... _args) {
   return NamedTuple<std::remove_cvref_t<FieldTypes>...>(
       std::forward<FieldTypes>(_args)...);
 }
 
 /// Convenience constructor that doesn't require you
-/// to explitly defined the field types.
-template <class Head, class... Tail>
-auto make_named_tuple(const Head& _h, const Tail&... _t) {
-  return NamedTuple<Head, Tail...>(_h, _t...);
+/// to explitly define the field types.
+template <class... FieldTypes>
+inline auto make_named_tuple(const FieldTypes&... _args) {
+  return NamedTuple<FieldTypes...>(_args...);
 }
+
+/// Explicit overload for creating empty named tuples.
+inline auto make_named_tuple() { return NamedTuple<>(); }
 
 }  // namespace rfl
 
