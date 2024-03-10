@@ -67,9 +67,9 @@ class Writer {
   }
 
   OutputArrayType add_array_to_object(
-      const std::string& _name, const size_t _size,
+      const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept {
-    cbor_encode_text_string(_parent->encoder_, _name.c_str(), _name.size());
+    cbor_encode_text_string(_parent->encoder_, _name.data(), _name.size());
     return new_array(_size, _parent->encoder_);
   }
 
@@ -79,9 +79,9 @@ class Writer {
   }
 
   OutputObjectType add_object_to_object(
-      const std::string& _name, const size_t _size,
+      const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept {
-    cbor_encode_text_string(_parent->encoder_, _name.c_str(), _name.size());
+    cbor_encode_text_string(_parent->encoder_, _name.data(), _name.size());
     return new_object(_size, _parent->encoder_);
   }
 
@@ -92,9 +92,10 @@ class Writer {
   }
 
   template <class T>
-  OutputVarType add_value_to_object(const std::string& _name, const T& _var,
+  OutputVarType add_value_to_object(const std::string_view& _name,
+                                    const T& _var,
                                     OutputObjectType* _parent) const noexcept {
-    cbor_encode_text_string(_parent->encoder_, _name.c_str(), _name.size());
+    cbor_encode_text_string(_parent->encoder_, _name.data(), _name.size());
     return new_value(_var, _parent->encoder_);
   }
 
@@ -103,9 +104,9 @@ class Writer {
     return OutputVarType{};
   }
 
-  OutputVarType add_null_to_object(const std::string& _name,
+  OutputVarType add_null_to_object(const std::string_view& _name,
                                    OutputObjectType* _parent) const noexcept {
-    cbor_encode_text_string(_parent->encoder_, _name.c_str(), _name.size());
+    cbor_encode_text_string(_parent->encoder_, _name.data(), _name.size());
     cbor_encode_null(_parent->encoder_);
     return OutputVarType{};
   }

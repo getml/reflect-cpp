@@ -46,21 +46,21 @@ struct MapParser {
 
         if constexpr (std::is_integral_v<ReflT> ||
                       std::is_floating_point_v<ReflT>) {
-          const auto new_parent =
-              typename ParentType::Object{std::to_string(k.reflection()), &obj};
+          const auto name = std::to_string(k.reflection());
+          const auto new_parent = typename ParentType::Object{name, &obj};
           Parser<R, W, std::remove_cvref_t<ValueType>>::write(_w, v,
                                                               new_parent);
         } else {
-          const auto new_parent =
-              typename ParentType::Object{k.reflection(), &obj};
+          const auto name = k.reflection();
+          const auto new_parent = typename ParentType::Object{name, &obj};
           Parser<R, W, std::remove_cvref_t<ValueType>>::write(_w, v,
                                                               new_parent);
         }
 
       } else if constexpr (std::is_integral_v<KeyType> ||
                            std::is_floating_point_v<KeyType>) {
-        const auto new_parent =
-            typename ParentType::Object{std::to_string(k), &obj};
+        const auto name = std::to_string(k);
+        const auto new_parent = typename ParentType::Object{name, &obj};
         Parser<R, W, std::remove_cvref_t<ValueType>>::write(_w, v, new_parent);
       } else {
         const auto new_parent = typename ParentType::Object{k, &obj};

@@ -187,7 +187,7 @@ struct NamedTupleParser {
           typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type;
       using ValueType = std::remove_cvref_t<typename FieldType::Type>;
       const auto& value = rfl::get<_i>(_tup);
-      const auto name = FieldType::name_.str();
+      constexpr auto name = FieldType::name_.string_view();
       const auto new_parent = typename ParentType::Object{name, _ptr};
       if constexpr (!_all_required &&
                     !is_required<ValueType, _ignore_empty_containers>()) {

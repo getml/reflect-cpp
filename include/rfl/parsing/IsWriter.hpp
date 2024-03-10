@@ -2,6 +2,8 @@
 #define RFL_PARSING_ISWRITER_HPP_
 
 #include <concepts>
+#include <string>
+#include <string_view>
 
 #include "../Result.hpp"
 
@@ -9,7 +11,8 @@ namespace rfl {
 namespace parsing {
 
 template <class W, class T>
-concept IsWriter = requires(W w, T t, std::string name, std::string basic_value,
+concept IsWriter = requires(W w, T t, std::string_view name,
+                            std::string basic_value,
                             typename W::OutputArrayType arr,
                             typename W::OutputObjectType obj,
                             typename W::OutputVarType var, size_t size) {

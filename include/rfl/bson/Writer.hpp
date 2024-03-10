@@ -93,10 +93,10 @@ class Writer {
   }
 
   OutputArrayType add_array_to_object(
-      const std::string& _name, const size_t _size,
+      const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept {
     bson_array_builder_t* val;
-    bson_append_array_builder_begin(_parent->val_, _name.c_str(),
+    bson_append_array_builder_begin(_parent->val_, _name.data(),
                                     static_cast<int>(_name.size()), &val);
     return OutputArrayType(val, IsObject{_parent->val_});
   }
@@ -110,10 +110,10 @@ class Writer {
   }
 
   OutputObjectType add_object_to_object(
-      const std::string& _name, const size_t _size,
+      const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept {
     subdocs_->emplace_back(rfl::Box<BSONType>());
-    bson_append_document_begin(_parent->val_, _name.c_str(),
+    bson_append_document_begin(_parent->val_, _name.data(),
                                static_cast<int>(_name.size()),
                                &(subdocs_->back()->val_));
     return OutputObjectType(&subdocs_->back()->val_, IsObject{_parent->val_});
@@ -140,21 +140,22 @@ class Writer {
   }
 
   template <class T>
-  OutputVarType add_value_to_object(const std::string& _name, const T& _var,
+  OutputVarType add_value_to_object(const std::string_view& _name,
+                                    const T& _var,
                                     OutputObjectType* _parent) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      bson_append_utf8(_parent->val_, _name.c_str(),
+      bson_append_utf8(_parent->val_, _name.data(),
                        static_cast<int>(_name.size()), _var.c_str(),
                        static_cast<int>(_var.size()));
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
-      bson_append_bool(_parent->val_, _name.c_str(),
+      bson_append_bool(_parent->val_, _name.data(),
                        static_cast<int>(_name.size()), _var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-      bson_append_double(_parent->val_, _name.c_str(),
+      bson_append_double(_parent->val_, _name.data(),
                          static_cast<int>(_name.size()),
                          static_cast<double>(_var));
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      bson_append_int64(_parent->val_, _name.c_str(),
+      bson_append_int64(_parent->val_, _name.data(),
                         static_cast<int>(_name.size()),
                         static_cast<std::int64_t>(_var));
     } else {
@@ -168,9 +169,9 @@ class Writer {
     return OutputVarType{};
   }
 
-  OutputVarType add_null_to_object(const std::string& _name,
+  OutputVarType add_null_to_object(const std::string_view& _name,
                                    OutputObjectType* _parent) const noexcept {
-    bson_append_null(_parent->val_, _name.c_str(),
+    bson_append_null(_parent->val_, _name.data(),
                      static_cast<int>(_name.size()));
     return OutputVarType{};
   }

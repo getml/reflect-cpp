@@ -2,6 +2,7 @@
 #define RFL_PARSING_PARENT_HPP_
 
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 #include "../always_false.hpp"
@@ -21,7 +22,7 @@ struct Parent {
   };
 
   struct Object {
-    std::string name_;
+    std::string_view name_;
     OutputObjectType* obj_;
     bool is_attribute_ = false;
     Object as_attribute() const { return Object{name_, obj_, true}; }

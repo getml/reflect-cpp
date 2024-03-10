@@ -58,7 +58,7 @@ class Writer {
   }
 
   OutputArrayType add_array_to_object(
-      const std::string& _name, const size_t _size,
+      const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept {
     return new_array(_name);
   }
@@ -69,7 +69,7 @@ class Writer {
   }
 
   OutputObjectType add_object_to_object(
-      const std::string& _name, const size_t _size,
+      const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept {
     return new_object(_name);
   }
@@ -81,7 +81,8 @@ class Writer {
   }
 
   template <class T>
-  OutputVarType add_value_to_object(const std::string& _name, const T& _var,
+  OutputVarType add_value_to_object(const std::string_view& _name,
+                                    const T& _var,
                                     OutputObjectType* _parent) const noexcept {
     return insert_value(_name, _var);
   }
@@ -90,7 +91,7 @@ class Writer {
     return insert_value(YAML::Null);
   }
 
-  OutputVarType add_null_to_object(const std::string& _name,
+  OutputVarType add_null_to_object(const std::string_view& _name,
                                    OutputObjectType* _parent) const noexcept {
     return insert_value(_name, YAML::Null);
   }
@@ -105,9 +106,9 @@ class Writer {
 
  private:
   template <class T>
-  OutputVarType insert_value(const std::string& _name,
+  OutputVarType insert_value(const std::string_view& _name,
                              const T& _var) const noexcept {
-    (*out_) << YAML::Key << _name << YAML::Value << _var;
+    (*out_) << YAML::Key << _name.data() << YAML::Value << _var;
     return OutputVarType{};
   }
 
@@ -117,8 +118,8 @@ class Writer {
     return OutputVarType{};
   }
 
-  OutputArrayType new_array(const std::string& _name) const noexcept {
-    (*out_) << YAML::Key << _name << YAML::Value << YAML::BeginSeq;
+  OutputArrayType new_array(const std::string_view& _name) const noexcept {
+    (*out_) << YAML::Key << _name.data() << YAML::Value << YAML::BeginSeq;
     return OutputArrayType{};
   }
 
@@ -127,8 +128,8 @@ class Writer {
     return OutputArrayType{};
   }
 
-  OutputObjectType new_object(const std::string& _name) const noexcept {
-    (*out_) << YAML::Key << _name << YAML::Value << YAML::BeginMap;
+  OutputObjectType new_object(const std::string_view& _name) const noexcept {
+    (*out_) << YAML::Key << _name.data() << YAML::Value << YAML::BeginMap;
     return OutputObjectType{};
   }
 

@@ -64,7 +64,7 @@ struct Writer {
   }
 
   OutputArrayType add_array_to_object(
-      const std::string& _name, const size_t _size,
+      const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept {
     return new_array(_name);
   }
@@ -75,7 +75,7 @@ struct Writer {
   }
 
   OutputObjectType add_object_to_object(
-      const std::string& _name, const size_t _size,
+      const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept {
     return new_object(_name);
   }
@@ -87,7 +87,8 @@ struct Writer {
   }
 
   template <class T>
-  OutputVarType add_value_to_object(const std::string& _name, const T& _var,
+  OutputVarType add_value_to_object(const std::string_view& _name,
+                                    const T& _var,
                                     OutputObjectType* _parent) const noexcept {
     return insert_value(_name, _var);
   }
@@ -97,9 +98,9 @@ struct Writer {
     return OutputVarType{};
   }
 
-  OutputVarType add_null_to_object(const std::string& _name,
+  OutputVarType add_null_to_object(const std::string_view& _name,
                                    OutputObjectType* _parent) const noexcept {
-    fbb_->Null(_name.c_str());
+    fbb_->Null(_name.data());
     return OutputVarType{};
   }
 
@@ -113,16 +114,16 @@ struct Writer {
 
  private:
   template <class T>
-  OutputVarType insert_value(const std::string& _name,
+  OutputVarType insert_value(const std::string_view& _name,
                              const T& _var) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      fbb_->String(_name.c_str(), _var);
+      fbb_->String(_name.data(), _var);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
-      fbb_->Bool(_name.c_str(), _var);
+      fbb_->Bool(_name.data(), _var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-      fbb_->Double(_name.c_str(), _var);
+      fbb_->Double(_name.data(), _var);
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      fbb_->Int(_name.c_str(), _var);
+      fbb_->Int(_name.data(), _var);
     } else {
       static_assert(always_false_v<T>, "Unsupported type");
     }
@@ -145,8 +146,8 @@ struct Writer {
     return OutputVarType{};
   }
 
-  OutputArrayType new_array(const std::string& _name) const noexcept {
-    const auto start = fbb_->StartVector(_name.c_str());
+  OutputArrayType new_array(const std::string_view& _name) const noexcept {
+    const auto start = fbb_->StartVector(_name.data());
     return OutputArrayType{start};
   }
 
@@ -155,8 +156,8 @@ struct Writer {
     return OutputArrayType{start};
   }
 
-  OutputObjectType new_object(const std::string& _name) const noexcept {
-    const auto start = fbb_->StartMap(_name.c_str());
+  OutputObjectType new_object(const std::string_view& _name) const noexcept {
+    const auto start = fbb_->StartMap(_name.data());
     return OutputObjectType{start};
   }
 

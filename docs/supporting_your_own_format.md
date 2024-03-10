@@ -103,7 +103,7 @@ struct Writer {
   /// Adds an empty array to an existing object. The key or name of the field is
   /// signified by `_name`. Returns the new array for further modification.
   OutputArrayType add_array_to_object(
-      const std::string& _name, const size_t _size,
+      const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept;
 
   /// Adds an empty object to an existing array. Returns the new
@@ -114,7 +114,7 @@ struct Writer {
   /// Adds an empty object to an existing object. The key or name of the field
   /// is signified by `_name`. Returns the new object for further modification.
   OutputObjectType add_object_to_object(
-      const std::string& _name, const size_t _size,
+      const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept;
 
   /// Adds a basic value (bool, numeric, string) to an array. Returns an
@@ -127,7 +127,7 @@ struct Writer {
   /// or name of the field is signified by `name`. Returns an
   /// OutputVarType containing the new value.
   template <class T>
-  OutputVarType add_value_to_object(const std::string& _name, const T& _var,
+  OutputVarType add_value_to_object(const std::string_view& _name, const T& _var,
                                     OutputObjectType* _parent) const noexcept;
 
   /// Adds a null value to an array. Returns an
@@ -137,7 +137,7 @@ struct Writer {
   /// Adds a null value to an existing object. The key
   /// or name of the field is signified by `name`. Returns an
   /// OutputVarType containing the null value.
-  OutputVarType add_null_to_object(const std::string& _name,
+  OutputVarType add_null_to_object(const std::string_view& _name,
                                    OutputObjectType* _parent) const noexcept;
 
   /// Signifies to the writer that we do not want to add any further elements to

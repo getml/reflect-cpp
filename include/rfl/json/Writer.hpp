@@ -81,10 +81,10 @@ class Writer {
   }
 
   OutputArrayType add_array_to_object(
-      const std::string& _name, const size_t _size,
+      const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept {
     const auto arr = yyjson_mut_arr(doc_);
-    yyjson_mut_obj_add(_parent->val_, yyjson_mut_strcpy(doc_, _name.c_str()),
+    yyjson_mut_obj_add(_parent->val_, yyjson_mut_strcpy(doc_, _name.data()),
                        arr);
     return OutputArrayType(arr);
   }
@@ -97,10 +97,10 @@ class Writer {
   }
 
   OutputObjectType add_object_to_object(
-      const std::string& _name, const size_t _size,
+      const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept {
     const auto obj = yyjson_mut_obj(doc_);
-    yyjson_mut_obj_add(_parent->val_, yyjson_mut_strcpy(doc_, _name.c_str()),
+    yyjson_mut_obj_add(_parent->val_, yyjson_mut_strcpy(doc_, _name.data()),
                        obj);
     return OutputObjectType(obj);
   }
@@ -114,10 +114,11 @@ class Writer {
   }
 
   template <class T>
-  OutputVarType add_value_to_object(const std::string& _name, const T& _var,
+  OutputVarType add_value_to_object(const std::string_view& _name,
+                                    const T& _var,
                                     OutputObjectType* _parent) const noexcept {
     const auto val = from_basic_type(_var);
-    yyjson_mut_obj_add(_parent->val_, yyjson_mut_strcpy(doc_, _name.c_str()),
+    yyjson_mut_obj_add(_parent->val_, yyjson_mut_strcpy(doc_, _name.data()),
                        val.val_);
     return OutputVarType(val);
   }
@@ -128,10 +129,10 @@ class Writer {
     return OutputVarType(null);
   }
 
-  OutputVarType add_null_to_object(const std::string& _name,
+  OutputVarType add_null_to_object(const std::string_view& _name,
                                    OutputObjectType* _parent) const noexcept {
     const auto null = yyjson_mut_null(doc_);
-    yyjson_mut_obj_add(_parent->val_, yyjson_mut_strcpy(doc_, _name.c_str()),
+    yyjson_mut_obj_add(_parent->val_, yyjson_mut_strcpy(doc_, _name.data()),
                        null);
     return OutputVarType(null);
   }

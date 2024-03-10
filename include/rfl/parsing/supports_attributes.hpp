@@ -3,6 +3,7 @@
 
 #include <concepts>
 #include <string>
+#include <string_view>
 
 #include "../Result.hpp"
 
@@ -11,7 +12,7 @@ namespace parsing {
 
 /// Determines whether a writer supports attributes.
 template <class W>
-concept supports_attributes = requires(W w, std::string name,
+concept supports_attributes = requires(W w, std::string_view name,
                                        typename W::OutputObjectType obj,
                                        bool is_attribute) {
   {
