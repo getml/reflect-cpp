@@ -150,83 +150,6 @@ struct Reader {
     return InputArrayType{_var.val_};
   }
 
-  template <size_t size, class FunctionType>
-  std::array<std::optional<InputVarType>, size> to_fields_array(
-      const FunctionType& _fct, const InputObjectType& _obj) const noexcept {
-    std::array<std::optional<InputVarType>, size> f_arr;
-    CborValue val;
-    auto buffer = std::vector<char>();
-    auto err = cbor_value_enter_container(_obj.val_, &val);
-    if (err != CborNoError) {
-      return f_arr;
-    }
-    size_t length = 0;
-    err = cbor_value_get_map_length(_obj.val_, &length);
-    if (err != CborNoError) {
-      return f_arr;
-    }
-    for (size_t i = 0; i < length; ++i) {
-      if (!cbor_value_is_text_string(&val)) {
-        err = cbor_value_advance(&val);
-        if (err != CborNoError) {
-          return f_arr;
-        }
-        err = cbor_value_advance(&val);
-        if (err != CborNoError) {
-          return f_arr;
-        }
-        continue;
-      }
-      err = get_string(&val, &buffer);
-      if (err != CborNoError) {
-        return f_arr;
-      }
-      err = cbor_value_advance(&val);
-      if (err != CborNoError) {
-        return f_arr;
-      }
-      const auto ix = _fct(std::string_view(buffer.data()));
-      if (ix != -1) {
-        f_arr[ix] = to_input_var(&val);
-      }
-      err = cbor_value_advance(&val);
-      if (err != CborNoError) {
-        return f_arr;
-      }
-    }
-    return f_arr;
-  }
-
-  rfl::Result<std::vector<std::pair<std::string, InputVarType>>> to_map(
-      const InputObjectType& _obj) const noexcept {
-    std::vector<std::pair<std::string, InputVarType>> map;
-    CborValue val;
-    auto buffer = std::vector<char>();
-    auto err = cbor_value_enter_container(_obj.val_, &val);
-    if (err != CborNoError && err != CborErrorOutOfMemory) {
-      return Error(cbor_error_string(err));
-    }
-    size_t length = 0;
-    cbor_value_get_map_length(_obj.val_, &length);
-    for (size_t i = 0; i < length; ++i) {
-      if (!cbor_value_is_text_string(&val)) {
-        return Error("Expected the key to be a string value.");
-      }
-      err = get_string(&val, &buffer);
-      if (err != CborNoError && err != CborErrorOutOfMemory) {
-        return Error(cbor_error_string(err));
-      }
-      err = cbor_value_advance(&val);
-      if (err != CborNoError && err != CborErrorOutOfMemory) {
-        return Error(cbor_error_string(err));
-      }
-      map.emplace_back(
-          std::make_pair(std::string(buffer.data()), to_input_var(&val)));
-      cbor_value_advance(&val);
-    }
-    return map;
-  }
-
   rfl::Result<InputObjectType> to_object(
       const InputVarType& _var) const noexcept {
     if (!cbor_value_is_map(_var.val_)) {
@@ -256,6 +179,40 @@ struct Reader {
       }
     }
     return vec;
+  }
+
+  template <class ObjectReader>
+  std::optional<Error> read_object(const ObjectReader& _object_reader,
+                                   const InputObjectType& _obj) const noexcept {
+    size_t length = 0;
+    auto err = cbor_value_get_map_length(_obj.val_, &length);
+    if (err != CborNoError) {
+      return Error(cbor_error_string(err));
+    }
+
+    CborValue val;
+    err = cbor_value_enter_container(_obj.val_, &val);
+    if (err != CborNoError) {
+      return Error(cbor_error_string(err));
+    }
+
+    auto buffer = std::vector<char>();
+
+    for (size_t i = 0; i < length; ++i) {
+      err = get_string(&val, &buffer);
+      if (err != CborNoError) {
+        return Error(cbor_error_string(err));
+      }
+      err = cbor_value_advance(&val);
+      if (err != CborNoError) {
+        return Error(cbor_error_string(err));
+      }
+      const auto name = std::string_view(buffer.data(), buffer.size() - 1);
+      _object_reader.read(name, InputVarType{&val});
+      cbor_value_advance(&val);
+    }
+
+    return std::nullopt;
   }
 
   template <class T>

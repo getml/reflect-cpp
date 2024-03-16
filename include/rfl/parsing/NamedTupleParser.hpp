@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_NAMEDTUPLEPARSER_HPP_
 #define RFL_PARSING_NAMEDTUPLEPARSER_HPP_
 
+#include <array>
 #include <map>
 #include <tuple>
 #include <type_traits>
@@ -10,15 +11,19 @@
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../internal/Memoization.hpp"
+#include "../internal/is_array.hpp"
 #include "../internal/is_attribute.hpp"
 #include "../internal/is_basic_type.hpp"
 #include "../internal/strings/replace_all.hpp"
+#include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
+#include "ViewReader.hpp"
 #include "is_empty.hpp"
 #include "is_required.hpp"
 #include "schema/Type.hpp"
+#include "to_single_error_message.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -35,23 +40,42 @@ struct NamedTupleParser {
 
   using ParentType = Parent<W>;
 
+  using NamedTupleType = NamedTuple<FieldTypes...>;
+
+  static constexpr size_t size_ = NamedTupleType::size();
+
  public:
+  /// The way this works is that we allocate space on the stack in this size of
+  /// the named tuple in which we then write the individual fields using
+  /// views and placement new. This is how we deal with the fact that some
+  /// fields might not be default-constructible.
   static Result<NamedTuple<FieldTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
-    const auto& indices = field_indices();
-    const auto fct = [&](const std::string_view& _str) -> std::int16_t {
-      const auto it = indices.find(_str);
-      return it != indices.end() ? it->second : static_cast<std::uint16_t>(-1);
-    };
-    const auto to_fields_array = [&](auto _obj) {
-      return _r.template to_fields_array<sizeof...(FieldTypes)>(fct, _obj);
-    };
-    const auto build = [&](auto _fields_vec) {
-      return build_named_tuple_recursively(_r, _fields_vec);
-    };
-    return _r.to_object(_var).transform(to_fields_array).and_then(build);
+    alignas(NamedTuple<FieldTypes...>) unsigned char
+        buf[sizeof(NamedTuple<FieldTypes...>)];
+    auto ptr = reinterpret_cast<NamedTuple<FieldTypes...>*>(buf);
+    const auto view = rfl::to_view(*ptr);
+    using ViewType = std::remove_cvref_t<decltype(view)>;
+    const auto err = Parser<R, W, ViewType>::read_view(_r, _var, view);
+    if (err) {
+      return *err;
+    }
+    return *ptr;
   }
 
+  /// Reads the data into a view.
+  static std::optional<Error> read_view(
+      const R& _r, const InputVarType& _var,
+      const NamedTuple<FieldTypes...>& _view) noexcept {
+    const auto obj = _r.to_object(_var);
+    if (obj) {
+      return read_object(_r, *obj, _view);
+    }
+    return obj.error();
+  }
+
+  /// For writing, we do not need to make the distinction between
+  /// default-constructible and non-default constructible fields.
   template <class P>
   static void write(const W& _w, const NamedTuple<FieldTypes...>& _tup,
                     const P& _parent) noexcept {
@@ -60,6 +84,8 @@ struct NamedTupleParser {
     _w.end_object(&obj);
   }
 
+  /// For generating the schema, we also do not need to make the distinction
+  /// between default-constructible and non-default constructible fields.
   template <size_t _i = 0>
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions,
@@ -78,104 +104,6 @@ struct NamedTupleParser {
   };
 
  private:
-  /// Builds the named tuple field by field.
-  template <class... Args>
-  static Result<NamedTuple<FieldTypes...>> build_named_tuple_recursively(
-      const R& _r,
-      const std::array<std::optional<InputVarType>, sizeof...(FieldTypes)>&
-          _fields_arr,
-      Args&&... _args) noexcept {
-    constexpr auto i = sizeof...(Args);
-
-    if constexpr (i == sizeof...(FieldTypes)) {
-      return NamedTuple<FieldTypes...>(std::move(_args)...);
-    } else {
-      using FieldType = typename std::tuple_element<
-          i, typename NamedTuple<FieldTypes...>::Fields>::type;
-
-      using ValueType = std::remove_cvref_t<typename FieldType::Type>;
-
-      const auto& f = std::get<i>(_fields_arr);
-
-      if (!f) {
-        if constexpr (_all_required ||
-                      is_required<ValueType, _ignore_empty_containers>()) {
-          const auto key = FieldType::name_.str();
-          return collect_errors<i + 1>(
-              _r, _fields_arr,
-              std::vector<Error>(
-                  {Error("Field named '" + key + "' not found!")}));
-        } else {
-          return build_named_tuple_recursively(
-              _r, _fields_arr, std::move(_args)..., FieldType(ValueType()));
-        }
-      }
-
-      const auto build = [&](auto&& _value) {
-        return build_named_tuple_recursively(
-            _r, _fields_arr, std::move(_args)..., FieldType(std::move(_value)));
-      };
-
-      const auto handle_error = [&](Error&& _error) {
-        return collect_errors<i + 1>(_r, _fields_arr,
-                                     std::vector<Error>({std::move(_error)}));
-      };
-
-      return get_value<FieldType>(_r, *f).or_else(handle_error).and_then(build);
-    }
-  }
-
-  /// If something went wrong, we want to collect all of the errors - it's
-  /// just good UX.
-  template <int _i>
-  static Error collect_errors(
-      const R& _r,
-      const std::array<std::optional<InputVarType>, sizeof...(FieldTypes)>&
-          _fields_arr,
-      std::vector<Error> _errors) noexcept {
-    if constexpr (_i == sizeof...(FieldTypes)) {
-      if (_errors.size() == 1) {
-        return std::move(_errors[0]);
-      } else {
-        std::string msg =
-            "Found " + std::to_string(_errors.size()) + " errors:";
-        for (size_t i = 0; i < _errors.size(); ++i) {
-          msg += "\n" + std::to_string(i + 1) + ") " +
-                 internal::strings::replace_all(_errors.at(i).what(), "\n",
-                                                "\n    ");
-        }
-        return Error(msg);
-      }
-    } else {
-      using FieldType = typename std::tuple_element<
-          _i, typename NamedTuple<FieldTypes...>::Fields>::type;
-
-      using ValueType = std::remove_cvref_t<typename FieldType::Type>;
-
-      const auto& f = std::get<_i>(_fields_arr);
-
-      if (!f) {
-        if constexpr (_all_required ||
-                      is_required<ValueType, _ignore_empty_containers>()) {
-          const auto key = FieldType::name_.str();
-          _errors.emplace_back(Error("Field named '" + key + "' not found."));
-        }
-        return collect_errors<_i + 1>(_r, _fields_arr, std::move(_errors));
-      }
-
-      const auto add_error_if_applicable =
-          [&](Error&& _error) -> Result<ValueType> {
-        _errors.emplace_back(std::move(_error));
-        return _error;
-      };
-
-      get_value<FieldType>(_r, *f).or_else(add_error_if_applicable);
-
-      return collect_errors<_i + 1>(_r, _fields_arr, std::move(_errors));
-    }
-  }
-
-  /// Builds the object field by field.
   template <int _i = 0>
   static void build_object_recursively(const W& _w,
                                        const NamedTuple<FieldTypes...>& _tup,
@@ -210,50 +138,95 @@ struct NamedTupleParser {
     }
   }
 
-  /// Uses a memoization pattern to retrieve the field indices.
-  /// There are some objects that we are likely to parse many times,
-  /// so we only calculate these indices once.
-  static const auto& field_indices() noexcept {
-    return field_indices_.value(set_field_indices<0>);
-  }
-
-  /// Retrieves the value from the object. This is mainly needed to
-  /// generate a better error message.
-  template <class FieldType>
-  static auto get_value(const R& _r, const InputVarType _var) noexcept {
-    static_assert(FieldType::name_ != internal::StringLiteral("xml_content") ||
-                      internal::is_basic_type_v<typename FieldType::Type>,
-                  "xml_content must be a string, a boolean, a floating point "
-                  "value or integral.");
-    const auto embellish_error = [&](const Error& _e) {
-      const auto key = FieldType::name_.str();
-      return Error("Failed to parse field '" + key + "': " + _e.what());
-    };
-    using ValueType = std::remove_cvref_t<typename FieldType::Type>;
-    return Parser<R, W, ValueType>::read(_r, _var).or_else(embellish_error);
-  }
-
-  /// Builds the object field by field.
-  template <size_t _i = 0>
-  static void set_field_indices(
-      std::unordered_map<std::string_view, std::int16_t>*
-          _field_indices) noexcept {
-    if constexpr (_i >= sizeof...(FieldTypes)) {
-      return;
-    } else {
-      using FieldType =
-          typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type;
-      const auto name = FieldType::name_.string_view();
-      (*_field_indices)[name] = static_cast<std::int16_t>(_i);
-      set_field_indices<_i + 1>(_field_indices);
+  /// C-arrays need special handling here.
+  template <class T>
+  static void call_destructor_on_array(const size_t _size, T* _ptr) {
+    for (size_t i = 0; i < _size; ++i) {
+      if constexpr (std::is_array_v<T>) {
+        call_destructor_on_array(sizeof(*_ptr) / sizeof(**_ptr), *(_ptr + i));
+      } else if constexpr (std::is_destructible_v<T>) {
+        (_ptr + i)->~T();
+      }
     }
   }
 
- private:
-  /// Maps each of the field names to an index signifying their order.
-  static inline internal::Memoization<
-      std::unordered_map<std::string_view, std::int16_t>>
-      field_indices_;
+  /// Because of the way we have allocated the fields, we need to manually
+  /// trigger the destructors.
+  template <size_t _i = 0>
+  static void call_destructors_where_necessary(
+      const NamedTupleType& _view, const std::array<bool, size_>& _set) {
+    using FieldType = std::tuple_element_t<_i, typename NamedTupleType::Fields>;
+    using ValueType =
+        std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
+    if constexpr (!std::is_array_v<ValueType> &&
+                  std::is_destructible_v<ValueType>) {
+      if (std::get<_i>(_set)) {
+        rfl::get<_i>(_view)->~ValueType();
+      }
+    } else if constexpr (std::is_array_v<ValueType>) {
+      if (std::get<_i>(_set)) {
+        auto ptr = rfl::get<_i>(_view);
+        call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
+      }
+    }
+    if constexpr (_i + 1 < size_) {
+      call_destructors_where_necessary<_i + 1>(_view, _set);
+    }
+  }
+
+  /// Generates error messages for when fields are missing.
+  template <size_t _i = 0>
+  static void handle_missing_fields(const std::array<bool, size_>& _found,
+                                    const NamedTupleType& _view,
+                                    std::array<bool, size_>* _set,
+                                    std::vector<Error>* _errors) noexcept {
+    using FieldType = std::tuple_element_t<_i, typename NamedTupleType::Fields>;
+    using ValueType = std::remove_reference_t<
+        std::remove_pointer_t<typename FieldType::Type>>;
+
+    if (!std::get<_i>(_found)) {
+      if constexpr (_all_required ||
+                    is_required<ValueType, _ignore_empty_containers>()) {
+        constexpr auto current_name =
+            std::tuple_element_t<_i, typename NamedTupleType::Fields>::name();
+        _errors->push_back("Field named '" + std::string(current_name) +
+                           "' not found.");
+      } else {
+        if constexpr (!std::is_const_v<ValueType>) {
+          ::new (rfl::get<_i>(_view)) ValueType();
+        } else {
+          using NonConstT = std::remove_const_t<ValueType>;
+          ::new (const_cast<NonConstT*>(rfl::get<_i>(_view))) NonConstT();
+        }
+        std::get<_i>(*_set) = true;
+      }
+    }
+    if constexpr (_i + 1 < size_) {
+      handle_missing_fields<_i + 1>(_found, _view, _set, _errors);
+    }
+  }
+
+  static std::optional<Error> read_object(
+      const R& _r, const InputObjectType& _obj,
+      const NamedTupleType& _view) noexcept {
+    auto found = std::array<bool, NamedTupleType::size()>();
+    found.fill(false);
+    auto set = std::array<bool, NamedTupleType::size()>();
+    set.fill(false);
+    std::vector<Error> errors;
+    const auto object_reader =
+        ViewReader<R, W, NamedTupleType>(&_r, &_view, &found, &set, &errors);
+    const auto err = _r.read_object(object_reader, _obj);
+    if (err) {
+      return *err;
+    }
+    handle_missing_fields(found, _view, &set, &errors);
+    if (errors.size() != 0) {
+      call_destructors_where_necessary(_view, set);
+      return to_single_error_message(errors);
+    }
+    return std::nullopt;
+  }
 };
 
 }  // namespace parsing

@@ -15,6 +15,7 @@
 #include "test_c_array_class3.hpp"
 #include "test_c_array_class4.hpp"
 #include "test_c_array_class5.hpp"
+#include "test_const_fields.hpp"
 #include "test_custom_class1.hpp"
 #include "test_custom_class2.hpp"
 #include "test_custom_class3.hpp"
@@ -124,6 +125,7 @@ int main() {
   test_monster_example::test();
   test_unnamed_namespace::test();
   test_inside_function::test();
+  test_const_fields::test();
 
   test_enum1::test();
   test_enum2::test();

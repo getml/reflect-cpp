@@ -2,6 +2,7 @@
 #define RFL_INTERNAL_ARRAY_HPP_
 
 #include <array>
+#include <cstddef>
 #include <type_traits>
 
 #include "to_std_array.hpp"

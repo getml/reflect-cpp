@@ -20,6 +20,7 @@
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
+#include "StructReader.hpp"
 #include "is_tagged_union_wrapper.hpp"
 #include "schema/Type.hpp"
 
@@ -52,15 +53,7 @@ struct Parser {
         };
         return Parser<R, W, ReflectionType>::read(_r, _var).and_then(wrap_in_t);
       } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
-        using NamedTupleType = named_tuple_t<T>;
-        const auto to_struct = [](NamedTupleType&& _n) -> Result<T> {
-          try {
-            return from_named_tuple<T>(std::move(_n));
-          } catch (std::exception& e) {
-            return Error(e.what());
-          }
-        };
-        return Parser<R, W, NamedTupleType>::read(_r, _var).and_then(to_struct);
+        return StructReader<R, W, T>::read(_r, _var);
       } else if constexpr (std::is_enum_v<T>) {
         using StringConverter = internal::enums::StringConverter<T>;
         return _r.template to_basic_type<std::string>(_var).and_then(

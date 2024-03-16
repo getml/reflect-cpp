@@ -84,23 +84,19 @@ struct Reader {
     }
   }
 
-  template <size_t size, class FunctionType>
-  std::array<std::optional<InputVarType>, size> to_fields_array(
-      const FunctionType& _fct, const InputObjectType& _obj) const noexcept {
-    std::array<std::optional<InputVarType>, size> f_arr;
-
+  template <class ObjectReader>
+  std::optional<Error> read_object(const ObjectReader& _object_reader,
+                                   const InputObjectType& _obj) const noexcept {
     const auto keys = _obj.Keys();
     const auto values = _obj.Values();
     const auto num_values = std::min(keys.size(), values.size());
 
     for (size_t i = 0; i < num_values; ++i) {
-      const auto ix = _fct(std::string_view(keys[i].AsString().c_str()));
-      if (ix != -1) {
-        f_arr[ix] = values[i];
-      }
+      _object_reader.read(std::string_view(keys[i].AsString().c_str()),
+                          values[i]);
     }
 
-    return f_arr;
+    return std::nullopt;
   }
 
   rfl::Result<InputArrayType> to_array(
@@ -109,22 +105,6 @@ struct Reader {
       return rfl::Error("Could not cast to Vector.");
     }
     return _var.AsVector();
-  }
-
-  rfl::Result<std::vector<std::pair<std::string, InputVarType>>> to_map(
-      const InputObjectType& _obj) const noexcept {
-    std::vector<std::pair<std::string, InputVarType>> m;
-
-    const auto keys = _obj.Keys();
-    const auto values = _obj.Values();
-    const auto size = std::min(keys.size(), values.size());
-
-    for (size_t i = 0; i < size; ++i) {
-      m.emplace_back(
-          std::make_pair(std::string(keys[i].AsString().c_str()), values[i]));
-    }
-
-    return m;
   }
 
   rfl::Result<InputObjectType> to_object(

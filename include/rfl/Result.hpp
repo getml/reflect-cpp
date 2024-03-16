@@ -40,6 +40,8 @@ class Result {
   static_assert(!std::is_same<T, Error>(), "The result type cannot be Error.");
 
  public:
+  using Type = T;
+
   Result(const T& _val) : t_or_err_(_val) {}
 
   Result(T&& _val) noexcept : t_or_err_(std::move(_val)) {}

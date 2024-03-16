@@ -40,6 +40,9 @@ struct Flatten {
   ~Flatten() = default;
 
   /// Returns the underlying object.
+  Type& get() { return value_; }
+
+  /// Returns the underlying object.
   const Type& get() const { return value_; }
 
   /// Returns the underlying object.

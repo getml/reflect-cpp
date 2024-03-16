@@ -8,6 +8,7 @@
 #include <exception>
 #include <map>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -127,10 +128,9 @@ struct Reader {
     return InputArrayType{_var.val_};
   }
 
-  template <size_t size, class FunctionType>
-  std::array<std::optional<InputVarType>, size> to_fields_array(
-      const FunctionType& _fct, const InputObjectType& _obj) const noexcept {
-    std::array<std::optional<InputVarType>, size> f_arr;
+  template <class ObjectReader>
+  std::optional<Error> read_object(const ObjectReader& _object_reader,
+                                   const InputObjectType& _obj) const noexcept {
     bson_t b;
     bson_iter_t iter;
     const auto doc = _obj.val_->val_.value.v_doc;
@@ -138,31 +138,11 @@ struct Reader {
       if (bson_iter_init(&iter, &b)) {
         while (bson_iter_next(&iter)) {
           const char* k = bson_iter_key(&iter);
-          const auto ix = _fct(std::string_view(k));
-          if (ix != -1) {
-            f_arr[ix] = to_input_var(&iter);
-          }
+          _object_reader.read(std::string_view(k), to_input_var(&iter));
         }
       }
     }
-    return f_arr;
-  }
-
-  rfl::Result<std::vector<std::pair<std::string, InputVarType>>> to_map(
-      const InputObjectType& _obj) const noexcept {
-    std::vector<std::pair<std::string, InputVarType>> map;
-    bson_t b;
-    bson_iter_t iter;
-    const auto doc = _obj.val_->val_.value.v_doc;
-    if (bson_init_static(&b, doc.data, doc.data_len)) {
-      if (bson_iter_init(&iter, &b)) {
-        while (bson_iter_next(&iter)) {
-          auto key = std::string(bson_iter_key(&iter));
-          map.emplace_back(std::make_pair(std::move(key), to_input_var(&iter)));
-        }
-      }
-    }
-    return map;
+    return std::nullopt;
   }
 
   rfl::Result<InputObjectType> to_object(

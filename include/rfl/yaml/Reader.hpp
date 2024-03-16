@@ -86,36 +86,18 @@ struct Reader {
     return InputArrayType(_var.node_);
   }
 
-  template <size_t size, class FunctionType>
-  std::array<std::optional<InputVarType>, size> to_fields_array(
-      const FunctionType& _fct, const InputObjectType& _obj) const noexcept {
-    std::array<std::optional<InputVarType>, size> f_arr;
+  template <class ObjectReader>
+  std::optional<Error> read_object(const ObjectReader& _object_reader,
+                                   const InputObjectType& _obj) const noexcept {
     for (const auto& p : _obj.node_) {
       try {
         const auto k = p.first.as<std::string>();
-        const auto ix = _fct(std::string_view(k));
-        if (ix != -1) {
-          f_arr[ix] = InputVarType(p.second);
-        }
+        _object_reader.read(std::string_view(k), InputVarType(p.second));
       } catch (std::exception& e) {
         continue;
       }
     }
-    return f_arr;
-  }
-
-  rfl::Result<std::vector<std::pair<std::string, InputVarType>>> to_map(
-      const InputObjectType& _obj) const noexcept {
-    std::vector<std::pair<std::string, InputVarType>> m;
-    for (const auto& p : _obj.node_) {
-      try {
-        auto k = p.first.as<std::string>();
-        m.emplace_back(std::make_pair(k, p.second));
-      } catch (std::exception& e) {
-        continue;
-      }
-    }
-    return m;
+    return std::nullopt;
   }
 
   rfl::Result<InputObjectType> to_object(

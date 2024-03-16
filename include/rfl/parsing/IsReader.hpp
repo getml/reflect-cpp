@@ -16,9 +16,16 @@
 namespace rfl {
 namespace parsing {
 
+template <class R>
+struct MockObjectReader {
+  void read(const std::string_view& _name,
+            typename R::InputVarType& _var) const {}
+};
+
 template <class R, class T>
 concept IsReader = requires(R r, std::string name,
                             std::function<std::int16_t(std::string_view)> fct,
+                            MockObjectReader<R> object_reader,
                             typename R::InputArrayType arr,
                             typename R::InputObjectType obj,
                             typename R::InputVarType var) {
@@ -41,28 +48,19 @@ concept IsReader = requires(R r, std::string name,
   /// Determines whether a variable is empty (the NULL type).
   { r.is_empty(var) } -> std::same_as<bool>;
 
+  /// Iterates through an object and writes the key-value pairs into a view.
+  /// This is what we use to handle structs and named tuples, making it a very
+  /// important function.
+  { r.read_object(object_reader, obj) } -> std::same_as<std::optional<Error>>;
+
   /// Transforms var to a basic type (bool, integral,
   /// floating point, std::string)
   {
     r.template to_basic_type<internal::wrap_in_rfl_array_t<T>>(var)
     } -> std::same_as<rfl::Result<internal::wrap_in_rfl_array_t<T>>>;
 
-  /// _fct is a function that turns the field name into the field index of the
-  /// struct. It returns -1, if the fields does not exist on the struct. This
-  /// returns an std::array that can be used to build up the struct.
-  {
-    r.template to_fields_array<6>(fct, obj)
-    } -> std::same_as<std::array<std::optional<typename R::InputVarType>, 6>>;
-
   /// Casts var as an InputArrayType.
   { r.to_array(var) } -> std::same_as<rfl::Result<typename R::InputArrayType>>;
-
-  /// Iterates through an object and writes the contained key-value pairs into
-  /// a vector.
-  {
-    r.to_map(obj)
-    } -> std::same_as<rfl::Result<
-        std::vector<std::pair<std::string, typename R::InputVarType>>>>;
 
   /// Casts var as an InputObjectType.
   {

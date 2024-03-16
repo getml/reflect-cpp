@@ -9,9 +9,11 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "MapReader.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
+#include "to_single_error_message.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -33,7 +35,9 @@ struct MapParser {
   using ParentType = Parent<W>;
 
   static Result<MapType> read(const R& _r, const InputVarType& _var) noexcept {
-    const auto to_map = [&](const auto& _obj) { return make_map(_r, _obj); };
+    const auto to_map = [&](auto obj) -> Result<MapType> {
+      return make_map(_r, obj);
+    };
     return _r.to_object(_var).and_then(to_map);
   }
 
@@ -77,72 +81,18 @@ struct MapParser {
   }
 
  private:
-  template <class T>
-  static Result<T> key_to_numeric(auto& _pair) noexcept {
-    try {
-      if constexpr (std::is_integral_v<T>) {
-        return static_cast<T>(std::stoi(_pair.first));
-      } else if constexpr (std::is_floating_point_v<T>) {
-        return static_cast<T>(std::stod(_pair.first));
-      } else {
-        static_assert(always_false_v<T>, "Unsupported type");
-      }
-    } catch (std::exception& e) {
-      return Error(e.what());
+  static Result<MapType> make_map(const R& _r, const InputObjectType& _obj) {
+    MapType map;
+    std::vector<Error> errors;
+    const auto map_reader = MapReader<R, W, MapType>(&_r, &map, &errors);
+    const auto err = _r.read_object(map_reader, _obj);
+    if (err) {
+      return *err;
     }
-  }
-
-  static Result<std::pair<KeyType, ValueType>> make_key(auto& _pair) noexcept {
-    const auto to_pair = [&](auto _key) {
-      return std::make_pair(KeyType(std::move(_key)), std::move(_pair.second));
-    };
-
-    if constexpr (std::is_integral_v<KeyType> ||
-                  std::is_floating_point_v<KeyType>) {
-      return key_to_numeric<KeyType>(_pair).transform(to_pair);
-
-    } else if constexpr (internal::has_reflection_type_v<KeyType>) {
-      using ReflT = typename KeyType::ReflectionType;
-
-      if constexpr (std::is_integral_v<ReflT> ||
-                    std::is_floating_point_v<ReflT>) {
-        return key_to_numeric<ReflT>(_pair).transform(to_pair);
-      } else {
-        return to_pair(_pair.first);
-      }
-
-    } else {
-      return std::move(_pair);
+    if (errors.size() != 0) {
+      return to_single_error_message(errors);
     }
-  }
-
-  static std::pair<KeyType, ValueType> get_pair(const R& _r, auto& _pair) {
-    const auto to_pair = [&](ValueType&& _val) {
-      auto pair = std::make_pair(std::move(_pair.first), std::move(_val));
-      return make_key(pair);
-    };
-    return Parser<R, W, std::remove_cvref_t<ValueType>>::read(_r, _pair.second)
-        .and_then(to_pair)
-        .value();
-  }
-
-  static Result<MapType> iterate_map(const R& _r, const auto& _map) noexcept {
-    MapType res;
-    try {
-      for (auto& p : _map) {
-        res.insert(get_pair(_r, p));
-      }
-    } catch (std::exception& e) {
-      return Error(e.what());
-    }
-    return res;
-  };
-
-  static Result<MapType> make_map(const R& _r, const auto& _obj) noexcept {
-    const auto iterate = [&](const auto& _map) {
-      return iterate_map(_r, _map);
-    };
-    return _r.to_map(_obj).and_then(iterate);
+    return map;
   }
 };
 

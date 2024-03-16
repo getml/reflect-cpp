@@ -96,37 +96,6 @@ struct Reader {
     return InputArrayType(_var.val_);
   }
 
-  template <size_t size, class FunctionType>
-  std::array<std::optional<InputVarType>, size> to_fields_array(
-      const FunctionType _fct, const InputObjectType _obj) const noexcept {
-    std::array<std::optional<InputVarType>, size> f_arr;
-    yyjson_obj_iter iter;
-    yyjson_obj_iter_init(_obj.val_, &iter);
-    yyjson_val* key;
-    while ((key = yyjson_obj_iter_next(&iter))) {
-      const char* k = yyjson_get_str(key);
-      const auto ix = _fct(std::string_view(k));
-      if (ix != -1) {
-        f_arr[ix] = InputVarType(yyjson_obj_iter_get_val(key));
-      }
-    }
-    return f_arr;
-  }
-
-  rfl::Result<std::vector<std::pair<std::string, InputVarType>>> to_map(
-      const InputObjectType _obj) const noexcept {
-    std::vector<std::pair<std::string, InputVarType>> m;
-    yyjson_obj_iter iter;
-    yyjson_obj_iter_init(_obj.val_, &iter);
-    yyjson_val* key;
-    while ((key = yyjson_obj_iter_next(&iter))) {
-      auto p = std::make_pair(yyjson_get_str(key),
-                              InputVarType(yyjson_obj_iter_get_val(key)));
-      m.emplace_back(std::move(p));
-    }
-    return m;
-  }
-
   rfl::Result<InputObjectType> to_object(
       const InputVarType _var) const noexcept {
     if (!yyjson_is_obj(_var.val_)) {
@@ -144,6 +113,19 @@ struct Reader {
       vec.push_back(InputVarType(val));
     }
     return vec;
+  }
+
+  template <class ObjectReader>
+  std::optional<Error> read_object(const ObjectReader& _object_reader,
+                                   const InputObjectType& _obj) const noexcept {
+    yyjson_obj_iter iter;
+    yyjson_obj_iter_init(_obj.val_, &iter);
+    yyjson_val* key;
+    while ((key = yyjson_obj_iter_next(&iter))) {
+      const auto name = std::string_view(yyjson_get_str(key));
+      _object_reader.read(name, InputVarType(yyjson_obj_iter_get_val(key)));
+    }
+    return std::nullopt;
   }
 
   template <class T>

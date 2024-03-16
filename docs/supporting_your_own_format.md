@@ -198,19 +198,6 @@ struct Reader {
     /// Returns an rfl::Error if `_var` cannot be cast as an array.
     rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept {...}
 
-    /// _fct is a function that turns the field name into the field index of the
-    /// struct. It returns -1, if the fields does not exist on the struct. This
-    /// returns an std::array that can be used to build up the struct.
-    /// See below for a more comprehensive explanation.
-    template <size_t size, class FunctionType>
-    std::array<std::optional<InputVarType>, size> to_fields_array(
-        const FunctionType _fct, const InputObjectType& _obj) const noexcept {...}
-
-    /// Iterates through an object and writes the contained key-value pairs into
-    /// a vector.
-    std::vector<std::pair<std::string, InputVarType>> to_map(
-        const InputObjectType& _obj) const noexcept {...}
-
     /// Casts _var as an InputObjectType.
     /// Returns an rfl::Error if `_var` cannot be cast as an object.
     rfl::Result<InputObjectType> to_object(
@@ -219,6 +206,12 @@ struct Reader {
     /// Iterates through an array and writes the contained values into
     /// a std::vector<InputVarType>. 
     std::vector<InputVarType> to_vec(const InputArrayType& _arr) const noexcept {...}
+
+    /// Iterates through an object and inserts the key-value pairs into the object 
+    /// reader. See below for a more detailed explanation.
+    template <class ObjectReader>
+    std::optional<Error> read_object(const ObjectReader& _object_reader,
+                                     const InputObjectType& _obj) const noexcept {...}
 
     /// Constructs T using its custom constructor. This will only be triggered if
     /// T was determined to have a custom constructor by
@@ -234,37 +227,15 @@ struct Reader {
 };
 ```
 
-Of these methods, `to_fields_array` probably requires futher explanation.
+Of these methods, `read_object` probably requires further explanation.
 
-Consider the following struct:
+`read_object` expects an `ObjectReader` class which might come in several forms. But all
+of these forms have a method with the following signature:
 
 ```cpp
-struct Person {
-    rfl::Rename<"firstName", std::string> first_name;
-    rfl::Rename<"lastName", std::string> last_name;
-    rfl::Timestamp<"%Y-%m-%d"> birthday;
-    std::vector<Person> children;
-};
+void read(const std::string_view& _name,
+          const InputVarType& _var) const noexcept;
 ```
 
-This struct contains four fields. `rfl::parsing::Parser` expects `to_fields_array`
-to return an `std::array<std::optional<InputVarType>, 4>` containing the field "firstName" in the
-first position, "lastName" in the second position, "birthday" in the third position
-and "children" in the fourth position.
-
-`rfl::parsing::Parser` will pass the following two elements:
-
-1. A function `_fct` of type `FunctionType`.
-2. An object `_obj` of type `InputObjectType`.
-
-`_fct` takes a field name of type `std::string_view` as an input and 
-returns an index. This index signifies the position in the `std::array` 
-it wants this field to have. If the field is not contained in the struct,
-the index will be -1.
-
-Your job is to implement the following:
-
-1. Iterate through `_obj`.
-2. Identify the required index of the field name using `_fct`.
-3. Set the corresponding field in `std::array` to the field value associated with the field name.
-4. Any field that could not be set in steps 1-3 must be set to `std::nullopt`.
+Within your implementation of `read_object`, you must iterate through the object passed
+to the function and then insert the resulting key-value-pairs into `object_reader.read`.

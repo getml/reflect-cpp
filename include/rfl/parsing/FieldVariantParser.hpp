@@ -9,6 +9,7 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "FieldVariantReader.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
@@ -20,7 +21,8 @@ namespace parsing {
 template <class R, class W, class... FieldTypes>
 requires AreReaderAndWriter<R, W, std::variant<FieldTypes...>>
 struct FieldVariantParser {
-  using ResultType = Result<std::variant<FieldTypes...>>;
+  using FieldVariantType = std::variant<FieldTypes...>;
+  using ResultType = Result<FieldVariantType>;
 
  public:
   using InputObjectType = typename R::InputObjectType;
@@ -35,22 +37,23 @@ struct FieldVariantParser {
         "Externally tagged variants cannot have duplicate field "
         "names.");
 
-    const auto to_map = [&](auto _obj) { return _r.to_map(_obj); };
-
-    const auto to_result = [&](auto _map) -> ResultType {
-      if (_map.size() != 1) {
-        return Error(
-            "Could not parse Field: Expected the object to have "
-            "exactly one field, but found " +
-            std::to_string(_map.size()) + " fields.");
+    const auto to_result = [&](const auto _obj) -> ResultType {
+      auto field_variant = std::optional<Result<FieldVariantType>>();
+      const auto reader =
+          FieldVariantReader<R, W, FieldTypes...>(&_r, &field_variant);
+      auto err = _r.read_object(reader, _obj);
+      if (err) {
+        return *err;
       }
-      const auto it = _map.begin();
-      const auto& disc_value = it->first;
-      const auto& var = it->second;
-      return find_matching_alternative(_r, disc_value, var);
+      if (!field_variant) {
+        return Error(
+            "Could not parse: Expected the object to have "
+            "exactly one field, but found more than one.");
+      }
+      return std::move(*field_variant);
     };
 
-    return _r.to_object(_var).and_then(to_map).and_then(to_result);
+    return _r.to_object(_var).and_then(to_result);
   }
 
   template <class P>
@@ -75,43 +78,6 @@ struct FieldVariantParser {
       std::vector<schema::Type> _types = {}) {
     using VariantType = std::variant<NamedTuple<FieldTypes>...>;
     return Parser<R, W, VariantType>::to_schema(_definitions);
-  }
-
- private:
-  template <int _i = 0>
-  static ResultType find_matching_alternative(
-      const R& _r, const std::string& _disc_value,
-      const InputVarType& _var) noexcept {
-    if constexpr (_i == sizeof...(FieldTypes)) {
-      return Error(
-          "Could not parse std::variant, could not match field named "
-          "'" +
-          _disc_value + "'.");
-    } else {
-      using FieldType = std::remove_cvref_t<
-          typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type>;
-
-      using ValueType = std::remove_cvref_t<typename FieldType::Type>;
-
-      const auto key = FieldType::name_.str();
-
-      if (key == _disc_value) {
-        const auto to_variant = [](ValueType&& _val) {
-          return std::variant<FieldTypes...>(FieldType(std::move(_val)));
-        };
-
-        const auto embellish_error = [&](const Error& _e) {
-          return Error("Could not parse std::variant with field '" +
-                       _disc_value + "': " + _e.what());
-        };
-
-        return Parser<R, W, ValueType>::read(_r, _var)
-            .transform(to_variant)
-            .or_else(embellish_error);
-      } else {
-        return find_matching_alternative<_i + 1>(_r, _disc_value, _var);
-      }
-    }
   }
 };
 }  // namespace parsing
