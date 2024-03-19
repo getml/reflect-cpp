@@ -133,6 +133,8 @@ class Writer {
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       bson_array_builder_append_int64(_parent->val_,
                                       static_cast<std::int64_t>(_var));
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bson_oid_t>()) {
+      bson_array_builder_append_oid(_parent->val_, &_var);
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
@@ -158,6 +160,9 @@ class Writer {
       bson_append_int64(_parent->val_, _name.data(),
                         static_cast<int>(_name.size()),
                         static_cast<std::int64_t>(_var));
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bson_oid_t>()) {
+      bson_append_oid(_parent->val_, _name.data(),
+                      static_cast<int>(_name.size()), &_var);
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }

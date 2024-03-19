@@ -17,6 +17,7 @@
 #include "test_map.hpp"
 #include "test_map_with_key_validation.hpp"
 #include "test_monster_example.hpp"
+#include "test_oid.hpp"
 #include "test_readme_example.hpp"
 #include "test_readme_example2.hpp"
 #include "test_ref.hpp"
@@ -62,6 +63,7 @@ int main() {
   test_default_values::test();
   test_save_load::test();
   test_wstring::test();
+  test_oid::test();
 
   return 0;
 }

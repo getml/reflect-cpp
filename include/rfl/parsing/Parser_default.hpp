@@ -58,14 +58,8 @@ struct Parser {
         using StringConverter = internal::enums::StringConverter<T>;
         return _r.template to_basic_type<std::string>(_var).and_then(
             StringConverter::string_to_enum);
-      } else if constexpr (internal::is_basic_type_v<T>) {
-        return _r.template to_basic_type<std::remove_cvref_t<T>>(_var);
       } else {
-        static_assert(
-            always_false_v<T>,
-            "Unsupported type. Please refer to the sections on custom "
-            "classes and custom parsers for information on how add "
-            "support for your own classes.");
+        return _r.template to_basic_type<std::remove_cvref_t<T>>(_var);
       }
     }
   }
@@ -88,13 +82,8 @@ struct Parser {
       using StringConverter = internal::enums::StringConverter<T>;
       const auto str = StringConverter::enum_to_string(_var);
       ParentType::add_value(_w, str, _parent);
-    } else if constexpr (internal::is_basic_type_v<T>) {
-      ParentType::add_value(_w, _var, _parent);
     } else {
-      static_assert(always_false_v<T>,
-                    "Unsupported type. Please refer to the sections on custom "
-                    "classes and custom parsers for information on how add "
-                    "support for your own classes.");
+      ParentType::add_value(_w, _var, _parent);
     }
   }
 
