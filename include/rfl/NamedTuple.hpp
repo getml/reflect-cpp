@@ -602,7 +602,7 @@ class NamedTuple<> {
 
   /// Does nothing at all.
   template <typename F>
-  void apply(const F& _f) const {}
+  void apply(F&& _f) const {}
 
   /// Returns an empty tuple.
   auto fields() const { return std::tuple(); }
