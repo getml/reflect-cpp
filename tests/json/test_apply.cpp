@@ -38,7 +38,7 @@ void test() {
     }
   });
 
-  rfl::to_view(lisa).apply([](auto field) {
+  rfl::to_view(lisa).apply([](auto field) mutable {
     if constexpr (decltype(field)::name() == "first_name") {
       *field.value() = "Bart";
     }
