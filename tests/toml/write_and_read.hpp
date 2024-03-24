@@ -25,7 +25,7 @@ void write_and_read(const T& _struct) {
               << std::endl;
     return;
   }
-  std::cout << toml_string1 << std::endl;
+  // std::cout << toml_string1 << std::endl;
   std::cout << "OK" << std::endl << std::endl;
 }
 

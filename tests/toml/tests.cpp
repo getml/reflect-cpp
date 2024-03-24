@@ -21,7 +21,7 @@
 #include "test_readme_example.hpp"
 #include "test_readme_example2.hpp"
 #include "test_ref.hpp"
-//#include "test_save_load.hpp"
+#include "test_save_load.hpp"
 #include "test_set.hpp"
 #include "test_size.hpp"
 #include "test_tagged_union.hpp"
@@ -62,7 +62,7 @@ int main() {
   test_custom_class4::test();
   test_default_values::test();
   test_custom_constructor::test();
-  //  test_save_load::test();
+  test_save_load::test();
   test_wstring::test();
 
   return 0;
