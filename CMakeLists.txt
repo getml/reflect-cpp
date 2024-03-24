@@ -48,7 +48,7 @@ endif ()
 if (REFLECTCPP_TOML)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(tomlplusplus REQUIRED IMPORTED_TARGET tomlplusplus)
-    target_link_libraries(reflectcpp PkgConfig::tomlplusplus)
+    target_link_libraries(reflectcpp INTERFACE PkgConfig::tomlplusplus)
 endif()
 
 if (REFLECTCPP_XML)
