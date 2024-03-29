@@ -69,7 +69,8 @@ This will result in the following JSON schema:
             ]
         }
     }
-}```
+}
+```
 
 You can insert this into the tools mentioned above and see the generated code.
 
