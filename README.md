@@ -34,6 +34,7 @@ The following table lists the serialization formats currently supported by refle
 | BSON         | [libbson](https://github.com/mongodb/libbson)        | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
 | CBOR         | [tinycbor](https://github.com/intel/tinycbor)        | >= 0.6.0     | MIT        | JSON-like binary format                              |
 | flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 | Schema-less version of flatbuffers, binary format    |
+| TOML         | [toml++](https://github.com/marzer/tomlplusplus)    | >= 3.4.0     | MIT        | Textual format with an emphasis on readability       |
 | XML          | [pugixml](https://github.com/zeux/pugixml)           | >= 1.14      | MIT        | Textual format used in many legacy projects          |
 | YAML         | [yaml-cpp](https://github.com/jbeder/yaml-cpp)       | >= 0.8.0     | MIT        | Textual format with an emphasis on readability       |
 
@@ -95,11 +96,13 @@ and any supported format, except where explicitly noted otherwise:
 rfl::bson::write(homer);
 rfl::cbor::write(homer);
 rfl::flexbuf::write(homer);
+rfl::toml::write(homer);
 rfl::xml::write(homer);
 
 rfl::bson::read<Person>(bson_bytes);
 rfl::cbor::read<Person>(cbor_bytes);
 rfl::flexbuf::read<Person>(flexbuf_bytes);
+rfl::toml::read<Person>(toml_string);
 rfl::xml::read<Person>(xml_string);
 ```
 
@@ -504,6 +507,7 @@ add_subdirectory(reflect-cpp) # Add this project as a subdirectory
 set(REFLECTCPP_BSON ON) # Optional
 set(REFLECTCPP_CBOR ON) # Optional
 set(REFLECTCPP_FLEXBUFFERS ON) # Optional
+set(REFLECTCPP_TOML ON) # Optional
 set(REFLECTCPP_XML ON) # Optional
 set(REFLECTCPP_YAML ON) # Optional
 
@@ -549,7 +553,7 @@ git submodule update --init
 ./vcpkg/bootstrap-vcpkg.bat # Windows
 # You may be prompted to install additional dependencies.
 
-cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
 ```
@@ -561,6 +565,7 @@ To run the tests, do the following:
 ./build/tests/cbor/reflect-cpp-cbor-tests
 ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
 ./build/tests/json/reflect-cpp-json-tests
+./build/tests/xml/reflect-cpp-toml-tests
 ./build/tests/xml/reflect-cpp-xml-tests
 ./build/tests/xml/reflect-cpp-yaml-tests
 ```

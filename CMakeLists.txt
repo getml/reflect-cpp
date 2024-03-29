@@ -5,12 +5,13 @@ option(REFLECTCPP_BSON "Enable BSON support" OFF)
 option(REFLECTCPP_CBOR "Enable CBOR support" OFF)
 option(REFLECTCPP_FLEXBUFFERS "Enable flexbuffers support" OFF)
 option(REFLECTCPP_XML "Enable XML support" OFF)
+option(REFLECTCPP_TOML "Enable TOML support" OFF)
 option(REFLECTCPP_YAML "Enable YAML support" OFF)
 
 option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
 
 # enable vcpkg if require features other than JSON
-if (REFLECTCPP_BSON OR REFLECTCPP_CBOR OR REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_XML OR REFLECTCPP_YAML)
+if (REFLECTCPP_BSON OR REFLECTCPP_CBOR OR REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_XML OR REFLECTCPP_TOML OR REFLECTCPP_YAML)
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
 endif ()
 
@@ -43,6 +44,12 @@ if (REFLECTCPP_FLEXBUFFERS)
     find_package(flatbuffers CONFIG REQUIRED)
     target_link_libraries(reflectcpp INTERFACE flatbuffers::flatbuffers)
 endif ()
+
+if (REFLECTCPP_TOML)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(tomlplusplus REQUIRED IMPORTED_TARGET tomlplusplus)
+    target_link_libraries(reflectcpp INTERFACE PkgConfig::tomlplusplus)
+endif()
 
 if (REFLECTCPP_XML)
     find_package(pugixml CONFIG REQUIRED)

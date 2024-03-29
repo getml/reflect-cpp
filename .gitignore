@@ -45,6 +45,7 @@
 *.cbor
 *.json
 *.fb
+*.toml
 *.xml
 *.yml
 *.yaml
