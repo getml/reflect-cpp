@@ -36,6 +36,8 @@
 
 2.4) [Size validation](https://github.com/getml/reflect-cpp/blob/main/docs/size_validation.md) - For imposing size constraints on containers such as `std::vector` or `std::string`.
 
+2.5) [JSON schema](https://github.com/getml/reflect-cpp/blob/main/docs/json_schema.md) - For validating your schema before you even send it to your C++ backend.
+
 ## 3) Custom classes
 
 3.1) [Custom classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_classes.md) - For custom classes with private fields.
