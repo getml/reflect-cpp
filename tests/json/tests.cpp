@@ -25,6 +25,7 @@
 #include "test_default_values.hpp"
 #include "test_deque.hpp"
 #include "test_email.hpp"
+#include "test_empty_object.hpp"
 #include "test_enum1.hpp"
 #include "test_enum2.hpp"
 #include "test_enum3.hpp"
@@ -130,6 +131,7 @@ int main() {
   test_unnamed_namespace::test();
   test_inside_function::test();
   test_const_fields::test();
+  test_empty_object::test();
 
   test_enum1::test();
   test_enum2::test();

@@ -8,6 +8,7 @@
 #include "Array.hpp"
 #include "bind_to_tuple.hpp"
 #include "has_fields.hpp"
+#include "is_empty.hpp"
 #include "is_named_tuple.hpp"
 #include "wrap_in_fields.hpp"
 
@@ -21,6 +22,8 @@ auto move_to_field_tuple(OriginalStruct&& _t) {
     return _t.fields();
   } else if constexpr (has_fields<T>()) {
     return bind_to_tuple(_t, [](auto& x) { return std::move(x); });
+  } else if constexpr (is_empty<T>()) {
+    return std::tuple();
   } else {
     using FieldNames = field_names_t<T>;
     const auto fct = []<class T>(T& _v) {
