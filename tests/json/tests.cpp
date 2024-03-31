@@ -10,6 +10,7 @@
 #include "test_as2.hpp"
 #include "test_as_flatten.hpp"
 #include "test_box.hpp"
+#include "test_box2.hpp"
 #include "test_c_array_class1.hpp"
 #include "test_c_array_class2.hpp"
 #include "test_c_array_class3.hpp"
@@ -98,6 +99,7 @@ int main() {
   test_field_variant::test();
   test_ref::test();
   test_box::test();
+  test_box2::test();
   test_array::test();
   test_timestamp::test();
   test_flatten::test();

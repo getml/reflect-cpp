@@ -138,6 +138,16 @@ This will result in the following JSON string:
 {"leafOrNode":{"type":"Node","criticalValue":10.0,"lesser":{"leafOrNode":{"type":"Leaf","value":3.0}},"greater":{"leafOrNode":{"type":"Leaf","value":5.0}}}}
 ```
 
+You can also initialize `rfl::Box<T>` from a `std::unique_ptr<T>`:
+
+```cpp
+auto ptr = std::make_unique<std::string>("Hello World!");
+const rfl::Result<rfl::Box<std::string>> box = rfl::make_box<std::string>(std::move(ptr));
+```
+
+Note that `box` is wrapped in a `Result`. That is, because we cannot guarantee at compile time 
+that `ptr` is not `nullptr`, therefore we need to account for that.
+
 If you want to use reference-counted pointers, instead of unique pointers, you can use `rfl::Ref`. 
 `rfl::Ref` is the same concept as `rfl::Box`, but using `std::shared_ptr` under-the-hood.
 
