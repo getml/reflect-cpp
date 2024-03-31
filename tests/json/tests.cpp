@@ -64,6 +64,7 @@
 #include "test_result.hpp"
 #include "test_save_load.hpp"
 #include "test_set.hpp"
+#include "test_shared_ptr.hpp"
 #include "test_size.hpp"
 #include "test_std_ref.hpp"
 #include "test_string_map.hpp"
@@ -89,6 +90,7 @@ int main() {
   test_optional_fields::test();
   test_unique_ptr::test();
   test_unique_ptr2::test();
+  test_shared_ptr::test();
   test_literal::test();
   test_variant::test();
   test_tagged_union::test();
