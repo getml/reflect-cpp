@@ -47,7 +47,7 @@ class Literal {
   /// A single-field literal is special because it
   /// can also have a default constructor.
   template <ValueType num_fields = num_fields_,
-            typename = std::enable_if_t<num_fields == 1>>
+            typename = std::enable_if_t<num_fields <= 1>>
   Literal() : value_(0) {}
 
   ~Literal() = default;
@@ -81,7 +81,11 @@ class Literal {
   }
 
   /// Determines whether the literal contains the string.
-  static bool contains(const std::string& _str) { return has_value(_str); }
+  static bool contains(const std::string& _str) {
+    bool found = false;
+    has_value(_str, &found);
+    return found;
+  }
 
   /// Determines whether the literal contains the string at compile time.
   template <internal::StringLiteral _name>
@@ -280,37 +284,38 @@ class Literal {
   /// Finds the value of a string literal at compile time.
   template <internal::StringLiteral _name, int _i = 0>
   static constexpr int find_value_of() {
-    using FieldType = typename std::tuple_element<_i, FieldsType>::type;
-    if constexpr (FieldType::field_ == _name) {
-      return _i;
-    } else if constexpr (_i + 1 < num_fields_) {
-      return find_value_of<_name, _i + 1>();
-    } else {
+    if constexpr (_i == num_fields_) {
       return -1;
+    } else {
+      using FieldType = typename std::tuple_element<_i, FieldsType>::type;
+      if constexpr (FieldType::field_ == _name) {
+        return _i;
+      } else {
+        return find_value_of<_name, _i + 1>();
+      }
     }
   }
 
   /// Whether the literal contains this string.
   template <int _i = 0>
-  static bool has_value(const std::string& _str) {
-    using FieldType = typename std::tuple_element<_i, FieldsType>::type;
-    if (FieldType::field_.str() == _str) {
-      return true;
-    }
-    if constexpr (_i + 1 == num_fields_) {
-      return false;
+  static void has_value(const std::string& _str, bool* _found) {
+    if constexpr (_i == num_fields_) {
+      *_found = false;
+      return;
     } else {
-      return has_value<_i + 1>(_str);
+      using FieldType = typename std::tuple_element<_i, FieldsType>::type;
+      if (FieldType::field_.str() == _str) {
+        *_found = true;
+        return;
+      }
+      return has_value<_i + 1>(_str, _found);
     }
   }
-
-  static_assert(sizeof...(fields_) > 0,
-                "There must be at least one field in a Literal.");
 
   static_assert(sizeof...(fields_) <= std::numeric_limits<ValueType>::max(),
                 "Too many fields.");
 
-  static_assert(!has_duplicates(),
+  static_assert(sizeof...(fields_) <= 1 || !has_duplicates(),
                 "Duplicate strings are not allowed in a Literal.");
 
  private:
