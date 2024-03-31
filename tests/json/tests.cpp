@@ -73,6 +73,7 @@
 #include "test_string_unordered_map.hpp"
 #include "test_tagged_union.hpp"
 #include "test_tagged_union2.hpp"
+#include "test_tagged_union3.hpp"
 #include "test_timestamp.hpp"
 #include "test_transform.hpp"
 #include "test_unique_ptr.hpp"
@@ -97,6 +98,7 @@ int main() {
   test_variant::test();
   test_tagged_union::test();
   test_tagged_union2::test();
+  test_tagged_union3::test();
   test_field_variant::test();
   test_ref::test();
   test_box::test();

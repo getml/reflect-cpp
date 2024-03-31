@@ -3,15 +3,15 @@
 
 #include <type_traits>
 
+#include "StringLiteral.hpp"
 #include "make_tag.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
-template <class T>
-using tag_t = typename std::invoke_result<decltype(make_tag<T>)>::type;
+template <internal::StringLiteral _discriminator, class T>
+using tag_t =
+    typename std::invoke_result<decltype(make_tag<_discriminator, T>), T>::type;
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

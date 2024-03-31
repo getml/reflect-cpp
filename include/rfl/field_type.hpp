@@ -10,9 +10,8 @@
 
 namespace rfl {
 
-template <internal::StringLiteral _field_name, class NamedTupleType>
-using field_type_t =
-    typename internal::FieldType<_field_name, NamedTupleType>::Type;
+template <internal::StringLiteral _field_name, class T>
+using field_type_t = typename internal::FieldType<_field_name, T>::Type;
 
 }  // namespace rfl
 

@@ -23,8 +23,7 @@
 #endif
 #endif
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class T>
 struct Wrapper {
@@ -112,6 +111,8 @@ auto concat_literals(const Head& _head, const Tail&... _tail) {
   }
 }
 
+inline auto concat_literals() { return rfl::Literal<>(); }
+
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundefined-var-template"
@@ -150,7 +151,6 @@ auto get_field_names() {
 #pragma clang diagnostic pop
 #endif
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

@@ -9,7 +9,6 @@
 
 #include "../always_false.hpp"
 #include "get_fake_object.hpp"
-#include "is_named_tuple.hpp"
 #include "num_fields.hpp"
 
 namespace rfl {
