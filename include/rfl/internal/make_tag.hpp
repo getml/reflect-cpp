@@ -3,6 +3,7 @@
 
 #include "../Literal.hpp"
 #include "../field_names_t.hpp"
+#include "../named_tuple_t.hpp"
 #include "../to_view.hpp"
 #include "StringLiteral.hpp"
 #include "get_type_name.hpp"
@@ -16,7 +17,8 @@ template <internal::StringLiteral _discriminator, class T>
 static inline auto make_tag(const T& _t) noexcept {
   if constexpr (internal::has_reflection_type_v<T>) {
     return make_tag<typename T::ReflectionType>();
-  } else if constexpr (field_names_t<T>::template contains<_discriminator>()) {
+  } else if constexpr (named_tuple_t<T>::Names::template contains<
+                           _discriminator>()) {
     return *to_view(_t).template get<_discriminator>();
   } else if constexpr (internal::has_tag_v<T>) {
     using LiteralType = typename T::Tag;

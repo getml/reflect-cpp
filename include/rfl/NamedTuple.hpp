@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "Field.hpp"
+#include "Literal.hpp"
 #include "get.hpp"
 #include "internal/StringLiteral.hpp"
 #include "internal/find_index.hpp"
@@ -29,8 +30,8 @@ template <class... FieldTypes>
 class NamedTuple {
  public:
   using Fields = std::tuple<std::remove_cvref_t<FieldTypes>...>;
-  using Values =
-      std::tuple<typename std::remove_cvref<FieldTypes>::type::Type...>;
+  using Names = Literal<std::remove_cvref_t<FieldTypes>::name_...>;
+  using Values = std::tuple<typename std::remove_cvref_t<FieldTypes>::Type...>;
 
  public:
   /// Construct from the values.
@@ -555,6 +556,7 @@ template <>
 class NamedTuple<> {
  public:
   using Fields = std::tuple<>;
+  using Names = Literal<>;
   using Values = std::tuple<>;
 
   NamedTuple(){};
