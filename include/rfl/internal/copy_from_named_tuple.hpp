@@ -11,7 +11,7 @@ namespace internal {
 template <class T, class NamedTupleType>
 T copy_from_named_tuple(const NamedTupleType& _n) {
   auto n = _n;
-  return move_from_named_tuple(std::move(n));
+  return move_from_named_tuple<T>(std::move(n));
 }
 
 }  // namespace internal
