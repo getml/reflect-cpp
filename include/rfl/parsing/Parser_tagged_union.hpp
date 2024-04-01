@@ -132,7 +132,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
   /// tag, if the object doesn't already contain the wrap.
   template <class T>
   static auto wrap_if_necessary(const T& _val) noexcept {
-    if constexpr (field_names_t<T>::template contains<_discriminator>()) {
+    if constexpr (named_tuple_t<T>::Names::template contains<_discriminator>()) {
       return _val;
     } else {
       const auto tag = internal::make_tag<_discriminator, T>(_val);
