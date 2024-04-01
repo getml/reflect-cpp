@@ -10,8 +10,15 @@ option(REFLECTCPP_YAML "Enable YAML support" OFF)
 
 option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
 
-# enable vcpkg if require features other than JSON
+set(REFLECTCPP_USE_VCPKG_DEFAULT OFF)
 if (REFLECTCPP_BSON OR REFLECTCPP_CBOR OR REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_XML OR REFLECTCPP_TOML OR REFLECTCPP_YAML)
+    # enable vcpkg per default if require features other than JSON
+    set(REFLECTCPP_USE_VCPKG_DEFAULT ON)
+endif()
+
+option(REFLECTCPP_USE_VCPKG "Use VCPKG to download and build dependencies" ${REFLECTCPP_USE_VCPKG_DEFAULT})
+
+if (REFLECTCPP_USE_VCPKG)
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
 endif ()
 
@@ -25,7 +32,9 @@ else ()
     add_library(reflectcpp STATIC src/yyjson.c)
 endif ()
 
-target_include_directories(reflectcpp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_features(reflectcpp PUBLIC cxx_std_20)
+
+target_include_directories(reflectcpp PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include> )
 
 if (REFLECTCPP_BSON)
     find_package(bson-1.0 CONFIG REQUIRED)
@@ -66,3 +75,38 @@ target_compile_options(reflectcpp PRIVATE -Wall)
 if (REFLECTCPP_BUILD_TESTS)
     add_subdirectory(tests)
 endif ()
+
+
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(reflectcpp-config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/reflectcpp-config.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp  
+  )
+
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/reflectcpp-config.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp"
+)
+
+file(GLOB_RECURSE RFL_HEADERS RELATIVE ${CMAKE_CURRENT_LIST_DIR} "${CMAKE_CURRENT_LIST_DIR}/include/*" )
+
+target_sources(reflectcpp
+    PUBLIC
+    FILE_SET reflectcpp_headers    
+    TYPE HEADERS
+    BASE_DIRS $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+    FILES ${RFL_HEADERS})
+   
+install(
+    TARGETS reflectcpp
+    EXPORT reflectcpp-exports
+    FILE_SET reflectcpp_headers DESTINATION ${INCLUDE_INSTALL_DIR}
+    )
+    
+install(
+    EXPORT reflectcpp-exports
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp
+    NAMESPACE reflectcpp::
+)
