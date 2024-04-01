@@ -161,9 +161,32 @@ class Literal {
     return *this;
   }
 
-  /// Equality operator other Literals.
-  bool operator==(const Literal<fields_...>& _other) const {
-    return value() == _other.value();
+  /// <=> for other Literals with the same fields.
+  auto operator<=>(const Literal<fields_...>& _other) const {
+    return value() <=> _other.value();
+  }
+
+  /// <=> for other Literals with different fields.
+  template <internal::StringLiteral... _fields>
+  inline auto operator<=>(const Literal<_fields...>& _l2) const {
+    return name() <=> _l2.name();
+  }
+
+  /// <=> for strings.
+  inline auto operator<=>(const std::string& _str) const {
+    return name() <=> _str;
+  }
+
+  /// <=> for const char*.
+  template <internal::StringLiteral... other_fields>
+  inline auto operator<=>(const char* _str) const {
+    return name() <=> _str;
+  }
+
+  /// Equality operator.
+  template <class Other>
+  bool operator==(const Other& _other) const {
+    return (*this <=> _other) == 0;
   }
 
   /// Alias for .name().
@@ -333,28 +356,6 @@ inline constexpr auto name_of() {
 template <class LiteralType, internal::StringLiteral _name>
 inline constexpr auto value_of() {
   return LiteralType::template value_of<_name>();
-}
-
-/// <=> for other Literals with the same fields.
-template <internal::StringLiteral... fields>
-inline auto operator<=>(const Literal<fields...>& _l1,
-                        const Literal<fields...>& _l2) {
-  return _l1.value() <=> _l2.value();
-}
-
-/// <=> for other Literals with different fields.
-template <internal::StringLiteral... fields1,
-          internal::StringLiteral... fields2>
-inline auto operator<=>(const Literal<fields1...>& _l1,
-                        const Literal<fields2...>& _l2) {
-  return _l1.name() <=> _l2.name();
-}
-
-/// <=> for strings.
-template <internal::StringLiteral... other_fields>
-inline auto operator<=>(const Literal<other_fields...>& _l,
-                        const std::string& _str) {
-  return _l <=> _str;
 }
 
 }  // namespace rfl
