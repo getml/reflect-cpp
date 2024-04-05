@@ -34,5 +34,4 @@ if (REFLECTCPP_YAML)
   find_dependency(yaml-cpp)
 endif ()
 
-check_required_components(reflect-cpp)
-
+check_required_components(reflectcpp)
