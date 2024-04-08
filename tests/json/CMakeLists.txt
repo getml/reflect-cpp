@@ -1,6 +1,6 @@
 project(reflect-cpp-json-tests)
 
-file(GLOB_RECURSE SOURCES "*.cpp")
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "*.cpp")
 
 add_executable(reflect-cpp-json-tests ${SOURCES})
 
