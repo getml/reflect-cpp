@@ -86,6 +86,7 @@
 #include "test_variant.hpp"
 #include "test_view.hpp"
 #include "test_wstring.hpp"
+#include "test_inheritance.hpp"
 
 int main() {
   test_readme_example::test();
@@ -186,6 +187,8 @@ int main() {
 
   test_wstring::test();
   test_json_schema::test();
+
+  test_inheritance::test();
 
   return 0;
 }
