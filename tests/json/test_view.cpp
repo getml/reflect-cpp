@@ -31,6 +31,13 @@ struct Derived2 : public EmptyBase1, public EmptyBase2 {
   int z;
 };
 
+struct BaseX {
+  int x;
+  int y;
+};
+struct EmptyDerived :public BaseX {};
+
+
 void test() {
   std::cout << std::source_location::current().function_name() << std::endl;
 
@@ -51,5 +58,9 @@ void test() {
   Derived2 derived2;
   const auto derived2_view = rfl::to_view(derived2);
   static_assert(derived2_view.size() == 3);
+  
+  EmptyDerived empty_derived;
+  auto empty_derived_view = rfl::to_view(empty_derived);
+  static_assert(empty_derived_view.size() == 2);
 }
 }  // namespace test_view

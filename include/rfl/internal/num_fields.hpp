@@ -108,6 +108,17 @@ struct CountFieldsHelper {
     }
   }
 
+  template <std::size_t size = 0>
+  static consteval std::size_t get_the_sole_nested_array_size() {
+    static_assert(size <= sizeof(T));
+    if constexpr (constructible_with_nested<0, size, 0>() &&
+                  !constructible_with_nested<0, size + 1, 0>()) {
+      return size;
+    } else {
+      return get_the_sole_nested_array_size<size + 1>();
+    }
+  }
+
   template <std::size_t n, std::size_t total_arg_num>
   static consteval bool has_n_base_param() {
     if constexpr (n > total_arg_num) {
@@ -124,10 +135,7 @@ struct CountFieldsHelper {
 
   template <std::size_t total_arg_num, std::size_t index>
   static consteval std::size_t base_param_num() {
-    if constexpr (index > total_arg_num) {
-      return 0;
-    } else if constexpr (has_n_base_param<index, total_arg_num>() &&
-                         !has_n_base_param<index + 1, total_arg_num>()) {
+    if constexpr (!has_n_base_param<index + 1, total_arg_num>()) {
       return index;
     } else {
       return base_param_num<total_arg_num, index + 1>();
@@ -147,13 +155,15 @@ struct CountFieldsHelper {
   }
 
   static consteval std::size_t count_fields() {
+    constexpr std::size_t max_fields = count_max_fields();
     constexpr std::size_t total_args =
-        constructable_no_brace_elision<0, count_max_fields()>();
-    constexpr std::size_t base_args = base_param_num<total_args, 1>();
+        constructable_no_brace_elision<0, max_fields>();
+    constexpr std::size_t base_args = base_param_num<total_args, 0>();
     if constexpr (base_args == total_args) {
       // Special case when the derived class is empty.
       // In such cases the filed number is the fields in base class.
-      return total_args;
+      // Note that there should be only one base class in this case.
+      return get_the_sole_nested_array_size();
     } else {
       return total_args - base_args;
     }
