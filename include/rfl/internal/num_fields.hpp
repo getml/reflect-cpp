@@ -48,6 +48,17 @@ This is the purpose of get_nested_array_size().
 namespace rfl {
 namespace internal {
 
+template <class Derived>
+struct any_base {
+  any_base(std::size_t);
+  template <class Base>
+    requires(
+        std::is_base_of_v<std::remove_cvref_t<Base>,
+                          std::remove_cv_t<Derived>> &&
+        !std::is_same_v<std::remove_cvref_t<Base>, std::remove_cv_t<Derived>>)
+  constexpr operator Base&() const noexcept;
+};
+
 struct any {
   any(std::size_t);
   template <typename T>
@@ -97,20 +108,55 @@ struct CountFieldsHelper {
     }
   }
 
+  template <std::size_t n, std::size_t total_arg_num>
+  static consteval bool has_n_base_param() {
+    if constexpr (n > total_arg_num) {
+      return false;
+    } else {
+      auto left = std::make_index_sequence<n>();
+      auto right = std::make_index_sequence<total_arg_num - n>();
+      return []<std::size_t... l, std::size_t... r>(std::index_sequence<l...>,
+                                                    std::index_sequence<r...>) {
+        return requires { T{any_base<T>(l)..., any(r)...}; };
+      }(left, right);
+    }
+  }
+
+  template <std::size_t total_arg_num, std::size_t index>
+  static consteval std::size_t base_param_num() {
+    if constexpr (index > total_arg_num) {
+      return 0;
+    } else if constexpr (has_n_base_param<index, total_arg_num>() &&
+                         !has_n_base_param<index + 1, total_arg_num>()) {
+      return index;
+    } else {
+      return base_param_num<total_arg_num, index + 1>();
+    }
+  }
+
   template <std::size_t index, std::size_t max>
-  static consteval std::size_t count_fields_impl() {
+  static consteval std::size_t constructable_no_brace_elision() {
     static_assert(index <= max);
     if constexpr (index == max) {
       return 0;
     } else {
       return 1 +
-             count_fields_impl<
+             constructable_no_brace_elision<
                  index + get_nested_array_size<index, max - index, 0>(), max>();
     }
   }
 
   static consteval std::size_t count_fields() {
-    return count_fields_impl<0, count_max_fields()>();
+    constexpr std::size_t total_args =
+        constructable_no_brace_elision<0, count_max_fields()>();
+    constexpr std::size_t base_args = base_param_num<total_args, 1>();
+    if constexpr (base_args == total_args) {
+      // Special case when the derived class is empty.
+      // In such cases the filed number is the fields in base class.
+      return total_args;
+    } else {
+      return total_args - base_args;
+    }
   }
 };
 

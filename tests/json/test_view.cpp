@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "rfl/internal/num_fields.hpp"
 #include "test_replace.hpp"
 #include "write_and_read.hpp"
 
@@ -16,6 +17,18 @@ struct Person {
   std::string first_name;
   std::string last_name;
   int age;
+};
+
+struct EmptyBase1 {};
+struct EmptyBase2 {};
+struct Derived1 : public EmptyBase1 {
+  int x;
+  int y;
+};
+struct Derived2 : public EmptyBase1, public EmptyBase2 {
+  int x;
+  int y;
+  int z;
 };
 
 void test() {
@@ -31,5 +44,12 @@ void test() {
 
   write_and_read(lisa,
                  R"({"first_name":"Maggie","last_name":"Simpson","age":0})");
+
+  Derived1 derived1;
+  const auto derived1_view = rfl::to_view(derived1);
+  static_assert(derived1_view.size() == 2);
+  Derived2 derived2;
+  const auto derived2_view = rfl::to_view(derived2);
+  static_assert(derived2_view.size() == 3);
 }
 }  // namespace test_view

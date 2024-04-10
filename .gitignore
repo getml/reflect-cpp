@@ -51,3 +51,7 @@
 *.yaml
 
 !vcpkg.json
+
+# clangd
+compile_flags.txt
+compile_commands.json
