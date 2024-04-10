@@ -159,7 +159,10 @@ struct CountFieldsHelper {
     constexpr std::size_t total_args =
         constructable_no_brace_elision<0, max_fields>();
     constexpr std::size_t base_args = base_param_num<total_args, 0>();
-    if constexpr (base_args == total_args) {
+    if constexpr (total_args == 0 && base_args == 0) {
+      // Empty struct
+      return 0;
+    } else if constexpr (base_args == total_args) {
       // Special case when the derived class is empty.
       // In such cases the filed number is the fields in base class.
       // Note that there should be only one base class in this case.
