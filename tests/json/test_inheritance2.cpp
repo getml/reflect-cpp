@@ -34,15 +34,15 @@ void test() {
   const auto derived2_view = rfl::to_view(derived2);
   static_assert(derived2_view.size() == 3);
 
-  EmptyDerived1 empty_derived0{rfl::internal::any(0), {}};
+  EmptyDerived1 empty_derived0;
   auto empty_derived0_view = rfl::to_view(empty_derived0);
   static_assert(empty_derived0_view.size() == 2);
 
-  EmptyDerived1 empty_derived1{rfl::internal::any(0), {}};
+  EmptyDerived1 empty_derived1;
   auto empty_derived1_view = rfl::to_view(empty_derived1);
   static_assert(empty_derived1_view.size() == 2);
 
-  EmptyDerived1 empty_derived2{rfl::internal::any(0), {}};
+  EmptyDerived1 empty_derived2;
   auto empty_derived2_view = rfl::to_view(empty_derived2);
   static_assert(empty_derived0_view.size() == 2);
 
