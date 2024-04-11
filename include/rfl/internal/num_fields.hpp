@@ -88,12 +88,12 @@ struct CountFieldsHelper {
   }
 
   template <std::size_t n = 0>
-  static consteval std::size_t count_max_fields() {
+  static consteval std::size_t count_max_args_in_agg_init() {
     static_assert(n <= static_cast<std::size_t>(sizeof(T)));
     if constexpr (constructible<n>() && !constructible<n + 1>()) {
       return n;
     } else {
-      return count_max_fields<n + 1>();
+      return count_max_args_in_agg_init<n + 1>();
     }
   }
 
@@ -120,21 +120,21 @@ struct CountFieldsHelper {
     }
   }
 
-  template <std::size_t n, std::size_t total_arg_num>
+  template <std::size_t n, std::size_t max_arg_num>
   static consteval bool has_n_base_param() {
-    constexpr auto right_len = total_arg_num>=n ? total_arg_num-n : 0;
+    constexpr auto right_len = max_arg_num>=n ? max_arg_num-n : 0;
     return []<std::size_t... l, std::size_t... r>(std::index_sequence<l...>,
                                                   std::index_sequence<r...>) {
       return requires { T{any_base<T>(l)..., any(r)...}; };
     }(std::make_index_sequence<n>(), std::make_index_sequence<right_len>());
   }
 
-  template <std::size_t total_arg_num, std::size_t index = 0>
+  template <std::size_t max_arg_num, std::size_t index = 0>
   static consteval std::size_t base_param_num() {
-    if constexpr (!has_n_base_param<index + 1, total_arg_num>()) {
+    if constexpr (!has_n_base_param<index + 1, max_arg_num>()) {
       return index;
     } else {
-      return base_param_num<total_arg_num, index + 1>();
+      return base_param_num<max_arg_num, index + 1>();
     }
   }
 
@@ -151,20 +151,20 @@ struct CountFieldsHelper {
   }
 
   static consteval std::size_t count_fields() {
-    constexpr std::size_t max_fields = count_max_fields();
-    constexpr std::size_t total_args =
-        constructible_no_brace_elision<0, max_fields>();
-    constexpr std::size_t base_args = base_param_num<total_args>();
-    if constexpr (total_args == 0 && base_args == 0) {
+    constexpr std::size_t max_agg_args = count_max_args_in_agg_init();
+    constexpr std::size_t no_brace_ellison_args =
+        constructible_no_brace_elision<0, max_agg_args>();
+    constexpr std::size_t base_args = base_param_num<no_brace_ellison_args>();
+    if constexpr (no_brace_ellison_args == 0 && base_args == 0) {
       // Empty struct
       return 0;
-    } else if constexpr (base_args == total_args) {
+    } else if constexpr (base_args == no_brace_ellison_args) {
       // Special case when the derived class is empty.
       // In such cases the filed number is the fields in base class.
       // Note that there should be only one base class in this case.
       return get_the_sole_nested_base_field_count();
     } else {
-      return total_args - base_args;
+      return no_brace_ellison_args - base_args;
     }
   }
 };
