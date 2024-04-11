@@ -2,6 +2,8 @@
 #include <iostream>
 #include <rfl.hpp>
 
+#include "rfl/internal/num_fields.hpp"
+
 namespace test_inheritance2 {
 
 struct EmptyBase1 {};
@@ -20,7 +22,9 @@ struct BaseX {
   int x;
   int y;
 };
-struct EmptyDerived : public BaseX {};
+struct EmptyDerived0 : BaseX, EmptyBase1 {};
+struct EmptyDerived1 : EmptyBase1, BaseX {};
+struct EmptyDerived2 : EmptyBase1, EmptyBase2, BaseX {};
 
 void test() {
   Derived1 derived1;
@@ -30,9 +34,17 @@ void test() {
   const auto derived2_view = rfl::to_view(derived2);
   static_assert(derived2_view.size() == 3);
 
-  EmptyDerived empty_derived;
-  auto empty_derived_view = rfl::to_view(empty_derived);
-  static_assert(empty_derived_view.size() == 2);
+  EmptyDerived1 empty_derived0{rfl::internal::any(0), {}};
+  auto empty_derived0_view = rfl::to_view(empty_derived0);
+  static_assert(empty_derived0_view.size() == 2);
+
+  EmptyDerived1 empty_derived1{rfl::internal::any(0), {}};
+  auto empty_derived1_view = rfl::to_view(empty_derived1);
+  static_assert(empty_derived1_view.size() == 2);
+
+  EmptyDerived1 empty_derived2{rfl::internal::any(0), {}};
+  auto empty_derived2_view = rfl::to_view(empty_derived2);
+  static_assert(empty_derived0_view.size() == 2);
 
   std::cout << "OK\n";
 }

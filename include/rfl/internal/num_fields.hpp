@@ -50,6 +50,18 @@ namespace rfl {
 namespace internal {
 
 template <class Derived>
+struct any_empty_base {
+  any_empty_base(std::size_t);
+  template <class Base>
+    requires(
+        std::is_empty_v<std::remove_cvref_t<Base>> &&
+        std::is_base_of_v<std::remove_cvref_t<Base>,
+                          std::remove_cv_t<Derived>> &&
+        !std::is_same_v<std::remove_cvref_t<Base>, std::remove_cv_t<Derived>>)
+  constexpr operator Base&() const noexcept;
+};
+
+template <class Derived>
 struct any_base {
   any_base(std::size_t);
   template <class Base>
@@ -109,14 +121,33 @@ struct CountFieldsHelper {
     }
   }
 
-  template <std::size_t size = 0>
-  static consteval std::size_t get_the_sole_nested_base_field_count() {
+  template <std::size_t max_args, std::size_t index = 0>
+  static consteval std::size_t find_the_sole_non_empty_base_index() {
+    static_assert(index < max_args);
+    constexpr auto check = []<std::size_t... l, std::size_t... r>(
+                               std::index_sequence<l...>,
+                               std::index_sequence<r...>) {
+      return requires {
+        T{any_empty_base<T>(l)..., any_base<T>(0), any_empty_base<T>(r)...};
+      };
+    };
+
+    if constexpr (check(std::make_index_sequence<index>(),
+                        std::make_index_sequence<max_args - index - 1>())) {
+      return index;
+    } else {
+      return find_the_sole_non_empty_base_index<max_args, index + 1>();
+    }
+  }
+
+  template <std::size_t arg_index, std::size_t size = 0>
+  static consteval std::size_t get_nested_base_field_count() {
     static_assert(size <= sizeof(T));
-    if constexpr (constructible_with_nested<0, size, 0>() &&
-                  !constructible_with_nested<0, size + 1, 0>()) {
+    if constexpr (constructible_with_nested<arg_index, size, 0>() &&
+                  !constructible_with_nested<arg_index, size + 1, 0>()) {
       return size;
     } else {
-      return get_the_sole_nested_base_field_count<size + 1>();
+      return get_nested_base_field_count<arg_index, size + 1>();
     }
   }
 
@@ -162,7 +193,8 @@ struct CountFieldsHelper {
       // Special case when the derived class is empty.
       // In such cases the filed number is the fields in base class.
       // Note that there should be only one base class in this case.
-      return get_the_sole_nested_base_field_count();
+      return get_nested_base_field_count<
+          find_the_sole_non_empty_base_index<max_agg_args>()>();
     } else {
       return no_brace_ellison_args - base_args;
     }
