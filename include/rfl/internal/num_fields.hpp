@@ -143,13 +143,13 @@ struct CountFieldsHelper {
   }
 
   template <std::size_t index, std::size_t max>
-  static consteval std::size_t constructable_no_brace_elision() {
+  static consteval std::size_t constructible_no_brace_elision() {
     static_assert(index <= max);
     if constexpr (index == max) {
       return 0;
     } else {
       return 1 +
-             constructable_no_brace_elision<
+             constructible_no_brace_elision<
                  index + get_nested_array_size<index, max - index, 0>(), max>();
     }
   }
@@ -157,7 +157,7 @@ struct CountFieldsHelper {
   static consteval std::size_t count_fields() {
     constexpr std::size_t max_fields = count_max_fields();
     constexpr std::size_t total_args =
-        constructable_no_brace_elision<0, max_fields>();
+        constructible_no_brace_elision<0, max_fields>();
     constexpr std::size_t base_args = base_param_num<total_args, 0>();
     if constexpr (total_args == 0 && base_args == 0) {
       // Empty struct

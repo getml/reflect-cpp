@@ -87,6 +87,7 @@
 #include "test_view.hpp"
 #include "test_wstring.hpp"
 #include "test_inheritance.hpp"
+#include "test_inheritance2.hpp"
 
 int main() {
   test_readme_example::test();
@@ -189,6 +190,7 @@ int main() {
   test_json_schema::test();
 
   test_inheritance::test();
+  test_inheritance2::test();
 
   return 0;
 }
