@@ -29,6 +29,7 @@ the potential array as we can without missing variables in subsequent fields.
 This is the purpose of get_nested_array_size().
 */
 
+#include <algorithm>
 #include <cstddef>
 #include <type_traits>
 #include <utility>
@@ -109,31 +110,26 @@ struct CountFieldsHelper {
   }
 
   template <std::size_t size = 0>
-  static consteval std::size_t get_the_sole_nested_array_size() {
+  static consteval std::size_t get_the_sole_nested_base_field_count() {
     static_assert(size <= sizeof(T));
     if constexpr (constructible_with_nested<0, size, 0>() &&
                   !constructible_with_nested<0, size + 1, 0>()) {
       return size;
     } else {
-      return get_the_sole_nested_array_size<size + 1>();
+      return get_the_sole_nested_base_field_count<size + 1>();
     }
   }
 
   template <std::size_t n, std::size_t total_arg_num>
   static consteval bool has_n_base_param() {
-    if constexpr (n > total_arg_num) {
-      return false;
-    } else {
-      auto left = std::make_index_sequence<n>();
-      auto right = std::make_index_sequence<total_arg_num - n>();
-      return []<std::size_t... l, std::size_t... r>(std::index_sequence<l...>,
-                                                    std::index_sequence<r...>) {
-        return requires { T{any_base<T>(l)..., any(r)...}; };
-      }(left, right);
-    }
+    constexpr auto right_len = total_arg_num>=n ? total_arg_num-n : 0;
+    return []<std::size_t... l, std::size_t... r>(std::index_sequence<l...>,
+                                                  std::index_sequence<r...>) {
+      return requires { T{any_base<T>(l)..., any(r)...}; };
+    }(std::make_index_sequence<n>(), std::make_index_sequence<right_len>());
   }
 
-  template <std::size_t total_arg_num, std::size_t index>
+  template <std::size_t total_arg_num, std::size_t index = 0>
   static consteval std::size_t base_param_num() {
     if constexpr (!has_n_base_param<index + 1, total_arg_num>()) {
       return index;
@@ -158,7 +154,7 @@ struct CountFieldsHelper {
     constexpr std::size_t max_fields = count_max_fields();
     constexpr std::size_t total_args =
         constructible_no_brace_elision<0, max_fields>();
-    constexpr std::size_t base_args = base_param_num<total_args, 0>();
+    constexpr std::size_t base_args = base_param_num<total_args>();
     if constexpr (total_args == 0 && base_args == 0) {
       // Empty struct
       return 0;
@@ -166,7 +162,7 @@ struct CountFieldsHelper {
       // Special case when the derived class is empty.
       // In such cases the filed number is the fields in base class.
       // Note that there should be only one base class in this case.
-      return get_the_sole_nested_array_size();
+      return get_the_sole_nested_base_field_count();
     } else {
       return total_args - base_args;
     }
