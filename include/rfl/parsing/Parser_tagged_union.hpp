@@ -7,6 +7,7 @@
 #include "../Result.hpp"
 #include "../TaggedUnion.hpp"
 #include "../always_false.hpp"
+#include "../internal/strings/join.hpp"
 #include "Parser_base.hpp"
 #include "TaggedUnionWrapper.hpp"
 #include "schema/Type.hpp"
@@ -64,8 +65,13 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
       const R& _r, const std::string& _disc_value,
       const InputVarType& _var) noexcept {
     if constexpr (_i == sizeof...(AlternativeTypes)) {
+      const auto names =
+          TaggedUnion<_discriminator,
+                      AlternativeTypes...>::PossibleTags::names();
       return Error("Could not parse tagged union, could not match " +
-                   _discriminator.str() + " '" + _disc_value + "'.");
+                   _discriminator.str() + " '" + _disc_value +
+                   "'. The following tags are allowed: " +
+                   internal::strings::join(",", names));
     } else {
       using AlternativeType = std::remove_cvref_t<
           std::variant_alternative_t<_i, std::variant<AlternativeTypes...>>>;
@@ -132,7 +138,8 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>> {
   /// tag, if the object doesn't already contain the wrap.
   template <class T>
   static auto wrap_if_necessary(const T& _val) noexcept {
-    if constexpr (named_tuple_t<T>::Names::template contains<_discriminator>()) {
+    if constexpr (named_tuple_t<T>::Names::template contains<
+                      _discriminator>()) {
       return _val;
     } else {
       const auto tag = internal::make_tag<_discriminator, T>(_val);

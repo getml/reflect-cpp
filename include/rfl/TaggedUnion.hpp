@@ -18,6 +18,9 @@ struct TaggedUnion {
   /// The type of the underlying variant.
   using VariantType = std::variant<Ts...>;
 
+  /// A literal containing all the tags that are possible
+  using PossibleTags = define_literal_t<internal::tag_t<_discriminator, Ts>...>;
+
   TaggedUnion(const VariantType& _variant) : variant_(_variant) {}
 
   TaggedUnion(VariantType&& _variant) noexcept
@@ -85,8 +88,7 @@ struct TaggedUnion {
   /// Returns the underlying variant.
   const VariantType& variant() const { return variant_; }
 
-  static_assert(!define_literal_t<
-                    internal::tag_t<_discriminator, Ts>...>::has_duplicates(),
+  static_assert(!PossibleTags::has_duplicates(),
                 "Duplicate tags are not allowed inside tagged unions.");
 
   /// The underlying variant - a TaggedUnion is a thin wrapper
