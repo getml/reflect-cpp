@@ -52,7 +52,7 @@ consteval auto get_field_name_str_view() {
 #endif
 #if defined(__clang__)
   const auto split = func_name.substr(0, func_name.size() - 2);
-  return split.substr(split.find_last_of(".") + 1);
+  return split.substr(split.find_last_of(":.") + 1);  
 #elif defined(__GNUC__)
   const auto split = func_name.substr(0, func_name.size() - 2);
   return split.substr(split.find_last_of(":") + 1);

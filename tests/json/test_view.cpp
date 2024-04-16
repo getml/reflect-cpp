@@ -7,6 +7,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "rfl/internal/num_fields.hpp"
 #include "test_replace.hpp"
 #include "write_and_read.hpp"
 
