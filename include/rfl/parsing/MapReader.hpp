@@ -41,8 +41,10 @@ class MapReader {
   template <class T>
   Result<T> key_to_numeric(auto& _pair) const noexcept {
     try {
-      if constexpr (std::is_integral_v<T>) {
-        return static_cast<T>(std::stoi(_pair.first));
+      if constexpr (std::is_integral_v<T> && std::is_signed_v<T>) {
+        return static_cast<T>(std::stoll(_pair.first));
+      } else if constexpr (std::is_integral_v<T> && std::is_unsigned_v<T>) {
+        return static_cast<T>(std::stoull(_pair.first));
       } else if constexpr (std::is_floating_point_v<T>) {
         return static_cast<T>(std::stod(_pair.first));
       } else {
