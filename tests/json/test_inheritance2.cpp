@@ -1,6 +1,7 @@
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
+#include <source_location>
 
 #include "rfl/internal/num_fields.hpp"
 
@@ -27,9 +28,12 @@ struct EmptyDerived1 : EmptyBase1, BaseX {};
 struct EmptyDerived2 : EmptyBase1, EmptyBase2, BaseX {};
 
 void test() {
+  std::cout << std::source_location::current().function_name() << std::endl;
+
   Derived1 derived1;
   const auto derived1_view = rfl::to_view(derived1);
   static_assert(derived1_view.size() == 2);
+
   Derived2 derived2;
   const auto derived2_view = rfl::to_view(derived2);
   static_assert(derived2_view.size() == 3);
@@ -46,7 +50,7 @@ void test() {
   auto empty_derived2_view = rfl::to_view(empty_derived2);
   static_assert(empty_derived0_view.size() == 2);
 
-  std::cout << "OK\n";
+  std::cout << "OK" << std::endl << std::endl;
 }
 
-}  // namespace test_inheritance
+}  // namespace test_inheritance2

@@ -16,7 +16,7 @@ void test() {
 
   const auto name = get<0>(rfl::fields<T>()).name();
   if (name == "x") {
-    std::cout << "OK" << std::endl;
+    std::cout << "OK" << std::endl << std::endl;
   } else {
     std::cout << "FAIL\n"
               << "Expected member name 'x', got '" << name << "'" << std::endl;
