@@ -20,6 +20,10 @@ if (REFLECTCPP_FLEXBUFFERS)
     add_subdirectory(flexbuffers)
 endif()
 
+if (REFLECTCPP_MSGPACK)
+    add_subdirectory(msgpack)
+endif()
+
 if (REFLECTCPP_XML)
     add_subdirectory(xml)
 endif()
