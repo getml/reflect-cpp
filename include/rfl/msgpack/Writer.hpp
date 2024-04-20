@@ -45,7 +45,7 @@ class Writer {
   }
 
   OutputVarType null_as_root() const noexcept {
-    msgpack_encode_null(encoder_);
+    msgpack_pack_nil(pk_);
     return OutputVarType{};
   }
 
@@ -63,7 +63,7 @@ class Writer {
       const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept {
     msgpack_pack_str(pk_, _name.size());
-    msgpack_pack_str_body(pk_, _name.c_str(), _name.size());
+    msgpack_pack_str_body(pk_, _name.data(), _name.size());
     return new_array(_size);
   }
 
@@ -76,7 +76,7 @@ class Writer {
       const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept {
     msgpack_pack_str(pk_, _name.size());
-    msgpack_pack_str_body(pk_, _name.c_str(), _name.size());
+    msgpack_pack_str_body(pk_, _name.data(), _name.size());
     return new_object(_size);
   }
 
@@ -91,7 +91,7 @@ class Writer {
                                     const T& _var,
                                     OutputObjectType* _parent) const noexcept {
     msgpack_pack_str(pk_, _name.size());
-    msgpack_pack_str_body(pk_, _name.c_str(), _name.size());
+    msgpack_pack_str_body(pk_, _name.data(), _name.size());
     return new_value(_var);
   }
 
@@ -103,8 +103,8 @@ class Writer {
   OutputVarType add_null_to_object(const std::string_view& _name,
                                    OutputObjectType* _parent) const noexcept {
     msgpack_pack_str(pk_, _name.size());
-    msgpack_pack_str_body(pk_, _name.c_str(), _name.size());
-    msgpack_encode_null(_parent->encoder_);
+    msgpack_pack_str_body(pk_, _name.data(), _name.size());
+    msgpack_pack_nil(pk_);
     return OutputVarType{};
   }
 
@@ -130,14 +130,14 @@ class Writer {
       msgpack_pack_str_body(pk_, _var.c_str(), _var.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (_var) {
-        msgpack_pack_true(_parent, _var);
+        msgpack_pack_true(pk_);
       } else {
-        msgpack_pack_false(_parent, _var);
+        msgpack_pack_false(pk_);
       }
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       msgpack_pack_double(pk_, static_cast<double>(_var));
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      msgpack_pack_int64(_parent, static_cast<std::int64_t>(_var));
+      msgpack_pack_int64(pk_, static_cast<std::int64_t>(_var));
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }

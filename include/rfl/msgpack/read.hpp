@@ -27,13 +27,13 @@ auto read(const InputVarType& _obj) {
 template <class T>
 Result<internal::wrap_in_rfl_array_t<T>> read(const char* _bytes,
                                               const size_t _size) {
-  CborParser parser;
-  CborValue value;
-  msgpack_parser_init(reinterpret_cast<const uint8_t*>(_bytes), _size, 0,
-                      &parser, &value);
-  auto doc = InputVarType{&value};
-  auto result = read<T>(doc);
-  return result;
+  msgpack_zone mempool;
+  msgpack_zone_init(&mempool, 2048);
+  msgpack_object deserialized;
+  msgpack_unpack(_bytes, _size, NULL, &mempool, &deserialized);
+  auto r = read<T>(deserialized);
+  msgpack_zone_destroy(&mempool);
+  return r;
 }
 
 /// Parses an object from MSGPACK using reflection.

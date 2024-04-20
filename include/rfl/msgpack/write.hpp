@@ -12,35 +12,21 @@
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
 
-namespace rfl {
-namespace msgpack {
+namespace rfl::msgpack {
 
-template <class T>
-void write_into_buffer(const T& _obj, CborEncoder* _encoder,
-                       std::vector<char>* _buffer) noexcept {
-  using ParentType = parsing::Parent<Writer>;
-  msgpack_encoder_init(_encoder, reinterpret_cast<uint8_t*>(_buffer->data()),
-                       _buffer->size(), 0);
-  const auto writer = Writer(_encoder);
-  Parser<T>::write(writer, _obj, typename ParentType::Root{});
-}
-
-/// Returns MSGPACK bytes.
+/// Returns msgpack bytes.
 template <class T>
 std::vector<char> write(const T& _obj) noexcept {
-  std::vector<char> buffer(4096);
-  CborEncoder encoder;
-  write_into_buffer(_obj, &encoder, &buffer);
-  const auto total_bytes_needed =
-      buffer.size() + msgpack_encoder_get_extra_bytes_needed(&encoder);
-  if (total_bytes_needed != buffer.size()) {
-    buffer.resize(total_bytes_needed);
-    write_into_buffer(_obj, &encoder, &buffer);
-  }
-  const auto length = msgpack_encoder_get_buffer_size(
-      &encoder, reinterpret_cast<uint8_t*>(buffer.data()));
-  buffer.resize(length);
-  return buffer;
+  using ParentType = parsing::Parent<Writer>;
+  msgpack_sbuffer sbuf;
+  msgpack_sbuffer_init(&sbuf);
+  msgpack_packer pk;
+  msgpack_packer_init(&pk, &sbuf, msgpack_sbuffer_write);
+  auto w = Writer(&pk);
+  Parser<T>::write(w, _obj, typename ParentType::Root{});
+  auto bytes = std::vector<char>(sbuf.data, sbuf.data + sbuf.size);
+  msgpack_sbuffer_destroy(&sbuf);
+  return bytes;
 }
 
 /// Writes a MSGPACK into an ostream.
@@ -51,7 +37,6 @@ std::ostream& write(const T& _obj, std::ostream& _stream) noexcept {
   return _stream;
 }
 
-}  // namespace msgpack
-}  // namespace rfl
+}  // namespace rfl::msgpack
 
 #endif

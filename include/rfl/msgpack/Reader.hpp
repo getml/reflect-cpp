@@ -42,7 +42,8 @@ struct Reader {
         return Error("Key in element " + std::to_string(i) +
                      " was not a string.");
       }
-      const auto current_name = std::string_view(key.ptr, key.ptr.size);
+      const auto current_name =
+          std::string_view(key.via.str.ptr, key.via.str.size);
       if (_name == current_name) {
         return _obj.ptr[i].val;
       }
@@ -61,7 +62,7 @@ struct Reader {
       if (type != MSGPACK_OBJECT_STR) {
         return Error("Could not cast to string.");
       }
-      const auto str = _var.via.msgpack_object_str;
+      const auto str = _var.via.str;
       return std::string(str.ptr, str.size);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != MSGPACK_OBJECT_BOOLEAN) {
@@ -120,7 +121,7 @@ struct Reader {
         return Error("Key in element " + std::to_string(i) +
                      " was not a string.");
       }
-      const auto name = std::string_view(key.ptr, key.ptr.size);
+      const auto name = std::string_view(key.via.str.ptr, key.via.str.size);
       _object_reader.read(name, val);
     }
     return std::nullopt;
