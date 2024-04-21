@@ -45,6 +45,7 @@
 *.cbor
 *.json
 *.fb
+*.msgpack
 *.toml
 *.xml
 *.yml
