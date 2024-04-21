@@ -14,13 +14,11 @@ void test() {
 
   struct T : S {};
 
-  const auto name = get<0>(rfl::fields<T>()).name();
-  if (name == "x") {
-    std::cout << "OK" << std::endl << std::endl;
-  } else {
-    std::cout << "FAIL\n"
-              << "Expected member name 'x', got '" << name << "'" << std::endl;
-  }
+  constexpr auto name = get<0>(rfl::fields<T>()).name();
+
+  static_assert(name == "x");
+
+  std::cout << "OK" << std::endl << std::endl;
 }
 
 }  // namespace test_inheritance
