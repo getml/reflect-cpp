@@ -2,6 +2,7 @@
 #include <iostream>
 #include <rfl.hpp>
 #include <source_location>
+#include <tuple>
 
 namespace test_inheritance {
 
@@ -14,7 +15,8 @@ void test() {
 
   struct T : S {};
 
-  constexpr auto name = get<0>(rfl::fields<T>()).name();
+  constexpr auto name =
+      std::tuple_element_t<0, typename rfl::named_tuple_t<T>::Fields>::name();
 
   static_assert(name == "x");
 
