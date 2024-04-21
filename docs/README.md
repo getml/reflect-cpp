@@ -64,11 +64,13 @@
 
 5.4) [flexbuffers](https://github.com/getml/reflect-cpp/blob/main/docs/flexbuffers.md)
 
-5.5) [TOML](https://github.com/getml/reflect-cpp/blob/main/docs/toml.md)
+5.5) [msgpack](https://github.com/getml/reflect-cpp/blob/main/docs/msgpack.md)
 
-5.6) [XML](https://github.com/getml/reflect-cpp/blob/main/docs/xml.md)
+5.6) [TOML](https://github.com/getml/reflect-cpp/blob/main/docs/toml.md)
 
-5.7) [YAML](https://github.com/getml/reflect-cpp/blob/main/docs/yaml.md)
+5.7) [XML](https://github.com/getml/reflect-cpp/blob/main/docs/xml.md)
+
+5.8) [YAML](https://github.com/getml/reflect-cpp/blob/main/docs/yaml.md)
 
 ## 6) Advanced topics
 
