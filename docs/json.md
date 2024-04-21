@@ -21,7 +21,7 @@ You can parse JSON strings like this:
 const rfl::Result<Person> result = rfl::json::read<Person>(json_string);
 ```
 
-A `Person` struct can be written into a JSON string like this:
+A `Person` struct can be serialized like this:
 
 ```cpp
 const auto person = Person{...};

@@ -1,6 +1,6 @@
 {
   "name": "reflectcpp",
-  "version-string": "0.7.0",
+  "version-string": "0.8.0",
   "builtin-baseline": "50bffcc62d7f6571eb32bc1a0b1807e77af1166c",
   "dependencies": [
     {
@@ -10,6 +10,10 @@
     {
       "name": "libbson",
       "version>=": "1.25.1"
+    },
+    {
+      "name": "msgpack-c",
+      "version>=": "6.0.0"
     },
     {
       "name": "pugixml",
