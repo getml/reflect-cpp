@@ -66,21 +66,25 @@ jobs:
           ./build/tests/xml/reflect-cpp-xml-tests
           ./build/tests/yaml/reflect-cpp-yaml-tests
 
-
-#  The latest MSVC version on GitHub Actions has a bug, and it's difficult to switch to another version.
-#  Re-enable this when the bug is fixed.
-
-#  windows-msvc:
-#    runs-on: windows-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#        with:
-#          submodules: true
-#      - uses: ilammy/msvc-dev-cmd@v1
-#      - uses: lukka/run-vcpkg@v11
-#      - name: Run test
-#        run: |
-#          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_FLEXBUFFERS=ON
-#          cmake --build build -j 4
-#          .\build\tests\flexbuffers\Release\reflect-cpp-flexbuffers-tests.exe
-#          .\build\tests\json\Release\reflect-cpp-json-tests.exe
+  windows-msvc:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - uses: ilammy/msvc-dev-cmd@v1
+      - uses: lukka/run-vcpkg@v11
+      - name: Run test
+        run: |
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release -j4 
+          .\build\tests\json\Release\reflect-cpp-json-tests.exe
+          .\build\tests\bson\Release\reflect-cpp-bson-tests.exe
+          .\build\tests\cbor\Release\reflect-cpp-cbor-tests.exe
+          .\build\tests\flexbuffers\Release\reflect-cpp-flexbuffers-tests.exe
+          .\build\tests\msgpack\Release\reflect-cpp-msgpack-tests.exe
+          .\build\tests\toml\Release\reflect-cpp-toml-tests.exe
+          .\build\tests\xml\Release\reflect-cpp-xml-tests.exe
+          .\build\tests\yaml\Release\reflect-cpp-yaml-tests.exe

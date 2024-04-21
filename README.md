@@ -570,9 +570,9 @@ To run the tests, do the following:
 ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
 ./build/tests/msgpack/reflect-cpp-msgpack-tests
 ./build/tests/json/reflect-cpp-json-tests
-./build/tests/xml/reflect-cpp-toml-tests
+./build/tests/toml/reflect-cpp-toml-tests
 ./build/tests/xml/reflect-cpp-xml-tests
-./build/tests/xml/reflect-cpp-yaml-tests
+./build/tests/yaml/reflect-cpp-yaml-tests
 ```
 
 ## How to contribute
