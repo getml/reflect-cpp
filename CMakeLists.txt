@@ -85,6 +85,11 @@ endif ()
 target_compile_options(reflectcpp PRIVATE -Wall)
 
 if (REFLECTCPP_BUILD_TESTS)
+    if (MSVC)
+        set(REFLECT_CPP_GTEST_LIB "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    else ()
+        set(REFLECT_CPP_GTEST_LIB "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libgtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    endif ()
     add_subdirectory(tests)
 endif ()
 

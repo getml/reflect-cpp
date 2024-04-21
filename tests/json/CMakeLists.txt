@@ -14,5 +14,5 @@ target_link_libraries(
     reflect-cpp-json-tests 
     PRIVATE 
     reflectcpp
-    "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libgtest.a"
+    "${REFLECT_CPP_GTEST_LIB}"
 )
