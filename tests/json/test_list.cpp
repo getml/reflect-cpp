@@ -1,5 +1,3 @@
-#include "test_list.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -17,9 +15,7 @@ struct Person {
   std::unique_ptr<std::list<Person>> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_list) {
   auto children = std::make_unique<std::list<Person>>();
   children->emplace_back(Person{.first_name = "Bart"});
   children->emplace_back(Person{.first_name = "Lisa"});

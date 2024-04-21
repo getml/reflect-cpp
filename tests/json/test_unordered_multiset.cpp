@@ -1,5 +1,3 @@
-#include "test_unordered_multiset.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -17,9 +15,7 @@ struct Person {
   std::unique_ptr<std::unordered_multiset<std::string>> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_unordered_multiset) {
   auto children = std::make_unique<std::unordered_multiset<std::string>>(
       std::unordered_multiset<std::string>({"Bart", "Lisa", "Maggie"}));
 
@@ -30,6 +26,6 @@ void test() {
   // this compiles.
   const auto json_string = rfl::json::write(homer);
   const auto homer2 = rfl::json::read<Person>(json_string);
-  std::cout << "OK" << std::endl << std::endl;
+  EXPECT_TRUE(homer2 && true);
 }
 }  // namespace test_unordered_multiset

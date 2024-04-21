@@ -1,5 +1,3 @@
-#include "test_c_array_class2.hpp"
-
 #include <iostream>
 #include <source_location>
 #include <string>
@@ -15,12 +13,11 @@ struct Test2 {
   std::string s;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_c_array_class2) {
   Test2 test2;
   for (int i = 0; i < 1 << 4; i++) {
-    test2.multi_dimension_arr[i >> 3 & 1][i >> 2 & 1][i >> 1 & 1][i >> 0 & 1] = i;
+    test2.multi_dimension_arr[i >> 3 & 1][i >> 2 & 1][i >> 1 & 1][i >> 0 & 1] =
+        i;
   }
   test2.s = "Hello, world!";
 
@@ -29,4 +26,4 @@ void test() {
       R"({"multi_dimension_arr":[[[[0,1],[2,3]],[[4,5],[6,7]]],[[[8,9],[10,11]],[[12,13],[14,15]]]],"s":"Hello, world!"})");
 }
 
-}  // namespace test_c_array
+}  // namespace test_c_array_class2

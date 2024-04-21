@@ -1,4 +1,3 @@
-#include <cassert>
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -7,7 +6,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "test_replace.hpp"
 #include "write_and_read.hpp"
 
 namespace test_and_then {
@@ -18,9 +16,7 @@ struct Person {
   int age;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_and_then) {
   const auto lisa =
       Person{.first_name = "Lisa", .last_name = "Simpson", .age = 8};
 

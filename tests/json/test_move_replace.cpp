@@ -1,5 +1,3 @@
-#include "test_move_replace.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -18,9 +16,7 @@ struct Person {
   rfl::Field<"children", rfl::Box<std::vector<Person>>> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_move_replace) {
   auto lisa = Person{.first_name = "Lisa",
                      .last_name = "Simpson",
                      .children = rfl::make_box<std::vector<Person>>()};

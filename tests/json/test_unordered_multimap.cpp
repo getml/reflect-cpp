@@ -1,5 +1,3 @@
-#include "test_unordered_multimap.hpp"
-
 #include <iostream>
 #include <map>
 #include <rfl.hpp>
@@ -17,9 +15,7 @@ struct Person {
   std::unique_ptr<std::unordered_multimap<int, Person>> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_unordered_multimap) {
   auto children = std::make_unique<std::unordered_multimap<int, Person>>();
   children->insert(std::make_pair(1, Person{.first_name = "Bart"}));
   children->insert(std::make_pair(2, Person{.first_name = "Lisa"}));
@@ -32,6 +28,6 @@ void test() {
   // compiles.
   const auto json_string = rfl::json::write(homer);
   const auto homer2 = rfl::json::read<Person>(json_string);
-  std::cout << "OK" << std::endl << std::endl;
+  EXPECT_TRUE(true);
 }
 }  // namespace test_unordered_multimap

@@ -1,5 +1,3 @@
-#include "test_custom_class2.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -31,15 +29,10 @@ struct FiveDigitCode {
   int code;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_custom_class2) {
   const auto result = rfl::json::read<FiveDigitCode>("123");
 
-  if (result) {
-    std::cout << "Failed: Expected an error, but got none." << std::endl;
-    return;
-  }
+  EXPECT_TRUE(!result && true);
 
   const auto c = FiveDigitCode(12345);
 

@@ -1,5 +1,3 @@
-#include "test_as_flatten.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -28,9 +26,7 @@ struct C {
   int f5;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_as_flatten) {
   auto a = A{.f1 = "Hello", .f2 = rfl::make_box<std::string>("World")};
 
   auto b = B{.f3 = "Hello", .f4 = rfl::make_box<std::string>("World")};

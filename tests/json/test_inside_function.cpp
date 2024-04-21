@@ -1,5 +1,3 @@
-#include "test_inside_function.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -11,9 +9,7 @@
 
 namespace test_inside_function {
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_inside_function) {
   using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
 
   struct Person {

@@ -6,22 +6,15 @@
 #include <string>
 #include <vector>
 
-#include "test_box.hpp"
+#include <gtest/gtest.h>
 
 namespace test_box2 {
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_box2) {
   auto ptr = std::make_unique<std::string>("Hello World!");
   const rfl::Result<rfl::Box<std::string>> box =
       rfl::make_box<std::string>(std::move(ptr));
 
-  if (box) {
-    std::cout << "OK" << std::endl << std::endl;
-  } else {
-    std::cout << "Expected the result to be successful." << std::endl
-              << std::endl;
-  }
-}
+  ASSERT_TRUE(box && true);
+ }
 }  // namespace test_box2

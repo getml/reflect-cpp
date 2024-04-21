@@ -1,5 +1,3 @@
-#include "test_map.hpp"
-
 #include <iostream>
 #include <map>
 #include <rfl.hpp>
@@ -17,9 +15,7 @@ struct Person {
   std::unique_ptr<std::map<size_t, Person>> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_map) {
   auto children = std::make_unique<std::map<size_t, Person>>();
   children->insert(std::make_pair(1, Person{.first_name = "Bart"}));
   children->insert(std::make_pair(2, Person{.first_name = "Lisa"}));

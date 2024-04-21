@@ -1,5 +1,3 @@
-#include "test_box.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -30,9 +28,7 @@ struct DecisionTree {
   rfl::Field<"leafOrNode", LeafOrNode> leaf_or_node;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_box) {
   auto leaf1 = DecisionTree::Leaf{.value = 3.0};
 
   auto leaf2 = DecisionTree::Leaf{.value = 5.0};

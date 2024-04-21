@@ -7,8 +7,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "rfl/internal/num_fields.hpp"
-#include "test_replace.hpp"
 #include "write_and_read.hpp"
 
 namespace test_view {
@@ -19,9 +17,7 @@ struct Person {
   int age;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_view) {
   auto lisa = Person{.first_name = "Lisa", .last_name = "Simpson", .age = 8};
 
   const auto view = rfl::to_view(lisa);
