@@ -4,5 +4,6 @@ file(GLOB_RECURSE SOURCES "*.cpp")
 
 add_executable(reflect-cpp-toml-tests ${SOURCES})
 
+target_include_directories(reflect-cpp-toml-tests SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
 target_link_libraries(reflect-cpp-toml-tests PRIVATE reflectcpp)
 
