@@ -530,6 +530,17 @@ vcpkg is a great, but very ambitious and complex project (just like C++ is a gre
 
 ## Compiling and running the tests
 
+reflect-cpp uses vcpkg for dependency management, including
+gtest, which is required for the tests.
+
+```bash
+# bootstrap vcpkg if you haven't done so already 
+git submodule update --init
+./vcpkg/bootstrap-vcpkg.sh # Linux, macOS
+./vcpkg/bootstrap-vcpkg.bat # Windows
+# You may be prompted to install additional dependencies.
+```
+
 ### JSON only
 
 To compile the tests, do the following:
@@ -551,12 +562,6 @@ To run the tests, do the following:
 To compile the tests with serialization formats other than JSON, do the following:
 
 ```bash
-# bootstrap vcpkg if you haven't done so already 
-git submodule update --init
-./vcpkg/bootstrap-vcpkg.sh # Linux, macOS
-./vcpkg/bootstrap-vcpkg.bat # Windows
-# You may be prompted to install additional dependencies.
-
 cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
