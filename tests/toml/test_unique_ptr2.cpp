@@ -1,5 +1,3 @@
-#include "test_unique_ptr2.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -29,9 +27,7 @@ struct DecisionTree {
   rfl::Field<"leafOrNode", LeafOrNode> leaf_or_node;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(toml, test_unique_ptr2) { 
   auto leaf1 = DecisionTree::Leaf{.value = 3.0};
 
   auto leaf2 = DecisionTree::Leaf{.value = 5.0};

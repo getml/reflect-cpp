@@ -1,5 +1,3 @@
-#include "test_monster_example.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <source_location>
@@ -38,9 +36,7 @@ struct Monster {
   std::vector<Vec3> path;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(yaml, test_monster_example) {
   const auto sword = Weapon{.name = "Sword", .damage = 3};
   const auto axe = Weapon{.name = "Axe", .damage = 5};
 

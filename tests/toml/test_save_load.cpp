@@ -1,5 +1,3 @@
-#include "test_save_load.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -7,6 +5,8 @@
 #include <source_location>
 #include <string>
 #include <vector>
+
+#include <gtest/gtest.h>
 
 namespace test_save_load {
 
@@ -22,9 +22,7 @@ struct Person {
   std::vector<Person> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(toml, test_save_load) { 
   const auto bart = Person{.first_name = "Bart",
                            .last_name = "Simpson",
                            .birthday = "1987-04-19",
@@ -59,12 +57,6 @@ void test() {
   const auto string1 = rfl::toml::write(homer1);
   const auto string2 = rfl::toml::write(homer2);
 
-  if (string1 != string2) {
-    std::cout << "Test failed. Content was not identical." << std::endl
-              << std::endl;
-    return;
-  }
-
-  std::cout << "OK" << std::endl << std::endl;
+  EXPECT_EQ(string1, string2);
 }
 }  // namespace test_save_load

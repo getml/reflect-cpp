@@ -1,5 +1,3 @@
-#include "test_save_load.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -8,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "write_and_read.hpp"
+#include <gtest/gtest.h>
 
 namespace test_save_load {
 
@@ -16,17 +14,15 @@ using Age = rfl::Validator<unsigned int,
                            rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
 
 struct Person {
-  rfl::Field<"firstName", std::string> first_name;
-  rfl::Field<"lastName", std::string> last_name;
-  rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
-  rfl::Field<"age", Age> age;
-  rfl::Field<"email", rfl::Email> email;
-  rfl::Field<"children", std::vector<Person>> children;
+  rfl::Rename<"firstName", std::string> first_name;
+  rfl::Rename<"lastName", std::string> last_name;
+  rfl::Timestamp<"%Y-%m-%d"> birthday;
+  Age age;
+  rfl::Email email;
+  std::vector<Person> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(flexbuf, test_save_load) { 
   const auto bart = Person{.first_name = "Bart",
                            .last_name = "Simpson",
                            .birthday = "1987-04-19",
@@ -34,19 +30,17 @@ void test() {
                            .email = "bart@simpson.com",
                            .children = std::vector<Person>()};
 
-  const auto lisa = Person{
-      .first_name = "Lisa",
-      .last_name = "Simpson",
-      .birthday = "1987-04-19",
-      .age = 8,
-      .email = "lisa@simpson.com",
-      .children = rfl::default_value  // same as std::vector<Person>()
-  };
+  const auto lisa = Person{.first_name = "Lisa",
+                           .last_name = "Simpson",
+                           .birthday = "1987-04-19",
+                           .age = 8,
+                           .email = "lisa@simpson.com"};
 
-  const auto maggie =
-      rfl::replace(lisa, rfl::make_field<"firstName">(std::string("Maggie")),
-                   rfl::make_field<"email">(std::string("maggie@simpson.com")),
-                   rfl::make_field<"age">(0));
+  const auto maggie = Person{.first_name = "Maggie",
+                             .last_name = "Simpson",
+                             .birthday = "1987-04-19",
+                             .age = 0,
+                             .email = "maggie@simpson.com"};
 
   const auto homer1 =
       Person{.first_name = "Homer",
@@ -56,19 +50,13 @@ void test() {
              .email = "homer@simpson.com",
              .children = std::vector<Person>({bart, lisa, maggie})};
 
-  rfl::flexbuf::save("homer.fb", homer1);
+  rfl::flexbuf::save("homer.flexbuf", homer1);
 
-  const auto homer2 = rfl::flexbuf::load<Person>("homer.fb").value();
+  const auto homer2 = rfl::flexbuf::load<Person>("homer.flexbuf").value();
 
-  const auto bytes1 = rfl::flexbuf::write(homer1);
-  const auto bytes2 = rfl::flexbuf::write(homer2);
+  const auto string1 = rfl::flexbuf::write(homer1);
+  const auto string2 = rfl::flexbuf::write(homer2);
 
-  if (bytes1 != bytes2) {
-    std::cout << "Test failed. Content was not identical." << std::endl
-              << std::endl;
-    return;
-  }
-
-  std::cout << "OK" << std::endl << std::endl;
+  EXPECT_EQ(string1, string2);
 }
 }  // namespace test_save_load

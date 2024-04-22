@@ -1,9 +1,6 @@
-#include "test_map_with_key_validation.hpp"
-
 #include <iostream>
 #include <map>
 #include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <source_location>
 #include <string>
 
@@ -17,9 +14,7 @@ struct Person {
   std::unique_ptr<std::map<rfl::AlphaNumeric, Person>> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(xml, test_map_with_key_validation) {
   auto children = std::make_unique<std::map<rfl::AlphaNumeric, Person>>();
 
   children->insert(std::make_pair("Bart", Person{.first_name = "Bart"}));

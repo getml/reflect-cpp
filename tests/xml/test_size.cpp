@@ -1,8 +1,5 @@
-#include "test_size.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <source_location>
 #include <string>
 #include <vector>
@@ -20,9 +17,7 @@ struct Person {
       children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(xml, test_size) { 
   const auto bart = Person{
       .first_name = "Bart", .last_name = "Simpson", .birthday = "1987-04-19"};
 

@@ -1,5 +1,3 @@
-#include "test_map.hpp"
-
 #include <iostream>
 #include <map>
 #include <rfl.hpp>
@@ -16,9 +14,7 @@ struct Person {
   std::map<std::string, Person> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(bson, test_map) {
   auto children = std::map<std::string, Person>();
   children.insert(std::make_pair("child1", Person{.first_name = "Bart"}));
   children.insert(std::make_pair("child2", Person{.first_name = "Lisa"}));

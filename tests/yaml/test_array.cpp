@@ -1,5 +1,3 @@
-#include "test_array.hpp"
-
 #include <array>
 #include <iostream>
 #include <memory>
@@ -8,7 +6,7 @@
 #include <string>
 
 // Make sure things still compile when
-// rfl.hpp is included after rfl/yaml.hpp.
+// rfl.hpp is included after rfl/cbor.hpp.
 #include <rfl.hpp>
 
 #include "write_and_read.hpp"
@@ -21,9 +19,7 @@ struct Person {
   std::unique_ptr<std::array<Person, 3>> children = nullptr;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(yaml, test_array) {
   auto bart = Person{.first_name = "Bart"};
 
   auto lisa = Person{.first_name = "Lisa"};

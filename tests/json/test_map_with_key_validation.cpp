@@ -1,5 +1,3 @@
-#include "test_map_with_key_validation.hpp"
-
 #include <iostream>
 #include <map>
 #include <rfl.hpp>
@@ -19,9 +17,7 @@ struct Person {
   std::unique_ptr<std::map<Between1and3, Person>> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_map_with_key_validation) {
   auto children = std::make_unique<std::map<Between1and3, Person>>();
 
   children->insert(std::make_pair(1, Person{.first_name = "Bart"}));

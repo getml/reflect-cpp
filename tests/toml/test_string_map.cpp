@@ -1,5 +1,3 @@
-#include "test_string_map.hpp"
-
 #include <iostream>
 #include <map>
 #include <memory>
@@ -10,9 +8,7 @@
 #include "write_and_read.hpp"
 
 namespace test_string_map {
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(toml, test_string_map) { 
   std::map<std::string, std::unique_ptr<std::string>> homer;
   homer.insert(
       std::make_pair("firstName", std::make_unique<std::string>("Homer")));

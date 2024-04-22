@@ -1,5 +1,3 @@
-#include "test_alphanumeric_unordered_map.hpp"
-
 #include <iostream>
 #include <memory>
 #include <rfl.hpp>
@@ -11,9 +9,7 @@
 #include "write_and_read.hpp"
 
 namespace test_alphanumeric_unordered_map {
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_alphanumeric_unordered_map) {
   using Map =
       std::unordered_map<rfl::AlphaNumeric, std::unique_ptr<std::string>>;
   Map homer;
@@ -26,6 +22,5 @@ void test() {
   // compiles.
   const auto json_string = rfl::json::write(homer);
   const auto homer2 = rfl::json::read<Map>(json_string);
-  std::cout << "OK" << std::endl << std::endl;
 }
 }  // namespace test_alphanumeric_unordered_map

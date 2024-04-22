@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "test_enum.hpp"
 #include "write_and_read.hpp"
 
 namespace test_flag_enum {
@@ -27,9 +26,7 @@ struct Circle {
   Color color;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(cbor, test_flag_enum) {
   const auto circle =
       Circle{.radius = 2.0, .color = Color::blue | Color::orange};
 

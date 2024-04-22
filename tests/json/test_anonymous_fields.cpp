@@ -1,5 +1,3 @@
-#include "test_anonymous_fields.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -23,9 +21,7 @@ struct Person {
   std::vector<Person> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_anonymous_fields) {
   const auto bart = Person{.first_name = "Bart",
                            .last_name = "Simpson",
                            .birthday = "1987-04-19",

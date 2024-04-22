@@ -1,5 +1,3 @@
-#include "test_c_array_class5.hpp"
-
 #include <array>
 #include <source_location>
 
@@ -15,9 +13,7 @@ struct Test5 {
   int c[2][2];
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_c_array_class5) {
   Test5 t1 = {.a = {1, 2, 3}, .b = {4, 5, 6}, .c = {{7, 8}, {9, 10}}};
 
   const auto t2 = rfl::replace(t1, rfl::make_field<"b", int[3]>({1, 2, 3}));

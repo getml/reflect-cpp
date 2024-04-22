@@ -1,5 +1,3 @@
-#include "test_alphanumeric_map.hpp"
-
 #include <iostream>
 #include <map>
 #include <memory>
@@ -12,9 +10,7 @@
 
 namespace test_alphanumeric_map {
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_alphanumeric_map) {
   std::map<rfl::AlphaNumeric, std::unique_ptr<std::string>> homer;
   homer.insert(
       std::make_pair("firstName", std::make_unique<std::string>("Homer")));

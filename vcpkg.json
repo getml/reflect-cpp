@@ -32,6 +32,10 @@
       "version>=": "0.8.0#1"
     },
     {
+      "name": "gtest",
+      "version>=": "1.14.0"
+    },
+    {
       "name": "vcpkg-cmake",
       "version>=": "2023-05-04"
     },

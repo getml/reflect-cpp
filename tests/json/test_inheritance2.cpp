@@ -5,6 +5,8 @@
 
 #include "rfl/internal/num_fields.hpp"
 
+#include <gtest/gtest.h>
+
 namespace test_inheritance2 {
 
 struct EmptyBase1 {};
@@ -27,9 +29,7 @@ struct EmptyDerived0 : BaseX, EmptyBase1 {};
 struct EmptyDerived1 : EmptyBase1, BaseX {};
 struct EmptyDerived2 : EmptyBase1, EmptyBase2, BaseX {};
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_inheritance2) {
   Derived1 derived1;
   const auto derived1_view = rfl::to_view(derived1);
   static_assert(derived1_view.size() == 2);
@@ -50,7 +50,7 @@ void test() {
   auto empty_derived2_view = rfl::to_view(empty_derived2);
   static_assert(empty_derived0_view.size() == 2);
 
-  std::cout << "OK" << std::endl << std::endl;
+  EXPECT_TRUE(true);
 }
 
 }  // namespace test_inheritance2

@@ -1,5 +1,3 @@
-#include "test_timestamp.hpp"
-
 #include <ctime>
 #include <iostream>
 #include <rfl.hpp>
@@ -19,9 +17,7 @@ struct Person {
   TS birthday;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(toml, test_timestamp) { 
   const auto result = TS::from_string("nonsense");
 
   if (result) {

@@ -1,8 +1,5 @@
-#include "test_set.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
-#include <rfl/flexbuf.hpp>
 #include <source_location>
 #include <string>
 #include <vector>
@@ -12,15 +9,12 @@
 namespace test_set {
 
 struct Person {
-  rfl::Field<"firstName", std::string> first_name;
-  rfl::Field<"lastName", std::string> last_name = "Simpson";
-  rfl::Field<"children", std::unique_ptr<std::set<std::string>>> children =
-      rfl::default_value;
+  rfl::Rename<"firstName", std::string> first_name;
+  rfl::Rename<"lastName", std::string> last_name = "Simpson";
+  std::unique_ptr<std::set<std::string>> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(flexbuf, test_set) { 
   auto children = std::make_unique<std::set<std::string>>(
       std::set<std::string>({"Bart", "Lisa", "Maggie"}));
 
