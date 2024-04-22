@@ -1,5 +1,3 @@
-#include "test_enum.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -18,9 +16,7 @@ struct Circle {
   Color color;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(toml, test_enum) {
   const auto circle = Circle{.radius = 2.0, .color = Color::green};
 
   write_and_read(circle);

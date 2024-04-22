@@ -1,9 +1,6 @@
-#include "test_tagged_union.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
-#include <rfl/flexbuf.hpp>
 #include <source_location>
 #include <string>
 #include <vector>
@@ -25,13 +22,10 @@ struct Square {
   double width;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
+using Shapes = rfl::TaggedUnion<"shape", Circle, Square, Rectangle>;
 
-  using Shapes = rfl::TaggedUnion<"shape", Circle, Square, Rectangle>;
-
+TEST(flexbuf, test_tagged_union) { 
   const Shapes r = Rectangle{.height = 10, .width = 5};
-
   write_and_read(r);
 }
 }  // namespace test_tagged_union

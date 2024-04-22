@@ -1,5 +1,3 @@
-#include "test_deque.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <source_location>
@@ -16,9 +14,7 @@ struct Person {
   std::unique_ptr<std::deque<Person>> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(toml, test_default_values) {
   auto children = std::make_unique<std::deque<Person>>();
   children->emplace_back(Person{.first_name = "Bart"});
   children->emplace_back(Person{.first_name = "Lisa"});

@@ -1,5 +1,3 @@
-#include "test_field_variant.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -28,9 +26,7 @@ using Shapes = rfl::Variant<rfl::Field<"circle", Circle>,
                             rfl::Field<"rectangle", Rectangle>,
                             rfl::Field<"square", rfl::Box<Square>>>;
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(toml, test_field_variant) {
   const Shapes r =
       rfl::make_field<"rectangle">(Rectangle{.height = 10, .width = 5});
 
