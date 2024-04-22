@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "test_readme_example.hpp"
 #include "write_and_read.hpp"
 
 namespace test_readme_example2 {
@@ -15,9 +14,7 @@ struct Person {
   int age;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(msgpack, test_readme_example2) {
   const auto homer =
       Person{.first_name = "Homer", .last_name = "Simpson", .age = 45};
 

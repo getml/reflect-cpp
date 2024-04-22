@@ -1,5 +1,3 @@
-#include "test_array.hpp"
-
 #include <array>
 #include <iostream>
 #include <memory>
@@ -21,9 +19,7 @@ struct Person {
   std::unique_ptr<std::array<Person, 3>> children = nullptr;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(msgpack, test_array) {
   auto bart = Person{.first_name = "Bart"};
 
   auto lisa = Person{.first_name = "Lisa"};

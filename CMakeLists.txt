@@ -93,7 +93,6 @@ if (REFLECTCPP_BUILD_TESTS)
     add_subdirectory(tests)
 endif ()
 
-
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 

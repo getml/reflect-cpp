@@ -1,5 +1,3 @@
-#include "test_variant.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -26,9 +24,7 @@ struct Square {
 
 using Shapes = std::variant<Circle, Rectangle, std::unique_ptr<Square>>;
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(msgpack, test_variant) { 
   const Shapes r = Rectangle{.height = 10, .width = 5};
 
   write_and_read(r);

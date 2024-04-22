@@ -1,5 +1,3 @@
-#include "test_wstring.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -9,17 +7,15 @@
 
 #include "write_and_read.hpp"
 
-struct Test {
+struct TestStruct {
   std::string theNormalString;
   std::wstring theWiderString;
 };
 
 namespace test_wstring {
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
-  const Test test = Test{.theNormalString = "The normal string",
-                         .theWiderString = L"The wider string"};
+TEST(msgpack, test_wstring) {
+  const auto test = TestStruct{.theNormalString = "The normal string",
+                               .theWiderString = L"The wider string"};
 
   write_and_read(test);
 }
