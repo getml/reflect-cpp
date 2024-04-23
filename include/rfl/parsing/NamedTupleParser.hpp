@@ -96,7 +96,7 @@ struct NamedTupleParser {
     if constexpr (_i == size) {
       return Type{Type::Object{_values}};
     } else {
-      using F = std::tuple_element_t<_i, typename T::Fields>;
+      using F = std::tuple_element_t<_i, typename NamedTuple<FieldTypes...>::Fields>;
       _values[std::string(F::name())] =
           Parser<R, W, typename F::Type>::to_schema(_definitions);
       return to_schema<_i + 1>(_definitions, _values);
