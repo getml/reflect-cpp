@@ -1,11 +1,11 @@
+#include <gtest/gtest.h>
+
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
 #include <source_location>
 
 #include "rfl/internal/num_fields.hpp"
-
-#include <gtest/gtest.h>
 
 namespace test_inheritance2 {
 
@@ -30,6 +30,7 @@ struct EmptyDerived1 : EmptyBase1, BaseX {};
 struct EmptyDerived2 : EmptyBase1, EmptyBase2, BaseX {};
 
 TEST(json, test_inheritance2) {
+#ifndef REFLECT_CPP_NO_C_ARRAYS_OR_INHERITANCE
   Derived1 derived1;
   const auto derived1_view = rfl::to_view(derived1);
   static_assert(derived1_view.size() == 2);
@@ -51,6 +52,7 @@ TEST(json, test_inheritance2) {
   static_assert(empty_derived0_view.size() == 2);
 
   EXPECT_TRUE(true);
+#endif
 }
 
 }  // namespace test_inheritance2
