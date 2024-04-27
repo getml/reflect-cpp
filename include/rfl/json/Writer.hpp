@@ -150,8 +150,10 @@ class Writer {
       return OutputVarType(yyjson_mut_bool(doc_, _var));
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       return OutputVarType(yyjson_mut_real(doc_, static_cast<double>(_var)));
+    } else if constexpr (std::is_unsigned<std::remove_cvref_t<T>>()) {
+      return OutputVarType(yyjson_mut_uint(doc_, static_cast<uint64_t>(_var)));
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      return OutputVarType(yyjson_mut_int(doc_, static_cast<int>(_var)));
+      return OutputVarType(yyjson_mut_int(doc_, static_cast<int64_t>(_var)));
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
