@@ -1,5 +1,3 @@
-#include "test_timestamp.hpp"
-
 #include <ctime>
 #include <iostream>
 #include <rfl.hpp>
@@ -20,15 +18,10 @@ struct Person {
   TS birthday;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_timestamp) {
   const auto result = TS::from_string("nonsense");
 
-  if (result) {
-    std::cout << "Failed: Expected an error, but got none." << std::endl;
-    return;
-  }
+  ASSERT_TRUE(!result && true);
 
   const auto bart = Person{.first_name = "Bart", .birthday = "1987-04-19"};
 

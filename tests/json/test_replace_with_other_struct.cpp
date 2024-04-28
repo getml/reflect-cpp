@@ -1,5 +1,3 @@
-#include "test_replace_with_other_struct.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -24,9 +22,7 @@ struct Employee {
   rfl::Field<"salary", float> salary;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_replace_with_other_struct) {
   const auto employee = Employee{
       .person =
           Person{.first_name = "Homer", .last_name = "Simpson", .age = 45},

@@ -1,6 +1,3 @@
-
-#include "test_unnamed_namespace.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -28,9 +25,7 @@ struct Person {
 
 }  // namespace
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_unnamed_namespace) {
   const auto bart = Person{.first_name = "Bart",
                            .birthday = "1987-04-19",
                            .age = 10,

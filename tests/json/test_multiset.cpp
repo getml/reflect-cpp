@@ -1,5 +1,3 @@
-#include "test_multiset.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -17,9 +15,7 @@ struct Person {
   std::unique_ptr<std::multiset<std::string>> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_multiset) {
   auto children = std::make_unique<std::multiset<std::string>>(
       std::multiset<std::string>({"Bart", "Lisa", "Maggie"}));
 

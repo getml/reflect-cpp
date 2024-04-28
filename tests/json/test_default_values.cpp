@@ -1,5 +1,3 @@
-#include "test_default_values.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -18,9 +16,7 @@ struct Person {
   std::vector<Person> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_default_values) {
   const auto bart = Person{.first_name = "Bart"};
   const auto lisa = Person{.first_name = "Lisa"};
   const auto maggie = Person{.first_name = "Maggie"};

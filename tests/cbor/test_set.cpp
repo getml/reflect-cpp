@@ -1,5 +1,3 @@
-#include "test_set.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <source_location>
@@ -16,9 +14,7 @@ struct Person {
   std::unique_ptr<std::set<std::string>> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(cbor, test_set) { 
   auto children = std::make_unique<std::set<std::string>>(
       std::set<std::string>({"Bart", "Lisa", "Maggie"}));
 

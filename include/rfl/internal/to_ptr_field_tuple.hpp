@@ -8,6 +8,7 @@
 #include "../field_names_t.hpp"
 #include "bind_to_tuple.hpp"
 #include "has_fields.hpp"
+#include "is_empty.hpp"
 #include "is_named_tuple.hpp"
 #include "nt_to_ptr_named_tuple.hpp"
 #include "to_ptr_field.hpp"
@@ -24,6 +25,8 @@ auto to_ptr_field_tuple(T& _t) {
     return nt_to_ptr_named_tuple(_t).fields();
   } else if constexpr (has_fields<T>()) {
     return bind_to_tuple(_t, [](auto& x) { return to_ptr_field(x); });
+  } else if constexpr (is_empty<T>()) {
+    return std::tuple();
   } else {
     using FieldNames = field_names_t<T>;
     auto tup = bind_to_tuple(_t, [](auto& x) { return to_ptr_field(x); });

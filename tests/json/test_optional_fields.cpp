@@ -1,5 +1,3 @@
-#include "test_optional_fields.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -17,9 +15,7 @@ struct Person {
   rfl::Rename<"children", std::optional<std::vector<Person>>> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, insert_name_here) {
   const auto bart = Person{.first_name = "Bart"};
 
   const auto lisa = Person{.first_name = "Lisa"};

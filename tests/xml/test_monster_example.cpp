@@ -1,8 +1,5 @@
-#include "test_monster_example.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <source_location>
 #include <string>
 #include <vector>
@@ -32,16 +29,14 @@ struct Monster {
   short hp = 100;
   std::string name;
   bool friendly = false;
-  std::vector<std::uint8_t> inventory;
+  std::vector<int> inventory;
   Color color = Color::make<"Blue">();
   std::vector<Weapon> weapons;
   Equipment equipped;
   std::vector<Vec3> path;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(xml, test_monster_example) {
   const auto sword = Weapon{.name = "Sword", .damage = 3};
   const auto axe = Weapon{.name = "Axe", .damage = 5};
 
@@ -49,8 +44,7 @@ void test() {
 
   const auto position = Vec3{1.0f, 2.0f, 3.0f};
 
-  const auto inventory =
-      std::vector<std::uint8_t>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+  const auto inventory = std::vector<int>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
 
   const auto orc = Monster{.pos = position,
                            .mana = 150,
@@ -62,6 +56,5 @@ void test() {
                            .equipped = rfl::make_field<"weapon">(axe)};
 
   write_and_read(orc);
-  
 }
 }  // namespace test_monster_example

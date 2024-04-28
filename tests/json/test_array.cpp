@@ -1,4 +1,3 @@
-#include "test_array.hpp"
 
 #include <array>
 #include <iostream>
@@ -18,9 +17,7 @@ struct Person {
   std::unique_ptr<std::array<Person, 3>> children = nullptr;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_array) {
   auto bart = Person{.first_name = "Bart"};
 
   auto lisa = Person{.first_name = "Lisa"};

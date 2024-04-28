@@ -1,5 +1,3 @@
-#include "test_xml_content.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -19,9 +17,7 @@ struct Person {
   std::vector<Person> child;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(xml, test_xml_content) {
   const auto bart = Person{.xml_content = "Bart Simpson",
                            .birthday = "1987-04-19",
                            .email = "bart@simpson.com"};

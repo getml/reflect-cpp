@@ -23,8 +23,7 @@
 #endif
 #endif
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class T>
 struct Wrapper {
@@ -53,13 +52,13 @@ consteval auto get_field_name_str_view() {
 #endif
 #if defined(__clang__)
   const auto split = func_name.substr(0, func_name.size() - 2);
-  return split.substr(split.find_last_of(".") + 1);
+  return split.substr(split.find_last_of(":.") + 1);
 #elif defined(__GNUC__)
   const auto split = func_name.substr(0, func_name.size() - 2);
   return split.substr(split.find_last_of(":") + 1);
 #elif defined(_MSC_VER)
   const auto split = func_name.substr(0, func_name.size() - 7);
-  return split.substr(split.find("value->") + 7);
+  return split.substr(split.rfind("->") + 2);
 #else
   static_assert(false,
                 "You are using an unsupported compiler. Please use GCC, Clang "
@@ -112,6 +111,8 @@ auto concat_literals(const Head& _head, const Tail&... _tail) {
   }
 }
 
+inline auto concat_literals() { return rfl::Literal<>(); }
+
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundefined-var-template"
@@ -150,7 +151,6 @@ auto get_field_names() {
 #pragma clang diagnostic pop
 #endif
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

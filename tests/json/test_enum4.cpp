@@ -1,5 +1,3 @@
-#include "test_enum4.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -19,8 +17,7 @@ struct Circle {
   Color color;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
+TEST(json, test_enum4) {
 
   auto mutable_circle = Circle{.radius = 2.0, .color = Color::red};
 

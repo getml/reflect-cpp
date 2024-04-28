@@ -1,5 +1,3 @@
-#include "test_literal_map.hpp"
-
 #include <iostream>
 #include <map>
 #include <memory>
@@ -15,9 +13,7 @@ namespace test_literal_map {
 
 using FieldName = rfl::Literal<"firstName", "lastName">;
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_literal_map) {
   std::map<FieldName, std::unique_ptr<std::string>> homer;
   homer.insert(std::make_pair(FieldName::make<"firstName">(),
                               std::make_unique<std::string>("Homer")));

@@ -9,6 +9,7 @@
 
 #include "../always_false.hpp"
 #include "is_named_tuple.hpp"
+#include "num_fields.hpp"
 
 namespace rfl {
 namespace internal {

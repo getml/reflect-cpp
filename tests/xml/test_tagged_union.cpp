@@ -1,9 +1,6 @@
-#include "test_tagged_union.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <source_location>
 #include <string>
 #include <vector>
@@ -27,11 +24,8 @@ struct Square {
 
 using Shapes = rfl::TaggedUnion<"shape", Circle, Square, Rectangle>;
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(xml, test_tagged_union) {
   const Shapes r = Rectangle{.height = 10, .width = 5};
-
   write_and_read<"root">(r);
 }
 }  // namespace test_tagged_union

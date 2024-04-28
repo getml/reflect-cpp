@@ -1,5 +1,3 @@
-#include "test_literal_unordered_map.hpp"
-
 #include <functional>
 #include <iostream>
 #include <map>
@@ -18,9 +16,7 @@ using FieldName = rfl::Literal<"firstName", "lastName">;
 
 using Map = std::unordered_map<FieldName, std::unique_ptr<std::string>>;
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_literal_unordered_map) {
   Map homer;
 
   homer.insert(std::make_pair(FieldName::make<"firstName">(),
@@ -32,6 +28,7 @@ void test() {
   // compiles.
   const auto json_string = rfl::json::write(homer);
   const auto homer2 = rfl::json::read<Map>(json_string);
-  std::cout << "OK" << std::endl << std::endl;
+
+  EXPECT_TRUE(true);
 }
 }  // namespace test_literal_unordered_map
