@@ -12,11 +12,9 @@ jobs:
           submodules: recursive
           fetch-depth: 0
       - name: Run vcpkg
-        env:
-          CC: clang
-          CXX: clang++
-          VCPKG_FORCE_SYSTEM_BINARIES: arm  
         uses: lukka/run-vcpkg@v11
+      - name: Install ninja 
+        run: brew install ninja 
       - name: Run test
         env:
           CC: clang
