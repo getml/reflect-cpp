@@ -3,7 +3,7 @@ name: test
 on: [ push, pull_request ]
 
 jobs:
-  macos-clang:
+  macos-clang-x64:
     runs-on: macos-13
     steps:
       - name: Checkout
