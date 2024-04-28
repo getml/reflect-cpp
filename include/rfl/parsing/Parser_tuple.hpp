@@ -7,9 +7,9 @@
 namespace rfl {
 namespace parsing {
 
-template <class R, class W, class... Ts>
+template <class R, class W, class... Ts, class... Processors>
 requires AreReaderAndWriter<R, W, std::tuple<Ts...>>
-struct Parser<R, W, std::tuple<Ts...>>
+struct Parser<R, W, std::tuple<Ts...>, Processors...>
     : public TupleParser<R, W, /*_ignore_empty_containers=*/false,
                          /*_all_required=*/false, Ts...> {
 };

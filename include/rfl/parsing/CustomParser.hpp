@@ -12,7 +12,8 @@
 namespace rfl {
 namespace parsing {
 
-template <class R, class W, class OriginalClass, class HelperStruct>
+template <class R, class W, class OriginalClass, class HelperStruct,
+          class... Processors>
 struct CustomParser {
   static Result<OriginalClass> read(const R& _r, const auto& _var) noexcept {
     const auto to_class = [](auto&& _h) -> Result<OriginalClass> {
@@ -30,20 +31,21 @@ struct CustomParser {
         return Error(e.what());
       }
     };
-    return Parser<R, W, HelperStruct>::read(_r, _var).and_then(to_class);
+    return Parser<R, W, HelperStruct, Processors...>::read(_r, _var).and_then(
+        to_class);
   }
 
   template <class P>
   static auto write(const W& _w, const OriginalClass& _p,
                     const P& _parent) noexcept {
-    Parser<R, W, HelperStruct>::write(_w, HelperStruct::from_class(_p),
-                                      _parent);
+    Parser<R, W, HelperStruct, Processors...>::write(
+        _w, HelperStruct::from_class(_p), _parent);
   }
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
-    return Parser<R, W, std::remove_cvref_t<HelperStruct>>::to_schema(
-        _definitions);
+    return Parser<R, W, std::remove_cvref_t<HelperStruct>,
+                  Processors...>::to_schema(_definitions);
   }
 };
 

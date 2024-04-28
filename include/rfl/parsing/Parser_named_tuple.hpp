@@ -7,9 +7,9 @@
 namespace rfl {
 namespace parsing {
 
-template <class R, class W, class... FieldTypes>
+template <class R, class W, class... FieldTypes, class... Processors>
 requires AreReaderAndWriter<R, W, NamedTuple<FieldTypes...>>
-struct Parser<R, W, NamedTuple<FieldTypes...>>
+struct Parser<R, W, NamedTuple<FieldTypes...>, Processors...>
     : public NamedTupleParser<R, W, /*_ignore_empty_containers=*/false,
                               /*_all_required=*/false, FieldTypes...> {
 };

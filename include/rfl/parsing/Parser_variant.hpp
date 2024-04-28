@@ -17,9 +17,9 @@
 namespace rfl {
 namespace parsing {
 
-template <class R, class W, class... FieldTypes>
+template <class R, class W, class... FieldTypes, class... Processors>
 requires AreReaderAndWriter<R, W, std::variant<FieldTypes...>>
-class Parser<R, W, std::variant<FieldTypes...>> {
+class Parser<R, W, std::variant<FieldTypes...>, Processors...> {
  public:
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
@@ -53,7 +53,7 @@ class Parser<R, W, std::variant<FieldTypes...>> {
     } else {
       const auto handle = [&](const auto& _v) {
         using Type = std::remove_cvref_t<decltype(_v)>;
-        Parser<R, W, Type>::write(_w, _v, _parent);
+        Parser<R, W, Type, Processors...>::write(_w, _v, _parent);
       };
       return std::visit(handle, _variant);
     }
@@ -73,7 +73,8 @@ class Parser<R, W, std::variant<FieldTypes...>> {
       } else {
         using U = std::remove_cvref_t<
             std::variant_alternative_t<_i, std::variant<FieldTypes...>>>;
-        _types.push_back(Parser<R, W, U>::to_schema(_definitions));
+        _types.push_back(
+            Parser<R, W, U, Processors...>::to_schema(_definitions));
         return to_schema<_i + 1>(_definitions, std::move(_types));
       }
     }
@@ -88,7 +89,7 @@ class Parser<R, W, std::variant<FieldTypes...>> {
     if constexpr (_i < size) {
       using AltType = std::remove_cvref_t<
           std::variant_alternative_t<_i, std::variant<FieldTypes...>>>;
-      auto res = Parser<R, W, AltType>::read(_r, _var);
+      auto res = Parser<R, W, AltType, Processors...>::read(_r, _var);
       if (res) {
         *_result = std::move(*res);
         return;

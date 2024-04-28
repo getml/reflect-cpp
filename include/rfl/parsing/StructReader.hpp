@@ -12,7 +12,7 @@
 
 namespace rfl::parsing {
 
-template <class R, class W, class StructType>
+template <class R, class W, class StructType, class... Processors>
 requires AreReaderAndWriter<R, W, StructType>
 struct StructReader {
  public:
@@ -27,7 +27,8 @@ struct StructReader {
     auto ptr = reinterpret_cast<StructType*>(buf);
     const auto view = to_view(*ptr);
     using ViewType = std::remove_cvref_t<decltype(view)>;
-    const auto err = Parser<R, W, ViewType>::read_view(_r, _var, view);
+    const auto err =
+        Parser<R, W, ViewType, Processors...>::read_view(_r, _var, view);
     if (err) {
       return *err;
     }

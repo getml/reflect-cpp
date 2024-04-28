@@ -56,7 +56,8 @@ struct NamedTupleParser {
     auto ptr = reinterpret_cast<NamedTuple<FieldTypes...>*>(buf);
     const auto view = rfl::to_view(*ptr);
     using ViewType = std::remove_cvref_t<decltype(view)>;
-    const auto err = Parser<R, W, ViewType>::read_view(_r, _var, view);
+    const auto err =
+        Parser<R, W, ViewType /*, Processors...*/>::read_view(_r, _var, view);
     if (err) {
       return *err;
     }
@@ -96,9 +97,11 @@ struct NamedTupleParser {
     if constexpr (_i == size) {
       return Type{Type::Object{_values}};
     } else {
-      using F = std::tuple_element_t<_i, typename NamedTuple<FieldTypes...>::Fields>;
+      using F =
+          std::tuple_element_t<_i, typename NamedTuple<FieldTypes...>::Fields>;
       _values[std::string(F::name())] =
-          Parser<R, W, typename F::Type>::to_schema(_definitions);
+          Parser<R, W, typename F::Type /*, Processors...*/>::to_schema(
+              _definitions);
       return to_schema<_i + 1>(_definitions, _values);
     }
   };
@@ -121,17 +124,20 @@ struct NamedTupleParser {
                     !is_required<ValueType, _ignore_empty_containers>()) {
         if (!is_empty(value)) {
           if constexpr (internal::is_attribute_v<ValueType>) {
-            Parser<R, W, ValueType>::write(_w, value,
-                                           new_parent.as_attribute());
+            Parser<R, W, ValueType /*, Processors...*/>::write(
+                _w, value, new_parent.as_attribute());
           } else {
-            Parser<R, W, ValueType>::write(_w, value, new_parent);
+            Parser<R, W, ValueType /*, Processors...*/>::write(_w, value,
+                                                               new_parent);
           }
         }
       } else {
         if constexpr (internal::is_attribute_v<ValueType>) {
-          Parser<R, W, ValueType>::write(_w, value, new_parent.as_attribute());
+          Parser<R, W, ValueType /*, Processors...*/>::write(
+              _w, value, new_parent.as_attribute());
         } else {
-          Parser<R, W, ValueType>::write(_w, value, new_parent);
+          Parser<R, W, ValueType /*, Processors...*/>::write(_w, value,
+                                                             new_parent);
         }
       }
       return build_object_recursively<_i + 1>(_w, _tup, _ptr);
