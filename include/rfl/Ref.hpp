@@ -4,6 +4,8 @@
 #include <memory>
 #include <stdexcept>
 
+#include "Result.hpp"
+
 namespace rfl {
 
 /// The Ref class behaves very similarly to the shared_ptr, but unlike the
@@ -18,6 +20,24 @@ class Ref {
   template <class... Args>
   static Ref<T> make(Args&&... _args) {
     return Ref<T>(std::make_shared<T>(std::forward<Args>(_args)...));
+  }
+
+  /// You can generate them from shared_ptrs as well, in which case it will
+  /// return an Error, if the shared_ptr is not set.
+  static Result<Ref<T>> make(std::shared_ptr<T>&& _ptr) {
+    if (!_ptr) {
+      return Error("std::shared_ptr was a nullptr.");
+    }
+    return Ref<T>(std::move(_ptr));
+  }
+
+  /// You can generate them from shared_ptrs as well, in which case it will
+  /// return an Error, if the shared_ptr is not set.
+  static Result<Ref<T>> make(const std::shared_ptr<T>& _ptr) {
+    if (!_ptr) {
+      return Error("std::shared_ptr was a nullptr.");
+    }
+    return Ref<T>(_ptr);
   }
 
   Ref() : ptr_(std::make_shared<T>()) {}
@@ -80,6 +100,9 @@ class Ref {
   /// Only make is allowed to use this constructor.
   explicit Ref(std::shared_ptr<T>&& _ptr) : ptr_(std::move(_ptr)) {}
 
+  /// Only make is allowed to use this constructor.
+  explicit Ref(const std::shared_ptr<T>& _ptr) : ptr_(_ptr) {}
+
  private:
   /// The underlying shared_ptr_
   std::shared_ptr<T> ptr_;
@@ -87,7 +110,7 @@ class Ref {
 
 /// Generates a new Ref<T>.
 template <class T, class... Args>
-Ref<T> make_ref(Args&&... _args) {
+auto make_ref(Args&&... _args) {
   return Ref<T>::make(std::forward<Args>(_args)...);
 }
 

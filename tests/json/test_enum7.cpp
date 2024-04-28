@@ -1,5 +1,3 @@
-#include "test_enum7.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -8,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "write_and_read.hpp"
+#include <gtest/gtest.h>
 
 namespace test_enum7 {
 
@@ -19,9 +17,7 @@ struct Circle {
   Color color;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_enum7) {
   constexpr auto enumerator_array = rfl::get_enumerator_array<Color>();
   static_assert(enumerator_array[0].first == "red");
   static_assert(enumerator_array[1].first == "green");
@@ -44,7 +40,7 @@ void test() {
   static_assert(enumerator_array_underlying[3].second == 3);
 
   // This is a compile-time test
-  std::cout << "OK" << std::endl << std::endl;
+  EXPECT_TRUE(true);
 }
 
 }  // namespace test_enum7

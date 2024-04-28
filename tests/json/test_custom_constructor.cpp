@@ -1,5 +1,3 @@
-#include "test_custom_constructor.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -32,24 +30,12 @@ struct Person {
   rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_custom_constructor) {
   const auto res = rfl::json::read<Person>(
       R"({"firstName":"Homer","lastName":"Simpson","birthday":"1987-04-19"})");
 
-  if (!res) {
-    std::cout << "Test failed on read. Error: " << res.error().value().what()
-              << std::endl;
-    return;
-  }
+  EXPECT_TRUE (res && true);
 
-  if (res.value().first_name() != "Bart") {
-    std::cout << "Expected 'Bart', got '" << res.value().first_name() << "'"
-              << std::endl
-              << std::endl;
-  } else {
-    std::cout << "OK" << std::endl << std::endl;
-  }
+  EXPECT_EQ(res.value().first_name(), "Bart");
 }
 }  // namespace test_custom_constructor

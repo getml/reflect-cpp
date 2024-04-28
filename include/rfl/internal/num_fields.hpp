@@ -29,6 +29,7 @@ the potential array as we can without missing variables in subsequent fields.
 This is the purpose of get_nested_array_size().
 */
 
+#include <algorithm>
 #include <cstddef>
 #include <type_traits>
 #include <utility>
@@ -47,6 +48,29 @@ This is the purpose of get_nested_array_size().
 
 namespace rfl {
 namespace internal {
+
+template <class Derived>
+struct any_empty_base {
+  any_empty_base(std::size_t);
+  template <class Base>
+    requires(
+        std::is_empty_v<std::remove_cvref_t<Base>> &&
+        std::is_base_of_v<std::remove_cvref_t<Base>,
+                          std::remove_cv_t<Derived>> &&
+        !std::is_same_v<std::remove_cvref_t<Base>, std::remove_cv_t<Derived>>)
+  constexpr operator Base&() const noexcept;
+};
+
+template <class Derived>
+struct any_base {
+  any_base(std::size_t);
+  template <class Base>
+    requires(
+        std::is_base_of_v<std::remove_cvref_t<Base>,
+                          std::remove_cv_t<Derived>> &&
+        !std::is_same_v<std::remove_cvref_t<Base>, std::remove_cv_t<Derived>>)
+  constexpr operator Base&() const noexcept;
+};
 
 struct any {
   any(std::size_t);
@@ -76,12 +100,12 @@ struct CountFieldsHelper {
   }
 
   template <std::size_t n = 0>
-  static consteval std::size_t count_max_fields() {
+  static consteval std::size_t count_max_args_in_agg_init() {
     static_assert(n <= static_cast<std::size_t>(sizeof(T)));
     if constexpr (constructible<n>() && !constructible<n + 1>()) {
       return n;
     } else {
-      return count_max_fields<n + 1>();
+      return count_max_args_in_agg_init<n + 1>();
     }
   }
 
@@ -97,20 +121,83 @@ struct CountFieldsHelper {
     }
   }
 
+  template <std::size_t max_args, std::size_t index = 0>
+  static consteval std::size_t find_the_sole_non_empty_base_index() {
+    static_assert(index < max_args);
+    constexpr auto check = []<std::size_t... l, std::size_t... r>(
+                               std::index_sequence<l...>,
+                               std::index_sequence<r...>) {
+      return requires {
+        T{any_empty_base<T>(l)..., any_base<T>(0), any_empty_base<T>(r)...};
+      };
+    };
+
+    if constexpr (check(std::make_index_sequence<index>(),
+                        std::make_index_sequence<max_args - index - 1>())) {
+      return index;
+    } else {
+      return find_the_sole_non_empty_base_index<max_args, index + 1>();
+    }
+  }
+
+  template <std::size_t arg_index, std::size_t size = 0>
+  static consteval std::size_t get_nested_base_field_count() {
+    static_assert(size <= sizeof(T));
+    if constexpr (constructible_with_nested<arg_index, size, 0>() &&
+                  !constructible_with_nested<arg_index, size + 1, 0>()) {
+      return size;
+    } else {
+      return get_nested_base_field_count<arg_index, size + 1>();
+    }
+  }
+
+  template <std::size_t n, std::size_t max_arg_num>
+  static consteval bool has_n_base_param() {
+    constexpr auto right_len = max_arg_num>=n ? max_arg_num-n : 0;
+    return []<std::size_t... l, std::size_t... r>(std::index_sequence<l...>,
+                                                  std::index_sequence<r...>) {
+      return requires { T{any_base<T>(l)..., any(r)...}; };
+    }(std::make_index_sequence<n>(), std::make_index_sequence<right_len>());
+  }
+
+  template <std::size_t max_arg_num, std::size_t index = 0>
+  static consteval std::size_t base_param_num() {
+    if constexpr (!has_n_base_param<index + 1, max_arg_num>()) {
+      return index;
+    } else {
+      return base_param_num<max_arg_num, index + 1>();
+    }
+  }
+
   template <std::size_t index, std::size_t max>
-  static consteval std::size_t count_fields_impl() {
+  static consteval std::size_t constructible_no_brace_elision() {
     static_assert(index <= max);
     if constexpr (index == max) {
       return 0;
     } else {
       return 1 +
-             count_fields_impl<
+             constructible_no_brace_elision<
                  index + get_nested_array_size<index, max - index, 0>(), max>();
     }
   }
 
   static consteval std::size_t count_fields() {
-    return count_fields_impl<0, count_max_fields()>();
+    constexpr std::size_t max_agg_args = count_max_args_in_agg_init();
+    constexpr std::size_t no_brace_ellison_args =
+        constructible_no_brace_elision<0, max_agg_args>();
+    constexpr std::size_t base_args = base_param_num<no_brace_ellison_args>();
+    if constexpr (no_brace_ellison_args == 0 && base_args == 0) {
+      // Empty struct
+      return 0;
+    } else if constexpr (base_args == no_brace_ellison_args) {
+      // Special case when the derived class is empty.
+      // In such cases the filed number is the fields in base class.
+      // Note that there should be only one base class in this case.
+      return get_nested_base_field_count<
+          find_the_sole_non_empty_base_index<max_agg_args>()>();
+    } else {
+      return no_brace_ellison_args - base_args;
+    }
   }
 };
 

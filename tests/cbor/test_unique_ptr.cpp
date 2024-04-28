@@ -1,5 +1,3 @@
-#include "test_unique_ptr.hpp"
-
 #include <iostream>
 #include <memory>
 #include <rfl.hpp>
@@ -17,9 +15,7 @@ struct Person {
   std::unique_ptr<std::vector<Person>> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(cbor, test_unique_ptr) { 
   auto children = std::make_unique<std::vector<Person>>();
   children->emplace_back(Person{.first_name = "Bart"});
   children->emplace_back(Person{.first_name = "Lisa"});

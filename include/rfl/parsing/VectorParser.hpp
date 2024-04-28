@@ -86,7 +86,7 @@ struct VectorParser {
         .value();
   }
 
-  static Result<VecType> to_container(const R& _r, InputArrayType&& _arr) {
+  static VecType to_container(const R& _r, InputArrayType&& _arr) {
     auto input_vars = _r.to_vec(_arr);
     VecType vec;
     if constexpr (is_forward_list<VecType>()) {

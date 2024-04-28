@@ -1,0 +1,37 @@
+@PACKAGE_INIT@
+
+set(REFLECTCPP_BSON @REFLECTCPP_BSON@)
+set(REFLECTCPP_FLEXBUFFERS @REFLECTCPP_FLEXBUFFERS@)
+set(REFLECTCPP_TOML @REFLECTCPP_TOML@)
+set(REFLECTCPP_XML @REFLECTCPP_XML@)
+set(REFLECTCPP_YAML @REFLECTCPP_YAML@)
+
+if(REFLECTCPP_BSON OR REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_XML OR REFLECTCPP_YAML)
+  include(CMakeFindDependencyMacro)
+endif()
+
+include(${CMAKE_CURRENT_LIST_DIR}/reflectcpp-exports.cmake)
+
+
+if (REFLECTCPP_BSON)  
+  find_dependency(bson-1.0)
+endif ()
+
+if (REFLECTCPP_FLEXBUFFERS)
+  find_dependency(flatbuffers)
+endif ()
+
+if (REFLECTCPP_TOML)
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(tomlplusplus REQUIRED IMPORTED_TARGET tomlplusplus)
+endif()
+
+if (REFLECTCPP_XML)
+  find_dependency(pugixml)
+endif ()
+
+if (REFLECTCPP_YAML)
+  find_dependency(yaml-cpp)
+endif ()
+
+check_required_components(reflectcpp)

@@ -27,24 +27,24 @@ class ViewReader {
 
   template <size_t _i = 0>
   void read(const std::string_view& _name, const InputVarType& _var) const {
-    constexpr auto current_name =
-        std::tuple_element_t<_i, typename ViewType::Fields>::name();
-    using CurrentType = std::remove_cvref_t<std::remove_pointer_t<
-        typename std::tuple_element_t<_i, typename ViewType::Fields>::Type>>;
-    if (!std::get<_i>(*found_) && _name == current_name) {
-      auto res = Parser<R, W, CurrentType>::read(*r_, _var);
-      if (res) {
-        move_to(rfl::get<_i>(*view_), &(*res));
-        std::get<_i>(*set_) = true;
-      } else {
-        errors_->push_back(Error("Failed to parse field '" +
-                                 std::string(current_name) +
-                                 "': " + res.error()->what()));
+    if constexpr (_i < size_) {
+      constexpr auto current_name =
+          std::tuple_element_t<_i, typename ViewType::Fields>::name();
+      using CurrentType = std::remove_cvref_t<std::remove_pointer_t<
+          typename std::tuple_element_t<_i, typename ViewType::Fields>::Type>>;
+      if (!std::get<_i>(*found_) && _name == current_name) {
+        auto res = Parser<R, W, CurrentType>::read(*r_, _var);
+        if (res) {
+          move_to(rfl::get<_i>(*view_), &(*res));
+          std::get<_i>(*set_) = true;
+        } else {
+          errors_->push_back(Error("Failed to parse field '" +
+                                   std::string(current_name) +
+                                   "': " + res.error()->what()));
+        }
+        std::get<_i>(*found_) = true;
+        return;
       }
-      std::get<_i>(*found_) = true;
-      return;
-    }
-    if constexpr (_i + 1 < size_) {
       read<_i + 1>(_name, _var);
     }
   }

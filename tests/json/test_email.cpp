@@ -1,5 +1,3 @@
-#include "test_email.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -17,9 +15,7 @@ struct Person {
   rfl::Email email;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_email) {
   const auto homer = Person{.first_name = "Homer",
                             .last_name = "Simpson",
                             .email = "homer@simpson.com"};

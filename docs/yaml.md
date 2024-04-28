@@ -21,7 +21,7 @@ You can parse YAML strings like this:
 const rfl::Result<Person> result = rfl::yaml::read<Person>(yaml_string);
 ```
 
-A person can be turned into a YAML string like this:
+A `Person` can be serialized like this:
 
 ```cpp
 const auto person = Person{...};

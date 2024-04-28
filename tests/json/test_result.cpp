@@ -1,5 +1,3 @@
-#include "test_result.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -17,9 +15,7 @@ struct Person {
   std::vector<rfl::Result<Person>> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_result) {
   const rfl::Result<Person> bart = Person{.first_name = "Bart"};
 
   const rfl::Result<Person> lisa = Person{.first_name = "Lisa"};

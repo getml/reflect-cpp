@@ -1,5 +1,3 @@
-#include "test_wstring.hpp"
-
 #include <iostream>
 #include <map>
 #include <memory>
@@ -11,9 +9,7 @@
 #include "write_and_read.hpp"
 
 namespace test_wstring {
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_wstring) {
   std::map<std::string, std::wstring> homer;
   homer.insert(std::make_pair("firstName", L"Homer"));
 

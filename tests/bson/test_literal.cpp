@@ -1,5 +1,3 @@
-#include "test_literal.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -20,9 +18,7 @@ struct Person {
   std::vector<Person> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(bson, test_literal) {
   const auto bart = Person{.first_name = FirstName::make<"Bart">()};
 
   write_and_read(bart);

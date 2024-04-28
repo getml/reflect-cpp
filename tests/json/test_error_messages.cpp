@@ -1,5 +1,3 @@
-#include "test_error_messages.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -7,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "write_and_read.hpp"
+#include <gtest/gtest.h>
 
 namespace test_error_messages {
 
@@ -18,9 +16,7 @@ struct Person {
   std::vector<Person> children;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_error_messages) {
   const std::string faulty_string =
       R"({"firstName":"Homer","lastName":12345,"birthday":"04/19/1987"})";
 
@@ -31,18 +27,8 @@ void test() {
 2) Failed to parse field 'birthday': String '04/19/1987' did not match format '%Y-%m-%d'.
 3) Field named 'children' not found.)";
 
-  if (!result.error()) {
-    std::cout << "Expected an error, got none." << std::endl << std::endl;
-  }
+  EXPECT_TRUE(result.error() && true);
 
-  if (result.error().value().what() != expected) {
-    std::cout << "Expected: " << std::endl
-              << expected << std::endl
-              << "Got:" << std::endl
-              << result.error().value().what() << std::endl
-              << std::endl;
-  }
-
-  std::cout << "OK" << std::endl << std::endl;
+  EXPECT_EQ(result.error().value().what(), expected);
 }
 }  // namespace test_error_messages

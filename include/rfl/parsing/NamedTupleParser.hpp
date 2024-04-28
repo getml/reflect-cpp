@@ -96,7 +96,7 @@ struct NamedTupleParser {
     if constexpr (_i == size) {
       return Type{Type::Object{_values}};
     } else {
-      using F = std::tuple_element_t<_i, typename T::Fields>;
+      using F = std::tuple_element_t<_i, typename NamedTuple<FieldTypes...>::Fields>;
       _values[std::string(F::name())] =
           Parser<R, W, typename F::Type>::to_schema(_definitions);
       return to_schema<_i + 1>(_definitions, _values);
@@ -155,21 +155,22 @@ struct NamedTupleParser {
   template <size_t _i = 0>
   static void call_destructors_where_necessary(
       const NamedTupleType& _view, const std::array<bool, size_>& _set) {
-    using FieldType = std::tuple_element_t<_i, typename NamedTupleType::Fields>;
-    using ValueType =
-        std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
-    if constexpr (!std::is_array_v<ValueType> &&
-                  std::is_destructible_v<ValueType>) {
-      if (std::get<_i>(_set)) {
-        rfl::get<_i>(_view)->~ValueType();
+    if constexpr (_i < sizeof...(FieldTypes)) {
+      using FieldType =
+          std::tuple_element_t<_i, typename NamedTupleType::Fields>;
+      using ValueType =
+          std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
+      if constexpr (!std::is_array_v<ValueType> &&
+                    std::is_destructible_v<ValueType>) {
+        if (std::get<_i>(_set)) {
+          rfl::get<_i>(_view)->~ValueType();
+        }
+      } else if constexpr (std::is_array_v<ValueType>) {
+        if (std::get<_i>(_set)) {
+          auto ptr = rfl::get<_i>(_view);
+          call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
+        }
       }
-    } else if constexpr (std::is_array_v<ValueType>) {
-      if (std::get<_i>(_set)) {
-        auto ptr = rfl::get<_i>(_view);
-        call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
-      }
-    }
-    if constexpr (_i + 1 < size_) {
       call_destructors_where_necessary<_i + 1>(_view, _set);
     }
   }
@@ -180,28 +181,29 @@ struct NamedTupleParser {
                                     const NamedTupleType& _view,
                                     std::array<bool, size_>* _set,
                                     std::vector<Error>* _errors) noexcept {
-    using FieldType = std::tuple_element_t<_i, typename NamedTupleType::Fields>;
-    using ValueType = std::remove_reference_t<
-        std::remove_pointer_t<typename FieldType::Type>>;
+    if constexpr (_i < sizeof...(FieldTypes)) {
+      using FieldType =
+          std::tuple_element_t<_i, typename NamedTupleType::Fields>;
+      using ValueType = std::remove_reference_t<
+          std::remove_pointer_t<typename FieldType::Type>>;
 
-    if (!std::get<_i>(_found)) {
-      if constexpr (_all_required ||
-                    is_required<ValueType, _ignore_empty_containers>()) {
-        constexpr auto current_name =
-            std::tuple_element_t<_i, typename NamedTupleType::Fields>::name();
-        _errors->push_back("Field named '" + std::string(current_name) +
-                           "' not found.");
-      } else {
-        if constexpr (!std::is_const_v<ValueType>) {
-          ::new (rfl::get<_i>(_view)) ValueType();
+      if (!std::get<_i>(_found)) {
+        if constexpr (_all_required ||
+                      is_required<ValueType, _ignore_empty_containers>()) {
+          constexpr auto current_name =
+              std::tuple_element_t<_i, typename NamedTupleType::Fields>::name();
+          _errors->push_back("Field named '" + std::string(current_name) +
+                             "' not found.");
         } else {
-          using NonConstT = std::remove_const_t<ValueType>;
-          ::new (const_cast<NonConstT*>(rfl::get<_i>(_view))) NonConstT();
+          if constexpr (!std::is_const_v<ValueType>) {
+            ::new (rfl::get<_i>(_view)) ValueType();
+          } else {
+            using NonConstT = std::remove_const_t<ValueType>;
+            ::new (const_cast<NonConstT*>(rfl::get<_i>(_view))) NonConstT();
+          }
+          std::get<_i>(*_set) = true;
         }
-        std::get<_i>(*_set) = true;
       }
-    }
-    if constexpr (_i + 1 < size_) {
       handle_missing_fields<_i + 1>(_found, _view, _set, _errors);
     }
   }

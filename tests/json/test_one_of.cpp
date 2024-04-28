@@ -1,5 +1,3 @@
-#include "test_one_of.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
@@ -22,9 +20,7 @@ struct Person {
   Age age;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_one_of) {
   const auto homer =
       Person{.first_name = "Homer", .last_name = "Simpson", .age = 45};
 

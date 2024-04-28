@@ -36,6 +36,8 @@
 
 2.4) [Size validation](https://github.com/getml/reflect-cpp/blob/main/docs/size_validation.md) - For imposing size constraints on containers such as `std::vector` or `std::string`.
 
+2.5) [JSON schema](https://github.com/getml/reflect-cpp/blob/main/docs/json_schema.md) - For validating your schema before you even send it to your C++ backend.
+
 ## 3) Custom classes
 
 3.1) [Custom classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_classes.md) - For custom classes with private fields.
@@ -62,9 +64,13 @@
 
 5.4) [flexbuffers](https://github.com/getml/reflect-cpp/blob/main/docs/flexbuffers.md)
 
-5.5) [XML](https://github.com/getml/reflect-cpp/blob/main/docs/xml.md)
+5.5) [msgpack](https://github.com/getml/reflect-cpp/blob/main/docs/msgpack.md)
 
-5.6) [YAML](https://github.com/getml/reflect-cpp/blob/main/docs/yaml.md)
+5.6) [TOML](https://github.com/getml/reflect-cpp/blob/main/docs/toml.md)
+
+5.7) [XML](https://github.com/getml/reflect-cpp/blob/main/docs/xml.md)
+
+5.8) [YAML](https://github.com/getml/reflect-cpp/blob/main/docs/yaml.md)
 
 ## 6) Advanced topics
 

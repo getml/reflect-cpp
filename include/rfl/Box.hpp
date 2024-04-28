@@ -4,6 +4,8 @@
 #include <memory>
 #include <stdexcept>
 
+#include "Result.hpp"
+
 namespace rfl {
 
 /// The Box class behaves very similarly to the unique_ptr, but unlike the
@@ -18,6 +20,15 @@ class Box {
   template <class... Args>
   static Box<T> make(Args&&... _args) {
     return Box<T>(std::make_unique<T>(std::forward<Args>(_args)...));
+  }
+
+  /// You can generate them from unique_ptrs as well, in which case it will
+  /// return an Error, if the unique_ptr is not set.
+  static Result<Box<T>> make(std::unique_ptr<T>&& _ptr) {
+    if (!_ptr) {
+      return Error("std::unique_ptr was a nullptr.");
+    }
+    return Box<T>(std::move(_ptr));
   }
 
   Box() : ptr_(std::make_unique<T>()) {}
@@ -77,7 +88,7 @@ class Box {
 
 /// Generates a new Ref<T>.
 template <class T, class... Args>
-Box<T> make_box(Args&&... _args) {
+auto make_box(Args&&... _args) {
   return Box<T>::make(std::forward<Args>(_args)...);
 }
 

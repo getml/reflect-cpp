@@ -12,8 +12,7 @@
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
 template <class R, class W, class T>
 requires AreReaderAndWriter<R, W, std::shared_ptr<T>>
@@ -25,7 +24,7 @@ struct Parser<R, W, std::shared_ptr<T>> {
 
   static Result<std::shared_ptr<T>> read(const R& _r,
                                          const InputVarType& _var) noexcept {
-    if (_r.is_empty(*_var)) {
+    if (_r.is_empty(_var)) {
       return std::shared_ptr<T>();
     }
     const auto to_ptr = [](auto&& _t) {
@@ -53,7 +52,6 @@ struct Parser<R, W, std::shared_ptr<T>> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif

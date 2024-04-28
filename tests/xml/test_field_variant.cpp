@@ -1,9 +1,6 @@
-#include "test_field_variant.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <source_location>
 #include <string>
 #include <vector>
@@ -29,12 +26,10 @@ using Shapes = rfl::Variant<rfl::Field<"circle", Circle>,
                             rfl::Field<"rectangle", Rectangle>,
                             rfl::Field<"square", rfl::Box<Square>>>;
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(xml, test_field_variant) {
   const Shapes r =
       rfl::make_field<"rectangle">(Rectangle{.height = 10, .width = 5});
 
-  write_and_read<"shape">(r);
+  write_and_read<"root">(r);
 }
 }  // namespace test_field_variant

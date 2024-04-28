@@ -1,5 +1,3 @@
-#include "test_enum1.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -19,9 +17,7 @@ struct Circle {
   Color color;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(json, test_enum1) {
   const auto circle = Circle{.radius = 2.0, .color = Color::green};
 
   write_and_read(circle, R"({"radius":2.0,"color":"green"})");

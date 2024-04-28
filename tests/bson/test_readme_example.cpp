@@ -1,5 +1,3 @@
-#include "test_readme_example.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <source_location>
@@ -22,9 +20,7 @@ struct Person {
   std::vector<Person> child;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(bson, test_readme_example) {
   const auto bart = Person{.first_name = "Bart",
                            .birthday = "1987-04-19",
                            .age = 10,

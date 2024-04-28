@@ -117,6 +117,44 @@ However, `rfl::json::read` would also accept this:
 {"shape":"Rectangle","height":10.0,"width":5.0}
 ```
 
+If the behavior of your program depends on the value the user has decided to pass, then
+you can also set the tag as a field explicitly. 
+
+For instance, if it somehow makes a difference
+whether the JSON contains "Rectangle" or "rectangle", you can do the following:
+
+```cpp
+struct Circle {
+  rfl::Literal<"circle", "Circle"> shape;
+  double radius;
+};
+
+struct Rectangle {
+  rfl::Literal<"rectangle", "Rectangle"> shape;
+  double height;
+  double width;
+};
+
+struct Square {
+  rfl::Literal<"square", "Square"> shape;
+  double width;
+};
+
+using Shapes = rfl::TaggedUnion<"shape", Circle, Square, Rectangle>;
+
+const Shapes r = Rectangle{
+  .shape = rfl::Literal<"rectangle", "Rectangle">::make<"Rectangle">(),
+  .height = 10,
+  .width = 5};
+
+const auto json_string = rfl::json::write(r);
+
+const auto r2 = rfl::json::read<Shapes>(json_string);
+```
+
+Note that in this case the type of the field `shape` MUST be `rfl::Literal`.
+Also note that this is exactly how tagged unions work in Pydantic.
+
 ## `std::variant` or `rfl::Variant` (externally tagged)
 
 Another approach is to add external tags. 

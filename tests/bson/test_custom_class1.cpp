@@ -1,5 +1,3 @@
-#include "test_custom_class1.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
@@ -31,9 +29,7 @@ struct Person {
   PersonImpl impl;
 };
 
-void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+TEST(bson, test_custom_class1) {
   const auto bart = Person("Bart");
 
   write_and_read(bart);

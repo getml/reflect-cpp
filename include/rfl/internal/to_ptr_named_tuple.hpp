@@ -10,6 +10,7 @@
 #include "copy_flattened_tuple_to_named_tuple.hpp"
 #include "has_fields.hpp"
 #include "has_flatten_fields.hpp"
+#include "is_empty.hpp"
 #include "is_field.hpp"
 #include "is_named_tuple.hpp"
 #include "to_flattened_ptr_tuple.hpp"
@@ -63,6 +64,8 @@ auto to_ptr_named_tuple(T&& _t) {
       auto ptr_field_tuple = to_ptr_field_tuple(_t);
       return field_tuple_to_named_tuple(ptr_field_tuple);
     }
+  } else if constexpr (is_empty<T>()) {
+    return rfl::NamedTuple<>();
   } else {
     using FieldNames = rfl::field_names_t<T>;
     auto flattened_ptr_tuple = to_flattened_ptr_tuple(_t);
