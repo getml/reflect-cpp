@@ -23,6 +23,7 @@
 #include "rfl/Rename.hpp"
 #include "rfl/Size.hpp"
 #include "rfl/SnakeCaseToCamelCase.hpp"
+#include "rfl/SnakeCaseToHungarianCase.hpp"
 #include "rfl/TaggedUnion.hpp"
 #include "rfl/Timestamp.hpp"
 #include "rfl/Validator.hpp"
