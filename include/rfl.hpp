@@ -22,6 +22,7 @@
 #include "rfl/Ref.hpp"
 #include "rfl/Rename.hpp"
 #include "rfl/Size.hpp"
+#include "rfl/SnakeCaseToCamelCase.hpp"
 #include "rfl/TaggedUnion.hpp"
 #include "rfl/Timestamp.hpp"
 #include "rfl/Validator.hpp"
