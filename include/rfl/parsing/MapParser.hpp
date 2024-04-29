@@ -18,7 +18,7 @@
 namespace rfl {
 namespace parsing {
 
-template <class R, class W, class MapType, class... Processors>
+template <class R, class W, class MapType, class ProcessorsType>
 requires AreReaderAndWriter<R, W, MapType>
 struct MapParser {
  public:
@@ -52,12 +52,12 @@ struct MapParser {
                       std::is_floating_point_v<ReflT>) {
           const auto name = std::to_string(k.reflection());
           const auto new_parent = typename ParentType::Object{name, &obj};
-          Parser<R, W, std::remove_cvref_t<ValueType>, Processors...>::write(
+          Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
               _w, v, new_parent);
         } else {
           const auto name = k.reflection();
           const auto new_parent = typename ParentType::Object{name, &obj};
-          Parser<R, W, std::remove_cvref_t<ValueType>, Processors...>::write(
+          Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
               _w, v, new_parent);
         }
 
@@ -65,11 +65,11 @@ struct MapParser {
                            std::is_floating_point_v<KeyType>) {
         const auto name = std::to_string(k);
         const auto new_parent = typename ParentType::Object{name, &obj};
-        Parser<R, W, std::remove_cvref_t<ValueType>, Processors...>::write(
+        Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
             _w, v, new_parent);
       } else {
         const auto new_parent = typename ParentType::Object{k, &obj};
-        Parser<R, W, std::remove_cvref_t<ValueType>, Processors...>::write(
+        Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
             _w, v, new_parent);
       }
     }
@@ -79,7 +79,7 @@ struct MapParser {
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     return schema::Type{schema::Type::StringMap{Ref<schema::Type>::make(
-        Parser<R, W, ValueType, Processors...>::to_schema(_definitions))}};
+        Parser<R, W, ValueType, ProcessorsType>::to_schema(_definitions))}};
   }
 
  private:
@@ -87,7 +87,7 @@ struct MapParser {
     MapType map;
     std::vector<Error> errors;
     const auto map_reader =
-        MapReader<R, W, MapType, Processors...>(&_r, &map, &errors);
+        MapReader<R, W, MapType, ProcessorsType>(&_r, &map, &errors);
     const auto err = _r.read_object(map_reader, _obj);
     if (err) {
       return *err;

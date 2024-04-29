@@ -15,9 +15,9 @@
 namespace rfl {
 namespace parsing {
 
-template <class R, class W, class T, class... Processors>
+template <class R, class W, class T, class ProcessorsType>
 requires AreReaderAndWriter<R, W, std::optional<T>>
-struct Parser<R, W, std::optional<T>, Processors...> {
+struct Parser<R, W, std::optional<T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
 
@@ -29,7 +29,7 @@ struct Parser<R, W, std::optional<T>, Processors...> {
       return std::optional<T>();
     }
     const auto to_opt = [](auto&& _t) { return std::make_optional<T>(_t); };
-    return Parser<R, W, std::remove_cvref_t<T>, Processors...>::read(_r, _var)
+    return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r, _var)
         .transform(to_opt);
   }
 
@@ -40,15 +40,15 @@ struct Parser<R, W, std::optional<T>, Processors...> {
       ParentType::add_null(_w, _parent);
       return;
     }
-    Parser<R, W, std::remove_cvref_t<T>, Processors...>::write(_w, *_o,
-                                                               _parent);
+    Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, *_o,
+                                                                _parent);
   }
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     using U = std::remove_cvref_t<T>;
     return schema::Type{schema::Type::Optional{Ref<schema::Type>::make(
-        Parser<R, W, U, Processors...>::to_schema(_definitions))}};
+        Parser<R, W, U, ProcessorsType>::to_schema(_definitions))}};
   }
 };
 

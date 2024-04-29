@@ -28,7 +28,7 @@ namespace rfl {
 namespace parsing {
 
 /// Default case - anything that cannot be explicitly matched.
-template <class R, class W, class T, class... Processors>
+template <class R, class W, class T, class ProcessorsType>
 requires AreReaderAndWriter<R, W, T>
 struct Parser {
  public:
@@ -51,10 +51,10 @@ struct Parser {
             return Error(e.what());
           }
         };
-        return Parser<R, W, ReflectionType, Processors...>::read(_r, _var)
+        return Parser<R, W, ReflectionType, ProcessorsType>::read(_r, _var)
             .and_then(wrap_in_t);
       } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
-        return StructReader<R, W, T>::read(_r, _var);
+        return StructReader<R, W, T, ProcessorsType>::read(_r, _var);
       } else if constexpr (std::is_enum_v<T>) {
         using StringConverter = internal::enums::StringConverter<T>;
         return _r.template to_basic_type<std::string>(_var).and_then(
@@ -76,17 +76,18 @@ struct Parser {
     if constexpr (internal::has_reflection_type_v<T>) {
       using ReflectionType = std::remove_cvref_t<typename T::ReflectionType>;
       if constexpr (internal::has_reflection_method_v<T>) {
-        Parser<R, W, ReflectionType, Processors...>::write(
+        Parser<R, W, ReflectionType, ProcessorsType>::write(
             _w, _var.reflection(), _parent);
       } else {
         const auto& [r] = _var;
-        Parser<R, W, ReflectionType, Processors...>::write(_w, r, _parent);
+        Parser<R, W, ReflectionType, ProcessorsType>::write(_w, r, _parent);
       }
     } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
-      const auto ptr_named_tuple = internal::to_ptr_named_tuple(_var);
+      const auto ptr_named_tuple = ProcessorsType::template apply_all<T>(
+          internal::to_ptr_named_tuple(_var));
       using PtrNamedTupleType = std::remove_cvref_t<decltype(ptr_named_tuple)>;
-      Parser<R, W, PtrNamedTupleType, Processors...>::write(_w, ptr_named_tuple,
-                                                            _parent);
+      Parser<R, W, PtrNamedTupleType, ProcessorsType>::write(
+          _w, ptr_named_tuple, _parent);
     } else if constexpr (std::is_enum_v<T>) {
       using StringConverter = internal::enums::StringConverter<T>;
       const auto str = StringConverter::enum_to_string(_var);
@@ -149,8 +150,8 @@ struct Parser {
       return make_validated<U>(_definitions);
 
     } else if constexpr (internal::has_reflection_type_v<U>) {
-      return Parser<R, W, typename U::ReflectionType, Processors...>::to_schema(
-          _definitions);
+      return Parser<R, W, typename U::ReflectionType,
+                    ProcessorsType>::to_schema(_definitions);
 
     } else {
       static_assert(rfl::always_false_v<U>, "Unsupported type.");
@@ -166,7 +167,7 @@ struct Parser {
         .description_ = typename U::Content().str(),
         .type_ =
             Ref<Type>::make(Parser<R, W, std::remove_cvref_t<typename U::Type>,
-                                   Processors...>::to_schema(_definitions))}};
+                                   ProcessorsType>::to_schema(_definitions))}};
   }
 
   template <class U>
@@ -177,7 +178,7 @@ struct Parser {
     if constexpr (S::is_flag_enum_) {
       return Type{Type::String{}};
     } else {
-      return Parser<R, W, typename S::NamesLiteral, Processors...>::to_schema(
+      return Parser<R, W, typename S::NamesLiteral, ProcessorsType>::to_schema(
           _definitions);
     }
   }
@@ -191,7 +192,7 @@ struct Parser {
       (*_definitions)[name] =
           Type{Type::Integer{}};  // Placeholder to avoid infinite loop.
       (*_definitions)[name] =
-          Parser<R, W, named_tuple_t<U>, Processors...>::to_schema(
+          Parser<R, W, named_tuple_t<U>, ProcessorsType>::to_schema(
               _definitions);
     }
     return Type{Type::Reference{name}};
@@ -205,7 +206,7 @@ struct Parser {
     using ValidationType = std::remove_cvref_t<typename U::ValidationType>;
     return Type{Type::Validated{
         .type_ = Ref<Type>::make(
-            Parser<R, W, ReflectionType, Processors...>::to_schema(
+            Parser<R, W, ReflectionType, ProcessorsType>::to_schema(
                 _definitions)),
         .validation_ = ValidationType::template to_schema<ReflectionType>()}};
   }

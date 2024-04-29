@@ -15,9 +15,9 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class T, internal::StringLiteral _name,
-          class... Processors>
+          class ProcessorsType>
 requires AreReaderAndWriter<R, W, Rename<_name, T>>
-struct Parser<R, W, Rename<_name, T>, Processors...> {
+struct Parser<R, W, Rename<_name, T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
 
@@ -26,20 +26,20 @@ struct Parser<R, W, Rename<_name, T>, Processors...> {
     const auto to_rename = [](auto&& _t) {
       return Rename<_name, T>(std::move(_t));
     };
-    return Parser<R, W, std::remove_cvref_t<T>, Processors...>::read(_r, _var)
+    return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r, _var)
         .transform(to_rename);
   }
 
   template <class P>
   static void write(const W& _w, const Rename<_name, T>& _rename,
                     const P& _parent) noexcept {
-    Parser<R, W, std::remove_cvref_t<T>, Processors...>::write(
+    Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(
         _w, _rename.value(), _parent);
   }
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
-    return Parser<R, W, std::remove_cvref_t<T>, Processors...>::to_schema(
+    return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::to_schema(
         _definitions);
   }
 };

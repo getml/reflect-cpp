@@ -14,9 +14,9 @@
 namespace rfl {
 namespace parsing {
 
-template <class R, class W, class... Processors>
+template <class R, class W, class ProcessorsType>
 requires AreReaderAndWriter<R, W, std::string_view>
-struct Parser<R, W, std::string_view, Processors...> {
+struct Parser<R, W, std::string_view, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
 
@@ -32,13 +32,13 @@ struct Parser<R, W, std::string_view, Processors...> {
   template <class P>
   static void write(const W& _w, const std::string_view& _str,
                     const P& _p) noexcept {
-    Parser<R, W, std::string_view, Processors...>::write(_w, std::string(_str),
-                                                         _p);
+    Parser<R, W, std::string_view, ProcessorsType>::write(_w, std::string(_str),
+                                                          _p);
   }
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
-    return Parser<R, W, std::string, Processors...>::to_schema(_definitions);
+    return Parser<R, W, std::string, ProcessorsType>::to_schema(_definitions);
   }
 };
 

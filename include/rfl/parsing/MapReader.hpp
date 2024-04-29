@@ -12,7 +12,7 @@
 
 namespace rfl::parsing {
 
-template <class R, class W, class MapType, class... Processors>
+template <class R, class W, class MapType, class ProcessorsType>
 class MapReader {
  private:
   using InputVarType = typename R::InputVarType;
@@ -91,7 +91,7 @@ class MapReader {
       auto pair = std::make_pair(std::string(_name), std::move(_val));
       return make_key(pair);
     };
-    return Parser<R, W, std::remove_cvref_t<ValueType>, Processors...>::read(
+    return Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::read(
                *r_, _var)
         .and_then(to_pair);
   }

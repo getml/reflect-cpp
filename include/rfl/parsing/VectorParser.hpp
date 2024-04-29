@@ -25,7 +25,7 @@ namespace parsing {
 /// serialized format (std::vector, std::set, std::deque, ...),
 /// but also includes map-like types, when the key is not of type
 /// std::string.
-template <class R, class W, class VecType, class... Processors>
+template <class R, class W, class VecType, class ProcessorsType>
 requires AreReaderAndWriter<R, W, VecType>
 struct VectorParser {
  public:
@@ -41,7 +41,7 @@ struct VectorParser {
 
   static Result<VecType> read(const R& _r, const InputVarType& _var) noexcept {
     if constexpr (treat_as_map()) {
-      return MapParser<R, W, VecType, Processors...>::read(_r, _var);
+      return MapParser<R, W, VecType, ProcessorsType>::read(_r, _var);
     } else {
       const auto to_res = [&](auto&& _v) {
         return to_result(_r, std::move(_v));
@@ -54,14 +54,14 @@ struct VectorParser {
   static void write(const W& _w, const VecType& _vec,
                     const P& _parent) noexcept {
     if constexpr (treat_as_map()) {
-      MapParser<R, W, VecType, Processors...>::write(_w, _vec, _parent);
+      MapParser<R, W, VecType, ProcessorsType>::write(_w, _vec, _parent);
     } else {
       auto arr = ParentType::add_array(
           _w, std::distance(_vec.begin(), _vec.end()), _parent);
       const auto new_parent = typename ParentType::Array{&arr};
       for (const auto& v : _vec) {
-        Parser<R, W, std::remove_cvref_t<T>, Processors...>::write(_w, v,
-                                                                   new_parent);
+        Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, v,
+                                                                    new_parent);
       }
       _w.end_array(&arr);
     }
@@ -73,12 +73,12 @@ struct VectorParser {
     using Type = schema::Type;
     return Type{Type::TypedArray{
         .type_ = Ref<Type>::make(
-            Parser<R, W, T, Processors...>::to_schema(_definitions))}};
+            Parser<R, W, T, ProcessorsType>::to_schema(_definitions))}};
   }
 
  private:
   static auto get_elem(const R& _r, auto& _v) {
-    return Parser<R, W, std::remove_cvref_t<T>, Processors...>::read(_r, _v)
+    return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r, _v)
         .value();
   };
 
@@ -86,7 +86,7 @@ struct VectorParser {
     using K = std::remove_cvref_t<typename T::first_type>;
     using V = std::remove_cvref_t<typename T::second_type>;
     return Parser<R, W, std::remove_cvref_t<std::pair<K, V>>,
-                  Processors...>::read(_r, _v)
+                  ProcessorsType>::read(_r, _v)
         .value();
   }
 

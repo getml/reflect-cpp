@@ -14,7 +14,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, bool _ignore_empty_containers, bool _all_required,
-          class... Ts>
+          class ProcessorsType, class... Ts>
 requires AreReaderAndWriter<R, W, std::tuple<Ts...>>
 struct TupleParser {
  public:
@@ -68,7 +68,8 @@ struct TupleParser {
     } else {
       using U =
           std::remove_cvref_t<std::tuple_element_t<_i, std::tuple<Ts...>>>;
-      _types.push_back(Parser<R, W, U>::to_schema(_definitions));
+      _types.push_back(
+          Parser<R, W, U, ProcessorsType>::to_schema(_definitions));
       return to_schema<_i + 1>(_definitions, std::move(_types));
     }
   }
@@ -111,7 +112,7 @@ struct TupleParser {
       }
     }
 
-    return Parser<R, W, NewFieldType>::read(_r, _vec[_i]);
+    return Parser<R, W, NewFieldType, ProcessorsType>::read(_r, _vec[_i]);
   }
 
   template <int _i, class P>
@@ -120,7 +121,8 @@ struct TupleParser {
     if constexpr (_i < sizeof...(Ts)) {
       using NewFieldType = std::remove_cvref_t<
           typename std::tuple_element<_i, std::tuple<Ts...>>::type>;
-      Parser<R, W, NewFieldType>::write(_w, std::get<_i>(_tup), _parent);
+      Parser<R, W, NewFieldType, ProcessorsType>::write(_w, std::get<_i>(_tup),
+                                                        _parent);
       to_array<_i + 1>(_w, _tup, _parent);
     }
   }

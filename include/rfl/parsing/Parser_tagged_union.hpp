@@ -16,11 +16,11 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, internal::StringLiteral _discriminator,
-          class... AlternativeTypes, class... Processors>
+          class... AlternativeTypes, class ProcessorsType>
 requires AreReaderAndWriter<R, W,
                             TaggedUnion<_discriminator, AlternativeTypes...>>
 struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
-              Processors...> {
+              ProcessorsType> {
   using ResultType = Result<TaggedUnion<_discriminator, AlternativeTypes...>>;
 
  public:
@@ -57,7 +57,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
       std::map<std::string, schema::Type>* _definitions) {
     using VariantType = std::variant<std::invoke_result_t<
         decltype(wrap_if_necessary<AlternativeTypes>), AlternativeTypes>...>;
-    return Parser<R, W, VariantType, Processors...>::to_schema(_definitions);
+    return Parser<R, W, VariantType, ProcessorsType>::to_schema(_definitions);
   }
 
  private:
@@ -90,7 +90,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
               _discriminator.str() + " '" + _disc_value + "': " + _e.what());
         };
 
-        return Parser<R, W, AlternativeType, Processors...>::read(_r, _var)
+        return Parser<R, W, AlternativeType, ProcessorsType>::read(_r, _var)
             .transform(to_tagged_union)
             .or_else(embellish_error);
 
@@ -131,7 +131,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
   static void write_wrapped(const W& _w, const T& _val,
                             const P& _parent) noexcept {
     const auto wrapped = wrap_if_necessary(_val);
-    Parser<R, W, std::remove_cvref_t<decltype(wrapped)>, Processors...>::write(
+    Parser<R, W, std::remove_cvref_t<decltype(wrapped)>, ProcessorsType>::write(
         _w, wrapped, _parent);
   }
 

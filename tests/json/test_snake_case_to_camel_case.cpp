@@ -32,9 +32,8 @@ TEST(json, test_snake_case_to_camel_case) {
              .birthday = "1987-04-19",
              .children = std::vector<Person>({bart, lisa, maggie})};
 
-  const auto named_tuple =
-      rfl::to_named_tuple<rfl::SnakeCaseToCamelCase>(homer);
-
-  std::cout << rfl::json::write(named_tuple, rfl::json::pretty) << std::endl;
+  std::cout << rfl::json::write<rfl::SnakeCaseToCamelCase>(homer,
+                                                           rfl::json::pretty)
+            << std::endl;
 }
 }  // namespace test_snake_case_to_camel_case

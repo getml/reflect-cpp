@@ -15,9 +15,9 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class FirstType, class SecondType,
-          class... Processors>
+          class ProcessorsType>
 requires AreReaderAndWriter<R, W, std::pair<FirstType, SecondType>>
-struct Parser<R, W, std::pair<FirstType, SecondType>, Processors...> {
+struct Parser<R, W, std::pair<FirstType, SecondType>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
 
@@ -28,8 +28,8 @@ struct Parser<R, W, std::pair<FirstType, SecondType>, Processors...> {
       return std::make_pair(std::move(std::get<0>(_t)),
                             std::move(std::get<1>(_t)));
     };
-    return Parser<R, W, std::tuple<FirstType, SecondType>, Processors...>::read(
-               _r, _var)
+    return Parser<R, W, std::tuple<FirstType, SecondType>,
+                  ProcessorsType>::read(_r, _var)
         .transform(to_pair);
   }
 
@@ -38,13 +38,13 @@ struct Parser<R, W, std::pair<FirstType, SecondType>, Processors...> {
                     const P& _parent) noexcept {
     const auto tup = std::make_tuple(&_p.first, &_p.second);
     Parser<R, W, std::tuple<const FirstType*, const SecondType*>,
-           Processors...>::write(_w, tup, _parent);
+           ProcessorsType>::write(_w, tup, _parent);
   }
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     return Parser<R, W, std::tuple<FirstType, SecondType>,
-                  Processors...>::to_schema(_definitions);
+                  ProcessorsType>::to_schema(_definitions);
   }
 };
 

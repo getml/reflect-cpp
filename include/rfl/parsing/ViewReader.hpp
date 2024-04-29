@@ -11,7 +11,7 @@
 
 namespace rfl::parsing {
 
-template <class R, class W, class ViewType, class... Processors>
+template <class R, class W, class ViewType, class ProcessorsType>
 class ViewReader {
  private:
   using InputVarType = typename R::InputVarType;
@@ -33,7 +33,7 @@ class ViewReader {
       using CurrentType = std::remove_cvref_t<std::remove_pointer_t<
           typename std::tuple_element_t<_i, typename ViewType::Fields>::Type>>;
       if (!std::get<_i>(*found_) && _name == current_name) {
-        auto res = Parser<R, W, CurrentType, Processors...>::read(*r_, _var);
+        auto res = Parser<R, W, CurrentType, ProcessorsType>::read(*r_, _var);
         if (res) {
           move_to(rfl::get<_i>(*view_), &(*res));
           std::get<_i>(*set_) = true;

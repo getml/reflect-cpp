@@ -9,10 +9,10 @@
 
 namespace rfl::parsing::schema {
 
-template <class R, class W, class T, class... Processors>
+template <class R, class W, class T, class ProcessorsType>
 Definition make() {
   std::map<std::string, Type> definitions;
-  auto root = Parser<R, W, T, Processors...>::to_schema(&definitions);
+  auto root = Parser<R, W, T, ProcessorsType>::to_schema(&definitions);
   return Definition{.root_ = root, .definitions_ = definitions};
 }
 

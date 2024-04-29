@@ -13,9 +13,9 @@
 namespace rfl {
 namespace parsing {
 
-template <class R, class W, class... Processors>
+template <class R, class W, class ProcessorsType>
 requires AreReaderAndWriter<R, W, std::wstring>
-struct Parser<R, W, std::wstring, Processors...> {
+struct Parser<R, W, std::wstring, ProcessorsType> {
  public:
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
@@ -28,7 +28,7 @@ struct Parser<R, W, std::wstring, Processors...> {
       return std::wstring();
     }
 
-    auto inStr = Parser<R, W, std::string, Processors...>::read(_r, _var);
+    auto inStr = Parser<R, W, std::string, ProcessorsType>::read(_r, _var);
     if (auto err = inStr.error(); err.has_value()) {
       return Result<std::wstring>(err.value());
     }
@@ -71,7 +71,7 @@ struct Parser<R, W, std::wstring, Processors...> {
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
-    return Parser<R, W, std::string, Processors...>::to_schema(_definitions);
+    return Parser<R, W, std::string, ProcessorsType>::to_schema(_definitions);
   }
 };
 

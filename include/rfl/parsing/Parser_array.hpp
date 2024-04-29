@@ -15,9 +15,9 @@
 
 namespace rfl {
 namespace parsing {
-template <class R, class W, class T, size_t _size, class... Processors>
+template <class R, class W, class T, size_t _size, class ProcessorsType>
 requires AreReaderAndWriter<R, W, std::array<T, _size>>
-struct Parser<R, W, std::array<T, _size>, Processors...> {
+struct Parser<R, W, std::array<T, _size>, ProcessorsType> {
  public:
   using InputArrayType = typename R::InputArrayType;
   using InputVarType = typename R::InputVarType;
@@ -55,8 +55,8 @@ struct Parser<R, W, std::array<T, _size>, Processors...> {
     auto arr = ParentType::add_array(_w, _size, _parent);
     const auto new_parent = typename ParentType::Array{&arr};
     for (const auto& e : _arr) {
-      Parser<R, W, std::remove_cvref_t<T>, Processors...>::write(_w, e,
-                                                                 new_parent);
+      Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, e,
+                                                                  new_parent);
     }
     _w.end_array(&arr);
   }
@@ -67,7 +67,7 @@ struct Parser<R, W, std::array<T, _size>, Processors...> {
     return schema::Type{schema::Type::FixedSizeTypedArray{
         .size_ = _size,
         .type_ = Ref<schema::Type>::make(
-            Parser<R, W, U, Processors...>::to_schema(_definitions))}};
+            Parser<R, W, U, ProcessorsType>::to_schema(_definitions))}};
   }
 
  private:
@@ -93,7 +93,7 @@ struct Parser<R, W, std::array<T, _size>, Processors...> {
   template <int _i>
   static auto extract_single_field(
       const R& _r, const std::vector<InputVarType>& _vec) noexcept {
-    return Parser<R, W, T, Processors...>::read(_r, _vec[_i]);
+    return Parser<R, W, T, ProcessorsType>::read(_r, _vec[_i]);
   }
 };
 

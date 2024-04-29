@@ -13,9 +13,9 @@
 namespace rfl {
 namespace parsing {
 
-template <class R, class W, class T, class... Processors>
+template <class R, class W, class T, class ProcessorsType>
 requires AreReaderAndWriter<R, W, Result<T>>
-struct Parser<R, W, Result<T>, Processors...> {
+struct Parser<R, W, Result<T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
 
@@ -38,7 +38,7 @@ struct Parser<R, W, Result<T>, Processors...> {
     };
 
     return Result<Result<T>>(
-        Parser<R, W, VariantType, Processors...>::read(_r, _var).transform(
+        Parser<R, W, VariantType, ProcessorsType>::read(_r, _var).transform(
             to_res));
   }
 
@@ -46,13 +46,13 @@ struct Parser<R, W, Result<T>, Processors...> {
   static void write(const W& _w, const Result<T>& _r,
                     const P& _parent) noexcept {
     const auto write_t = [&](const auto& _t) -> Nothing {
-      Parser<R, W, std::remove_cvref_t<T>, Processors...>::write(_w, _t,
-                                                                 _parent);
+      Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, _t,
+                                                                  _parent);
       return Nothing{};
     };
 
     const auto write_err = [&](const auto& _err) -> Nothing {
-      Parser<R, W, ErrorType, Processors...>::write(
+      Parser<R, W, ErrorType, ProcessorsType>::write(
           _w, ErrorType(make_field<"error">(_err.what())), _parent);
       return Nothing{};
     };
@@ -62,7 +62,7 @@ struct Parser<R, W, Result<T>, Processors...> {
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
-    return Parser<R, W, std::remove_cvref_t<T>, Processors...>::to_schema(
+    return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::to_schema(
         _definitions);
   }
 };

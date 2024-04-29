@@ -15,9 +15,9 @@
 namespace rfl {
 namespace parsing {
 
-template <class R, class W, class... FieldTypes, class... Processors>
+template <class R, class W, class... FieldTypes, class ProcessorsType>
 requires AreReaderAndWriter<R, W, rfl::Variant<FieldTypes...>>
-struct Parser<R, W, rfl::Variant<FieldTypes...>, Processors...> {
+struct Parser<R, W, rfl::Variant<FieldTypes...>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
 
@@ -28,21 +28,21 @@ struct Parser<R, W, rfl::Variant<FieldTypes...>, Processors...> {
       return rfl::Variant<FieldTypes...>(
           std::forward<std::variant<FieldTypes...>>(_var));
     };
-    return Parser<R, W, std::variant<FieldTypes...>, Processors...>::read(_r,
-                                                                          _var)
+    return Parser<R, W, std::variant<FieldTypes...>, ProcessorsType>::read(_r,
+                                                                           _var)
         .transform(to_rfl_variant);
   }
 
   template <class P>
   static void write(const W& _w, const rfl::Variant<FieldTypes...>& _variant,
                     const P& _parent) noexcept {
-    Parser<R, W, std::variant<FieldTypes...>, Processors...>::write(
+    Parser<R, W, std::variant<FieldTypes...>, ProcessorsType>::write(
         _w, _variant.variant(), _parent);
   }
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
-    return Parser<R, W, std::variant<FieldTypes...>, Processors...>::to_schema(
+    return Parser<R, W, std::variant<FieldTypes...>, ProcessorsType>::to_schema(
         _definitions);
   }
 };

@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 
+#include "../internal/Processors.hpp"
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
 
@@ -17,11 +18,13 @@ namespace json {
 inline constexpr yyjson_write_flag pretty = YYJSON_WRITE_PRETTY;
 
 /// Returns a JSON string.
-template <class T>
-std::string write(const T& _obj, const yyjson_write_flag _flag = 0) {
+template <class... Ps>
+std::string write(const auto& _obj, const yyjson_write_flag _flag = 0) {
+  using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
   auto w = Writer(yyjson_mut_doc_new(NULL));
-  Parser<T>::write(w, _obj, typename ParentType::Root{});
+  Parser<T, internal::Processors<Ps...>>::write(w, _obj,
+                                                typename ParentType::Root{});
   const char* json_c_str = yyjson_mut_write(w.doc_, _flag, NULL);
   const auto json_str = std::string(json_c_str);
   free((void*)json_c_str);
@@ -30,12 +33,14 @@ std::string write(const T& _obj, const yyjson_write_flag _flag = 0) {
 }
 
 /// Writes a JSON into an ostream.
-template <class T>
-std::ostream& write(const T& _obj, std::ostream& _stream,
+template <class... Ps>
+std::ostream& write(const auto& _obj, std::ostream& _stream,
                     const yyjson_write_flag _flag = 0) {
+  using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
   auto w = Writer(yyjson_mut_doc_new(NULL));
-  Parser<T>::write(w, _obj, typename ParentType::Root{});
+  Parser<T, internal::Processors<Ps...>>::write(w, _obj,
+                                                typename ParentType::Root{});
   const char* json_c_str = yyjson_mut_write(w.doc_, _flag, NULL);
   _stream << json_c_str;
   free((void*)json_c_str);

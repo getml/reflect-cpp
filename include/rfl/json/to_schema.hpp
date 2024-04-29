@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "../Literal.hpp"
+#include "../internal/Processors.hpp"
 #include "../parsing/schema/Type.hpp"
 #include "../parsing/schema/ValidationType.hpp"
 #include "../parsing/schema/make.hpp"
@@ -232,14 +233,15 @@ template <class T>
 struct TypeHelper {};
 
 template <class... Ts>
-struct TypeHelper<std::variant<Ts...> > {
+struct TypeHelper<std::variant<Ts...>> {
   using JSONSchemaType = std::variant<schema::JSONSchema<Ts>...>;
 };
 
 /// Returns the JSON schema for a class.
-template <class T>
+template <class T, class... Ps>
 std::string to_schema(const yyjson_write_flag _flag = 0) {
-  const auto internal_schema = parsing::schema::make<Reader, Writer, T>();
+  const auto internal_schema =
+      parsing::schema::make<Reader, Writer, T, internal::Processors<Ps...>>();
   auto definitions = std::map<std::string, schema::Type>();
   for (const auto& [k, v] : internal_schema.definitions_) {
     definitions[k] = type_to_json_schema_type(v);

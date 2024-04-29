@@ -17,9 +17,9 @@
 namespace rfl {
 namespace parsing {
 
-template <class R, class W, class... FieldTypes, class... Processors>
+template <class R, class W, class... FieldTypes, class ProcessorsType>
 requires AreReaderAndWriter<R, W, std::variant<FieldTypes...>>
-class Parser<R, W, std::variant<FieldTypes...>, Processors...> {
+class Parser<R, W, std::variant<FieldTypes...>, ProcessorsType> {
  public:
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
@@ -27,7 +27,8 @@ class Parser<R, W, std::variant<FieldTypes...>, Processors...> {
   static Result<std::variant<FieldTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
     if constexpr (internal::all_fields<std::tuple<FieldTypes...>>()) {
-      return FieldVariantParser<R, W, FieldTypes...>::read(_r, _var);
+      return FieldVariantParser<R, W, ProcessorsType, FieldTypes...>::read(
+          _r, _var);
     } else {
       std::optional<std::variant<FieldTypes...>> result;
       std::vector<Error> errors;
@@ -49,11 +50,12 @@ class Parser<R, W, std::variant<FieldTypes...>, Processors...> {
   static void write(const W& _w, const std::variant<FieldTypes...>& _variant,
                     const P& _parent) noexcept {
     if constexpr (internal::all_fields<std::tuple<FieldTypes...>>()) {
-      FieldVariantParser<R, W, FieldTypes...>::write(_w, _variant, _parent);
+      FieldVariantParser<R, W, ProcessorsType, FieldTypes...>::write(
+          _w, _variant, _parent);
     } else {
       const auto handle = [&](const auto& _v) {
         using Type = std::remove_cvref_t<decltype(_v)>;
-        Parser<R, W, Type, Processors...>::write(_w, _v, _parent);
+        Parser<R, W, Type, ProcessorsType>::write(_w, _v, _parent);
       };
       return std::visit(handle, _variant);
     }
@@ -64,7 +66,8 @@ class Parser<R, W, std::variant<FieldTypes...>, Processors...> {
       std::map<std::string, schema::Type>* _definitions,
       std::vector<schema::Type> _types = {}) {
     if constexpr (internal::all_fields<std::tuple<FieldTypes...>>()) {
-      return FieldVariantParser<R, W, FieldTypes...>::to_schema(_definitions);
+      return FieldVariantParser<R, W, ProcessorsType, FieldTypes...>::to_schema(
+          _definitions);
     } else {
       using Type = schema::Type;
       constexpr size_t size = sizeof...(FieldTypes);
@@ -74,7 +77,7 @@ class Parser<R, W, std::variant<FieldTypes...>, Processors...> {
         using U = std::remove_cvref_t<
             std::variant_alternative_t<_i, std::variant<FieldTypes...>>>;
         _types.push_back(
-            Parser<R, W, U, Processors...>::to_schema(_definitions));
+            Parser<R, W, U, ProcessorsType>::to_schema(_definitions));
         return to_schema<_i + 1>(_definitions, std::move(_types));
       }
     }
@@ -89,7 +92,7 @@ class Parser<R, W, std::variant<FieldTypes...>, Processors...> {
     if constexpr (_i < size) {
       using AltType = std::remove_cvref_t<
           std::variant_alternative_t<_i, std::variant<FieldTypes...>>>;
-      auto res = Parser<R, W, AltType, Processors...>::read(_r, _var);
+      auto res = Parser<R, W, AltType, ProcessorsType>::read(_r, _var);
       if (res) {
         *_result = std::move(*res);
         return;
