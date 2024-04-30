@@ -7,7 +7,7 @@
 
 #include "write_and_read.hpp"
 
-namespace test_snake_case_to_hungarian_case {
+namespace test_snake_case_to_pascal_case {
 
 struct Person {
   std::string first_name;
@@ -16,7 +16,7 @@ struct Person {
   std::vector<Person> children;
 };
 
-TEST(json, test_snake_case_to_hungarian_case) {
+TEST(json, test_snake_case_to_pascal_case) {
   const auto bart = Person{
       .first_name = "Bart", .last_name = "Simpson", .birthday = "1987-04-19"};
 
@@ -32,8 +32,8 @@ TEST(json, test_snake_case_to_hungarian_case) {
              .birthday = "1987-04-19",
              .children = std::vector<Person>({bart, lisa, maggie})};
 
-  std::cout << rfl::json::write<rfl::SnakeCaseToHungarianCase>(
-                   homer, rfl::json::pretty)
-            << std::endl;
+  write_and_read<rfl::SnakeCaseToPascalCase>(
+      homer,
+      R"({"FirstName":"Homer","LastName":"Simpson","Birthday":"1987-04-19","Children":[{"FirstName":"Bart","LastName":"Simpson","Birthday":"1987-04-19","Children":[]},{"FirstName":"Lisa","LastName":"Simpson","Birthday":"1987-04-19","Children":[]},{"FirstName":"Maggie","LastName":"Simpson","Birthday":"1987-04-19","Children":[]}]})");
 }
-}  // namespace test_snake_case_to_hungarian_case
+}  // namespace test_snake_case_to_pascal_case

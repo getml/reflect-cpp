@@ -2,15 +2,18 @@
 #define RFL_CBOR_LOAD_HPP_
 
 #include "../Result.hpp"
+#include "../internal/Processors.hpp"
 #include "../io/load_bytes.hpp"
 #include "read.hpp"
 
 namespace rfl {
 namespace cbor {
 
-template <class T>
+template <class T, class... Ps>
 Result<T> load(const std::string& _fname) {
-  const auto read_bytes = [](const auto& _bytes) { return read<T>(_bytes); };
+  const auto read_bytes = [](const auto& _bytes) {
+    return read<T, Ps...>(_bytes);
+  };
   return rfl::io::load_bytes(_fname).and_then(read_bytes);
 }
 

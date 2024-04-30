@@ -23,6 +23,8 @@ consteval auto transform_snake_case() {
     return StringLiteral<sizeof...(chars) + 1>(chars...);
   } else if constexpr (_name.arr_[_i] == '_') {
     return transform_snake_case<_name, true, _i + 1, chars...>();
+  } else if constexpr (_name.arr_[_i] == '\0') {
+    return transform_snake_case<_name, false, _name.arr_.size(), chars...>();
   } else if constexpr (_capitalize) {
     return transform_snake_case<_name, false, _i + 1, chars...,
                                 to_upper<_name.arr_[_i]>()>();

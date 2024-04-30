@@ -32,8 +32,8 @@ TEST(json, test_snake_case_to_camel_case) {
              .birthday = "1987-04-19",
              .children = std::vector<Person>({bart, lisa, maggie})};
 
-  std::cout << rfl::json::write<rfl::SnakeCaseToCamelCase>(homer,
-                                                           rfl::json::pretty)
-            << std::endl;
+  write_and_read<rfl::SnakeCaseToCamelCase>(
+      homer,
+      R"({"firstName":"Homer","lastName":"Simpson","birthday":"1987-04-19","children":[{"firstName":"Bart","lastName":"Simpson","birthday":"1987-04-19","children":[]},{"firstName":"Lisa","lastName":"Simpson","birthday":"1987-04-19","children":[]},{"firstName":"Maggie","lastName":"Simpson","birthday":"1987-04-19","children":[]}]})");
 }
 }  // namespace test_snake_case_to_camel_case

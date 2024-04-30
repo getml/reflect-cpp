@@ -25,7 +25,8 @@ struct StructReader {
   static Result<StructType> read(const R& _r, const InputVarType& _var) {
     alignas(StructType) unsigned char buf[sizeof(StructType)];
     auto ptr = reinterpret_cast<StructType*>(buf);
-    const auto view = to_view(*ptr);
+    const auto view =
+        ProcessorsType::template apply_all<StructType>(to_view(*ptr));
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto err =
         Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, view);

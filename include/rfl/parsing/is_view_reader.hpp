@@ -11,9 +11,9 @@ class is_view_reader;
 template <class T>
 class is_view_reader : public std::false_type {};
 
-template <class R, class W, class NamedTupleType>
-class is_view_reader<ViewReader<R, W, NamedTupleType>> : public std::true_type {
-};
+template <class R, class W, class NamedTupleType, class ProcessorsType>
+class is_view_reader<ViewReader<R, W, NamedTupleType, ProcessorsType>>
+    : public std::true_type {};
 
 template <class T>
 constexpr bool is_view_reader_v =
