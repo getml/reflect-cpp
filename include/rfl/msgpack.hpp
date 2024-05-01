@@ -1,6 +1,7 @@
 #ifndef RFL_MSGPACK_HPP_
 #define RFL_MSGPACK_HPP_
 
+#include "../rfl.hpp"
 #include "msgpack/Parser.hpp"
 #include "msgpack/Reader.hpp"
 #include "msgpack/Writer.hpp"

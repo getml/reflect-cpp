@@ -1,6 +1,7 @@
 #ifndef RFL_XML_HPP_
 #define RFL_XML_HPP_
 
+#include "../rfl.hpp"
 #include "xml/Parser.hpp"
 #include "xml/Reader.hpp"
 #include "xml/Writer.hpp"

@@ -7,13 +7,14 @@
 #include <rfl/yaml.hpp>
 #include <string>
 
-template <class T>
-void write_and_read(const T& _struct) {
-  const auto serialized1 = rfl::yaml::write(_struct);
-  const auto res = rfl::yaml::read<T>(serialized1);
+template <class... Ps>
+void write_and_read(const auto& _struct) {
+  using T = std::remove_cvref_t<decltype(_struct)>;
+  const auto serialized1 = rfl::yaml::write<Ps...>(_struct);
+  const auto res = rfl::yaml::read<T, Ps...>(serialized1);
   EXPECT_TRUE(res && true) << "Test failed on read. Error: "
                            << res.error().value().what();
-  const auto serialized2 = rfl::yaml::write(res.value());
+  const auto serialized2 = rfl::yaml::write<Ps...>(res.value());
   EXPECT_EQ(serialized1, serialized2);
 }
 
