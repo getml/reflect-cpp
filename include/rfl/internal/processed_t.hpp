@@ -3,8 +3,8 @@
 
 #include <type_traits>
 
+#include "../Processors.hpp"
 #include "../named_tuple_t.hpp"
-#include "Processors.hpp"
 
 namespace rfl::internal {
 
@@ -15,8 +15,7 @@ template <class StructType, class... Ps>
 struct Processed<StructType, Processors<Ps...>> {
   using NamedTupleType = named_tuple_t<StructType>;
   using type = typename std::invoke_result<
-      decltype(Processors<Ps...>::template apply_all<StructType,
-                                                     NamedTupleType>),
+      decltype(Processors<Ps...>::template process<StructType, NamedTupleType>),
       NamedTupleType>::type;
 };
 

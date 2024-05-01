@@ -1,8 +1,8 @@
 #ifndef RFL_CBOR_LOAD_HPP_
 #define RFL_CBOR_LOAD_HPP_
 
+#include "../Processors.hpp"
 #include "../Result.hpp"
-#include "../internal/Processors.hpp"
 #include "../io/load_bytes.hpp"
 #include "read.hpp"
 

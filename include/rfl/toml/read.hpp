@@ -5,7 +5,7 @@
 #include <string>
 #include <toml++/toml.hpp>
 
-#include "../internal/Processors.hpp"
+#include "../Processors.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
 #include "Parser.hpp"
 #include "Reader.hpp"
@@ -18,7 +18,7 @@ using InputVarType = typename Reader::InputVarType;
 template <class T, class... Ps>
 auto read(InputVarType _var) {
   const auto r = Reader();
-  return Parser<T, internal::Processors<Ps...>>::read(r, _var);
+  return Parser<T, Processors<Ps...>>::read(r, _var);
 }
 
 /// Parses an object from TOML using reflection.

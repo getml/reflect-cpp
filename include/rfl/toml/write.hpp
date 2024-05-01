@@ -7,7 +7,7 @@
 #include <toml++/toml.hpp>
 #include <type_traits>
 
-#include "../internal/Processors.hpp"
+#include "../Processors.hpp"
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
 
@@ -20,8 +20,7 @@ std::ostream& write(const auto& _obj, std::ostream& _stream) {
   using ParentType = parsing::Parent<Writer>;
   ::toml::table root;
   auto w = Writer(&root);
-  Parser<T, internal::Processors<Ps...>>::write(w, _obj,
-                                                typename ParentType::Root{});
+  Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
   _stream << root;
   return _stream;
 }
@@ -34,8 +33,7 @@ std::string write(const auto& _obj) {
   std::stringstream sstream;
   ::toml::table root;
   auto w = Writer(&root);
-  Parser<T, internal::Processors<Ps...>>::write(w, _obj,
-                                                typename ParentType::Root{});
+  Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
   sstream << root;
   return sstream.str();
 }

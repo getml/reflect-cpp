@@ -5,8 +5,8 @@
 #include <iostream>
 #include <string>
 
+#include "../Processors.hpp"
 #include "../Result.hpp"
-#include "../internal/Processors.hpp"
 #include "../io/save_string.hpp"
 #include "write.hpp"
 

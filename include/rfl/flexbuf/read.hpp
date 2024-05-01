@@ -6,8 +6,8 @@
 #include <istream>
 #include <vector>
 
+#include "../Processors.hpp"
 #include "../Result.hpp"
-#include "../internal/Processors.hpp"
 #include "Parser.hpp"
 
 namespace rfl {
@@ -19,7 +19,7 @@ using InputVarType = typename Reader::InputVarType;
 template <class T, class... Ps>
 auto read(const InputVarType& _obj) {
   const auto r = Reader();
-  return Parser<T, internal::Processors<Ps...>>::read(r, _obj);
+  return Parser<T, Processors<Ps...>>::read(r, _obj);
 }
 
 /// Parses an object from flexbuf using reflection.

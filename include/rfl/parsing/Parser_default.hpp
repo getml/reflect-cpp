@@ -84,7 +84,7 @@ struct Parser {
         Parser<R, W, ReflectionType, ProcessorsType>::write(_w, r, _parent);
       }
     } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
-      const auto ptr_named_tuple = ProcessorsType::template apply_all<T>(
+      const auto ptr_named_tuple = ProcessorsType::template process<T>(
           internal::to_ptr_named_tuple(_var));
       using PtrNamedTupleType = std::remove_cvref_t<decltype(ptr_named_tuple)>;
       Parser<R, W, PtrNamedTupleType, ProcessorsType>::write(

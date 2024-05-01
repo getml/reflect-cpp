@@ -20,6 +20,7 @@
 #include "rfl/OneOf.hpp"
 #include "rfl/Pattern.hpp"
 #include "rfl/PatternValidator.hpp"
+#include "rfl/Processors.hpp"
 #include "rfl/Ref.hpp"
 #include "rfl/Rename.hpp"
 #include "rfl/Size.hpp"

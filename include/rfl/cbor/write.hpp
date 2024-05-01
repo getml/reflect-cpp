@@ -23,8 +23,8 @@ void write_into_buffer(const auto& _obj, CborEncoder* _encoder,
   cbor_encoder_init(_encoder, reinterpret_cast<uint8_t*>(_buffer->data()),
                     _buffer->size(), 0);
   const auto writer = Writer(_encoder);
-  Parser<T, internal::Processors<Ps...>>::write(writer, _obj,
-                                                typename ParentType::Root{});
+  Parser<T, Processors<Ps...>>::write(writer, _obj,
+                                      typename ParentType::Root{});
 }
 
 /// Returns CBOR bytes.

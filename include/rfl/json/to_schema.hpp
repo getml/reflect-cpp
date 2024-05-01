@@ -9,7 +9,7 @@
 #include <variant>
 
 #include "../Literal.hpp"
-#include "../internal/Processors.hpp"
+#include "../Processors.hpp"
 #include "../parsing/schema/Type.hpp"
 #include "../parsing/schema/ValidationType.hpp"
 #include "../parsing/schema/make.hpp"
@@ -241,7 +241,7 @@ struct TypeHelper<std::variant<Ts...>> {
 template <class T, class... Ps>
 std::string to_schema(const yyjson_write_flag _flag = 0) {
   const auto internal_schema =
-      parsing::schema::make<Reader, Writer, T, internal::Processors<Ps...>>();
+      parsing::schema::make<Reader, Writer, T, Processors<Ps...>>();
   auto definitions = std::map<std::string, schema::Type>();
   for (const auto& [k, v] : internal_schema.definitions_) {
     definitions[k] = type_to_json_schema_type(v);

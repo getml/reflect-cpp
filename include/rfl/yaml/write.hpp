@@ -8,7 +8,7 @@
 #include <string>
 #include <type_traits>
 
-#include "../internal/Processors.hpp"
+#include "../Processors.hpp"
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
 
@@ -22,8 +22,7 @@ std::ostream& write(const auto& _obj, std::ostream& _stream) {
   using ParentType = parsing::Parent<Writer>;
   const auto out = Ref<YAML::Emitter>::make();
   auto w = Writer(out);
-  Parser<T, internal::Processors<Ps...>>::write(w, _obj,
-                                                typename ParentType::Root{});
+  Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
   _stream << out->c_str();
   return _stream;
 }
@@ -35,8 +34,7 @@ std::string write(const auto& _obj) {
   using ParentType = parsing::Parent<Writer>;
   const auto out = Ref<YAML::Emitter>::make();
   auto w = Writer(out);
-  Parser<T, internal::Processors<Ps...>>::write(w, _obj,
-                                                typename ParentType::Root{});
+  Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
   return out->c_str();
 }
 

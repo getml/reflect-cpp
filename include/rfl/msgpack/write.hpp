@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "../internal/Processors.hpp"
+#include "../Processors.hpp"
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
 
@@ -25,8 +25,7 @@ std::vector<char> write(const auto& _obj) noexcept {
   msgpack_packer pk;
   msgpack_packer_init(&pk, &sbuf, msgpack_sbuffer_write);
   auto w = Writer(&pk);
-  Parser<T, internal::Processors<Ps...>>::write(w, _obj,
-                                                typename ParentType::Root{});
+  Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
   auto bytes = std::vector<char>(sbuf.data, sbuf.data + sbuf.size);
   msgpack_sbuffer_destroy(&sbuf);
   return bytes;

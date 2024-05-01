@@ -5,7 +5,7 @@
 #include <pugixml.hpp>
 #include <string>
 
-#include "../internal/Processors.hpp"
+#include "../Processors.hpp"
 #include "../internal/get_type_name.hpp"
 #include "../internal/remove_namespaces.hpp"
 #include "Parser.hpp"
@@ -20,7 +20,7 @@ using InputVarType = typename Reader::InputVarType;
 template <class T, class... Ps>
 auto read(const InputVarType& _var) {
   const auto r = Reader();
-  return Parser<T, internal::Processors<Ps...>>::read(r, _var);
+  return Parser<T, Processors<Ps...>>::read(r, _var);
 }
 
 /// Parses an object from XML using reflection.

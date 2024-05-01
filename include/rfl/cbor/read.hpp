@@ -6,7 +6,7 @@
 #include <istream>
 #include <string>
 
-#include "../internal/Processors.hpp"
+#include "../Processors.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
 #include "Parser.hpp"
 #include "Reader.hpp"
@@ -21,7 +21,7 @@ using InputVarType = typename Reader::InputVarType;
 template <class T, class... Ps>
 auto read(const InputVarType& _obj) {
   const auto r = Reader();
-  return Parser<T, internal::Processors<Ps...>>::read(r, _obj);
+  return Parser<T, Processors<Ps...>>::read(r, _obj);
 }
 
 /// Parses an object from CBOR using reflection.

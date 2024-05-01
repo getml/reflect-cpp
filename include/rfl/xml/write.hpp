@@ -7,7 +7,7 @@
 #include <string>
 #include <type_traits>
 
-#include "../internal/Processors.hpp"
+#include "../Processors.hpp"
 #include "../internal/StringLiteral.hpp"
 #include "../internal/get_type_name.hpp"
 #include "../internal/remove_namespaces.hpp"
@@ -52,8 +52,7 @@ std::ostream& write(const auto& _obj, std::ostream& _stream,
 
   auto w = Writer(doc, root_name.str());
 
-  Parser<T, internal::Processors<Ps...>>::write(w, _obj,
-                                                typename ParentType::Root{});
+  Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
 
   doc->save(_stream, _indent.c_str());
 

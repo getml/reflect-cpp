@@ -8,8 +8,8 @@
 #include <sstream>
 #include <vector>
 
+#include "../Processors.hpp"
 #include "../Ref.hpp"
-#include "../internal/Processors.hpp"
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
 
@@ -22,8 +22,7 @@ std::vector<uint8_t> to_buffer(const auto& _obj) {
   using ParentType = parsing::Parent<Writer>;
   const auto fbb = Ref<flexbuffers::Builder>::make();
   auto w = Writer(fbb);
-  Parser<T, internal::Processors<Ps...>>::write(w, _obj,
-                                                typename ParentType::Root{});
+  Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
   fbb->Finish();
   return fbb->GetBuffer();
 }
