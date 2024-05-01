@@ -15,6 +15,7 @@
 #include "../internal/is_description.hpp"
 #include "../internal/is_literal.hpp"
 #include "../internal/is_validator.hpp"
+#include "../internal/processed_t.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
 #include "../type_name_t.hpp"
 #include "AreReaderAndWriter.hpp"
@@ -191,9 +192,9 @@ struct Parser {
     if (_definitions->find(name) == _definitions->end()) {
       (*_definitions)[name] =
           Type{Type::Integer{}};  // Placeholder to avoid infinite loop.
+      using NamedTupleType = internal::processed_t<U, ProcessorsType>;
       (*_definitions)[name] =
-          Parser<R, W, named_tuple_t<U>, ProcessorsType>::to_schema(
-              _definitions);
+          Parser<R, W, NamedTupleType, ProcessorsType>::to_schema(_definitions);
     }
     return Type{Type::Reference{name}};
   }
