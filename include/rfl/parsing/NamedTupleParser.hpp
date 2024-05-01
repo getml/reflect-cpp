@@ -29,7 +29,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, bool _ignore_empty_containers, bool _all_required,
-          class... FieldTypes>
+          class ProcessorsType, class... FieldTypes>
 requires AreReaderAndWriter<R, W, NamedTuple<FieldTypes...>>
 struct NamedTupleParser {
   using InputObjectType = typename R::InputObjectType;
@@ -54,9 +54,10 @@ struct NamedTupleParser {
     alignas(NamedTuple<FieldTypes...>) unsigned char
         buf[sizeof(NamedTuple<FieldTypes...>)];
     auto ptr = reinterpret_cast<NamedTuple<FieldTypes...>*>(buf);
-    const auto view = rfl::to_view(*ptr);
+    auto view = rfl::to_view(*ptr);
     using ViewType = std::remove_cvref_t<decltype(view)>;
-    const auto err = Parser<R, W, ViewType>::read_view(_r, _var, view);
+    const auto err =
+        Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
     if (err) {
       return *err;
     }
@@ -66,7 +67,7 @@ struct NamedTupleParser {
   /// Reads the data into a view.
   static std::optional<Error> read_view(
       const R& _r, const InputVarType& _var,
-      const NamedTuple<FieldTypes...>& _view) noexcept {
+      NamedTuple<FieldTypes...>* _view) noexcept {
     const auto obj = _r.to_object(_var);
     if (obj) {
       return read_object(_r, *obj, _view);
@@ -96,9 +97,11 @@ struct NamedTupleParser {
     if constexpr (_i == size) {
       return Type{Type::Object{_values}};
     } else {
-      using F = std::tuple_element_t<_i, typename NamedTuple<FieldTypes...>::Fields>;
+      using F =
+          std::tuple_element_t<_i, typename NamedTuple<FieldTypes...>::Fields>;
       _values[std::string(F::name())] =
-          Parser<R, W, typename F::Type>::to_schema(_definitions);
+          Parser<R, W, typename F::Type, ProcessorsType>::to_schema(
+              _definitions);
       return to_schema<_i + 1>(_definitions, _values);
     }
   };
@@ -121,17 +124,19 @@ struct NamedTupleParser {
                     !is_required<ValueType, _ignore_empty_containers>()) {
         if (!is_empty(value)) {
           if constexpr (internal::is_attribute_v<ValueType>) {
-            Parser<R, W, ValueType>::write(_w, value,
-                                           new_parent.as_attribute());
+            Parser<R, W, ValueType, ProcessorsType>::write(
+                _w, value, new_parent.as_attribute());
           } else {
-            Parser<R, W, ValueType>::write(_w, value, new_parent);
+            Parser<R, W, ValueType, ProcessorsType>::write(_w, value,
+                                                           new_parent);
           }
         }
       } else {
         if constexpr (internal::is_attribute_v<ValueType>) {
-          Parser<R, W, ValueType>::write(_w, value, new_parent.as_attribute());
+          Parser<R, W, ValueType, ProcessorsType>::write(
+              _w, value, new_parent.as_attribute());
         } else {
-          Parser<R, W, ValueType>::write(_w, value, new_parent);
+          Parser<R, W, ValueType, ProcessorsType>::write(_w, value, new_parent);
         }
       }
       return build_object_recursively<_i + 1>(_w, _tup, _ptr);
@@ -154,20 +159,22 @@ struct NamedTupleParser {
   /// trigger the destructors.
   template <size_t _i = 0>
   static void call_destructors_where_necessary(
-      const NamedTupleType& _view, const std::array<bool, size_>& _set) {
+      NamedTupleType* _view, const std::array<bool, size_>& _set) {
     if constexpr (_i < sizeof...(FieldTypes)) {
       using FieldType =
           std::tuple_element_t<_i, typename NamedTupleType::Fields>;
+      using OriginalType = std::remove_cvref_t<typename FieldType::Type>;
       using ValueType =
           std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
       if constexpr (!std::is_array_v<ValueType> &&
+                    std::is_pointer_v<OriginalType> &&
                     std::is_destructible_v<ValueType>) {
         if (std::get<_i>(_set)) {
-          rfl::get<_i>(_view)->~ValueType();
+          rfl::get<_i>(*_view)->~ValueType();
         }
       } else if constexpr (std::is_array_v<ValueType>) {
         if (std::get<_i>(_set)) {
-          auto ptr = rfl::get<_i>(_view);
+          auto ptr = rfl::get<_i>(*_view);
           call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
         }
       }
@@ -208,21 +215,21 @@ struct NamedTupleParser {
     }
   }
 
-  static std::optional<Error> read_object(
-      const R& _r, const InputObjectType& _obj,
-      const NamedTupleType& _view) noexcept {
+  static std::optional<Error> read_object(const R& _r,
+                                          const InputObjectType& _obj,
+                                          NamedTupleType* _view) noexcept {
     auto found = std::array<bool, NamedTupleType::size()>();
     found.fill(false);
     auto set = std::array<bool, NamedTupleType::size()>();
     set.fill(false);
     std::vector<Error> errors;
-    const auto object_reader =
-        ViewReader<R, W, NamedTupleType>(&_r, &_view, &found, &set, &errors);
+    const auto object_reader = ViewReader<R, W, NamedTupleType, ProcessorsType>(
+        &_r, _view, &found, &set, &errors);
     const auto err = _r.read_object(object_reader, _obj);
     if (err) {
       return *err;
     }
-    handle_missing_fields(found, _view, &set, &errors);
+    handle_missing_fields(found, *_view, &set, &errors);
     if (errors.size() != 0) {
       call_destructors_where_necessary(_view, set);
       return to_single_error_message(errors);

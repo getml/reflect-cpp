@@ -19,8 +19,8 @@ namespace rfl {
 /// Generates the named tuple that is equivalent to the struct _t.
 /// If _t already is a named tuple, then _t will be returned.
 /// All fields of the struct must be an rfl::Field.
-template <class T>
-auto to_named_tuple(T&& _t) {
+auto to_named_tuple(auto&& _t) {
+  using T = std::remove_cvref_t<decltype(_t)>;
   if constexpr (internal::is_named_tuple_v<std::remove_cvref_t<T>>) {
     return _t;
   } else if constexpr (internal::is_field_v<std::remove_cvref_t<T>>) {
@@ -37,8 +37,9 @@ auto to_named_tuple(T&& _t) {
 /// Generates the named tuple that is equivalent to the struct _t.
 /// If _t already is a named tuple, then _t will be returned.
 /// All fields of the struct must be an rfl::Field.
-template <class T>
-auto to_named_tuple(const T& _t) {
+template <class ProcessorsType>
+auto to_named_tuple(const auto& _t) {
+  using T = std::remove_cvref_t<decltype(_t)>;
   if constexpr (internal::is_named_tuple_v<std::remove_cvref_t<T>>) {
     return _t;
   } else if constexpr (internal::is_field_v<std::remove_cvref_t<T>>) {

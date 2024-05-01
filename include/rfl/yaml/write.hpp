@@ -8,34 +8,37 @@
 #include <string>
 #include <type_traits>
 
+#include "../Processors.hpp"
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
 
 namespace rfl {
 namespace yaml {
 
-/// Writes a XML into an ostream.
-template <class T>
-std::ostream& write(const T& _obj, std::ostream& _stream) {
+/// Writes a YAML into an ostream.
+template <class... Ps>
+std::ostream& write(const auto& _obj, std::ostream& _stream) {
+  using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
   const auto out = Ref<YAML::Emitter>::make();
   auto w = Writer(out);
-  Parser<T>::write(w, _obj, typename ParentType::Root{});
+  Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
   _stream << out->c_str();
   return _stream;
 }
 
-/// Returns a XML string.
-template <class T>
-std::string write(const T& _obj) {
+/// Returns a YAML string.
+template <class... Ps>
+std::string write(const auto& _obj) {
+  using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
   const auto out = Ref<YAML::Emitter>::make();
   auto w = Writer(out);
-  Parser<T>::write(w, _obj, typename ParentType::Root{});
+  Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
   return out->c_str();
 }
 
 }  // namespace yaml
 }  // namespace rfl
 
-#endif  // XML_PARSER_HPP_
+#endif

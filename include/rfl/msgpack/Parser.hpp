@@ -11,21 +11,24 @@ namespace parsing {
 /// msgpack-c requires us to explicitly set the number of fields in advance.
 /// Because of that, we require all of the fields and then set them to nullptr,
 /// if necessary.
-template <class... FieldTypes>
+template <class ProcessorsType, class... FieldTypes>
 requires AreReaderAndWriter<msgpack::Reader, msgpack::Writer,
                             NamedTuple<FieldTypes...>>
-struct Parser<msgpack::Reader, msgpack::Writer, NamedTuple<FieldTypes...>>
+struct Parser<msgpack::Reader, msgpack::Writer, NamedTuple<FieldTypes...>,
+              ProcessorsType>
     : public NamedTupleParser<msgpack::Reader, msgpack::Writer,
                               /*_ignore_empty_containers=*/false,
-                              /*_all_required=*/true, FieldTypes...> {
+                              /*_all_required=*/true, ProcessorsType,
+                              FieldTypes...> {
 };
 
-template <class... Ts>
+template <class ProcessorsType, class... Ts>
 requires AreReaderAndWriter<msgpack::Reader, msgpack::Writer, std::tuple<Ts...>>
-struct Parser<msgpack::Reader, msgpack::Writer, std::tuple<Ts...>>
+struct Parser<msgpack::Reader, msgpack::Writer, std::tuple<Ts...>,
+              ProcessorsType>
     : public TupleParser<msgpack::Reader, msgpack::Writer,
                          /*_ignore_empty_containers=*/false,
-                         /*_all_required=*/true, Ts...> {
+                         /*_all_required=*/true, ProcessorsType, Ts...> {
 };
 
 }  // namespace parsing
@@ -34,8 +37,8 @@ struct Parser<msgpack::Reader, msgpack::Writer, std::tuple<Ts...>>
 namespace rfl {
 namespace msgpack {
 
-template <class T>
-using Parser = parsing::Parser<Reader, Writer, T>;
+template <class T, class ProcessorsType>
+using Parser = parsing::Parser<Reader, Writer, T, ProcessorsType>;
 
 }
 }  // namespace rfl

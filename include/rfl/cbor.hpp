@@ -1,6 +1,7 @@
 #ifndef RFL_CBOR_HPP_
 #define RFL_CBOR_HPP_
 
+#include "../rfl.hpp"
 #include "cbor/Parser.hpp"
 #include "cbor/Reader.hpp"
 #include "cbor/Writer.hpp"

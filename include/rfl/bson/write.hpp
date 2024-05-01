@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "../Processors.hpp"
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
 
@@ -16,8 +17,9 @@ namespace bson {
 
 /// Returns BSON bytes. Careful: It is the responsibility of the caller to call
 /// bson_free on the returned pointer.
-template <class T>
-std::pair<uint8_t*, size_t> to_buffer(const T& _obj) noexcept {
+template <class... Ps>
+std::pair<uint8_t*, size_t> to_buffer(const auto& _obj) noexcept {
+  using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
   bson_t* doc = nullptr;
   uint8_t* buf = nullptr;
@@ -26,7 +28,8 @@ std::pair<uint8_t*, size_t> to_buffer(const T& _obj) noexcept {
       bson_writer_new(&buf, &buflen, 0, bson_realloc_ctx, NULL);
   bson_writer_begin(bson_writer, &doc);
   const auto rfl_writer = Writer(doc);
-  Parser<T>::write(rfl_writer, _obj, typename ParentType::Root{});
+  Parser<T, Processors<Ps...>>::write(rfl_writer, _obj,
+                                      typename ParentType::Root{});
   bson_writer_end(bson_writer);
   const auto len = bson_writer_get_length(bson_writer);
   bson_writer_destroy(bson_writer);
@@ -34,9 +37,9 @@ std::pair<uint8_t*, size_t> to_buffer(const T& _obj) noexcept {
 }
 
 /// Returns BSON bytes.
-template <class T>
-std::vector<char> write(const T& _obj) noexcept {
-  auto [buf, len] = to_buffer(_obj);
+template <class... Ps>
+std::vector<char> write(const auto& _obj) noexcept {
+  auto [buf, len] = to_buffer<Ps...>(_obj);
   const auto result = std::vector<char>(reinterpret_cast<char*>(buf),
                                         reinterpret_cast<char*>(buf) + len);
   bson_free(buf);
@@ -44,9 +47,9 @@ std::vector<char> write(const T& _obj) noexcept {
 }
 
 /// Writes a BSON into an ostream.
-template <class T>
-std::ostream& write(const T& _obj, std::ostream& _stream) noexcept {
-  auto [buf, len] = to_buffer(_obj);
+template <class... Ps>
+std::ostream& write(const auto& _obj, std::ostream& _stream) noexcept {
+  auto [buf, len] = to_buffer<Ps...>(_obj);
   _stream.write(reinterpret_cast<const char*>(buf), len);
   bson_free(buf);
   return _stream;

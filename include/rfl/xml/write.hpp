@@ -7,6 +7,7 @@
 #include <string>
 #include <type_traits>
 
+#include "../Processors.hpp"
 #include "../internal/StringLiteral.hpp"
 #include "../internal/get_type_name.hpp"
 #include "../internal/remove_namespaces.hpp"
@@ -27,9 +28,11 @@ consteval auto get_root_name() {
 }
 
 /// Writes a XML into an ostream.
-template <internal::StringLiteral _root = internal::StringLiteral(""), class T>
-std::ostream& write(const T& _obj, std::ostream& _stream,
+template <internal::StringLiteral _root = internal::StringLiteral(""),
+          class... Ps>
+std::ostream& write(const auto& _obj, std::ostream& _stream,
                     const std::string& _indent = "    ") {
+  using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
 
   constexpr auto root_name = get_root_name<_root, T>();
@@ -49,7 +52,7 @@ std::ostream& write(const T& _obj, std::ostream& _stream,
 
   auto w = Writer(doc, root_name.str());
 
-  Parser<T>::write(w, _obj, typename ParentType::Root{});
+  Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
 
   doc->save(_stream, _indent.c_str());
 
@@ -57,10 +60,11 @@ std::ostream& write(const T& _obj, std::ostream& _stream,
 }
 
 /// Returns a XML string.
-template <internal::StringLiteral _root = internal::StringLiteral(""), class T>
-std::string write(const T& _obj, const std::string& _indent = "    ") {
+template <internal::StringLiteral _root = internal::StringLiteral(""),
+          class... Ps>
+std::string write(const auto& _obj, const std::string& _indent = "    ") {
   std::stringstream stream;
-  write<_root, T>(_obj, stream);
+  write<_root, Ps...>(_obj, stream);
   return stream.str();
 }
 
