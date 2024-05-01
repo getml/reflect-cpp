@@ -11,8 +11,12 @@ struct SnakeCaseToCamelCase {
   /// Replaces all instances of snake_case field names with camelCase.
   template <class StructType>
   static auto process(auto&& _named_tuple) {
-    const auto handle_one = [](auto&& _f) {
-      return handle_one_field(std::move(_f));
+    const auto handle_one = []<class FieldType>(FieldType&& _f) {
+      if constexpr (FieldType::name() != "xml_content") {
+        return handle_one_field(std::move(_f));
+      } else {
+        return std::move(_f);
+      }
     };
     return _named_tuple.transform(handle_one);
   }
