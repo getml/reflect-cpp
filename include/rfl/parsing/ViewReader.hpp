@@ -18,9 +18,8 @@ class ViewReader {
   static constexpr size_t size_ = ViewType::size();
 
  public:
-  ViewReader(const R* _r, const ViewType* _view,
-             std::array<bool, size_>* _found, std::array<bool, size_>* _set,
-             std::vector<Error>* _errors)
+  ViewReader(const R* _r, ViewType* _view, std::array<bool, size_>* _found,
+             std::array<bool, size_>* _set, std::vector<Error>* _errors)
       : r_(_r), view_(_view), found_(_found), set_(_set), errors_(_errors) {}
 
   ~ViewReader() = default;
@@ -30,12 +29,19 @@ class ViewReader {
     if constexpr (_i < size_) {
       constexpr auto current_name =
           std::tuple_element_t<_i, typename ViewType::Fields>::name();
-      using CurrentType = std::remove_cvref_t<std::remove_pointer_t<
-          typename std::tuple_element_t<_i, typename ViewType::Fields>::Type>>;
+      using OriginalType =
+          typename std::tuple_element_t<_i, typename ViewType::Fields>::Type;
+      using CurrentType =
+          std::remove_cvref_t<std::remove_pointer_t<OriginalType>>;
       if (!std::get<_i>(*found_) && _name == current_name) {
         auto res = Parser<R, W, CurrentType, ProcessorsType>::read(*r_, _var);
         if (res) {
-          move_to(rfl::get<_i>(*view_), &(*res));
+          if constexpr (std::is_pointer_v<OriginalType> ||
+                        internal::is_array_v<OriginalType>) {
+            move_to(rfl::get<_i>(*view_), &(*res));
+          } else {
+            rfl::get<_i>(*view_) = *res;
+          }
           std::get<_i>(*set_) = true;
         } else {
           errors_->push_back(Error("Failed to parse field '" +
@@ -73,7 +79,7 @@ class ViewReader {
   const R* r_;
 
   /// The underlying view.
-  const ViewType* view_;
+  ViewType* view_;
 
   /// Indicates that a certain field has been found.
   std::array<bool, size_>* found_;

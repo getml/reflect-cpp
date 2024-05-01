@@ -7,6 +7,7 @@
 #pragma warning(disable : 4101)
 #endif
 
+#include "rfl/AddStructName.hpp"
 #include "rfl/AllOf.hpp"
 #include "rfl/AnyOf.hpp"
 #include "rfl/Attribute.hpp"
