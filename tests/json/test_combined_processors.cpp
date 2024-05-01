@@ -7,7 +7,7 @@
 
 #include "write_and_read.hpp"
 
-namespace test_add_combined_processors {
+namespace test_combined_processors {
 
 using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
 
@@ -21,7 +21,7 @@ struct Person {
   std::vector<Person> children;
 };
 
-TEST(json, test_add_combined_processors) {
+TEST(json, test_combined_processors) {
   const auto bart = Person{.first_name = "Bart",
                            .birthday = "1987-04-19",
                            .age = 10,
@@ -51,4 +51,4 @@ TEST(json, test_add_combined_processors) {
       homer,
       R"({"type":"Person","firstName":"Homer","lastName":"Simpson","town":"Springfield","birthday":"1987-04-19","age":45,"email":"homer@simpson.com","children":[{"type":"Person","firstName":"Bart","lastName":"Simpson","town":"Springfield","birthday":"1987-04-19","age":10,"email":"bart@simpson.com","children":[]},{"type":"Person","firstName":"Lisa","lastName":"Simpson","town":"Springfield","birthday":"1987-04-19","age":8,"email":"lisa@simpson.com","children":[]},{"type":"Person","firstName":"Maggie","lastName":"Simpson","town":"Springfield","birthday":"1987-04-19","age":0,"email":"maggie@simpson.com","children":[]}]})");
 }
-}  // namespace test_add_combined_processors
+}  // namespace test_combined_processors
