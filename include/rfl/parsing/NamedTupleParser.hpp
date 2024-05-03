@@ -143,45 +143,6 @@ struct NamedTupleParser {
     }
   }
 
-  /// C-arrays need special handling here.
-  template <class T>
-  static void call_destructor_on_array(const size_t _size, T* _ptr) {
-    for (size_t i = 0; i < _size; ++i) {
-      if constexpr (std::is_array_v<T>) {
-        call_destructor_on_array(sizeof(*_ptr) / sizeof(**_ptr), *(_ptr + i));
-      } else if constexpr (std::is_destructible_v<T>) {
-        (_ptr + i)->~T();
-      }
-    }
-  }
-
-  /// Because of the way we have allocated the fields, we need to manually
-  /// trigger the destructors.
-  template <size_t _i = 0>
-  static void call_destructors_where_necessary(
-      NamedTupleType* _view, const std::array<bool, size_>& _set) {
-    if constexpr (_i < sizeof...(FieldTypes)) {
-      using FieldType =
-          std::tuple_element_t<_i, typename NamedTupleType::Fields>;
-      using OriginalType = std::remove_cvref_t<typename FieldType::Type>;
-      using ValueType =
-          std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
-      if constexpr (!std::is_array_v<ValueType> &&
-                    std::is_pointer_v<OriginalType> &&
-                    std::is_destructible_v<ValueType>) {
-        if (std::get<_i>(_set)) {
-          rfl::get<_i>(*_view)->~ValueType();
-        }
-      } else if constexpr (std::is_array_v<ValueType>) {
-        if (std::get<_i>(_set)) {
-          auto ptr = rfl::get<_i>(*_view);
-          call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
-        }
-      }
-      call_destructors_where_necessary<_i + 1>(_view, _set);
-    }
-  }
-
   /// Generates error messages for when fields are missing.
   template <size_t _i = 0>
   static void handle_missing_fields(const std::array<bool, size_>& _found,
@@ -231,7 +192,7 @@ struct NamedTupleParser {
     }
     handle_missing_fields(found, *_view, &set, &errors);
     if (errors.size() != 0) {
-      call_destructors_where_necessary(_view, set);
+      object_reader.call_destructors_where_necessary();
       return to_single_error_message(errors);
     }
     return std::nullopt;
