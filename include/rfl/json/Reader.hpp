@@ -61,6 +61,31 @@ struct Reader {
     return !_var.val_ || yyjson_is_null(_var.val_);
   }
 
+  template <class ArrayReader>
+  std::optional<Error> read_array(const ArrayReader& _array_reader,
+                                  const InputArrayType& _arr) const noexcept {
+    yyjson_val* val;
+    yyjson_arr_iter iter;
+    yyjson_arr_iter_init(_arr.val_, &iter);
+    while ((val = yyjson_arr_iter_next(&iter))) {
+      _array_reader.read(InputVarType(val));
+    }
+    return std::nullopt;
+  }
+
+  template <class ObjectReader>
+  std::optional<Error> read_object(const ObjectReader& _object_reader,
+                                   const InputObjectType& _obj) const noexcept {
+    yyjson_obj_iter iter;
+    yyjson_obj_iter_init(_obj.val_, &iter);
+    yyjson_val* key;
+    while ((key = yyjson_obj_iter_next(&iter))) {
+      const auto name = std::string_view(yyjson_get_str(key));
+      _object_reader.read(name, InputVarType(yyjson_obj_iter_get_val(key)));
+    }
+    return std::nullopt;
+  }
+
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType _var) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
@@ -104,6 +129,7 @@ struct Reader {
     return InputObjectType(_var.val_);
   }
 
+  // TODO: Remove me.
   std::vector<InputVarType> to_vec(const InputArrayType _arr) const noexcept {
     std::vector<InputVarType> vec;
     yyjson_val* val;
@@ -113,19 +139,6 @@ struct Reader {
       vec.push_back(InputVarType(val));
     }
     return vec;
-  }
-
-  template <class ObjectReader>
-  std::optional<Error> read_object(const ObjectReader& _object_reader,
-                                   const InputObjectType& _obj) const noexcept {
-    yyjson_obj_iter iter;
-    yyjson_obj_iter_init(_obj.val_, &iter);
-    yyjson_val* key;
-    while ((key = yyjson_obj_iter_next(&iter))) {
-      const auto name = std::string_view(yyjson_get_str(key));
-      _object_reader.read(name, InputVarType(yyjson_obj_iter_get_val(key)));
-    }
-    return std::nullopt;
   }
 
   template <class T>
