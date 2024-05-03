@@ -59,7 +59,7 @@ class ViewReader {
   /// trigger the destructors.
   template <size_t _i = 0>
   void call_destructors_where_necessary() const {
-    if constexpr (_i < ViewType::size()) {
+    if constexpr (_i < size_) {
       using FieldType = std::tuple_element_t<_i, typename ViewType::Fields>;
       using OriginalType = std::remove_cvref_t<typename FieldType::Type>;
       using ValueType =
