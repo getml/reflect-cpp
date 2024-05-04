@@ -63,8 +63,6 @@ The resulting JSON string looks like this:
 
 You can also combine several processors:
 
-It is also possible to add the struct name as an addtional field, like this:
-
 ```cpp
 const auto json_string = 
   rfl::json::write<rfl::SnakeCaseToCamelCase, rfl::AddStructName<"type">>(homer);
