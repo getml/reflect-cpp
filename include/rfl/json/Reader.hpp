@@ -68,7 +68,10 @@ struct Reader {
     yyjson_arr_iter iter;
     yyjson_arr_iter_init(_arr.val_, &iter);
     while ((val = yyjson_arr_iter_next(&iter))) {
-      _array_reader.read(InputVarType(val));
+      const auto err = _array_reader.read(InputVarType(val));
+      if (err) {
+        return err;
+      }
     }
     return std::nullopt;
   }

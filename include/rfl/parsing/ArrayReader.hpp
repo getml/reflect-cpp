@@ -9,6 +9,7 @@
 
 #include "../Result.hpp"
 #include "../internal/is_array.hpp"
+#include "Parser_base.hpp"
 
 namespace rfl::parsing {
 
@@ -24,58 +25,49 @@ class ArrayReader {
 
   ~ArrayReader() = default;
 
-  template <size_t _i = 0>
-  std::optional<Error> read(const InputVarType& _var) const {
-    if constexpr (_i < size_) {
-      if (i_ == _i) {
-        auto res =
-            Parser<R, W, std::remove_cv_t<T>, ProcessorsType>::read(*r_, _var);
-        if (res) {
-          if constexpr (internal::is_array_v<T>) {
-            move_to(std::get<_i>(*array_), &(*res));
-          } else {
-            std::get<_i>(*array_) = *res;
-          }
-        } else {
-          return Error("Failed to parse element " + std::string(_i) + ": " +
-                       res.error()->what());
-        }
-        ++i_;
-        return std::nullopt;
-      }
-      read<_i + 1>(_var);
+  std::optional<Error> check_size() const {
+    if (i_ != size_) {
+      return Error("Expected " + std::to_string(size_) + " elements, got " +
+                   std::to_string(i_) + ".");
     }
+    return std::nullopt;
+  }
+
+  std::optional<Error> read(const InputVarType& _var) const {
+    auto res =
+        Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(*r_, _var);
+    if (res) {
+      move_to(&((*array_)[i_]), &(*res));
+    } else {
+      return Error("Failed to parse element " + std::to_string(i_) + ": " +
+                   res.error()->what());
+    }
+    ++i_;
+    return std::nullopt;
   }
 
   /// Because of the way we have allocated the fields, we need to manually
   /// trigger the destructors.
-  template <size_t _i = 0>
   void call_destructors_where_necessary() const {
-    if constexpr (_i < size_) {
-      if (_i < i_) {
-        if constexpr (!std::is_array_v<ValueType> &&
-                      std::is_pointer_v<OriginalType> &&
-                      std::is_destructible_v<ValueType>) {
-          std::get<_i>(*array_).~T();
-        } else if constexpr (std::is_array_v<ValueType>) {
-          auto ptr = std::get<_i>(*array_);
-          call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
-        }
-      } else {
-        return;
+    for (size_t i = 0; i < std::min(i_, size_); ++i) {
+      if constexpr (!std::is_array_v<T> && std::is_pointer_v<T> &&
+                    std::is_destructible_v<T>) {
+        (*array_)[i].~T();
+      } else if constexpr (std::is_array_v<T>) {
+        auto ptr = (*array_)[i];
+        call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
       }
-      call_destructors_where_necessary<_i + 1>();
     }
   }
 
  private:
-  template <class T>
-  void call_destructor_on_array(const size_t _size, T* _ptr) const {
-    for (size_t i = 0; i < _size; ++i) {
-      if constexpr (std::is_array_v<T>) {
+  template <class U>
+  void call_destructor_on_array(const size_t _size2, U* _ptr) const {
+    for (size_t i = 0; i < _size2; ++i) {
+      if constexpr (std::is_array_v<U>) {
         call_destructor_on_array(sizeof(*_ptr) / sizeof(**_ptr), *(_ptr + i));
-      } else if constexpr (std::is_destructible_v<T>) {
-        (_ptr + i)->~T();
+      } else if constexpr (std::is_destructible_v<U>) {
+        (_ptr + i)->~U();
       }
     }
   }
