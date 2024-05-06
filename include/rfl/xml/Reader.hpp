@@ -121,6 +121,19 @@ struct Reader {
     return std::visit(cast_as_node, _var.node_or_attribute_).transform(wrap);
   }
 
+  template <class ArrayReader>
+  std::optional<Error> read_array(const ArrayReader& _array_reader,
+                                  const InputArrayType& _arr) const noexcept {
+    const auto name = _arr.node_.name();
+    for (auto node = _arr.node_; node; node = node.next_sibling(name)) {
+      const auto err = _array_reader.read(InputVarType(node));
+      if (err) {
+        return err;
+      }
+    }
+    return std::nullopt;
+  }
+
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
@@ -146,15 +159,6 @@ struct Reader {
       const InputVarType _var) const noexcept {
     const auto wrap = [](const auto& _node) { return InputObjectType(_node); };
     return std::visit(cast_as_node, _var.node_or_attribute_).transform(wrap);
-  }
-
-  std::vector<InputVarType> to_vec(const InputArrayType _arr) const noexcept {
-    const auto name = _arr.node_.name();
-    std::vector<InputVarType> vec;
-    for (auto node = _arr.node_; node; node = node.next_sibling(name)) {
-      vec.push_back(InputVarType(node));
-    }
-    return vec;
   }
 
   template <class T>
