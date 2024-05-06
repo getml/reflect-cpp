@@ -34,7 +34,7 @@ class VectorReader {
     };
 
     const auto insert = [this](auto&& _var) -> std::optional<Error> {
-      if constexpr (is_set_like_v<VecType>() || is_set_like_v<VecType>) {
+      if constexpr (is_set_like_v<VecType> || is_set_like_v<VecType>) {
         vec_->insert(std::move(_var));
       } else {
         vec_->emplace_back(std::move(_var));
