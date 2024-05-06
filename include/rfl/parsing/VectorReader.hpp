@@ -23,10 +23,7 @@ class VectorReader {
   std::optional<Error> read(const InputVarType& _var) const {
     const auto parse = [this](const InputVarType& _var) {
       if constexpr (is_map_like_v<VecType>) {
-        using K = std::remove_cvref_t<typename T::first_type>;
-        using V = std::remove_cvref_t<typename T::second_type>;
-        return Parser<R, W, std::remove_cvref_t<std::pair<K, V>>,
-                      ProcessorsType>::read(*r_, _var);
+        return get_pair(_var);
       } else {
         return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(*r_,
                                                                           _var);
@@ -43,6 +40,14 @@ class VectorReader {
     };
 
     return parse(_var).transform(insert).error();
+  }
+
+ private:
+  auto get_pair(const auto& _var) const {
+    using K = std::remove_cvref_t<typename T::first_type>;
+    using V = std::remove_cvref_t<typename T::second_type>;
+    return Parser<R, W, std::remove_cvref_t<std::pair<K, V>>,
+                  ProcessorsType>::read(*r_, _var);
   }
 
  private:
