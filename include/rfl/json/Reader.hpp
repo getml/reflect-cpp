@@ -132,18 +132,6 @@ struct Reader {
     return InputObjectType(_var.val_);
   }
 
-  // TODO: Remove me.
-  std::vector<InputVarType> to_vec(const InputArrayType _arr) const noexcept {
-    std::vector<InputVarType> vec;
-    yyjson_val* val;
-    yyjson_arr_iter iter;
-    yyjson_arr_iter_init(_arr.val_, &iter);
-    while ((val = yyjson_arr_iter_next(&iter))) {
-      vec.push_back(InputVarType(val));
-    }
-    return vec;
-  }
-
   template <class T>
   rfl::Result<T> use_custom_constructor(
       const InputVarType _var) const noexcept {
