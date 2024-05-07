@@ -128,6 +128,25 @@ struct Reader {
     return InputArrayType{_var.val_};
   }
 
+  template <class ArrayReader>
+  std::optional<Error> read_array(const ArrayReader& _array_reader,
+                                  const InputArrayType& _arr) const noexcept {
+    bson_t b;
+    bson_iter_t iter;
+    const auto doc = _arr.val_->val_.value.v_doc;
+    if (bson_init_static(&b, doc.data, doc.data_len)) {
+      if (bson_iter_init(&iter, &b)) {
+        while (bson_iter_next(&iter)) {
+          const auto err = _array_reader.read(to_input_var(&iter));
+          if (err) {
+            return err;
+          }
+        }
+      }
+    }
+    return std::nullopt;
+  }
+
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
@@ -152,21 +171,6 @@ struct Reader {
       return Error("Could not cast to a document.");
     }
     return InputObjectType{_var.val_};
-  }
-
-  std::vector<InputVarType> to_vec(const InputArrayType& _arr) const noexcept {
-    std::vector<InputVarType> vec;
-    bson_t b;
-    bson_iter_t iter;
-    const auto doc = _arr.val_->val_.value.v_doc;
-    if (bson_init_static(&b, doc.data, doc.data_len)) {
-      if (bson_iter_init(&iter, &b)) {
-        while (bson_iter_next(&iter)) {
-          vec.push_back(to_input_var(&iter));
-        }
-      }
-    }
-    return vec;
   }
 
   template <class T>

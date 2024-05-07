@@ -103,12 +103,16 @@ struct Reader {
     return _var.via.map;
   }
 
-  std::vector<InputVarType> to_vec(const InputArrayType& _arr) const noexcept {
-    std::vector<InputVarType> vec;
+  template <class ArrayReader>
+  std::optional<Error> read_array(const ArrayReader& _array_reader,
+                                  const InputArrayType& _arr) const noexcept {
     for (uint32_t i = 0; i < _arr.size; ++i) {
-      vec.push_back(_arr.ptr[i]);
+      const auto err = _array_reader.read(_arr.ptr[i]);
+      if (err) {
+        return err;
+      }
     }
-    return vec;
+    return std::nullopt;
   }
 
   template <class ObjectReader>

@@ -55,7 +55,43 @@ class ViewReader {
     }
   }
 
+  /// Because of the way we have allocated the fields, we need to manually
+  /// trigger the destructors.
+  template <size_t _i = 0>
+  void call_destructors_where_necessary() const {
+    if constexpr (_i < size_) {
+      using FieldType = std::tuple_element_t<_i, typename ViewType::Fields>;
+      using OriginalType = std::remove_cvref_t<typename FieldType::Type>;
+      using ValueType =
+          std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
+      if constexpr (!std::is_array_v<ValueType> &&
+                    std::is_pointer_v<OriginalType> &&
+                    std::is_destructible_v<ValueType>) {
+        if (std::get<_i>(*set_)) {
+          rfl::get<_i>(*view_)->~ValueType();
+        }
+      } else if constexpr (std::is_array_v<ValueType>) {
+        if (std::get<_i>(*set_)) {
+          auto ptr = rfl::get<_i>(*view_);
+          call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
+        }
+      }
+      call_destructors_where_necessary<_i + 1>();
+    }
+  }
+
  private:
+  template <class T>
+  void call_destructor_on_array(const size_t _size, T* _ptr) const {
+    for (size_t i = 0; i < _size; ++i) {
+      if constexpr (std::is_array_v<T>) {
+        call_destructor_on_array(sizeof(*_ptr) / sizeof(**_ptr), *(_ptr + i));
+      } else if constexpr (std::is_destructible_v<T>) {
+        (_ptr + i)->~T();
+      }
+    }
+  }
+
   template <class Target, class Source>
   void move_to(Target* _t, Source* _s) const {
     if constexpr (std::is_const_v<Target>) {

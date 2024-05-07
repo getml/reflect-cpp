@@ -82,6 +82,18 @@ struct Reader {
     return ptr;
   }
 
+  template <class ArrayReader>
+  std::optional<Error> read_array(const ArrayReader& _array_reader,
+                                  const InputArrayType& _arr) const noexcept {
+    for (auto& node : *_arr) {
+      const auto err = _array_reader.read(&node);
+      if (err) {
+        return err;
+      }
+    }
+    return std::nullopt;
+  }
+
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    InputObjectType _obj) const noexcept {
@@ -98,14 +110,6 @@ struct Reader {
       return rfl::Error("Could not cast to a table!");
     }
     return ptr;
-  }
-
-  std::vector<InputVarType> to_vec(const InputArrayType& _arr) const noexcept {
-    std::vector<InputVarType> vec;
-    for (auto& node : *_arr) {
-      vec.push_back(&node);
-    }
-    return vec;
   }
 
   template <class T>

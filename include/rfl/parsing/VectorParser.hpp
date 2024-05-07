@@ -12,6 +12,7 @@
 #include "MapParser.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
+#include "VectorReader.hpp"
 #include "is_forward_list.hpp"
 #include "is_map_like.hpp"
 #include "is_map_like_not_multimap.hpp"
@@ -42,11 +43,28 @@ struct VectorParser {
   static Result<VecType> read(const R& _r, const InputVarType& _var) noexcept {
     if constexpr (treat_as_map()) {
       return MapParser<R, W, VecType, ProcessorsType>::read(_r, _var);
-    } else {
-      const auto to_res = [&](auto&& _v) {
-        return to_result(_r, std::move(_v));
+    } else if constexpr (is_forward_list<VecType>()) {
+      const auto to_forward_list = [](auto&& vec) -> std::forward_list<T> {
+        std::forward_list<T> list;
+        for (auto it = vec.rbegin(); it != vec.rend(); ++it) {
+          list.emplace_front(std::move(*it));
+        }
+        return list;
       };
-      return _r.to_array(_var).and_then(to_res);
+      return Parser<R, W, std::vector<T>, ProcessorsType>::read(_r, _var)
+          .transform(to_forward_list);
+    } else {
+      const auto parse = [&](const InputArrayType& _arr) -> Result<VecType> {
+        VecType vec;
+        auto vector_reader =
+            VectorReader<R, W, VecType, ProcessorsType>(&_r, &vec);
+        const auto err = _r.read_array(vector_reader, _arr);
+        if (err) {
+          return *err;
+        }
+        return vec;
+      };
+      return _r.to_array(_var).and_then(parse);
     }
   }
 
@@ -77,50 +95,6 @@ struct VectorParser {
   }
 
  private:
-  static auto get_elem(const R& _r, auto& _v) {
-    return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r, _v)
-        .value();
-  };
-
-  static auto get_pair(const R& _r, auto& _v) {
-    using K = std::remove_cvref_t<typename T::first_type>;
-    using V = std::remove_cvref_t<typename T::second_type>;
-    return Parser<R, W, std::remove_cvref_t<std::pair<K, V>>,
-                  ProcessorsType>::read(_r, _v)
-        .value();
-  }
-
-  static VecType to_container(const R& _r, InputArrayType&& _arr) {
-    auto input_vars = _r.to_vec(_arr);
-    VecType vec;
-    if constexpr (is_forward_list<VecType>()) {
-      for (auto it = input_vars.rbegin(); it != input_vars.rend(); ++it) {
-        vec.emplace_front(get_elem(_r, *it));
-      }
-    } else if constexpr (is_map_like<VecType>()) {
-      for (auto& v : input_vars) {
-        vec.insert(get_pair(_r, v));
-      }
-    } else if constexpr (is_set_like<VecType>()) {
-      for (auto& v : input_vars) {
-        vec.insert(get_elem(_r, v));
-      }
-    } else {
-      for (auto& v : input_vars) {
-        vec.emplace_back(get_elem(_r, v));
-      }
-    }
-    return vec;
-  }
-
-  static Result<VecType> to_result(const R& _r, InputArrayType&& _arr) {
-    try {
-      return to_container(_r, std::forward<InputArrayType>(_arr));
-    } catch (std::exception& e) {
-      return Error(e.what());
-    }
-  }
-
   static constexpr bool treat_as_map() {
     if constexpr (is_map_like_not_multimap<VecType>()) {
       if constexpr (internal::has_reflection_type_v<typename T::first_type>) {
