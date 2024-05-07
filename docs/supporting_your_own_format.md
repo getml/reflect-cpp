@@ -203,9 +203,11 @@ struct Reader {
     rfl::Result<InputObjectType> to_object(
         const InputVarType& _var) const noexcept {...}
 
-    /// Iterates through an array and writes the contained values into
-    /// a std::vector<InputVarType>. 
-    std::vector<InputVarType> to_vec(const InputArrayType& _arr) const noexcept {...}
+    /// Iterates through an array and inserts the values into the array
+    /// reader. See below for a more detailed explanation.
+    template <class ArrayReader>
+    std::optional<Error> read_array(const ArrayReader& _array_reader,
+                                    const InputArrayType& _arr) const noexcept {...}
 
     /// Iterates through an object and inserts the key-value pairs into the object 
     /// reader. See below for a more detailed explanation.
@@ -227,7 +229,22 @@ struct Reader {
 };
 ```
 
-Of these methods, `read_object` probably requires further explanation.
+Of these methods, `read_array` and `read_object` probably require further explanation.
+
+## `read_array`
+
+`read_array` expects an `ArrayReader` class which might come in several forms. But all
+of these forms have a method with the following signature:
+
+```cpp
+std::optional<Error> read(const InputVarType& _var) const noexcept;
+```
+
+Within your implementation of `read_array`, you must iterate through the array passed
+to the function and then insert the resulting values into `array_reader.read`. If 
+`array_reader.read` returns an error, then you must return that error immediately.
+
+## `read_object`
 
 `read_object` expects an `ObjectReader` class which might come in several forms. But all
 of these forms have a method with the following signature:
