@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.23)
 
 option(REFLECTCPP_BUILD_SHARED "Build shared library" ${BUILD_SHARED_LIBS})
+
 option(REFLECTCPP_BSON "Enable BSON support" OFF)
 option(REFLECTCPP_CBOR "Enable CBOR support" OFF)
 option(REFLECTCPP_FLEXBUFFERS "Enable flexbuffers support" OFF)
@@ -9,10 +10,11 @@ option(REFLECTCPP_XML "Enable XML support" OFF)
 option(REFLECTCPP_TOML "Enable TOML support" OFF)
 option(REFLECTCPP_YAML "Enable YAML support" OFF)
 
+option(REFLECTCPP_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
 
 set(REFLECTCPP_USE_VCPKG_DEFAULT OFF)
-if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_BSON OR REFLECTCPP_CBOR OR REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_MSGPACK OR REFLECTCPP_XML OR REFLECTCPP_TOML OR REFLECTCPP_YAML)
+if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_BUILD_BENCHMARKS OR REFLECTCPP_BSON OR REFLECTCPP_CBOR OR REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_MSGPACK OR REFLECTCPP_XML OR REFLECTCPP_TOML OR REFLECTCPP_YAML)
     # enable vcpkg per default if require features other than JSON
     set(REFLECTCPP_USE_VCPKG_DEFAULT ON)
 endif()
@@ -91,6 +93,12 @@ if (REFLECTCPP_BUILD_TESTS)
         set(REFLECT_CPP_GTEST_LIB "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libgtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
     endif ()
     add_subdirectory(tests)
+endif ()
+
+if (REFLECTCPP_BUILD_BENCHMARKS)
+    find_package(benchmark CONFIG REQUIRED)
+    target_link_libraries(reflectcpp INTERFACE benchmark::benchmark)
+    add_subdirectory(benchmarks)
 endif ()
 
 include(GNUInstallDirs)
