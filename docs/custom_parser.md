@@ -14,16 +14,14 @@ conditions:
 You can then implement a custom parser for your class like this:
 
 ```cpp
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
-template <class ReaderType, class WriterType>
-struct Parser<ReaderType, WriterType, YourOriginalClass>
-    : public CustomParser<ReaderType, WriterType, YourOriginalClass,
+template <class ReaderType, class WriterType, class ProcessorsType>
+struct Parser<ReaderType, WriterType, YourOriginalClass, ProcessorsType>
+    : public CustomParser<ReaderType, WriterType, ProcessorsType, YourOriginalClass,
                           YourHelperStruct> {};
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 ```
 
 ## Example
@@ -77,15 +75,13 @@ struct PersonImpl {
 You then implement the custom parser:
 
 ```cpp
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
-template <class ReaderType, class WriterType>
+template <class ReaderType, class WriterType, class ProcessorsType>
 struct Parser<ReaderType, WriterType, Person>
-    : public CustomParser<ReaderType, WriterType, Person, PersonImpl> {};
+    : public CustomParser<ReaderType, WriterType, ProcessorsType, Person, PersonImpl> {};
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 ```
 
 Now your custom class is fully supported by reflect-cpp. So for instance, you could parse it

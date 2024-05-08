@@ -11,16 +11,15 @@
 
 namespace rfl::parsing {
 
-template <class R, class W, class ViewType>
+template <class R, class W, class ViewType, class ProcessorsType>
 class ViewReader {
  private:
   using InputVarType = typename R::InputVarType;
   static constexpr size_t size_ = ViewType::size();
 
  public:
-  ViewReader(const R* _r, const ViewType* _view,
-             std::array<bool, size_>* _found, std::array<bool, size_>* _set,
-             std::vector<Error>* _errors)
+  ViewReader(const R* _r, ViewType* _view, std::array<bool, size_>* _found,
+             std::array<bool, size_>* _set, std::vector<Error>* _errors)
       : r_(_r), view_(_view), found_(_found), set_(_set), errors_(_errors) {}
 
   ~ViewReader() = default;
@@ -30,12 +29,19 @@ class ViewReader {
     if constexpr (_i < size_) {
       constexpr auto current_name =
           std::tuple_element_t<_i, typename ViewType::Fields>::name();
-      using CurrentType = std::remove_cvref_t<std::remove_pointer_t<
-          typename std::tuple_element_t<_i, typename ViewType::Fields>::Type>>;
+      using OriginalType =
+          typename std::tuple_element_t<_i, typename ViewType::Fields>::Type;
+      using CurrentType =
+          std::remove_cvref_t<std::remove_pointer_t<OriginalType>>;
       if (!std::get<_i>(*found_) && _name == current_name) {
-        auto res = Parser<R, W, CurrentType>::read(*r_, _var);
+        auto res = Parser<R, W, CurrentType, ProcessorsType>::read(*r_, _var);
         if (res) {
-          move_to(rfl::get<_i>(*view_), &(*res));
+          if constexpr (std::is_pointer_v<OriginalType> ||
+                        internal::is_array_v<OriginalType>) {
+            move_to(rfl::get<_i>(*view_), &(*res));
+          } else {
+            rfl::get<_i>(*view_) = *res;
+          }
           std::get<_i>(*set_) = true;
         } else {
           errors_->push_back(Error("Failed to parse field '" +
@@ -49,7 +55,43 @@ class ViewReader {
     }
   }
 
+  /// Because of the way we have allocated the fields, we need to manually
+  /// trigger the destructors.
+  template <size_t _i = 0>
+  void call_destructors_where_necessary() const {
+    if constexpr (_i < size_) {
+      using FieldType = std::tuple_element_t<_i, typename ViewType::Fields>;
+      using OriginalType = std::remove_cvref_t<typename FieldType::Type>;
+      using ValueType =
+          std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
+      if constexpr (!std::is_array_v<ValueType> &&
+                    std::is_pointer_v<OriginalType> &&
+                    std::is_destructible_v<ValueType>) {
+        if (std::get<_i>(*set_)) {
+          rfl::get<_i>(*view_)->~ValueType();
+        }
+      } else if constexpr (std::is_array_v<ValueType>) {
+        if (std::get<_i>(*set_)) {
+          auto ptr = rfl::get<_i>(*view_);
+          call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
+        }
+      }
+      call_destructors_where_necessary<_i + 1>();
+    }
+  }
+
  private:
+  template <class T>
+  void call_destructor_on_array(const size_t _size, T* _ptr) const {
+    for (size_t i = 0; i < _size; ++i) {
+      if constexpr (std::is_array_v<T>) {
+        call_destructor_on_array(sizeof(*_ptr) / sizeof(**_ptr), *(_ptr + i));
+      } else if constexpr (std::is_destructible_v<T>) {
+        (_ptr + i)->~T();
+      }
+    }
+  }
+
   template <class Target, class Source>
   void move_to(Target* _t, Source* _s) const {
     if constexpr (std::is_const_v<Target>) {
@@ -73,7 +115,7 @@ class ViewReader {
   const R* r_;
 
   /// The underlying view.
-  const ViewType* view_;
+  ViewType* view_;
 
   /// Indicates that a certain field has been found.
   std::array<bool, size_>* found_;

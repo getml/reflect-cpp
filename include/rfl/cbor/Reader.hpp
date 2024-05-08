@@ -158,27 +158,31 @@ struct Reader {
     return InputObjectType{_var.val_};
   }
 
-  std::vector<InputVarType> to_vec(const InputArrayType& _arr) const noexcept {
-    std::vector<InputVarType> vec;
+  template <class ArrayReader>
+  std::optional<Error> read_array(const ArrayReader& _array_reader,
+                                  const InputArrayType& _arr) const noexcept {
     CborValue val;
     auto buffer = std::vector<char>();
     auto err = cbor_value_enter_container(_arr.val_, &val);
     if (err != CborNoError && err != CborErrorOutOfMemory) {
-      return vec;
+      return Error(cbor_error_string(err));
     }
     size_t length = 0;
     err = cbor_value_get_array_length(_arr.val_, &length);
     if (err != CborNoError && err != CborErrorOutOfMemory) {
-      return vec;
+      return Error(cbor_error_string(err));
     }
     for (size_t i = 0; i < length; ++i) {
-      vec.emplace_back(to_input_var(&val));
+      const auto err2 = _array_reader.read(to_input_var(&val));
+      if (err2) {
+        return err2;
+      }
       err = cbor_value_advance(&val);
       if (err != CborNoError && err != CborErrorOutOfMemory) {
-        return vec;
+        return Error(cbor_error_string(err));
       }
     }
-    return vec;
+    return std::nullopt;
   }
 
   template <class ObjectReader>

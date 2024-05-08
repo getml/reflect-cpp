@@ -45,9 +45,11 @@ struct PersonImpl {
 namespace rfl {
 namespace parsing {
 
-template <class ReaderType, class WriterType>
-struct Parser<ReaderType, WriterType, test_custom_class3::Person>
-    : public CustomParser<ReaderType, WriterType, test_custom_class3::Person,
+template <class ReaderType, class WriterType, class ProcessorsType>
+struct Parser<ReaderType, WriterType, test_custom_class3::Person,
+              ProcessorsType>
+    : public CustomParser<ReaderType, WriterType, ProcessorsType,
+                          test_custom_class3::Person,
                           test_custom_class3::PersonImpl> {};
 
 }  // namespace parsing

@@ -7,6 +7,7 @@
 #pragma warning(disable : 4101)
 #endif
 
+#include "rfl/AddStructName.hpp"
 #include "rfl/AllOf.hpp"
 #include "rfl/AnyOf.hpp"
 #include "rfl/Attribute.hpp"
@@ -19,9 +20,12 @@
 #include "rfl/OneOf.hpp"
 #include "rfl/Pattern.hpp"
 #include "rfl/PatternValidator.hpp"
+#include "rfl/Processors.hpp"
 #include "rfl/Ref.hpp"
 #include "rfl/Rename.hpp"
 #include "rfl/Size.hpp"
+#include "rfl/SnakeCaseToCamelCase.hpp"
+#include "rfl/SnakeCaseToPascalCase.hpp"
 #include "rfl/TaggedUnion.hpp"
 #include "rfl/Timestamp.hpp"
 #include "rfl/Validator.hpp"

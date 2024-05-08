@@ -15,9 +15,9 @@
 namespace rfl {
 namespace parsing {
 
-template <class R, class W, class T>
+template <class R, class W, class T, class ProcessorsType>
 requires AreReaderAndWriter<R, W, internal::Array<T>>
-struct Parser<R, W, internal::Array<T>> {
+struct Parser<R, W, internal::Array<T>, ProcessorsType> {
  public:
   using InputArrayType = typename R::InputArrayType;
   using InputVarType = typename R::InputVarType;
@@ -29,18 +29,18 @@ struct Parser<R, W, internal::Array<T>> {
 
   static Result<internal::Array<T>> read(const R& _r,
                                          const InputVarType& _var) noexcept {
-    return Parser<R, W, StdArray>::read(_r, _var);
+    return Parser<R, W, StdArray, ProcessorsType>::read(_r, _var);
   }
 
   template <class P>
   static void write(const W& _w, const internal::Array<T>& _arr,
                     const P& _parent) noexcept {
-    Parser<R, W, StdArray>::write(_w, _arr.arr_, _parent);
+    Parser<R, W, StdArray, ProcessorsType>::write(_w, _arr.arr_, _parent);
   }
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
-    return Parser<R, W, StdArray>::to_schema(_definitions);
+    return Parser<R, W, StdArray, ProcessorsType>::to_schema(_definitions);
   }
 };
 

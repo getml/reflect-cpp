@@ -71,6 +71,21 @@ The resulting JSON string looks like this:
 {"first_name":"Homer","last_name":"Simpson","age":45}
 ```
 
+You can transform the field names from `snake_case` to `camelCase` like this:
+
+```cpp
+const std::string json_string = 
+  rfl::json::write<rfl::SnakeCaseToCamelCase>(homer);
+auto homer2 = 
+  rfl::json::read<Person, rfl::SnakeCaseToCamelCase>(json_string).value();
+```
+
+The resulting JSON string looks like this:
+
+```json
+{"firstName":"Homer","lastName":"Simpson","age":45}
+```
+
 Or you can use another format, such as YAML.
 
 ```cpp

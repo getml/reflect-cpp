@@ -14,9 +14,9 @@
 
 namespace rfl::parsing {
 
-template <class R, class W, class T>
+template <class R, class W, class T, class ProcessorsType>
 requires AreReaderAndWriter<R, W, std::shared_ptr<T>>
-struct Parser<R, W, std::shared_ptr<T>> {
+struct Parser<R, W, std::shared_ptr<T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
 
@@ -30,8 +30,8 @@ struct Parser<R, W, std::shared_ptr<T>> {
     const auto to_ptr = [](auto&& _t) {
       return std::make_shared<T>(std::move(_t));
     };
-    return Parser<R, W, std::remove_cvref_t<T>>::read(_r, _var).transform(
-        to_ptr);
+    return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r, _var)
+        .transform(to_ptr);
   }
 
   template <class P>
@@ -41,14 +41,15 @@ struct Parser<R, W, std::shared_ptr<T>> {
       ParentType::add_null(_w, _parent);
       return;
     }
-    Parser<R, W, std::remove_cvref_t<T>>::write(_w, *_s, _parent);
+    Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, *_s,
+                                                                _parent);
   }
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     using U = std::remove_cvref_t<T>;
-    return schema::Type{schema::Type::Optional{
-        Ref<schema::Type>::make(Parser<R, W, U>::to_schema(_definitions))}};
+    return schema::Type{schema::Type::Optional{Ref<schema::Type>::make(
+        Parser<R, W, U, ProcessorsType>::to_schema(_definitions))}};
   }
 };
 

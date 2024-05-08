@@ -1,6 +1,7 @@
 #ifndef RFL_JSON_HPP_
 #define RFL_JSON_HPP_
 
+#include "../rfl.hpp"
 #include "json/Parser.hpp"
 #include "json/Reader.hpp"
 #include "json/Writer.hpp"

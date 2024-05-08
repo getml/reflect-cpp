@@ -9,30 +9,32 @@
 #include <string>
 #include <utility>
 
+#include "../Processors.hpp"
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
 
 namespace rfl::msgpack {
 
 /// Returns msgpack bytes.
-template <class T>
-std::vector<char> write(const T& _obj) noexcept {
+template <class... Ps>
+std::vector<char> write(const auto& _obj) noexcept {
+  using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
   msgpack_sbuffer sbuf;
   msgpack_sbuffer_init(&sbuf);
   msgpack_packer pk;
   msgpack_packer_init(&pk, &sbuf, msgpack_sbuffer_write);
   auto w = Writer(&pk);
-  Parser<T>::write(w, _obj, typename ParentType::Root{});
+  Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
   auto bytes = std::vector<char>(sbuf.data, sbuf.data + sbuf.size);
   msgpack_sbuffer_destroy(&sbuf);
   return bytes;
 }
 
 /// Writes a MSGPACK into an ostream.
-template <class T>
-std::ostream& write(const T& _obj, std::ostream& _stream) noexcept {
-  auto buffer = write(_obj);
+template <class... Ps>
+std::ostream& write(const auto& _obj, std::ostream& _stream) noexcept {
+  auto buffer = write<Ps...>(_obj);
   _stream.write(buffer.data(), buffer.size());
   return _stream;
 }

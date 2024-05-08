@@ -18,7 +18,7 @@ const auto bart = Person{.first_name = "Bart",
                          .children = std::vector<Person>()};
 ```
 
-JSON uses Hungarian case, but C++ uses snake case, so you might want to rename your fields:
+JSON uses camel case, but C++ uses snake case, so you might want to rename your fields:
 
 ```cpp
 struct Person {

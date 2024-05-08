@@ -42,8 +42,8 @@ struct Parser<R, W, bson_oid_t> {
 
 namespace rfl::bson {
 
-template <class T>
-using Parser = parsing::Parser<Reader, Writer, T>;
+template <class T, class ProcessorsType>
+using Parser = parsing::Parser<Reader, Writer, T, ProcessorsType>;
 
 }  // namespace rfl::bson
 

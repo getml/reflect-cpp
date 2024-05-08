@@ -6,7 +6,7 @@
 namespace rfl {
 namespace parsing {
 
-template <class R, class W, class T>
+template <class R, class W, class T, class ProcessorsType>
 requires AreReaderAndWriter<R, W, T>
 struct Parser;
 

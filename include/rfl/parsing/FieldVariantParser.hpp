@@ -18,7 +18,7 @@ namespace parsing {
 
 /// To be used when all options of the variants are rfl::Field. Essentially,
 /// this is an externally tagged union.
-template <class R, class W, class... FieldTypes>
+template <class R, class W, class ProcessorsType, class... FieldTypes>
 requires AreReaderAndWriter<R, W, std::variant<FieldTypes...>>
 struct FieldVariantParser {
   using FieldVariantType = std::variant<FieldTypes...>;
@@ -40,7 +40,8 @@ struct FieldVariantParser {
     const auto to_result = [&](const auto _obj) -> ResultType {
       auto field_variant = std::optional<Result<FieldVariantType>>();
       const auto reader =
-          FieldVariantReader<R, W, FieldTypes...>(&_r, &field_variant);
+          FieldVariantReader<R, W, ProcessorsType, FieldTypes...>(
+              &_r, &field_variant);
       auto err = _r.read_object(reader, _obj);
       if (err) {
         return *err;
@@ -67,7 +68,8 @@ struct FieldVariantParser {
     const auto handle = [&](const auto& _field) {
       const auto named_tuple = make_named_tuple(internal::to_ptr_field(_field));
       using NamedTupleType = std::remove_cvref_t<decltype(named_tuple)>;
-      Parser<R, W, NamedTupleType>::write(_w, named_tuple, _parent);
+      Parser<R, W, NamedTupleType, ProcessorsType>::write(_w, named_tuple,
+                                                          _parent);
     };
 
     std::visit(handle, _v);
@@ -77,7 +79,7 @@ struct FieldVariantParser {
       std::map<std::string, schema::Type>* _definitions,
       std::vector<schema::Type> _types = {}) {
     using VariantType = std::variant<NamedTuple<FieldTypes>...>;
-    return Parser<R, W, VariantType>::to_schema(_definitions);
+    return Parser<R, W, VariantType, ProcessorsType>::to_schema(_definitions);
   }
 };
 }  // namespace parsing
