@@ -1,6 +1,8 @@
 #ifndef RFL_RESULT_HPP_
 #define RFL_RESULT_HPP_
 
+#include <array>
+#include <iostream>
 #include <optional>
 #include <ranges>
 #include <span>
@@ -39,16 +41,22 @@ template <class T>
 class Result {
   static_assert(!std::is_same<T, Error>(), "The result type cannot be Error.");
 
+  using TOrErr = std::array<unsigned char, std::max(sizeof(T), sizeof(Error))>;
+
  public:
   using Type = T;
 
-  Result(const T& _val) : t_or_err_(_val) {}
+  Result(const T& _val) : success_(true) { new (&get_t()) T(_val); }
 
-  Result(T&& _val) noexcept : t_or_err_(std::move(_val)) {}
+  Result(T&& _val) noexcept : success_(true) {
+    new (&get_t()) T(std::move(_val));
+  }
 
-  Result(const Error& _err) : t_or_err_(_err) {}
+  Result(const Error& _err) : success_(false) { new (&get_err()) Error(_err); }
 
-  Result(Error&& _err) noexcept : t_or_err_(std::move(_err)) {}
+  Result(Error&& _err) noexcept : success_(false) {
+    new (&get_err()) Error(std::move(_err));
+  }
 
   Result(Result<T>&& _other) noexcept = default;
 
@@ -59,15 +67,25 @@ class Result {
   Result(Result<U>&& _other)
       : t_or_err_(std::forward<Result<U>>(_other)
                       .transform([](U&& _u) { return T(std::forward<U>(_u)); })
-                      .t_or_err_) {}
+                      .t_or_err_),
+        success_(_other && true) {}
 
   template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
                                              bool>::type = true>
   Result(const Result<U>& _other)
       : t_or_err_(
-            _other.transform([](const U& _u) { return T(_u); }).t_or_err_) {}
+            _other.transform([](const U& _u) { return T(_u); }).t_or_err_),
+        success_(_other && true) {}
 
-  ~Result() = default;
+  ~Result() {
+    if (success_) {
+      if constexpr (std::is_destructible_v<T>) {
+        get_t().~T();
+      }
+    } else {
+      get_err().~Error();
+    }
+  }
 
   /// Returns Result<U>, if successful and error otherwise.
   /// Inspired by .and(...) in the Rust std::result type.
@@ -82,18 +100,11 @@ class Result {
   auto and_then(const F& _f) {
     /// Result_U is expected to be of type Result<U>.
     using Result_U = typename std::invoke_result<F, T>::type;
-
-    const auto handle_variant =
-        [&]<class TOrError>(TOrError&& _t_or_err) -> Result_U {
-      if constexpr (!std::is_same<std::remove_cvref_t<TOrError>, Error>()) {
-        return _f(std::forward<TOrError>(_t_or_err));
-      } else {
-        return std::forward<TOrError>(_t_or_err);
-      }
-    };
-
-    return std::visit(handle_variant,
-                      std::forward<std::variant<T, Error>>(t_or_err_));
+    if (success_) {
+      return Result_U(_f(std::forward<T>(get_t())));
+    } else {
+      return Result_U(std::forward<Error>(get_err()));
+    }
   }
 
   /// Monadic operation - F must be a function of type T -> Result<U>.
@@ -101,101 +112,73 @@ class Result {
   auto and_then(const F& _f) const {
     /// Result_U is expected to be of type Result<U>.
     using Result_U = typename std::invoke_result<F, T>::type;
-
-    const auto handle_variant =
-        [&]<class TOrError>(const TOrError& _t_or_err) -> Result_U {
-      if constexpr (!std::is_same<TOrError, Error>()) {
-        return _f(_t_or_err);
-      } else {
-        return _t_or_err;
-      }
-    };
-
-    return std::visit(handle_variant, t_or_err_);
+    if (success_) {
+      return Result_U(_f(get_t()));
+    } else {
+      return Result_U(get_err());
+    }
   }
 
   /// Results types can be iterated over, which even make it possible to use
   /// them within a std::range.
   T* begin() noexcept {
-    const auto get_ptr =
-        [this]<class TOrError>(const TOrError& _t_or_err) -> T* {
-      if constexpr (!std::is_same<TOrError, Error>()) {
-        return &_t_or_err;
-      } else {
-        return nullptr;
-      }
-    };
-    return std::visit(get_ptr, t_or_err_);
+    if (success_) {
+      return &get_t();
+    } else {
+      return nullptr;
+    }
   }
 
   /// Results types can be iterated over, which even make it possible to use
   /// them within a std::range.
   const T* begin() const noexcept {
-    const auto get_ptr =
-        [this]<class TOrError>(const TOrError& _t_or_err) -> const T* {
-      if constexpr (!std::is_same<TOrError, Error>()) {
-        return &_t_or_err;
-      } else {
-        return nullptr;
-      }
-    };
-    return std::visit(get_ptr, t_or_err_);
+    if (success_) {
+      return &get_t();
+    } else {
+      return nullptr;
+    }
   }
 
   /// Results types can be iterated over, which even make it possible to use
   /// them within a std::range.
   T* end() noexcept {
-    const auto get_ptr =
-        [this]<class TOrError>(const TOrError& _t_or_err) -> T* {
-      if constexpr (!std::is_same<TOrError, Error>()) {
-        return &_t_or_err + 1;
-      } else {
-        return nullptr;
-      }
-    };
-    return std::visit(get_ptr, t_or_err_);
+    if (success_) {
+      return &get_t() + 1;
+    } else {
+      return nullptr;
+    }
   }
 
   /// Results types can be iterated over, which even make it possible to use
   /// them within a std::range.
   const T* end() const noexcept {
-    const auto get_ptr =
-        []<class TOrError>(const TOrError& _t_or_err) -> const T* {
-      if constexpr (!std::is_same<TOrError, Error>()) {
-        return &_t_or_err + 1;
-      } else {
-        return nullptr;
-      }
-    };
-    return std::visit(get_ptr, t_or_err_);
+    if (success_) {
+      return &get_t() + 1;
+    } else {
+      return nullptr;
+    }
   }
 
   /// Returns an std::optional<error> if this does in fact contain an error
   /// or std::nullopt otherwise.
   std::optional<Error> error() const noexcept {
-    const auto get_err =
-        []<class TOrError>(const TOrError& _t_or_err) -> std::optional<Error> {
-      if constexpr (!std::is_same<TOrError, Error>()) {
-        return std::nullopt;
-      } else {
-        return _t_or_err;
-      }
-    };
-    return std::visit(get_err, t_or_err_);
+    if (success_) {
+      return std::nullopt;
+    } else {
+      return get_err();
+    }
   }
 
   /// Returns true if the result contains a value, false otherwise.
-  operator bool() const noexcept {
-    return !std::holds_alternative<Error>(t_or_err_);
-  }
+  operator bool() const noexcept { return success_; }
 
   /// Allows access to the underlying value. Careful: Will result in undefined
   /// behavior, if the result contains an error.
-  T& operator*() { return *std::get_if<T>(&t_or_err_); }
+  T& operator*() { return get_t(); }
 
   /// Allows read access to the underlying value. Careful: Will result in
   /// undefined behavior, if the result contains an error.
-  const T& operator*() const { return *std::get_if<T>(&t_or_err_); }
+  const T& operator*() const { return get_t(); }
 
   /// Assigns the underlying object.
   Result<T>& operator=(const Result<T>& _other) = default;
@@ -216,31 +199,22 @@ class Result {
   /// Result<T>.
   template <class F>
   Result<T> or_else(const F& _f) {
-    const auto handle_variant =
-        [&]<class TOrError>(TOrError&& _t_or_err) -> Result<T> {
-      if constexpr (std::is_same<std::remove_cvref_t<TOrError>, Error>()) {
-        return _f(std::forward<Error>(_t_or_err));
-      } else {
-        return std::forward<T>(_t_or_err);
-      }
-    };
-    return std::visit(handle_variant,
-                      std::forward<std::variant<T, Error>>(t_or_err_));
+    if (success_) {
+      return std::forward<T>(get_t());
+    } else {
+      return _f(std::forward<Error>(get_err()));
+    }
   }
 
   /// Expects a function that takes of type Error -> Result<T> and returns
   /// Result<T>.
   template <class F>
   Result<T> or_else(const F& _f) const {
-    const auto handle_variant =
-        [&_f]<class TOrError>(const TOrError& _t_or_err) -> Result<T> {
-      if constexpr (std::is_same<TOrError, Error>()) {
-        return _f(_t_or_err);
-      } else {
-        return _t_or_err;
-      }
-    };
-    return std::visit(handle_variant, t_or_err_);
+    if (success_) {
+      return get_t();
+    } else {
+      return _f(get_err());
+    }
   }
 
   /// Returns the value contained if successful or the provided result r if
@@ -255,18 +229,11 @@ class Result {
   auto transform(const F& _f) {
     /// Result_U is expected to be of type Result<U>.
     using U = typename std::invoke_result<F, T>::type;
-
-    const auto handle_variant =
-        [&]<class TOrError>(TOrError&& _t_or_err) -> rfl::Result<U> {
-      if constexpr (!std::is_same<std::remove_cvref_t<TOrError>, Error>()) {
-        return _f(std::forward<TOrError>(_t_or_err));
-      } else {
-        return std::forward<TOrError>(_t_or_err);
-      }
-    };
-
-    return std::visit(handle_variant,
-                      std::forward<std::variant<T, Error>>(t_or_err_));
+    if (success_) {
+      return rfl::Result<U>(_f(std::forward<T>(get_t())));
+    } else {
+      return rfl::Result<U>(std::forward<Error>(get_err()));
+    }
   }
 
   /// Functor operation - F must be a function of type T -> U.
@@ -274,75 +241,70 @@ class Result {
   auto transform(const F& _f) const {
     /// Result_U is expected to be of type Result<U>.
     using U = typename std::invoke_result<F, T>::type;
-
-    const auto handle_variant =
-        [&]<class TOrError>(const TOrError& _t_or_err) -> rfl::Result<U> {
-      if constexpr (!std::is_same<TOrError, Error>()) {
-        return _f(_t_or_err);
-      } else {
-        return _t_or_err;
-      }
-    };
-
-    return std::visit(handle_variant, t_or_err_);
+    if (success_) {
+      return rfl::Result<U>(_f(get_t()));
+    } else {
+      return rfl::Result<U>(get_err());
+    }
   }
 
   /// Returns the value if the result does not contain an error, throws an
   /// exceptions if not. Similar to .unwrap() in Rust.
   T value() {
-    const auto handle_variant = [&]<class TOrError>(TOrError& _t_or_err) -> T {
-      if constexpr (!std::is_same<TOrError, Error>()) {
-        return std::forward<T>(_t_or_err);
-      } else {
-        throw std::runtime_error(_t_or_err.what());
-      }
-    };
-    return std::visit(handle_variant, t_or_err_);
+    if (success_) {
+      return std::forward<T>(get_t());
+    } else {
+      throw std::runtime_error(get_err().what());
+    }
   }
 
   /// Returns the value if the result does not contain an error, throws an
   /// exceptions if not. Similar to .unwrap() in Rust.
   const T& value() const {
-    const auto handle_variant =
-        [&]<class TOrError>(const TOrError& _t_or_err) -> const T& {
-      if constexpr (!std::is_same<TOrError, Error>()) {
-        return _t_or_err;
-      } else {
-        throw std::runtime_error(_t_or_err.what());
-      }
-    };
-    return std::visit(handle_variant, t_or_err_);
+    if (success_) {
+      return get_t();
+    } else {
+      throw std::runtime_error(get_err().what());
+    }
   }
 
   /// Returns the value or a default.
   T value_or(T&& _default) noexcept {
-    const auto handle_variant = [&]<class TOrError>(TOrError&& _t_or_err) -> T {
-      using Type = std::remove_cvref_t<TOrError>;
-      if constexpr (!std::is_same<Type, Error>()) {
-        return std::forward<T>(_t_or_err);
-      } else {
-        return std::forward<T>(_default);
-      }
-    };
-    return std::visit(handle_variant, t_or_err_);
+    if (success_) {
+      return std::forward<T>(get_t());
+    } else {
+      return std::forward<T>(_default);
+    }
   }
 
   /// Returns the value or a default.
   T value_or(const T& _default) const noexcept {
-    const auto handle_variant =
-        [&]<class TOrError>(const TOrError& _t_or_err) -> T {
-      if constexpr (!std::is_same<TOrError, Error>()) {
-        return _t_or_err;
-      } else {
-        return _default;
-      }
-    };
-    return std::visit(handle_variant, t_or_err_);
+    if (success_) {
+      return get_t();
+    } else {
+      return _default;
+    }
   }
 
  private:
-  /// The underlying variant, can either be T or Error.
-  std::variant<T, Error> t_or_err_;
+  T& get_t() { return *(reinterpret_cast<T*>(t_or_err_.data())); }
+
+  const T& get_t() const {
+    return *(reinterpret_cast<const T*>(t_or_err_.data()));
+  }
+
+  Error& get_err() { return *(reinterpret_cast<Error*>(t_or_err_.data())); }
+
+  const Error& get_err() const {
+    return *(reinterpret_cast<const Error*>(t_or_err_.data()));
+  }
+
+ private:
+  /// The underlying data, can either be T or Error.
+  alignas(std::max(alignof(T), alignof(Error))) TOrErr t_or_err_;
+
+  /// Signifies whether this was a success.
+  bool success_;
 };
 
 }  // namespace rfl
