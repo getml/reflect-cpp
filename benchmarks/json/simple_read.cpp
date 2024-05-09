@@ -1,5 +1,6 @@
 #include <benchmark/benchmark.h>
 
+#include <array>
 #include <iostream>
 #include <rfl/json.hpp>
 
@@ -85,6 +86,8 @@ static void read_using_yyjson_iter() {
   Person homer;
 
   std::vector<std::string> errors;
+  std::array<bool, 3> found;
+  std::fill(found.begin(), found.end(), false);
 
   yyjson_obj_iter iter;
   yyjson_obj_iter_init(root, &iter);
@@ -99,6 +102,7 @@ static void read_using_yyjson_iter() {
             "Error reading 'first_name': Could not cast to string.");
       }
       homer.first_name = first_name;
+      std::get<0>(found) = true;
     } else if (name == "last_name") {
       auto last_name = yyjson_get_str(v);
       if (last_name == NULL) {
@@ -106,11 +110,28 @@ static void read_using_yyjson_iter() {
             "Error reading 'last_name': Could not cast to string.");
       }
       homer.last_name = last_name;
+      std::get<1>(found) = true;
     } else if (name == "age") {
       if (!yyjson_is_int(v)) {
         errors.push_back("Error reading 'age': Could not cast to int.");
       }
       homer.age = yyjson_get_int(v);
+      std::get<2>(found) = true;
+    }
+  }
+  if (!std::get<0>(found)) {
+    errors.push_back("'first_name' not found");
+  }
+  if (!std::get<1>(found)) {
+    errors.push_back("'last_name' not found");
+  }
+  if (!std::get<2>(found)) {
+    errors.push_back("'age' not found");
+  }
+  if (errors.size() != 0) {
+    std::cout << "Some errors occurred:" << std::endl;
+    for (const auto &err : errors) {
+      std::cout << err << std::endl;
     }
   }
 
