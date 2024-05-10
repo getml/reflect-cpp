@@ -22,13 +22,12 @@ TEST(json, test_result) {
 
   const rfl::Result<Person> maggie = rfl::Error("Some error occurred.");
 
-  // const auto homer = Person{
-  //     .first_name = "Homer",
-  //    .children = std::vector<rfl::Result<Person>>({bart, lisa, maggie})};
+  const auto homer = Person{
+      .first_name = "Homer",
+      .children = std::vector<rfl::Result<Person>>({bart, lisa, maggie})};
 
-  // write_and_read(
-  //     homer,
-  //     R"({"firstName":"Homer","lastName":"Simpson","children":[{"firstName":"Bart","lastName":"Simpson","children":[]},{"firstName":"Lisa","lastName":"Simpson","children":[]},{"error":"Some
-  //       error occurred."}]})");
+  write_and_read(
+      homer,
+      R"({"firstName":"Homer","lastName":"Simpson","children":[{"firstName":"Bart","lastName":"Simpson","children":[]},{"firstName":"Lisa","lastName":"Simpson","children":[]},{"error":"Some error occurred."}]})");
 }
 }  // namespace test_result

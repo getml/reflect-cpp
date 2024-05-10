@@ -58,9 +58,21 @@ class Result {
     new (&get_err()) Error(std::move(_err));
   }
 
-  Result(Result<T>&& _other) noexcept = default;
+  Result(Result<T>&& _other) noexcept : success_(_other.success_) {
+    if (success_) {
+      new (&get_t()) T(std::move(_other.get_t()));
+    } else {
+      new (&get_err()) Error(std::move(_other.get_err()));
+    }
+  }
 
-  Result(const Result<T>& _other) = default;
+  Result(const Result<T>& _other) : success_(_other.success_) {
+    if (success_) {
+      new (&get_t()) T(_other.get_t());
+    } else {
+      new (&get_err()) Error(_other.get_err());
+    }
+  }
 
   template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
                                              bool>::type = true>
@@ -77,15 +89,7 @@ class Result {
             _other.transform([](const U& _u) { return T(_u); }).t_or_err_),
         success_(_other && true) {}
 
-  ~Result() {
-    if (success_) {
-      if constexpr (std::is_destructible_v<T>) {
-        get_t().~T();
-      }
-    } else {
-      get_err().~Error();
-    }
-  }
+  ~Result() { destroy(); }
 
   /// Returns Result<U>, if successful and error otherwise.
   /// Inspired by .and(...) in the Rust std::result type.
@@ -181,10 +185,32 @@ class Result {
   const T& operator*() const { return get_t(); }
 
   /// Assigns the underlying object.
-  Result<T>& operator=(const Result<T>& _other) = default;
+  Result<T>& operator=(const Result<T>& _other) {
+    if (this == &_other) {
+      return *this;
+    }
+    destroy();
+    success_ = _other.success_;
+    if (success_) {
+      new (&get_t()) T(_other.get_t());
+    } else {
+      new (&get_err()) Error(_other.get_err());
+    }
+  }
 
   /// Assigns the underlying object.
-  Result<T>& operator=(Result<T>&& _other) = default;
+  Result<T>& operator=(Result<T>&& _other) {
+    if (this == &_other) {
+      return *this;
+    }
+    destroy();
+    success_ = _other.success_;
+    if (success_) {
+      new (&get_t()) T(std::move(_other.get_t()));
+    } else {
+      new (&get_err()) Error(std::move(_other.get_err()));
+    }
+  }
 
   /// Assigns the underlying object.
   template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
@@ -287,6 +313,16 @@ class Result {
   }
 
  private:
+  void destroy() {
+    if (success_) {
+      if constexpr (std::is_destructible_v<T>) {
+        get_t().~T();
+      }
+    } else {
+      get_err().~Error();
+    }
+  }
+
   T& get_t() { return *(reinterpret_cast<T*>(t_or_err_.data())); }
 
   const T& get_t() const {

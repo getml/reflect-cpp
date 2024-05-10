@@ -16,11 +16,10 @@ TEST(json, test_c_array_class1) {
   Test1 test1 = {.classes = {{"Little A", "Little B", "Little C"},
                              {"BIG A", "BIG B", "BIG C"},
                              {"??", "$%", "#@"}}};
-  // TODO
-  /*  write_and_read(
-        test1,
-        R"({"classes":[["Little A","Little B","Little C"],["BIG A","BIG B","BIG
-    C"],["??","$%","#@"]]})");*/
+  // write_and_read(
+  //     test1,
+  //     R"({"classes":[["Little A","Little B","Little C"],["BIG A","BIG B","BIG
+  //     C"],["??","$%","#@"]]})");
 }
 
 }  // namespace test_c_array_class1
