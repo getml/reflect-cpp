@@ -178,11 +178,11 @@ class Result {
 
   /// Allows access to the underlying value. Careful: Will result in undefined
   /// behavior, if the result contains an error.
-  T& operator*() { return get_t(); }
+  T& operator*() noexcept { return get_t(); }
 
   /// Allows read access to the underlying value. Careful: Will result in
   /// undefined behavior, if the result contains an error.
-  const T& operator*() const { return get_t(); }
+  const T& operator*() const noexcept { return get_t(); }
 
   /// Assigns the underlying object.
   Result<T>& operator=(const Result<T>& _other) {
@@ -196,6 +196,7 @@ class Result {
     } else {
       new (&get_err()) Error(_other.get_err());
     }
+    return *this;
   }
 
   /// Assigns the underlying object.
@@ -210,6 +211,7 @@ class Result {
     } else {
       new (&get_err()) Error(std::move(_other.get_err()));
     }
+    return *this;
   }
 
   /// Assigns the underlying object.
@@ -323,24 +325,26 @@ class Result {
     }
   }
 
-  T& get_t() { return *(reinterpret_cast<T*>(t_or_err_.data())); }
+  T& get_t() noexcept { return *(reinterpret_cast<T*>(t_or_err_.data())); }
 
-  const T& get_t() const {
+  const T& get_t() const noexcept {
     return *(reinterpret_cast<const T*>(t_or_err_.data()));
   }
 
-  Error& get_err() { return *(reinterpret_cast<Error*>(t_or_err_.data())); }
+  Error& get_err() noexcept {
+    return *(reinterpret_cast<Error*>(t_or_err_.data()));
+  }
 
-  const Error& get_err() const {
+  const Error& get_err() const noexcept {
     return *(reinterpret_cast<const Error*>(t_or_err_.data()));
   }
 
  private:
-  /// The underlying data, can either be T or Error.
-  alignas(std::max(alignof(T), alignof(Error))) TOrErr t_or_err_;
-
   /// Signifies whether this was a success.
   bool success_;
+
+  /// The underlying data, can either be T or Error.
+  alignas(std::max(alignof(T), alignof(Error))) TOrErr t_or_err_;
 };
 
 }  // namespace rfl
