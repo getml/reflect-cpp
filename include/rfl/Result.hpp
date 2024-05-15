@@ -13,6 +13,7 @@
 #include <variant>
 #include <vector>
 
+#include "internal/is_array.hpp"
 #include "internal/to_std_array.hpp"
 
 namespace rfl {
@@ -59,19 +60,11 @@ class Result {
   }
 
   Result(Result<T>&& _other) noexcept : success_(_other.success_) {
-    if (success_) {
-      new (&get_t()) T(std::move(_other.get_t()));
-    } else {
-      new (&get_err()) Error(std::move(_other.get_err()));
-    }
+    move_from_other(std::move(_other));
   }
 
   Result(const Result<T>& _other) : success_(_other.success_) {
-    if (success_) {
-      new (&get_t()) T(_other.get_t());
-    } else {
-      new (&get_err()) Error(_other.get_err());
-    }
+    copy_from_other(_other);
   }
 
   template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
@@ -191,11 +184,7 @@ class Result {
     }
     destroy();
     success_ = _other.success_;
-    if (success_) {
-      new (&get_t()) T(_other.get_t());
-    } else {
-      new (&get_err()) Error(_other.get_err());
-    }
+    copy_from_other(_other);
     return *this;
   }
 
@@ -206,11 +195,7 @@ class Result {
     }
     destroy();
     success_ = _other.success_;
-    if (success_) {
-      new (&get_t()) T(std::move(_other.get_t()));
-    } else {
-      new (&get_err()) Error(std::move(_other.get_err()));
-    }
+    move_from_other(std::move(_other));
     return *this;
   }
 
@@ -320,9 +305,62 @@ class Result {
     for (size_t i = 0; i < _size; ++i) {
       if constexpr (std::is_array_v<U>) {
         call_destructor_on_array(sizeof(*_ptr) / sizeof(**_ptr), *(_ptr + i));
+      } else if constexpr (internal::is_array_v<U>) {
+        call_destructor_on_array(_ptr->arr_.size(), _ptr->arr_[i]);
       } else if constexpr (std::is_destructible_v<U>) {
         (_ptr + i)->~U();
       }
+    }
+  }
+
+  template <class Target, class Source>
+  void call_copy_constructor_on_array(Target* _t, Source* _s) const {
+    if constexpr (std::is_const_v<Target>) {
+      return call_copy_constructor_on_array(
+          const_cast<std::remove_const_t<Target>*>(_t), _s);
+    } else if constexpr (!internal::is_array_v<Source> &&
+                         !std::is_array_v<Target>) {
+      ::new (_t) Target(*_s);
+    } else if constexpr (internal::is_array_v<Source>) {
+      for (size_t i = 0; i < _s->arr_.size(); ++i) {
+        call_copy_constructor_on_array(&((*_t)[i]), &(_s->arr_[i]));
+      }
+    } else {
+      for (size_t i = 0; i < _s->size(); ++i) {
+        call_copy_constructor_on_array(&((*_t)[i]), &((*_s)[i]));
+      }
+    }
+  }
+
+  template <class Target, class Source>
+  void call_move_constructor_on_array(Target* _t, Source* _s) const {
+    if constexpr (std::is_const_v<Target>) {
+      return call_move_constructor_on_array(
+          const_cast<std::remove_const_t<Target>*>(_t), _s);
+    } else if constexpr (!internal::is_array_v<Source> &&
+                         !std::is_array_v<Target>) {
+      ::new (_t) Target(std::move(*_s));
+    } else if constexpr (internal::is_array_v<Source>) {
+      for (size_t i = 0; i < _s->arr_.size(); ++i) {
+        call_move_constructor_on_array(&((*_t)[i]), &(_s->arr_[i]));
+      }
+    } else {
+      for (size_t i = 0; i < _s->size(); ++i) {
+        call_move_constructor_on_array(&((*_t)[i]), &((*_s)[i]));
+      }
+    }
+  }
+
+  void copy_from_other(const Result<T>& _other) {
+    if (success_) {
+      if constexpr (std::is_array_v<T> || internal::is_array_v<T>) {
+        auto ptr = &get_t();
+        call_copy_constructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
+      } else if constexpr (std::is_destructible_v<T>) {
+        new (&get_t()) T(_other.get_t());
+      }
+    } else {
+      new (&get_err()) Error(_other.get_err());
     }
   }
 
@@ -331,6 +369,9 @@ class Result {
       if constexpr (std::is_array_v<T>) {
         auto ptr = &get_t();
         call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
+      } else if constexpr (internal::is_array_v<T>) {
+        auto ptr = &get_t();
+        call_destructor_on_array(ptr->arr_.size(), &(ptr->arr_));
       } else if constexpr (std::is_destructible_v<T>) {
         get_t().~T();
       }
@@ -351,6 +392,19 @@ class Result {
 
   const Error& get_err() const noexcept {
     return *(reinterpret_cast<const Error*>(t_or_err_.data()));
+  }
+
+  void move_from_other(Result<T>&& _other) {
+    if (success_) {
+      if constexpr (std::is_array_v<T> || internal::is_array_v<T>) {
+        auto ptr = &get_t();
+        call_move_constructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
+      } else if constexpr (std::is_destructible_v<T>) {
+        new (&get_t()) T(std::move(_other.get_t()));
+      }
+    } else {
+      new (&get_err()) Error(std::move(_other.get_err()));
+    }
   }
 
  private:
