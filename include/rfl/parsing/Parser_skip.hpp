@@ -44,12 +44,11 @@ struct Parser<R, W,
                     const internal::Skip<T, _skip_serialization,
                                          _skip_deserialization>& _skip,
                     const P& _parent) noexcept {
-    if constexpr (!_skip_serialization) {
-      using ReflectionType =
-          typename internal::Skip<T, _skip_serialization,
-                                  _skip_deserialization>::ReflectionType;
-      Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(
-          _w, ReflectionType(), _parent);
+    if constexpr (_skip_serialization) {
+      using ReflectionType = std::remove_cvref_t<typename internal::Skip<
+          T, _skip_serialization, _skip_deserialization>::ReflectionType>;
+      Parser<R, W, ReflectionType, ProcessorsType>::write(_w, ReflectionType(),
+                                                          _parent);
     } else {
       Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(
           _w, _skip.value(), _parent);
