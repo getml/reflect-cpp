@@ -14,6 +14,7 @@
 #include "../internal/is_array.hpp"
 #include "../internal/is_attribute.hpp"
 #include "../internal/is_basic_type.hpp"
+#include "../internal/is_skip.hpp"
 #include "../internal/strings/replace_all.hpp"
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
@@ -99,9 +100,11 @@ struct NamedTupleParser {
     } else {
       using F =
           std::tuple_element_t<_i, typename NamedTuple<FieldTypes...>::Fields>;
-      _values[std::string(F::name())] =
-          Parser<R, W, typename F::Type, ProcessorsType>::to_schema(
-              _definitions);
+      using U = typename F::Type;
+      if constexpr (!internal::is_skip_v<U>) {
+        _values[std::string(F::name())] =
+            Parser<R, W, U, ProcessorsType>::to_schema(_definitions);
+      }
       return to_schema<_i + 1>(_definitions, _values);
     }
   };
