@@ -24,9 +24,11 @@
 
 1.10) [rfl::Timestamp](https://github.com/getml/reflect-cpp/blob/main/docs/timestamps.md) - For serializing and deserializing timestamps.
 
-1.11) [rfl::Result](https://github.com/getml/reflect-cpp/blob/main/docs/result.md) - For error handling without exceptions.
+1.11) [rfl::Skip](https://github.com/getml/reflect-cpp/blob/main/docs/rfl_skip.md) - For skipping fields during serialization and/or deserialization.
 
-1.12) [Standard containers](https://github.com/getml/reflect-cpp/blob/main/docs/standard_containers.md) - Describes how reflect-cpp treats containers in the standard library.
+1.12) [rfl::Result](https://github.com/getml/reflect-cpp/blob/main/docs/result.md) - For error handling without exceptions.
+
+1.13) [Standard containers](https://github.com/getml/reflect-cpp/blob/main/docs/standard_containers.md) - Describes how reflect-cpp treats containers in the standard library.
 
 ## 2) Validation
 
