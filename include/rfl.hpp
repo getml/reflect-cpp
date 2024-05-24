@@ -17,6 +17,7 @@
 #include "rfl/Flatten.hpp"
 #include "rfl/Literal.hpp"
 #include "rfl/NamedTuple.hpp"
+#include "rfl/NoOptionals.hpp"
 #include "rfl/OneOf.hpp"
 #include "rfl/Pattern.hpp"
 #include "rfl/PatternValidator.hpp"
