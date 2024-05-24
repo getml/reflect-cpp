@@ -44,7 +44,7 @@ struct Parser<R, W, std::wstring, ProcessorsType> {
     auto* ptr = val.c_str();
 
     // Add 1 for null terminator
-    auto len = std::mbsrtowcs(outStr.data(), &ptr, val.size(), &state) + 1;
+    auto len = std::mbsrtowcs(outStr.data(), &ptr, val.size(), &state);
     outStr.resize(len);  // Truncate the extra bytes
 
     return Result<std::wstring>(outStr);
@@ -59,11 +59,11 @@ struct Parser<R, W, std::wstring, ProcessorsType> {
     }
 
     std::mbstate_t state = std::mbstate_t();
-    std::string outStr(_str.size() + 1, '\0');
-    outStr.resize(_str.size() + 1);
+    std::string outStr(_str.size(), '\0');
+    outStr.resize(_str.size());
 
     auto* ptr = _str.c_str();
-    auto len = std::wcsrtombs(outStr.data(), &ptr, _str.size(), &state) + 1;
+    auto len = std::wcsrtombs(outStr.data(), &ptr, _str.size(), &state);
     outStr.resize(len);
 
     ParentType::add_value(_w, outStr, _parent);
