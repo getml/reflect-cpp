@@ -58,7 +58,7 @@ The resulting JSON string looks like this:
 
 ### `rfl::NoOptionals`
 
-As we have seen in the section on optional fields, if when a `std::optional` is
+As we have seen in the section on optional fields, when a `std::optional` is
 `std::nullopt`, it is usually not written at all. But if you want them to be explicitly
 written as `null`, you can use this processor. The same thing applies to `std::shared_ptr` and 
 `std::unique_ptr`.
@@ -78,7 +78,7 @@ rfl::json::write<rfl::NoOptionals>(homer);
 The resulting JSON string looks like this:
 
 ```json
-{"first_name":"Homer","last_name":"Simpson","town":null};
+{"first_name":"Homer","last_name":"Simpson","town":null}
 ```
 
 By default, `rfl::json::read` will accept both `"town":null` and just 
