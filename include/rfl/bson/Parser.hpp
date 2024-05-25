@@ -11,9 +11,9 @@ namespace rfl::parsing {
 
 /// bson_oid_t needs to be treated as a special case, otherwise it will be read
 /// as a struct.
-template <class R, class W>
+template <class R, class W, class ProcessorsType>
 requires AreReaderAndWriter<R, W, bson_oid_t>
-struct Parser<R, W, bson_oid_t> {
+struct Parser<R, W, ProcessorsType, bson_oid_t> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
 
