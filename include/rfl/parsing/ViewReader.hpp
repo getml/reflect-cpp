@@ -36,7 +36,7 @@ class ViewReader {
   /// Because of the way we have allocated the fields, we need to manually
   /// trigger the destructors.
   void call_destructors_where_necessary() const {
-    [this]<int... is>(std::integer_sequence<int, is...>) {
+    [&]<int... is>(std::integer_sequence<int, is...>) {
       (call_destructor_on_one_if_necessary<is>(), ...);
     }
     (std::make_integer_sequence<int, size_>());
