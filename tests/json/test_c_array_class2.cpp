@@ -21,11 +21,9 @@ TEST(json, test_c_array_class2) {
   }
   test2.s = "Hello, world!";
 
-  // TODO
-  //  write_and_read(
-  //      test2,
-  //      R"({"multi_dimension_arr":[[[[0,1],[2,3]],[[4,5],[6,7]]],[[[8,9],[10,11]],[[12,13],[14,15]]]],"s":"Hello,
-  //      world!"})");
+  write_and_read(
+      test2,
+      R"({"multi_dimension_arr":[[[[0,1],[2,3]],[[4,5],[6,7]]],[[[8,9],[10,11]],[[12,13],[14,15]]]],"s":"Hello, world!"})");
 }
 
 }  // namespace test_c_array_class2
