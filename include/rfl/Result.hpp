@@ -13,6 +13,7 @@
 #include <variant>
 #include <vector>
 
+#include "internal/is_array.hpp"
 #include "internal/to_std_array.hpp"
 
 namespace rfl {
@@ -59,35 +60,27 @@ class Result {
   }
 
   Result(Result<T>&& _other) noexcept : success_(_other.success_) {
-    if (success_) {
-      new (&get_t()) T(std::move(_other.get_t()));
-    } else {
-      new (&get_err()) Error(std::move(_other.get_err()));
-    }
+    move_from_other(_other);
   }
 
   Result(const Result<T>& _other) : success_(_other.success_) {
-    if (success_) {
-      new (&get_t()) T(_other.get_t());
-    } else {
-      new (&get_err()) Error(_other.get_err());
-    }
+    copy_from_other(_other);
   }
 
   template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
                                              bool>::type = true>
-  Result(Result<U>&& _other)
-      : t_or_err_(std::forward<Result<U>>(_other)
-                      .transform([](U&& _u) { return T(std::forward<U>(_u)); })
-                      .t_or_err_),
-        success_(_other && true) {}
+  Result(Result<U>&& _other) : success_(_other && true) {
+    auto temp = std::forward<Result<U>>(_other).transform(
+        [](U&& _u) { return T(std::forward<U>(_u)); });
+    move_from_other(temp);
+  }
 
   template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
                                              bool>::type = true>
-  Result(const Result<U>& _other)
-      : t_or_err_(
-            _other.transform([](const U& _u) { return T(_u); }).t_or_err_),
-        success_(_other && true) {}
+  Result(const Result<U>& _other) : success_(_other && true) {
+    auto temp = _other.transform([](const U& _u) { return T(_u); });
+    move_from_other(temp);
+  }
 
   ~Result() { destroy(); }
 
@@ -191,26 +184,18 @@ class Result {
     }
     destroy();
     success_ = _other.success_;
-    if (success_) {
-      new (&get_t()) T(_other.get_t());
-    } else {
-      new (&get_err()) Error(_other.get_err());
-    }
+    copy_from_other(_other);
     return *this;
   }
 
   /// Assigns the underlying object.
-  Result<T>& operator=(Result<T>&& _other) {
+  Result<T>& operator=(Result<T>&& _other) noexcept {
     if (this == &_other) {
       return *this;
     }
     destroy();
     success_ = _other.success_;
-    if (success_) {
-      new (&get_t()) T(std::move(_other.get_t()));
-    } else {
-      new (&get_err()) Error(std::move(_other.get_err()));
-    }
+    move_from_other(_other);
     return *this;
   }
 
@@ -278,9 +263,9 @@ class Result {
 
   /// Returns the value if the result does not contain an error, throws an
   /// exceptions if not. Similar to .unwrap() in Rust.
-  T value() {
+  T& value() {
     if (success_) {
-      return std::forward<T>(get_t());
+      return get_t();
     } else {
       throw std::runtime_error(get_err().what());
     }
@@ -315,9 +300,17 @@ class Result {
   }
 
  private:
+  void copy_from_other(const Result<T>& _other) {
+    if (success_) {
+      new (&get_t()) T(_other.get_t());
+    } else {
+      new (&get_err()) Error(_other.get_err());
+    }
+  }
+
   void destroy() {
     if (success_) {
-      if constexpr (std::is_destructible_v<T>) {
+      if constexpr (std::is_destructible_v<T> /*&& !internal::is_array_v<T>*/) {
         get_t().~T();
       }
     } else {
@@ -337,6 +330,14 @@ class Result {
 
   const Error& get_err() const noexcept {
     return *(reinterpret_cast<const Error*>(t_or_err_.data()));
+  }
+
+  void move_from_other(Result<T>& _other) {
+    if (success_) {
+      new (&get_t()) T(std::move(_other.get_t()));
+    } else {
+      new (&get_err()) Error(std::move(_other.get_err()));
+    }
   }
 
  private:

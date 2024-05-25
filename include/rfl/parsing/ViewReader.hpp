@@ -27,17 +27,15 @@ class ViewReader {
   template <size_t _i = 0>
   void read(const std::string_view& _name, const InputVarType& _var) const {
     if constexpr (_i < size_) {
-      using FieldType =
-          typename std::tuple_element<_i, typename ViewType::Fields>::type;
-      using OriginalType = typename FieldType::Type;
+      using FieldType = std::tuple_element_t<_i, typename ViewType::Fields>;
+      using OriginalType = std::remove_cvref_t<typename FieldType::Type>;
       using CurrentType =
           std::remove_cvref_t<std::remove_pointer_t<OriginalType>>;
-      constexpr auto current_name = FieldType::name_.string_view();
+      constexpr auto current_name = FieldType::name();
       if (!std::get<_i>(*found_) && _name == current_name) {
         auto res = Parser<R, W, CurrentType, ProcessorsType>::read(*r_, _var);
         if (res) {
-          if constexpr (std::is_pointer_v<OriginalType> ||
-                        internal::is_array_v<OriginalType>) {
+          if constexpr (std::is_pointer_v<OriginalType>) {
             move_to(rfl::get<_i>(*view_), &(*res));
           } else {
             rfl::get<_i>(*view_) = *res;
@@ -100,6 +98,8 @@ class ViewReader {
                          !std::is_array_v<Target>) {
       ::new (_t) Target(std::move(*_s));
     } else if constexpr (internal::is_array_v<Source>) {
+      static_assert(std::is_array_v<Target>,
+                    "Expected target to be a c-array.");
       for (size_t i = 0; i < _s->arr_.size(); ++i) {
         move_to(&((*_t)[i]), &(_s->arr_[i]));
       }
