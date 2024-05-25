@@ -4,6 +4,7 @@
 #include <array>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "../Result.hpp"
@@ -25,79 +26,77 @@ class ViewReader {
   ~ViewReader() = default;
 
   void read(const std::string_view& _name, const InputVarType& _var) const {
-    assign_all(*r_, _name, _var, view_, errors_, found_, set_,
-               std::make_integer_sequence<int, size_>());
+    [&]<int... is>(std::integer_sequence<int, is...>) {
+      bool is_assigned = false;
+      (assign_if_field_matches<is>(_name, _var, &is_assigned), ...);
+    }
+    (std::make_integer_sequence<int, size_>());
   }
 
   /// Because of the way we have allocated the fields, we need to manually
   /// trigger the destructors.
-  template <size_t _i = 0>
   void call_destructors_where_necessary() const {
-    if constexpr (_i < size_) {
-      using FieldType = std::tuple_element_t<_i, typename ViewType::Fields>;
-      using OriginalType = std::remove_cvref_t<typename FieldType::Type>;
-      using ValueType =
-          std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
-      if constexpr (!std::is_array_v<ValueType> &&
-                    std::is_pointer_v<OriginalType> &&
-                    std::is_destructible_v<ValueType>) {
-        if (std::get<_i>(*set_)) {
-          rfl::get<_i>(*view_)->~ValueType();
-        }
-      } else if constexpr (std::is_array_v<ValueType>) {
-        if (std::get<_i>(*set_)) {
-          auto ptr = rfl::get<_i>(*view_);
-          call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
-        }
-      }
-      call_destructors_where_necessary<_i + 1>();
+    [this]<int... is>(std::integer_sequence<int, is...>) {
+      (call_destructor_on_one_if_necessary<is>(), ...);
     }
+    (std::make_integer_sequence<int, size_>());
   }
 
  private:
   template <int i>
-  static void assign_one(const R& _r, const std::string_view& _current_name,
-                         const auto& _var, ViewType* _view, auto* _errors,
-                         auto* _found, auto* _set, bool* _ok) {
+  void assign_if_field_matches(const std::string_view& _current_name,
+                               const auto& _var, bool* _is_assigned) const {
     using FieldType = std::tuple_element_t<i, typename ViewType::Fields>;
     using OriginalType = typename FieldType::Type;
     using T =
         std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
     constexpr auto name = FieldType::name();
-    if (!(*_ok) && _current_name == name) {
-      auto r = rfl::parsing::Parser<R, W, T, rfl::Processors<>>::read(_r, _var);
-      if (!r) {
-        _errors->push_back(std::move(*r.error()));
-      } else {
-        std::get<i>(*_set) = true;
+    if (!(*_is_assigned) && !std::get<i>(*found_) && _current_name == name) {
+      std::get<i>(*found_) = true;
+      auto res = rfl::parsing::Parser<R, W, T, ProcessorsType>::read(*r_, _var);
+      if (!res) {
+        errors_->emplace_back(Error("Failed to parse field '" +
+                                    std::string(name) +
+                                    "': " + std::move(res.error()->what())));
+        return;
       }
+      std::get<i>(*set_) = true;
       if constexpr (std::is_pointer_v<OriginalType>) {
-        move_to(rfl::get<i>(*_view), &(*r));
+        move_to(rfl::get<i>(*view_), &(*res));
       } else {
-        rfl::get<i>(*_view) = std::move(*r);
+        rfl::get<i>(*view_) = std::move(*res);
       }
-      std::get<i>(*_found) = true;
-      *_ok = true;
+      *_is_assigned = true;
     }
   }
 
-  template <int... is>
-  static void assign_all(const R& _r, const std::string_view& _current_name,
-                         const auto& _var, ViewType* _view, auto* _errors,
-                         auto* _found, auto* _set,
-                         std::integer_sequence<int, is...> _seq) {
-    bool ok = false;
-    (assign_one<is>(_r, _current_name, _var, _view, _errors, _found, _set, &ok),
-     ...);
-  }
-
   template <class T>
-  void call_destructor_on_array(const size_t _size, T* _ptr) const {
+  static void call_destructor_on_array(const size_t _size, T* _ptr) {
     for (size_t i = 0; i < _size; ++i) {
       if constexpr (std::is_array_v<T>) {
         call_destructor_on_array(sizeof(*_ptr) / sizeof(**_ptr), *(_ptr + i));
       } else if constexpr (std::is_destructible_v<T>) {
         (_ptr + i)->~T();
+      }
+    }
+  }
+
+  template <int _i>
+  void call_destructor_on_one_if_necessary() const {
+    using FieldType = std::tuple_element_t<_i, typename ViewType::Fields>;
+    using OriginalType = std::remove_cvref_t<typename FieldType::Type>;
+    using ValueType =
+        std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
+    if constexpr (!std::is_array_v<ValueType> &&
+                  std::is_pointer_v<OriginalType> &&
+                  std::is_destructible_v<ValueType>) {
+      if (std::get<_i>(*set_)) {
+        rfl::get<_i>(*view_)->~ValueType();
+      }
+    } else if constexpr (std::is_array_v<ValueType>) {
+      if (std::get<_i>(*set_)) {
+        auto ptr = rfl::get<_i>(*view_);
+        call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
       }
     }
   }
