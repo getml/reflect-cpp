@@ -49,7 +49,9 @@ class ViewReader {
                                       auto* _errors, auto* _found, auto* _set,
                                       bool* _already_assigned) {
     using FieldType = std::tuple_element_t<i, typename ViewType::Fields>;
-    using T = std::remove_pointer_t<typename FieldType::Type>;
+    using OriginalType = typename FieldType::Type;
+    using T =
+        std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
     constexpr auto name = FieldType::name();
     if (!(*_already_assigned) && !std::get<i>(*_found) &&
         _current_name == name) {
@@ -62,7 +64,11 @@ class ViewReader {
                        "': " + std::move(res.error()->what())));
         return;
       }
-      move_to(rfl::get<i>(*_view), &(*res));
+      if constexpr (std::is_pointer_v<OriginalType>) {
+        move_to(rfl::get<i>(*_view), &(*res));
+      } else {
+        rfl::get<i>(*_view) = std::move(*res);
+      }
       std::get<i>(*_set) = true;
     }
   }
