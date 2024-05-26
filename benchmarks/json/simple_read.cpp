@@ -38,11 +38,10 @@ inline auto get(auto &_view) {
   }
 };
 
-static void read_using_yyjson_comparison() {
+static rfl::Result<Person> read_using_yyjson_comparison() {
   yyjson_doc *doc = yyjson_read(json_string.c_str(), json_string.size(), 0);
   if (!doc) {
-    std::cout << "Could not parse document!" << std::endl;
-    return;
+    return rfl::Error("Could not parse document!");
   }
   yyjson_val *root = yyjson_doc_get_root(doc);
 
@@ -59,10 +58,12 @@ static void read_using_yyjson_comparison() {
                                     &view);
 
   if (err) {
-    std::cout << err->what() << std::endl;
+    return *err;
   }
 
   yyjson_doc_free(doc);
+
+  return std::move(*ptr);
 }
 
 template <class Target, class Source>
@@ -128,11 +129,10 @@ inline void assign_to_matching_field(const R &_r,
    ...);
 }
 
-static void read_using_yyjson_comparison2() {
+static rfl::Result<Person> read_using_yyjson_comparison2() {
   yyjson_doc *doc = yyjson_read(json_string.c_str(), json_string.size(), 0);
   if (!doc) {
-    std::cout << "Could not parse document!" << std::endl;
-    return;
+    return rfl::Error("Could not parse document!");
   }
   yyjson_val *root = yyjson_doc_get_root(doc);
 
@@ -177,19 +177,21 @@ static void read_using_yyjson_comparison2() {
   }
 
   yyjson_doc_free(doc);
+
+  return std::move(*ptr);
 }
 
-static void read_using_yyjson_iter() {
+static rfl::Result<Person> read_using_yyjson_iter() {
   yyjson_doc *doc = yyjson_read(json_string.c_str(), json_string.size(), 0);
   if (!doc) {
     std::cout << "Could not parse document!" << std::endl;
-    return;
+    return rfl::Error("Could not parse document");
   }
   yyjson_val *root = yyjson_doc_get_root(doc);
 
   Person homer;
 
-  std::vector<std::string> errors;
+  std::vector<rfl::Error> errors;
   std::array<bool, 3> found;
   std::fill(found.begin(), found.end(), false);
 
@@ -202,8 +204,8 @@ static void read_using_yyjson_iter() {
     if (!std::get<0>(found) && name == "first_name") {
       auto first_name = yyjson_get_str(v);
       if (first_name == NULL) {
-        errors.push_back(
-            "Error reading 'first_name': Could not cast to string.");
+        errors.push_back(rfl::Error(
+            "Error reading 'first_name': Could not cast to string."));
       }
       homer.first_name = first_name;
       std::get<0>(found) = true;
@@ -211,57 +213,84 @@ static void read_using_yyjson_iter() {
       auto last_name = yyjson_get_str(v);
       if (last_name == NULL) {
         errors.push_back(
-            "Error reading 'last_name': Could not cast to string.");
+            rfl::Error("Error reading 'last_name': Could not cast to string."));
       }
       homer.last_name = last_name;
       std::get<1>(found) = true;
     } else if (!std::get<2>(found) && name == "age") {
       auto age = yyjson_get_str(v);
       if (age == NULL) {
-        errors.push_back("Error reading 'age': Could not cast to string.");
+        errors.push_back(
+            rfl::Error("Error reading 'age': Could not cast to string."));
       }
       homer.age = age;
       std::get<2>(found) = true;
     }
   }
   if (!std::get<0>(found)) {
-    errors.push_back("'first_name' not found");
+    errors.push_back(rfl::Error("'first_name' not found"));
   }
   if (!std::get<1>(found)) {
-    errors.push_back("'last_name' not found");
+    errors.push_back(rfl::Error("'last_name' not found"));
   }
   if (!std::get<2>(found)) {
-    errors.push_back("'age' not found");
+    errors.push_back(rfl::Error("'age' not found"));
   }
   if (errors.size() != 0) {
     std::cout << "Some errors occurred:" << std::endl;
     for (const auto &err : errors) {
-      std::cout << err << std::endl;
+      std::cout << err.what() << std::endl;
     }
   }
 
   yyjson_doc_free(doc);
+
+  return homer;
+}
+
+static rfl::Result<Person> read_using_reflect_cpp() {
+  return rfl::json::read<Person>(json_string);
 }
 
 static void BM_simple_read_yyjson_iter(benchmark::State &state) {
-  for (auto _ : state) read_using_yyjson_iter();
+  for (auto _ : state) {
+    const auto res = read_using_yyjson_iter();
+    if (!res) {
+      std::cout << res.error()->what() << std::endl;
+    }
+  }
 }
 BENCHMARK(BM_simple_read_yyjson_iter);
 
+static void BM_simple_read_reflect_cpp(benchmark::State &state) {
+  for (auto _ : state) {
+    const auto res = read_using_reflect_cpp();
+    if (!res) {
+      std::cout << res.error()->what() << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_simple_read_reflect_cpp);
+
 static void BM_simple_read_yyjson_comparison(benchmark::State &state) {
-  for (auto _ : state) read_using_yyjson_comparison();
+  for (auto _ : state) {
+    const auto res = read_using_yyjson_comparison();
+    if (!res) {
+      std::cout << res.error()->what() << std::endl;
+    }
+  }
 }
 BENCHMARK(BM_simple_read_yyjson_comparison);
 
 static void BM_simple_read_yyjson_comparison2(benchmark::State &state) {
-  for (auto _ : state) read_using_yyjson_comparison2();
+  for (auto _ : state) {
+    const auto res = read_using_yyjson_comparison2();
+    if (!res) {
+      std::cout << res.error()->what() << std::endl;
+    }
+  }
 }
 BENCHMARK(BM_simple_read_yyjson_comparison2);
-
-static void BM_simple_read_reflect_cpp(benchmark::State &state) {
-  for (auto _ : state) rfl::json::read<Person>(json_string);
-}
-BENCHMARK(BM_simple_read_reflect_cpp);
 
 }  // namespace simple_read
 
