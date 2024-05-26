@@ -25,12 +25,11 @@ class ViewReader {
 
   ~ViewReader() = default;
 
+  /// Assigns the parsed version of _var to the field signified by _name, if
+  /// such a field exists in the underlying view.
   void read(const std::string_view& _name, const InputVarType& _var) const {
-    [&]<int... is>(std::integer_sequence<int, is...>) {
-      bool is_assigned = false;
-      (assign_if_field_matches<is>(_name, _var, &is_assigned), ...);
-    }
-    (std::make_integer_sequence<int, size_>());
+    assign_to_matching_field(*r_, _name, _var, view_, errors_, found_, set_,
+                             std::make_integer_sequence<int, size_>());
   }
 
   /// Because of the way we have allocated the fields, we need to manually
@@ -44,30 +43,40 @@ class ViewReader {
 
  private:
   template <int i>
-  void assign_if_field_matches(const std::string_view& _current_name,
-                               const auto& _var, bool* _is_assigned) const {
+  static void assign_if_field_matches(const R& _r,
+                                      const std::string_view& _current_name,
+                                      const auto& _var, auto* _view,
+                                      auto* _errors, auto* _found, auto* _set,
+                                      bool* _already_assigned) {
     using FieldType = std::tuple_element_t<i, typename ViewType::Fields>;
-    using OriginalType = typename FieldType::Type;
-    using T =
-        std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
+    using T = std::remove_pointer_t<typename FieldType::Type>;
     constexpr auto name = FieldType::name();
-    if (!(*_is_assigned) && !std::get<i>(*found_) && _current_name == name) {
-      std::get<i>(*found_) = true;
-      auto res = rfl::parsing::Parser<R, W, T, ProcessorsType>::read(*r_, _var);
+    if (!(*_already_assigned) && !std::get<i>(*_found) &&
+        _current_name == name) {
+      std::get<i>(*_found) = true;
+      *_already_assigned = true;
+      auto res = rfl::parsing::Parser<R, W, T, ProcessorsType>::read(_r, _var);
       if (!res) {
-        errors_->emplace_back(Error("Failed to parse field '" +
-                                    std::string(name) +
-                                    "': " + std::move(res.error()->what())));
+        _errors->emplace_back(
+            rfl::Error("Failed to parse field '" + std::string(name) +
+                       "': " + std::move(res.error()->what())));
         return;
       }
-      std::get<i>(*set_) = true;
-      if constexpr (std::is_pointer_v<OriginalType>) {
-        move_to(rfl::get<i>(*view_), &(*res));
-      } else {
-        rfl::get<i>(*view_) = std::move(*res);
-      }
-      *_is_assigned = true;
+      move_to(rfl::get<i>(*_view), &(*res));
+      std::get<i>(*_set) = true;
     }
+  }
+
+  template <int... is>
+  static void assign_to_matching_field(const R& _r,
+                                       const std::string_view& _current_name,
+                                       const auto& _var, auto* _view,
+                                       auto* _errors, auto* _found, auto* _set,
+                                       std::integer_sequence<int, is...>) {
+    bool already_assigned = false;
+    (assign_if_field_matches<is>(_r, _current_name, _var, _view, _errors,
+                                 _found, _set, &already_assigned),
+     ...);
   }
 
   template <class T>
@@ -105,10 +114,10 @@ class ViewReader {
   static void move_to(Target* _t, Source* _s) {
     if constexpr (std::is_const_v<Target>) {
       return move_to(const_cast<std::remove_const_t<Target>*>(_t), _s);
-    } else if constexpr (!internal::is_array_v<Source> &&
+    } else if constexpr (!rfl::internal::is_array_v<Source> &&
                          !std::is_array_v<Target>) {
       ::new (_t) Target(std::move(*_s));
-    } else if constexpr (internal::is_array_v<Source>) {
+    } else if constexpr (rfl::internal::is_array_v<Source>) {
       static_assert(std::is_array_v<Target>,
                     "Expected target to be a c-array.");
       for (size_t i = 0; i < _s->arr_.size(); ++i) {
