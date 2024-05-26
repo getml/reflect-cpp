@@ -57,11 +57,11 @@ class ViewReader {
         _current_name == name) {
       std::get<i>(*_found) = true;
       *_already_assigned = true;
-      auto res = rfl::parsing::Parser<R, W, T, ProcessorsType>::read(_r, _var);
+      auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
       if (!res) {
-        _errors->emplace_back(
-            rfl::Error("Failed to parse field '" + std::string(name) +
-                       "': " + std::move(res.error()->what())));
+        _errors->emplace_back(Error("Failed to parse field '" +
+                                    std::string(name) +
+                                    "': " + std::move(res.error()->what())));
         return;
       }
       if constexpr (std::is_pointer_v<OriginalType>) {
