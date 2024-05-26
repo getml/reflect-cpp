@@ -46,9 +46,9 @@ static void read_using_yyjson_comparison() {
   }
   yyjson_val *root = yyjson_doc_get_root(doc);
 
-  Person homer;
-
-  auto view = rfl::to_view(homer);
+  alignas(Person) unsigned char buf[sizeof(Person)];
+  auto ptr = reinterpret_cast<Person *>(buf);
+  auto view = rfl::to_view(*ptr);
 
   const auto reader = rfl::json::Reader();
 
