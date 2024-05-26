@@ -21,8 +21,8 @@ struct Parser<xml::Reader, xml::Writer, NamedTuple<FieldTypes...>,
               ProcessorsType>
     : public NamedTupleParser<xml::Reader, xml::Writer,
                               /*_ignore_empty_containers=*/true,
-                              /*_all_required=*/false, ProcessorsType,
-                              FieldTypes...> {
+                              /*_all_required=*/ProcessorsType::all_required_,
+                              ProcessorsType, FieldTypes...> {
 };
 
 }  // namespace parsing

@@ -29,21 +29,16 @@ The resulting JSON string looks like this:
 {"firstName":"Homer","lastName":"Simpson","age":45}
 ```
 
-If you want `PascalCase` instead, you can use the appropriate processor:
+## Supported processors
 
-```cpp
-const auto json_string = 
-  rfl::json::write<rfl::SnakeCaseToPascalCase>(homer);
+reflect-cpp currently supports the following processors:
 
-const auto homer2 = 
-  rfl::json::read<Person, rfl::SnakeCaseToPascalCase>(json_string).value();
-```
+- `rfl::AddStructName` 
+- `rfl::NoOptionals` 
+- `rfl::SnakeCaseToCamelCase` 
+- `rfl::SnakeCaseToPascalCase` 
 
-The resulting JSON string looks like this:
-
-```json
-{"FirstName":"Homer","LastName":"Simpson","Age":45}
-```
+### `rfl::AddStructName` 
 
 It is also possible to add the struct name as an addtional field, like this:
 
@@ -61,7 +56,64 @@ The resulting JSON string looks like this:
 {"type":"Person","first_name":"Homer","last_name":"Simpson","age":45}
 ```
 
-You can also combine several processors:
+### `rfl::NoOptionals`
+
+As we have seen in the section on optional fields, when a `std::optional` is
+`std::nullopt`, it is usually not written at all. But if you want them to be explicitly
+written as `null`, you can use this processor. The same thing applies to `std::shared_ptr` and 
+`std::unique_ptr`.
+
+```cpp
+struct Person {
+  std::string first_name;
+  std::string last_name = "Simpson";
+  std::optional<std::string> town = std::nullopt;
+};
+
+const auto homer = Person{.first_name = "Homer"};
+
+rfl::json::write<rfl::NoOptionals>(homer);
+```
+
+The resulting JSON string looks like this:
+
+```json
+{"first_name":"Homer","last_name":"Simpson","town":null}
+```
+
+By default, `rfl::json::read` will accept both `"town":null` and just 
+leaving out the field `town`. However, if you want to require the field
+`town` to be included, you can add `rfl::NoOptionals` to `read`:
+
+```
+rfl::json::read<Person, rfl::NoOptionals>(json_string);
+```
+
+### `rfl::SnakeCaseToCamelCase`
+
+Please refer to the example above.
+
+### `rfl::SnakeCaseToPascalCase`
+
+If you want `PascalCase` instead of `camelCase`, you can use the appropriate processor:
+
+```cpp
+const auto json_string = 
+  rfl::json::write<rfl::SnakeCaseToPascalCase>(homer);
+
+const auto homer2 = 
+  rfl::json::read<Person, rfl::SnakeCaseToPascalCase>(json_string).value();
+```
+
+The resulting JSON string looks like this:
+
+```json
+{"FirstName":"Homer","LastName":"Simpson","Age":45}
+```
+
+## Combining several processors
+
+You can combine several processors:
 
 ```cpp
 const auto json_string = 
