@@ -60,7 +60,7 @@ struct NamedTupleParser {
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto err =
         Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
-    if (err) {
+    if (err) [[unlikely]] {
       return *err;
     }
     return *ptr;
@@ -70,11 +70,11 @@ struct NamedTupleParser {
   static std::optional<Error> read_view(
       const R& _r, const InputVarType& _var,
       NamedTuple<FieldTypes...>* _view) noexcept {
-    const auto obj = _r.to_object(_var);
-    if (obj) {
-      return read_object(_r, *obj, _view);
+    auto obj = _r.to_object(_var);
+    if (!obj) [[unlikely]] {
+      return obj.error();
     }
-    return obj.error();
+    return read_object(_r, *obj, _view);
   }
 
   /// For writing, we do not need to make the distinction between

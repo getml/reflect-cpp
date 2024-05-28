@@ -21,23 +21,6 @@ struct Person {
   std::string age;
 };
 
-struct View {
-  std::string *ptr0;
-  std::string *ptr1;
-  std::string *ptr2;
-};
-
-template <int _i>
-inline auto get(auto &_view) {
-  if constexpr (_i == 0) {
-    return _view.ptr0;
-  } else if constexpr (_i == 1) {
-    return _view.ptr1;
-  } else if constexpr (_i == 2) {
-    return _view.ptr2;
-  }
-};
-
 static rfl::Result<Person> read_using_yyjson_comparison() {
   yyjson_doc *doc = yyjson_read(json_string.c_str(), json_string.size(), 0);
   if (!doc) {
@@ -47,7 +30,7 @@ static rfl::Result<Person> read_using_yyjson_comparison() {
 
   alignas(Person) unsigned char buf[sizeof(Person)];
   auto ptr = reinterpret_cast<Person *>(buf);
-  auto view = rfl::to_view(*ptr);
+  auto view = rfl::Processors<>::template process<Person>(rfl::to_view(*ptr));
 
   const auto reader = rfl::json::Reader();
 
@@ -58,6 +41,7 @@ static rfl::Result<Person> read_using_yyjson_comparison() {
                                     &view);
 
   if (err) {
+    yyjson_doc_free(doc);
     return *err;
   }
 
