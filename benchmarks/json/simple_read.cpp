@@ -1,4 +1,5 @@
 #include <benchmark/benchmark.h>
+#include <rapidjson/document.h>
 
 #include <array>
 #include <iostream>
@@ -45,19 +46,19 @@ struct Person {
 // ----------------------------------------------------------------------------
 // nlohmann/json
 
-std::vector<Person> nlohmann_to_children(nlohmann::json _val);
+std::vector<Person> nlohmann_to_children(const nlohmann::json &_val);
 
-Person nlohmann_to_person(nlohmann::json _val);
+Person nlohmann_to_person(const nlohmann::json &_val);
 
-std::vector<Person> nlohmann_to_children(nlohmann::json _arr) {
+std::vector<Person> nlohmann_to_children(const nlohmann::json &_arr) {
   std::vector<Person> children;
-  for (auto &val : _arr) {
+  for (const auto &val : _arr) {
     children.push_back(nlohmann_to_person(val));
   }
   return children;
 }
 
-Person nlohmann_to_person(nlohmann::json _val) {
+Person nlohmann_to_person(const nlohmann::json &_val) {
   Person person;
   person.first_name = _val["first_name"].template get<std::string>();
   person.last_name = _val["last_name"].template get<std::string>();
@@ -66,8 +67,51 @@ Person nlohmann_to_person(nlohmann::json _val) {
 }
 
 static rfl::Result<Person> read_using_nlohmann() {
-  auto val = nlohmann::json::parse(json_string);
-  return nlohmann_to_person(val);
+  try {
+    auto val = nlohmann::json::parse(json_string);
+    return nlohmann_to_person(val);
+  } catch (std::exception &e) {
+    return rfl::Error(e.what());
+  }
+}
+
+// ----------------------------------------------------------------------------
+// rapidjson
+
+std::vector<Person> rapidjson_to_children(const rapidjson::Value &_arr);
+
+Person rapidjson_to_person(const rapidjson::Value &_val);
+
+std::vector<Person> rapidjson_to_children(const rapidjson::Value &_arr) {
+  std::vector<Person> children;
+  for (auto it = _arr.Begin(); it != _arr.End(); ++it) {
+    children.push_back(rapidjson_to_person(it->GetObject()));
+  }
+  return children;
+}
+
+Person rapidjson_to_person(const rapidjson::Value &_val) {
+  Person person;
+  for (auto &m : _val.GetObject()) {
+    if (m.name == "first_name") {
+      person.first_name = _val["first_name"].GetString();
+    } else if (m.name == "last_name") {
+      person.last_name = _val["last_name"].GetString();
+    } else if (m.name == "children") {
+      person.children = rapidjson_to_children(_val["children"].GetArray());
+    }
+  }
+  return person;
+}
+
+static rfl::Result<Person> read_using_rapidjson() {
+  try {
+    rapidjson::Document d;
+    d.Parse(json_string.c_str());
+    return rapidjson_to_person(d.GetObject());
+  } catch (std::exception &e) {
+    return rfl::Error(e.what());
+  }
 }
 
 // ----------------------------------------------------------------------------
@@ -176,6 +220,16 @@ static void BM_simple_read_nlohmann(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_simple_read_nlohmann);
+
+static void BM_simple_read_rapidjson(benchmark::State &state) {
+  for (auto _ : state) {
+    const auto res = read_using_rapidjson();
+    if (!res) {
+      std::cout << res.error()->what() << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_simple_read_rapidjson);
 
 static void BM_simple_read_yyjson(benchmark::State &state) {
   for (auto _ : state) {

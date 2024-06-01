@@ -24,6 +24,10 @@
       "version>=": "1.14"
     },
     {
+      "name": "rapidjson",
+      "version>=": "2023-07-17"
+    },
+    {
       "name": "tinycbor",
       "version>=": "0.6.0"
     },
