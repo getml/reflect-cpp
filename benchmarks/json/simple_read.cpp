@@ -2,12 +2,15 @@
 
 #include <array>
 #include <iostream>
+#include <nlohmann/json.hpp>
 #include <optional>
 #include <rfl/json.hpp>
 #include <type_traits>
 #include <vector>
 
 namespace simple_read {
+
+// ----------------------------------------------------------------------------
 
 static const std::string json_string = R"(
     {
@@ -39,17 +42,48 @@ struct Person {
   std::vector<Person> children;
 };
 
-rfl::Result<std::vector<Person>> to_children(yyjson_val *_val);
+// ----------------------------------------------------------------------------
+// nlohmann/json
 
-rfl::Result<Person> to_person(yyjson_val *_val);
+std::vector<Person> nlohmann_to_children(nlohmann::json _val);
 
-rfl::Result<std::vector<Person>> to_children(yyjson_val *_val) {
+Person nlohmann_to_person(nlohmann::json _val);
+
+std::vector<Person> nlohmann_to_children(nlohmann::json _arr) {
+  std::vector<Person> children;
+  for (auto &val : _arr) {
+    children.push_back(nlohmann_to_person(val));
+  }
+  return children;
+}
+
+Person nlohmann_to_person(nlohmann::json _val) {
+  Person person;
+  person.first_name = _val["first_name"].template get<std::string>();
+  person.last_name = _val["last_name"].template get<std::string>();
+  person.children = nlohmann_to_children(_val["children"]);
+  return person;
+}
+
+static rfl::Result<Person> read_using_nlohmann() {
+  auto val = nlohmann::json::parse(json_string);
+  return nlohmann_to_person(val);
+}
+
+// ----------------------------------------------------------------------------
+// YYJSON
+
+rfl::Result<std::vector<Person>> yyjson_to_children(yyjson_val *_val);
+
+rfl::Result<Person> yyjson_to_person(yyjson_val *_val);
+
+rfl::Result<std::vector<Person>> yyjson_to_children(yyjson_val *_val) {
   std::vector<Person> children;
   yyjson_val *val;
   yyjson_arr_iter iter;
   yyjson_arr_iter_init(_val, &iter);
   while ((val = yyjson_arr_iter_next(&iter))) {
-    auto r = to_person(val);
+    auto r = yyjson_to_person(val);
     if (!r) {
       return *r.error();
     }
@@ -58,7 +92,7 @@ rfl::Result<std::vector<Person>> to_children(yyjson_val *_val) {
   return children;
 }
 
-rfl::Result<Person> to_person(yyjson_val *_val) {
+rfl::Result<Person> yyjson_to_person(yyjson_val *_val) {
   Person person;
 
   std::vector<rfl::Error> errors;
@@ -90,7 +124,7 @@ rfl::Result<Person> to_person(yyjson_val *_val) {
       person.last_name = last_name;
       std::get<1>(found) = true;
     } else if (!std::get<2>(found) && name == "children") {
-      auto children = to_children(v);
+      auto children = yyjson_to_children(v);
       if (!children) {
         errors.push_back(rfl::Error("Error reading 'children': " +
                                     children.error()->what()));
@@ -126,14 +160,22 @@ static rfl::Result<Person> read_using_yyjson() {
     return rfl::Error("Could not parse document");
   }
   yyjson_val *root = yyjson_doc_get_root(doc);
-  auto person = to_person(root);
+  auto person = yyjson_to_person(root);
   yyjson_doc_free(doc);
   return person;
 }
 
-static rfl::Result<Person> read_using_reflect_cpp() {
-  return rfl::json::read<Person>(json_string);
+// ----------------------------------------------------------------------------
+
+static void BM_simple_read_nlohmann(benchmark::State &state) {
+  for (auto _ : state) {
+    const auto res = read_using_nlohmann();
+    if (!res) {
+      std::cout << res.error()->what() << std::endl;
+    }
+  }
 }
+BENCHMARK(BM_simple_read_nlohmann);
 
 static void BM_simple_read_yyjson(benchmark::State &state) {
   for (auto _ : state) {
@@ -147,13 +189,15 @@ BENCHMARK(BM_simple_read_yyjson);
 
 static void BM_simple_read_reflect_cpp(benchmark::State &state) {
   for (auto _ : state) {
-    const auto res = read_using_reflect_cpp();
+    const auto res = rfl::json::read<Person>(json_string);
     if (!res) {
       std::cout << res.error()->what() << std::endl;
     }
   }
 }
 BENCHMARK(BM_simple_read_reflect_cpp);
+
+// ----------------------------------------------------------------------------
 
 }  // namespace simple_read
 

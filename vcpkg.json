@@ -16,6 +16,10 @@
       "version>=": "6.0.0"
     },
     {
+      "name": "nlohmann-json",
+      "version>=": "3.11.3"
+    },
+    {
       "name": "pugixml",
       "version>=": "1.14"
     },
