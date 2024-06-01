@@ -16,8 +16,20 @@
       "version>=": "6.0.0"
     },
     {
+      "name": "nlohmann-json",
+      "version>=": "3.11.3"
+    },
+    {
       "name": "pugixml",
       "version>=": "1.14"
+    },
+    {
+      "name": "rapidjson",
+      "version>=": "2023-07-17"
+    },
+    {
+      "name": "simdjson",
+      "version>=": "3.6.2"
     },
     {
       "name": "tinycbor",
@@ -30,6 +42,10 @@
     {
       "name": "yaml-cpp",
       "version>=": "0.8.0#1"
+    },
+    {
+      "name": "benchmark",
+      "version>=": "1.8.3"
     },
     {
       "name": "gtest",

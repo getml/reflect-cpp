@@ -17,11 +17,11 @@
 #include "../internal/is_validator.hpp"
 #include "../internal/processed_t.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
+#include "../to_view.hpp"
 #include "../type_name_t.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
-#include "StructReader.hpp"
 #include "is_tagged_union_wrapper.hpp"
 #include "schema/Type.hpp"
 
@@ -55,19 +55,13 @@ struct Parser {
         return Parser<R, W, ReflectionType, ProcessorsType>::read(_r, _var)
             .and_then(wrap_in_t);
       } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
-        return StructReader<R, W, T, ProcessorsType>::read(_r, _var);
+        return read_struct(_r, _var);
       } else if constexpr (std::is_enum_v<T>) {
         using StringConverter = internal::enums::StringConverter<T>;
         return _r.template to_basic_type<std::string>(_var).and_then(
             StringConverter::string_to_enum);
-      } else if constexpr (internal::is_basic_type_v<T>) {
-        return _r.template to_basic_type<std::remove_cvref_t<T>>(_var);
       } else {
-        static_assert(
-            always_false_v<T>,
-            "Unsupported type. Please refer to the sections on custom "
-            "classes and custom parsers for information on how add "
-            "support for your own classes.");
+        return _r.template to_basic_type<std::remove_cvref_t<T>>(_var);
       }
     }
   }
@@ -93,13 +87,8 @@ struct Parser {
       using StringConverter = internal::enums::StringConverter<T>;
       const auto str = StringConverter::enum_to_string(_var);
       ParentType::add_value(_w, str, _parent);
-    } else if constexpr (internal::is_basic_type_v<T>) {
-      ParentType::add_value(_w, _var, _parent);
     } else {
-      static_assert(always_false_v<T>,
-                    "Unsupported type. Please refer to the sections on custom "
-                    "classes and custom parsers for information on how add "
-                    "support for your own classes.");
+      ParentType::add_value(_w, _var, _parent);
     }
   }
 
@@ -220,6 +209,23 @@ struct Parser {
     } else {
       return replace_non_alphanumeric(type_name_t<U>().str());
     }
+  }
+
+  /// The way this works is that we allocate space on the stack in this size of
+  /// the struct in which we then write the individual fields using
+  /// views and placement new. This is how we deal with the fact that some
+  /// fields might not be default-constructible.
+  static Result<T> read_struct(const R& _r, const InputVarType& _var) {
+    alignas(T) unsigned char buf[sizeof(T)];
+    auto ptr = reinterpret_cast<T*>(buf);
+    auto view = ProcessorsType::template process<T>(to_view(*ptr));
+    using ViewType = std::remove_cvref_t<decltype(view)>;
+    const auto err =
+        Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
+    if (err) [[unlikely]] {
+      return *err;
+    }
+    return std::move(*ptr);
   }
 
   static std::string replace_non_alphanumeric(std::string _str) {

@@ -114,6 +114,11 @@ struct Reader {
               "Could not cast to numeric value. The type must be double, "
               "int32, int64 or date_time.");
       }
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bson_oid_t>()) {
+      if (btype != BSON_TYPE_OID) {
+        return rfl::Error("Could not cast to OID.");
+      }
+      return value.v_oid;
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }

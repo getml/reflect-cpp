@@ -6,6 +6,7 @@
 #include <tuple>
 #include <type_traits>
 #include <unordered_map>
+#include <utility>
 
 #include "../NamedTuple.hpp"
 #include "../Result.hpp"
@@ -59,7 +60,7 @@ struct NamedTupleParser {
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto err =
         Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
-    if (err) {
+    if (err) [[unlikely]] {
       return *err;
     }
     return *ptr;
@@ -69,11 +70,11 @@ struct NamedTupleParser {
   static std::optional<Error> read_view(
       const R& _r, const InputVarType& _var,
       NamedTuple<FieldTypes...>* _view) noexcept {
-    const auto obj = _r.to_object(_var);
-    if (obj) {
-      return read_object(_r, *obj, _view);
+    auto obj = _r.to_object(_var);
+    if (!obj) [[unlikely]] {
+      return obj.error();
     }
-    return obj.error();
+    return read_object(_r, *obj, _view);
   }
 
   /// For writing, we do not need to make the distinction between
@@ -147,36 +148,41 @@ struct NamedTupleParser {
   }
 
   /// Generates error messages for when fields are missing.
-  template <size_t _i = 0>
-  static void handle_missing_fields(const std::array<bool, size_>& _found,
-                                    const NamedTupleType& _view,
-                                    std::array<bool, size_>* _set,
-                                    std::vector<Error>* _errors) noexcept {
-    if constexpr (_i < sizeof...(FieldTypes)) {
-      using FieldType =
-          std::tuple_element_t<_i, typename NamedTupleType::Fields>;
-      using ValueType = std::remove_reference_t<
-          std::remove_pointer_t<typename FieldType::Type>>;
+  template <int _i>
+  static void handle_one_missing_field(const std::array<bool, size_>& _found,
+                                       const NamedTupleType& _view,
+                                       std::array<bool, size_>* _set,
+                                       std::vector<Error>* _errors) noexcept {
+    using FieldType = std::tuple_element_t<_i, typename NamedTupleType::Fields>;
+    using ValueType = std::remove_reference_t<
+        std::remove_pointer_t<typename FieldType::Type>>;
 
-      if (!std::get<_i>(_found)) {
-        if constexpr (_all_required ||
-                      is_required<ValueType, _ignore_empty_containers>()) {
-          constexpr auto current_name =
-              std::tuple_element_t<_i, typename NamedTupleType::Fields>::name();
-          _errors->push_back("Field named '" + std::string(current_name) +
-                             "' not found.");
+    if (!std::get<_i>(_found)) {
+      if constexpr (_all_required ||
+                    is_required<ValueType, _ignore_empty_containers>()) {
+        constexpr auto current_name =
+            std::tuple_element_t<_i, typename NamedTupleType::Fields>::name();
+        _errors->emplace_back(Error(
+            "Field named '" + std::string(current_name) + "' not found."));
+      } else {
+        if constexpr (!std::is_const_v<ValueType>) {
+          ::new (rfl::get<_i>(_view)) ValueType();
         } else {
-          if constexpr (!std::is_const_v<ValueType>) {
-            ::new (rfl::get<_i>(_view)) ValueType();
-          } else {
-            using NonConstT = std::remove_const_t<ValueType>;
-            ::new (const_cast<NonConstT*>(rfl::get<_i>(_view))) NonConstT();
-          }
-          std::get<_i>(*_set) = true;
+          using NonConstT = std::remove_const_t<ValueType>;
+          ::new (const_cast<NonConstT*>(rfl::get<_i>(_view))) NonConstT();
         }
+        std::get<_i>(*_set) = true;
       }
-      handle_missing_fields<_i + 1>(_found, _view, _set, _errors);
     }
+  }
+
+  /// Generates error messages for when fields are missing.
+  template <int... _is>
+  static void handle_missing_fields(
+      const std::array<bool, size_>& _found, const NamedTupleType& _view,
+      std::array<bool, size_>* _set, std::vector<Error>* _errors,
+      std::integer_sequence<int, _is...>) noexcept {
+    (handle_one_missing_field<_is>(_found, _view, _set, _errors), ...);
   }
 
   static std::optional<Error> read_object(const R& _r,
@@ -193,7 +199,8 @@ struct NamedTupleParser {
     if (err) {
       return *err;
     }
-    handle_missing_fields(found, *_view, &set, &errors);
+    handle_missing_fields(found, *_view, &set, &errors,
+                          std::make_integer_sequence<int, size_>());
     if (errors.size() != 0) {
       object_reader.call_destructors_where_necessary();
       return to_single_error_message(errors);

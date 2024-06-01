@@ -21,14 +21,16 @@ jobs:
           sudo mkdir -p /usr/lib/llvm-16/lib
           sudo ln -s clang /usr/lib/llvm-16/lib/clang
         working-directory: ${{ env.LLVM_PATH }}/lib
-      - name: Run test
+      - name: Compile 
         env:
           CC: clang
           CXX: clang++
         run: |
           clang --version
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build -j 4
+      - name: Run tests 
+        run: |
           ./build/tests/bson/reflect-cpp-bson-tests
           ./build/tests/cbor/reflect-cpp-cbor-tests
           ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
@@ -37,3 +39,6 @@ jobs:
           ./build/tests/toml/reflect-cpp-toml-tests
           ./build/tests/xml/reflect-cpp-xml-tests
           ./build/tests/yaml/reflect-cpp-yaml-tests
+      - name: Run benchmarks
+        run: |
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks

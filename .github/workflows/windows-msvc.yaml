@@ -13,10 +13,12 @@ jobs:
           fetch-depth: 0
       - uses: ilammy/msvc-dev-cmd@v1
       - uses: lukka/run-vcpkg@v11
-      - name: Run test
+      - name: Compile 
         run: |
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release -j4 
+      - name: Run tests 
+        run: |
           .\build\tests\json\Release\reflect-cpp-json-tests.exe
           .\build\tests\bson\Release\reflect-cpp-bson-tests.exe
           .\build\tests\cbor\Release\reflect-cpp-cbor-tests.exe
@@ -25,3 +27,6 @@ jobs:
           .\build\tests\toml\Release\reflect-cpp-toml-tests.exe
           .\build\tests\xml\Release\reflect-cpp-xml-tests.exe
           .\build\tests\yaml\Release\reflect-cpp-yaml-tests.exe
+      - name: Run benchmarks
+        run: |
+          .\build\benchmarks\json\Release\reflect-cpp-json-benchmarks.exe
