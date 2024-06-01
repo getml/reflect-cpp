@@ -97,7 +97,8 @@ endif ()
 
 if (REFLECTCPP_BUILD_BENCHMARKS)
     find_package(benchmark CONFIG REQUIRED)
-    target_link_libraries(reflectcpp INTERFACE benchmark::benchmark)
+    find_package(simdjson CONFIG REQUIRED)
+    target_link_libraries(reflectcpp INTERFACE benchmark::benchmark simdjson::simdjson)
     add_subdirectory(benchmarks)
 endif ()
 

@@ -1,5 +1,6 @@
 #include <benchmark/benchmark.h>
 #include <rapidjson/document.h>
+#include <simdjson.h>
 
 #include <array>
 #include <iostream>
@@ -115,7 +116,41 @@ static rfl::Result<Person> read_using_rapidjson() {
 }
 
 // ----------------------------------------------------------------------------
-// YYJSON
+// simdjson
+
+std::vector<Person> simdjson_to_children(simdjson::ondemand::array _arr);
+
+Person simdjson_to_person(simdjson::ondemand::object _val);
+
+std::vector<Person> simdjson_to_children(simdjson::ondemand::array _arr) {
+  std::vector<Person> children;
+  for (auto val : _arr) {
+    children.push_back(simdjson_to_person(val));
+  }
+  return children;
+}
+
+Person simdjson_to_person(simdjson::ondemand::object _val) {
+  Person person;
+  person.first_name = _val["first_name"].get_string().value();
+  person.last_name = _val["last_name"].get_string().value();
+  person.children = simdjson_to_children(_val["children"].get_array());
+  return person;
+}
+
+static rfl::Result<Person> read_using_simdjson() {
+  try {
+    simdjson::ondemand::parser parser;
+    auto padded_str = simdjson::padded_string(json_string);
+    auto doc = parser.iterate(padded_str).value();
+    return simdjson_to_person(doc.get_object());
+  } catch (std::exception &e) {
+    return rfl::Error(e.what());
+  }
+}
+
+// ----------------------------------------------------------------------------
+// yyjson
 
 rfl::Result<std::vector<Person>> yyjson_to_children(yyjson_val *_val);
 
@@ -230,6 +265,16 @@ static void BM_simple_read_rapidjson(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_simple_read_rapidjson);
+
+static void BM_simple_read_simdjson(benchmark::State &state) {
+  for (auto _ : state) {
+    const auto res = read_using_simdjson();
+    if (!res) {
+      std::cout << res.error()->what() << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_simple_read_simdjson);
 
 static void BM_simple_read_yyjson(benchmark::State &state) {
   for (auto _ : state) {

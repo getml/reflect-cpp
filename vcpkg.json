@@ -28,6 +28,10 @@
       "version>=": "2023-07-17"
     },
     {
+      "name": "simdjson",
+      "version>=": "3.6.2"
+    },
+    {
       "name": "tinycbor",
       "version>=": "0.6.0"
     },
