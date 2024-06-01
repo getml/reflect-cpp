@@ -93,15 +93,9 @@ std::vector<Person> rapidjson_to_children(const rapidjson::Value &_arr) {
 
 Person rapidjson_to_person(const rapidjson::Value &_val) {
   Person person;
-  for (auto &m : _val.GetObject()) {
-    if (m.name == "first_name") {
-      person.first_name = _val["first_name"].GetString();
-    } else if (m.name == "last_name") {
-      person.last_name = _val["last_name"].GetString();
-    } else if (m.name == "children") {
-      person.children = rapidjson_to_children(_val["children"].GetArray());
-    }
-  }
+  person.first_name = _val["first_name"].GetString();
+  person.last_name = _val["last_name"].GetString();
+  person.children = rapidjson_to_children(_val["children"].GetObject());
   return person;
 }
 
