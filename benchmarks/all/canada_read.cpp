@@ -13,7 +13,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace canada {
+namespace canada_read {
 
 // ----------------------------------------------------------------------------
 
@@ -125,5 +125,5 @@ BENCHMARK(BM_canada_read_reflect_cpp_yaml);
 
 // ----------------------------------------------------------------------------
 
-}  // namespace canada
+}  // namespace canada_read
 
