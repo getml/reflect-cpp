@@ -40,7 +40,7 @@ struct FeatureCollection {
 // ----------------------------------------------------------------------------
 
 static FeatureCollection load_data() {
-  return rfl::json::load<FeatureCollection>("benchmarks/json/data/canada.json")
+  return rfl::json::load<FeatureCollection>("benchmarks/data/canada.json")
       .value();
 }
 

@@ -37,7 +37,7 @@ struct FeatureCollection {
 // ----------------------------------------------------------------------------
 
 static std::string load_data() {
-  return rfl::io::load_string("benchmarks/json/data/canada.json").value();
+  return rfl::io::load_string("benchmarks/data/canada.json").value();
 }
 
 // ----------------------------------------------------------------------------
