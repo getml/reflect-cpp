@@ -265,98 +265,97 @@ static rfl::Result<FeatureCollection> read_using_simdjson(
 
 // ----------------------------------------------------------------------------
 // yyjson
-/*
-rfl::Result<std::vector<Person>> yyjson_to_children(yyjson_val *_val);
 
-rfl::Result<Person> yyjson_to_person(yyjson_val *_val);
+std::vector<std::vector<std::tuple<double, double>>> yyjson_to_coordinates(
+    yyjson_val *_val);
 
-rfl::Result<std::vector<Person>> yyjson_to_children(yyjson_val *_val) {
-  std::vector<Person> children;
-  yyjson_val *val;
+Property yyjson_to_property(yyjson_val *_val);
+
+Geometry yyjson_to_geometry(yyjson_val *_val);
+
+Feature yyjson_to_feature(yyjson_val *_val);
+
+FeatureCollection yyjson_to_feature_collection(yyjson_val *_val);
+
+std::vector<std::vector<std::tuple<double, double>>> yyjson_to_coordinates(
+    yyjson_val *_val) {
+  std::vector<std::vector<std::tuple<double, double>>> coordinates;
+  yyjson_val *v1;
+  yyjson_arr_iter iter1;
+  yyjson_arr_iter_init(_val, &iter1);
+  while ((v1 = yyjson_arr_iter_next(&iter1))) {
+    std::vector<std::tuple<double, double>> vec;
+    yyjson_val *arr2;
+    yyjson_arr_iter iter2;
+    yyjson_arr_iter_init(v1, &iter2);
+    while ((arr2 = yyjson_arr_iter_next(&iter2))) {
+      std::tuple<double, double> tup;
+      std::get<0>(tup) =
+          static_cast<double>(yyjson_get_num(yyjson_arr_get(arr2, 0)));
+      std::get<1>(tup) =
+          static_cast<double>(yyjson_get_num(yyjson_arr_get(arr2, 1)));
+      vec.emplace_back(std::move(tup));
+    }
+    coordinates.emplace_back(std::move(vec));
+  }
+  return coordinates;
+}
+
+Property yyjson_to_property(yyjson_val *_val) {
+  Property property;
+  property.name = yyjson_get_str(yyjson_obj_get(_val, "name"));
+  return property;
+}
+
+Geometry yyjson_to_geometry(yyjson_val *_val) {
+  Geometry geometry;
+  geometry.type = std::string(yyjson_get_str(yyjson_obj_get(_val, "type")));
+  geometry.coordinates =
+      yyjson_to_coordinates(yyjson_obj_get(_val, "coordinates"));
+  return geometry;
+}
+
+Feature yyjson_to_feature(yyjson_val *_val) {
+  Feature feature;
+  feature.type = std::string(yyjson_get_str(yyjson_obj_get(_val, "type")));
+  feature.properties = yyjson_to_property(yyjson_obj_get(_val, "properties"));
+  feature.geometry = yyjson_to_geometry(yyjson_obj_get(_val, "geometry"));
+  return feature;
+}
+
+FeatureCollection yyjson_to_feature_collection(yyjson_val *_val) {
+  FeatureCollection feature_collection;
+  feature_collection.type =
+      std::string(yyjson_get_str(yyjson_obj_get(_val, "type")));
+  auto features = yyjson_obj_get(_val, "features");
+  yyjson_val *feat;
   yyjson_arr_iter iter;
-  yyjson_arr_iter_init(_val, &iter);
-  while ((val = yyjson_arr_iter_next(&iter))) {
-    auto r = yyjson_to_person(val);
-    if (!r) {
-      return *r.error();
-    }
-    children.emplace_back(std::move(*r));
+  yyjson_arr_iter_init(features, &iter);
+  while ((feat = yyjson_arr_iter_next(&iter))) {
+    feature_collection.features.push_back(yyjson_to_feature(feat));
   }
-  return children;
+  return feature_collection;
 }
 
-rfl::Result<Person> yyjson_to_person(yyjson_val *_val) {
-  Person person;
-
-  std::vector<rfl::Error> errors;
-  std::array<bool, 3> found;
-  std::fill(found.begin(), found.end(), false);
-
-  yyjson_obj_iter iter;
-  yyjson_obj_iter_init(_val, &iter);
-  yyjson_val *key;
-  while ((key = yyjson_obj_iter_next(&iter))) {
-    const auto name = std::string_view(yyjson_get_str(key));
-    const auto v = yyjson_obj_iter_get_val(key);
-    if (!std::get<0>(found) && name == "first_name") {
-      auto first_name = yyjson_get_str(v);
-      if (first_name == NULL) {
-        errors.push_back(rfl::Error(
-            "Error reading 'first_name': Could not cast to string."));
-        continue;
-      }
-      person.first_name = first_name;
-      std::get<0>(found) = true;
-    } else if (!std::get<1>(found) && name == "last_name") {
-      auto last_name = yyjson_get_str(v);
-      if (last_name == NULL) {
-        errors.push_back(
-            rfl::Error("Error reading 'last_name': Could not cast to string."));
-        continue;
-      }
-      person.last_name = last_name;
-      std::get<1>(found) = true;
-    } else if (!std::get<2>(found) && name == "children") {
-      auto children = yyjson_to_children(v);
-      if (!children) {
-        errors.push_back(rfl::Error("Error reading 'children': " +
-                                    children.error()->what()));
-        continue;
-      }
-      person.children = std::move(*children);
-      std::get<2>(found) = true;
-    }
-  }
-  if (!std::get<0>(found)) {
-    errors.push_back(rfl::Error("'first_name' not found"));
-  }
-  if (!std::get<1>(found)) {
-    errors.push_back(rfl::Error("'last_name' not found"));
-  }
-  if (!std::get<2>(found)) {
-    errors.push_back(rfl::Error("'children' not found"));
-  }
-  if (errors.size() != 0) {
-    std::cout << "Some errors occurred:" << std::endl;
-    for (const auto &err : errors) {
-      std::cout << err.what() << std::endl;
-    }
-    return errors[0];
-  }
-  return person;
-}
-
-static rfl::Result<Person> read_using_yyjson() {
-  yyjson_doc *doc = yyjson_read(json_string.c_str(), json_string.size(), 0);
+static rfl::Result<FeatureCollection> read_using_yyjson(
+    const std::string &_json_string) {
+  yyjson_doc *doc = yyjson_read(_json_string.c_str(), _json_string.size(), 0);
   if (!doc) {
     std::cout << "Could not parse document!" << std::endl;
     return rfl::Error("Could not parse document");
   }
   yyjson_val *root = yyjson_doc_get_root(doc);
-  auto person = yyjson_to_person(root);
+  auto person = yyjson_to_feature_collection(root);
   yyjson_doc_free(doc);
   return person;
-}*/
+
+  try {
+    auto val = nlohmann::json::parse(_json_string);
+    return nlohmann_to_feature_collection(val);
+  } catch (std::exception &e) {
+    return rfl::Error(e.what());
+  }
+}
 
 // ----------------------------------------------------------------------------
 
@@ -392,17 +391,17 @@ static void BM_canada_simdjson(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_canada_simdjson);
-/*
-static void BM_simple_read_yyjson(benchmark::State &state) {
+
+static void BM_canada_yyjson(benchmark::State &state) {
+  const auto json_string = load_data();
   for (auto _ : state) {
-    const auto res = read_using_yyjson();
+    const auto res = read_using_yyjson(json_string);
     if (!res) {
       std::cout << res.error()->what() << std::endl;
     }
   }
 }
-BENCHMARK(BM_simple_read_yyjson);
-*/
+BENCHMARK(BM_canada_yyjson);
 
 static void BM_canada_reflect_cpp(benchmark::State &state) {
   const auto json_string = load_data();
