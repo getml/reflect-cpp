@@ -381,6 +381,9 @@ static void BM_canada_rapidjson(benchmark::State &state) {
 }
 BENCHMARK(BM_canada_rapidjson);
 
+#ifndef __clang__
+
+// simdjson has a bug in clang.
 static void BM_canada_simdjson(benchmark::State &state) {
   const auto json_string = load_data();
   for (auto _ : state) {
@@ -391,6 +394,8 @@ static void BM_canada_simdjson(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_canada_simdjson);
+
+#endif
 
 static void BM_canada_yyjson(benchmark::State &state) {
   const auto json_string = load_data();
