@@ -300,4 +300,3 @@ BENCHMARK(BM_simple_read_reflect_cpp);
 
 }  // namespace simple_read
 
-BENCHMARK_MAIN();
