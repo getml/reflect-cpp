@@ -29,4 +29,6 @@ jobs:
           .\build\tests\yaml\Release\reflect-cpp-yaml-tests.exe
       - name: Run benchmarks
         run: |
-          .\build\benchmarks\json\Release\reflect-cpp-json-benchmarks.exe
+          .\build\benchmarks\json\Release\reflect-cpp-json-benchmarks.exe --benchmark_filter=canada
+          .\build\benchmarks\json\Release\reflect-cpp-json-benchmarks.exe --benchmark_filter=simple_read
+          .\build\benchmarks\all\Release\reflect-cpp-all-formats-benchmarks.exe --benchmark_filter=canada_read
