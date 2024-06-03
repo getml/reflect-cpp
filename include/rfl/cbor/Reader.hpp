@@ -243,14 +243,8 @@ struct Reader {
   }
 
   InputVarType to_input_var(CborValue* _ptr) const noexcept {
-    values_->emplace_back(rfl::Box<CborValue>::make(*_ptr));
-    auto* last_value = values_->back().get();
-    return InputVarType{last_value};
+    return InputVarType{_ptr};
   }
-
- private:
-  /// Contains the values inside the object.
-  rfl::Box<std::vector<rfl::Box<CborValue>>> values_;
 };
 
 }  // namespace cbor
