@@ -27,12 +27,11 @@ Result<internal::wrap_in_rfl_array_t<T>> read(const InputVarType& _obj) {
 /// Parses an BSON object using reflection.
 template <class T, class... Ps>
 auto read(const uint8_t* _bytes, const size_t _size) {
-  Reader::BSONValue value;
-  value.val_.value.v_doc.data_len = static_cast<uint32_t>(_size);
-  value.val_.value.v_doc.data = const_cast<uint8_t*>(_bytes);
-  value.val_.value_type = BSON_TYPE_DOCUMENT;
-  auto doc = InputVarType{&value};
-  return read<T, Ps...>(doc);
+  bson_value_t val;
+  val.value.v_doc.data_len = static_cast<uint32_t>(_size);
+  val.value.v_doc.data = const_cast<uint8_t*>(_bytes);
+  val.value_type = BSON_TYPE_DOCUMENT;
+  return read<T, Ps...>(Reader::InputVarType{&val});
 }
 
 /// Parses an BSON object using reflection.
