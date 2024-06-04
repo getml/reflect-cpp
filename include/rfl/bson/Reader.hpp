@@ -26,20 +26,16 @@ namespace bson {
 
 /// Please refer to https://mongoc.org/libbson/current/api.html
 struct Reader {
-  struct BSONValue {
-    bson_value_t val_;
-  };
-
   struct BSONInputArray {
-    BSONValue* val_;
+    const bson_value_t* val_;
   };
 
   struct BSONInputObject {
-    BSONValue* val_;
+    const bson_value_t* val_;
   };
 
   struct BSONInputVar {
-    BSONValue* val_;
+    const bson_value_t* val_;
   };
 
   using InputArrayType = BSONInputArray;
@@ -55,7 +51,7 @@ struct Reader {
       const std::string& _name, const InputObjectType& _obj) const noexcept {
     bson_t b;
     bson_iter_t iter;
-    const auto doc = _obj.val_->val_.value.v_doc;
+    const auto doc = _obj.val_->value.v_doc;
     if (bson_init_static(&b, doc.data, doc.data_len)) {
       if (bson_iter_init(&iter, &b)) {
         while (bson_iter_next(&iter)) {
@@ -70,13 +66,13 @@ struct Reader {
   }
 
   bool is_empty(const InputVarType& _var) const noexcept {
-    return _var.val_->val_.value_type == BSON_TYPE_NULL;
+    return _var.val_->value_type == BSON_TYPE_NULL;
   }
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
-    const auto btype = _var.val_->val_.value_type;
-    const auto value = _var.val_->val_.value;
+    const auto btype = _var.val_->value_type;
+    const auto value = _var.val_->value;
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       switch (btype) {
         case BSON_TYPE_UTF8:
@@ -126,7 +122,7 @@ struct Reader {
 
   rfl::Result<InputArrayType> to_array(
       const InputVarType& _var) const noexcept {
-    const auto btype = _var.val_->val_.value_type;
+    const auto btype = _var.val_->value_type;
     if (btype != BSON_TYPE_ARRAY && btype != BSON_TYPE_DOCUMENT) {
       return Error("Could not cast to an array.");
     }
@@ -138,7 +134,7 @@ struct Reader {
                                   const InputArrayType& _arr) const noexcept {
     bson_t b;
     bson_iter_t iter;
-    const auto doc = _arr.val_->val_.value.v_doc;
+    const auto doc = _arr.val_->value.v_doc;
     if (bson_init_static(&b, doc.data, doc.data_len)) {
       if (bson_iter_init(&iter, &b)) {
         while (bson_iter_next(&iter)) {
@@ -157,7 +153,7 @@ struct Reader {
                                    const InputObjectType& _obj) const noexcept {
     bson_t b;
     bson_iter_t iter;
-    const auto doc = _obj.val_->val_.value.v_doc;
+    const auto doc = _obj.val_->value.v_doc;
     if (bson_init_static(&b, doc.data, doc.data_len)) {
       if (bson_iter_init(&iter, &b)) {
         while (bson_iter_next(&iter)) {
@@ -171,7 +167,7 @@ struct Reader {
 
   rfl::Result<InputObjectType> to_object(
       const InputVarType& _var) const noexcept {
-    const auto btype = _var.val_->val_.value_type;
+    const auto btype = _var.val_->value_type;
     if (btype != BSON_TYPE_DOCUMENT) {
       return Error("Could not cast to a document.");
     }
@@ -189,26 +185,9 @@ struct Reader {
   }
 
  private:
-  struct BSONValues {
-    std::vector<rfl::Box<BSONValue>> vec_;
-    ~BSONValues() {
-      for (auto& v : vec_) {
-        bson_value_destroy(&(v->val_));
-      }
-    }
-  };
-
- private:
   InputVarType to_input_var(bson_iter_t* _iter) const noexcept {
-    values_->vec_.emplace_back(rfl::Box<BSONValue>::make());
-    auto* last_value = values_->vec_.back().get();
-    bson_value_copy(bson_iter_value(_iter), &last_value->val_);
-    return InputVarType{last_value};
+    return InputVarType{bson_iter_value(_iter)};
   }
-
- private:
-  /// Contains the values inside the object.
-  rfl::Ref<BSONValues> values_;
 };
 
 }  // namespace bson
