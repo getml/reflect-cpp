@@ -238,7 +238,7 @@ struct Reader {
       return err;
     }
     _buffer->resize(length + 1);
-    (*_buffer)[length] = '\0';
+    _buffer->back() = '\0';
     return cbor_value_copy_text_string(_ptr, _buffer->data(), &length, NULL);
   }
 };
