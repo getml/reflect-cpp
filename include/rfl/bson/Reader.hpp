@@ -143,7 +143,11 @@ struct Reader {
             return err;
           }
         }
+      } else {
+        return Error("Could not init the array iteration.");
       }
+    } else {
+      return Error("Could not init array.");
     }
     return std::nullopt;
   }
@@ -160,7 +164,11 @@ struct Reader {
           const char* k = bson_iter_key(&iter);
           _object_reader.read(std::string_view(k), to_input_var(&iter));
         }
+      } else {
+        return Error("Could not init the object iteration.");
       }
+    } else {
+      return Error("Could not init object.");
     }
     return std::nullopt;
   }

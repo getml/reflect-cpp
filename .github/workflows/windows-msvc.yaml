@@ -33,3 +33,5 @@ jobs:
           .\build\benchmarks\json\Release\reflect-cpp-json-benchmarks.exe --benchmark_filter=simple_read
           .\build\benchmarks\all\Release\reflect-cpp-all-format-benchmarks.exe --benchmark_filter=canada_read
           .\build\benchmarks\all\Release\reflect-cpp-all-format-benchmarks.exe --benchmark_filter=canada_write
+          .\build\benchmarks\all\Release\reflect-cpp-all-format-benchmarks.exe --benchmark_filter=licenses_read
+          .\build\benchmarks\all\Release\reflect-cpp-all-format-benchmarks.exe --benchmark_filter=licenses_write
