@@ -10,7 +10,7 @@
 #include <type_traits>
 #include <vector>
 
-namespace simple_read {
+namespace person_read {
 
 // ----------------------------------------------------------------------------
 
@@ -240,7 +240,7 @@ static rfl::Result<Person> read_using_yyjson() {
 
 // ----------------------------------------------------------------------------
 
-static void BM_simple_read_nlohmann(benchmark::State &state) {
+static void BM_person_read_nlohmann(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_nlohmann();
     if (!res) {
@@ -248,9 +248,9 @@ static void BM_simple_read_nlohmann(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_simple_read_nlohmann);
+BENCHMARK(BM_person_read_nlohmann);
 
-static void BM_simple_read_rapidjson(benchmark::State &state) {
+static void BM_person_read_rapidjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_rapidjson();
     if (!res) {
@@ -258,9 +258,9 @@ static void BM_simple_read_rapidjson(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_simple_read_rapidjson);
+BENCHMARK(BM_person_read_rapidjson);
 
-static void BM_simple_read_simdjson(benchmark::State &state) {
+static void BM_person_read_simdjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_simdjson();
     if (!res) {
@@ -268,9 +268,9 @@ static void BM_simple_read_simdjson(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_simple_read_simdjson);
+BENCHMARK(BM_person_read_simdjson);
 
-static void BM_simple_read_yyjson(benchmark::State &state) {
+static void BM_person_read_yyjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_yyjson();
     if (!res) {
@@ -278,9 +278,9 @@ static void BM_simple_read_yyjson(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_simple_read_yyjson);
+BENCHMARK(BM_person_read_yyjson);
 
-static void BM_simple_read_reflect_cpp(benchmark::State &state) {
+static void BM_person_read_reflect_cpp(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::json::read<Person>(json_string);
     if (!res) {
@@ -288,9 +288,9 @@ static void BM_simple_read_reflect_cpp(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_simple_read_reflect_cpp);
+BENCHMARK(BM_person_read_reflect_cpp);
 
 // ----------------------------------------------------------------------------
 
-}  // namespace simple_read
+}  // namespace person_read
 
