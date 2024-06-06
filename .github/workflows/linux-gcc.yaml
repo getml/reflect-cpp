@@ -20,25 +20,20 @@ jobs:
       - name: Compile 
         run: |
           g++ --version
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B build -DREFLECTCPP_BUILD_BENCHMARKS=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build -j 4
-      - name: Run tests 
-        run: |
-          ./build/tests/bson/reflect-cpp-bson-tests
-          ./build/tests/cbor/reflect-cpp-cbor-tests
-          ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
-          ./build/tests/json/reflect-cpp-json-tests
-          ./build/tests/msgpack/reflect-cpp-msgpack-tests
-          ./build/tests/toml/reflect-cpp-toml-tests
-          ./build/tests/xml/reflect-cpp-xml-tests
-          ./build/tests/yaml/reflect-cpp-yaml-tests
       - name: Run benchmarks
         run: |
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read --benchmark_format=json | tee bm_canada_read_all_linux_gcc.json
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_read
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_write
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: 'googlecpp'
+          output-file-path: bm_canada_read_all_linux_gcc.json

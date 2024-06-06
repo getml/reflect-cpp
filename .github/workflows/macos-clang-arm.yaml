@@ -38,15 +38,10 @@ jobs:
         run: |
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada 
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read --benchmark_format=json | tee bm_canada_read_all_macos_clang_arm.json
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read 
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_read
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_write
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write
-      - name: Store benchmark result
-        uses: benchmark-action/github-action-benchmark@v1
-        with:
-          tool: 'googlecpp'
-          output-file-path: bm_canada_read_all_macos_clang_arm.json
 
