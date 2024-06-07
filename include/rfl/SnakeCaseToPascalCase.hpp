@@ -2,6 +2,7 @@
 #define RFL_SNAKECASETOPASCALCASE_HPP_
 
 #include "Field.hpp"
+#include "internal/is_rename.hpp"
 #include "internal/transform_snake_case.hpp"
 
 namespace rfl {
@@ -12,7 +13,8 @@ struct SnakeCaseToPascalCase {
   template <class StructType>
   static auto process(auto&& _named_tuple) {
     const auto handle_one = []<class FieldType>(FieldType&& _f) {
-      if constexpr (FieldType::name() != "xml_content") {
+      if constexpr (FieldType::name() != "xml_content" &&
+                    !internal::is_rename_v<typename FieldType::Type>) {
         return handle_one_field(std::move(_f));
       } else {
         return std::move(_f);
