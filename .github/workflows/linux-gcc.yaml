@@ -26,10 +26,15 @@ jobs:
         run: |
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada 
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read 
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_read >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_write >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write >> $GITHUB_STEP_SUMMARY
-
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read --benchmark_out_format=json --benchmark_out=canada_read_all_formats.json
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write 
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_read 
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_write 
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read 
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write 
+      - name: Publish benchmarks
+        uses: buildingcash/json-to-markdown-table-action@v1
+        id: table
+        with:
+          json_file_path: "canada_read_all_formats.json"
+      - run: echo ${{ steps.table.outputs.table }} >> $GITHUB_STEP_SUMMARY
