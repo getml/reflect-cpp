@@ -31,7 +31,7 @@ To run the benchmarks, do the following:
 ./build/benchmarks/all/reflect-cpp-all-format-benchmarks
 ```
 
-Note that the benchmarks are based on Google Benchmarks. You can use the `--benchmark-filter` flag
+Note that the benchmarks are based on Google Benchmarks. You can use the `--benchmark_filter` flag
 to only run some of the benchmarks:
 
 ```
