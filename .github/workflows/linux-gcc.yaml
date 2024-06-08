@@ -26,21 +26,12 @@ jobs:
         run: |
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read --benchmark_format=json | tee bm_canada_read_all_linux_gcc.json
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read 
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_read
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_write
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write
-      - name: Store benchmark result
-        uses: benchmark-action/github-action-benchmark@v1
-        with:
-          name: C++ Benchmark
-          tool: 'googlecpp'
-          output-file-path: bm_canada_read_all_linux_gcc.json
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          auto-push: true
-          alert-threshold: '200%'
-          comment-on-alert: true
-          fail-on-alert: true
+      - name: Adding markdown
+        run: echo '### Hello world! 🚀' >> $GITHUB_STEP_SUMMARY
 
