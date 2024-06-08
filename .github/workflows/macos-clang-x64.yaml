@@ -1,4 +1,4 @@
-name: test
+name: macos-clang-x64
 
 on: [ push, pull_request ]
 

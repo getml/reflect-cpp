@@ -1,4 +1,4 @@
-name: test
+name: windows-msvc 
 
 on: [ push, pull_request ]
 
