@@ -23,8 +23,9 @@ jobs:
           cmake -S . -B build -DREFLECTCPP_BUILD_BENCHMARKS=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build -j 4
       - name: Run benchmarks
-        uses: buildingcash/json-to-markdown-table-action@v1
-        id: table
-        with:
-          json: "${{ ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_out_format=json }}"
-      - run: echo ${{ steps.table.outputs.table }} >> $GITHUB_STEP_SUMMARY
+        run: |
+          echo ``` >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read >> $GITHUB_STEP_SUMMARY
+          echo ``` >> $GITHUB_STEP_SUMMARY
+
+
