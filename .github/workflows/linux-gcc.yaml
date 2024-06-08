@@ -26,5 +26,5 @@ jobs:
         uses: buildingcash/json-to-markdown-table-action@v1
         id: table
         with:
-          json: ${{ ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read --benchmark_out_format=json }}
+          json: "${{ ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_out_format=json }}"
       - run: echo ${{ steps.table.outputs.table }} >> $GITHUB_STEP_SUMMARY
