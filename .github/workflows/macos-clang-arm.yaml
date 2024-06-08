@@ -27,7 +27,7 @@ jobs:
       - name: Run tests 
         run: |
           ./build/tests/bson/reflect-cpp-bson-tests
-          ./build/ests/cbor/reflect-cpp-cbor-tests
+          ./build/tests/cbor/reflect-cpp-cbor-tests
           ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
           ./build/tests/json/reflect-cpp-json-tests
           ./build/tests/msgpack/reflect-cpp-msgpack-tests

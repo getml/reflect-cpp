@@ -23,7 +23,7 @@ jobs:
           .\build\tests\bson\Release\reflect-cpp-bson-tests.exe
           .\build\tests\cbor\Release\reflect-cpp-cbor-tests.exe
           .\build\tests\flexbuffers\Release\reflect-cpp-flexbuffers-tests.exe
-          .\build\tests\msgpack\Release\rflect-cpp-msgpack-tests.exe
+          .\build\tests\msgpack\Release\reflect-cpp-msgpack-tests.exe
           .\build\tests\toml\Release\reflect-cpp-toml-tests.exe
           .\build\tests\xml\Release\reflect-cpp-xml-tests.exe
           .\build\tests\yaml\Release\reflect-cpp-yaml-tests.exe
