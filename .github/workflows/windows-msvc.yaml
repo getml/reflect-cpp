@@ -1,0 +1,46 @@
+name: test
+
+on: [ push, pull_request ]
+
+jobs:
+  windows-msvc:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - uses: ilammy/msvc-dev-cmd@v1
+      - uses: lukka/run-vcpkg@v11
+      - name: Compile 
+        run: |
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release -j4 
+      - name: Run tests 
+        run: |
+          .\build\tests\json\Release\reflect-cpp-json-tests.exe
+          .\build\tests\bson\Release\reflect-cpp-bson-tests.exe
+          .\build\tests\cbor\Release\reflect-cpp-cbor-tests.exe
+          .\build\tests\flexbuffers\Release\reflect-cpp-flexbuffers-tests.exe
+          .\build\tests\msgpack\Release\rflect-cpp-msgpack-tests.exe
+          .\build\tests\toml\Release\reflect-cpp-toml-tests.exe
+          .\build\tests\xml\Release\reflect-cpp-xml-tests.exe
+          .\build\tests\yaml\Release\reflect-cpp-yaml-tests.exe
+      - name: Run benchmarks
+        run: |
+          echo '# Benchmarks' >> $env:GITHUB_STEP_SUMMARY 
+          echo '## Benchmarks across different formats' >> $env:GITHUB_STEP_SUMMARY 
+          echo '```' >> $env:GITHUB_STEP_SUMMARY
+          .\build\benchmarks\all\Release\reflect-cpp-all-format-benchmarks.exe --benchmark_filter=canada_read >> $env:GITHUB_STEP_SUMMARY
+          .\build\benchmarks\all\Release\reflect-cpp-all-format-benchmarks.exe --benchmark_filter=canada_write >> $env:GITHUB_STEP_SUMMARY
+          .\build\benchmarks\all\Release\reflect-cpp-all-format-benchmarks.exe --benchmark_filter=licenses_read >> $env:GITHUB_STEP_SUMMARY
+          .\build\benchmarks\all\Release\reflect-cpp-all-format-benchmarks.exe --benchmark_filter=licenses_write >> $env:GITHUB_STEP_SUMMARY
+          .\build\benchmarks\all\Release\reflect-cpp-all-format-benchmarks.exe --benchmark_filter=person_read >> $env:GITHUB_STEP_SUMMARY
+          .\build\benchmarks\all\Release\reflect-cpp-all-format-benchmarks.exe --benchmark_filter=person_write >> $env:GITHUB_STEP_SUMMARY
+          echo '```' >> $env:GITHUB_STEP_SUMMARY
+          echo '## Benchmarks for JSON' >> $env:GITHUB_STEP_SUMMARY 
+          echo '```' >> $env:GITHUB_STEP_SUMMARY
+          .\build\benchmarks\json\Release\reflect-cpp-json-benchmarks.exe --benchmark_filter=canada >> $env:GITHUB_STEP_SUMMARY
+          .\build\benchmarks\json\Release\reflect-cpp-json-benchmarks.exe --benchmark_filter=person_read >> $env:GITHUB_STEP_SUMMARY
+          echo '```' >> $env:GITHUB_STEP_SUMMARY

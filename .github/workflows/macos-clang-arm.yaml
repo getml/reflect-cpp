@@ -3,8 +3,8 @@ name: test
 on: [ push, pull_request ]
 
 jobs:
-  linux-gcc:
-    runs-on: ubuntu-latest
+  macos-clang-arm:
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -13,19 +13,21 @@ jobs:
           fetch-depth: 0
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
-      - name: install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y g++
+      - name: Install ninja 
+        run: brew install ninja 
       - name: Compile 
+        env:
+          CC: clang
+          CXX: clang++
+          VCPKG_FORCE_SYSTEM_BINARIES: arm  
         run: |
-          g++ --version
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+          clang --version
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_MAKE_PROGRAM=make 
           cmake --build build -j 4
       - name: Run tests 
         run: |
           ./build/tests/bson/reflect-cpp-bson-tests
-          ./build/tests/cbor/reflect-cpp-cbor-tests
+          ./build/ests/cbor/reflect-cpp-cbor-tests
           ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
           ./build/tests/json/reflect-cpp-json-tests
           ./build/tests/msgpack/reflect-cpp-msgpack-tests
@@ -49,5 +51,3 @@ jobs:
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-
-
