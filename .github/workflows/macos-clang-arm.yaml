@@ -50,4 +50,5 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=licenses >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
