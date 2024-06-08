@@ -35,10 +35,12 @@ jobs:
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1
         with:
+          name: C++ Benchmark
           tool: 'googlecpp'
           output-file-path: bm_canada_read_all_linux_gcc.json
-          fail-on-alert: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          alert-threshold: '200%'
           comment-on-alert: true
-          summary-always: true
+          fail-on-alert: true
 
