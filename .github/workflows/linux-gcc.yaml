@@ -37,7 +37,6 @@ jobs:
         with:
           tool: 'googlecpp'
           output-file-path: bm_canada_read_all_linux_gcc.json
-          external-data-json-path: ./cache/benchmark-data.json
           fail-on-alert: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           comment-on-alert: true
