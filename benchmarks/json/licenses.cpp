@@ -334,79 +334,98 @@ static rfl::Result<Licenses> read_using_simdjson(
 
 // ----------------------------------------------------------------------------
 // yyjson
-/*
-std::vector<std::vector<std::tuple<double, double>>> yyjson_to_coordinates(
-    yyjson_val *_val);
 
-Property yyjson_to_property(yyjson_val *_val);
+Identifier yyjson_to_identifier(yyjson_val *_val);
 
-Geometry yyjson_to_geometry(yyjson_val *_val);
+Link yyjson_to_link(yyjson_val *_val);
 
-Feature yyjson_to_feature(yyjson_val *_val);
+OtherName yyjson_to_other_name(yyjson_val *_val);
 
-FeatureCollection yyjson_to_feature_collection(yyjson_val *_val);
+Text yyjson_to_text(yyjson_val *_val);
 
-std::vector<std::vector<std::tuple<double, double>>> yyjson_to_coordinates(
-    yyjson_val *_val) {
-  std::vector<std::vector<std::tuple<double, double>>> coordinates;
-  yyjson_val *v1;
-  yyjson_arr_iter iter1;
-  yyjson_arr_iter_init(_val, &iter1);
-  while ((v1 = yyjson_arr_iter_next(&iter1))) {
-    std::vector<std::tuple<double, double>> vec;
-    yyjson_val *arr2;
-    yyjson_arr_iter iter2;
-    yyjson_arr_iter_init(v1, &iter2);
-    while ((arr2 = yyjson_arr_iter_next(&iter2))) {
-      std::tuple<double, double> tup;
-      std::get<0>(tup) =
-          static_cast<double>(yyjson_get_num(yyjson_arr_get(arr2, 0)));
-      std::get<1>(tup) =
-          static_cast<double>(yyjson_get_num(yyjson_arr_get(arr2, 1)));
-      vec.emplace_back(std::move(tup));
-    }
-    coordinates.emplace_back(std::move(vec));
+License yyjson_to_license(yyjson_val *_val);
+
+Licenses yyjson_to_licenses(yyjson_val *_val);
+
+Identifier yyjson_to_identifier(yyjson_val *_val) {
+  Identifier identifier;
+  identifier.identifier =
+      std::string(yyjson_get_str(yyjson_obj_get(_val, "identifier")));
+  identifier.scheme =
+      std::string(yyjson_get_str(yyjson_obj_get(_val, "scheme")));
+  return identifier;
+}
+
+Link yyjson_to_link(yyjson_val *_val) {
+  Link link;
+  link.note = std::string(yyjson_get_str(yyjson_obj_get(_val, "note")));
+  link.url = std::string(yyjson_get_str(yyjson_obj_get(_val, "url")));
+  return link;
+}
+
+OtherName yyjson_to_other_name(yyjson_val *_val) {
+  OtherName other_name;
+  other_name.name = std::string(yyjson_get_str(yyjson_obj_get(_val, "name")));
+  if (!yyjson_is_null(yyjson_obj_get(_val, "note"))) {
+    other_name.note = std::string(yyjson_get_str(yyjson_obj_get(_val, "note")));
   }
-  return coordinates;
+  return other_name;
 }
 
-Property yyjson_to_property(yyjson_val *_val) {
-  Property property;
-  property.name = yyjson_get_str(yyjson_obj_get(_val, "name"));
-  return property;
+Text yyjson_to_text(yyjson_val *_val) {
+  Text text;
+  text.media_type =
+      std::string(yyjson_get_str(yyjson_obj_get(_val, "media_type")));
+  text.title = std::string(yyjson_get_str(yyjson_obj_get(_val, "title")));
+  text.url = std::string(yyjson_get_str(yyjson_obj_get(_val, "url")));
+  return text;
 }
 
-Geometry yyjson_to_geometry(yyjson_val *_val) {
-  Geometry geometry;
-  geometry.type = std::string(yyjson_get_str(yyjson_obj_get(_val, "type")));
-  geometry.coordinates =
-      yyjson_to_coordinates(yyjson_obj_get(_val, "coordinates"));
-  return geometry;
-}
-
-Feature yyjson_to_feature(yyjson_val *_val) {
-  Feature feature;
-  feature.type = std::string(yyjson_get_str(yyjson_obj_get(_val, "type")));
-  feature.properties = yyjson_to_property(yyjson_obj_get(_val, "properties"));
-  feature.geometry = yyjson_to_geometry(yyjson_obj_get(_val, "geometry"));
-  return feature;
-}
-
-FeatureCollection yyjson_to_feature_collection(yyjson_val *_val) {
-  FeatureCollection feature_collection;
-  feature_collection.type =
-      std::string(yyjson_get_str(yyjson_obj_get(_val, "type")));
-  auto features = yyjson_obj_get(_val, "features");
-  yyjson_val *feat;
+License yyjson_to_license(yyjson_val *_val) {
+  License license;
+  license.id = std::string(yyjson_get_str(yyjson_obj_get(_val, "id")));
+  yyjson_val *v;
   yyjson_arr_iter iter;
-  yyjson_arr_iter_init(features, &iter);
-  while ((feat = yyjson_arr_iter_next(&iter))) {
-    feature_collection.features.push_back(yyjson_to_feature(feat));
+  yyjson_arr_iter_init(yyjson_obj_get(_val, "identifiers"), &iter);
+  while ((v = yyjson_arr_iter_next(&iter))) {
+    license.identifiers.emplace_back(yyjson_to_identifier(v));
   }
-  return feature_collection;
+  yyjson_arr_iter_init(yyjson_obj_get(_val, "links"), &iter);
+  while ((v = yyjson_arr_iter_next(&iter))) {
+    license.links.emplace_back(yyjson_to_link(v));
+  }
+  license.name = std::string(yyjson_get_str(yyjson_obj_get(_val, "name")));
+  yyjson_arr_iter_init(yyjson_obj_get(_val, "other_names"), &iter);
+  while ((v = yyjson_arr_iter_next(&iter))) {
+    license.other_names.emplace_back(yyjson_to_other_name(v));
+  }
+  if (!yyjson_is_null(yyjson_obj_get(_val, "superseded_by"))) {
+    license.superseded_by =
+        std::string(yyjson_get_str(yyjson_obj_get(_val, "superseded_by")));
+  }
+  yyjson_arr_iter_init(yyjson_obj_get(_val, "keywords"), &iter);
+  while ((v = yyjson_arr_iter_next(&iter))) {
+    license.keywords.emplace_back(std::string(yyjson_get_str(v)));
+  }
+  yyjson_arr_iter_init(yyjson_obj_get(_val, "text"), &iter);
+  while ((v = yyjson_arr_iter_next(&iter))) {
+    license.text.emplace_back(yyjson_to_text(v));
+  }
+  return license;
 }
 
-static rfl::Result<FeatureCollection> read_using_yyjson(
+Licenses yyjson_to_licenses(yyjson_val *_val) {
+  Licenses licenses;
+  yyjson_val *v;
+  yyjson_arr_iter iter;
+  yyjson_arr_iter_init(yyjson_obj_get(_val, "licenses"), &iter);
+  while ((v = yyjson_arr_iter_next(&iter))) {
+    licenses.licenses.emplace_back(yyjson_to_license(v));
+  }
+  return licenses;
+}
+
+static rfl::Result<Licenses> read_using_yyjson(
     const std::string &_json_string) {
   yyjson_doc *doc = yyjson_read(_json_string.c_str(), _json_string.size(), 0);
   if (!doc) {
@@ -414,18 +433,11 @@ static rfl::Result<FeatureCollection> read_using_yyjson(
     return rfl::Error("Could not parse document");
   }
   yyjson_val *root = yyjson_doc_get_root(doc);
-  auto person = yyjson_to_feature_collection(root);
+  auto licenses = yyjson_to_licenses(root);
   yyjson_doc_free(doc);
-  return person;
-
-  try {
-    auto val = nlohmann::json::parse(_json_string);
-    return nlohmann_to_feature_collection(val);
-  } catch (std::exception &e) {
-    return rfl::Error(e.what());
-  }
+  return licenses;
 }
-*/
+
 // ----------------------------------------------------------------------------
 
 static void BM_licenses_nlohmann(benchmark::State &state) {
@@ -460,6 +472,17 @@ static void BM_licenses_simdjson(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_licenses_simdjson);
+
+static void BM_licenses_yyjson(benchmark::State &state) {
+  const auto json_string = load_data();
+  for (auto _ : state) {
+    const auto res = read_using_yyjson(json_string);
+    if (!res) {
+      std::cout << res.error()->what() << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_licenses_yyjson);
 
 static void BM_licenses_reflect_cpp(benchmark::State &state) {
   const auto json_string = load_data();
