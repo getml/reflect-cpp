@@ -4,6 +4,7 @@
 #include <type_traits>
 
 #include "internal/is_no_optionals_v.hpp"
+#include "internal/is_strip_field_names_v.hpp"
 
 namespace rfl {
 
@@ -13,6 +14,7 @@ struct Processors;
 template <>
 struct Processors<> {
   static constexpr bool all_required_ = false;
+  static constexpr bool strip_field_names_ = false;
 
   template <class T, class NamedTupleType>
   static auto process(NamedTupleType&& _named_tuple) {
@@ -25,6 +27,10 @@ struct Processors<Head, Tail...> {
   static constexpr bool all_required_ =
       std::disjunction_v<internal::is_no_optionals<Head>,
                          internal::is_no_optionals<Tail>...>;
+
+  static constexpr bool strip_field_names_ =
+      std::disjunction_v<internal::is_strip_field_names<Head>,
+                         internal::is_strip_field_names<Tail>...>;
 
   template <class T, class NamedTupleType>
   static auto process(NamedTupleType&& _named_tuple) {

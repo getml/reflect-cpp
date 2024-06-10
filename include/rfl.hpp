@@ -28,6 +28,7 @@
 #include "rfl/Skip.hpp"
 #include "rfl/SnakeCaseToCamelCase.hpp"
 #include "rfl/SnakeCaseToPascalCase.hpp"
+#include "rfl/StripFieldNames.hpp"
 #include "rfl/TaggedUnion.hpp"
 #include "rfl/Timestamp.hpp"
 #include "rfl/Validator.hpp"
