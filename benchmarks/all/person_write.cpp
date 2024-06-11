@@ -64,6 +64,18 @@ static void BM_person_write_reflect_cpp_cbor(benchmark::State &state) {
 }
 BENCHMARK(BM_person_write_reflect_cpp_cbor);
 
+static void BM_person_write_reflect_cpp_cbor_without_field_names(
+    benchmark::State &state) {
+  const auto data = load_data();
+  for (auto _ : state) {
+    const auto output = rfl::cbor::write<rfl::StripFieldNames>(data);
+    if (output.size() == 0) {
+      std::cout << "No output" << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_person_write_reflect_cpp_cbor_without_field_names);
+
 static void BM_person_write_reflect_cpp_flexbuf(benchmark::State &state) {
   const auto data = load_data();
   for (auto _ : state) {
@@ -74,6 +86,18 @@ static void BM_person_write_reflect_cpp_flexbuf(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_person_write_reflect_cpp_flexbuf);
+
+static void BM_person_write_reflect_cpp_flexbuf_without_field_names(
+    benchmark::State &state) {
+  const auto data = load_data();
+  for (auto _ : state) {
+    const auto output = rfl::flexbuf::write<rfl::StripFieldNames>(data);
+    if (output.size() == 0) {
+      std::cout << "No output" << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_person_write_reflect_cpp_flexbuf_without_field_names);
 
 static void BM_person_write_reflect_cpp_json(benchmark::State &state) {
   const auto data = load_data();
@@ -86,6 +110,18 @@ static void BM_person_write_reflect_cpp_json(benchmark::State &state) {
 }
 BENCHMARK(BM_person_write_reflect_cpp_json);
 
+static void BM_person_write_reflect_cpp_json_without_field_names(
+    benchmark::State &state) {
+  const auto data = load_data();
+  for (auto _ : state) {
+    const auto output = rfl::json::write<rfl::StripFieldNames>(data);
+    if (output.size() == 0) {
+      std::cout << "No output" << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_person_write_reflect_cpp_json_without_field_names);
+
 static void BM_person_write_reflect_cpp_msgpack(benchmark::State &state) {
   const auto data = load_data();
   for (auto _ : state) {
@@ -96,6 +132,18 @@ static void BM_person_write_reflect_cpp_msgpack(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_person_write_reflect_cpp_msgpack);
+
+static void BM_person_write_reflect_cpp_msgpack_without_field_names(
+    benchmark::State &state) {
+  const auto data = load_data();
+  for (auto _ : state) {
+    const auto output = rfl::msgpack::write<rfl::StripFieldNames>(data);
+    if (output.size() == 0) {
+      std::cout << "No output" << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_person_write_reflect_cpp_msgpack_without_field_names);
 
 static void BM_person_write_reflect_cpp_toml(benchmark::State &state) {
   const auto data = load_data();
