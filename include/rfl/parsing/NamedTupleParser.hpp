@@ -36,8 +36,6 @@ template <class R, class W, bool _ignore_empty_containers, bool _all_required,
 requires AreReaderAndWriter<R, W, NamedTuple<FieldTypes...>>
 struct NamedTupleParser {
   using InputVarType = typename R::InputVarType;
-
-  using OutputObjectType = typename W::OutputObjectType;
   using OutputVarType = typename W::OutputVarType;
 
   using ParentType = Parent<W>;
@@ -52,6 +50,9 @@ struct NamedTupleParser {
   using InputObjectOrArrayType =
       std::conditional_t<_strip_field_names, typename R::InputArrayType,
                          typename R::InputObjectType>;
+  using OutputObjectOrArrayType =
+      std::conditional_t<_strip_field_names, typename W::OutputArrayType,
+                         typename W::OutputObjectType>;
 
   static constexpr size_t size_ = NamedTupleType::size();
 
@@ -94,18 +95,20 @@ struct NamedTupleParser {
     }
   }
 
-  /// For writing, we do not need to make the distinction between
-  /// default-constructible and non-default constructible fields.
   template <class P>
   static void write(const W& _w, const NamedTuple<FieldTypes...>& _tup,
                     const P& _parent) noexcept {
-    auto obj = ParentType::add_object(_w, _tup.size(), _parent);
-    build_object_recursively(_w, _tup, &obj);
-    _w.end_object(&obj);
+    if constexpr (_strip_field_names) {
+      auto arr = ParentType::add_array(_w, _tup.size(), _parent);
+      build_object_or_array_recursively(_w, _tup, &arr);
+      _w.end_array(&arr);
+    } else {
+      auto obj = ParentType::add_object(_w, _tup.size(), _parent);
+      build_object_or_array_recursively(_w, _tup, &obj);
+      _w.end_object(&obj);
+    }
   }
 
-  /// For generating the schema, we also do not need to make the distinction
-  /// between default-constructible and non-default constructible fields.
   template <size_t _i = 0>
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions,
@@ -129,9 +132,9 @@ struct NamedTupleParser {
 
  private:
   template <int _i = 0>
-  static void build_object_recursively(const W& _w,
-                                       const NamedTuple<FieldTypes...>& _tup,
-                                       OutputObjectType* _ptr) noexcept {
+  static void build_object_or_array_recursively(
+      const W& _w, const NamedTuple<FieldTypes...>& _tup,
+      OutputObjectOrArrayType* _ptr) noexcept {
     if constexpr (_i >= sizeof...(FieldTypes)) {
       return;
     } else {
@@ -140,8 +143,8 @@ struct NamedTupleParser {
       using ValueType = std::remove_cvref_t<typename FieldType::Type>;
       const auto& value = rfl::get<_i>(_tup);
       constexpr auto name = FieldType::name_.string_view();
-      const auto new_parent = typename ParentType::Object{name, _ptr};
-      if constexpr (!_all_required &&
+      const auto new_parent = make_parent(name, _ptr);
+      if constexpr (!_all_required && !_strip_field_names &&
                     !is_required<ValueType, _ignore_empty_containers>()) {
         if (!is_empty(value)) {
           if constexpr (internal::is_attribute_v<ValueType>) {
@@ -160,7 +163,7 @@ struct NamedTupleParser {
           Parser<R, W, ValueType, ProcessorsType>::write(_w, value, new_parent);
         }
       }
-      return build_object_recursively<_i + 1>(_w, _tup, _ptr);
+      return build_object_or_array_recursively<_i + 1>(_w, _tup, _ptr);
     }
   }
 
@@ -200,6 +203,15 @@ struct NamedTupleParser {
       std::array<bool, size_>* _set, std::vector<Error>* _errors,
       std::integer_sequence<int, _is...>) noexcept {
     (handle_one_missing_field<_is>(_found, _view, _set, _errors), ...);
+  }
+
+  static auto make_parent(const std::string_view& _name,
+                          OutputObjectOrArrayType* _ptr) {
+    if constexpr (_strip_field_names) {
+      return typename ParentType::Array{_ptr};
+    } else {
+      return typename ParentType::Object{_name, _ptr};
+    }
   }
 
   static std::optional<Error> read_object_or_array(

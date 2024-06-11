@@ -39,7 +39,7 @@ class ViewReaderWithStrippedFieldNames {
       return Error("Expected a maximum of " + std::to_string(size_) +
                    " fields, but got at least one more.");
     }
-    assign_to_field_i(*r_, _var, view_, errors_, found_, set_,
+    assign_to_field_i(*r_, _var, view_, errors_, found_, set_, i_,
                       std::make_integer_sequence<int, size_>());
     ++i_;
     return std::nullopt;
