@@ -44,7 +44,7 @@ TEST(json, test_strip_field_names) {
              .email = "homer@simpson.com",
              .children = std::vector<Person>({bart, lisa, maggie})};
 
-  write_and_read<rfl::StripFieldNames>(
+  write_and_read<rfl::NoFieldNames>(
       homer,
       R"(["Homer","Simpson","Springfield","1987-04-19",45,"homer@simpson.com",[["Bart","Simpson","Springfield","1987-04-19",10,"bart@simpson.com",[]],["Lisa","Simpson","Springfield","1987-04-19",8,"lisa@simpson.com",[]],["Maggie","Simpson","Springfield","1987-04-19",0,"maggie@simpson.com",[]]]])");
 }

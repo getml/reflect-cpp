@@ -1,11 +1,11 @@
-#ifndef RFL_STRIPFIELDNAMES_HPP_
-#define RFL_STRIPFIELDNAMES_HPP_
+#ifndef RFL_NOFIELDNAMES_HPP_
+#define RFL_NOFIELDNAMES_HPP_
 
 namespace rfl {
 
 /// This is a "fake" processor - it doesn't do much in itself, but its
 /// inclusion instructs the parsers to strip field names.
-struct StripFieldNames {
+struct NoFieldNames {
  public:
   template <class StructType>
   static auto process(auto&& _named_tuple) {

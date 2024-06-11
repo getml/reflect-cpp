@@ -20,8 +20,8 @@ struct Parser<cbor::Reader, cbor::Writer, NamedTuple<FieldTypes...>,
           cbor::Reader, cbor::Writer,
           /*_ignore_empty_containers=*/false,
           /*_all_required=*/true,
-          /*_strip_field_names=*/ProcessorsType::strip_field_names_,
-          ProcessorsType, FieldTypes...> {
+          /*_no_field_names=*/ProcessorsType::no_field_names_, ProcessorsType,
+          FieldTypes...> {
 };
 
 template <class ProcessorsType, class... Ts>

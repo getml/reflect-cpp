@@ -13,8 +13,8 @@ struct Parser<R, W, NamedTuple<FieldTypes...>, ProcessorsType>
     : public NamedTupleParser<
           R, W, /*_ignore_empty_containers=*/false,
           /*_all_required=*/ProcessorsType::all_required_,
-          /*_strip_field_names=*/ProcessorsType::strip_field_names_,
-          ProcessorsType, FieldTypes...> {
+          /*_no_field_names=*/ProcessorsType::no_field_names_, ProcessorsType,
+          FieldTypes...> {
 };
 
 }  // namespace parsing

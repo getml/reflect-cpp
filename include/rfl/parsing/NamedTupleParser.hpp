@@ -32,7 +32,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, bool _ignore_empty_containers, bool _all_required,
-          bool _strip_field_names, class ProcessorsType, class... FieldTypes>
+          bool _no_field_names, class ProcessorsType, class... FieldTypes>
 requires AreReaderAndWriter<R, W, NamedTuple<FieldTypes...>>
 struct NamedTupleParser {
   using InputVarType = typename R::InputVarType;
@@ -43,15 +43,15 @@ struct NamedTupleParser {
   using NamedTupleType = NamedTuple<FieldTypes...>;
 
   using ViewReaderType = std::conditional_t<
-      _strip_field_names,
+      _no_field_names,
       ViewReaderWithStrippedFieldNames<R, W, NamedTupleType, ProcessorsType>,
       ViewReader<R, W, NamedTupleType, ProcessorsType>>;
 
   using InputObjectOrArrayType =
-      std::conditional_t<_strip_field_names, typename R::InputArrayType,
+      std::conditional_t<_no_field_names, typename R::InputArrayType,
                          typename R::InputObjectType>;
   using OutputObjectOrArrayType =
-      std::conditional_t<_strip_field_names, typename W::OutputArrayType,
+      std::conditional_t<_no_field_names, typename W::OutputArrayType,
                          typename W::OutputObjectType>;
 
   static constexpr size_t size_ = NamedTupleType::size();
@@ -80,7 +80,7 @@ struct NamedTupleParser {
   static std::optional<Error> read_view(
       const R& _r, const InputVarType& _var,
       NamedTuple<FieldTypes...>* _view) noexcept {
-    if constexpr (_strip_field_names) {
+    if constexpr (_no_field_names) {
       auto arr = _r.to_array(_var);
       if (!arr) [[unlikely]] {
         return arr.error();
@@ -98,7 +98,7 @@ struct NamedTupleParser {
   template <class P>
   static void write(const W& _w, const NamedTuple<FieldTypes...>& _tup,
                     const P& _parent) noexcept {
-    if constexpr (_strip_field_names) {
+    if constexpr (_no_field_names) {
       auto arr = ParentType::add_array(_w, _tup.size(), _parent);
       build_object_or_array_recursively(_w, _tup, &arr);
       _w.end_array(&arr);
@@ -144,7 +144,7 @@ struct NamedTupleParser {
       const auto& value = rfl::get<_i>(_tup);
       constexpr auto name = FieldType::name_.string_view();
       const auto new_parent = make_parent(name, _ptr);
-      if constexpr (!_all_required && !_strip_field_names &&
+      if constexpr (!_all_required && !_no_field_names &&
                     !is_required<ValueType, _ignore_empty_containers>()) {
         if (!is_empty(value)) {
           if constexpr (internal::is_attribute_v<ValueType>) {
@@ -207,7 +207,7 @@ struct NamedTupleParser {
 
   static auto make_parent(const std::string_view& _name,
                           OutputObjectOrArrayType* _ptr) {
-    if constexpr (_strip_field_names) {
+    if constexpr (_no_field_names) {
       return typename ParentType::Array{_ptr};
     } else {
       return typename ParentType::Object{_name, _ptr};
@@ -224,7 +224,7 @@ struct NamedTupleParser {
     std::vector<Error> errors;
     const auto reader = ViewReaderType(&_r, _view, &found, &set, &errors);
     std::optional<Error> err;
-    if constexpr (_strip_field_names) {
+    if constexpr (_no_field_names) {
       err = _r.read_array(reader, _obj_or_arr);
     } else {
       err = _r.read_object(reader, _obj_or_arr);

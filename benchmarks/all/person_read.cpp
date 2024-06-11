@@ -66,9 +66,9 @@ BENCHMARK(BM_person_read_reflect_cpp_cbor);
 
 static void BM_person_read_reflect_cpp_cbor_without_field_names(
     benchmark::State &state) {
-  const auto data = rfl::cbor::write<rfl::StripFieldNames>(load_data());
+  const auto data = rfl::cbor::write<rfl::NoFieldNames>(load_data());
   for (auto _ : state) {
-    const auto res = rfl::cbor::read<Person, rfl::StripFieldNames>(data);
+    const auto res = rfl::cbor::read<Person, rfl::NoFieldNames>(data);
     if (!res) {
       std::cout << res.error()->what() << std::endl;
     }
@@ -89,9 +89,9 @@ BENCHMARK(BM_person_read_reflect_cpp_flexbuf);
 
 static void BM_person_read_reflect_cpp_flexbuf_without_field_names(
     benchmark::State &state) {
-  const auto data = rfl::flexbuf::write<rfl::StripFieldNames>(load_data());
+  const auto data = rfl::flexbuf::write<rfl::NoFieldNames>(load_data());
   for (auto _ : state) {
-    const auto res = rfl::flexbuf::read<Person, rfl::StripFieldNames>(data);
+    const auto res = rfl::flexbuf::read<Person, rfl::NoFieldNames>(data);
     if (!res) {
       std::cout << res.error()->what() << std::endl;
     }
@@ -112,9 +112,9 @@ BENCHMARK(BM_person_read_reflect_cpp_json);
 
 static void BM_person_read_reflect_cpp_json_without_field_names(
     benchmark::State &state) {
-  const auto data = rfl::json::write<rfl::StripFieldNames>(load_data());
+  const auto data = rfl::json::write<rfl::NoFieldNames>(load_data());
   for (auto _ : state) {
-    const auto res = rfl::json::read<Person, rfl::StripFieldNames>(data);
+    const auto res = rfl::json::read<Person, rfl::NoFieldNames>(data);
     if (!res) {
       std::cout << res.error()->what() << std::endl;
     }
@@ -135,9 +135,9 @@ BENCHMARK(BM_person_read_reflect_cpp_msgpack);
 
 static void BM_person_read_reflect_cpp_msgpack_without_field_names(
     benchmark::State &state) {
-  const auto data = rfl::msgpack::write<rfl::StripFieldNames>(load_data());
+  const auto data = rfl::msgpack::write<rfl::NoFieldNames>(load_data());
   for (auto _ : state) {
-    const auto res = rfl::msgpack::read<Person, rfl::StripFieldNames>(data);
+    const auto res = rfl::msgpack::read<Person, rfl::NoFieldNames>(data);
     if (!res) {
       std::cout << res.error()->what() << std::endl;
     }
