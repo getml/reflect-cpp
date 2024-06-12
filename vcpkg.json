@@ -4,6 +4,10 @@
   "builtin-baseline": "50bffcc62d7f6571eb32bc1a0b1807e77af1166c",
   "dependencies": [
     {
+      "name": "ctre",
+      "version>=": "3.8"
+    },
+    {
       "name": "flatbuffers",
       "version>=": "23.5.26#1"
     },
@@ -42,6 +46,10 @@
     {
       "name": "yaml-cpp",
       "version>=": "0.8.0#1"
+    },
+    {
+      "name": "yyjson",
+      "version>=": "0.8.0"
     },
     {
       "name": "benchmark",
