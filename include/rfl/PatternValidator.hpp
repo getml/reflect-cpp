@@ -6,7 +6,7 @@
 #ifdef REFLECTCPP_NO_BUNDLED_DEPENDENCIES
 #include <ctre.hpp>
 #else
-#include "../thirdparty/ctre.hpp"
+#include "thirdparty/ctre.hpp"
 #endif
 
 #include "Literal.hpp"
