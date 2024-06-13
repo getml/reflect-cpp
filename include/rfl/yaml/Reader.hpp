@@ -86,6 +86,18 @@ struct Reader {
     return InputArrayType(_var.node_);
   }
 
+  template <class ArrayReader>
+  std::optional<Error> read_array(const ArrayReader& _array_reader,
+                                  const InputArrayType& _arr) const noexcept {
+    for (size_t i = 0; i < _arr.node_.size(); ++i) {
+      const auto err = _array_reader.read(_arr.node_[i]);
+      if (err) {
+        return err;
+      }
+    }
+    return std::nullopt;
+  }
+
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
@@ -106,14 +118,6 @@ struct Reader {
       return rfl::Error("Could not cast to map!");
     }
     return InputObjectType(_var.node_);
-  }
-
-  std::vector<InputVarType> to_vec(const InputArrayType& _arr) const noexcept {
-    std::vector<InputVarType> vec;
-    for (size_t i = 0; i < _arr.node_.size(); ++i) {
-      vec.push_back(InputVarType(_arr.node_[i]));
-    }
-    return vec;
   }
 
   template <class T>

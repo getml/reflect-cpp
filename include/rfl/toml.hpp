@@ -1,6 +1,7 @@
 #ifndef RFL_TOML_HPP_
 #define RFL_TOML_HPP_
 
+#include "../rfl.hpp"
 #include "toml/Parser.hpp"
 #include "toml/Reader.hpp"
 #include "toml/Writer.hpp"

@@ -6,6 +6,7 @@
 #include <tuple>
 #include <type_traits>
 #include <unordered_map>
+#include <utility>
 
 #include "../NamedTuple.hpp"
 #include "../Result.hpp"
@@ -14,6 +15,7 @@
 #include "../internal/is_array.hpp"
 #include "../internal/is_attribute.hpp"
 #include "../internal/is_basic_type.hpp"
+#include "../internal/is_skip.hpp"
 #include "../internal/strings/replace_all.hpp"
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
@@ -29,7 +31,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, bool _ignore_empty_containers, bool _all_required,
-          class... FieldTypes>
+          class ProcessorsType, class... FieldTypes>
 requires AreReaderAndWriter<R, W, NamedTuple<FieldTypes...>>
 struct NamedTupleParser {
   using InputObjectType = typename R::InputObjectType;
@@ -54,10 +56,11 @@ struct NamedTupleParser {
     alignas(NamedTuple<FieldTypes...>) unsigned char
         buf[sizeof(NamedTuple<FieldTypes...>)];
     auto ptr = reinterpret_cast<NamedTuple<FieldTypes...>*>(buf);
-    const auto view = rfl::to_view(*ptr);
+    auto view = rfl::to_view(*ptr);
     using ViewType = std::remove_cvref_t<decltype(view)>;
-    const auto err = Parser<R, W, ViewType>::read_view(_r, _var, view);
-    if (err) {
+    const auto err =
+        Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
+    if (err) [[unlikely]] {
       return *err;
     }
     return *ptr;
@@ -66,12 +69,12 @@ struct NamedTupleParser {
   /// Reads the data into a view.
   static std::optional<Error> read_view(
       const R& _r, const InputVarType& _var,
-      const NamedTuple<FieldTypes...>& _view) noexcept {
-    const auto obj = _r.to_object(_var);
-    if (obj) {
-      return read_object(_r, *obj, _view);
+      NamedTuple<FieldTypes...>* _view) noexcept {
+    auto obj = _r.to_object(_var);
+    if (!obj) [[unlikely]] {
+      return obj.error();
     }
-    return obj.error();
+    return read_object(_r, *obj, _view);
   }
 
   /// For writing, we do not need to make the distinction between
@@ -96,9 +99,13 @@ struct NamedTupleParser {
     if constexpr (_i == size) {
       return Type{Type::Object{_values}};
     } else {
-      using F = std::tuple_element_t<_i, typename T::Fields>;
-      _values[std::string(F::name())] =
-          Parser<R, W, typename F::Type>::to_schema(_definitions);
+      using F =
+          std::tuple_element_t<_i, typename NamedTuple<FieldTypes...>::Fields>;
+      using U = typename F::Type;
+      if constexpr (!internal::is_skip_v<U>) {
+        _values[std::string(F::name())] =
+            Parser<R, W, U, ProcessorsType>::to_schema(_definitions);
+      }
       return to_schema<_i + 1>(_definitions, _values);
     }
   };
@@ -121,110 +128,81 @@ struct NamedTupleParser {
                     !is_required<ValueType, _ignore_empty_containers>()) {
         if (!is_empty(value)) {
           if constexpr (internal::is_attribute_v<ValueType>) {
-            Parser<R, W, ValueType>::write(_w, value,
-                                           new_parent.as_attribute());
+            Parser<R, W, ValueType, ProcessorsType>::write(
+                _w, value, new_parent.as_attribute());
           } else {
-            Parser<R, W, ValueType>::write(_w, value, new_parent);
+            Parser<R, W, ValueType, ProcessorsType>::write(_w, value,
+                                                           new_parent);
           }
         }
       } else {
         if constexpr (internal::is_attribute_v<ValueType>) {
-          Parser<R, W, ValueType>::write(_w, value, new_parent.as_attribute());
+          Parser<R, W, ValueType, ProcessorsType>::write(
+              _w, value, new_parent.as_attribute());
         } else {
-          Parser<R, W, ValueType>::write(_w, value, new_parent);
+          Parser<R, W, ValueType, ProcessorsType>::write(_w, value, new_parent);
         }
       }
       return build_object_recursively<_i + 1>(_w, _tup, _ptr);
     }
   }
 
-  /// C-arrays need special handling here.
-  template <class T>
-  static void call_destructor_on_array(const size_t _size, T* _ptr) {
-    for (size_t i = 0; i < _size; ++i) {
-      if constexpr (std::is_array_v<T>) {
-        call_destructor_on_array(sizeof(*_ptr) / sizeof(**_ptr), *(_ptr + i));
-      } else if constexpr (std::is_destructible_v<T>) {
-        (_ptr + i)->~T();
-      }
-    }
-  }
+  /// Generates error messages for when fields are missing.
+  template <int _i>
+  static void handle_one_missing_field(const std::array<bool, size_>& _found,
+                                       const NamedTupleType& _view,
+                                       std::array<bool, size_>* _set,
+                                       std::vector<Error>* _errors) noexcept {
+    using FieldType = std::tuple_element_t<_i, typename NamedTupleType::Fields>;
+    using ValueType = std::remove_reference_t<
+        std::remove_pointer_t<typename FieldType::Type>>;
 
-  /// Because of the way we have allocated the fields, we need to manually
-  /// trigger the destructors.
-  template <size_t _i = 0>
-  static void call_destructors_where_necessary(
-      const NamedTupleType& _view, const std::array<bool, size_>& _set) {
-    if constexpr (_i < sizeof...(FieldTypes)) {
-      using FieldType =
-          std::tuple_element_t<_i, typename NamedTupleType::Fields>;
-      using ValueType =
-          std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
-      if constexpr (!std::is_array_v<ValueType> &&
-                    std::is_destructible_v<ValueType>) {
-        if (std::get<_i>(_set)) {
-          rfl::get<_i>(_view)->~ValueType();
+    if (!std::get<_i>(_found)) {
+      if constexpr (_all_required ||
+                    is_required<ValueType, _ignore_empty_containers>()) {
+        constexpr auto current_name =
+            std::tuple_element_t<_i, typename NamedTupleType::Fields>::name();
+        _errors->emplace_back(Error(
+            "Field named '" + std::string(current_name) + "' not found."));
+      } else {
+        if constexpr (!std::is_const_v<ValueType>) {
+          ::new (rfl::get<_i>(_view)) ValueType();
+        } else {
+          using NonConstT = std::remove_const_t<ValueType>;
+          ::new (const_cast<NonConstT*>(rfl::get<_i>(_view))) NonConstT();
         }
-      } else if constexpr (std::is_array_v<ValueType>) {
-        if (std::get<_i>(_set)) {
-          auto ptr = rfl::get<_i>(_view);
-          call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
-        }
+        std::get<_i>(*_set) = true;
       }
-      call_destructors_where_necessary<_i + 1>(_view, _set);
     }
   }
 
   /// Generates error messages for when fields are missing.
-  template <size_t _i = 0>
-  static void handle_missing_fields(const std::array<bool, size_>& _found,
-                                    const NamedTupleType& _view,
-                                    std::array<bool, size_>* _set,
-                                    std::vector<Error>* _errors) noexcept {
-    if constexpr (_i < sizeof...(FieldTypes)) {
-      using FieldType =
-          std::tuple_element_t<_i, typename NamedTupleType::Fields>;
-      using ValueType = std::remove_reference_t<
-          std::remove_pointer_t<typename FieldType::Type>>;
-
-      if (!std::get<_i>(_found)) {
-        if constexpr (_all_required ||
-                      is_required<ValueType, _ignore_empty_containers>()) {
-          constexpr auto current_name =
-              std::tuple_element_t<_i, typename NamedTupleType::Fields>::name();
-          _errors->push_back("Field named '" + std::string(current_name) +
-                             "' not found.");
-        } else {
-          if constexpr (!std::is_const_v<ValueType>) {
-            ::new (rfl::get<_i>(_view)) ValueType();
-          } else {
-            using NonConstT = std::remove_const_t<ValueType>;
-            ::new (const_cast<NonConstT*>(rfl::get<_i>(_view))) NonConstT();
-          }
-          std::get<_i>(*_set) = true;
-        }
-      }
-      handle_missing_fields<_i + 1>(_found, _view, _set, _errors);
-    }
+  template <int... _is>
+  static void handle_missing_fields(
+      const std::array<bool, size_>& _found, const NamedTupleType& _view,
+      std::array<bool, size_>* _set, std::vector<Error>* _errors,
+      std::integer_sequence<int, _is...>) noexcept {
+    (handle_one_missing_field<_is>(_found, _view, _set, _errors), ...);
   }
 
-  static std::optional<Error> read_object(
-      const R& _r, const InputObjectType& _obj,
-      const NamedTupleType& _view) noexcept {
+  static std::optional<Error> read_object(const R& _r,
+                                          const InputObjectType& _obj,
+                                          NamedTupleType* _view) noexcept {
     auto found = std::array<bool, NamedTupleType::size()>();
     found.fill(false);
     auto set = std::array<bool, NamedTupleType::size()>();
     set.fill(false);
     std::vector<Error> errors;
-    const auto object_reader =
-        ViewReader<R, W, NamedTupleType>(&_r, &_view, &found, &set, &errors);
+    const auto object_reader = ViewReader<R, W, NamedTupleType, ProcessorsType>(
+        &_r, _view, &found, &set, &errors);
     const auto err = _r.read_object(object_reader, _obj);
     if (err) {
       return *err;
     }
-    handle_missing_fields(found, _view, &set, &errors);
+    handle_missing_fields(found, *_view, &set, &errors,
+                          std::make_integer_sequence<int, size_>());
     if (errors.size() != 0) {
-      call_destructors_where_necessary(_view, set);
+      object_reader.call_destructors_where_necessary();
       return to_single_error_message(errors);
     }
     return std::nullopt;

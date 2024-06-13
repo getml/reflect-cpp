@@ -16,6 +16,8 @@ template <size_t N>
 struct StringLiteral {
   constexpr StringLiteral(const auto... _chars) : arr_{_chars..., '\0'} {}
 
+  constexpr StringLiteral(const std::array<char, N> _arr) : arr_(_arr) {}
+
   constexpr StringLiteral(const char (&_str)[N]) {
     std::copy_n(_str, N, std::data(arr_));
   }

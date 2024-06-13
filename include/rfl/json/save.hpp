@@ -1,7 +1,11 @@
 #ifndef RFL_JSON_SAVE_HPP_
 #define RFL_JSON_SAVE_HPP_
 
+#ifdef REFLECTCPP_NO_BUNDLED_DEPENDENCIES
 #include <yyjson.h>
+#else
+#include "../thirdparty/yyjson.h"
+#endif
 
 #include <fstream>
 #include <iostream>
@@ -14,11 +18,11 @@
 namespace rfl {
 namespace json {
 
-template <class T>
-Result<Nothing> save(const std::string& _fname, const T& _obj,
+template <class... Ps>
+Result<Nothing> save(const std::string& _fname, const auto& _obj,
                      const yyjson_write_flag _flag = 0) {
   const auto write_func = [_flag](const auto& _obj, auto& _stream) -> auto& {
-    return write(_obj, _stream, _flag);
+    return write<Ps...>(_obj, _stream, _flag);
   };
   return rfl::io::save_string(_fname, _obj, write_func);
 }

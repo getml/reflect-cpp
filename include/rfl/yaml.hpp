@@ -1,6 +1,7 @@
 #ifndef RFL_YAML_HPP_
 #define RFL_YAML_HPP_
 
+#include "../rfl.hpp"
 #include "yaml/Parser.hpp"
 #include "yaml/Reader.hpp"
 #include "yaml/Writer.hpp"

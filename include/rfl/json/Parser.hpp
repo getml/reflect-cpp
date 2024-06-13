@@ -1,17 +1,15 @@
 #ifndef RFL_JSON_PARSER_HPP_
 #define RFL_JSON_PARSER_HPP_
 
+#include "../parsing/Parser.hpp"
 #include "Reader.hpp"
 #include "Writer.hpp"
-#include "../parsing/Parser.hpp"
 
-namespace rfl {
-namespace json {
+namespace rfl::json {
 
-template <class T>
-using Parser = parsing::Parser<Reader, Writer, T>;
+template <class T, class ProcessorsType>
+using Parser = parsing::Parser<Reader, Writer, T, ProcessorsType>;
 
-}
-}  // namespace rfl
+}  // namespace rfl::json
 
 #endif

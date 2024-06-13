@@ -15,7 +15,7 @@ struct Person {
   rfl::Rename<"children", std::optional<std::vector<Person>>> children;
 };
 
-TEST(json, insert_name_here) {
+TEST(json, test_optional_fields) {
   const auto bart = Person{.first_name = "Bart"};
 
   const auto lisa = Person{.first_name = "Lisa"};

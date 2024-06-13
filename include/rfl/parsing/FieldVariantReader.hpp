@@ -13,7 +13,7 @@
 
 namespace rfl::parsing {
 
-template <class R, class W, class... FieldTypes>
+template <class R, class W, class ProcessorsType, class... FieldTypes>
 class FieldVariantReader {
  private:
   using InputVarType = typename R::InputVarType;
@@ -55,9 +55,10 @@ class FieldVariantReader {
           return Error("Could not parse std::variant with field '" +
                        std::string(_disc_value) + "': " + _e.what());
         };
-        *field_variant_ = Parser<R, W, ValueType>::read(*r_, _var)
-                              .transform(to_variant)
-                              .or_else(embellish_error);
+        *field_variant_ =
+            Parser<R, W, ValueType, ProcessorsType>::read(*r_, _var)
+                .transform(to_variant)
+                .or_else(embellish_error);
         return;
       } else {
         read<_i + 1>(_disc_value, _var);

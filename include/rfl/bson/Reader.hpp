@@ -26,20 +26,16 @@ namespace bson {
 
 /// Please refer to https://mongoc.org/libbson/current/api.html
 struct Reader {
-  struct BSONValue {
-    bson_value_t val_;
-  };
-
   struct BSONInputArray {
-    BSONValue* val_;
+    const bson_value_t* val_;
   };
 
   struct BSONInputObject {
-    BSONValue* val_;
+    const bson_value_t* val_;
   };
 
   struct BSONInputVar {
-    BSONValue* val_;
+    const bson_value_t* val_;
   };
 
   using InputArrayType = BSONInputArray;
@@ -55,7 +51,7 @@ struct Reader {
       const std::string& _name, const InputObjectType& _obj) const noexcept {
     bson_t b;
     bson_iter_t iter;
-    const auto doc = _obj.val_->val_.value.v_doc;
+    const auto doc = _obj.val_->value.v_doc;
     if (bson_init_static(&b, doc.data, doc.data_len)) {
       if (bson_iter_init(&iter, &b)) {
         while (bson_iter_next(&iter)) {
@@ -70,13 +66,13 @@ struct Reader {
   }
 
   bool is_empty(const InputVarType& _var) const noexcept {
-    return _var.val_->val_.value_type == BSON_TYPE_NULL;
+    return _var.val_->value_type == BSON_TYPE_NULL;
   }
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
-    const auto btype = _var.val_->val_.value_type;
-    const auto value = _var.val_->val_.value;
+    const auto btype = _var.val_->value_type;
+    const auto value = _var.val_->value;
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       switch (btype) {
         case BSON_TYPE_UTF8:
@@ -114,6 +110,11 @@ struct Reader {
               "Could not cast to numeric value. The type must be double, "
               "int32, int64 or date_time.");
       }
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bson_oid_t>()) {
+      if (btype != BSON_TYPE_OID) {
+        return rfl::Error("Could not cast to OID.");
+      }
+      return value.v_oid;
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
@@ -121,11 +122,34 @@ struct Reader {
 
   rfl::Result<InputArrayType> to_array(
       const InputVarType& _var) const noexcept {
-    const auto btype = _var.val_->val_.value_type;
+    const auto btype = _var.val_->value_type;
     if (btype != BSON_TYPE_ARRAY && btype != BSON_TYPE_DOCUMENT) {
       return Error("Could not cast to an array.");
     }
     return InputArrayType{_var.val_};
+  }
+
+  template <class ArrayReader>
+  std::optional<Error> read_array(const ArrayReader& _array_reader,
+                                  const InputArrayType& _arr) const noexcept {
+    bson_t b;
+    bson_iter_t iter;
+    const auto doc = _arr.val_->value.v_doc;
+    if (bson_init_static(&b, doc.data, doc.data_len)) {
+      if (bson_iter_init(&iter, &b)) {
+        while (bson_iter_next(&iter)) {
+          const auto err = _array_reader.read(to_input_var(&iter));
+          if (err) {
+            return err;
+          }
+        }
+      } else {
+        return Error("Could not init the array iteration.");
+      }
+    } else {
+      return Error("Could not init array.");
+    }
+    return std::nullopt;
   }
 
   template <class ObjectReader>
@@ -133,40 +157,29 @@ struct Reader {
                                    const InputObjectType& _obj) const noexcept {
     bson_t b;
     bson_iter_t iter;
-    const auto doc = _obj.val_->val_.value.v_doc;
+    const auto doc = _obj.val_->value.v_doc;
     if (bson_init_static(&b, doc.data, doc.data_len)) {
       if (bson_iter_init(&iter, &b)) {
         while (bson_iter_next(&iter)) {
           const char* k = bson_iter_key(&iter);
           _object_reader.read(std::string_view(k), to_input_var(&iter));
         }
+      } else {
+        return Error("Could not init the object iteration.");
       }
+    } else {
+      return Error("Could not init object.");
     }
     return std::nullopt;
   }
 
   rfl::Result<InputObjectType> to_object(
       const InputVarType& _var) const noexcept {
-    const auto btype = _var.val_->val_.value_type;
+    const auto btype = _var.val_->value_type;
     if (btype != BSON_TYPE_DOCUMENT) {
       return Error("Could not cast to a document.");
     }
     return InputObjectType{_var.val_};
-  }
-
-  std::vector<InputVarType> to_vec(const InputArrayType& _arr) const noexcept {
-    std::vector<InputVarType> vec;
-    bson_t b;
-    bson_iter_t iter;
-    const auto doc = _arr.val_->val_.value.v_doc;
-    if (bson_init_static(&b, doc.data, doc.data_len)) {
-      if (bson_iter_init(&iter, &b)) {
-        while (bson_iter_next(&iter)) {
-          vec.push_back(to_input_var(&iter));
-        }
-      }
-    }
-    return vec;
   }
 
   template <class T>
@@ -180,26 +193,9 @@ struct Reader {
   }
 
  private:
-  struct BSONValues {
-    std::vector<rfl::Box<BSONValue>> vec_;
-    ~BSONValues() {
-      for (auto& v : vec_) {
-        bson_value_destroy(&(v->val_));
-      }
-    }
-  };
-
- private:
   InputVarType to_input_var(bson_iter_t* _iter) const noexcept {
-    values_->vec_.emplace_back(rfl::Box<BSONValue>::make());
-    auto* last_value = values_->vec_.back().get();
-    bson_value_copy(bson_iter_value(_iter), &last_value->val_);
-    return InputVarType{last_value};
+    return InputVarType{bson_iter_value(_iter)};
   }
-
- private:
-  /// Contains the values inside the object.
-  rfl::Ref<BSONValues> values_;
 };
 
 }  // namespace bson

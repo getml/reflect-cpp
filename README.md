@@ -71,6 +71,21 @@ The resulting JSON string looks like this:
 {"first_name":"Homer","last_name":"Simpson","age":45}
 ```
 
+You can transform the field names from `snake_case` to `camelCase` like this:
+
+```cpp
+const std::string json_string = 
+  rfl::json::write<rfl::SnakeCaseToCamelCase>(homer);
+auto homer2 = 
+  rfl::json::read<Person, rfl::SnakeCaseToCamelCase>(json_string).value();
+```
+
+The resulting JSON string looks like this:
+
+```json
+{"firstName":"Homer","lastName":"Simpson","age":45}
+```
+
 Or you can use another format, such as YAML.
 
 ```cpp
@@ -461,12 +476,22 @@ For a more in-depth theoretical discussions of these topics, the following books
 
 Click [here](https://github.com/getml/reflect-cpp/tree/main/docs).
 
+## Benchmarks
+
+reflect-cpp conducts continuuous benchmarking across different operating systems, compilers and architectures
+and publishes the results on its [Actions tab](https://github.com/getml/reflect-cpp/actions).
+Refer to the [benchmarks folder](https://github.com/getml/reflect-cpp/tree/main/benchmarks) for details.
+
+The benchmarks show that reflect-cpp is not only very convenient, but also one the fastest JSON libraries for C++.
+It is faster than RapidJSON and about 10 times faster than nlohmann/json. It can be even faster than that, 
+if you choose to use a different format supported by reflect-cpp, such as msgpack.
+
 ## Installation
 
 The following compilers are supported:
 - GCC 11.4 or higher
 - Clang 16.0 or higher
-- MSVC 17.8 or higher
+- MSVC 17.8 (19.38) or higher
 
 ### Option 1: Header-only
 

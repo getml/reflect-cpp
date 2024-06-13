@@ -26,7 +26,12 @@ class is_set_like<std::multiset<T>> : public std::true_type {};
 template <class T>
 class is_set_like<std::unordered_multiset<T>> : public std::true_type {};
 
+template <class T>
+constexpr bool is_set_like_v =
+    is_set_like<std::remove_cvref_t<std::remove_pointer_t<T>>>::value;
+
 }  // namespace parsing
+
 }  // namespace rfl
 
 #endif

@@ -13,9 +13,9 @@
 namespace rfl {
 namespace parsing {
 
-template <class R, class W>
+template <class R, class W, class ProcessorsType>
 requires AreReaderAndWriter<R, W, std::wstring>
-struct Parser<R, W, std::wstring> {
+struct Parser<R, W, std::wstring, ProcessorsType> {
  public:
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
@@ -28,7 +28,7 @@ struct Parser<R, W, std::wstring> {
       return std::wstring();
     }
 
-    auto inStr = Parser<R, W, std::string>::read(_r, _var);
+    auto inStr = Parser<R, W, std::string, ProcessorsType>::read(_r, _var);
     if (auto err = inStr.error(); err.has_value()) {
       return Result<std::wstring>(err.value());
     }
@@ -44,7 +44,7 @@ struct Parser<R, W, std::wstring> {
     auto* ptr = val.c_str();
 
     // Add 1 for null terminator
-    auto len = std::mbsrtowcs(outStr.data(), &ptr, val.size(), &state) + 1;
+    auto len = std::mbsrtowcs(outStr.data(), &ptr, val.size(), &state);
     outStr.resize(len);  // Truncate the extra bytes
 
     return Result<std::wstring>(outStr);
@@ -59,11 +59,11 @@ struct Parser<R, W, std::wstring> {
     }
 
     std::mbstate_t state = std::mbstate_t();
-    std::string outStr(_str.size() + 1, '\0');
-    outStr.resize(_str.size() + 1);
+    std::string outStr(_str.size(), '\0');
+    outStr.resize(_str.size());
 
     auto* ptr = _str.c_str();
-    auto len = std::wcsrtombs(outStr.data(), &ptr, _str.size(), &state) + 1;
+    auto len = std::wcsrtombs(outStr.data(), &ptr, _str.size(), &state);
     outStr.resize(len);
 
     ParentType::add_value(_w, outStr, _parent);
@@ -71,7 +71,7 @@ struct Parser<R, W, std::wstring> {
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
-    return Parser<R, W, std::string>::to_schema(_definitions);
+    return Parser<R, W, std::string, ProcessorsType>::to_schema(_definitions);
   }
 };
 

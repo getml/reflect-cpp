@@ -53,6 +53,8 @@
 *.yaml
 
 !vcpkg.json
+!.github/**/*.yaml
+!benchmarks/**/*.json
 
 # clangd
 compile_flags.txt
