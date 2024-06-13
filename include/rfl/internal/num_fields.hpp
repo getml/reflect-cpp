@@ -182,7 +182,7 @@ struct CountFieldsHelper {
 
   static consteval std::size_t count_fields() {
     constexpr std::size_t max_agg_args = count_max_args_in_agg();
-#ifndef REFLECT_CPP_NO_C_ARRAYS_OR_INHERITANCE
+#ifdef REFLECT_CPP_C_ARRAYS_OR_INHERITANCE
     constexpr std::size_t no_brace_ellison_args =
         constructible_no_brace_elision<0, max_agg_args>();
     constexpr std::size_t base_args = base_param_num<no_brace_ellison_args>();

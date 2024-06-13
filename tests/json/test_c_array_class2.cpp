@@ -14,7 +14,7 @@ struct Test2 {
 };
 
 TEST(json, test_c_array_class2) {
-#ifndef REFLECT_CPP_NO_C_ARRAYS_OR_INHERITANCE
+#ifdef REFLECT_CPP_C_ARRAYS_OR_INHERITANCE
   Test2 test2;
   for (int i = 0; i < 1 << 4; i++) {
     test2.multi_dimension_arr[i >> 3 & 1][i >> 2 & 1][i >> 1 & 1][i >> 0 & 1] =

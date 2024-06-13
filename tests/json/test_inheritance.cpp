@@ -9,7 +9,7 @@
 namespace test_inheritance {
 
 TEST(json, test_inheritance) {
-#ifndef REFLECT_CPP_NO_C_ARRAYS_OR_INHERITANCE
+#ifdef REFLECT_CPP_C_ARRAYS_OR_INHERITANCE
   struct S {
     int x;
   };

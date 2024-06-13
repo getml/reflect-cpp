@@ -13,7 +13,7 @@ struct Test1 {
 };
 
 TEST(json, test_inheritance2) {
-#ifndef REFLECT_CPP_NO_C_ARRAYS_OR_INHERITANCE
+#ifdef REFLECT_CPP_C_ARRAYS_OR_INHERITANCE
   Test1 test1 = {.classes = {{"Little A", "Little B", "Little C"},
                              {"BIG A", "BIG B", "BIG C"},
                              {"??", "$%", "#@"}}};
