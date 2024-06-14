@@ -100,7 +100,7 @@ struct NamedTupleParser {
                     const P& _parent) noexcept {
     if constexpr (_no_field_names) {
       auto arr = ParentType::add_array(_w, _tup.size(), _parent);
-      build_object(_w, _tup, &obj, std::make_integer_sequence<int, size_>());
+      build_object(_w, _tup, &arr, std::make_integer_sequence<int, size_>());
       _w.end_array(&arr);
     } else {
       auto obj = ParentType::add_object(_w, _tup.size(), _parent);
