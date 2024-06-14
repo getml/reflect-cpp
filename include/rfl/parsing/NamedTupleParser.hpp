@@ -54,6 +54,9 @@ struct NamedTupleParser {
       std::conditional_t<_no_field_names, typename W::OutputArrayType,
                          typename W::OutputObjectType>;
 
+  using SchemaType = std::conditional_t<_no_field_names, schema::Type::Tuple,
+                                        schema::Type::Object>;
+
   static constexpr size_t size_ = NamedTupleType::size();
 
  public:
@@ -109,26 +112,13 @@ struct NamedTupleParser {
     }
   }
 
-  template <size_t _i = 0>
   static schema::Type to_schema(
-      std::map<std::string, schema::Type>* _definitions,
-      std::map<std::string, schema::Type> _values = {}) {
-    using Type = schema::Type;
-    using T = NamedTuple<FieldTypes...>;
-    constexpr size_t size = T::size();
-    if constexpr (_i == size) {
-      return Type{Type::Object{_values}};
-    } else {
-      using F =
-          std::tuple_element_t<_i, typename NamedTuple<FieldTypes...>::Fields>;
-      using U = typename F::Type;
-      if constexpr (!internal::is_skip_v<U>) {
-        _values[std::string(F::name())] =
-            Parser<R, W, U, ProcessorsType>::to_schema(_definitions);
-      }
-      return to_schema<_i + 1>(_definitions, _values);
-    }
-  };
+      std::map<std::string, schema::Type>* _definitions) noexcept {
+    SchemaType schema;
+    build_schema(_definitions, &schema,
+                 std::make_integer_sequence<int, size_>());
+    return schema::Type{schema};
+  }
 
  private:
   template <int _i>
@@ -161,11 +151,35 @@ struct NamedTupleParser {
     }
   }
 
+  template <size_t _i>
+  static void add_field_to_schema(
+      std::map<std::string, schema::Type>* _definitions,
+      SchemaType* _schema) noexcept {
+    using F =
+        std::tuple_element_t<_i, typename NamedTuple<FieldTypes...>::Fields>;
+    using U = typename F::Type;
+    if constexpr (!internal::is_skip_v<U>) {
+      auto s = Parser<R, W, U, ProcessorsType>::to_schema(_definitions);
+      if constexpr (_no_field_names) {
+        _schema->types_.emplace_back(std::move(s));
+      } else {
+        _schema->types_[std::string(F::name())] = std::move(s);
+      }
+    }
+  };
+
   template <int... _is>
   static void build_object(const W& _w, const NamedTuple<FieldTypes...>& _tup,
                            OutputObjectOrArrayType* _ptr,
                            std::integer_sequence<int, _is...>) noexcept {
     (add_field_to_object<_is>(_w, _tup, _ptr), ...);
+  }
+
+  template <int... _is>
+  static void build_schema(std::map<std::string, schema::Type>* _definitions,
+                           SchemaType* _schema,
+                           std::integer_sequence<int, _is...>) noexcept {
+    (add_field_to_schema<_is>(_definitions, _schema), ...);
   }
 
   /// Generates error messages for when fields are missing.
