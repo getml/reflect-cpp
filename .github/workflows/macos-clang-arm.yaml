@@ -1,6 +1,6 @@
 name: macos-clang-arm 
 
-on: [ push, pull_request ]
+on: [ pull_request ]
 
 jobs:
   macos-clang-arm:
