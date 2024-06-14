@@ -14,8 +14,10 @@ struct Test4 {
 };
 
 TEST(json, test_c_array_class4) {
+#ifdef REFLECT_CPP_C_ARRAYS_OR_INHERITANCE
   Test4 test4 = {.a = {1, 2, 3}, .b = {4, 5, 6}, .c = {{7, 8}, {9, 10}}};
   write_and_read(test4, R"({"a":[1,2,3],"b":[4,5,6],"c":[[7,8],[9,10]]})");
+#endif
 }
 
 }  // namespace test_c_array_class4

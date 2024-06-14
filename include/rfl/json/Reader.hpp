@@ -1,7 +1,11 @@
 #ifndef RFL_JSON_READER_HPP_
 #define RFL_JSON_READER_HPP_
 
+#ifdef REFLECTCPP_NO_BUNDLED_DEPENDENCIES
 #include <yyjson.h>
+#else
+#include "../thirdparty/yyjson.h"
+#endif
 
 #include <array>
 #include <concepts>

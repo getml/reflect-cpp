@@ -3,7 +3,12 @@
 
 #include <string>
 
-#include "../ctre.hpp"
+#ifdef REFLECTCPP_NO_BUNDLED_DEPENDENCIES
+#include <ctre.hpp>
+#else
+#include "thirdparty/ctre.hpp"
+#endif
+
 #include "Literal.hpp"
 #include "Result.hpp"
 #include "internal/StringLiteral.hpp"
