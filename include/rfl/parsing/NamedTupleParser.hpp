@@ -134,14 +134,14 @@ struct NamedTupleParser {
   template <int _i>
   static void add_field_to_object(const W& _w,
                                   const NamedTuple<FieldTypes...>& _tup,
-                                  OutputObjectType* _ptr) noexcept {
+                                  OutputObjectOrArrayType* _ptr) noexcept {
     using FieldType =
         typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type;
     using ValueType = std::remove_cvref_t<typename FieldType::Type>;
     const auto& value = rfl::get<_i>(_tup);
     constexpr auto name = FieldType::name_.string_view();
     const auto new_parent = make_parent(name, _ptr);
-    if constexpr (!_all_required &&
+    if constexpr (!_all_required && !_no_field_names &&
                   !is_required<ValueType, _ignore_empty_containers>()) {
       if (!is_empty(value)) {
         if constexpr (internal::is_attribute_v<ValueType>) {
@@ -163,7 +163,7 @@ struct NamedTupleParser {
 
   template <int... _is>
   static void build_object(const W& _w, const NamedTuple<FieldTypes...>& _tup,
-                           OutputObjectType* _ptr,
+                           OutputObjectOrArrayType* _ptr,
                            std::integer_sequence<int, _is...>) noexcept {
     (add_field_to_object<_is>(_w, _tup, _ptr), ...);
   }
