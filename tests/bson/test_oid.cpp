@@ -1,5 +1,3 @@
-#include "test_oid.hpp"
-
 #include <iostream>
 #include <rfl.hpp>
 #include <source_location>
@@ -17,8 +15,7 @@ struct Person {
 };
 
 void test() {
-  std::cout << std::source_location::current().function_name() << std::endl;
-
+#ifdef REFLECT_CPP_C_ARRAYS_OR_INHERITANCE
   auto oids = std::vector<bson_oid_t>(3);
 
   for (auto& oid : oids) {
@@ -29,5 +26,6 @@ void test() {
       Person{.first_name = "Homer", .last_name = "Simpson", .oids = oids};
 
   write_and_read(homer);
+#endif
 }
 }  // namespace test_oid

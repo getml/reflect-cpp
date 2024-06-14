@@ -83,7 +83,7 @@ struct NamedTupleParser {
   static void write(const W& _w, const NamedTuple<FieldTypes...>& _tup,
                     const P& _parent) noexcept {
     auto obj = ParentType::add_object(_w, _tup.size(), _parent);
-    build_object_recursively(_w, _tup, &obj);
+    build_object(_w, _tup, &obj, std::make_integer_sequence<int, size_>());
     _w.end_object(&obj);
   }
 
@@ -111,31 +111,19 @@ struct NamedTupleParser {
   };
 
  private:
-  template <int _i = 0>
-  static void build_object_recursively(const W& _w,
-                                       const NamedTuple<FieldTypes...>& _tup,
-                                       OutputObjectType* _ptr) noexcept {
-    if constexpr (_i >= sizeof...(FieldTypes)) {
-      return;
-    } else {
-      using FieldType =
-          typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type;
-      using ValueType = std::remove_cvref_t<typename FieldType::Type>;
-      const auto& value = rfl::get<_i>(_tup);
-      constexpr auto name = FieldType::name_.string_view();
-      const auto new_parent = typename ParentType::Object{name, _ptr};
-      if constexpr (!_all_required &&
-                    !is_required<ValueType, _ignore_empty_containers>()) {
-        if (!is_empty(value)) {
-          if constexpr (internal::is_attribute_v<ValueType>) {
-            Parser<R, W, ValueType, ProcessorsType>::write(
-                _w, value, new_parent.as_attribute());
-          } else {
-            Parser<R, W, ValueType, ProcessorsType>::write(_w, value,
-                                                           new_parent);
-          }
-        }
-      } else {
+  template <int _i>
+  static void add_field_to_object(const W& _w,
+                                  const NamedTuple<FieldTypes...>& _tup,
+                                  OutputObjectType* _ptr) noexcept {
+    using FieldType =
+        typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type;
+    using ValueType = std::remove_cvref_t<typename FieldType::Type>;
+    const auto& value = rfl::get<_i>(_tup);
+    constexpr auto name = FieldType::name_.string_view();
+    const auto new_parent = typename ParentType::Object{name, _ptr};
+    if constexpr (!_all_required &&
+                  !is_required<ValueType, _ignore_empty_containers>()) {
+      if (!is_empty(value)) {
         if constexpr (internal::is_attribute_v<ValueType>) {
           Parser<R, W, ValueType, ProcessorsType>::write(
               _w, value, new_parent.as_attribute());
@@ -143,8 +131,21 @@ struct NamedTupleParser {
           Parser<R, W, ValueType, ProcessorsType>::write(_w, value, new_parent);
         }
       }
-      return build_object_recursively<_i + 1>(_w, _tup, _ptr);
+    } else {
+      if constexpr (internal::is_attribute_v<ValueType>) {
+        Parser<R, W, ValueType, ProcessorsType>::write(
+            _w, value, new_parent.as_attribute());
+      } else {
+        Parser<R, W, ValueType, ProcessorsType>::write(_w, value, new_parent);
+      }
     }
+  }
+
+  template <int... _is>
+  static void build_object(const W& _w, const NamedTuple<FieldTypes...>& _tup,
+                           OutputObjectType* _ptr,
+                           std::integer_sequence<int, _is...>) noexcept {
+    (add_field_to_object<_is>(_w, _tup, _ptr), ...);
   }
 
   /// Generates error messages for when fields are missing.

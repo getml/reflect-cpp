@@ -30,6 +30,8 @@
 
 1.13) [Standard containers](https://github.com/getml/reflect-cpp/blob/main/docs/standard_containers.md) - Describes how reflect-cpp treats containers in the standard library.
 
+1.14) [C arrays and inheritance](https://github.com/getml/reflect-cpp/blob/main/docs/c_arrays_and_inheritance.md) - Describes how reflect-cpp handles C arrays and inheritance. 
+
 ## 2) Validation
 
 2.1) [Regex patterns](https://github.com/getml/reflect-cpp/blob/main/docs/patterns.md) - For requiring that strings follow used-defined regex patterns.
