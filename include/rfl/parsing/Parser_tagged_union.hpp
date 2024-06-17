@@ -31,12 +31,15 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
   using OutputVarType = typename W::OutputVarType;
 
   static ResultType read(const R& _r, const InputVarType& _var) noexcept {
-    const auto get_disc = [&_r](auto _obj) {
+    const auto get_disc = [&_r](InputObjectType _obj) -> Result<std::string> {
       return get_discriminator(_r, _obj);
     };
 
-    const auto to_result = [&_r, _var](const std::string& _disc_value) {
-      return find_matching_alternative(_r, _disc_value, _var);
+    const auto to_result =
+        [&_r, _var](const std::string& _disc_value) -> ResultType {
+      return find_matching_alternative(
+          _r, _disc_value, _var,
+          std::make_integer_sequence<int, sizeof...(AlternativeTypes)>());
     };
 
     return _r.to_object(_var).and_then(get_disc).and_then(to_result);
@@ -54,49 +57,61 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
   }
 
   static schema::Type to_schema(
-      std::map<std::string, schema::Type>* _definitions) {
+      std::map<std::string, schema::Type>* _definitions) noexcept {
     using VariantType = std::variant<std::invoke_result_t<
         decltype(wrap_if_necessary<AlternativeTypes>), AlternativeTypes>...>;
     return Parser<R, W, VariantType, ProcessorsType>::to_schema(_definitions);
   }
 
  private:
-  template <int _i = 0>
+  template <int... _is>
   static ResultType find_matching_alternative(
-      const R& _r, const std::string& _disc_value,
-      const InputVarType& _var) noexcept {
-    if constexpr (_i == sizeof...(AlternativeTypes)) {
+      const R& _r, const std::string& _disc_value, const InputVarType& _var,
+      std::integer_sequence<int, _is...>) noexcept {
+    ResultType res = Error("");
+    bool match_found = false;
+    (set_if_disc_value_matches<_is>(_r, _disc_value, _var, &res, &match_found),
+     ...);
+    if (match_found) [[likely]] {
+      return res;
+    } else {
       const auto names =
           TaggedUnion<_discriminator,
                       AlternativeTypes...>::PossibleTags::names();
       return Error("Could not parse tagged union, could not match " +
                    _discriminator.str() + " '" + _disc_value +
                    "'. The following tags are allowed: " +
-                   internal::strings::join(",", names));
-    } else {
-      using AlternativeType = std::remove_cvref_t<
-          std::variant_alternative_t<_i, std::variant<AlternativeTypes...>>>;
+                   internal::strings::join(", ", names));
+    }
+  }
 
-      if (contains_disc_value<AlternativeType>(_disc_value)) {
-        const auto to_tagged_union = [](auto&& _val) {
-          return TaggedUnion<_discriminator, AlternativeTypes...>(
-              std::move(_val));
-        };
+  template <int _i>
+  static void set_if_disc_value_matches(const R& _r,
+                                        const std::string& _disc_value,
+                                        const InputVarType& _var,
+                                        ResultType* _res,
+                                        bool* _match_found) noexcept {
+    using AlternativeType = std::remove_cvref_t<
+        std::variant_alternative_t<_i, std::variant<AlternativeTypes...>>>;
 
-        const auto embellish_error = [&](Error&& _e) {
-          return Error(
-              "Could not parse tagged union with "
-              "discrimininator " +
-              _discriminator.str() + " '" + _disc_value + "': " + _e.what());
-        };
+    if (!*_match_found && contains_disc_value<AlternativeType>(_disc_value)) {
+      const auto to_tagged_union = [](auto&& _val) {
+        return TaggedUnion<_discriminator, AlternativeTypes...>(
+            std::move(_val));
+      };
 
-        return Parser<R, W, AlternativeType, ProcessorsType>::read(_r, _var)
-            .transform(to_tagged_union)
-            .or_else(embellish_error);
+      const auto embellish_error = [&](Error&& _e) {
+        return Error(
+            "Could not parse tagged union with "
+            "discrimininator " +
+            _discriminator.str() + " '" + _disc_value + "': " + _e.what());
+      };
 
-      } else {
-        return find_matching_alternative<_i + 1>(_r, _disc_value, _var);
-      }
+      *_res = Parser<R, W, AlternativeType, ProcessorsType>::read(_r, _var)
+                  .transform(to_tagged_union)
+                  .or_else(embellish_error);
+
+      *_match_found = true;
     }
   }
 
