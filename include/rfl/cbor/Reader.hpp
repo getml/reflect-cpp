@@ -47,7 +47,7 @@ struct Reader {
     T::from_cbor_obj(var);
   });
 
-  rfl::Result<InputVarType> get_field(
+  rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType& _obj) const noexcept {
     InputVarType var;
     auto buffer = std::vector<char>();

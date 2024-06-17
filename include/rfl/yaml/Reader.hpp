@@ -49,7 +49,7 @@ struct Reader {
     T::from_yaml_obj(var);
   });
 
-  rfl::Result<InputVarType> get_field(
+  rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType& _obj) const noexcept {
     auto var = InputVarType(_obj.node_[_name]);
     if (!var.node_) {

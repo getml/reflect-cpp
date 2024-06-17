@@ -34,7 +34,7 @@ struct Reader {
     T::from_msgpack_obj(var);
   });
 
-  rfl::Result<InputVarType> get_field(
+  rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType& _obj) const noexcept {
     for (uint32_t i = 0; i < _obj.size; ++i) {
       const auto& key = _obj.ptr[i].key;

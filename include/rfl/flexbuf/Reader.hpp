@@ -41,7 +41,7 @@ struct Reader {
   template <class T>
   static constexpr bool has_custom_constructor = has_from_flexbuf<T>::value;
 
-  rfl::Result<InputVarType> get_field(
+  rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType& _obj) const noexcept {
     const auto keys = _obj.Keys();
     for (size_t i = 0; i < keys.size(); ++i) {

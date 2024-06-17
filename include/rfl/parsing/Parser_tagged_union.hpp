@@ -30,9 +30,16 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
   using OutputObjectType = typename W::OutputObjectType;
   using OutputVarType = typename W::OutputVarType;
 
+  constexpr static bool no_field_names_ = ProcessorsType::no_field_names_;
+
+  using InputObjectOrArrayType =
+      std::conditional_t<no_field_names_, typename R::InputArrayType,
+                         typename R::InputObjectType>;
+
   static ResultType read(const R& _r, const InputVarType& _var) noexcept {
-    const auto get_disc = [&_r](InputObjectType _obj) -> Result<std::string> {
-      return get_discriminator(_r, _obj);
+    const auto get_disc =
+        [&_r](InputObjectOrArrayType _obj_or_arr) -> Result<std::string> {
+      return get_discriminator(_r, _obj_or_arr);
     };
 
     const auto to_result =
@@ -42,7 +49,11 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
           std::make_integer_sequence<int, sizeof...(AlternativeTypes)>());
     };
 
-    return _r.to_object(_var).and_then(get_disc).and_then(to_result);
+    if constexpr (no_field_names_) {
+      return _r.to_array(_var).and_then(get_disc).and_then(to_result);
+    } else {
+      return _r.to_object(_var).and_then(get_disc).and_then(to_result);
+    }
   }
 
   template <class P>
@@ -115,22 +126,28 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
     }
   }
 
-  /// Retrieves the discriminator.
+  /// Retrieves the discriminator from an object
   static Result<std::string> get_discriminator(
-      const R& _r, const InputObjectType& _obj) noexcept {
+      const R& _r, const InputObjectOrArrayType& _obj_or_arr) noexcept {
+    const auto to_type = [&_r](auto _var) {
+      return _r.template to_basic_type<std::string>(_var);
+    };
+
     const auto embellish_error = [](const auto& _err) {
       return Error("Could not parse tagged union: Could not find field '" +
                    _discriminator.str() +
                    "' or type of field was not a string.");
     };
 
-    const auto to_type = [&_r](auto _var) {
-      return _r.template to_basic_type<std::string>(_var);
-    };
-
-    return _r.get_field(_discriminator.str(), _obj)
-        .and_then(to_type)
-        .or_else(embellish_error);
+    if constexpr (no_field_names_) {
+      return _r.get_field_from_array(0, _obj_or_arr)
+          .and_then(to_type)
+          .or_else(embellish_error);
+    } else {
+      return _r.get_field_from_object(_discriminator.str(), _obj_or_arr)
+          .and_then(to_type)
+          .or_else(embellish_error);
+    }
   }
 
   /// Determines whether the discriminating literal contains the value
