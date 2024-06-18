@@ -65,7 +65,19 @@ struct Reader {
     return std::visit(cast, _node_or_attribute);
   }
 
-  rfl::Result<InputVarType> get_field(
+  rfl::Result<InputVarType> get_field_from_array(
+      const size_t _idx, const InputArrayType& _arr) const noexcept {
+    const auto name = _arr.node_.name();
+    size_t i = 0;
+    for (auto node = _arr.node_; node; node = node.next_sibling(name)) {
+      if (i == _idx) {
+        return InputVarType(node);
+      }
+    }
+    return rfl::Error("Index " + std::to_string(_idx) + " of of bounds.");
+  }
+
+  rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType _obj) const noexcept {
     const auto node = _obj.node_.child(_name.c_str());
     if (!node) {

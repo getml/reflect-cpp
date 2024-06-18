@@ -47,7 +47,30 @@ struct Reader {
     T::from_bson_obj(var);
   });
 
-  rfl::Result<InputVarType> get_field(
+  rfl::Result<InputVarType> get_field_from_array(
+      const size_t _idx, const InputArrayType& _arr) const noexcept {
+    bson_t b;
+    bson_iter_t iter;
+    const auto doc = _arr.val_->value.v_doc;
+    if (bson_init_static(&b, doc.data, doc.data_len)) {
+      if (bson_iter_init(&iter, &b)) {
+        size_t i = 0;
+        while (bson_iter_next(&iter)) {
+          if (i == _idx) {
+            return to_input_var(&iter);
+          }
+          ++i;
+        }
+      } else {
+        return Error("Could not init the array iteration.");
+      }
+    } else {
+      return Error("Could not init array.");
+    }
+    return Error("Index " + std::to_string(_idx) + " of of bounds.");
+  }
+
+  rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType& _obj) const noexcept {
     bson_t b;
     bson_iter_t iter;

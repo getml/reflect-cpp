@@ -28,8 +28,12 @@ std::pair<uint8_t*, size_t> to_buffer(const auto& _obj) noexcept {
       bson_writer_new(&buf, &buflen, 0, bson_realloc_ctx, NULL);
   bson_writer_begin(bson_writer, &doc);
   const auto rfl_writer = Writer(doc);
-  Parser<T, Processors<Ps...>>::write(rfl_writer, _obj,
-                                      typename ParentType::Root{});
+  using ProcessorsType = Processors<Ps...>;
+  static_assert(!ProcessorsType::no_field_names_,
+                "The NoFieldNames processor is not supported for BSON, XML, "
+                "TOML, or YAML.");
+  Parser<T, ProcessorsType>::write(rfl_writer, _obj,
+                                   typename ParentType::Root{});
   bson_writer_end(bson_writer);
   const auto len = bson_writer_get_length(bson_writer);
   bson_writer_destroy(bson_writer);

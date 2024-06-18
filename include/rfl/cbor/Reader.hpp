@@ -47,7 +47,31 @@ struct Reader {
     T::from_cbor_obj(var);
   });
 
-  rfl::Result<InputVarType> get_field(
+  rfl::Result<InputVarType> get_field_from_array(
+      const size_t _idx, const InputArrayType& _arr) const noexcept {
+    InputVarType var;
+    auto err = cbor_value_enter_container(&_arr.val_, &var.val_);
+    if (err != CborNoError && err != CborErrorOutOfMemory) {
+      return Error(cbor_error_string(err));
+    }
+    size_t length = 0;
+    err = cbor_value_get_array_length(&_arr.val_, &length);
+    if (err != CborNoError && err != CborErrorOutOfMemory) {
+      return Error(cbor_error_string(err));
+    }
+    if (_idx >= length) {
+      return Error("Index " + std::to_string(_idx) + " of of bounds.");
+    }
+    for (size_t i = 0; i < _idx; ++i) {
+      err = cbor_value_advance(&var.val_);
+      if (err != CborNoError && err != CborErrorOutOfMemory) {
+        return Error(cbor_error_string(err));
+      }
+    }
+    return var;
+  }
+
+  rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType& _obj) const noexcept {
     InputVarType var;
     auto buffer = std::vector<char>();

@@ -16,10 +16,12 @@ requires AreReaderAndWriter<cbor::Reader, cbor::Writer,
                             NamedTuple<FieldTypes...>>
 struct Parser<cbor::Reader, cbor::Writer, NamedTuple<FieldTypes...>,
               ProcessorsType>
-    : public NamedTupleParser<cbor::Reader, cbor::Writer,
-                              /*_ignore_empty_containers=*/false,
-                              /*_all_required=*/true, ProcessorsType,
-                              FieldTypes...> {
+    : public NamedTupleParser<
+          cbor::Reader, cbor::Writer,
+          /*_ignore_empty_containers=*/false,
+          /*_all_required=*/true,
+          /*_no_field_names=*/ProcessorsType::no_field_names_, ProcessorsType,
+          FieldTypes...> {
 };
 
 template <class ProcessorsType, class... Ts>

@@ -21,7 +21,11 @@ using InputVarType = typename Reader::InputVarType;
 template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(const InputVarType& _obj) {
   const auto r = Reader();
-  return Parser<T, Processors<Ps...>>::read(r, _obj);
+  using ProcessorsType = Processors<Ps...>;
+  static_assert(!ProcessorsType::no_field_names_,
+                "The NoFieldNames processor is not supported for BSON, XML, "
+                "TOML, or YAML.");
+  return Parser<T, ProcessorsType>::read(r, _obj);
 }
 
 /// Parses an BSON object using reflection.
