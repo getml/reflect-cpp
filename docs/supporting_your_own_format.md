@@ -179,9 +179,14 @@ struct Reader {
     template <class T>
     static constexpr bool has_custom_constructor = false;
 
+    /// Retrieves a particular field from an array.
+    /// Returns an rfl::Error if the index is out of bounds.
+    rfl::Result<InputVarType> get_field_from_array(
+        const size_t _idx, const InputArrayType _arr) const noexcept {...}
+
     /// Retrieves a particular field from an object.
     /// Returns an rfl::Error if the field cannot be found.
-    rfl::Result<InputVarType> get_field(
+    rfl::Result<InputVarType> get_field_from_object(
         const std::string& _name, const InputObjectType& _obj) const noexcept {...}
 
     /// Determines whether a variable is empty (the NULL type).

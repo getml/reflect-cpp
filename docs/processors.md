@@ -56,6 +56,34 @@ The resulting JSON string looks like this:
 {"type":"Person","first_name":"Homer","last_name":"Simpson","age":45}
 ```
 
+### `rfl::NoFieldNames`
+
+We can also remove the field names altogether: 
+
+```cpp
+const auto json_string = 
+  rfl::json::write<rfl::NoFieldNames>(homer);
+
+const auto homer2 = 
+  rfl::json::read<Person, rfl::NoFieldNames>(json_string).value();
+```
+
+The resulting JSON string looks like this:
+
+```json
+["Homer","Simpson",45]
+```
+
+This is particularly relevant for binary formats, which do not emphasize readability,
+like msgpack or flexbuffers. Removing the field names can reduce the size of the
+resulting bytestrings and significantly speed up read and write time, 
+depending on the dataset.
+
+However, it makes it more difficult to maintain backwards compatability.
+
+Note that `rfl::NoFieldNames` is not supported for BSON, TOML, XML, or YAML, due
+to limitations of these formats. 
+
 ### `rfl::NoOptionals`
 
 As we have seen in the section on optional fields, when a `std::optional` is

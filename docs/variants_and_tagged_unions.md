@@ -153,7 +153,9 @@ const auto r2 = rfl::json::read<Shapes>(json_string);
 ```
 
 Note that in this case the type of the field `shape` MUST be `rfl::Literal`.
-Also note that this is exactly how tagged unions work in Pydantic.
+Also note that this is exactly how tagged unions work in Pydantic. When you 
+use the `rfl::NoFieldNames` processor, the tag MUST always be the first entry 
+of the array.
 
 ## `std::variant` or `rfl::Variant` (externally tagged)
 
