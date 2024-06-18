@@ -19,7 +19,11 @@ using InputVarType = typename Reader::InputVarType;
 template <class T, class... Ps>
 auto read(const InputVarType& _var) {
   const auto r = Reader();
-  return Parser<T, Processors<Ps...>>::read(r, _var);
+  using ProcessorsType = Processors<Ps...>;
+  static_assert(!ProcessorsType::no_field_names_,
+                "The NoFieldNames processor is not supported for BSON, XML, "
+                "TOML, or YAML.");
+  return Parser<T, ProcessorsType>::read(r, _var);
 }
 
 /// Parses an object from YAML using reflection.

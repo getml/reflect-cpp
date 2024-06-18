@@ -8,9 +8,12 @@
 #include "../TaggedUnion.hpp"
 #include "../always_false.hpp"
 #include "../internal/strings/join.hpp"
+#include "../named_tuple_t.hpp"
 #include "Parser_base.hpp"
 #include "TaggedUnionWrapper.hpp"
+#include "is_tagged_union_wrapper.hpp"
 #include "schema/Type.hpp"
+#include "tagged_union_wrapper_no_ptr.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -106,6 +109,14 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
         std::variant_alternative_t<_i, std::variant<AlternativeTypes...>>>;
 
     if (!*_match_found && contains_disc_value<AlternativeType>(_disc_value)) {
+      const auto get_fields = [](auto&& _val) -> AlternativeType {
+        if constexpr (is_tagged_union_wrapper_v<decltype(_val)>) {
+          return std::move(_val.fields());
+        } else {
+          return std::move(_val);
+        }
+      };
+
       const auto to_tagged_union = [](auto&& _val) {
         return TaggedUnion<_discriminator, AlternativeTypes...>(
             std::move(_val));
@@ -118,9 +129,18 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
             _discriminator.str() + " '" + _disc_value + "': " + _e.what());
       };
 
-      *_res = Parser<R, W, AlternativeType, ProcessorsType>::read(_r, _var)
-                  .transform(to_tagged_union)
-                  .or_else(embellish_error);
+      if constexpr (no_field_names_) {
+        using T = tagged_union_wrapper_no_ptr_t<std::invoke_result_t<
+            decltype(wrap_if_necessary<AlternativeType>), AlternativeType>>;
+        *_res = Parser<R, W, T, ProcessorsType>::read(_r, _var)
+                    .transform(get_fields)
+                    .transform(to_tagged_union)
+                    .or_else(embellish_error);
+      } else {
+        *_res = Parser<R, W, AlternativeType, ProcessorsType>::read(_r, _var)
+                    .transform(to_tagged_union)
+                    .or_else(embellish_error);
+      }
 
       *_match_found = true;
     }
@@ -162,7 +182,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
   template <class T, class P>
   static void write_wrapped(const W& _w, const T& _val,
                             const P& _parent) noexcept {
-    const auto wrapped = wrap_if_necessary(_val);
+    const auto wrapped = wrap_if_necessary<T>(_val);
     Parser<R, W, std::remove_cvref_t<decltype(wrapped)>, ProcessorsType>::write(
         _w, wrapped, _parent);
   }
