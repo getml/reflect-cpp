@@ -8,16 +8,18 @@
 #include <string>
 #include <tuple>
 #include <type_traits>
+#include <utility>
 
 #include "Result.hpp"
 #include "internal/StringLiteral.hpp"
 #include "internal/VisitTree.hpp"
+#include "internal/no_duplicate_field_names.hpp"
 
 namespace rfl {
 
-template <internal::StringLiteral _field>
+template <internal::StringLiteral _name>
 struct LiteralHelper {
-  constexpr static internal::StringLiteral field_ = _field;
+  constexpr static internal::StringLiteral name_ = _name;
 };
 
 template <internal::StringLiteral... fields_>
@@ -124,7 +126,9 @@ class Literal {
 
   /// Determines whether the literal has duplicate strings at compile time.
   /// These is useful for checking collections of strings in other contexts.
-  static constexpr bool has_duplicates() { return has_duplicate_strings(); }
+  static constexpr bool has_duplicates() {
+    return !internal::no_duplicate_field_names<FieldsType>();
+  }
 
   /// Constructs a Literal from a string. Returns an error if the string
   /// cannot be found.
@@ -139,7 +143,9 @@ class Literal {
   std::string name() const { return find_name(); }
 
   /// Returns all possible values of the literal as a std::vector<std::string>.
-  static std::vector<std::string> names() { return allowed_strings_vec(); }
+  static std::vector<std::string> names() {
+    return allowed_strings_vec(std::make_integer_sequence<int, num_fields_>());
+  }
 
   /// Helper function to retrieve a name at compile time.
   template <int _value>
@@ -199,7 +205,9 @@ class Literal {
   std::string str() const { return name(); }
 
   /// Alias for .names().
-  static std::vector<std::string> strings() { return allowed_strings_vec(); }
+  static std::vector<std::string> strings() {
+    return allowed_strings_vec(std::make_integer_sequence<int, num_fields_>());
+  }
 
   /// Returns the value actually contained in the Literal.
   ValueType value() const { return value_; }
@@ -218,7 +226,8 @@ class Literal {
 
   /// Returns all of the allowed fields.
   static std::string allowed_strings() {
-    const auto vec = allowed_strings_vec();
+    const auto vec =
+        allowed_strings_vec(std::make_integer_sequence<int, num_fields_>());
     std::string str;
     for (size_t i = 0; i < vec.size(); ++i) {
       const auto head = "'" + vec[i] + "'";
@@ -228,54 +237,38 @@ class Literal {
   }
 
   /// Returns all of the allowed fields.
-  template <int _i = 0>
+  template <int... _is>
   static std::vector<std::string> allowed_strings_vec(
-      std::vector<std::string> _values = {}) {
+      std::integer_sequence<int, _is...>) {
+    std::vector<std::string> values;
+    (allowed_strings_vec_add_one<_is>(&values), ...);
+    return values;
+  }
+
+  template <int _i>
+  static void allowed_strings_vec_add_one(std::vector<std::string>* _values) {
     using FieldType = typename std::tuple_element<_i, FieldsType>::type;
-    const auto head = FieldType::field_.str();
-    _values.push_back(head);
-    if constexpr (_i + 1 < num_fields_) {
-      return allowed_strings_vec<_i + 1>(std::move(_values));
-    } else {
-      return _values;
-    }
-  }
-
-  /// Whether the Literal contains duplicate strings.
-  template <int _i = 1>
-  constexpr static bool has_duplicate_strings() {
-    if constexpr (_i >= num_fields_) {
-      return false;
-    } else {
-      return is_duplicate<_i>() || has_duplicate_strings<_i + 1>();
-    }
-  }
-
-  template <int _i, int _j = _i - 1>
-  constexpr static bool is_duplicate() {
-    using FieldType1 = typename std::tuple_element<_i, FieldsType>::type;
-    using FieldType2 = typename std::tuple_element<_j, FieldsType>::type;
-    if constexpr (FieldType1::field_ == FieldType2::field_) {
-      return true;
-    } else if constexpr (_j > 0) {
-      return is_duplicate<_i, _j - 1>();
-    } else {
-      return false;
-    }
+    _values->emplace_back(FieldType::name_.str());
   }
 
   /// Finds the correct index associated with
   /// the string at run time.
-  template <int _i = 0>
   std::string find_name() const {
+    return find_name_set_str(std::make_integer_sequence<int, num_fields_>());
+  }
+
+  template <int... _is>
+  std::string find_name_set_str(std::integer_sequence<int, _is...>) const {
+    std::string name;
+    (find_name_set_if_matches<_is>(&name), ...);
+    return name;
+  }
+
+  template <int _i>
+  void find_name_set_if_matches(std::string* _name) const {
     if (_i == value_) {
-      using FieldType = typename std::tuple_element<_i, FieldsType>::type;
-      return FieldType::field_.str();
-    }
-    if constexpr (_i + 1 == num_fields_) {
-      return "";
-    } else {
-      return find_name<_i + 1>();
+      using FieldType = typename std::tuple_element_t<_i, FieldsType>;
+      *_name = FieldType::name_.str();
     }
   }
 
@@ -283,24 +276,38 @@ class Literal {
   /// the string at compile time within the Literal's own fields.
   template <int _i>
   constexpr static auto find_name_within_own_fields() {
-    using FieldType = typename std::tuple_element<_i, FieldsType>::type;
-    return FieldType::field_;
+    return std::tuple_element_t<_i, FieldsType>::name_;
   }
 
   /// Finds the correct value associated with
   /// the string at run time.
-  template <int _i = 0>
   static Result<int> find_value(const std::string& _str) {
-    using FieldType = typename std::tuple_element<_i, FieldsType>::type;
-    if (FieldType::field_.str() == _str) {
-      return _i;
-    }
-    if constexpr (_i + 1 == num_fields_) {
+    bool found = false;
+    const auto idx = find_value_set_idx(
+        _str, &found, std::make_integer_sequence<int, num_fields_>());
+    if (!found) {
       return Error(
           "Literal does not support string '" + _str +
           "'. The following strings are supported: " + allowed_strings() + ".");
-    } else {
-      return find_value<_i + 1>(_str);
+    }
+    return idx;
+  }
+
+  template <int... _is>
+  static int find_value_set_idx(const std::string& _str, bool* _found,
+                                std::integer_sequence<int, _is...>) {
+    int idx = 0;
+    (find_value_set_if_matches<_is>(_str, _found, &idx), ...);
+    return idx;
+  }
+
+  template <int _i>
+  static void find_value_set_if_matches(const std::string& _str, bool* _found,
+                                        int* _idx) {
+    using FieldType = typename std::tuple_element<_i, FieldsType>::type;
+    if (!*_found && FieldType::name_.string_view() == _str) {
+      *_idx = _i;
+      *_found = true;
     }
   }
 
@@ -311,7 +318,7 @@ class Literal {
       return -1;
     } else {
       using FieldType = typename std::tuple_element<_i, FieldsType>::type;
-      if constexpr (FieldType::field_ == _name) {
+      if constexpr (FieldType::name_ == _name) {
         return _i;
       } else {
         return find_value_of<_name, _i + 1>();
@@ -320,19 +327,9 @@ class Literal {
   }
 
   /// Whether the literal contains this string.
-  template <int _i = 0>
   static void has_value(const std::string& _str, bool* _found) {
-    if constexpr (_i == num_fields_) {
-      *_found = false;
-      return;
-    } else {
-      using FieldType = typename std::tuple_element<_i, FieldsType>::type;
-      if (FieldType::field_.str() == _str) {
-        *_found = true;
-        return;
-      }
-      return has_value<_i + 1>(_str, _found);
-    }
+    find_value_set_idx(_str, _found,
+                       std::make_integer_sequence<int, num_fields_>());
   }
 
   static_assert(sizeof...(fields_) <= std::numeric_limits<ValueType>::max(),
@@ -361,7 +358,6 @@ inline constexpr auto value_of() {
 }  // namespace rfl
 
 namespace std {
-
 template <rfl::internal::StringLiteral... fields>
 struct hash<rfl::Literal<fields...>> {
   size_t operator()(const rfl::Literal<fields...>& _l) const {
