@@ -15,6 +15,7 @@
 #include "rfl/Description.hpp"
 #include "rfl/Field.hpp"
 #include "rfl/Flatten.hpp"
+#include "rfl/Generic.hpp"
 #include "rfl/Literal.hpp"
 #include "rfl/NamedTuple.hpp"
 #include "rfl/NoFieldNames.hpp"
