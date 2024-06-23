@@ -33,6 +33,6 @@ TEST(json, test_generic) {
 
   write_and_read(
       homer,
-      R"({"age":45,"children":[{"age":10,"first_name":"Bart","last_name":"Simpson"},{"age":8,"first_name":"Lisa","last_name":"Simpson"},{"age":0,"first_name":"Lisa","last_name":"Simpson"}],"first_name":"Lisa","last_name":"Simpson"})");
+      R"({"first_name":"Lisa","last_name":"Simpson","age":45,"children":[{"first_name":"Bart","last_name":"Simpson","age":10},{"first_name":"Lisa","last_name":"Simpson","age":8},{"first_name":"Lisa","last_name":"Simpson","age":0}]})");
 }
 }  // namespace test_generic

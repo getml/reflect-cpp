@@ -1,11 +1,11 @@
 #ifndef RFL_GENERIC_HPP_
 #define RFL_GENERIC_HPP_
 
-#include <map>
 #include <string>
 #include <variant>
 #include <vector>
 
+#include "Object.hpp"
 #include "Result.hpp"
 
 namespace rfl {
@@ -13,9 +13,9 @@ namespace rfl {
 class Generic {
  public:
   using Array = std::vector<Generic>;
-  using Object = std::map<std::string, Generic>;
+  using Object = rfl::Object<Generic>;
   using ReflectionType =
-      std::variant<bool, int, double, std::string, Array, Object>;
+      std::variant<bool, int, double, std::string, Object, Array>;
 
   Generic() : value_(false) {}
 
