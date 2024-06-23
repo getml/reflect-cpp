@@ -88,7 +88,7 @@ class ViewReader {
     if constexpr (ViewType::pos_extra_fields_ != -1) {
       constexpr int pos = ViewType::pos_extra_fields_;
       if (!already_assigned) {
-        auto* extra_fields = _view->template get<ViewType::pos_extra_fields_>();
+        auto* extra_fields = _view->template get<pos>();
         using ExtraFieldsType =
             std::remove_cvref_t<std::remove_pointer_t<decltype(extra_fields)>>;
         using T = std::remove_cvref_t<
