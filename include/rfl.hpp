@@ -13,6 +13,7 @@
 #include "rfl/Attribute.hpp"
 #include "rfl/Box.hpp"
 #include "rfl/Description.hpp"
+#include "rfl/ExtraFields.hpp"
 #include "rfl/Field.hpp"
 #include "rfl/Flatten.hpp"
 #include "rfl/Generic.hpp"

@@ -15,6 +15,7 @@
 #include "../internal/is_array.hpp"
 #include "../internal/is_attribute.hpp"
 #include "../internal/is_basic_type.hpp"
+#include "../internal/is_extra_fields.hpp"
 #include "../internal/is_skip.hpp"
 #include "../internal/strings/replace_all.hpp"
 #include "../to_view.hpp"
@@ -128,11 +129,17 @@ struct NamedTupleParser {
     using FieldType =
         typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type;
     using ValueType = std::remove_cvref_t<typename FieldType::Type>;
-    const auto& value = rfl::get<_i>(_tup);
-    constexpr auto name = FieldType::name_.string_view();
-    const auto new_parent = make_parent(name, _ptr);
-    if constexpr (!_all_required && !_no_field_names &&
-                  !is_required<ValueType, _ignore_empty_containers>()) {
+    const auto value = rfl::get<_i>(_tup);
+    if constexpr (internal::is_extra_fields_v<ValueType>) {
+      for (const auto& [k, v] : *value) {
+        const auto new_parent = make_parent(k, _ptr);
+        Parser<R, W, std::remove_cvref_t<decltype(v)>, ProcessorsType>::write(
+            _w, v, new_parent);
+      }
+    } else if constexpr (!_all_required && !_no_field_names &&
+                         !is_required<ValueType, _ignore_empty_containers>()) {
+      constexpr auto name = FieldType::name_.string_view();
+      const auto new_parent = make_parent(name, _ptr);
       if (!is_empty(value)) {
         if constexpr (internal::is_attribute_v<ValueType>) {
           Parser<R, W, ValueType, ProcessorsType>::write(
@@ -142,6 +149,8 @@ struct NamedTupleParser {
         }
       }
     } else {
+      constexpr auto name = FieldType::name_.string_view();
+      const auto new_parent = make_parent(name, _ptr);
       if constexpr (internal::is_attribute_v<ValueType>) {
         Parser<R, W, ValueType, ProcessorsType>::write(
             _w, value, new_parent.as_attribute());
@@ -193,8 +202,10 @@ struct NamedTupleParser {
         std::remove_pointer_t<typename FieldType::Type>>;
 
     if (!std::get<_i>(_found)) {
-      if constexpr (_all_required ||
-                    is_required<ValueType, _ignore_empty_containers>()) {
+      constexpr bool is_required_field =
+          !internal::is_extra_fields_v<ValueType> &&
+          (_all_required || is_required<ValueType, _ignore_empty_containers>());
+      if constexpr (is_required_field) {
         constexpr auto current_name =
             std::tuple_element_t<_i, typename NamedTupleType::Fields>::name();
         _errors->emplace_back(Error(

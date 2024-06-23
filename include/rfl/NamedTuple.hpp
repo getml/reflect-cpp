@@ -12,6 +12,7 @@
 #include "get.hpp"
 #include "internal/StringLiteral.hpp"
 #include "internal/find_index.hpp"
+#include "internal/is_extra_fields.hpp"
 #include "internal/no_duplicate_field_names.hpp"
 
 namespace rfl {
@@ -32,6 +33,24 @@ class NamedTuple {
   using Fields = std::tuple<std::remove_cvref_t<FieldTypes>...>;
   using Names = Literal<std::remove_cvref_t<FieldTypes>::name_...>;
   using Values = std::tuple<typename std::remove_cvref_t<FieldTypes>::Type...>;
+
+  /// Finds the position of the extra fields, or -1 if there aren't any.
+  template <int _i = 0>
+  constexpr static int find_extra_fields() {
+    if constexpr (_i == size()) {
+      return -1;
+    } else {
+      using FieldType = typename std::tuple_element_t<_i, Fields>;
+      if constexpr (internal::is_extra_fields_v<typename FieldType::Type>) {
+        return _i;
+      } else {
+        return find_extra_fields<_i + 1>();
+      }
+    }
+  }
+
+  /// The position of rfl::ExtraFields, or -1 if there aren't any.
+  constexpr static int pos_extra_fields_ = find_extra_fields();
 
  public:
   /// Construct from the values.
@@ -423,7 +442,7 @@ class NamedTuple {
     } else {
       // When we add additional fields, it is more intuitive to add
       // them to the end, that is why we do it like this.
-      using FieldType = typename std::tuple_element<i, Fields>::type;
+      using FieldType = typename std::tuple_element_t<i, Fields>;
       using T = std::remove_cvref_t<typename FieldType::Type>;
       return make_fields<num_additional_fields>(
           FieldType(std::forward<T>(std::get<i>(values_))),
@@ -565,6 +584,8 @@ class NamedTuple<> {
   using Fields = std::tuple<>;
   using Names = Literal<>;
   using Values = std::tuple<>;
+
+  constexpr static int pos_extra_fields_ = -1;
 
   NamedTuple(){};
 

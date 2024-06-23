@@ -80,9 +80,34 @@ class ViewReader {
                                        auto* _errors, auto* _found, auto* _set,
                                        std::integer_sequence<int, is...>) {
     bool already_assigned = false;
+
     (assign_if_field_matches<is>(_r, _current_name, _var, _view, _errors,
                                  _found, _set, &already_assigned),
      ...);
+
+    if constexpr (ViewType::pos_extra_fields_ != -1) {
+      constexpr int pos = ViewType::pos_extra_fields_;
+      if (!already_assigned) {
+        auto* extra_fields = _view->template get<ViewType::pos_extra_fields_>();
+        using ExtraFieldsType =
+            std::remove_cvref_t<std::remove_pointer_t<decltype(extra_fields)>>;
+        using T = std::remove_cvref_t<
+            std::remove_pointer_t<typename ExtraFieldsType::Type>>;
+        if (!std::get<pos>(*_set)) {
+          ::new (extra_fields) ExtraFieldsType();
+          std::get<pos>(*_set) = true;
+          std::get<pos>(*_found) = true;
+        }
+        auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
+        if (!res) {
+          _errors->emplace_back(Error("Failed to parse field '" +
+                                      std::string(_current_name) +
+                                      "': " + std::move(res.error()->what())));
+          return;
+        }
+        extra_fields->emplace(std::string(_current_name), std::move(*res));
+      }
+    }
   }
 
   template <class T>

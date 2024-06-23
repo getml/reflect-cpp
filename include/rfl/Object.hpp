@@ -15,6 +15,7 @@ template <class T>
 class Object {
  public:
   using DataType = std::vector<std::pair<std::string, T>>;
+  using Type = T;
 
   /// We want this to behave as similarly to C++ standard containers as
   /// possible.
