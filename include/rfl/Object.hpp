@@ -32,7 +32,7 @@ class Object {
   using reverse_iterator = typename DataType::reverse_iterator;
   using const_reverse_iterator = typename DataType::const_reverse_iterator;
 
-  Object() : data_() {}
+  Object() : data_(), it_(data_.begin()) {}
 
   Object(const Object<T>& _f) = default;
 
@@ -74,9 +74,15 @@ class Object {
 
   auto max_size() const { return data_.max_size(); }
 
-  void insert(const value_type& _value) { data_.push_back(_value); }
+  void insert(const value_type& _value) {
+    data_.push_back(_value);
+    it_ = data_.begin();
+  }
 
-  void insert(value_type&& _value) { data_.emplace_back(std::move(_value)); }
+  void insert(value_type&& _value) {
+    data_.emplace_back(std::move(_value));
+    it_ = data_.begin();
+  }
 
   template <class InputIt>
   void insert(InputIt _first, InputIt _last) {
@@ -95,36 +101,60 @@ class Object {
 
   void emplace(std::string&& _k, T&& _v) {
     data_.emplace_back(std::make_pair(std::move(_k), std::move(_v)));
+    it_ = data_.begin();
   }
 
   void emplace(std::pair<std::string, T>&& _value) {
     data_.emplace_back(std::move(_value));
+    it_ = data_.begin();
   }
 
   T& operator[](const std::string& _key) {
-    for (auto it = begin(); it != end(); ++it) {
+    for (auto it = it_; it != end(); ++it) {
       if (it->first == _key) {
+        it_ = it + 1;
+        return it->second;
+      }
+    }
+    for (auto it = begin(); it != it_; ++it) {
+      if (it->first == _key) {
+        it_ = it + 1;
         return it->second;
       }
     }
     data_.emplace_back(std::make_pair(_key, T()));
+    it_ = data_.begin();
     return data_.back().second;
   }
 
   T& operator[](std::string&& _key) {
-    for (auto it = begin(); it != end(); ++it) {
+    for (auto it = it_; it != end(); ++it) {
       if (it->first == _key) {
+        it_ = it + 1;
+        return it->second;
+      }
+    }
+    for (auto it = begin(); it != it_; ++it) {
+      if (it->first == _key) {
+        it_ = it + 1;
         return it->second;
       }
     }
     data_.emplace_back(std::make_pair(std::move(_key), T()));
+    it_ = data_.begin();
     return data_.back().second;
   }
 
-  void clear() { data_.clear(); }
+  void clear() {
+    data_.clear();
+    it_ = data_.begin();
+  }
 
  private:
   DataType data_;
+
+  /// Allows faster access
+  iterator it_;
 };
 
 }  // namespace rfl
