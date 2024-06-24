@@ -34,24 +34,6 @@ class NamedTuple {
   using Names = Literal<std::remove_cvref_t<FieldTypes>::name_...>;
   using Values = std::tuple<typename std::remove_cvref_t<FieldTypes>::Type...>;
 
-  /// Finds the position of the extra fields, or -1 if there aren't any.
-  template <int _i = 0>
-  constexpr static int find_extra_fields() {
-    if constexpr (_i == size()) {
-      return -1;
-    } else {
-      using FieldType = typename std::tuple_element_t<_i, Fields>;
-      if constexpr (internal::is_extra_fields_v<typename FieldType::Type>) {
-        return _i;
-      } else {
-        return find_extra_fields<_i + 1>();
-      }
-    }
-  }
-
-  /// The position of rfl::ExtraFields, or -1 if there aren't any.
-  constexpr static int pos_extra_fields_ = find_extra_fields();
-
  public:
   /// Construct from the values.
   NamedTuple(typename std::remove_cvref<FieldTypes>::type::Type&&... _values)
@@ -301,6 +283,28 @@ class NamedTuple {
   inline auto operator!=(const rfl::NamedTuple<FieldTypes...>& _other) const {
     return !(*this == _other);
   }
+
+  /// Returns the number of fields. Note that this is not necessary the same
+  /// thing as .size(), because there might be rfl::ExtraFields, which are
+  /// simply counted as one entry by .size(), but are counted by individually by
+  /// .num_fields().
+  size_t num_fields() const {
+    if constexpr (pos_extra_fields() == -1) {
+      return size();
+    } else {
+      const auto& extra_fields = get<pos_extra_fields()>();
+      if constexpr (std::is_pointer_v<
+                        std::remove_cvref_t<decltype(extra_fields)>>) {
+        return size() + extra_fields->size() - 1;
+      } else {
+        return size() + extra_fields.size() - 1;
+      }
+    }
+  }
+
+  /// The position of the extra fields, or -1 if there aren't any.
+  constexpr static int pos_extra_fields() { return pos_extra_fields_; }
+
   /// Replaces one or several fields, returning a new version
   /// with the non-replaced fields left unchanged.
   template <internal::StringLiteral _name, class FType, class... OtherRFields>
@@ -426,6 +430,26 @@ class NamedTuple {
       return this->add(std::forward<TupContent>(_fields)...);
     };
     return std::apply(a, std::forward<std::tuple<TupContent...>>(_tuple));
+  }
+
+  /// Finds the position of the extra fields, or -1 if there aren't any.
+  template <int _i = 0, int _idx = -1>
+  constexpr static int find_extra_fields() {
+    if constexpr (_i == size()) {
+      return _idx;
+    } else {
+      using FieldType = typename std::tuple_element_t<_i, Fields>;
+      constexpr bool is_extra_fields =
+          internal::is_extra_fields_v<typename FieldType::Type>;
+      static_assert(_idx == -1 || !is_extra_fields,
+                    "There can only be one rfl::ExtraFields in any struct or "
+                    "named tuple.");
+      if constexpr (is_extra_fields) {
+        return find_extra_fields<_i + 1, _i>();
+      } else {
+        return find_extra_fields<_i + 1, _idx>();
+      }
+    }
   }
 
   /// Generates the fields.
@@ -573,6 +597,9 @@ class NamedTuple {
   /// everything else is resolved at compile time. It should have no
   /// runtime overhead over a normal std::tuple.
   Values values_;
+
+  /// The position of rfl::ExtraFields, or -1 if there aren't any.
+  constexpr static int pos_extra_fields_ = find_extra_fields();
 };
 
 // ----------------------------------------------------------------------------
@@ -584,8 +611,6 @@ class NamedTuple<> {
   using Fields = std::tuple<>;
   using Names = Literal<>;
   using Values = std::tuple<>;
-
-  constexpr static int pos_extra_fields_ = -1;
 
   NamedTuple(){};
 
@@ -631,6 +656,12 @@ class NamedTuple<> {
 
   /// Returns an empty tuple.
   auto fields() const { return std::tuple(); }
+
+  /// Must always be 0.
+  size_t num_fields() const { return 0; }
+
+  /// Must always be -1.
+  constexpr static int pos_extra_fields() { return -1; }
 
   /// Must always be 0.
   static constexpr size_t size() { return 0; }

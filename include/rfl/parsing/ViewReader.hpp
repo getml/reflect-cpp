@@ -85,8 +85,8 @@ class ViewReader {
                                  _found, _set, &already_assigned),
      ...);
 
-    if constexpr (ViewType::pos_extra_fields_ != -1) {
-      constexpr int pos = ViewType::pos_extra_fields_;
+    if constexpr (ViewType::pos_extra_fields() != -1) {
+      constexpr int pos = ViewType::pos_extra_fields();
       if (!already_assigned) {
         auto* extra_fields = _view->template get<pos>();
         using ExtraFieldsType =
