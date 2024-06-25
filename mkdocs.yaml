@@ -1,0 +1,229 @@
+site_name: Reflect-cpp
+site_description: fast serialization, deserialization and validation using reflection.
+strict: true
+site_url: https://docs.reflect-cpp.dev/
+
+theme:
+  name: 'material'
+    #custom_dir: 'docs/theme'
+  palette:
+    #- media: "(prefers-color-scheme: light)"
+    #  scheme: default
+    #  primary: #F0685C
+    #  accent: #F0685C
+    #  toggle:
+    #    icon: material/lightbulb-outline
+    #    name: "Switch to dark mode"
+    #- media: "(prefers-color-scheme: dark)"
+    #  scheme: slate
+    #  primary: pink
+    #  accent: pink
+    #  toggle:
+    #    icon: material/lightbulb
+    #    name: "Switch to light mode"
+  features:
+    - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
+    - announce.dismiss
+    - navigation.tabs
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.preview
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.top
+    - navigation.tracking
+    - search.suggest
+    - toc.follow
+      #logo: 'banner2.png'
+  favicon: 'banner2.png'
+
+extra_css:
+  - stylesheets/extra.css
+repo_name: getml/reflect-cpp
+repo_url: https://github.com/getml/reflect-cpp
+edit_uri: edit/main/docs/
+extra:
+  version:
+    provider: patrick
+      #analytics:
+      #  feedback:
+      #    title: Was this page helpful?
+      #    ratings:
+      #      - icon: material/thumb-up-outline
+      #        name: This page was helpful
+      #        data: 1
+      #        note: >-
+      #          Thanks for your feedback!
+      #      - icon: material/thumb-down-outline
+      #        name: This page could be improved
+      #        data: 0
+      #        note: >-
+      #          Thanks for your feedback!
+
+# https://www.mkdocs.org/user-guide/configuration/#validation
+#validation:
+#  omitted_files: warn
+#  absolute_links: warn
+#  unrecognized_links: warn
+
+    #extra_css:
+    #  - 'extra/terminal.css'
+    #  - 'extra/tweaks.css'
+    #extra_javascript:
+    #  - 'extra/feedback.js'
+    #  - 'extra/fluff.js'
+    #  - 'https://samuelcolvin.github.io/mkdocs-run-code/run_code_main.js'
+
+nav:
+- Overview:
+  - Welcome to Reflect-cpp: index.md
+  - Why use Reflect-cpp: why.md
+  - Installation: install.md
+  - Contributing: contributing.md
+  - Changelog: changelog.md
+- Concepts:
+  - Structs: concepts/structs.md
+  - Custom Classes: concepts/custom_classes.md 
+  - Fields: concepts/field_syntax.md
+  - Type: concepts/types.md
+  - Processors: concepts/processors.md
+  - Serialization: concepts/serialization.md
+  - Validators: concepts/validators.md
+  - Errors handling: concepts/errors.md
+- Supported Formats: 
+  - BSON: concepts/supported_formats/bson.md 
+  - CBOR: concepts/supported_formats/cbor.md 
+  - FlexBuffers: concepts/supported_formats/flexbuffers.md 
+  - JSON: concepts/supported_formats/json.md
+  - JSON Schema: concepts/supported_formats/json_schema.md
+  - MessagePack: concepts/supported_formats/msgpack.md
+  - TOML: concepts/supported_formats/toml.md
+  - XML: concepts/supported_formats/xml.md
+  - YAML: concepts/supported_formats/yaml.md
+  - Custom Format: concepts/supported_formats/supporting_your_own_format.md
+- Reflective Programming: ./reflective_programming.md
+
+markdown_extensions:
+- tables
+- toc:
+    permalink: true
+    title: Page contents
+- admonition
+- pymdownx.details
+- pymdownx.superfences
+- pymdownx.highlight:
+    pygments_lang_class: true
+- pymdownx.extra
+- pymdownx.emoji:
+    emoji_index: !!python/name:material.extensions.emoji.twemoji
+    emoji_generator: !!python/name:material.extensions.emoji.to_svg
+- pymdownx.tabbed:
+    alternate_style: true
+
+watch:
+- docs
+
+plugins:
+  #- mike:
+  #    alias_type: symlink
+  #    canonical_version: latest
+- search
+  #- exclude:
+  #    glob:
+  #    - theme/announce.html
+  #    - plugins/*
+  #    - __pycache__/*
+  #- mkdocstrings:
+  #    handlers:
+  #      python:
+  #        paths: [.]
+  #        options:
+  #          members_order: source
+  #          separate_signature: true
+  #          filters: ["!^_"]
+  #          docstring_options:
+  #            ignore_init_summary: true
+  #          merge_init_into_class: true
+  #          show_signature_annotations: true
+  #          signature_crossrefs: true
+  #          extensions:
+  #            - docs/plugins/griffe_doclinks.py
+  #        import:
+  #          - https://docs.python.org/3/objects.inv
+            #- mkdocs-simple-hooks:
+            #    hooks:
+            #      on_pre_build: 'docs.plugins.main:on_pre_build'
+            #      on_files: 'docs.plugins.main:on_files'
+            #      on_page_markdown: 'docs.plugins.main:on_page_markdown'
+            #- redirects:
+            #    redirect_maps:
+            #      'usage/mypy.md': 'integrations/mypy.md'
+            #      'mypy_plugin.md': 'integrations/mypy.md'
+            #      'datamodel_code_generator.md': 'integrations/datamodel_code_generator.md'
+            #      'visual_studio_code.md': 'integrations/visual_studio_code.md'
+            #      'hypothesis_plugin.md': 'integrations/hypothesis.md'
+            #      'pycharm_plugin.md': 'integrations/pycharm.md'
+            #      'usage/model_config.md': 'api/config.md'
+            #      'usage/devtools.md': 'integrations/devtools.md'
+            #      'usage/rich.md': 'integrations/rich.md'
+            #      'usage/linting.md': 'integrations/linting.md'
+            #      'usage/types.md': 'concepts/types.md'
+            #      'usage/types/secrets.md': 'examples/secrets.md'
+            #      'usage/types/string_types.md': 'api/types.md#pydantic.types.StringConstraints'
+            #      'usage/types/file_types.md': 'api/types.md#pydantic.types.FilePath'
+            #      'api/main.md': 'api/base_model.md'
+            #      'api/color.md': 'api/pydantic_extra_types_color.md'
+            #      'api/alias_generators.md': 'api/config.md#pydantic.config.ConfigDict.alias_generator'
+            #      'api/pydantic_core_init.md': 'api/pydantic_core.md'
+            #      'usage/types/booleans.md': 'api/standard_library_types.md#booleans'
+            #      'usage/types/callables.md': 'api/standard_library_types.md#callable'
+            #      'usage/types/custom.md': 'concepts/types.md#custom-types'
+            #      'usage/types/datetime.md': 'api/standard_library_types.md#datetime-types'
+            #      'usage/types/enum.md': 'api/standard_library_types.md#enum'
+            #      'usage/types/json.md': 'api/types.md#pydantic.types.Json'
+            #      'usage/types/list_types.md': 'api/standard_library_types.md#list'
+            #      'usage/types/standard_types.md': 'api/standard_library_types.md'
+            #      'usage/types/strict_types.md': 'concepts/types.md#strict-types'
+            #      'usage/types/types.md': 'concepts/types.md'
+            #      'usage/types/urls.md': 'api/networks.md'
+            #      'usage/types/unions.md': 'api/standard_library_types.md#union'
+            #      'usage/types/typevars.md': 'api/standard_library_types.md#type-and-typevar'
+            #      'usage/types/types_fields.md': 'api/standard_library_types.md'
+            #      'usage/validation_errors.md': 'errors/validation_errors.md'
+            #      'usage/errors.md': 'errors/usage_errors.md'
+            #      'usage/types/extra_types/color_types.md': 'api/pydantic_extra_types_color.md'
+            #      'usage/types/extra_types/extra_types.md': 'api/pydantic_extra_types_color.md'
+            #      'usage/types/extra_types/coordinate.md': 'api/pydantic_extra_types_coordinate.md'
+            #      'usage/types/extra_types/mac_address.md': 'api/pydantic_extra_types_mac_address.md'
+            #      'usage/types/extra_types/payment_cards.md': 'api/pydantic_extra_types_payment.md'
+            #      'usage/types/extra_types/phone_numbers.md': 'api/pydantic_extra_types_phone_numbers.md'
+            #      'usage/types/extra_types/routing_numbers.md': 'api/pydantic_extra_types_routing_numbers.md'
+            #      'version-compatibility.md': 'version-policy.md'
+            #      'api/pydantic_extra_types_routing_number.md': 'api/pydantic_extra_types_routing_numbers.md'
+            #      'usage/computed_fields.md': 'api/fields.md#pydantic.fields.computed_field'
+            #      'usage/conversion_table.md': 'concepts/conversion_table.md'
+            #      'usage/dataclasses.md': 'concepts/dataclasses.md'
+            #      'usage/fields.md': 'concepts/fields.md'
+            #      'usage/json_schema.md': 'concepts/json_schema.md'
+            #      'usage/models.md': 'concepts/models.md'
+            #      'usage/postponed_annotations.md': 'concepts/postponed_annotations.md'
+            #      'usage/pydantic_settings.md': 'concepts/pydantic_settings.md'
+            #      'usage/serialization.md': 'concepts/serialization.md'
+            #      'usage/strict_mode.md': 'concepts/strict_mode.md'
+            #      'usage/type_adapter.md': 'concepts/type_adapter.md'
+            #      'usage/validation_decorator.md': 'concepts/validation_decorator.md'
+            #      'usage/validators.md': 'concepts/validators.md'
+            #      'usage/types/bytesize.md': 'api/types.md#pydantic.types.ByteSize'
+            #      'usage/types/dicts_mapping.md': 'api/standard_library_types.md#mapping-types'
+            #      'usage/types/encoded.md': 'api/types.md#pydantic.types.EncodedBytes'
+            #      'usage/types/enums.md': 'api/standard_library_types.md#enum'
+            #      'usage/types/number_types.md': 'api/standard_library_types.md#number-types'
+            #      'usage/types/sequence_iterable.md': 'api/standard_library_types.md#other-iterables'
+            #      'usage/types/set_types.md': 'api/standard_library_types.md#sets'
+            #      'usage/types/uuids.md': 'api/standard_library_types.md#uuid'
+            #      'blog/pydantic-v2-alpha.md': 'https://blog.pydantic.dev/blog/2023/04/03/pydantic-v2-pre-release/'
+            #      'blog/pydantic-v2-final.md': 'https://blog.pydantic.dev/blog/2023/06/30/pydantic-v2-is-here/'
+            #      'blog/pydantic-v2.md': 'https://blog.pydantic.dev/blog/2022/07/10/pydantic-v2-plan/'
+            #- external-markdown:
