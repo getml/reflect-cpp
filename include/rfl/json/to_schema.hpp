@@ -193,8 +193,15 @@ inline schema::Type type_to_json_schema_type(
           required.push_back(k);
         }
       }
+      auto additional_properties =
+          _t.additional_properties_
+              ? std::make_shared<schema::Type>(
+                    type_to_json_schema_type(*_t.additional_properties_))
+              : std::shared_ptr<schema::Type>();
       return schema::Type{.value = schema::Type::Object{
-                              .properties = properties, .required = required}};
+                              .properties = properties,
+                              .required = required,
+                              .additionalProperties = additional_properties}};
 
     } else if constexpr (std::is_same<T, Type::Optional>()) {
       return schema::Type{.value = schema::Type::AnyOf{

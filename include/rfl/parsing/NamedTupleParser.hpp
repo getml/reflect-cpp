@@ -60,6 +60,10 @@ struct NamedTupleParser {
 
   static constexpr size_t size_ = NamedTupleType::size();
 
+  static_assert(NamedTupleType::pos_extra_fields() == -1 || !_no_field_names,
+                "You cannot use the rfl::NoFieldNames processor if you are "
+                "including rfl::ExtraFields.");
+
  public:
   /// The way this works is that we allocate space on the stack in this size of
   /// the named tuple in which we then write the individual fields using
@@ -166,8 +170,8 @@ struct NamedTupleParser {
       SchemaType* _schema) noexcept {
     using F =
         std::tuple_element_t<_i, typename NamedTuple<FieldTypes...>::Fields>;
-    using U = typename F::Type;
-    if constexpr (!internal::is_skip_v<U>) {
+    using U = std::remove_cvref_t<typename F::Type>;
+    if constexpr (!internal::is_skip_v<U> && !internal::is_extra_fields_v<U>) {
       auto s = Parser<R, W, U, ProcessorsType>::to_schema(_definitions);
       if constexpr (_no_field_names) {
         _schema->types_.emplace_back(std::move(s));
@@ -189,6 +193,16 @@ struct NamedTupleParser {
                            SchemaType* _schema,
                            std::integer_sequence<int, _is...>) noexcept {
     (add_field_to_schema<_is>(_definitions, _schema), ...);
+
+    if constexpr (NamedTupleType::pos_extra_fields() != -1) {
+      using F =
+          std::tuple_element_t<NamedTupleType::pos_extra_fields(),
+                               typename NamedTuple<FieldTypes...>::Fields>;
+      using ExtraFieldsType = std::remove_cvref_t<typename F::Type>;
+      using U = std::remove_cvref_t<typename ExtraFieldsType::Type>;
+      _schema->additional_properties_ = std::make_shared<schema::Type>(
+          Parser<R, W, U, ProcessorsType>::to_schema(_definitions));
+    }
   }
 
   /// Generates error messages for when fields are missing.
