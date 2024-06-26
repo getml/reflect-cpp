@@ -42,12 +42,6 @@ class Generic {
   /// Returns the underlying object.
   const ReflectionType& get() const { return value_; }
 
-  /// Returns the underlying object.
-  ReflectionType& operator()() { return value_; }
-
-  /// Returns the underlying object.
-  const ReflectionType& operator()() const { return value_; }
-
   /// Assigns the underlying object.
   auto& operator=(const ReflectionType& _value) {
     value_ = _value;
