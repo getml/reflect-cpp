@@ -37,6 +37,7 @@ if(REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
     else()
         add_library(reflectcpp STATIC src/yyjson.c)
     endif()
+    set_source_files_properties(src/yyjson.c PROPERTIES LANGUAGE CXX)
 else()
     if (REFLECTCPP_BUILD_SHARED)
         add_library(reflectcpp SHARED)
@@ -60,7 +61,7 @@ endif()
 
 if (REFLECTCPP_BSON OR REFLECTCPP_BUILD_BENCHMARKS)
     find_package(bson-1.0 CONFIG REQUIRED)
-    target_link_libraries(reflectcpp PRIVATE $<IF:$<TARGET_EXISTS:mongo::bson_static>,mongo::bson_static,mongo::bson_shared>) 
+    target_link_libraries(reflectcpp PRIVATE $<IF:$<TARGET_EXISTS:mongo::bson_static>,mongo::bson_static,mongo::bson_shared>)
 endif ()
 
 if (REFLECTCPP_CBOR OR REFLECTCPP_BUILD_BENCHMARKS)
@@ -126,7 +127,7 @@ include(CMakePackageConfigHelpers)
 
 configure_package_config_file(reflectcpp-config.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/reflectcpp-config.cmake
-  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp  
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp
   )
 
 install(
@@ -138,17 +139,17 @@ file(GLOB_RECURSE RFL_HEADERS RELATIVE ${CMAKE_CURRENT_LIST_DIR} "${CMAKE_CURREN
 
 target_sources(reflectcpp
     PUBLIC
-    FILE_SET reflectcpp_headers    
+    FILE_SET reflectcpp_headers
     TYPE HEADERS
     BASE_DIRS $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
     FILES ${RFL_HEADERS})
-   
+
 install(
     TARGETS reflectcpp
     EXPORT reflectcpp-exports
     FILE_SET reflectcpp_headers DESTINATION ${INCLUDE_INSTALL_DIR}
     )
-    
+
 install(
     EXPORT reflectcpp-exports
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp

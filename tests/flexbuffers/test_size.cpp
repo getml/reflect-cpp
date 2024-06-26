@@ -1,6 +1,4 @@
-#include <iostream>
 #include <rfl.hpp>
-#include <source_location>
 #include <string>
 #include <vector>
 
@@ -17,7 +15,7 @@ struct Person {
       children;
 };
 
-TEST(flexbuf, test_size) { 
+TEST(flexbuf, test_size) {
   const auto bart = Person{
       .first_name = "Bart", .last_name = "Simpson", .birthday = "1987-04-19"};
 

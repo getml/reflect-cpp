@@ -1,10 +1,10 @@
 #ifndef RFL_LITERAL_HPP_
 #define RFL_LITERAL_HPP_
 
+#include <compare>
 #include <cstdint>
 #include <functional>
 #include <limits>
-#include <stdexcept>
 #include <string>
 #include <tuple>
 #include <type_traits>
@@ -12,7 +12,6 @@
 
 #include "Result.hpp"
 #include "internal/StringLiteral.hpp"
-#include "internal/VisitTree.hpp"
 #include "internal/no_duplicate_field_names.hpp"
 
 namespace rfl {
@@ -180,13 +179,35 @@ class Literal {
 
   /// <=> for strings.
   inline auto operator<=>(const std::string& _str) const {
+#if __cpp_lib_three_way_comparison >= 201907L
     return name() <=> _str;
+#else
+    auto const &const_name = name();
+    if (const_name < _str) {
+      return std::strong_ordering::less;
+    }
+    if (const_name == _str) {
+      return std::strong_ordering::equal;
+    }
+    return std::strong_ordering::greater;
+#endif
   }
 
   /// <=> for const char*.
   template <internal::StringLiteral... other_fields>
   inline auto operator<=>(const char* _str) const {
+#if __cpp_lib_three_way_comparison >= 201907L
     return name() <=> _str;
+#else
+    auto const &const_name = name();
+    if (const_name < _str) {
+      return std::strong_ordering::less;
+    }
+    if (const_name == _str) {
+      return std::strong_ordering::equal;
+    }
+    return std::strong_ordering::greater;
+#endif
   }
 
   /// Equality operator.

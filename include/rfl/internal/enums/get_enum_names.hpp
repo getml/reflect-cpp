@@ -2,8 +2,11 @@
 #define RFL_INTERNAL_ENUMS_GET_ENUM_NAMES_HPP_
 
 #include <limits>
-#include <source_location>
 #include <type_traits>
+
+#if __has_include(<source_location>)
+#include <source_location>
+#endif
 
 #include "../../Literal.hpp"
 #include "../../define_literal.hpp"
@@ -43,11 +46,11 @@ template <auto e>
 consteval auto get_enum_name_str_view() {
   // Unfortunately, we cannot avoid the use of a compiler-specific macro for
   // Clang on Windows. For all other compilers, function_name works as intended.
-#if defined(__clang__) && defined(_MSC_VER)
-  const auto func_name = std::string_view{__PRETTY_FUNCTION__};
-#else
+#if __cpp_lib_source_location >= 201907L
   const auto func_name =
       std::string_view{std::source_location::current().function_name()};
+#else
+  const auto func_name = std::string_view{__PRETTY_FUNCTION__};
 #endif
 #if defined(__clang__)
   const auto split = func_name.substr(0, func_name.size() - 1);

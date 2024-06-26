@@ -1,10 +1,7 @@
 #include <cassert>
-#include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
-#include <source_location>
 #include <string>
-#include <vector>
 
 #include "write_and_read.hpp"
 
@@ -27,7 +24,6 @@ struct C {
 };
 
 TEST(json, test_as) {
-
   auto a = A{.f1 = "Hello", .f2 = rfl::make_box<std::string>("World")};
 
   auto b = B{.f3 = "Hello", .f4 = rfl::make_box<std::string>("World")};

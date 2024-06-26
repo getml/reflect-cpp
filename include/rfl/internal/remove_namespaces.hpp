@@ -1,7 +1,6 @@
 #ifndef RFL_INTERNAL_REMOVE_NAMESPACES_HPP_
 #define RFL_INTERNAL_REMOVE_NAMESPACES_HPP_
 
-#include <source_location>
 #include <string_view>
 #include <utility>
 
