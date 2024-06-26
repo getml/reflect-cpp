@@ -39,7 +39,7 @@ maggie["last_name"] = "Simpson";
 maggie["age"] = 0;
 
 auto homer = rfl::Generic::Object();
-homer["first_name"] = "Lisa";
+homer["first_name"] = "Homer";
 homer["last_name"] = "Simpson";
 homer["age"] = 45;
 homer["children"] = rfl::Generic::Array({bart, lisa, maggie});
@@ -48,7 +48,7 @@ homer["children"] = rfl::Generic::Array({bart, lisa, maggie});
 The resulting JSON strings looks as follows:
 
 ```json
-{"first_name":"Lisa","last_name":"Simpson","age":45,"children":[{"first_name":"Bart","last_name":"Simpson","age":10},{"first_name":"Lisa","last_name":"Simpson","age":8},{"first_name":"Lisa","last_name":"Simpson","age":0}]}
+{"first_name":"Homer","last_name":"Simpson","age":45,"children":[{"first_name":"Bart","last_name":"Simpson","age":10},{"first_name":"Lisa","last_name":"Simpson","age":8},{"first_name":"Lisa","last_name":"Simpson","age":0}]}
 ```
 
 `rfl::Generic` contains some convenience methods that allow you to handle parsed data:
