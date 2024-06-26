@@ -3,7 +3,7 @@
 
 #include <utility>
 
-#include "rfl/internal/StringLiteral.hpp"
+#include "StringLiteral.hpp"
 
 #if __has_include(<source_location>)
 #include <source_location>
