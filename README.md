@@ -313,6 +313,30 @@ This results in the following JSON string:
 
 Other forms of tagging are supported as well. Refer to the [documentation](https://github.com/getml/reflect-cpp/tree/main/docs) for details.
 
+## Extra fields
+
+If you don't know all of your fields at compile time, no problem. Just use `rfl::ExtraFields`:
+
+```cpp
+struct Person {
+  std::string first_name;
+  std::string last_name = "Simpson";
+  rfl::ExtraFields<rfl::Generic> extra_fields;
+};
+
+auto homer = Person{.first_name = "Homer"};
+
+homer.extra_fields["age"] = 45;
+homer.extra_fields["email"] = "homer@simpson.com";
+homer.extra_fields["town"] = "Springfield";
+```
+
+This results in the following JSON string:
+
+```json
+{"firstName":"Homer","lastName":"Simpson","age":45,"email":"homer@simpson.com","town":"Springfield"}
+```
+
 ## Reflective programming
 
 Beyond serialization and deserialization, reflect-cpp also supports reflective programming in general.
@@ -445,8 +469,10 @@ reflect-cpp supports the following containers from the C++ standard library:
 In addition, it supports the following custom containers:
 
 - `rfl::Box`: Similar to `std::unique_ptr`, but (almost) guaranteed to never be null.
+- `rfl::Generic`: A catch-all type that can represent (almost) anything.
 - `rfl::Literal`: An explicitly enumerated string.
 - `rfl::NamedTuple`: Similar to `std::tuple`, but with named fields that can be retrieved via their name at compile time.
+- `rfl::Object`: A map-like type representing a object with field names that are unknown at compile time.
 - `rfl::Ref`: Similar to `std::shared_ptr`, but (almost) guaranteed to never be null.
 - `rfl::Result`: Allows for exception-free programming.
 - `rfl::TaggedUnion`: Similar to `std::variant`, but with explicit tags that make parsing more efficient.

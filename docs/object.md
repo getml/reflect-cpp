@@ -47,8 +47,19 @@ This results in the following JSON string:
 {"first_name":"Bart","last_name":"Simpson","town":"Springfield","first_name":"Lisa"}
 ```
 
+There are three different ways of inserting fields:
+
+- `operator[...]` creates a new field, if a field of this name doesn't already exist, and then assigns it.
+- `.insert(...)` inserts a new field at the end, potentially creating duplicate field names. Much like `std::map`, it supports several types of inputs:
+    - `.insert(std::pair(key, value))`
+    - `.insert(key, value)`
+    - `.insert(begin, end)`, where `begin` and `end` are iterators of a container of key-value-pairs
+- `.emplace(...)` is an alias for `.insert` that exists primarily for reasons of compatability with standard containers.
+
 There are three different ways of accessing fields:
 
 - `operator[...]` creates a new field, if a field of this name doesn't already exist.
 - `.at(...)` throws an exception, if field of this name doesn't exist.
 - `.get(...)` returns an `rfl::Result` wrapping the field, or an `rfl::Error` if the field doesn't exist.
+
+Note that it is most efficient, if you access fields in the order that they were placed.
