@@ -1,8 +1,5 @@
-#include <iostream>
 #include <rfl.hpp>
-#include <source_location>
 #include <string>
-#include <vector>
 
 #include "write_and_read.hpp"
 
@@ -14,7 +11,7 @@ struct Person {
   std::unique_ptr<std::set<std::string>> children;
 };
 
-TEST(flexbuf, test_set) { 
+TEST(flexbuf, test_set) {
   auto children = std::make_unique<std::set<std::string>>(
       std::set<std::string>({"Bart", "Lisa", "Maggie"}));
 

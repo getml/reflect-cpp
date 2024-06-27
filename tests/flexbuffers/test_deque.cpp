@@ -1,8 +1,5 @@
-#include <iostream>
 #include <rfl.hpp>
-#include <source_location>
 #include <string>
-#include <vector>
 
 #include "write_and_read.hpp"
 
@@ -24,6 +21,5 @@ TEST(flexbuf, test_default_values) {
       Person{.first_name = "Homer", .children = std::move(children)};
 
   write_and_read(homer);
-
 }
 }  // namespace test_deque

@@ -1,10 +1,7 @@
 #ifndef RFL_VALIDATOR_HPP_
 #define RFL_VALIDATOR_HPP_
 
-#include <concepts>
 #include <functional>
-#include <optional>
-#include <regex>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -12,12 +9,11 @@
 #include "AllOf.hpp"
 #include "Result.hpp"
 #include "internal/HasValidation.hpp"
-#include "internal/StringLiteral.hpp"
 
 namespace rfl {
 
 template <class T, class V, class... Vs>
-requires internal::HasValidation<AllOf<V, Vs...>, T>
+  requires internal::HasValidation<AllOf<V, Vs...>, T>
 struct Validator {
  public:
   using ReflectionType = T;
@@ -114,7 +110,17 @@ struct Validator {
 template <class T, class V, class... Vs>
 inline auto operator<=>(const Validator<T, V, Vs...>& _v1,
                         const Validator<T, V, Vs...>& _v2) {
+#if __cpp_lib_three_way_comparison >= 201907L
   return _v1.value() <=> _v2.value();
+#else
+  if (_v1.value() < _v2.value()) {
+    return std::strong_ordering::less;
+  } else if (_v1.value() > _v2.value()) {
+    return std::strong_ordering::greater;
+  } else {
+    return std::strong_ordering::equal;
+  }
+#endif
 }
 
 template <class T, class V, class... Vs>

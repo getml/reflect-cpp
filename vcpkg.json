@@ -33,7 +33,7 @@
     },
     {
       "name": "simdjson",
-      "version>=": "3.6.2"
+      "version>=": "3.9.3"
     },
     {
       "name": "tinycbor",
@@ -68,9 +68,9 @@
     }
   ],
   "overrides": [
-     {
-        "name": "yyjson", 
-        "version": "0.8.0"
-     }
+    {
+      "name": "yyjson",
+      "version": "0.8.0"
+    }
   ]
 }

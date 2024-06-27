@@ -1,18 +1,15 @@
 #ifndef RFL_INTERNAL_GETFIELDNAMES_HPP_
 #define RFL_INTERNAL_GETFIELDNAMES_HPP_
 
-#include <array>
-#include <iostream>
-#include <memory>
-#include <source_location>
-#include <string>
-#include <tuple>
 #include <type_traits>
 #include <utility>
 
+#if __has_include(<source_location>)
+#include <source_location>
+#endif
+
 #include "../Literal.hpp"
 #include "bind_fake_object_to_tuple.hpp"
-#include "get_fake_object.hpp"
 #include "is_flatten_field.hpp"
 #include "is_rename.hpp"
 #include "num_fields.hpp"
@@ -44,11 +41,11 @@ template <class T, auto ptr>
 consteval auto get_field_name_str_view() {
   // Unfortunately, we cannot avoid the use of a compiler-specific macro for
   // Clang on Windows. For all other compilers, function_name works as intended.
-#if defined(__clang__) && defined(_MSC_VER)
-  const auto func_name = std::string_view{__PRETTY_FUNCTION__};
-#else
+#if __cpp_lib_source_location >= 201907L
   const auto func_name =
       std::string_view{std::source_location::current().function_name()};
+#else
+  const auto func_name = std::string_view{__PRETTY_FUNCTION__};
 #endif
 #if defined(__clang__)
   const auto split = func_name.substr(0, func_name.size() - 2);

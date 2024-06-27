@@ -17,7 +17,7 @@ inline auto visit(const Visitor& _visitor, const Literal<_fields...> _literal,
                   const Args&... _args) {
     constexpr int size = sizeof...(_fields);
     using WrapperType = internal::VisitorWrapper<Visitor, _fields...>;
-    const auto wrapper = WrapperType(&_visitor);
+    const auto wrapper = WrapperType{&_visitor};
     return internal::VisitTree::visit<0, size, WrapperType>(
         wrapper, _literal.value(), _args...);
 }

@@ -21,7 +21,7 @@ struct StdArrayType<T[_n]> {
 };
 
 template <class T>
-using to_std_array_t = StdArrayType<T>::Type;
+using to_std_array_t = typename StdArrayType<T>::Type;
 
 template <class T>
 auto to_std_array(T&& _t) {
