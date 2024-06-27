@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <map>
+#include <memory>
 #include <string>
 #include <variant>
 #include <vector>
@@ -51,6 +52,7 @@ struct Type {
 
   struct Object {
     std::map<std::string, Type> types_;
+    std::shared_ptr<Type> additional_properties_;
   };
 
   /// All values are assumed to be required unless explicitly stated otherwise

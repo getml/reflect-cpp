@@ -88,6 +88,7 @@ struct Type {
     std::optional<std::string> description;
     std::map<std::string, Type> properties;
     std::vector<std::string> required;
+    std::shared_ptr<Type> additionalProperties;
   };
 
   struct OneOf {

@@ -73,6 +73,31 @@ class ViewReader {
     }
   }
 
+  template <int _pos>
+  static void assign_to_extra_fields(const R& _r,
+                                     const std::string_view& _current_name,
+                                     const auto& _var, auto* _view,
+                                     auto* _errors, auto* _found, auto* _set) {
+    auto* extra_fields = _view->template get<_pos>();
+    using ExtraFieldsType =
+        std::remove_cvref_t<std::remove_pointer_t<decltype(extra_fields)>>;
+    using T = std::remove_cvref_t<
+        std::remove_pointer_t<typename ExtraFieldsType::Type>>;
+    if (!std::get<_pos>(*_set)) {
+      ::new (extra_fields) ExtraFieldsType();
+      std::get<_pos>(*_set) = true;
+      std::get<_pos>(*_found) = true;
+    }
+    auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
+    if (!res) {
+      _errors->emplace_back(Error("Failed to parse field '" +
+                                  std::string(_current_name) +
+                                  "': " + std::move(res.error()->what())));
+      return;
+    }
+    extra_fields->emplace(std::string(_current_name), std::move(*res));
+  }
+
   template <int... is>
   static void assign_to_matching_field(const R& _r,
                                        const std::string_view& _current_name,
@@ -80,9 +105,18 @@ class ViewReader {
                                        auto* _errors, auto* _found, auto* _set,
                                        std::integer_sequence<int, is...>) {
     bool already_assigned = false;
+
     (assign_if_field_matches<is>(_r, _current_name, _var, _view, _errors,
                                  _found, _set, &already_assigned),
      ...);
+
+    if constexpr (ViewType::pos_extra_fields() != -1) {
+      constexpr int pos = ViewType::pos_extra_fields();
+      if (!already_assigned) {
+        assign_to_extra_fields<pos>(_r, _current_name, _var, _view, _errors,
+                                    _found, _set);
+      }
+    }
   }
 
   template <class T>

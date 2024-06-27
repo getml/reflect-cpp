@@ -140,8 +140,7 @@ struct Parser {
       return make_validated<U>(_definitions);
 
     } else if constexpr (internal::has_reflection_type_v<U>) {
-      return Parser<R, W, typename U::ReflectionType,
-                    ProcessorsType>::to_schema(_definitions);
+      return make_reference<U>(_definitions);
 
     } else {
       static_assert(rfl::always_false_v<U>, "Unsupported type.");
@@ -181,9 +180,16 @@ struct Parser {
     if (_definitions->find(name) == _definitions->end()) {
       (*_definitions)[name] =
           Type{Type::Integer{}};  // Placeholder to avoid infinite loop.
-      using NamedTupleType = internal::processed_t<U, ProcessorsType>;
-      (*_definitions)[name] =
-          Parser<R, W, NamedTupleType, ProcessorsType>::to_schema(_definitions);
+      if constexpr (internal::has_reflection_type_v<U>) {
+        (*_definitions)[name] =
+            Parser<R, W, typename U::ReflectionType, ProcessorsType>::to_schema(
+                _definitions);
+      } else {
+        using NamedTupleType = internal::processed_t<U, ProcessorsType>;
+        (*_definitions)[name] =
+            Parser<R, W, NamedTupleType, ProcessorsType>::to_schema(
+                _definitions);
+      }
     }
     return Type{Type::Reference{name}};
   }
