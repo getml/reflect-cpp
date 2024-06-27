@@ -3,7 +3,6 @@
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
-#include <source_location>
 #include <tuple>
 
 namespace test_inheritance {
