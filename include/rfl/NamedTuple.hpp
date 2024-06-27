@@ -292,13 +292,7 @@ class NamedTuple {
     if constexpr (pos_extra_fields() == -1) {
       return size();
     } else {
-      const auto& extra_fields = get<pos_extra_fields()>();
-      if constexpr (std::is_pointer_v<
-                        std::remove_cvref_t<decltype(extra_fields)>>) {
-        return size() + extra_fields->size() - 1;
-      } else {
-        return size() + extra_fields.size() - 1;
-      }
+      return calc_num_fields<pos_extra_fields()>();
     }
   }
 
@@ -430,6 +424,18 @@ class NamedTuple {
       return this->add(std::forward<TupContent>(_fields)...);
     };
     return std::apply(a, std::forward<std::tuple<TupContent...>>(_tuple));
+  }
+
+  /// Unfortunately, MSVC forces us to do this...
+  template <int _pos>
+  size_t calc_num_fields() const {
+    const auto& extra_fields = get<_pos>();
+    if constexpr (std::is_pointer_v<
+                      std::remove_cvref_t<decltype(extra_fields)>>) {
+      return size() + extra_fields->size() - 1;
+    } else {
+      return size() + extra_fields.size() - 1;
+    }
   }
 
   /// Finds the position of the extra fields, or -1 if there aren't any.
