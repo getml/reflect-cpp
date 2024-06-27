@@ -124,15 +124,22 @@ class Object {
   }
 
   /// Inserts a new element at the end.
-  void emplace(std::string&& _k, T&& _v) {
-    data_.emplace_back(std::make_pair(std::move(_k), std::move(_v)));
-    it_ = data_.begin();
+  void insert(std::string&& _k, T&& _v) {
+    insert(std::make_pair(std::move(_k), std::move(_v)));
   }
 
-  /// Inserts a new element at the end.
-  void emplace(std::pair<std::string, T>&& _value) {
-    data_.emplace_back(std::move(_value));
-    it_ = data_.begin();
+  /// Alias for insert that primarily exists for compatability with standard
+  /// containers.
+  template <class... Args>
+  void emplace(Args&&... _args) {
+    insert(std::forward<Args>(_args)...);
+  }
+
+  /// Alias for insert that primarily exists for compatability with standard
+  /// containers.
+  template <class... Args>
+  void emplace(const Args&... _args) {
+    insert(_args...);
   }
 
   /// Returns the element signified by the key or creates a new one.
