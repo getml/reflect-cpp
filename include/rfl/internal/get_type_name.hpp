@@ -14,11 +14,13 @@ namespace internal {
 
 template <class T>
 consteval auto get_type_name_str_view() {
-  // Unfortunately, we cannot avoid the use of a compiler-specific macro for
-  // Clang on Windows. For all other compilers, function_name works as intended.
 #if __cpp_lib_source_location >= 201907L
   const auto func_name =
       std::string_view{std::source_location::current().function_name()};
+#elif defined(_MSC_VER)
+  // Officially, we only support MSVC versions that are modern enough to contain
+  // <source_location>, but inofficially, this might work.
+  const auto func_name = std::string_view{__FUNCSIG__};
 #else
   const auto func_name = std::string_view{__PRETTY_FUNCTION__};
 #endif
