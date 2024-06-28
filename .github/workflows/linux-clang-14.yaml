@@ -1,6 +1,6 @@
 name: linux-clang-14 
 
-on: [ pull_request ]
+on: [ push ]
 
 jobs:
   linux-clang:
