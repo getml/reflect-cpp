@@ -1,7 +1,7 @@
 #ifndef RFL_JSON_READ_HPP_
 #define RFL_JSON_READ_HPP_
 
-#ifdef REFLECTCPP_NO_BUNDLED_DEPENDENCIES
+#if __has_include(<yyjson.h>)
 #include <yyjson.h>
 #else
 #include "../thirdparty/yyjson.h"

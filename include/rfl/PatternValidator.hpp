@@ -3,7 +3,7 @@
 
 #include <string>
 
-#ifdef REFLECTCPP_NO_BUNDLED_DEPENDENCIES
+#if __has_include(<ctre.h>)
 #include <ctre.hpp>
 #else
 #include "thirdparty/ctre.hpp"

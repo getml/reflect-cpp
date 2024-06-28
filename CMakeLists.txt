@@ -56,8 +56,7 @@ if(REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
     target_include_directories(
         reflectcpp PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rfl/thirdparty>)
+        $<INSTALL_INTERFACE:include>)
 else()
     add_library(reflectcpp INTERFACE)
 
@@ -66,7 +65,6 @@ else()
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include> )
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DREFLECTCPP_NO_BUNDLED_DEPENDENCIES")
     target_compile_features(reflectcpp INTERFACE cxx_std_20)
 
     find_package(ctre CONFIG REQUIRED)
