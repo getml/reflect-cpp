@@ -516,7 +516,7 @@ if you choose to use a different format supported by reflect-cpp, such as msgpac
 
 The following compilers are supported:
 - GCC 11.4 or higher
-- Clang 16.0 or higher
+- Clang 14.0 or higher
 - MSVC 17.8 (19.38) or higher
 
 ### Option 1: Header-only
