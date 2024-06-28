@@ -1,4 +1,4 @@
-name: linux-clang 
+name: linux-clang-14 
 
 on: [ pull_request ]
 
@@ -15,11 +15,11 @@ jobs:
         uses: lukka/run-vcpkg@v11
       - uses: KyleMayes/install-llvm-action@v1
         with:
-          version: "16"
+          version: "14"
       - name: link clang lib
         run: |
-          sudo mkdir -p /usr/lib/llvm-16/lib
-          sudo ln -s clang /usr/lib/llvm-16/lib/clang
+          sudo mkdir -p /usr/lib/llvm-14/lib
+          sudo ln -s clang /usr/lib/llvm-14/lib/clang
         working-directory: ${{ env.LLVM_PATH }}/lib
       - name: Compile 
         env:
