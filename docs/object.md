@@ -1,6 +1,6 @@
 # `rfl::Object` 
 
-`rfl::Object<...>` behaves similarly to `rfl::map<std::string, ...>` and `rfl::unordered_map<std::string, ...>`.
+`rfl::Object<...>` behaves similarly to `std::map<std::string, ...>` and `std::unordered_map<std::string, ...>`.
 
 It will be represented in JSON or other formats as an object:
 
