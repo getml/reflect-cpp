@@ -56,3 +56,20 @@ In summary, it is fair to say that reflect-cpp is among the fastest JSON librari
 - TOML and YAML are very slow when compared to the other formats. To be fair, these formats emphasize readability rather than speed.
 
 In summary, if you are looking for a format that emphasizes speed, msgpack is probably your best bet. Not only does it perform very well on our benchmarks, but there are also many high-quality implementations in other languages. If you are looking for a good trade-off between speed and readability, you should probably just stick with JSON.
+
+The benchmarks depicted below were conducted using gcc 11.4 on Ubuntu 22.4.
+
+- **Canada** - dataset that is heavy on floats, few field names.
+
+![image](img/canada_read.png)
+![image](img/canada_write.png)
+
+- **Licenses** - dataset that is nested, many strings.
+
+![image](img/licenses_read.png)
+![image](img/licenses_write.png)
+
+- **Person** - very small dataset.
+
+![image](img/person_read.png)
+![image](img/person_write.png)
