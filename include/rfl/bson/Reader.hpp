@@ -5,6 +5,7 @@
 
 #include <array>
 #include <concepts>
+#include <cstddef>
 #include <exception>
 #include <map>
 #include <memory>
@@ -18,6 +19,7 @@
 #include <vector>
 
 #include "../Box.hpp"
+#include "../Bytestring.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
 
@@ -108,6 +110,19 @@ struct Reader {
           return rfl::Error(
               "Could not cast to string. The type must be UTF8 or symbol.");
       }
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      if (btype != BSON_TYPE_BIN) {
+        return rfl::Error("Could not cast to bytestring.");
+      }
+      if (value.v_binary.subtype != BSON_SUBTYPE_BINARY) {
+        return rfl::Error(
+            "The BSON subtype must be a binary in order to read into a "
+            "bytestring.");
+      }
+      return rfl::Bytestring(
+          reinterpret_cast<const std::byte*>(value.v_binary.data),
+          value.v_binary.data_len);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (btype != BSON_TYPE_BOOL) {
         return rfl::Error("Could not cast to boolean.");
