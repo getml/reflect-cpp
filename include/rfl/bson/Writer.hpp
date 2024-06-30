@@ -3,6 +3,7 @@
 
 #include <bson/bson.h>
 
+#include <cstddef>
 #include <exception>
 #include <map>
 #include <sstream>
@@ -14,6 +15,7 @@
 #include <vector>
 
 #include "../Box.hpp"
+#include "../Bytestring.hpp"
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
@@ -125,6 +127,12 @@ class Writer {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       bson_array_builder_append_utf8(_parent->val_, _var.c_str(),
                                      static_cast<int>(_var.size()));
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      bson_array_builder_append_binary(
+          _parent->val_, BSON_SUBTYPE_BINARY,
+          reinterpret_cast<const uint8_t*>(_var.c_str()),
+          static_cast<uint32_t>(_var.size()));
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       bson_array_builder_append_bool(_parent->val_, _var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
@@ -149,6 +157,12 @@ class Writer {
       bson_append_utf8(_parent->val_, _name.data(),
                        static_cast<int>(_name.size()), _var.c_str(),
                        static_cast<int>(_var.size()));
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      bson_append_binary(_parent->val_, _name.data(),
+                         static_cast<int>(_name.size()), BSON_SUBTYPE_BINARY,
+                         reinterpret_cast<const uint8_t*>(_var.c_str()),
+                         static_cast<uint32_t>(_var.size()));
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       bson_append_bool(_parent->val_, _name.data(),
                        static_cast<int>(_name.size()), _var);

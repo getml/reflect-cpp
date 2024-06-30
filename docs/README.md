@@ -32,6 +32,8 @@
 
 1.14) [C arrays and inheritance](https://github.com/getml/reflect-cpp/blob/main/docs/c_arrays_and_inheritance.md) - Describes how reflect-cpp handles C arrays and inheritance. 
 
+1.15) [rfl::Bytestring](https://github.com/getml/reflect-cpp/blob/main/docs/bytestring.md) - Describes how reflect-cpp handles binary strings for formats that support them. 
+
 ## 2) Validation
 
 2.1) [Regex patterns](https://github.com/getml/reflect-cpp/blob/main/docs/patterns.md) - For requiring that strings follow used-defined regex patterns.

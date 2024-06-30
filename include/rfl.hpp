@@ -12,6 +12,7 @@
 #include "rfl/AnyOf.hpp"
 #include "rfl/Attribute.hpp"
 #include "rfl/Box.hpp"
+#include "rfl/Bytestring.hpp"
 #include "rfl/Description.hpp"
 #include "rfl/ExtraFields.hpp"
 #include "rfl/Field.hpp"

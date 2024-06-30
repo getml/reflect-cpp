@@ -125,18 +125,22 @@ class Writer {
 
   template <class T>
   OutputVarType new_value(const T& _var) const noexcept {
-    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
+    using Type = std::remove_cvref_t<T>;
+    if constexpr (std::is_same<Type, std::string>()) {
       msgpack_pack_str(pk_, _var.size());
       msgpack_pack_str_body(pk_, _var.c_str(), _var.size());
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
+    } else if constexpr (std::is_same<Type, rfl::Bytestring>()) {
+      msgpack_pack_bin(pk_, _var.size());
+      msgpack_pack_bin_body(pk_, _var.c_str(), _var.size());
+    } else if constexpr (std::is_same<Type, bool>()) {
       if (_var) {
         msgpack_pack_true(pk_);
       } else {
         msgpack_pack_false(pk_);
       }
-    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
+    } else if constexpr (std::is_floating_point<Type>()) {
       msgpack_pack_double(pk_, static_cast<double>(_var));
-    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
+    } else if constexpr (std::is_integral<Type>()) {
       msgpack_pack_int64(pk_, static_cast<std::int64_t>(_var));
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");

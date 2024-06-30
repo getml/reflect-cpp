@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "../Box.hpp"
+#include "../Bytestring.hpp"
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
@@ -138,6 +139,10 @@ class Writer {
   OutputVarType new_value(const T& _var, CborEncoder* _parent) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       cbor_encode_text_string(_parent, _var.c_str(), _var.size());
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      cbor_encode_byte_string(
+          _parent, reinterpret_cast<const uint8_t*>(_var.c_str()), _var.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       cbor_encode_boolean(_parent, _var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
