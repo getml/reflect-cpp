@@ -56,7 +56,8 @@ if(REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
     target_include_directories(
         reflectcpp PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>)
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rfl/thirdparty>)
 else()
     add_library(reflectcpp INTERFACE)
 
