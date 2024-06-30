@@ -190,19 +190,19 @@ static rfl::Result<FeatureCollection> read_using_rapidjson(
 // ----------------------------------------------------------------------------
 // simdjson
 
-std::vector<std::vector<std::tuple<double, double>>> simdjson_to_coordinates(
+simdjson_inline std::vector<std::vector<std::tuple<double, double>>> simdjson_to_coordinates(
     simdjson::ondemand::array _val);
 
-Property simdjson_to_property(simdjson::ondemand::object _val);
+simdjson_inline Property simdjson_to_property(simdjson::ondemand::object _val);
 
-Geometry simdjson_to_geometry(simdjson::ondemand::object _val);
+simdjson_inline Geometry simdjson_to_geometry(simdjson::ondemand::object _val);
 
-Feature simdjson_to_feature(simdjson::ondemand::object _val);
+simdjson_inline Feature simdjson_to_feature(simdjson::ondemand::object _val);
 
-FeatureCollection simdjson_to_feature_collection(
+simdjson_inline FeatureCollection simdjson_to_feature_collection(
     simdjson::ondemand::object _val);
 
-std::vector<std::vector<std::tuple<double, double>>> simdjson_to_coordinates(
+simdjson_inline std::vector<std::vector<std::tuple<double, double>>> simdjson_to_coordinates(
     simdjson::ondemand::array _val) {
   std::vector<std::vector<std::tuple<double, double>>> coordinates;
   for (auto arr1 : _val) {
@@ -219,13 +219,13 @@ std::vector<std::vector<std::tuple<double, double>>> simdjson_to_coordinates(
   return coordinates;
 }
 
-Property simdjson_to_property(simdjson::ondemand::object _val) {
+simdjson_inline Property simdjson_to_property(simdjson::ondemand::object _val) {
   Property property;
   property.name = _val["name"].get_string().value();
   return property;
 }
 
-Geometry simdjson_to_geometry(simdjson::ondemand::object _val) {
+simdjson_inline Geometry simdjson_to_geometry(simdjson::ondemand::object _val) {
   Geometry geometry;
   geometry.type = std::string(_val["type"].get_string().value());
   geometry.coordinates =
@@ -233,7 +233,7 @@ Geometry simdjson_to_geometry(simdjson::ondemand::object _val) {
   return geometry;
 }
 
-Feature simdjson_to_feature(simdjson::ondemand::object _val) {
+simdjson_inline Feature simdjson_to_feature(simdjson::ondemand::object _val) {
   Feature feature;
   feature.type = std::string(_val["type"].get_string().value());
   feature.properties = simdjson_to_property(_val["properties"].get_object());
@@ -241,7 +241,7 @@ Feature simdjson_to_feature(simdjson::ondemand::object _val) {
   return feature;
 }
 
-FeatureCollection simdjson_to_feature_collection(
+simdjson_inline FeatureCollection simdjson_to_feature_collection(
     simdjson::ondemand::object _val) {
   FeatureCollection feature_collection;
   feature_collection.type = std::string(_val["type"].get_string().value());
