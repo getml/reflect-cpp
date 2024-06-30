@@ -208,11 +208,12 @@ simdjson_inline std::vector<std::vector<std::tuple<double, double>>> simdjson_to
   for (auto arr1 : _val) {
     std::vector<std::tuple<double, double>> vec;
     for (auto val2 : arr1.get_array()) {
-      auto arr2 = val2.get_array();
-      std::tuple<double, double> tup;
-      std::get<0>(tup) = arr2.at(0).get_double();
-      std::get<1>(tup) = arr2.at(1).get_double();
-      vec.emplace_back(std::move(tup));
+      // Instead of indexing x = val2[0] and y = val2[1], we iterate through the two values.
+      auto coord = val2.begin();
+      double x = *coord;
+      ++coord;
+      double y = *coord;
+      vec.emplace_back(x, y);
     }
     coordinates.emplace_back(std::move(vec));
   }
