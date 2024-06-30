@@ -207,7 +207,7 @@ simdjson_inline std::vector<std::vector<std::tuple<double, double>>> simdjson_to
   std::vector<std::vector<std::tuple<double, double>>> coordinates;
   for (auto arr1 : _val) {
     std::vector<std::tuple<double, double>> vec;
-    for (auto val2 : arr1.get_array()) {
+    for (auto val2 : arr1) {
       // Instead of indexing x = val2[0] and y = val2[1], we iterate through the two values.
       auto coord = val2.begin();
       double x = *coord;
@@ -229,16 +229,15 @@ simdjson_inline Property simdjson_to_property(simdjson::ondemand::object _val) {
 simdjson_inline Geometry simdjson_to_geometry(simdjson::ondemand::object _val) {
   Geometry geometry;
   geometry.type = std::string(_val["type"].get_string().value());
-  geometry.coordinates =
-      simdjson_to_coordinates(_val["coordinates"].get_array());
+  geometry.coordinates = simdjson_to_coordinates(_val["coordinates"]);
   return geometry;
 }
 
 simdjson_inline Feature simdjson_to_feature(simdjson::ondemand::object _val) {
   Feature feature;
   feature.type = std::string(_val["type"].get_string().value());
-  feature.properties = simdjson_to_property(_val["properties"].get_object());
-  feature.geometry = simdjson_to_geometry(_val["geometry"].get_object());
+  feature.properties = simdjson_to_property(_val["properties"]);
+  feature.geometry = simdjson_to_geometry(_val["geometry"]);
   return feature;
 }
 
@@ -257,8 +256,8 @@ static rfl::Result<FeatureCollection> read_using_simdjson(
   try {
     simdjson::ondemand::parser parser;
     auto padded_str = simdjson::padded_string(_json_string);
-    auto doc = parser.iterate(padded_str).value();
-    return simdjson_to_feature_collection(doc.get_object());
+    auto doc = parser.iterate(padded_str);
+    return simdjson_to_feature_collection(doc);
   } catch (std::exception &e) {
     return rfl::Error(e.what());
   }
