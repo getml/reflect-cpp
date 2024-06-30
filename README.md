@@ -469,6 +469,7 @@ reflect-cpp supports the following containers from the C++ standard library:
 In addition, it supports the following custom containers:
 
 - `rfl::Box`: Similar to `std::unique_ptr`, but (almost) guaranteed to never be null.
+- `rfl::Bytestring`: An alias for `std::basic_string<std::byte>`. Supported by BSON, CBOR, flexbuffers and msgpack. 
 - `rfl::Generic`: A catch-all type that can represent (almost) anything.
 - `rfl::Literal`: An explicitly enumerated string.
 - `rfl::NamedTuple`: Similar to `std::tuple`, but with named fields that can be retrieved via their name at compile time.
