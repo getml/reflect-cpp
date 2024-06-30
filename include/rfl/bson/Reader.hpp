@@ -112,7 +112,7 @@ struct Reader {
       }
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
-      if (btype != BSON_TYPE_BIN) {
+      if (btype != BSON_TYPE_BINARY) {
         return rfl::Error("Could not cast to bytestring.");
       }
       if (value.v_binary.subtype != BSON_SUBTYPE_BINARY) {
