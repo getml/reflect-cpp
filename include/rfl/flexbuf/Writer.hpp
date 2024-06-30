@@ -3,6 +3,7 @@
 
 #include <flatbuffers/flexbuffers.h>
 
+#include <cstddef>
 #include <exception>
 #include <functional>
 #include <map>
@@ -14,6 +15,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "../Bytestring.hpp"
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
@@ -118,6 +120,9 @@ struct Writer {
                              const T& _var) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       fbb_->String(_name.data(), _var);
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      fbb_->Blob(_name.data(), _var.c_str(), _var.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       fbb_->Bool(_name.data(), _var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
@@ -134,6 +139,9 @@ struct Writer {
   OutputVarType insert_value(const T& _var) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       fbb_->String(_var);
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      fbb_->Blob(_var.c_str(), _var.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       fbb_->Bool(_var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {

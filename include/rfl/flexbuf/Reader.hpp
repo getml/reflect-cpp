@@ -3,6 +3,7 @@
 
 #include <flatbuffers/flexbuffers.h>
 
+#include <cstddef>
 #include <exception>
 #include <map>
 #include <sstream>
@@ -12,6 +13,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "../Bytestring.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
 
@@ -69,9 +71,17 @@ struct Reader {
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       if (!_var.IsString()) {
-        return rfl::Error("Could not cast to string.");
+        return rfl::Error("Could not cast to a string.");
       }
       return std::string(_var.AsString().c_str());
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      if (!_var.IsBlob()) {
+        return rfl::Error("Could not cast to a bytestring.");
+      }
+      const auto blob = _var.AsBlob();
+      return rfl::Bytestring(reinterpret_cast<const std::byte*>(blob.data()),
+                             blob.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var.IsBool()) {
         return rfl::Error("Could not cast to boolean.");
