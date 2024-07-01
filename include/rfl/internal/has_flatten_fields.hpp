@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "is_flatten_field.hpp"
+#include "nth_tuple_element_t.hpp"
 
 namespace rfl {
 namespace internal {
@@ -15,7 +16,7 @@ constexpr bool has_flatten_fields() {
   if constexpr (_i == std::tuple_size_v<TupleType>) {
     return false;
   } else {
-    using T = std::remove_cvref_t<std::tuple_element_t<_i, TupleType>>;
+    using T = std::remove_cvref_t<nth_tuple_element_t<_i, TupleType>>;
     return is_flatten_field_v<T> || has_flatten_fields<TupleType, _i + 1>();
   }
 }

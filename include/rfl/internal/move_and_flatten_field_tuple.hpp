@@ -5,6 +5,7 @@
 
 #include "is_flatten_field.hpp"
 #include "move_to_field_tuple.hpp"
+#include "nth_tuple_element_t.hpp"
 
 namespace rfl {
 namespace internal {
@@ -15,7 +16,7 @@ auto move_and_flatten_field_tuple(FieldTuple&& _t, Args&&... _args) {
   if constexpr (i == std::tuple_size_v<std::remove_cvref_t<FieldTuple>>) {
     return std::tuple_cat(std::move(_args)...);
   } else {
-    using T = std::tuple_element_t<i, std::remove_cvref_t<FieldTuple>>;
+    using T = nth_tuple_element_t<i, std::remove_cvref_t<FieldTuple>>;
     if constexpr (is_flatten_field<T>::value) {
       return move_and_flatten_field_tuple(
           std::move(_t), std::move(_args)...,

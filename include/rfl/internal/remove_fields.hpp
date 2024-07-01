@@ -8,6 +8,7 @@
 #include "../NamedTuple.hpp"
 #include "../define_named_tuple.hpp"
 #include "StringLiteral.hpp"
+#include "nth_tuple_element_t.hpp"
 
 namespace rfl {
 namespace internal {
@@ -34,8 +35,8 @@ struct remove_single_field {
   constexpr static int num_fields =
       std::tuple_size_v<typename OldNamedTupleType::Fields>;
 
-  using FieldType = std::remove_cvref_t<typename std::tuple_element<
-      num_fields - _i, typename OldNamedTupleType::Fields>::type>;
+  using FieldType = std::remove_cvref_t<
+      nth_tuple_element_t<num_fields - _i, typename OldNamedTupleType::Fields>>;
 
   using NewNamedTupleType =
       std::conditional_t<_name == FieldType::name_, _NewNamedTupleType,

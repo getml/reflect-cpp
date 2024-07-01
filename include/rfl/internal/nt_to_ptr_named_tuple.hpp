@@ -5,6 +5,7 @@
 
 #include "../Field.hpp"
 #include "../make_named_tuple.hpp"
+#include "nth_tuple_element_t.hpp"
 
 namespace rfl {
 namespace internal {
@@ -21,7 +22,7 @@ auto nt_to_ptr_named_tuple(NamedTupleType& _nt, AlreadyExtracted... _a) {
   if constexpr (i == num_fields) {
     return make_named_tuple(_a...);
   } else {
-    using FieldType = typename std::tuple_element<i, Fields>::type;
+    using FieldType = nth_tuple_element_t<i, Fields>;
     using T = std::remove_cvref_t<typename FieldType::Type>;
     return nt_to_ptr_named_tuple(
         _nt, _a..., Field<FieldType::name_, T*>(&std::get<i>(_nt.values())));
@@ -40,7 +41,7 @@ auto nt_to_ptr_named_tuple(const NamedTupleType& _nt, AlreadyExtracted... _a) {
   if constexpr (i == num_fields) {
     return make_named_tuple(_a...);
   } else {
-    using FieldType = typename std::tuple_element<i, Fields>::type;
+    using FieldType = nth_tuple_element_t<i, Fields>;
     using T = std::remove_cvref_t<typename FieldType::Type>;
     return nt_to_ptr_named_tuple(
         _nt, _a...,

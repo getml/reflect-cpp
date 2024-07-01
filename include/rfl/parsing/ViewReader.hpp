@@ -9,6 +9,7 @@
 
 #include "../Result.hpp"
 #include "../internal/is_array.hpp"
+#include "../internal/nth_tuple_element_t.hpp"
 
 namespace rfl::parsing {
 
@@ -48,7 +49,8 @@ class ViewReader {
                                       const auto& _var, auto* _view,
                                       auto* _errors, auto* _found, auto* _set,
                                       bool* _already_assigned) {
-    using FieldType = std::tuple_element_t<i, typename ViewType::Fields>;
+    using FieldType =
+        internal::nth_tuple_element_t<i, typename ViewType::Fields>;
     using OriginalType = typename FieldType::Type;
     using T =
         std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
@@ -132,7 +134,8 @@ class ViewReader {
 
   template <int _i>
   void call_destructor_on_one_if_necessary() const {
-    using FieldType = std::tuple_element_t<_i, typename ViewType::Fields>;
+    using FieldType =
+        internal::nth_tuple_element_t<_i, typename ViewType::Fields>;
     using OriginalType = std::remove_cvref_t<typename FieldType::Type>;
     using ValueType =
         std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
