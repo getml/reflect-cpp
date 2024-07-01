@@ -1,8 +1,6 @@
 #ifndef RFL_PARSING_TUPLEPARSER_HPP_
 #define RFL_PARSING_TUPLEPARSER_HPP_
 
-#include <bits/utility.h>
-
 #include <map>
 #include <tuple>
 #include <type_traits>
