@@ -47,7 +47,7 @@ if(REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
         add_library(reflectcpp STATIC)
     endif()
 
-    target_sources(reflectcpp PRIVATE src/Generic.cpp src/to_schema.cpp src/Type.cpp src/yyjson.c )
+    target_sources(reflectcpp PRIVATE src/reflectcpp.cpp src/yyjson.c)
     set_source_files_properties(src/yyjson.c PROPERTIES LANGUAGE CXX)
 
     target_compile_features(reflectcpp PUBLIC cxx_std_20)
