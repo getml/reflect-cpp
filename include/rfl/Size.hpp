@@ -5,7 +5,6 @@
 
 #include "Ref.hpp"
 #include "Result.hpp"
-#include "parsing/Parser.hpp"
 #include "parsing/schema/ValidationType.hpp"
 
 namespace rfl {
