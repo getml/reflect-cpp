@@ -78,7 +78,7 @@ You then implement the custom parser:
 namespace rfl::parsing {
 
 template <class ReaderType, class WriterType, class ProcessorsType>
-struct Parser<ReaderType, WriterType, Person>
+struct Parser<ReaderType, WriterType, Person, ProcessorsType>
     : public CustomParser<ReaderType, WriterType, ProcessorsType, Person, PersonImpl> {};
 
 }  // namespace rfl::parsing
