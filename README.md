@@ -18,7 +18,7 @@ Design principles for reflect-cpp include:
 - Close integration with containers from the C++ standard library
 - Close adherence to C++ idioms
 - Out-of-the-box support for JSON
-- Simple installation: If no JSON support is required, reflect-cpp is header-only. For JSON support, only a single source file needs to be compiled.
+- Simple installation
 - Simple extendability to other serialization formats
 - Simple extendability to custom classes
 
@@ -520,17 +520,14 @@ The following compilers are supported:
 - Clang 14.0 or higher
 - MSVC 17.8 (19.38) or higher
 
-### Option 1: Header-only
+### Option 1: Include source files into your own build
 
-If you **do not** need JSON support or you want to link YYJSON yourself, then reflect-cpp is header-only. Simply copy the contents of the folder `include` into your source repository or add it to your include path.
-
-### Option 2: Include source files into your own build
-
-Simply copy the contents of the folder `include` into your source repository or add it to your include path and also add `src/yyjson.c` to your source files for compilation.
+Simply copy the contents of the folder `include` into your source repository or add it to your include path and also add `src/reflectcpp.cpp` and `src/yyjson.c` to your source files for compilation.
+If you want to link to your own version of yyjson, then only copy `src/reflectcpp.cpp`.
 
 If you need support for other serialization formats like flexbuffers or XML, you should also include and link the respective libraries, as listed in the section on serialization formats.
 
-### Option 3: Compilation using cmake
+### Option 2: Compilation using cmake
 
 This will simply compile YYJSON, which is the JSON library underlying reflect-cpp. You can then include reflect-cpp in your project and link to the binary
 to get reflect-cpp with JSON support.
@@ -541,7 +538,7 @@ cmake --build build -j 4  # gcc, clang
 cmake --build build --config Release -j 4  # MSVC
 ```
 
-### Option 4: Compilation using cmake and vcpkg
+### Option 3: Compilation using cmake and vcpkg
 
 If you want serialization formats other than JSON, you can either install them manually or use vcpkg.
 
@@ -636,7 +633,7 @@ To run the tests, do the following:
 
 ### Make sure includes are relative
 
-In order for the library to be able to function header-only, we need internal includes to be relative and not depend on any externally set include directory.
+We need internal includes to be relative and not depend on any externally set include directory.
 
 That is, for example, if you are within any file in `rfl/internal`, prefer
 ```cpp

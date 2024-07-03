@@ -61,29 +61,35 @@ class Parser<R, W, std::variant<FieldTypes...>, ProcessorsType> {
     }
   }
 
-  template <size_t _i = 0>
   static schema::Type to_schema(
-      std::map<std::string, schema::Type>* _definitions,
-      std::vector<schema::Type> _types = {}) {
+      std::map<std::string, schema::Type>* _definitions) {
     if constexpr (internal::all_fields<std::tuple<FieldTypes...>>()) {
       return FieldVariantParser<R, W, ProcessorsType, FieldTypes...>::to_schema(
           _definitions);
     } else {
-      using Type = schema::Type;
-      constexpr size_t size = sizeof...(FieldTypes);
-      if constexpr (_i == size) {
-        return Type{Type::AnyOf{.types_ = _types}};
-      } else {
-        using U = std::remove_cvref_t<
-            std::variant_alternative_t<_i, std::variant<FieldTypes...>>>;
-        _types.push_back(
-            Parser<R, W, U, ProcessorsType>::to_schema(_definitions));
-        return to_schema<_i + 1>(_definitions, std::move(_types));
-      }
+      std::vector<schema::Type> types;
+      build_schema(_definitions, &types,
+                   std::make_integer_sequence<int, sizeof...(FieldTypes)>());
+      return schema::Type{schema::Type::AnyOf{.types_ = std::move(types)}};
     }
   }
 
  private:
+  template <size_t _i>
+  static void add_to_schema(std::map<std::string, schema::Type>* _definitions,
+                            std::vector<schema::Type>* _types) noexcept {
+    using U = std::remove_cvref_t<
+        std::variant_alternative_t<_i, std::variant<FieldTypes...>>>;
+    _types->push_back(Parser<R, W, U, ProcessorsType>::to_schema(_definitions));
+  }
+
+  template <int... _is>
+  static void build_schema(std::map<std::string, schema::Type>* _definitions,
+                           std::vector<schema::Type>* _types,
+                           std::integer_sequence<int, _is...>) noexcept {
+    (add_to_schema<_is>(_definitions, _types), ...);
+  }
+
   template <int _i = 0>
   static void read_variant(const R& _r, const InputVarType& _var,
                            std::optional<std::variant<FieldTypes...>>* _result,

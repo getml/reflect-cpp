@@ -91,6 +91,12 @@ struct Type {
                    Literal, Object, Optional, Reference, StringMap, Tuple,
                    TypedArray, Validated>;
 
+  Type();
+
+  Type(const VariantType& _variant);
+
+  ~Type();
+
   /// A type can be determined to be any of the above.
   VariantType variant_;
 };
