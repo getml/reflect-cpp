@@ -59,14 +59,20 @@ if(REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rfl/thirdparty>)
 else()
-    add_library(reflectcpp INTERFACE)
+    if (REFLECTCPP_BUILD_SHARED)
+        add_library(reflectcpp SHARED)
+    else()
+        add_library(reflectcpp STATIC)
+    endif()
+
+    target_sources(reflectcpp PRIVATE src/reflectcpp.cpp)
 
     target_include_directories(
         reflectcpp PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include> )
+        $<INSTALL_INTERFACE:include>)
 
-    target_compile_features(reflectcpp INTERFACE cxx_std_20)
+    target_compile_features(reflectcpp PUBLIC cxx_std_20)
 
     find_package(ctre CONFIG REQUIRED)
     find_package(yyjson CONFIG REQUIRED)
