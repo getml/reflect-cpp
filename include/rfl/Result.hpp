@@ -1,6 +1,7 @@
 #ifndef RFL_RESULT_HPP_
 #define RFL_RESULT_HPP_
 
+#include <algorithm>
 #include <array>
 #include <iostream>
 #include <optional>
