@@ -4,11 +4,12 @@
 #include <functional>
 #include <type_traits>
 
+#include "../named_tuple_t.hpp"
 #include "is_field.hpp"
 #include "is_named_tuple.hpp"
 #include "nt_to_ptr_named_tuple.hpp"
+#include "nth_tuple_element_t.hpp"
 #include "ptr_field_tuple_t.hpp"
-#include "../named_tuple_t.hpp"
 
 namespace rfl {
 namespace internal {
@@ -24,7 +25,7 @@ auto make_ptr_fields(PtrNamedTupleType& _n, Args... _args) {
     return std::make_tuple(_args...);
   } else {
     using Field =
-        std::remove_cvref_t<std::tuple_element_t<i, PtrFieldTupleType>>;
+        std::remove_cvref_t<nth_tuple_element_t<i, PtrFieldTupleType>>;
     using T = std::remove_cvref_t<std::remove_pointer_t<typename Field::Type>>;
 
     if constexpr (is_named_tuple_v<T>) {
@@ -54,7 +55,7 @@ auto move_from_ptr_fields(Pointers& _ptrs, Args&&... _args) {
   if constexpr (i == std::tuple_size_v<std::remove_cvref_t<Pointers>>) {
     return T{std::move(_args)...};
   } else {
-    using FieldType = std::tuple_element_t<i, std::remove_cvref_t<Pointers>>;
+    using FieldType = nth_tuple_element_t<i, std::remove_cvref_t<Pointers>>;
 
     if constexpr (is_field_v<FieldType>) {
       return move_from_ptr_fields<T>(
@@ -66,7 +67,7 @@ auto move_from_ptr_fields(Pointers& _ptrs, Args&&... _args) {
       using PtrFieldTupleType = std::remove_cvref_t<ptr_field_tuple_t<T>>;
 
       using U = std::remove_cvref_t<std::remove_pointer_t<
-          typename std::tuple_element_t<i, PtrFieldTupleType>::Type>>;
+          typename nth_tuple_element_t<i, PtrFieldTupleType>::Type>>;
 
       return move_from_ptr_fields<T>(
           _ptrs, std::move(_args)...,

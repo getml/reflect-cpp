@@ -10,6 +10,7 @@
 
 #include "../Result.hpp"
 #include "../internal/is_array.hpp"
+#include "../internal/nth_element_t.hpp"
 
 namespace rfl::parsing {
 
@@ -40,8 +41,8 @@ class FieldVariantReader {
         }
       }
 
-      using FieldType = std::remove_cvref_t<
-          typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type>;
+      using FieldType =
+          std::remove_cvref_t<internal::nth_element_t<_i, FieldTypes...>>;
 
       using ValueType = std::remove_cvref_t<typename FieldType::Type>;
 

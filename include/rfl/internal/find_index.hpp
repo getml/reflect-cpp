@@ -1,10 +1,10 @@
 #ifndef RFL_FIND_INDEX_HPP_
 #define RFL_FIND_INDEX_HPP_
 
-#include <tuple>
 #include <type_traits>
 
 #include "StringLiteral.hpp"
+#include "nth_tuple_element_t.hpp"
 
 namespace rfl {
 namespace internal {
@@ -12,8 +12,7 @@ namespace internal {
 /// Finds the index of the field signified by _field_name
 template <StringLiteral _field_name, class Fields, int I = 0>
 constexpr static int find_index() {
-  using FieldType =
-      std::remove_cvref_t<typename std::tuple_element<I, Fields>::type>;
+  using FieldType = std::remove_cvref_t<nth_tuple_element_t<I, Fields>>;
 
   constexpr bool name_i_matches = (FieldType::name_ == _field_name);
 

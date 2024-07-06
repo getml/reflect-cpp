@@ -5,6 +5,7 @@
 
 #include "has_flatten_fields.hpp"
 #include "is_flatten_field.hpp"
+#include "nth_tuple_element_t.hpp"
 #include "to_ptr_tuple.hpp"
 
 namespace rfl {
@@ -18,7 +19,7 @@ auto flatten_ptr_tuple(PtrTuple&& _t, Args... _args) {
   } else if constexpr (i == std::tuple_size_v<std::remove_cvref_t<PtrTuple>>) {
     return std::tuple_cat(std::forward<Args>(_args)...);
   } else {
-    using T = std::tuple_element_t<i, std::remove_cvref_t<PtrTuple>>;
+    using T = nth_tuple_element_t<i, std::remove_cvref_t<PtrTuple>>;
     if constexpr (is_flatten_field_v<T>) {
       return flatten_ptr_tuple(
           std::forward<PtrTuple>(_t), std::forward<Args>(_args)...,

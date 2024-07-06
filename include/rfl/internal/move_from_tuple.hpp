@@ -19,7 +19,7 @@ constexpr int calc_flattened_size() {
   if constexpr (_i == std::tuple_size_v<Tuple>) {
     return 0;
   } else {
-    using T = std::remove_pointer_t<std::tuple_element_t<_i, Tuple>>;
+    using T = std::remove_pointer_t<nth_tuple_element_t<_i, Tuple>>;
     if constexpr (is_flatten_field_v<T>) {
       return calc_flattened_size<ptr_tuple_t<typename T::Type>>() +
              calc_flattened_size<Tuple, _i + 1>();
@@ -39,7 +39,7 @@ auto unflatten_ptr_tuple(PtrTupleType& _t, Args... _args) {
     return std::make_tuple(_args...);
   } else {
     using T = std::remove_cvref_t<
-        std::remove_pointer_t<std::tuple_element_t<i, TargetTupleType>>>;
+        std::remove_pointer_t<nth_tuple_element_t<i, TargetTupleType>>>;
 
     if constexpr (is_flatten_field_v<T>) {
       using SubTargetTupleType =
@@ -65,7 +65,7 @@ auto move_from_pointers(Pointers& _ptrs, Args&&... _args) {
   if constexpr (i == std::tuple_size_v<std::remove_cvref_t<Pointers>>) {
     return std::remove_cvref_t<T>{std::move(_args)...};
   } else {
-    using FieldType = std::tuple_element_t<i, std::remove_cvref_t<Pointers>>;
+    using FieldType = nth_tuple_element_t<i, std::remove_cvref_t<Pointers>>;
 
     if constexpr (std::is_pointer_v<FieldType>) {
       return move_from_pointers<T>(_ptrs, std::move(_args)...,
@@ -75,7 +75,7 @@ auto move_from_pointers(Pointers& _ptrs, Args&&... _args) {
       using PtrTupleType = ptr_tuple_t<std::remove_cvref_t<T>>;
 
       using U = std::remove_cvref_t<typename std::remove_pointer_t<
-          typename std::tuple_element_t<i, PtrTupleType>>::Type>;
+          nth_tuple_element_t<i, PtrTupleType>>::Type>;
 
       return move_from_pointers<T>(_ptrs, std::move(_args)...,
                                    move_from_pointers<U>(std::get<i>(_ptrs)));

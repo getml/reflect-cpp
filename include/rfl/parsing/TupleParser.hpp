@@ -7,6 +7,7 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/nth_element_t.hpp"
 #include "Parent.hpp"
 #include "TupleReader.hpp"
 #include "schema/Type.hpp"
@@ -87,8 +88,8 @@ struct TupleParser {
   static void to_array(const W& _w, const std::tuple<Ts...>& _tup,
                        const P& _parent) noexcept {
     if constexpr (_i < sizeof...(Ts)) {
-      using NewFieldType = std::remove_cvref_t<
-          typename std::tuple_element_t<_i, std::tuple<Ts...>>>;
+      using NewFieldType =
+          std::remove_cvref_t<internal::nth_element_t<_i, Ts...>>;
       Parser<R, W, NewFieldType, ProcessorsType>::write(_w, std::get<_i>(_tup),
                                                         _parent);
       to_array<_i + 1>(_w, _tup, _parent);
