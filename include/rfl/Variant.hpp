@@ -1,8 +1,6 @@
 #ifndef RFL_VARIANT_HPP_
 #define RFL_VARIANT_HPP_
 
-#include <bits/utility.h>
-
 #include <array>
 #include <cstdint>
 #include <limits>
@@ -10,6 +8,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "internal/element_index.hpp"
+#include "internal/nth_element_t.hpp"
 #include "internal/variant/find_max_size.hpp"
 
 namespace rfl {
@@ -46,7 +46,7 @@ class Variant {
                                     bool>::type = true>
   Variant(T&& _t) noexcept : variant_(std::forward<T>(_t)) {}*/
 
-  ~Variant() = default;
+  ~Variant() { destroy_if_necessary(); }
   /*
     /// Assigns the underlying object.
     Variant<AlternativeTypes...>& operator=(const VariantType& _variant) {
@@ -87,8 +87,25 @@ class Variant {
       Variant<AlternativeTypes...>&& _other) = default;
 
   template <class F>
+  auto visit(const F& _f) {
+    using FirstAlternative = internal::nth_element_t<0, AlternativeTypes...>;
+    using ResultType =
+        std::remove_cvref_t<std::result_of_t<F, FirstAlternative>>;
+    if constexpr (std::is_same_v<ResultType, void>) {
+      do_visit_no_result(_f, std::make_integer_sequence<ValueType, size_>());
+    } else {
+      auto res = std::optional<ResultType>();
+      do_visit_with_result(_f, &res,
+                           std::make_integer_sequence<ValueType, size_>());
+      return res;
+    }
+  }
+
+  template <class F>
   auto visit(const F& _f) const {
-    using ResultType = std::result_of_t<F, ...>;
+    using FirstAlternative = internal::nth_element_t<0, AlternativeTypes...>;
+    using ResultType =
+        std::remove_cvref_t<std::result_of_t<F, FirstAlternative>>;
     auto res = std::optional<ResultType>();
     do_visit_with_result(_f, &res,
                          std::make_integer_sequence<ValueType, size_>());
@@ -96,6 +113,39 @@ class Variant {
   }
 
  private:
+  void destroy_if_necessary() {
+    const auto destroy_one = [](auto& _t) {
+      using T = std::remove_cvref_t<decltype(_t)>;
+      if constexpr (std::is_destructible_v<T>) {
+        _t.~T();
+      }
+    };
+    visit(destroy_one);
+  }
+
+  template <class F, ValueType... _is>
+  void do_visit_no_result(const F& _f,
+                          std::integer_sequence<ValueType, _is...>) {
+    const auto visit_one = [this]<ValueType _i>(const F& _f) {
+      if (value_ == _i) {
+        _f(get_alternative<_i>());
+      }
+    };
+    (visit_one<_is>(_f), ...);
+  }
+
+  template <class F, class ResultType, ValueType... _is>
+  void do_visit_with_result(const F& _f, std::optional<ResultType>* _res,
+                            std::integer_sequence<ValueType, _is...>) {
+    const auto visit_one = [this]<ValueType _i>(
+                               const F& _f, std::optional<ResultType>* _res) {
+      if (value_ == _i) {
+        **_res = _f(get_alternative<_i>());
+      }
+    };
+    (visit_one<_is>(_f, _res), ...);
+  }
+
   template <class F, class ResultType, ValueType... _is>
   void do_visit_with_result(const F& _f, std::optional<ResultType>* _res,
                             std::integer_sequence<ValueType, _is...>) const {
@@ -110,13 +160,13 @@ class Variant {
 
   template <ValueType _i>
   auto& get_alternative() noexcept {
-    using CurrentType = ...;
+    using CurrentType = internal::nth_element_t<_i, AlternativeTypes...>;
     return *(reinterpret_cast<CurrentType*>(data_.data()));
   }
 
   template <ValueType _i>
   const auto& get_alternative() const noexcept {
-    using CurrentType = ...;
+    using CurrentType = internal::nth_element_t<_i, AlternativeTypes...>;
     return *(reinterpret_cast<CurrentType*>(data_.data()));
   }
 
