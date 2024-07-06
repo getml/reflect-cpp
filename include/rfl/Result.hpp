@@ -328,7 +328,7 @@ class Result {
     return *(reinterpret_cast<const Error*>(t_or_err_.data()));
   }
 
-  void move_from_other(Result<T>& _other) {
+  void move_from_other(Result<T>& _other) noexcept {
     if (success_) {
       new (&get_t()) T(std::move(_other.get_t()));
     } else {

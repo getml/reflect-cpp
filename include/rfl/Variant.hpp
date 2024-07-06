@@ -84,7 +84,13 @@ class Variant {
 
   /// Assigns the underlying object.
   Variant<AlternativeTypes...>& operator=(
-      Variant<AlternativeTypes...>&& _other) = default;
+      Variant<AlternativeTypes...>&& _other) noexcept {
+    if (this == &_other) {
+      return *this;
+    }
+    destroy_if_necessary();
+    return *this;
+  }
 
   template <class F>
   auto visit(const F& _f) {
@@ -113,6 +119,14 @@ class Variant {
   }
 
  private:
+  void copy_from_other(const Result<T>& _other) {
+    if (success_) {
+      new (&get_t()) T(_other.get_t());
+    } else {
+      new (&get_err()) Error(_other.get_err());
+    }
+  }
+
   void destroy_if_necessary() {
     const auto destroy_one = [](auto& _t) {
       using T = std::remove_cvref_t<decltype(_t)>;
@@ -168,6 +182,19 @@ class Variant {
   const auto& get_alternative() const noexcept {
     using CurrentType = internal::nth_element_t<_i, AlternativeTypes...>;
     return *(reinterpret_cast<CurrentType*>(data_.data()));
+  }
+
+  void move_from_other(Variant<AlternativeTypes...>&& _other) noexcept {
+    const auto move_one = [](auto&& _t) {
+      using T = std::remove_cvref_t<decltype(_t)>;
+
+      new (reinterpret_cast<CurrentType*>(data_.data())) T(_t);
+    };
+
+    if (success_) {
+    } else {
+      new (&get_err()) Error(std::move(_other.get_err()));
+    }
   }
 
  private:
