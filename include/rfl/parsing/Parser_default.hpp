@@ -48,7 +48,7 @@ struct Parser {
           return Error(e.what());
         }
       };
-      return Parser<R, W, typename Reflector<T>::refl_type, ProcessorsType>::read(_r, _var).and_then(
+      return Parser<R, W, typename Reflector<T>::ReflType, ProcessorsType>::read(_r, _var).and_then(
           wrap_in_t);
     } else if constexpr (R::template has_custom_constructor<T>) {
       return _r.template use_custom_constructor<T>(_var);
@@ -79,7 +79,7 @@ struct Parser {
   template <class P>
   static void write(const W& _w, const T& _var, const P& _parent) noexcept {
     if constexpr (internal::has_reflector<T>) {
-      Parser<R, W, typename Reflector<T>::refl_type, ProcessorsType>::write(
+      Parser<R, W, typename Reflector<T>::ReflType, ProcessorsType>::write(
           _w, Reflector<T>::from(_var), _parent);
     } else if constexpr (internal::has_reflection_type_v<T>) {
       using ReflectionType = std::remove_cvref_t<typename T::ReflectionType>;

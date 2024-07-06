@@ -28,7 +28,7 @@ constexpr bool has_reflection_method_v = has_refl_m<Wrapper>::value;
 template <typename Type>
 concept has_reflector = requires(Type&& item) {
   Reflector<Type>::from(item);
-} && requires(const typename Reflector<Type>::refl_type& item) {
+} && requires(const typename Reflector<Type>::ReflType& item) {
   Reflector<Type>::to(item);
 };
 
