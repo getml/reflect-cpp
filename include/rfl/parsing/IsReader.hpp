@@ -18,15 +18,15 @@ namespace parsing {
 
 template <class R>
 struct MockArrayReader {
-  std::optional<Error> read(typename R::InputVarType& _var) const {
+  std::optional<Error> read(typename R::InputVarType&) const {
     return std::nullopt;
   }
 };
 
 template <class R>
 struct MockObjectReader {
-  void read(const std::string_view& _name,
-            typename R::InputVarType& _var) const {}
+  void read(const std::string_view&,
+            typename R::InputVarType&) const {}
 };
 
 template <class R, class T>

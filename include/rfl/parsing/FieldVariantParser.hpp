@@ -19,7 +19,7 @@ namespace parsing {
 /// To be used when all options of the variants are rfl::Field. Essentially,
 /// this is an externally tagged union.
 template <class R, class W, class ProcessorsType, class... FieldTypes>
-requires AreReaderAndWriter<R, W, std::variant<FieldTypes...>>
+  requires AreReaderAndWriter<R, W, std::variant<FieldTypes...>>
 struct FieldVariantParser {
   using FieldVariantType = std::variant<FieldTypes...>;
   using ResultType = Result<FieldVariantType>;
@@ -77,7 +77,7 @@ struct FieldVariantParser {
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions,
-      std::vector<schema::Type> _types = {}) {
+      [[maybe_unused]] std::vector<schema::Type> _types = {}) {
     using VariantType = std::variant<NamedTuple<FieldTypes>...>;
     return Parser<R, W, VariantType, ProcessorsType>::to_schema(_definitions);
   }

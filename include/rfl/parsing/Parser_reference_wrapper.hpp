@@ -20,7 +20,7 @@ struct Parser<R, W, std::reference_wrapper<T>, ProcessorsType> {
   using OutputVarType = typename W::OutputVarType;
 
   static Result<std::reference_wrapper<T>> read(
-      const R& _r, const InputVarType& _var) noexcept {
+      const R&, const InputVarType&) noexcept {
     static_assert(always_false_v<T>,
                   "Reading into std::reference_wrapper is dangerous and "
                   "therefore unsupported. "

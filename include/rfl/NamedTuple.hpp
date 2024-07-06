@@ -652,13 +652,13 @@ class NamedTuple<> {
 
   /// Returns an empty named tuple.
   template <typename F>
-  auto and_then(const F& _f) const {
+  auto and_then(const F&) const {
     return NamedTuple<>();
   }
 
   /// Does nothing at all.
   template <typename F>
-  void apply(F&& _f) const {}
+  void apply(F&&) const {}
 
   /// Returns an empty tuple.
   auto fields() const { return std::tuple(); }
@@ -674,7 +674,7 @@ class NamedTuple<> {
 
   /// Returns an empty named tuple.
   template <typename F>
-  auto transform(const F& _f) const {
+  auto transform(const F&) const {
     return NamedTuple<>();
   }
 
