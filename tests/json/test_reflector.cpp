@@ -30,15 +30,16 @@ struct Reflector<Person> {
     return {v.first_name, v.last_name, v.children};
   }
 };
-}  // namespace rlf
+}  // namespace rfl
 
 namespace test_reflector {
 
 TEST(json, test_reflector) {
   const auto homer =
-      Person("Homer", "Simpson", {{"Bart", "Simpson"}, {"Lisa", "Simpson"}});
+      Person{"Homer", "Simpson", {{"Bart", "Simpson"}, {"Lisa", "Simpson"}}};
 
-  write_and_read(homer,
-                 R"({"first_name":"Homer","last_name":"Simpson","children":[{"first_name":"Bart","last_name":"Simpson","children":[]},{"first_name":"Lisa","last_name":"Simpson","children":[]}]})");
+  write_and_read(
+      homer,
+      R"({"first_name":"Homer","last_name":"Simpson","children":[{"first_name":"Bart","last_name":"Simpson","children":[]},{"first_name":"Lisa","last_name":"Simpson","children":[]}]})");
 }
 }  // namespace test_reflector
