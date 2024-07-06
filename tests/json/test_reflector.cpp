@@ -6,13 +6,11 @@
 
 #include "write_and_read.hpp"
 
-namespace {
 struct Person {
   std::string first_name = "Homer";
   std::string last_name = "Simpson";
   std::vector<Person> children;
 };
-}  // namespace
 
 namespace rfl {
 template <>
@@ -22,11 +20,11 @@ struct Reflector<Person> {
     std::string last_name;
     std::vector<Person> children;
   };
-  static constexpr Person to(const ReflType& v) noexcept {
+  static Person to(const ReflType& v) noexcept {
     return {v.first_name, v.last_name, v.children};
   }
 
-  static constexpr ReflType from(const Person& v) {
+  static ReflType from(const Person& v) {
     return {v.first_name, v.last_name, v.children};
   }
 };
