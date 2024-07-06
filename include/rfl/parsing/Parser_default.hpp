@@ -40,7 +40,17 @@ struct Parser {
 
   /// Expresses the variables as type T.
   static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
-    if constexpr (R::template has_custom_constructor<T>) {
+    if constexpr (internal::has_reflector<T>) {
+      const auto wrap_in_t = [](auto _named_tuple) -> Result<T> {
+        try {
+          return Reflector<T>::to(_named_tuple);
+        } catch (std::exception& e) {
+          return Error(e.what());
+        }
+      };
+      return Parser<R, W, typename Reflector<T>::refl_type, ProcessorsType>::read(_r, _var).and_then(
+          wrap_in_t);
+    } else if constexpr (R::template has_custom_constructor<T>) {
       return _r.template use_custom_constructor<T>(_var);
     } else {
       if constexpr (internal::has_reflection_type_v<T>) {
@@ -68,7 +78,10 @@ struct Parser {
 
   template <class P>
   static void write(const W& _w, const T& _var, const P& _parent) noexcept {
-    if constexpr (internal::has_reflection_type_v<T>) {
+    if constexpr (internal::has_reflector<T>) {
+      Parser<R, W, typename Reflector<T>::refl_type, ProcessorsType>::write(
+          _w, Reflector<T>::from(_var), _parent);
+    } else if constexpr (internal::has_reflection_type_v<T>) {
       using ReflectionType = std::remove_cvref_t<typename T::ReflectionType>;
       if constexpr (internal::has_reflection_method_v<T>) {
         Parser<R, W, ReflectionType, ProcessorsType>::write(

@@ -4,6 +4,8 @@
 #include <type_traits>
 
 namespace rfl {
+template <typename T>
+struct Reflector;
 namespace internal {
 
 template <typename Wrapper>
@@ -22,6 +24,13 @@ struct has_refl_m<Wrapper, std::void_t<reflection_method_t<Wrapper>>>
 /// called "reflection".
 template <typename Wrapper>
 constexpr bool has_reflection_method_v = has_refl_m<Wrapper>::value;
+
+template <typename Type>
+concept has_reflector = requires(Type&& item) {
+  Reflector<Type>::from(item);
+} && requires(const Reflector<Type>::refl_type& item) {
+  Reflector<Type>::to(item);
+};
 
 }  // namespace internal
 }  // namespace rfl
