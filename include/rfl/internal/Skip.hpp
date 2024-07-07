@@ -56,7 +56,7 @@ class Skip {
   template <class U = Type,
             typename std::enable_if<std::is_default_constructible_v<U>,
                                     bool>::type = true>
-  Skip(const Default& _default) : value_(Type()) {}
+  Skip(const Default&) : value_(Type()) {}
 
   ~Skip() = default;
 
@@ -96,7 +96,7 @@ class Skip {
   template <class U = Type,
             typename std::enable_if<std::is_default_constructible_v<U>,
                                     bool>::type = true>
-  auto& operator=(const Default& _default) {
+  auto& operator=(const Default&) {
     value_ = Type();
     return *this;
   }

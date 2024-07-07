@@ -23,7 +23,7 @@ struct Parser<R, W, T*, ProcessorsType> {
   using ParentType = Parent<W>;
 
   /// Expresses the variables as type T.
-  static Result<T*> read(const R& _r, const InputVarType& _var) noexcept {
+  static Result<T*> read(const R&, const InputVarType&) noexcept {
     static_assert(always_false_v<T>,
                   "Reading into raw pointers is dangerous and "
                   "therefore unsupported. "

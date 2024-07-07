@@ -96,8 +96,8 @@ auto get_field_name() {
 }
 
 template <StringLiteral... _names1, StringLiteral... _names2>
-auto concat_two_literals(const rfl::Literal<_names1...>& _lit1,
-                         const rfl::Literal<_names2...>& _lit2) {
+auto concat_two_literals(const rfl::Literal<_names1...>&,
+                         const rfl::Literal<_names2...>&) {
   return rfl::Literal<_names1..., _names2...>::template from_value<0>();
 }
 
