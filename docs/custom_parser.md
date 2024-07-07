@@ -1,7 +1,28 @@
 # Custom parsers
 
 If you absolutely do not want to make any changes to your original classes whatsoever,
-you can implement a custom parser using `rfl::parsing::CustomParser`.
+You can create a Reflector template specialization for your type:
+
+```cpp
+namespace rfl {
+template <>
+struct Reflector<Person> {
+  struct ReflType {
+    std::string first_name;
+    std::string last_name;
+  };
+  static constexpr Person to(const ReflType& v) noexcept {
+    return {v.first_name, v.last_name};
+  }
+
+  static constexpr ReflType from(const Person& v) {
+    return {v.first_name, v.last_name};
+  }
+};
+} 
+```
+
+Alternatively, you can implement a custom parser using `rfl::parsing::CustomParser`.
 
 In order to do so, you must do the following:
 
