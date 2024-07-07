@@ -22,13 +22,13 @@ struct Reflector<test_reflector::Person> {
   struct ReflType {
     std::string first_name;
     std::string last_name;
-    std::vector<Person> children;
+    std::vector<test_reflector::Person> children;
   };
-  static Person to(const ReflType& v) noexcept {
+  static test_reflector::Person to(const ReflType& v) noexcept {
     return {v.first_name, v.last_name, v.children};
   }
 
-  static ReflType from(const Person& v) {
+  static ReflType from(const test_reflector::Person& v) {
     return {v.first_name, v.last_name, v.children};
   }
 };
@@ -38,7 +38,7 @@ namespace test_reflector {
 
 TEST(json, test_reflector) {
   const auto homer =
-      Person{"Homer", "Simpson", {{"Bart", "Simpson"}, {"Lisa", "Simpson"}}};
+      test_reflector::Person{"Homer", "Simpson", {{"Bart", "Simpson"}, {"Lisa", "Simpson"}}};
 
   write_and_read(
       homer,
