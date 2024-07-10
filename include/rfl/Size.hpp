@@ -22,7 +22,10 @@ struct Size {
 
   template <class T>
   static parsing::schema::ValidationType to_schema() {
-    return V::template to_schema<size_t>();
+    using ValidationType = parsing::schema::ValidationType;
+    return ValidationType{ValidationType::Size{
+        .size_limit_ =
+            rfl::Ref<ValidationType>::make(V::template to_schema<size_t>())}};
   }
 };
 

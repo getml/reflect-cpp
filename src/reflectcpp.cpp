@@ -179,7 +179,38 @@ schema::Type handle_validation_type(
       return schema::Type{.value = schema::Type::Regex{.pattern = _v.pattern_}};
 
     } else if constexpr (std::is_same<T, ValidationType::Size>()) {
-      return type_to_json_schema_type(_type);
+      auto t = type_to_json_schema_type(_type);
+      auto handle_size_variant = [&](auto& _t, const auto& _size_limit) {
+        using U = std::remove_cvref_t<decltype(_t)>;
+        using V = std::remove_cvref_t<decltype(_size_limit)>;
+        if constexpr (std::is_same<U, schema::Type::TypedArray>() ||
+                      std::is_same<U, schema::Type::String>()) {
+          if constexpr (std::is_same<V, ValidationType::Minimum>()) {
+            _t.minSize = std::get<int>(_size_limit.value_);
+            return t;
+            
+          } else if constexpr (std::is_same<V, ValidationType::Maximum>()) {
+            _t.maxSize = std::get<int>(_size_limit.value_);
+            return t;
+
+          } else if constexpr (std::is_same<V, ValidationType::EqualTo>()) {
+            _t.minSize = std::get<int>(_size_limit.value_);
+            _t.maxSize = std::get<int>(_size_limit.value_);
+            return t;
+
+          } else if constexpr (std::is_same<V, ValidationType::AnyOf>() ||
+                               std::is_same<V, ValidationType::AllOf>()) {
+            V v;
+            for (const auto& limiter : _size_limit.types_) {
+              v.types_.push_back(ValidationType{ValidationType::Size{
+                  .size_limit_ = rfl::Ref<ValidationType>::make(limiter)}});
+            }
+            return handle_validation_type(_type, ValidationType{.variant_ = v});
+          }
+        }
+        return t;
+      };
+      return std::visit(handle_size_variant, t.value, _v.size_limit_->variant_);
 
     } else if constexpr (std::is_same<T, ValidationType::ExclusiveMaximum>()) {
       return schema::Type{.value = schema::Type::ExclusiveMaximum{
@@ -271,8 +302,8 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type) {
       return schema::Type{.value = schema::Type::FixedSizeTypedArray{
                               .items = Ref<schema::Type>::make(
                                   type_to_json_schema_type(*_t.type_)),
-                              .minContains = _t.size_,
-                              .maxContains = _t.size_}};
+                              .minItems = _t.size_,
+                              .maxItems = _t.size_}};
 
     } else if constexpr (std::is_same<T, Type::Literal>()) {
       return schema::Type{.value =
