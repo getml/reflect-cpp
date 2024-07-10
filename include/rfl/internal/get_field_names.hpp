@@ -95,19 +95,28 @@ auto get_field_name() {
   }
 }
 
+// We don't want the operator+ to apply to normal literals,
+// so we introduce this wrapper.
+template <StringLiteral... _names>
+struct LiteralWrapper {
+  Literal<_names...> literal_;
+};
+
+template <StringLiteral... _names>
+auto wrap_literal(const Literal<_names...>& _literal) {
+  return LiteralWrapper<_names...>{_literal};
+}
+
 template <StringLiteral... _names1, StringLiteral... _names2>
-auto concat_two_literals(const rfl::Literal<_names1...>&,
-                         const rfl::Literal<_names2...>&) {
-  return rfl::Literal<_names1..., _names2...>::template from_value<0>();
+auto operator+(const LiteralWrapper<_names1...>&,
+               const LiteralWrapper<_names2...>&) {
+  return LiteralWrapper<_names1..., _names2...>{
+      rfl::Literal<_names1..., _names2...>::template from_value<0>()};
 }
 
 template <class Head, class... Tail>
 auto concat_literals(const Head& _head, const Tail&... _tail) {
-  if constexpr (sizeof...(_tail) == 0) {
-    return _head;
-  } else {
-    return concat_two_literals(_head, concat_literals(_tail...));
-  }
+  return (wrap_literal(_head) + ... + wrap_literal(_tail)).literal_;
 }
 
 inline auto concat_literals() { return rfl::Literal<>(); }
