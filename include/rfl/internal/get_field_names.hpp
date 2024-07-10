@@ -145,10 +145,9 @@ auto get_field_names() {
                                    bind_fake_object_to_tuple<T>()))>()...);
     };
 #else
+    const auto tup = bind_fake_object_to_tuple<T>();
     const auto get = []<std::size_t... Is>(std::index_sequence<Is...>) {
-      return concat_literals(
-          get_field_name<Type,
-                         std::get<Is>(bind_fake_object_to_tuple<T>())>()...);
+      return concat_literals(get_field_name<Type, std::get<Is>(tup)>()...);
     };
 #endif
     return get(std::make_index_sequence<num_fields<T>>());
