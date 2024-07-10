@@ -119,6 +119,11 @@ auto concat_literals(const Head& _head, const Tail&... _tail) {
   return (wrap_literal(_head) + ... + wrap_literal(_tail)).literal_;
 }
 
+template <class... Literals>
+auto concat_literal_tuple(const std::tuple<Literals...>& _tup) {
+  return std::apply(concat_literals<Literals...>, _tup);
+}
+
 inline auto concat_literals() { return rfl::Literal<>(); }
 
 #ifdef __clang__
@@ -149,7 +154,7 @@ auto get_field_names() {
       const auto literals = std::make_tuple(
           get_field_name<Type,
                          std::get<Is>(bind_fake_object_to_tuple<T>())>()...);
-      return std::apply(concat_literals, literals);
+      return concat_literal_tuple(literals);
     };
 #endif
     return get(std::make_index_sequence<num_fields<T>>());
