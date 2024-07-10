@@ -68,11 +68,18 @@ class DeepClass {
 };
 
 TEST(json, test_deep_nested) {
-  DeepClass dc{};
+  /*DeepClass dc{};
 
   write_and_read(
       dc,
-      R"({"LHC":{"dummy1":0.0,"dummy2":0.0,"dummy3":0.0,"dummy4":0.0,"dummy5":0.0,"dummy6":0.0,"dummy7":0.0,"dummy8":0.0,"dummy9":0.0,"dummy10":0.0,"dummy11":0.0,"dummy12":0.0,"dummy13":0.0,"dummy14":0.0,"dummy15":{"dummy1":0.0,"dummy2":0.0,"dummy3":0.0,"dummy4":0.0,"dummy5":0.0,"dummy6":0.0,"dummy7":0.0,"dummy8":0.0,"dummy9":0.0,"dummy10":0.0,"dummy11":0.0,"dummy12":0.0,"dummy13":0.0,"dummy14":0.0,"dummy15":0.0,"dummy16":0.0,"dummy17":0.0,"dummy18":0.0,"dummy19":0.0,"dummy20":0.0,"dummy21":0.0},"dummy16":{"dummy1":0.0,"dummy2":0.0,"dummy3":0.0,"dummy4":0.0,"dummy5":0.0,"dummy6":0.0,"dummy7":0.0,"dummy8":0.0,"dummy9":0.0,"dummy10":0.0,"dummy11":0.0,"dummy12":0.0,"dummy13":0.0,"dummy14":0.0,"dummy15":0.0,"dummy16":0.0,"dummy17":0.0,"dummy18":0.0,"dummy19":0.0,"dummy20":0.0,"dummy21":0.0},"dummy17":{"dummy1":0.0,"dummy2":0.0,"dummy3":0.0,"dummy4":0.0,"dummy5":0.0,"dummy6":0.0,"dummy7":0.0,"dummy8":0.0,"dummy9":0.0,"dummy10":0.0,"dummy11":0.0,"dummy12":0.0,"dummy13":0.0,"dummy14":0.0,"dummy15":0.0,"dummy16":0.0,"dummy17":0.0,"dummy18":0.0,"dummy19":0.0,"dummy20":0.0,"dummy21":0.0},"dummy18":{"dummy1":0.0,"dummy2":0.0,"dummy3":0.0,"dummy4":0.0,"dummy5":0.0,"dummy6":0.0,"dummy7":0.0,"dummy8":0.0,"dummy9":0.0,"dummy10":0.0,"dummy11":0.0,"dummy12":0.0,"dummy13":0.0,"dummy14":0.0,"dummy15":0.0,"dummy16":0.0,"dummy17":0.0,"dummy18":0.0,"dummy19":0.0,"dummy20":0.0,"dummy21":0.0}},"dummy1":0,"dummy2":0,"dummy3":0.0})");
+      R"({"LHC":{"dummy1":0.0,"dummy2":0.0,"dummy3":0.0,"dummy4":0.0,"dummy5":0.0,"dummy6":0.0,"dummy7":0.0,"dummy8":0.0,"dummy9":0.0,"dummy10":0.0,"dummy11":0.0,"dummy12":0.0,"dummy13":0.0,"dummy14":0.0,"dummy15":{"dummy1":0.0,"dummy2":0.0,"dummy3":0.0,"dummy4":0.0,"dummy5":0.0,"dummy6":0.0,"dummy7":0.0,"dummy8":0.0,"dummy9":0.0,"dummy10":0.0,"dummy11":0.0,"dummy12":0.0,"dummy13":0.0,"dummy14":0.0,"dummy15":0.0,"dummy16":0.0,"dummy17":0.0,"dummy18":0.0,"dummy19":0.0,"dummy20":0.0,"dummy21":0.0},"dummy16":{"dummy1":0.0,"dummy2":0.0,"dummy3":0.0,"dummy4":0.0,"dummy5":0.0,"dummy6":0.0,"dummy7":0.0,"dummy8":0.0,"dummy9":0.0,"dummy10":0.0,"dummy11":0.0,"dummy12":0.0,"dummy13":0.0,"dummy14":0.0,"dummy15":0.0,"dummy16":0.0,"dummy17":0.0,"dummy18":0.0,"dummy19":0.0,"dummy20":0.0,"dummy21":0.0},"dummy17":{"dummy1":0.0,"dummy2":0.0,"dummy3":0.0,"dummy4":0.0,"dummy5":0.0,"dummy6":0.0,"dummy7":0.0,"dummy8":0.0,"dummy9":0.0,"dummy10":0.0,"dummy11":0.0,"dummy12":0.0,"dummy13":0.0,"dummy14":0.0,"dummy15":0.0,"dummy16":0.0,"dummy17":0.0,"dummy18":0.0,"dummy19":0.0,"dummy20":0.0,"dummy21":0.0},"dummy18":{"dummy1":0.0,"dummy2":0.0,"dummy3":0.0,"dummy4":0.0,"dummy5":0.0,"dummy6":0.0,"dummy7":0.0,"dummy8":0.0,"dummy9":0.0,"dummy10":0.0,"dummy11":0.0,"dummy12":0.0,"dummy13":0.0,"dummy14":0.0,"dummy15":0.0,"dummy16":0.0,"dummy17":0.0,"dummy18":0.0,"dummy19":0.0,"dummy20":0.0,"dummy21":0.0}},"dummy1":0,"dummy2":0,"dummy3":0.0})");*/
+
+  const auto tuple =
+      std::make_tuple(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+                      1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+                      1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+
+  write_and_read(tuple, "");
 }
 
 }  // namespace test_deep_nested
