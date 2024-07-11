@@ -28,13 +28,13 @@ class Variant {
   static constexpr ValueType size_ = sizeof...(AlternativeTypes);
 
  public:
-  // Variant(const VariantType& _variant) : variant_(_variant) {}
+  Variant(const Variant<AlternativeTypes...>& _other) {
+    copy_from_other(_other);
+  }
 
-  // Variant(VariantType&& _variant) noexcept : variant_(std::move(_variant)) {}
-
-  Variant(const Variant<AlternativeTypes...>& _variant) = default;
-
-  Variant(Variant<AlternativeTypes...>&& _variant) noexcept = default;
+  Variant(Variant<AlternativeTypes...>&& _other) noexcept {
+    move_from_other(_other);
+  }
 
   /*template <class T,
             typename std::enable_if<std::is_convertible_v<T, VariantType>,
@@ -48,18 +48,6 @@ class Variant {
 
   ~Variant() { destroy_if_necessary(); }
   /*
-    /// Assigns the underlying object.
-    Variant<AlternativeTypes...>& operator=(const VariantType& _variant) {
-      variant_ = _variant;
-      return *this;
-    }
-
-    /// Assigns the underlying object.
-    Variant<AlternativeTypes...>& operator=(VariantType&& _variant) {
-      variant_ = std::move(_variant);
-      return *this;
-    }
-
     /// Assigns the underlying object.
     template <class T,
               typename std::enable_if<std::is_convertible_v<T, VariantType>,
@@ -80,7 +68,15 @@ class Variant {
 
   /// Assigns the underlying object.
   Variant<AlternativeTypes...>& operator=(
-      const Variant<AlternativeTypes...>& _other) = default;
+      const Variant<AlternativeTypes...>& _other) {
+    if (this == &_other) {
+      return *this;
+    }
+    auto temp = Variant<AlternativeTypes...>(_other);
+    destroy_if_necessary();
+    move_from_other(std::move(temp));
+    return *this;
+  }
 
   /// Assigns the underlying object.
   Variant<AlternativeTypes...>& operator=(
@@ -89,6 +85,7 @@ class Variant {
       return *this;
     }
     destroy_if_necessary();
+    move_from_other(_other);
     return *this;
   }
 
@@ -119,12 +116,15 @@ class Variant {
   }
 
  private:
-  void copy_from_other(const Result<T>& _other) {
-    if (success_) {
-      new (&get_t()) T(_other.get_t());
-    } else {
-      new (&get_err()) Error(_other.get_err());
-    }
+  void copy_from_other(const Variant<AlternativeTypes...>& _other) {
+    const auto copy_one = [this](const auto& _t) {
+      using CurrentType = std::remove_cvref_t<decltype(_t)>;
+      value_ =
+          internal::element_index<T,
+                                  std::remove_cvref_t<AlternativeTypes>...>();
+      new (reinterpret_cast<CurrentType*>(data_.data())) T(_t);
+    };
+    _other.visit(copy_one);
   }
 
   void destroy_if_necessary() {
@@ -154,7 +154,7 @@ class Variant {
     const auto visit_one = [this]<ValueType _i>(
                                const F& _f, std::optional<ResultType>* _res) {
       if (value_ == _i) {
-        **_res = _f(get_alternative<_i>());
+        *_res = _f(get_alternative<_i>());
       }
     };
     (visit_one<_is>(_f, _res), ...);
@@ -166,7 +166,7 @@ class Variant {
     const auto visit_one = [this]<ValueType _i>(
                                const F& _f, std::optional<ResultType>* _res) {
       if (value_ == _i) {
-        **_res = _f(get_alternative<_i>());
+        *_res = _f(get_alternative<_i>());
       }
     };
     (visit_one<_is>(_f, _res), ...);
@@ -185,16 +185,14 @@ class Variant {
   }
 
   void move_from_other(Variant<AlternativeTypes...>&& _other) noexcept {
-    const auto move_one = [](auto&& _t) {
-      using T = std::remove_cvref_t<decltype(_t)>;
-
-      new (reinterpret_cast<CurrentType*>(data_.data())) T(_t);
+    const auto move_one = [this](auto&& _t) {
+      using CurrentType = std::remove_cvref_t<decltype(_t)>;
+      value_ =
+          internal::element_index<CurrentType,
+                                  std::remove_cvref_t<AlternativeTypes>...>();
+      new (reinterpret_cast<CurrentType*>(data_.data())) T(std::move(_t));
     };
-
-    if (success_) {
-    } else {
-      new (&get_err()) Error(std::move(_other.get_err()));
-    }
+    _other.visit(move_one);
   }
 
  private:
