@@ -14,6 +14,11 @@ consteval int find_element_index() {
   }
 }
 
+template <int _i, class T>
+consteval int find_element_index() {
+  return -1;
+}
+
 template <class T, class AlternativeTypes...>
 consteval int element_index() {
   return find_element_index<0, T, AlternativeTypes...>();

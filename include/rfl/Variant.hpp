@@ -36,35 +36,38 @@ class Variant {
     move_from_other(_other);
   }
 
-  /*template <class T,
-            typename std::enable_if<std::is_convertible_v<T, VariantType>,
-                                    bool>::type = true>
-  Variant(const T& _t) : variant_(_t) {}
+  template <class T, typename std::enable_if<is_alternative_type<T>(),
+                                             bool>::type = true>
+  Variant(const T& _t) {
+    copy_from_type(_t);
+  }
 
-  template <class T,
-            typename std::enable_if<std::is_convertible_v<T, VariantType>,
-                                    bool>::type = true>
-  Variant(T&& _t) noexcept : variant_(std::forward<T>(_t)) {}*/
+  template <class T, typename std::enable_if<is_alternative_type<T>(),
+                                             bool>::type = true>
+  Variant(T&& _t) noexcept {
+    move_from_type(_t);
+  }
 
   ~Variant() { destroy_if_necessary(); }
-  /*
-    /// Assigns the underlying object.
-    template <class T,
-              typename std::enable_if<std::is_convertible_v<T, VariantType>,
-                                      bool>::type = true>
-    Variant<AlternativeTypes...>& operator=(T&& _variant) {
-      variant_ = std::forward<T>(_variant);
-      return *this;
-    }
 
-    /// Assigns the underlying object.
-    template <class T,
-              typename std::enable_if<std::is_convertible_v<T, VariantType>,
-                                      bool>::type = true>
-    Variant<AlternativeTypes...>& operator=(const T& _variant) {
-      variant_ = _variant;
-      return *this;
-    }*/
+  /// Assigns the underlying object.
+  template <class T, typename std::enable_if<is_alternative_type<T>(),
+                                             bool>::type = true>
+  Variant<AlternativeTypes...>& operator=(const T& _t) {
+    auto temp = Variant<AlternativeTypes...>(_t);
+    destroy_if_necessary();
+    move_from_other(std::move(temp));
+    return *this;
+  }
+
+  /// Assigns the underlying object.
+  template <class T, typename std::enable_if<is_alternative_type<T>(),
+                                             bool>::type = true>
+  Variant<AlternativeTypes...>& operator=(T&& _t) noexcept {
+    destroy_if_necessary();
+    move_from_type(_t);
+    return *this;
+  }
 
   /// Assigns the underlying object.
   Variant<AlternativeTypes...>& operator=(
@@ -117,14 +120,17 @@ class Variant {
 
  private:
   void copy_from_other(const Variant<AlternativeTypes...>& _other) {
-    const auto copy_one = [this](const auto& _t) {
-      using CurrentType = std::remove_cvref_t<decltype(_t)>;
-      value_ =
-          internal::element_index<T,
-                                  std::remove_cvref_t<AlternativeTypes>...>();
-      new (reinterpret_cast<CurrentType*>(data_.data())) T(_t);
-    };
+    const auto copy_one = [this](const auto& _t) { copy_from_type(_t); };
     _other.visit(copy_one);
+  }
+
+  template <class T>
+  void copy_from_type(const T& _t) noexcept {
+    using CurrentType = std::remove_cvref_t<decltype(_t)>;
+    value_ =
+        internal::element_index<CurrentType,
+                                std::remove_cvref_t<AlternativeTypes>...>();
+    new (reinterpret_cast<CurrentType*>(data_.data())) CurrentType(_t);
   }
 
   void destroy_if_necessary() {
@@ -184,15 +190,26 @@ class Variant {
     return *(reinterpret_cast<CurrentType*>(data_.data()));
   }
 
+  template <class T>
+  static constexpr bool is_alternative_type() {
+    return internal::is_element_index<
+               std::remove_cvref_t<T>,
+               std::remove_cvref_t<AlternativeTypes>...>() != -1;
+  }
+
   void move_from_other(Variant<AlternativeTypes...>&& _other) noexcept {
-    const auto move_one = [this](auto&& _t) {
-      using CurrentType = std::remove_cvref_t<decltype(_t)>;
-      value_ =
-          internal::element_index<CurrentType,
-                                  std::remove_cvref_t<AlternativeTypes>...>();
-      new (reinterpret_cast<CurrentType*>(data_.data())) T(std::move(_t));
-    };
-    _other.visit(move_one);
+    const auto move_one = [this](auto&& _t) { move_from_type(std::move(_t)); };
+    _other.visit(move_from_type);
+  }
+
+  template <class T>
+  void move_from_type(T&& _t) noexcept {
+    using CurrentType = std::remove_cvref_t<decltype(_t)>;
+    value_ =
+        internal::element_index<CurrentType,
+                                std::remove_cvref_t<AlternativeTypes>...>();
+    new (reinterpret_cast<CurrentType*>(data_.data()))
+        CurrentType(std::forward<T>(_t));
   }
 
  private:
