@@ -19,7 +19,7 @@ namespace rfl {
 template <class... AlternativeTypes>
 class Variant {
   static constexpr unsigned long num_bytes_ =
-      internal::variant::find_max_size<0, AlternativeTypes...>();
+      internal::variant::find_max_size<AlternativeTypes...>();
 
   using ValueType =
       std::conditional_t<sizeof...(AlternativeTypes) <=
