@@ -289,6 +289,52 @@ class Variant {
   alignas(std::bit_ceil(num_bytes_)) DataType data_;
 };
 
+template <class T, class... Types>
+constexpr T* get_if(Variant<Types...>& _v) noexcept {
+  const auto get = [](auto& _v) -> T* {
+    using Type = std::remove_cvref_t<decltype(_v)>;
+    if constexpr (std::is_same<Type, std::remove_cvref_t<T>>()) {
+      return &_v;
+    } else {
+      return nullptr;
+    }
+  };
+  return _v.visit(get);
+}
+
+template <class T, class... Types>
+constexpr const T* get_if(const Variant<Types...>& _v) noexcept {
+  const auto get = [](const auto& _v) -> const T* {
+    using Type = std::remove_cvref_t<decltype(_v)>;
+    if constexpr (std::is_same<Type, std::remove_cvref_t<T>>()) {
+      return &_v;
+    } else {
+      return nullptr;
+    }
+  };
+  return _v.visit(get);
+}
+
+template <int _i, class... Types>
+constexpr auto* get_if(Variant<Types...>& _v) noexcept {
+  using T = internal::nth_element_t<_i, Types...>;
+  return get_if<T>(_v);
+}
+
+template <int _i, class... Types>
+constexpr auto* get_if(const Variant<Types...>& _v) noexcept {
+  using T = internal::nth_element_t<_i, Types...>;
+  return get_if<T>(_v);
+}
+
+template <class T, class... Types>
+constexpr bool holds_alternative(const Variant<Types...>& _v) noexcept {
+  constexpr auto ix = internal::element_index<std::remove_cvref_t<T>,
+                                              std::remove_cvref_t<Types>...>();
+  static_assert(ix != -1, "Type not supported.");
+  return ix == _v.index();
+}
+
 template <class T>
 struct variant_size;
 
