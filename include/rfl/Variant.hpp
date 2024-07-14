@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <limits>
 #include <optional>
+#include <stdexcept>
 #include <type_traits>
 #include <utility>
 
@@ -325,6 +326,60 @@ template <int _i, class... Types>
 constexpr auto* get_if(const Variant<Types...>& _v) noexcept {
   using T = internal::nth_element_t<_i, Types...>;
   return get_if<T>(_v);
+}
+
+template <class T, class... Types>
+constexpr T& get(Variant<Types...>& _v) {
+  auto ptr = get_if<T>(_v);
+  if (!ptr) {
+    throw std::runtime_error("Variant does not contain signified type.");
+  }
+  return *ptr;
+}
+
+template <class T, class... Types>
+constexpr T&& get(Variant<Types...>&& _v) {
+  auto ptr = get_if<T>(_v);
+  if (!ptr) {
+    throw std::runtime_error("Variant does not contain signified type.");
+  }
+  return std::move(*ptr);
+}
+
+template <class T, class... Types>
+constexpr const T& get(const Variant<Types...>& _v) {
+  auto ptr = get_if<T>(_v);
+  if (!ptr) {
+    throw std::runtime_error("Variant does not contain signified type.");
+  }
+  return *ptr;
+}
+
+template <int _i, class... Types>
+constexpr auto& get(Variant<Types...>& _v) {
+  auto ptr = get_if<_i>(_v);
+  if (!ptr) {
+    throw std::runtime_error("Variant does not contain signified type.");
+  }
+  return *ptr;
+}
+
+template <int _i, class... Types>
+constexpr auto&& get(Variant<Types...>&& _v) {
+  auto ptr = get_if<_i>(_v);
+  if (!ptr) {
+    throw std::runtime_error("Variant does not contain signified type.");
+  }
+  return std::move(*ptr);
+}
+
+template <int _i, class... Types>
+constexpr const auto& get(const Variant<Types...>& _v) {
+  auto ptr = get_if<_i>(_v);
+  if (!ptr) {
+    throw std::runtime_error("Variant does not contain signified type.");
+  }
+  return *ptr;
 }
 
 template <class T, class... Types>
