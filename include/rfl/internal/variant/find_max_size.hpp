@@ -6,7 +6,7 @@
 namespace rfl::internal::variant {
 
 template <unsigned long _max_size, class Head, class... Tail>
-consteval int find_max_size() {
+consteval unsigned long find_max_size() {
   constexpr auto max_size = std::max(_max_size, sizeof(Head));
   if constexpr (sizeof...(Tail) == 0) {
     return max_size;

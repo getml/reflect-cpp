@@ -2,6 +2,7 @@
 #define RFL_VARIANT_HPP_
 
 #include <array>
+#include <bit>
 #include <cstdint>
 #include <limits>
 #include <optional>
@@ -17,7 +18,7 @@ namespace rfl {
 
 template <class... AlternativeTypes>
 class Variant {
-  static constexpr int num_bytes_ =
+  static constexpr unsigned long num_bytes_ =
       internal::variant::find_max_size<0, AlternativeTypes...>();
 
   using ValueType =
@@ -141,7 +142,7 @@ class Variant {
 
  private:
   void copy_from_other(const Variant<AlternativeTypes...>& _other) {
-    const auto copy_one = [this](const auto& _t) { copy_from_type(_t); };
+    const auto copy_one = [this](const auto& _t) { this->copy_from_type(_t); };
     _other.visit(copy_one);
   }
 
@@ -251,7 +252,7 @@ class Variant {
   ValueType value_;
 
   /// The underlying data, can be any of the underlying types.
-  alignas(num_bytes_) DataType data_;
+  alignas(std::bit_ceil(num_bytes_)) DataType data_;
 };
 
 template <class F, class... AlternativeTypes>
