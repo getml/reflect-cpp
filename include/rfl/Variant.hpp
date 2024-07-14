@@ -65,6 +65,22 @@ class Variant {
 
   ~Variant() { destroy_if_necessary(); }
 
+  /// Emplaces a new element into the variant.
+  template <class T, class... Args>
+  constexpr T& emplace(Args&&... _args) {
+    auto t = T(std::forward<Args>(_args)...);
+    destroy_if_necessary();
+    move_from_type(std::move(t));
+    return *(reinterpret_cast<T*>(data_.data()));
+  }
+
+  /// Emplaces a new element into the variant.
+  template <int _i, class... Args>
+  constexpr auto& emplace(Args&&... _args) {
+    using T = internal::nth_element_t<_i, AlternativeTypes...>;
+    return emplace<T>(std::move(_args)...);
+  }
+
   /// Assigns the underlying object.
   template <class T,
             typename std::enable_if<internal::variant::is_alternative_type<
