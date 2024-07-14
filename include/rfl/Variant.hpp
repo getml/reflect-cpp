@@ -221,6 +221,16 @@ class Variant {
   alignas(num_bytes_) DataType data_;
 };
 
+template <class F, class... AlternativeTypes>
+auto visit(const F& _f, const Variant<AlternativeTypes...>& _v) {
+  return _v.visit(_f);
+}
+
+template <class F, class... AlternativeTypes>
+auto visit(const F& _f, Variant<AlternativeTypes...>&& _v) {
+  return _v.visit(_f);
+}
+
 }  // namespace rfl
 
 #endif
