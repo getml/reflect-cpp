@@ -1,8 +1,7 @@
 #ifndef RFL_TAGGEDUNION_HPP_
 #define RFL_TAGGEDUNION_HPP_
 
-#include <variant>
-
+#include "Variant.hpp"
 #include "define_literal.hpp"
 #include "internal/Getter.hpp"
 #include "internal/StringLiteral.hpp"
@@ -16,7 +15,7 @@ struct TaggedUnion {
   static constexpr internal::StringLiteral discrimininator_ = _discriminator;
 
   /// The type of the underlying variant.
-  using VariantType = std::variant<Ts...>;
+  using VariantType = rfl::Variant<Ts...>;
 
   /// A literal containing all the tags that are possible
   using PossibleTags = define_literal_t<internal::tag_t<_discriminator, Ts>...>;
