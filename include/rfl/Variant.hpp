@@ -127,6 +127,16 @@ class Variant {
     return *this;
   }
 
+  /// Swaps the content with the other variant.
+  void swap(Variant<AlternativeTypes...>& _other) noexcept {
+    if (this == &_other) {
+      return;
+    }
+    auto temp = Variant<AlternativeTypes...>(std::move(*this));
+    move_from_other(std::move(_other));
+    _other = std::move(temp);
+  }
+
   template <class F>
   auto visit(const F& _f) {
     using FirstAlternative = internal::nth_element_t<0, AlternativeTypes...>;
