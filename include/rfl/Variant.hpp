@@ -289,6 +289,16 @@ class Variant {
   alignas(std::bit_ceil(num_bytes_)) DataType data_;
 };
 
+template <class T>
+struct variant_size;
+
+template <class... Types>
+struct variant_size<Variant<Types...>>
+    : std::integral_constant<std::size_t, sizeof...(Types)> {};
+
+template <class VariantType>
+using variant_size_v = variant_size<std::remove_cvref_t<VariantType>>::value;
+
 template <class F, class... AlternativeTypes>
 auto visit(const F& _f, const Variant<AlternativeTypes...>& _v) {
   return _v.visit(_f);
