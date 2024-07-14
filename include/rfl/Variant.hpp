@@ -390,6 +390,18 @@ constexpr bool holds_alternative(const Variant<Types...>& _v) noexcept {
   return ix == _v.index();
 }
 
+template <int N, class T>
+struct variant_alternative;
+
+template <int N, class... Types>
+struct variant_alternative<N, Variant<Types...>> {
+  using type = internal::nth_element_t<N, Types...>;
+};
+
+template <int N, class VariantType>
+using variant_alternative_t =
+    typename variant_alternative<N, std::remove_cvref_t<VariantType>>::type;
+
 template <class T>
 struct variant_size;
 
