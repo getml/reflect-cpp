@@ -24,58 +24,56 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
 
   static Result<rfl::Variant<AlternativeTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
-    // TODO
-    /*if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
-    return FieldVariantParser<R, W, ProcessorsType,
-                              AlternativeTypes...>::read(_r, _var);
-  } else {*/
-    std::optional<rfl::Variant<AlternativeTypes...>> result;
-    std::vector<Error> errors;
-    read_variant(
-        _r, _var, &result, &errors,
-        std::make_integer_sequence<int, sizeof...(AlternativeTypes)>());
-    if (result) {
-      return std::move(*result);
+    if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
+      return FieldVariantParser<R, W, ProcessorsType,
+                                AlternativeTypes...>::read(_r, _var);
     } else {
-      return Error(
-          to_single_error_message(errors,
-                                  "Could not parse the variant. Each of the "
-                                  "possible alternatives failed "
-                                  "for the following reasons: ",
-                                  100000));
+      std::optional<rfl::Variant<AlternativeTypes...>> result;
+      std::vector<Error> errors;
+      read_variant(
+          _r, _var, &result, &errors,
+          std::make_integer_sequence<int, sizeof...(AlternativeTypes)>());
+      if (result) {
+        return std::move(*result);
+      } else {
+        return Error(
+            to_single_error_message(errors,
+                                    "Could not parse the variant. Each of the "
+                                    "possible alternatives failed "
+                                    "for the following reasons: ",
+                                    100000));
+      }
     }
-    //}
   }
 
   template <class P>
   static void write(const W& _w,
                     const rfl::Variant<AlternativeTypes...>& _variant,
                     const P& _parent) noexcept {
-    // TODO
-    // if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
-    //  FieldVariantParser<R, W, ProcessorsType, AlternativeTypes...>::write(
-    //      _w, _variant, _parent);
-    //} else {
-    const auto handle = [&](const auto& _v) {
-      using Type = std::remove_cvref_t<decltype(_v)>;
-      Parser<R, W, Type, ProcessorsType>::write(_w, _v, _parent);
-    };
-    return rfl::visit(handle, _variant);
-    //}
+    if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
+      FieldVariantParser<R, W, ProcessorsType, AlternativeTypes...>::write(
+          _w, _variant, _parent);
+    } else {
+      const auto handle = [&](const auto& _v) {
+        using Type = std::remove_cvref_t<decltype(_v)>;
+        Parser<R, W, Type, ProcessorsType>::write(_w, _v, _parent);
+      };
+      return rfl::visit(handle, _variant);
+    }
   }
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
-    // if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
-    //   return FieldVariantParser<R, W, ProcessorsType,
-    //                             AlternativeTypes...>::to_schema(_definitions);
-    // } else {
-    std::vector<schema::Type> types;
-    build_schema(
-        _definitions, &types,
-        std::make_integer_sequence<int, sizeof...(AlternativeTypes)>());
-    return schema::Type{schema::Type::AnyOf{.types_ = std::move(types)}};
-    //}
+    if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
+      return FieldVariantParser<R, W, ProcessorsType,
+                                AlternativeTypes...>::to_schema(_definitions);
+    } else {
+      std::vector<schema::Type> types;
+      build_schema(
+          _definitions, &types,
+          std::make_integer_sequence<int, sizeof...(AlternativeTypes)>());
+      return schema::Type{schema::Type::AnyOf{.types_ = std::move(types)}};
+    }
   }
 
  private:

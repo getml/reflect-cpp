@@ -5,9 +5,9 @@
 #include <stdexcept>
 #include <string>
 #include <type_traits>
-#include <variant>
 
 #include "../Result.hpp"
+#include "../Variant.hpp"
 #include "../always_false.hpp"
 #include "FieldVariantReader.hpp"
 #include "Parser_base.hpp"
@@ -19,9 +19,9 @@ namespace parsing {
 /// To be used when all options of the variants are rfl::Field. Essentially,
 /// this is an externally tagged union.
 template <class R, class W, class ProcessorsType, class... FieldTypes>
-requires AreReaderAndWriter<R, W, std::variant<FieldTypes...>>
+requires AreReaderAndWriter<R, W, rfl::Variant<FieldTypes...>>
 struct FieldVariantParser {
-  using FieldVariantType = std::variant<FieldTypes...>;
+  using FieldVariantType = rfl::Variant<FieldTypes...>;
   using ResultType = Result<FieldVariantType>;
 
  public:
@@ -58,12 +58,12 @@ struct FieldVariantParser {
   }
 
   template <class P>
-  static void write(const W& _w, const std::variant<FieldTypes...>& _v,
+  static void write(const W& _w, const rfl::Variant<FieldTypes...>& _v,
                     const P& _parent) noexcept {
-    static_assert(
-        internal::no_duplicate_field_names<std::tuple<FieldTypes...>>(),
-        "Externally tagged variants cannot have duplicate field "
-        "names.");
+    static_assert(internal::no_duplicate_field_names<
+                      std::tuple<std::remove_pointer_t<FieldTypes>...>>(),
+                  "Externally tagged variants cannot have duplicate field "
+                  "names.");
 
     const auto handle = [&](const auto& _field) {
       const auto named_tuple = make_named_tuple(internal::to_ptr_field(_field));
@@ -72,13 +72,13 @@ struct FieldVariantParser {
                                                           _parent);
     };
 
-    std::visit(handle, _v);
+    visit(handle, _v);
   }
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions,
       std::vector<schema::Type> _types = {}) {
-    using VariantType = std::variant<NamedTuple<FieldTypes>...>;
+    using VariantType = rfl::Variant<NamedTuple<FieldTypes>...>;
     return Parser<R, W, VariantType, ProcessorsType>::to_schema(_definitions);
   }
 };

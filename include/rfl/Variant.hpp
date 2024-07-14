@@ -118,7 +118,7 @@ class Variant {
       auto res = std::optional<ResultType>();
       do_visit_with_result(_f, &res,
                            std::make_integer_sequence<ValueType, size_>());
-      return res;
+      return std::move(*res);
     }
   }
 
@@ -135,7 +135,7 @@ class Variant {
       auto res = std::optional<ResultType>();
       do_visit_with_result(_f, &res,
                            std::make_integer_sequence<ValueType, size_>());
-      return res;
+      return std::move(*res);
     }
   }
 

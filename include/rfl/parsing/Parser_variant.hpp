@@ -8,7 +8,9 @@
 
 #include "../Ref.hpp"
 #include "../Result.hpp"
+#include "../Variant.hpp"
 #include "../always_false.hpp"
+#include "../internal/to_ptr_field.hpp"
 #include "FieldVariantParser.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
@@ -20,6 +22,10 @@ namespace parsing {
 template <class R, class W, class... FieldTypes, class ProcessorsType>
 requires AreReaderAndWriter<R, W, std::variant<FieldTypes...>>
 class Parser<R, W, std::variant<FieldTypes...>, ProcessorsType> {
+  template <class T>
+  using ptr_field_t =
+      decltype(internal::to_ptr_field(std::declval<const T&>()));
+
  public:
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
@@ -27,8 +33,15 @@ class Parser<R, W, std::variant<FieldTypes...>, ProcessorsType> {
   static Result<std::variant<FieldTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
     if constexpr (internal::all_fields<std::tuple<FieldTypes...>>()) {
-      return FieldVariantParser<R, W, ProcessorsType, FieldTypes...>::read(
-          _r, _var);
+      const auto wrap = [](auto&& _v) {
+        return std::variant<FieldTypes...>(std::move(_v));
+      };
+      const auto to_std_variant = [&](auto&& _v) {
+        return rfl::visit(wrap, std::move(_v));
+      };
+      return FieldVariantParser<R, W, ProcessorsType, FieldTypes...>::read(_r,
+                                                                           _var)
+          .transform(to_std_variant);
     } else {
       std::optional<std::variant<FieldTypes...>> result;
       std::vector<Error> errors;
@@ -50,8 +63,18 @@ class Parser<R, W, std::variant<FieldTypes...>, ProcessorsType> {
   static void write(const W& _w, const std::variant<FieldTypes...>& _variant,
                     const P& _parent) noexcept {
     if constexpr (internal::all_fields<std::tuple<FieldTypes...>>()) {
-      FieldVariantParser<R, W, ProcessorsType, FieldTypes...>::write(
-          _w, _variant, _parent);
+      const auto wrap = [](const auto& _v) {
+        return rfl::Variant<ptr_field_t<FieldTypes>...>(
+            internal::to_ptr_field(_v));
+      };
+      const auto to_rfl_variant = [&](const auto& _v) {
+        return std::visit(wrap, _v);
+      };
+      FieldVariantParser<R, W, ProcessorsType,
+                         ptr_field_t<FieldTypes>...>::write(_w,
+                                                            to_rfl_variant(
+                                                                _variant),
+                                                            _parent);
     } else {
       const auto handle = [&](const auto& _v) {
         using Type = std::remove_cvref_t<decltype(_v)>;

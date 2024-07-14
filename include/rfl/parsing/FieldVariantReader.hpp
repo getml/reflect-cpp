@@ -5,10 +5,10 @@
 #include <optional>
 #include <string_view>
 #include <type_traits>
-#include <variant>
 #include <vector>
 
 #include "../Result.hpp"
+#include "../Variant.hpp"
 #include "../internal/is_array.hpp"
 #include "../internal/nth_element_t.hpp"
 
@@ -18,7 +18,7 @@ template <class R, class W, class ProcessorsType, class... FieldTypes>
 class FieldVariantReader {
  private:
   using InputVarType = typename R::InputVarType;
-  using FieldVariantType = std::variant<FieldTypes...>;
+  using FieldVariantType = rfl::Variant<FieldTypes...>;
   using ResultType = Result<FieldVariantType>;
 
  public:
@@ -50,10 +50,10 @@ class FieldVariantReader {
 
       if (key == _disc_value) {
         const auto to_variant = [](ValueType&& _val) {
-          return std::variant<FieldTypes...>(FieldType(std::move(_val)));
+          return rfl::Variant<FieldTypes...>(FieldType(std::move(_val)));
         };
         const auto embellish_error = [&](const Error& _e) {
-          return Error("Could not parse std::variant with field '" +
+          return Error("Could not parse rfl::Variant with field '" +
                        std::string(_disc_value) + "': " + _e.what());
         };
         *field_variant_ =
@@ -66,7 +66,7 @@ class FieldVariantReader {
       }
     } else {
       *field_variant_ = Error(
-          "Could not parse std::variant, could not match field named "
+          "Could not parse rfl::Variant, could not match field named "
           "'" +
           std::string(_disc_value) + "'.");
     }
