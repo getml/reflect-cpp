@@ -60,10 +60,10 @@ struct FieldVariantParser {
   template <class P>
   static void write(const W& _w, const rfl::Variant<FieldTypes...>& _v,
                     const P& _parent) noexcept {
-    static_assert(internal::no_duplicate_field_names<
-                      std::tuple<std::remove_pointer_t<FieldTypes>...>>(),
-                  "Externally tagged variants cannot have duplicate field "
-                  "names.");
+    static_assert(
+        internal::no_duplicate_field_names<std::tuple<FieldTypes...>>(),
+        "Externally tagged variants cannot have duplicate field "
+        "names.");
 
     const auto handle = [&](const auto& _field) {
       const auto named_tuple = make_named_tuple(internal::to_ptr_field(_field));
@@ -72,7 +72,7 @@ struct FieldVariantParser {
                                                           _parent);
     };
 
-    visit(handle, _v);
+    rfl::visit(handle, _v);
   }
 
   static schema::Type to_schema(
