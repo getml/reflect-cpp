@@ -11,12 +11,14 @@
 #include "internal/element_index.hpp"
 #include "internal/nth_element_t.hpp"
 #include "internal/variant/find_max_size.hpp"
+#include "internal/variant/is_alternative_type.hpp"
 
 namespace rfl {
 
 template <class... AlternativeTypes>
 class Variant {
-  static constexpr num_bytes_ = find_max_size<0, AlternativeTypes...>();
+  static constexpr int num_bytes_ =
+      internal::variant::find_max_size<0, AlternativeTypes...>();
 
   using ValueType =
       std::conditional_t<sizeof...(AlternativeTypes) <=
@@ -27,32 +29,41 @@ class Variant {
 
   static constexpr ValueType size_ = sizeof...(AlternativeTypes);
 
+  template <ValueType _i>
+  struct Index {};
+
  public:
   Variant(const Variant<AlternativeTypes...>& _other) {
     copy_from_other(_other);
   }
 
   Variant(Variant<AlternativeTypes...>&& _other) noexcept {
-    move_from_other(_other);
+    move_from_other(std::move(_other));
   }
 
-  template <class T, typename std::enable_if<is_alternative_type<T>(),
-                                             bool>::type = true>
+  template <class T,
+            typename std::enable_if<internal::variant::is_alternative_type<
+                                        T, AlternativeTypes...>(),
+                                    bool>::type = true>
   Variant(const T& _t) {
     copy_from_type(_t);
   }
 
-  template <class T, typename std::enable_if<is_alternative_type<T>(),
-                                             bool>::type = true>
+  template <class T,
+            typename std::enable_if<internal::variant::is_alternative_type<
+                                        T, AlternativeTypes...>(),
+                                    bool>::type = true>
   Variant(T&& _t) noexcept {
-    move_from_type(_t);
+    move_from_type(std::forward<T>(_t));
   }
 
   ~Variant() { destroy_if_necessary(); }
 
   /// Assigns the underlying object.
-  template <class T, typename std::enable_if<is_alternative_type<T>(),
-                                             bool>::type = true>
+  template <class T,
+            typename std::enable_if<internal::variant::is_alternative_type<
+                                        T, AlternativeTypes...>(),
+                                    bool>::type = true>
   Variant<AlternativeTypes...>& operator=(const T& _t) {
     auto temp = Variant<AlternativeTypes...>(_t);
     destroy_if_necessary();
@@ -61,11 +72,13 @@ class Variant {
   }
 
   /// Assigns the underlying object.
-  template <class T, typename std::enable_if<is_alternative_type<T>(),
-                                             bool>::type = true>
+  template <class T,
+            typename std::enable_if<internal::variant::is_alternative_type<
+                                        T, AlternativeTypes...>(),
+                                    bool>::type = true>
   Variant<AlternativeTypes...>& operator=(T&& _t) noexcept {
     destroy_if_necessary();
-    move_from_type(_t);
+    move_from_type(std::forward<T>(_t));
     return *this;
   }
 
@@ -95,10 +108,12 @@ class Variant {
   template <class F>
   auto visit(const F& _f) {
     using FirstAlternative = internal::nth_element_t<0, AlternativeTypes...>;
-    using ResultType =
-        std::remove_cvref_t<std::result_of_t<F, FirstAlternative>>;
+    using ResultType = std::remove_cvref_t<
+        std::invoke_result_t<std::remove_cvref_t<F>, FirstAlternative&>>;
     if constexpr (std::is_same_v<ResultType, void>) {
-      do_visit_no_result(_f, std::make_integer_sequence<ValueType, size_>());
+      bool visited = false;
+      do_visit_no_result(_f, &visited,
+                         std::make_integer_sequence<ValueType, size_>());
     } else {
       auto res = std::optional<ResultType>();
       do_visit_with_result(_f, &res,
@@ -110,12 +125,18 @@ class Variant {
   template <class F>
   auto visit(const F& _f) const {
     using FirstAlternative = internal::nth_element_t<0, AlternativeTypes...>;
-    using ResultType =
-        std::remove_cvref_t<std::result_of_t<F, FirstAlternative>>;
-    auto res = std::optional<ResultType>();
-    do_visit_with_result(_f, &res,
+    using ResultType = std::remove_cvref_t<
+        std::invoke_result_t<std::remove_cvref_t<F>, FirstAlternative&>>;
+    if constexpr (std::is_same_v<ResultType, void>) {
+      bool visited = false;
+      do_visit_no_result(_f, &visited,
                          std::make_integer_sequence<ValueType, size_>());
-    return res;
+    } else {
+      auto res = std::optional<ResultType>();
+      do_visit_with_result(_f, &res,
+                           std::make_integer_sequence<ValueType, size_>());
+      return res;
+    }
   }
 
  private:
@@ -144,38 +165,55 @@ class Variant {
   }
 
   template <class F, ValueType... _is>
-  void do_visit_no_result(const F& _f,
+  void do_visit_no_result(const F& _f, bool* _visited,
                           std::integer_sequence<ValueType, _is...>) {
-    const auto visit_one = [this]<ValueType _i>(const F& _f) {
-      if (value_ == _i) {
+    const auto visit_one = [this]<ValueType _i>(const F& _f, bool* _visited,
+                                                Index<_i>) {
+      if (!*_visited && value_ == _i) {
         _f(get_alternative<_i>());
+        *_visited = true;
       }
     };
-    (visit_one<_is>(_f), ...);
+    (visit_one(_f, _visited, Index<_is>{}), ...);
+  }
+
+  template <class F, ValueType... _is>
+  void do_visit_no_result(const F& _f, bool* _visited,
+                          std::integer_sequence<ValueType, _is...>) const {
+    const auto visit_one = [this]<ValueType _i>(const F& _f, bool* _visited,
+                                                Index<_i>) {
+      if (!*_visited && value_ == _i) {
+        _f(get_alternative<_i>());
+        *_visited = true;
+      }
+    };
+    (visit_one(_f, _visited, Index<_is>{}), ...);
   }
 
   template <class F, class ResultType, ValueType... _is>
   void do_visit_with_result(const F& _f, std::optional<ResultType>* _res,
                             std::integer_sequence<ValueType, _is...>) {
-    const auto visit_one = [this]<ValueType _i>(
-                               const F& _f, std::optional<ResultType>* _res) {
-      if (value_ == _i) {
+    const auto visit_one = [this]<ValueType _i>(const F& _f,
+                                                std::optional<ResultType>* _res,
+                                                Index<_i>) {
+      if (!*_res && value_ == _i) {
         *_res = _f(get_alternative<_i>());
       }
     };
-    (visit_one<_is>(_f, _res), ...);
+    (visit_one(_f, _res, Index<_is>{}), ...);
   }
 
   template <class F, class ResultType, ValueType... _is>
   void do_visit_with_result(const F& _f, std::optional<ResultType>* _res,
                             std::integer_sequence<ValueType, _is...>) const {
-    const auto visit_one = [this]<ValueType _i>(
-                               const F& _f, std::optional<ResultType>* _res) {
-      if (value_ == _i) {
+    const auto visit_one = [this]<ValueType _i>(const F& _f,
+                                                std::optional<ResultType>* _res,
+                                                Index<_i>) {
+      if (!*_res && value_ == _i) {
         *_res = _f(get_alternative<_i>());
       }
     };
-    (visit_one<_is>(_f, _res), ...);
+    (visit_one(_f, _res, Index<_is>{}), ...);
   }
 
   template <ValueType _i>
@@ -187,19 +225,14 @@ class Variant {
   template <ValueType _i>
   const auto& get_alternative() const noexcept {
     using CurrentType = internal::nth_element_t<_i, AlternativeTypes...>;
-    return *(reinterpret_cast<CurrentType*>(data_.data()));
-  }
-
-  template <class T>
-  static constexpr bool is_alternative_type() {
-    return internal::is_element_index<
-               std::remove_cvref_t<T>,
-               std::remove_cvref_t<AlternativeTypes>...>() != -1;
+    return *(reinterpret_cast<const CurrentType*>(data_.data()));
   }
 
   void move_from_other(Variant<AlternativeTypes...>&& _other) noexcept {
-    const auto move_one = [this](auto&& _t) { move_from_type(std::move(_t)); };
-    _other.visit(move_from_type);
+    const auto move_one = [this](auto&& _t) {
+      this->move_from_type(std::forward<std::remove_cvref_t<decltype(_t)>>(_t));
+    };
+    std::forward<Variant<AlternativeTypes...>>(_other).visit(move_one);
   }
 
   template <class T>
@@ -215,7 +248,7 @@ class Variant {
  private:
   /// Value indicating which of the alternatives is currently contained in the
   /// variant.
-  Value value_;
+  ValueType value_;
 
   /// The underlying data, can be any of the underlying types.
   alignas(num_bytes_) DataType data_;

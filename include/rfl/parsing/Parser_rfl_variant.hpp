@@ -1,8 +1,6 @@
 #ifndef RFL_PARSING_PARSER_RFL_VARIANT_HPP_
 #define RFL_PARSING_PARSER_RFL_VARIANT_HPP_
 
-#include <bits/utility.h>
-
 #include <map>
 #include <type_traits>
 #include <variant>
@@ -33,8 +31,9 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
   } else {*/
     std::optional<rfl::Variant<AlternativeTypes...>> result;
     std::vector<Error> errors;
-    read_variant(_r, _var, &result, &errors,
-                 std::make_integer_sequence<int, sizeof...(AlternativeType)>());
+    read_variant(
+        _r, _var, &result, &errors,
+        std::make_integer_sequence<int, sizeof...(AlternativeTypes)>());
     if (result) {
       return std::move(*result);
     } else {
@@ -101,13 +100,15 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
       const R& _r, const InputVarType& _var,
       std::optional<rfl::Variant<AlternativeTypes...>>* _result,
       std::vector<Error>* _errors) noexcept {
-    using AltType =
-        std::remove_cvref_t<internal::nth_element_t<_i, AlternativeTypes...>>;
-    auto res = Parser<R, W, AltType, ProcessorsType>::read(_r, _var);
-    if (res) {
-      *_result = std::move(*res);
-    } else {
-      _errors->emplace_back(*res.error());
+    if (!*_result) {
+      using AltType =
+          std::remove_cvref_t<internal::nth_element_t<_i, AlternativeTypes...>>;
+      auto res = Parser<R, W, AltType, ProcessorsType>::read(_r, _var);
+      if (res) {
+        *_result = std::move(*res);
+      } else {
+        _errors->emplace_back(*res.error());
+      }
     }
   }
 
@@ -117,7 +118,7 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
       std::optional<rfl::Variant<AlternativeTypes...>>* _result,
       std::vector<Error>* _errors,
       std::integer_sequence<int, _is...>) noexcept {
-    (read_one_alternative(_r, _var, _result, _errors), ...);
+    (read_one_alternative<_is>(_r, _var, _result, _errors), ...);
   }
 };
 
