@@ -34,6 +34,11 @@ class Variant {
   struct Index {};
 
  public:
+  Variant() {
+    using FirstAlternative = internal::nth_element_t<0, AlternativeTypes...>;
+    move_from_type(FirstAlternative());
+  }
+
   Variant(const Variant<AlternativeTypes...>& _other) {
     copy_from_other(_other);
   }
@@ -102,7 +107,7 @@ class Variant {
       return *this;
     }
     destroy_if_necessary();
-    move_from_other(_other);
+    move_from_other(std::move(_other));
     return *this;
   }
 

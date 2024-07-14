@@ -5,10 +5,10 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "../../Ref.hpp"
+#include "../Variant.hpp"
 #include "ValidationType.hpp"
 
 namespace rfl::parsing::schema {
@@ -86,7 +86,7 @@ struct Type {
   };
 
   using VariantType =
-      std::variant<Boolean, Int32, Int64, UInt32, UInt64, Integer, Float,
+      rfl::Variant<Boolean, Int32, Int64, UInt32, UInt64, Integer, Float,
                    Double, String, AnyOf, Description, FixedSizeTypedArray,
                    Literal, Object, Optional, Reference, StringMap, Tuple,
                    TypedArray, Validated>;

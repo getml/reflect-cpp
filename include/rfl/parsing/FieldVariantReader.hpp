@@ -31,12 +31,6 @@ class FieldVariantReader {
 
   void read(const std::string_view& _disc_value,
             const InputVarType& _var) const noexcept {
-    if (*field_variant_) {
-      *field_variant_ = Error(
-          "Could not parse: Expected the object to have "
-          "at least one field, but found more than one.");
-      return;
-    }
     try_matching_fields(
         _disc_value, _var,
         std::make_integer_sequence<int, sizeof...(FieldTypes)>());

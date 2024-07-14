@@ -5,10 +5,10 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <variant>
 
 #include "../../Literal.hpp"
 #include "../../Rename.hpp"
+#include "../Variant.hpp"
 
 namespace rfl::json::schema {
 
@@ -133,7 +133,7 @@ struct Type {
   };
 
   using ReflectionType =
-      std::variant<AllOf, AnyOf, Boolean, ExclusiveMaximum, ExclusiveMinimum,
+      rfl::Variant<AllOf, AnyOf, Boolean, ExclusiveMaximum, ExclusiveMinimum,
                    FixedSizeTypedArray, Integer, Maximum, Minimum, Number, Null,
                    Object, OneOf, Reference, Regex, String, StringEnum,
                    StringMap, Tuple, TypedArray>;

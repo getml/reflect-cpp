@@ -128,7 +128,7 @@ bool is_optional(const parsing::schema::Type& _t) {
     using T = std::remove_cvref_t<decltype(_v)>;
     return std::is_same<T, parsing::schema::Type::Optional>();
   };
-  return std::visit(handle, _t.variant_);
+  return rfl::visit(handle, _t.variant_);
 }
 
 std::string numeric_type_to_string(const parsing::schema::Type& _type) {
@@ -145,7 +145,7 @@ std::string numeric_type_to_string(const parsing::schema::Type& _type) {
       return schema::Type::Number{}.type.str();
     }
   };
-  return std::visit(handle_variant, _type.variant_);
+  return rfl::visit(handle_variant, _type.variant_);
 }
 
 schema::Type handle_validation_type(
@@ -228,7 +228,7 @@ schema::Type handle_validation_type(
     }
   };
 
-  return std::visit(handle_variant, _validation_type.variant_);
+  return rfl::visit(handle_variant, _validation_type.variant_);
 }
 
 schema::Type type_to_json_schema_type(const parsing::schema::Type& _type) {
@@ -265,7 +265,7 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type) {
         _v.description = _t.description_;
         return schema::Type{_v};
       };
-      return std::visit(update_prediction, res.value);
+      return rfl::visit(update_prediction, res.value);
 
     } else if constexpr (std::is_same<T, Type::FixedSizeTypedArray>()) {
       return schema::Type{.value = schema::Type::FixedSizeTypedArray{
@@ -331,7 +331,7 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type) {
     }
   };
 
-  return std::visit(handle_variant, _type.variant_);
+  return rfl::visit(handle_variant, _type.variant_);
 }
 
 }  // namespace rfl::json

@@ -4,10 +4,10 @@
 #include <cstddef>
 #include <map>
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "../../Ref.hpp"
+#include "../Variant.hpp"
 
 namespace rfl::parsing::schema {
 
@@ -57,7 +57,7 @@ struct ValidationType {
   };
 
   using VariantType =
-      std::variant<AllOf, AnyOf, EqualTo, ExclusiveMaximum, ExclusiveMinimum,
+      rfl::Variant<AllOf, AnyOf, EqualTo, ExclusiveMaximum, ExclusiveMinimum,
                    Maximum, Minimum, OneOf, NotEqualTo, Regex, Size>;
 
   /// A type can be determined to be any of the above.
