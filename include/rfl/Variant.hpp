@@ -21,16 +21,16 @@ class Variant {
   static constexpr unsigned long num_bytes_ =
       internal::variant::find_max_size<AlternativeTypes...>();
 
-  using ValueType =
+  using IndexType =
       std::conditional_t<sizeof...(AlternativeTypes) <=
                              std::numeric_limits<std::uint8_t>::max(),
                          std::uint8_t, std::uint16_t>;
 
   using DataType = std::array<unsigned char, num_bytes_>;
 
-  static constexpr ValueType size_ = sizeof...(AlternativeTypes);
+  static constexpr IndexType size_ = sizeof...(AlternativeTypes);
 
-  template <ValueType _i>
+  template <IndexType _i>
   struct Index {};
 
  public:
@@ -80,6 +80,9 @@ class Variant {
     using T = internal::nth_element_t<_i, AlternativeTypes...>;
     return emplace<T>(std::move(_args)...);
   }
+
+  /// Returns the index of the element currently held.
+  constexpr int index() const noexcept { return index_; }
 
   /// Assigns the underlying object.
   template <class T,
@@ -145,11 +148,11 @@ class Variant {
     if constexpr (std::is_same_v<ResultType, void>) {
       bool visited = false;
       do_visit_no_result(_f, &visited,
-                         std::make_integer_sequence<ValueType, size_>());
+                         std::make_integer_sequence<IndexType, size_>());
     } else {
       auto res = std::optional<ResultType>();
       do_visit_with_result(_f, &res,
-                           std::make_integer_sequence<ValueType, size_>());
+                           std::make_integer_sequence<IndexType, size_>());
       return std::move(*res);
     }
   }
@@ -162,11 +165,11 @@ class Variant {
     if constexpr (std::is_same_v<ResultType, void>) {
       bool visited = false;
       do_visit_no_result(_f, &visited,
-                         std::make_integer_sequence<ValueType, size_>());
+                         std::make_integer_sequence<IndexType, size_>());
     } else {
       auto res = std::optional<ResultType>();
       do_visit_with_result(_f, &res,
-                           std::make_integer_sequence<ValueType, size_>());
+                           std::make_integer_sequence<IndexType, size_>());
       return std::move(*res);
     }
   }
@@ -180,7 +183,7 @@ class Variant {
   template <class T>
   void copy_from_type(const T& _t) noexcept {
     using CurrentType = std::remove_cvref_t<decltype(_t)>;
-    value_ =
+    index_ =
         internal::element_index<CurrentType,
                                 std::remove_cvref_t<AlternativeTypes>...>();
     new (reinterpret_cast<CurrentType*>(data_.data())) CurrentType(_t);
@@ -196,12 +199,12 @@ class Variant {
     visit(destroy_one);
   }
 
-  template <class F, ValueType... _is>
+  template <class F, IndexType... _is>
   void do_visit_no_result(const F& _f, bool* _visited,
-                          std::integer_sequence<ValueType, _is...>) {
-    const auto visit_one = [this]<ValueType _i>(const F& _f, bool* _visited,
+                          std::integer_sequence<IndexType, _is...>) {
+    const auto visit_one = [this]<IndexType _i>(const F& _f, bool* _visited,
                                                 Index<_i>) {
-      if (!*_visited && value_ == _i) {
+      if (!*_visited && index_ == _i) {
         _f(get_alternative<_i>());
         *_visited = true;
       }
@@ -209,12 +212,12 @@ class Variant {
     (visit_one(_f, _visited, Index<_is>{}), ...);
   }
 
-  template <class F, ValueType... _is>
+  template <class F, IndexType... _is>
   void do_visit_no_result(const F& _f, bool* _visited,
-                          std::integer_sequence<ValueType, _is...>) const {
-    const auto visit_one = [this]<ValueType _i>(const F& _f, bool* _visited,
+                          std::integer_sequence<IndexType, _is...>) const {
+    const auto visit_one = [this]<IndexType _i>(const F& _f, bool* _visited,
                                                 Index<_i>) {
-      if (!*_visited && value_ == _i) {
+      if (!*_visited && index_ == _i) {
         _f(get_alternative<_i>());
         *_visited = true;
       }
@@ -222,39 +225,39 @@ class Variant {
     (visit_one(_f, _visited, Index<_is>{}), ...);
   }
 
-  template <class F, class ResultType, ValueType... _is>
+  template <class F, class ResultType, IndexType... _is>
   void do_visit_with_result(const F& _f, std::optional<ResultType>* _res,
-                            std::integer_sequence<ValueType, _is...>) {
-    const auto visit_one = [this]<ValueType _i>(const F& _f,
+                            std::integer_sequence<IndexType, _is...>) {
+    const auto visit_one = [this]<IndexType _i>(const F& _f,
                                                 std::optional<ResultType>* _res,
                                                 Index<_i>) {
-      if (!*_res && value_ == _i) {
+      if (!*_res && index_ == _i) {
         *_res = _f(get_alternative<_i>());
       }
     };
     (visit_one(_f, _res, Index<_is>{}), ...);
   }
 
-  template <class F, class ResultType, ValueType... _is>
+  template <class F, class ResultType, IndexType... _is>
   void do_visit_with_result(const F& _f, std::optional<ResultType>* _res,
-                            std::integer_sequence<ValueType, _is...>) const {
-    const auto visit_one = [this]<ValueType _i>(const F& _f,
+                            std::integer_sequence<IndexType, _is...>) const {
+    const auto visit_one = [this]<IndexType _i>(const F& _f,
                                                 std::optional<ResultType>* _res,
                                                 Index<_i>) {
-      if (!*_res && value_ == _i) {
+      if (!*_res && index_ == _i) {
         *_res = _f(get_alternative<_i>());
       }
     };
     (visit_one(_f, _res, Index<_is>{}), ...);
   }
 
-  template <ValueType _i>
+  template <IndexType _i>
   auto& get_alternative() noexcept {
     using CurrentType = internal::nth_element_t<_i, AlternativeTypes...>;
     return *(reinterpret_cast<CurrentType*>(data_.data()));
   }
 
-  template <ValueType _i>
+  template <IndexType _i>
   const auto& get_alternative() const noexcept {
     using CurrentType = internal::nth_element_t<_i, AlternativeTypes...>;
     return *(reinterpret_cast<const CurrentType*>(data_.data()));
@@ -270,7 +273,7 @@ class Variant {
   template <class T>
   void move_from_type(T&& _t) noexcept {
     using CurrentType = std::remove_cvref_t<decltype(_t)>;
-    value_ =
+    index_ =
         internal::element_index<CurrentType,
                                 std::remove_cvref_t<AlternativeTypes>...>();
     new (reinterpret_cast<CurrentType*>(data_.data()))
@@ -278,9 +281,9 @@ class Variant {
   }
 
  private:
-  /// Value indicating which of the alternatives is currently contained in the
+  /// Index indicating which of the alternatives is currently contained in the
   /// variant.
-  ValueType value_;
+  IndexType index_;
 
   /// The underlying data, can be any of the underlying types.
   alignas(std::bit_ceil(num_bytes_)) DataType data_;
