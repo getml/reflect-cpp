@@ -15,18 +15,18 @@ namespace rfl {
 template <class Visitor, internal::StringLiteral... _fields, class... Args>
 inline auto visit(const Visitor& _visitor, const Literal<_fields...> _literal,
                   const Args&... _args) {
-    constexpr int size = sizeof...(_fields);
-    using WrapperType = internal::VisitorWrapper<Visitor, _fields...>;
-    const auto wrapper = WrapperType{&_visitor};
-    return internal::VisitTree::visit<0, size, WrapperType>(
-        wrapper, _literal.value(), _args...);
+  constexpr int size = sizeof...(_fields);
+  using WrapperType = internal::VisitorWrapper<Visitor, _fields...>;
+  const auto wrapper = WrapperType{&_visitor};
+  return internal::VisitTree::visit<0, size, WrapperType>(
+      wrapper, _literal.value(), _args...);
 }
 
 /// Implements the visitor pattern for TaggedUnions.
 template <class Visitor, internal::StringLiteral _discriminator, class... Args>
 inline auto visit(const Visitor& _visitor,
                   const TaggedUnion<_discriminator, Args...>& _tagged_union) {
-    return std::visit(_visitor, _tagged_union.variant());
+  return std::visit(_visitor, _tagged_union.variant());
 }
 
 }  // namespace rfl
