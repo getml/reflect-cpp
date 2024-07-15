@@ -9,6 +9,7 @@
 #include "../Result.hpp"
 #include "../Variant.hpp"
 #include "../always_false.hpp"
+#include "../visit.hpp"
 #include "FieldVariantReader.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"

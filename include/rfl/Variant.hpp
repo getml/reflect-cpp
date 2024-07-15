@@ -412,16 +412,6 @@ struct variant_size<Variant<Types...>>
 template <class VariantType>
 using variant_size_v = variant_size<std::remove_cvref_t<VariantType>>::value;
 
-template <class F, class... AlternativeTypes>
-auto visit(const F& _f, const Variant<AlternativeTypes...>& _v) {
-  return _v.visit(_f);
-}
-
-template <class F, class... AlternativeTypes>
-auto visit(const F& _f, Variant<AlternativeTypes...>&& _v) {
-  return _v.visit(_f);
-}
-
 }  // namespace rfl
 
 namespace std {
