@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "../../Ref.hpp"
-#include "../Variant.hpp"
+#include "../../Variant.hpp"
 
 namespace rfl::parsing::schema {
 
