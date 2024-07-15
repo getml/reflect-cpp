@@ -21,27 +21,27 @@ struct ValidationType {
   };
 
   struct EqualTo {
-    std::variant<double, int> value_;
+    rfl::Variant<double, int> value_;
   };
 
   struct ExclusiveMaximum {
-    std::variant<double, int> value_;
+    rfl::Variant<double, int> value_;
   };
 
   struct ExclusiveMinimum {
-    std::variant<double, int> value_;
+    rfl::Variant<double, int> value_;
   };
 
   struct Maximum {
-    std::variant<double, int> value_;
+    rfl::Variant<double, int> value_;
   };
 
   struct Minimum {
-    std::variant<double, int> value_;
+    rfl::Variant<double, int> value_;
   };
 
   struct NotEqualTo {
-    std::variant<double, int> value_;
+    rfl::Variant<double, int> value_;
   };
 
   struct OneOf {

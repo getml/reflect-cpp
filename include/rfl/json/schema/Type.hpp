@@ -34,7 +34,7 @@ struct Type {
     std::optional<std::string> description;
   };
 
-  using NumericType = std::variant<Integer, Number>;
+  using NumericType = rfl::Variant<Integer, Number>;
 
   struct AllOf {
     std::optional<std::string> description;
@@ -48,13 +48,13 @@ struct Type {
 
   struct ExclusiveMaximum {
     std::optional<std::string> description;
-    std::variant<double, int> exclusiveMaximum;
+    rfl::Variant<double, int> exclusiveMaximum;
     std::string type;
   };
 
   struct ExclusiveMinimum {
     std::optional<std::string> description;
-    std::variant<double, int> exclusiveMinimum;
+    rfl::Variant<double, int> exclusiveMinimum;
     std::string type;
   };
 
@@ -68,13 +68,13 @@ struct Type {
 
   struct Maximum {
     std::optional<std::string> description;
-    std::variant<double, int> maximum;
+    rfl::Variant<double, int> maximum;
     std::string type;
   };
 
   struct Minimum {
     std::optional<std::string> description;
-    std::variant<double, int> minimum;
+    rfl::Variant<double, int> minimum;
     std::string type;
   };
 
