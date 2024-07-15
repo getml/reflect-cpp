@@ -8,7 +8,7 @@
 
 #include "../../Literal.hpp"
 #include "../../Rename.hpp"
-#include "../Variant.hpp"
+#include "../../Variant.hpp"
 
 namespace rfl::json::schema {
 
