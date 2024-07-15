@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "../../Ref.hpp"
-#include "../Variant.hpp"
+#include "../../Variant.hpp"
 #include "ValidationType.hpp"
 
 namespace rfl::parsing::schema {
