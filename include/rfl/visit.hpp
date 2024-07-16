@@ -49,7 +49,7 @@ inline auto visit(const F& _f, const Head& _head, const Tail&... _tail) {
     const auto f_inner = [&](const auto&... _t) { return _f(_h, _t...); };
     return visit(f_inner, _tail...);
   };
-  return _head.visit(f_outer);
+  return visit(f_outer, _head);
 }
 
 }  // namespace rfl
