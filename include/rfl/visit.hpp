@@ -22,7 +22,22 @@ inline auto visit(const Visitor& _visitor, const Literal<_fields...> _literal,
 }
 
 template <class F, class... AlternativeTypes>
-inline auto visit(const F& _f, const Variant<AlternativeTypes...>& _v) {
+inline auto visit(F& _f, Variant<AlternativeTypes...>& _v) {
+  return _v.visit(_f);
+}
+
+template <class F, class... AlternativeTypes>
+inline auto visit(F& _f, Variant<AlternativeTypes...>&& _v) {
+  return _v.visit(_f);
+}
+
+template <class F, class... AlternativeTypes>
+inline auto visit(F& _f, const Variant<AlternativeTypes...>& _v) {
+  return _v.visit(_f);
+}
+
+template <class F, class... AlternativeTypes>
+inline auto visit(const F& _f, Variant<AlternativeTypes...>& _v) {
   return _v.visit(_f);
 }
 
@@ -31,9 +46,30 @@ inline auto visit(const F& _f, Variant<AlternativeTypes...>&& _v) {
   return _v.visit(_f);
 }
 
+template <class F, class... AlternativeTypes>
+inline auto visit(const F& _f, const Variant<AlternativeTypes...>& _v) {
+  return _v.visit(_f);
+}
+
+template <class F, internal::StringLiteral _discriminator, class... Args>
+inline auto visit(F& _f, TaggedUnion<_discriminator, Args...>& _tagged_union) {
+  return _tagged_union.variant().visit(_f);
+}
+
+template <class F, internal::StringLiteral _discriminator, class... Args>
+inline auto visit(F& _f, TaggedUnion<_discriminator, Args...>&& _tagged_union) {
+  return _tagged_union.variant().visit(_f);
+}
+
+template <class F, internal::StringLiteral _discriminator, class... Args>
+inline auto visit(F& _f,
+                  const TaggedUnion<_discriminator, Args...>& _tagged_union) {
+  return _tagged_union.variant().visit(_f);
+}
+
 template <class F, internal::StringLiteral _discriminator, class... Args>
 inline auto visit(const F& _f,
-                  const TaggedUnion<_discriminator, Args...>& _tagged_union) {
+                  TaggedUnion<_discriminator, Args...>& _tagged_union) {
   return _tagged_union.variant().visit(_f);
 }
 
@@ -43,13 +79,28 @@ inline auto visit(const F& _f,
   return _tagged_union.variant().visit(_f);
 }
 
+template <class F, internal::StringLiteral _discriminator, class... Args>
+inline auto visit(const F& _f,
+                  const TaggedUnion<_discriminator, Args...>& _tagged_union) {
+  return _tagged_union.variant().visit(_f);
+}
+
 template <class F, class Head, class... Tail>
-inline auto visit(const F& _f, const Head& _head, const Tail&... _tail) {
-  const auto f_outer = [&](const auto& _h) {
-    const auto f_inner = [&](const auto&... _t) { return _f(_h, _t...); };
+inline auto visit(F& _f, Head& _head, Tail&... _tail) {
+  const auto f_outer = [&](auto& _h) {
+    const auto f_inner = [&](auto&... _t) { return _f(_h, _t...); };
     return visit(f_inner, _tail...);
   };
-  return visit(f_outer, _head);
+  return _head.visit(f_outer);
+}
+
+template <class F, class Head, class... Tail>
+inline auto visit(const F& _f, Head& _head, Tail&... _tail) {
+  const auto f_outer = [&](auto& _h) {
+    const auto f_inner = [&](auto&... _t) { return _f(_h, _t...); };
+    return visit(f_inner, _tail...);
+  };
+  return _head.visit(f_outer);
 }
 
 }  // namespace rfl
