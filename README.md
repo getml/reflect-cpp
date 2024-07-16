@@ -478,7 +478,7 @@ In addition, it supports the following custom containers:
 - `rfl::Result`: Allows for exception-free programming.
 - `rfl::TaggedUnion`: Similar to `std::variant`, but with explicit tags that make parsing more efficient.
 - `rfl::Validator`: Allows for automatic input validation.
-- `rfl::Variant`: An alternative to `std::variant`.
+- `rfl::Variant`: An alternative to `std::variant` that compiles considerably faster.
 
 ### Custom classes
 
