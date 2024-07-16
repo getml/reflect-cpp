@@ -232,7 +232,10 @@ const auto handle_shapes = [](const auto& field) {
   }
 };
 
-rfl::visit(handle_shapes, my_shape);
+rfl::visit(handle_shapes, my_shape); // OK
+
+my_shape.visit(handle_shapes); // also OK
+
 ```
 
 You can also apply `rfl::visit` to `rfl::TaggedUnion`. The underlying `rfl::Variant` can be
@@ -256,5 +259,7 @@ const auto handle_shapes = [](const auto& s) {
   }
 };
 
-rfl::visit(handle_shapes, my_shape);
+rfl::visit(handle_shapes, my_shape); // OK
+
+my_shape.visit(handle_shapes); // also OK
 ```
