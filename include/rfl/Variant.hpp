@@ -142,6 +142,40 @@ class Variant {
   }
 
   template <class F>
+  auto visit(F& _f) {
+    using FirstAlternative = internal::nth_element_t<0, AlternativeTypes...>;
+    using ResultType = std::remove_cvref_t<
+        std::invoke_result_t<std::remove_cvref_t<F>, FirstAlternative&>>;
+    if constexpr (std::is_same_v<ResultType, void>) {
+      bool visited = false;
+      do_visit_no_result(_f, &visited,
+                         std::make_integer_sequence<IndexType, size_>());
+    } else {
+      auto res = std::optional<ResultType>();
+      do_visit_with_result(_f, &res,
+                           std::make_integer_sequence<IndexType, size_>());
+      return std::move(*res);
+    }
+  }
+
+  template <class F>
+  auto visit(F& _f) const {
+    using FirstAlternative = internal::nth_element_t<0, AlternativeTypes...>;
+    using ResultType = std::remove_cvref_t<
+        std::invoke_result_t<std::remove_cvref_t<F>, FirstAlternative&>>;
+    if constexpr (std::is_same_v<ResultType, void>) {
+      bool visited = false;
+      do_visit_no_result(_f, &visited,
+                         std::make_integer_sequence<IndexType, size_>());
+    } else {
+      auto res = std::optional<ResultType>();
+      do_visit_with_result(_f, &res,
+                           std::make_integer_sequence<IndexType, size_>());
+      return std::move(*res);
+    }
+  }
+
+  template <class F>
   auto visit(const F& _f) {
     using FirstAlternative = internal::nth_element_t<0, AlternativeTypes...>;
     using ResultType = std::remove_cvref_t<
@@ -198,6 +232,58 @@ class Variant {
       }
     };
     visit(destroy_one);
+  }
+
+  template <class F, IndexType... _is>
+  void do_visit_no_result(F& _f, bool* _visited,
+                          std::integer_sequence<IndexType, _is...>) {
+    auto visit_one = [this]<IndexType _i>(const F& _f, bool* _visited,
+                                          Index<_i>) {
+      if (!*_visited && index_ == _i) {
+        _f(get_alternative<_i>());
+        *_visited = true;
+      }
+    };
+    (visit_one(_f, _visited, Index<_is>{}), ...);
+  }
+
+  template <class F, IndexType... _is>
+  void do_visit_no_result(F& _f, bool* _visited,
+                          std::integer_sequence<IndexType, _is...>) const {
+    auto visit_one = [this]<IndexType _i>(const F& _f, bool* _visited,
+                                          Index<_i>) {
+      if (!*_visited && index_ == _i) {
+        _f(get_alternative<_i>());
+        *_visited = true;
+      }
+    };
+    (visit_one(_f, _visited, Index<_is>{}), ...);
+  }
+
+  template <class F, class ResultType, IndexType... _is>
+  void do_visit_with_result(F& _f, std::optional<ResultType>* _res,
+                            std::integer_sequence<IndexType, _is...>) {
+    auto visit_one = [this]<IndexType _i>(const F& _f,
+                                          std::optional<ResultType>* _res,
+                                          Index<_i>) {
+      if (!*_res && index_ == _i) {
+        *_res = _f(get_alternative<_i>());
+      }
+    };
+    (visit_one(_f, _res, Index<_is>{}), ...);
+  }
+
+  template <class F, class ResultType, IndexType... _is>
+  void do_visit_with_result(F& _f, std::optional<ResultType>* _res,
+                            std::integer_sequence<IndexType, _is...>) const {
+    auto visit_one = [this]<IndexType _i>(const F& _f,
+                                          std::optional<ResultType>* _res,
+                                          Index<_i>) {
+      if (!*_res && index_ == _i) {
+        *_res = _f(get_alternative<_i>());
+      }
+    };
+    (visit_one(_f, _res, Index<_is>{}), ...);
   }
 
   template <class F, IndexType... _is>
