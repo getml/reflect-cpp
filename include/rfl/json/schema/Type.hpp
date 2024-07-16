@@ -32,6 +32,8 @@ struct Type {
   struct String {
     Literal<"string"> type;
     std::optional<std::string> description;
+    rfl::Rename<"minLength", std::optional<size_t>> minSize;
+    rfl::Rename<"maxLength", std::optional<size_t>> maxSize;
   };
 
   using NumericType = rfl::Variant<Integer, Number>;
@@ -62,8 +64,8 @@ struct Type {
     Literal<"array"> type;
     std::optional<std::string> description;
     rfl::Ref<Type> items;
-    size_t minContains;
-    size_t maxContains;
+    size_t minItems;
+    size_t maxItems;
   };
 
   struct Maximum {
@@ -130,6 +132,8 @@ struct Type {
     Literal<"array"> type;
     std::optional<std::string> description;
     rfl::Ref<Type> items;
+    rfl::Rename<"minItems", std::optional<size_t>> minSize;
+    rfl::Rename<"maxItems", std::optional<size_t>> maxSize;
   };
 
   using ReflectionType =

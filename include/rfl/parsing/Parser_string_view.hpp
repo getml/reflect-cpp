@@ -20,8 +20,8 @@ struct Parser<R, W, std::string_view, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
   using OutputVarType = typename W::OutputVarType;
 
-  static Result<std::string_view> read(const R& _r,
-                                       const InputVarType& _var) noexcept {
+  static Result<std::string_view> read(const R&,
+                                       const InputVarType&) noexcept {
     static_assert(always_false_v<R>,
                   "Reading into std::string_view is dangerous and "
                   "therefore unsupported. "

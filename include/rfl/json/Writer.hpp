@@ -52,13 +52,13 @@ class Writer {
 
   ~Writer() = default;
 
-  OutputArrayType array_as_root(const size_t _size) const noexcept {
+  OutputArrayType array_as_root(const size_t) const noexcept {
     const auto arr = yyjson_mut_arr(doc_);
     yyjson_mut_doc_set_root(doc_, arr);
     return OutputArrayType(arr);
   }
 
-  OutputObjectType object_as_root(const size_t _size) const noexcept {
+  OutputObjectType object_as_root(const size_t) const noexcept {
     const auto obj = yyjson_mut_obj(doc_);
     yyjson_mut_doc_set_root(doc_, obj);
     return OutputObjectType(obj);
@@ -77,7 +77,7 @@ class Writer {
     return OutputVarType(val);
   }
 
-  OutputArrayType add_array_to_array(const size_t _size,
+  OutputArrayType add_array_to_array(const size_t,
                                      OutputArrayType* _parent) const noexcept {
     const auto arr = yyjson_mut_arr(doc_);
     yyjson_mut_arr_add_val(_parent->val_, arr);
@@ -85,7 +85,7 @@ class Writer {
   }
 
   OutputArrayType add_array_to_object(
-      const std::string_view& _name, const size_t _size,
+      const std::string_view& _name, const size_t,
       OutputObjectType* _parent) const noexcept {
     const auto arr = yyjson_mut_arr(doc_);
     yyjson_mut_obj_add(_parent->val_, yyjson_mut_strcpy(doc_, _name.data()),
@@ -94,14 +94,14 @@ class Writer {
   }
 
   OutputObjectType add_object_to_array(
-      const size_t _size, OutputArrayType* _parent) const noexcept {
+      const size_t, OutputArrayType* _parent) const noexcept {
     const auto obj = yyjson_mut_obj(doc_);
     yyjson_mut_arr_add_val(_parent->val_, obj);
     return OutputObjectType(obj);
   }
 
   OutputObjectType add_object_to_object(
-      const std::string_view& _name, const size_t _size,
+      const std::string_view& _name, const size_t,
       OutputObjectType* _parent) const noexcept {
     const auto obj = yyjson_mut_obj(doc_);
     yyjson_mut_obj_add(_parent->val_, yyjson_mut_strcpy(doc_, _name.data()),
@@ -141,9 +141,9 @@ class Writer {
     return OutputVarType(null);
   }
 
-  void end_array(OutputArrayType* _arr) const noexcept {}
+  void end_array(OutputArrayType*) const noexcept {}
 
-  void end_object(OutputObjectType* _obj) const noexcept {}
+  void end_object(OutputObjectType*) const noexcept {}
 
  private:
   template <class T>

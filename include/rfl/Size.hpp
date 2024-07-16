@@ -13,7 +13,7 @@ template <class V>
 struct Size {
   template <class T>
   static rfl::Result<T> validate(const T& _t) {
-    const auto to_t = [&](const auto& _v) { return _t; };
+    const auto to_t = [&](const auto&) { return _t; };
     const auto embellish_error = [](const auto& _err) {
       return Error("Size validation failed: " + _err.what());
     };
@@ -22,7 +22,10 @@ struct Size {
 
   template <class T>
   static parsing::schema::ValidationType to_schema() {
-    return V::template to_schema<size_t>();
+    using ValidationType = parsing::schema::ValidationType;
+    return ValidationType{ValidationType::Size{
+        .size_limit_ =
+            rfl::Ref<ValidationType>::make(V::template to_schema<size_t>())}};
   }
 };
 

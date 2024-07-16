@@ -153,7 +153,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
       return _r.template to_basic_type<std::string>(_var);
     };
 
-    const auto embellish_error = [](const auto& _err) {
+    const auto embellish_error = [](const auto&) {
       return Error("Could not parse tagged union: Could not find field '" +
                    _discriminator.str() +
                    "' or type of field was not a string.");

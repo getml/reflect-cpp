@@ -59,7 +59,7 @@ struct Description {
   template <class U = Type,
             typename std::enable_if<std::is_default_constructible_v<U>,
                                     bool>::type = true>
-  Description(const Default& _default) : value_(Type()) {}
+  Description(const Default&) : value_(Type()) {}
 
   ~Description() = default;
 
@@ -99,7 +99,7 @@ struct Description {
   template <class U = Type,
             typename std::enable_if<std::is_default_constructible_v<U>,
                                     bool>::type = true>
-  auto& operator=(const Default& _default) {
+  auto& operator=(const Default&) {
     value_ = Type();
     return *this;
   }
