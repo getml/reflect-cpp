@@ -87,6 +87,30 @@ struct TaggedUnion {
   /// Returns the underlying variant.
   const VariantType& variant() const { return variant_; }
 
+  /// Applies function _f to all underlying alternatives.
+  template <class F>
+  auto visit(F& _f) {
+    return variant_.visit(_f);
+  }
+
+  /// Applies function _f to all underlying alternatives.
+  template <class F>
+  auto visit(F& _f) const {
+    return variant_.visit(_f);
+  }
+
+  /// Applies function _f to all underlying alternatives.
+  template <class F>
+  auto visit(const F& _f) {
+    return variant_.visit(_f);
+  }
+
+  /// Applies function _f to all underlying alternatives.
+  template <class F>
+  auto visit(const F& _f) const {
+    return variant_.visit(_f);
+  }
+
   static_assert(!PossibleTags::has_duplicates(),
                 "Duplicate tags are not allowed inside tagged unions.");
 
