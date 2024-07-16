@@ -34,7 +34,6 @@ TEST(json, test_rfl_variant_visit) {
                rfl::json::write(_s);
       },
       r, c, s);
-  std::cout << str << std::endl;
   EXPECT_TRUE(str ==
               R"({"height":10.0,"width":5.0}, {"radius":3.0}, {"width":3.0})");
 }
