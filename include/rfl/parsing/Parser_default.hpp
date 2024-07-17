@@ -9,6 +9,7 @@
 #include "../always_false.hpp"
 #include "../from_named_tuple.hpp"
 #include "../internal/enums/StringConverter.hpp"
+#include "../internal/has_reflector.hpp"
 #include "../internal/has_reflection_method_v.hpp"
 #include "../internal/has_reflection_type_v.hpp"
 #include "../internal/is_basic_type.hpp"
@@ -40,7 +41,7 @@ struct Parser {
 
   /// Expresses the variables as type T.
   static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
-    if constexpr (internal::has_reflector<T>) {
+    if constexpr (internal::has_read_reflector<T>) {
       const auto wrap_in_t = [](auto _named_tuple) -> Result<T> {
         try {
           return Reflector<T>::to(_named_tuple);
@@ -78,7 +79,7 @@ struct Parser {
 
   template <class P>
   static void write(const W& _w, const T& _var, const P& _parent) noexcept {
-    if constexpr (internal::has_reflector<T>) {
+    if constexpr (internal::has_write_reflector<T>) {
       Parser<R, W, typename Reflector<T>::ReflType, ProcessorsType>::write(
           _w, Reflector<T>::from(_var), _parent);
     } else if constexpr (internal::has_reflection_type_v<T>) {
