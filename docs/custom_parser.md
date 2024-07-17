@@ -19,8 +19,11 @@ struct Reflector<Person> {
     return {v.first_name, v.last_name};
   }
 };
-} 
+}
 ```
+
+It's also fine to define just the `from` method when the original class is only written, or `to` when the original class is only read.
+
 
 Alternatively, you can implement a custom parser using `rfl::parsing::CustomParser`.
 
