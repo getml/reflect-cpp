@@ -14,6 +14,7 @@
 #include "internal/find_index.hpp"
 #include "internal/is_extra_fields.hpp"
 #include "internal/no_duplicate_field_names.hpp"
+#include "internal/nth_tuple_element_t.hpp"
 
 namespace rfl {
 
@@ -444,7 +445,7 @@ class NamedTuple {
     if constexpr (_i == size()) {
       return _idx;
     } else {
-      using FieldType = typename std::tuple_element_t<_i, Fields>;
+      using FieldType = internal::nth_element_t<_i, FieldTypes...>;
       constexpr bool is_extra_fields =
           internal::is_extra_fields_v<typename FieldType::Type>;
       static_assert(_idx == -1 || !is_extra_fields,
@@ -472,7 +473,7 @@ class NamedTuple {
     } else {
       // When we add additional fields, it is more intuitive to add
       // them to the end, that is why we do it like this.
-      using FieldType = typename std::tuple_element_t<i, Fields>;
+      using FieldType = internal::nth_element_t<i, FieldTypes...>;
       using T = std::remove_cvref_t<typename FieldType::Type>;
       return make_fields<num_additional_fields>(
           FieldType(std::forward<T>(std::get<i>(values_))),
@@ -494,7 +495,7 @@ class NamedTuple {
     } else {
       // When we add additional fields, it is more intuitive to add
       // them to the end, that is why we do it like this.
-      using FieldType = typename std::tuple_element<i, Fields>::type;
+      using FieldType = internal::nth_element_t<i, FieldTypes...>;
       return make_fields<num_additional_fields>(FieldType(std::get<i>(values_)),
                                                 std::move(_args)...);
     }
@@ -510,7 +511,7 @@ class NamedTuple {
     if constexpr (retrieved_all_fields) {
       return NamedTuple<FieldTypes...>(std::forward<Args>(_args)...);
     } else {
-      using FieldType = typename std::tuple_element<size, Fields>::type;
+      using FieldType = internal::nth_element_t<size, FieldTypes...>;
 
       if constexpr (size == _index) {
         return make_replaced<_index, V, T>(
@@ -581,12 +582,13 @@ class NamedTuple {
     if constexpr (retrieved_all_fields) {
       return std::make_tuple(std::forward<Args>(_args)...);
     } else {
-      constexpr auto field_name = std::tuple_element<size, Fields>::type::name_;
+      constexpr auto field_name =
+          internal::nth_element_t<size, FieldTypes...>::name_;
 
       constexpr auto index =
           internal::find_index<field_name, std::tuple<OtherFieldTypes...>>();
 
-      using FieldType = typename std::tuple_element<size, Fields>::type;
+      using FieldType = internal::nth_element_t<size, FieldTypes...>;
 
       using T = std::remove_cvref_t<typename FieldType::Type>;
 

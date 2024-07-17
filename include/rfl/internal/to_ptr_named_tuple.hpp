@@ -13,6 +13,7 @@
 #include "is_empty.hpp"
 #include "is_field.hpp"
 #include "is_named_tuple.hpp"
+#include "nth_tuple_element_t.hpp"
 #include "to_flattened_ptr_tuple.hpp"
 #include "to_ptr_field_tuple.hpp"
 
@@ -25,7 +26,7 @@ auto flatten_ptr_field_tuple(PtrFieldTuple& _t, Args&&... _args) {
   if constexpr (i == std::tuple_size_v<std::remove_cvref_t<PtrFieldTuple>>) {
     return std::tuple_cat(std::forward<Args>(_args)...);
   } else {
-    using T = std::tuple_element_t<i, std::remove_cvref_t<PtrFieldTuple>>;
+    using T = nth_tuple_element_t<i, std::remove_cvref_t<PtrFieldTuple>>;
     if constexpr (internal::is_flatten_field<T>::value) {
       auto subtuple = internal::to_ptr_field_tuple(*std::get<i>(_t).get());
       return flatten_ptr_field_tuple(_t, std::forward<Args>(_args)...,

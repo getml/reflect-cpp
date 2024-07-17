@@ -128,7 +128,7 @@ bool is_optional(const parsing::schema::Type& _t) {
     using T = std::remove_cvref_t<decltype(_v)>;
     return std::is_same<T, parsing::schema::Type::Optional>();
   };
-  return std::visit(handle, _t.variant_);
+  return rfl::visit(handle, _t.variant_);
 }
 
 std::string numeric_type_to_string(const parsing::schema::Type& _type) {
@@ -145,13 +145,13 @@ std::string numeric_type_to_string(const parsing::schema::Type& _type) {
       return schema::Type::Number{}.type.str();
     }
   };
-  return std::visit(handle_variant, _type.variant_);
+  return rfl::visit(handle_variant, _type.variant_);
 }
 
 schema::Type handle_validation_type(
     const parsing::schema::Type& _type,
     const parsing::schema::ValidationType& _validation_type) {
-  const auto handle_variant = [&](const auto& _v) -> schema::Type {
+  auto handle_variant = [&](const auto& _v) -> schema::Type {
     using T = std::remove_cvref_t<decltype(_v)>;
     using ValidationType = parsing::schema::ValidationType;
     if constexpr (std::is_same<T, ValidationType::AllOf>()) {
@@ -180,22 +180,25 @@ schema::Type handle_validation_type(
 
     } else if constexpr (std::is_same<T, ValidationType::Size>()) {
       auto t = type_to_json_schema_type(_type);
+      const auto to_size = [](const auto _v) {
+        return static_cast<size_t>(_v);
+      };
       auto handle_size_variant = [&](auto& _t, const auto& _size_limit) {
         using U = std::remove_cvref_t<decltype(_t)>;
         using V = std::remove_cvref_t<decltype(_size_limit)>;
         if constexpr (std::is_same<U, schema::Type::TypedArray>() ||
                       std::is_same<U, schema::Type::String>()) {
           if constexpr (std::is_same<V, ValidationType::Minimum>()) {
-            _t.minSize = std::get<int>(_size_limit.value_);
+            _t.minSize = _size_limit.value_.visit(to_size);
             return t;
-            
+
           } else if constexpr (std::is_same<V, ValidationType::Maximum>()) {
-            _t.maxSize = std::get<int>(_size_limit.value_);
+            _t.maxSize = _size_limit.value_.visit(to_size);
             return t;
 
           } else if constexpr (std::is_same<V, ValidationType::EqualTo>()) {
-            _t.minSize = std::get<int>(_size_limit.value_);
-            _t.maxSize = std::get<int>(_size_limit.value_);
+            _t.minSize = _size_limit.value_.visit(to_size);
+            _t.maxSize = _size_limit.value_.visit(to_size);
             return t;
 
           } else if constexpr (std::is_same<V, ValidationType::AnyOf>() ||
@@ -210,7 +213,8 @@ schema::Type handle_validation_type(
         }
         return t;
       };
-      return std::visit(handle_size_variant, t.value, _v.size_limit_->variant_);
+
+      return rfl::visit(handle_size_variant, t.value, _v.size_limit_->variant_);
 
     } else if constexpr (std::is_same<T, ValidationType::ExclusiveMaximum>()) {
       return schema::Type{.value = schema::Type::ExclusiveMaximum{
@@ -259,11 +263,11 @@ schema::Type handle_validation_type(
     }
   };
 
-  return std::visit(handle_variant, _validation_type.variant_);
+  return rfl::visit(handle_variant, _validation_type.variant_);
 }
 
 schema::Type type_to_json_schema_type(const parsing::schema::Type& _type) {
-  const auto handle_variant = [](const auto& _t) -> schema::Type {
+  auto handle_variant = [](const auto& _t) -> schema::Type {
     using T = std::remove_cvref_t<decltype(_t)>;
     using Type = parsing::schema::Type;
     if constexpr (std::is_same<T, Type::Boolean>()) {
@@ -296,7 +300,7 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type) {
         _v.description = _t.description_;
         return schema::Type{_v};
       };
-      return std::visit(update_prediction, res.value);
+      return rfl::visit(update_prediction, res.value);
 
     } else if constexpr (std::is_same<T, Type::FixedSizeTypedArray>()) {
       return schema::Type{.value = schema::Type::FixedSizeTypedArray{
@@ -362,7 +366,7 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type) {
     }
   };
 
-  return std::visit(handle_variant, _type.variant_);
+  return rfl::visit(handle_variant, _type.variant_);
 }
 
 }  // namespace rfl::json

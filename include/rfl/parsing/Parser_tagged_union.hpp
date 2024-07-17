@@ -67,7 +67,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
     const auto handle = [&](const auto& _val) {
       write_wrapped(_w, _val, _parent);
     };
-    std::visit(handle, _tagged_union.variant_);
+    rfl::visit(handle, _tagged_union.variant_);
   }
 
   static schema::Type to_schema(

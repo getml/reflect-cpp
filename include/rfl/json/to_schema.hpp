@@ -10,10 +10,10 @@
 #include <map>
 #include <string>
 #include <type_traits>
-#include <variant>
 
 #include "../Literal.hpp"
 #include "../Processors.hpp"
+#include "../Variant.hpp"
 #include "../parsing/schema/Type.hpp"
 #include "../parsing/schema/ValidationType.hpp"
 #include "../parsing/schema/make.hpp"
@@ -31,8 +31,8 @@ template <class T>
 struct TypeHelper {};
 
 template <class... Ts>
-struct TypeHelper<std::variant<Ts...>> {
-  using JSONSchemaType = std::variant<schema::JSONSchema<Ts>...>;
+struct TypeHelper<rfl::Variant<Ts...>> {
+  using JSONSchemaType = rfl::Variant<schema::JSONSchema<Ts>...>;
 };
 
 /// Returns the JSON schema for a class.
@@ -52,7 +52,7 @@ std::string to_schema(const yyjson_write_flag _flag = 0) {
                                  .definitions = definitions};
   };
   auto root = type_to_json_schema_type(internal_schema.root_);
-  const auto json_schema = std::visit(to_schema, std::move(root.value));
+  const auto json_schema = rfl::visit(to_schema, std::move(root.value));
   return write(json_schema, _flag);
 }
 }  // namespace rfl::json

@@ -8,6 +8,7 @@
 
 #include "../Result.hpp"
 #include "../internal/is_array.hpp"
+#include "../internal/nth_tuple_element_t.hpp"
 
 namespace rfl::parsing {
 
@@ -46,7 +47,7 @@ class TupleReader {
         return;
       }
       using CurrentType =
-          std::remove_cvref_t<std::tuple_element_t<_i, TupleType>>;
+          std::remove_cvref_t<internal::nth_tuple_element_t<_i, TupleType>>;
       if constexpr (!std::is_array_v<CurrentType> &&
                     std::is_pointer_v<CurrentType> &&
                     std::is_destructible_v<CurrentType>) {
@@ -65,7 +66,7 @@ class TupleReader {
     if constexpr (_i < size_) {
       if (i_ == _i) {
         using CurrentType =
-            std::remove_cvref_t<std::tuple_element_t<_i, TupleType>>;
+            std::remove_cvref_t<internal::nth_tuple_element_t<_i, TupleType>>;
 
         if constexpr (_all_required ||
                       is_required<CurrentType, _ignore_empty_containers>()) {
@@ -86,7 +87,7 @@ class TupleReader {
     if constexpr (_i < size_) {
       if (i_ == _i) {
         using CurrentType =
-            std::remove_cvref_t<std::tuple_element_t<_i, TupleType>>;
+            std::remove_cvref_t<internal::nth_tuple_element_t<_i, TupleType>>;
 
         auto res = Parser<R, W, CurrentType, ProcessorsType>::read(*r_, _var);
 

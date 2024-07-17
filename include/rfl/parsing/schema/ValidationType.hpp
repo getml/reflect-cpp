@@ -4,10 +4,10 @@
 #include <cstddef>
 #include <map>
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "../../Ref.hpp"
+#include "../../Variant.hpp"
 
 namespace rfl::parsing::schema {
 
@@ -21,27 +21,27 @@ struct ValidationType {
   };
 
   struct EqualTo {
-    std::variant<double, int> value_;
+    rfl::Variant<double, int> value_;
   };
 
   struct ExclusiveMaximum {
-    std::variant<double, int> value_;
+    rfl::Variant<double, int> value_;
   };
 
   struct ExclusiveMinimum {
-    std::variant<double, int> value_;
+    rfl::Variant<double, int> value_;
   };
 
   struct Maximum {
-    std::variant<double, int> value_;
+    rfl::Variant<double, int> value_;
   };
 
   struct Minimum {
-    std::variant<double, int> value_;
+    rfl::Variant<double, int> value_;
   };
 
   struct NotEqualTo {
-    std::variant<double, int> value_;
+    rfl::Variant<double, int> value_;
   };
 
   struct OneOf {
@@ -57,7 +57,7 @@ struct ValidationType {
   };
 
   using VariantType =
-      std::variant<AllOf, AnyOf, EqualTo, ExclusiveMaximum, ExclusiveMinimum,
+      rfl::Variant<AllOf, AnyOf, EqualTo, ExclusiveMaximum, ExclusiveMinimum,
                    Maximum, Minimum, OneOf, NotEqualTo, Regex, Size>;
 
   /// A type can be determined to be any of the above.

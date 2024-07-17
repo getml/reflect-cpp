@@ -1,6 +1,7 @@
 #ifndef RFL_RESULT_HPP_
 #define RFL_RESULT_HPP_
 
+#include <algorithm>
 #include <array>
 #include <iostream>
 #include <optional>
@@ -327,7 +328,7 @@ class Result {
     return *(reinterpret_cast<const Error*>(t_or_err_.data()));
   }
 
-  void move_from_other(Result<T>& _other) {
+  void move_from_other(Result<T>& _other) noexcept {
     if (success_) {
       new (&get_t()) T(std::move(_other.get_t()));
     } else {

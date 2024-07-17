@@ -13,6 +13,7 @@
 #include "Result.hpp"
 #include "internal/StringLiteral.hpp"
 #include "internal/no_duplicate_field_names.hpp"
+#include "internal/nth_tuple_element_t.hpp"
 
 namespace rfl {
 
@@ -182,7 +183,7 @@ class Literal {
 #if __cpp_lib_three_way_comparison >= 201907L
     return name() <=> _str;
 #else
-    auto const &const_name = name();
+    auto const& const_name = name();
     if (const_name < _str) {
       return std::strong_ordering::less;
     }
@@ -199,7 +200,7 @@ class Literal {
 #if __cpp_lib_three_way_comparison >= 201907L
     return name() <=> _str;
 #else
-    auto const &const_name = name();
+    auto const& const_name = name();
     if (const_name < _str) {
       return std::strong_ordering::less;
     }
@@ -268,7 +269,7 @@ class Literal {
 
   template <int _i>
   static void allowed_strings_vec_add_one(std::vector<std::string>* _values) {
-    using FieldType = typename std::tuple_element<_i, FieldsType>::type;
+    using FieldType = internal::nth_tuple_element_t<_i, FieldsType>;
     _values->emplace_back(FieldType::name_.str());
   }
 
@@ -288,7 +289,7 @@ class Literal {
   template <int _i>
   void find_name_set_if_matches(std::string* _name) const {
     if (_i == value_) {
-      using FieldType = typename std::tuple_element_t<_i, FieldsType>;
+      using FieldType = internal::nth_tuple_element_t<_i, FieldsType>;
       *_name = FieldType::name_.str();
     }
   }
@@ -297,7 +298,7 @@ class Literal {
   /// the string at compile time within the Literal's own fields.
   template <int _i>
   constexpr static auto find_name_within_own_fields() {
-    return std::tuple_element_t<_i, FieldsType>::name_;
+    return internal::nth_tuple_element_t<_i, FieldsType>::name_;
   }
 
   /// Finds the correct value associated with
@@ -325,7 +326,7 @@ class Literal {
   template <int _i>
   static void find_value_set_if_matches(const std::string& _str, bool* _found,
                                         int* _idx) {
-    using FieldType = typename std::tuple_element<_i, FieldsType>::type;
+    using FieldType = internal::nth_tuple_element_t<_i, FieldsType>;
     if (!*_found && FieldType::name_.string_view() == _str) {
       *_idx = _i;
       *_found = true;
@@ -338,7 +339,7 @@ class Literal {
     if constexpr (_i == num_fields_) {
       return -1;
     } else {
-      using FieldType = typename std::tuple_element<_i, FieldsType>::type;
+      using FieldType = internal::nth_tuple_element_t<_i, FieldsType>;
       if constexpr (FieldType::name_ == _name) {
         return _i;
       } else {

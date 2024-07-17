@@ -16,6 +16,7 @@
 #include "../internal/is_basic_type.hpp"
 #include "../internal/is_extra_fields.hpp"
 #include "../internal/is_skip.hpp"
+#include "../internal/nth_element_t.hpp"
 #include "../internal/strings/replace_all.hpp"
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
@@ -129,8 +130,7 @@ struct NamedTupleParser {
   static void add_field_to_object(const W& _w,
                                   const NamedTuple<FieldTypes...>& _tup,
                                   OutputObjectOrArrayType* _ptr) noexcept {
-    using FieldType =
-        typename std::tuple_element<_i, std::tuple<FieldTypes...>>::type;
+    using FieldType = internal::nth_element_t<_i, FieldTypes...>;
     using ValueType = std::remove_cvref_t<typename FieldType::Type>;
     const auto value = rfl::get<_i>(_tup);
     if constexpr (internal::is_extra_fields_v<ValueType>) {
@@ -167,8 +167,7 @@ struct NamedTupleParser {
   static void add_field_to_schema(
       std::map<std::string, schema::Type>* _definitions,
       SchemaType* _schema) noexcept {
-    using F =
-        std::tuple_element_t<_i, typename NamedTuple<FieldTypes...>::Fields>;
+    using F = internal::nth_element_t<_i, FieldTypes...>;
     using U = std::remove_cvref_t<typename F::Type>;
     if constexpr (!internal::is_skip_v<U> && !internal::is_extra_fields_v<U>) {
       auto s = Parser<R, W, U, ProcessorsType>::to_schema(_definitions);
@@ -194,9 +193,8 @@ struct NamedTupleParser {
     (add_field_to_schema<_is>(_definitions, _schema), ...);
 
     if constexpr (NamedTupleType::pos_extra_fields() != -1) {
-      using F =
-          std::tuple_element_t<NamedTupleType::pos_extra_fields(),
-                               typename NamedTuple<FieldTypes...>::Fields>;
+      using F = internal::nth_element_t<NamedTupleType::pos_extra_fields(),
+                                        FieldTypes...>;
       using ExtraFieldsType = std::remove_cvref_t<typename F::Type>;
       using U = std::remove_cvref_t<typename ExtraFieldsType::Type>;
       _schema->additional_properties_ = std::make_shared<schema::Type>(
@@ -210,7 +208,7 @@ struct NamedTupleParser {
                                        const NamedTupleType& _view,
                                        std::array<bool, size_>* _set,
                                        std::vector<Error>* _errors) noexcept {
-    using FieldType = std::tuple_element_t<_i, typename NamedTupleType::Fields>;
+    using FieldType = internal::nth_element_t<_i, FieldTypes...>;
     using ValueType = std::remove_reference_t<
         std::remove_pointer_t<typename FieldType::Type>>;
 
@@ -220,7 +218,7 @@ struct NamedTupleParser {
           (_all_required || is_required<ValueType, _ignore_empty_containers>());
       if constexpr (is_required_field) {
         constexpr auto current_name =
-            std::tuple_element_t<_i, typename NamedTupleType::Fields>::name();
+            internal::nth_element_t<_i, FieldTypes...>::name();
         _errors->emplace_back(Error(
             "Field named '" + std::string(current_name) + "' not found."));
       } else {

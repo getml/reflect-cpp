@@ -1,8 +1,7 @@
 #ifndef RFL_TAGGEDUNION_HPP_
 #define RFL_TAGGEDUNION_HPP_
 
-#include <variant>
-
+#include "Variant.hpp"
 #include "define_literal.hpp"
 #include "internal/Getter.hpp"
 #include "internal/StringLiteral.hpp"
@@ -16,7 +15,7 @@ struct TaggedUnion {
   static constexpr internal::StringLiteral discrimininator_ = _discriminator;
 
   /// The type of the underlying variant.
-  using VariantType = std::variant<Ts...>;
+  using VariantType = rfl::Variant<Ts...>;
 
   /// A literal containing all the tags that are possible
   using PossibleTags = define_literal_t<internal::tag_t<_discriminator, Ts>...>;
@@ -88,6 +87,30 @@ struct TaggedUnion {
   /// Returns the underlying variant.
   const VariantType& variant() const { return variant_; }
 
+  /// Applies function _f to all underlying alternatives.
+  template <class F>
+  auto visit(F& _f) {
+    return variant_.visit(_f);
+  }
+
+  /// Applies function _f to all underlying alternatives.
+  template <class F>
+  auto visit(F& _f) const {
+    return variant_.visit(_f);
+  }
+
+  /// Applies function _f to all underlying alternatives.
+  template <class F>
+  auto visit(const F& _f) {
+    return variant_.visit(_f);
+  }
+
+  /// Applies function _f to all underlying alternatives.
+  template <class F>
+  auto visit(const F& _f) const {
+    return variant_.visit(_f);
+  }
+
   static_assert(!PossibleTags::has_duplicates(),
                 "Duplicate tags are not allowed inside tagged unions.");
 
@@ -95,62 +118,6 @@ struct TaggedUnion {
   /// around a variant that is mainly used for parsing.
   VariantType variant_;
 };
-
-namespace internal {
-
-template <StringLiteral _discriminator, class... NamedTupleTypes>
-struct Getter<TaggedUnion<_discriminator, NamedTupleTypes...>> {
- public:
-  /// Retrieves the indicated value from the tuple.
-  template <int _index>
-  static inline auto& get(
-      TaggedUnion<_discriminator, NamedTupleTypes...>& _tu) {
-    return Getter<std::variant<NamedTupleTypes...>>::template get<_index>(
-        _tu.variant_);
-  }
-
-  /// Gets a field by name.
-  template <StringLiteral _field_name>
-  static inline auto& get(
-      TaggedUnion<_discriminator, NamedTupleTypes...>& _tu) {
-    return Getter<std::variant<NamedTupleTypes...>>::template get<_field_name>(
-        _tu.variant_);
-  }
-
-  /// Gets a field by the field type.
-  template <class Field>
-  static inline auto& get(
-      TaggedUnion<_discriminator, NamedTupleTypes...>& _tu) {
-    return Getter<std::variant<NamedTupleTypes...>>::template get<Field>(
-        _tu.variant_);
-  }
-
-  /// Retrieves the indicated value from the tuple.
-  template <int _index>
-  static inline const auto& get_const(
-      const TaggedUnion<_discriminator, NamedTupleTypes...>& _tu) {
-    return Getter<std::variant<NamedTupleTypes...>>::template get_const<_index>(
-        _tu.variant_);
-  }
-
-  /// Gets a field by name.
-  template <StringLiteral _field_name>
-  static inline const auto& get_const(
-      const TaggedUnion<_discriminator, NamedTupleTypes...>& _tu) {
-    return Getter<std::variant<NamedTupleTypes...>>::template get_const<
-        _field_name>(_tu.variant_);
-  }
-
-  /// Gets a field by the field type.
-  template <class Field>
-  static inline const auto& get_const(
-      const TaggedUnion<_discriminator, NamedTupleTypes...>& _tu) {
-    return Getter<std::variant<NamedTupleTypes...>>::template get_const<Field>(
-        _tu.variant_);
-  }
-};
-
-}  // namespace internal
 
 }  // namespace rfl
 
