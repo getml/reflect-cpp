@@ -19,15 +19,19 @@ namespace rfl {
 
 template <class... AlternativeTypes>
 class Variant {
-  static constexpr unsigned long num_bytes_ =
+  static constexpr auto max_size_wrapper_ =
       internal::variant::find_max_size<AlternativeTypes...>();
+
+  static constexpr unsigned long num_bytes_ = max_size_wrapper_.size_;
+
+  using LargestType = typename decltype(max_size_wrapper_)::Type;
+
+  using DataType = std::array<unsigned char, num_bytes_>;
 
   using IndexType =
       std::conditional_t<sizeof...(AlternativeTypes) <=
                              std::numeric_limits<std::uint8_t>::max(),
                          std::uint8_t, std::uint16_t>;
-
-  using DataType = std::array<unsigned char, num_bytes_>;
 
   static constexpr IndexType size_ = sizeof...(AlternativeTypes);
 
@@ -69,7 +73,7 @@ class Variant {
   /// Emplaces a new element into the variant.
   template <class T, class... Args>
   constexpr T& emplace(Args&&... _args) {
-    auto t = T(std::forward<Args>(_args)...);
+    auto t = T{std::forward<Args>(_args)...};
     destroy_if_necessary();
     move_from_type(std::move(t));
     return *(reinterpret_cast<T*>(data_.data()));
@@ -373,7 +377,7 @@ class Variant {
   IndexType index_;
 
   /// The underlying data, can be any of the underlying types.
-  alignas(std::bit_ceil(num_bytes_)) DataType data_;
+  alignas(LargestType) DataType data_;
 };
 
 template <class T, class... Types>

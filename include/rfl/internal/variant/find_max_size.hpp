@@ -3,21 +3,25 @@
 
 namespace rfl::internal::variant {
 
+template <class T>
 struct SizeWrapper {
-  unsigned long size_;
+  using Type = T;
+  static constexpr unsigned long size_ = sizeof(T);
 };
 
-constexpr auto wrap_size(const unsigned long _size) {
-  return SizeWrapper{_size};
-}
-
-constexpr auto operator|(const SizeWrapper& _s1, const SizeWrapper& _s2) {
-  return _s2.size_ > _s1.size_ ? _s2 : _s1;
+template <class T1, class T2>
+consteval auto operator|(const SizeWrapper<T1>& _s1,
+                         const SizeWrapper<T2>& _s2) {
+  if constexpr (sizeof(T2) > sizeof(T1)) {
+    return _s2;
+  } else {
+    return _s1;
+  }
 }
 
 template <class Head, class... Tail>
-consteval unsigned long find_max_size() {
-  return (wrap_size(sizeof(Head)) | ... | wrap_size(sizeof(Tail))).size_;
+consteval auto find_max_size() {
+  return (SizeWrapper<Head>{} | ... | SizeWrapper<Tail>{});
 }
 
 }  // namespace rfl::internal::variant
