@@ -8,7 +8,6 @@
 #include <string>
 #include <type_traits>
 
-
 template <class... Ps>
 auto write(const auto& _struct, const std::string& _expected) {
   const auto json_string1 = rfl::json::write<Ps...>(_struct);
@@ -18,9 +17,8 @@ auto write(const auto& _struct, const std::string& _expected) {
       << "Got: " << std::endl
       << json_string1 << std::endl
       << std::endl;
-    return json_string1;
+  return json_string1;
 }
-
 
 template <class... Ps>
 void read(const std::string& _json, const auto& _expected) {
@@ -29,21 +27,6 @@ void read(const std::string& _json, const auto& _expected) {
   EXPECT_TRUE(res && true) << "Test failed on read. Error: "
                            << res.error().value().what();
 }
-
-#if 0
-template <class... Ps>
-void write_and_read(const auto& _struct, const std::string& _expected) {
-  auto json_string1 = write<Ps...>(_struct, _expected);
-  auto res = read<Ps...>(json_string1, _struct);
-  const auto json_string2 = rfl::json::write<Ps...>(res.value());
-  EXPECT_EQ(json_string2, _expected)
-      << "Test failed on read. Expected:" << std::endl
-      << _expected << std::endl
-      << "Got: " << std::endl
-      << json_string2 << std::endl
-      << std::endl;
-}
-#endif
 
 template <class... Ps>
 void write_and_read(const auto& _struct, const std::string& _expected) {
