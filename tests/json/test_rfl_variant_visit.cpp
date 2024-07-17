@@ -27,7 +27,7 @@ using Shapes = rfl::Variant<Circle, Rectangle, std::unique_ptr<Square>>;
 TEST(json, test_rfl_variant_visit) {
   Shapes r = Rectangle{.height = 10, .width = 5};
   Shapes c = Circle{.radius = 3};
-  Shapes s = std::make_unique<Square>(3.0);
+  Shapes s = std::make_unique<Square>(Square{.width = 3.0});
   const auto f = [](const auto& _r, const auto& _c, const auto& _s) {
     return rfl::json::write(_r) + ", " + rfl::json::write(_c) + ", " +
            rfl::json::write(_s);
