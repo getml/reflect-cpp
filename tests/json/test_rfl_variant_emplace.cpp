@@ -26,7 +26,7 @@ using Shapes = rfl::Variant<Circle, Rectangle, std::unique_ptr<Square>>;
 
 TEST(json, test_rfl_variant_emplace) {
   Shapes r;
-  r.emplace<1>(10, 5);
+  r.emplace<1>(10.0, 5.0);
   write_and_read(r, R"({"height":10.0,"width":5.0})");
 }
 }  // namespace test_rfl_variant_emplace
