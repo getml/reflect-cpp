@@ -497,10 +497,11 @@ struct variant_size;
 
 template <class... Types>
 struct variant_size<Variant<Types...>>
-    : std::integral_constant<std::size_t, sizeof...(Types)> {};
+    : std::integral_constant<size_t, sizeof...(Types)> {};
 
 template <class VariantType>
-using variant_size_v = variant_size<std::remove_cvref_t<VariantType>>::value;
+constexpr size_t variant_size_v =
+    variant_size<std::remove_cvref_t<VariantType>>();
 
 }  // namespace rfl
 
