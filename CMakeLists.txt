@@ -51,7 +51,12 @@ if(REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
     set_source_files_properties(src/yyjson.c PROPERTIES LANGUAGE CXX)
 
     target_compile_features(reflectcpp PUBLIC cxx_std_20)
-    target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall -Wextra>)
+
+    if (MSVC)
+        target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall>)
+    else()
+        target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall -Wextra>)
+    endif()
 
     target_include_directories(
         reflectcpp PUBLIC
