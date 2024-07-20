@@ -173,6 +173,16 @@ const auto& get(const std::tuple<Types...>& _tup) {
   return std::get<_index>(_tup);
 }
 
+template <class... Types>
+auto make_tuple(Types&&... _args) {
+  return rfl::Tuple<std::decay_t<Types>...>(std::forward<Types>(_args)...);
+}
+
+template <class... Types>
+auto tie(Types&... _args) {
+  return rfl::Tuple<Types&...>(_args...);
+}
+
 template <int N, class T>
 struct tuple_element;
 
