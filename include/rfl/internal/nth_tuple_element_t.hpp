@@ -3,7 +3,10 @@
 
 #include <tuple>
 
+#include "../Tuple.hpp"
 #include "nth_element_t.hpp"
+
+// TODO: Remove this and replace with rfl::tuple_element_t.
 
 namespace rfl::internal {
 
@@ -12,6 +15,11 @@ struct nth_tuple_element;
 
 template <int N, class... Ts>
 struct nth_tuple_element<N, std::tuple<Ts...>> {
+  using Type = nth_element_t<N, Ts...>;
+};
+
+template <int N, class... Ts>
+struct nth_tuple_element<N, rfl::Tuple<Ts...>> {
   using Type = nth_element_t<N, Ts...>;
 };
 

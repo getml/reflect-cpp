@@ -7,6 +7,7 @@
 #include <limits>
 #include <optional>
 #include <stdexcept>
+#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -19,7 +20,7 @@ template <class... Types>
 class Tuple {
   static constexpr size_t size_ = sizeof...(Types);
 
-  static constexpr std::array<unsigned int, size_ + 1> accumulated_sizes_ =
+  static constexpr auto accumulated_sizes_ =
       internal::tuple::accumulate_sizes<Types...>();
 
   static constexpr auto seq_ = std::make_integer_sequence<int, size_>{};
@@ -41,7 +42,9 @@ class Tuple {
 
   Tuple(const Tuple<Types...>& _other) { copy_from_other(_other, seq_); }
 
-  Tuple(Tuple<Types...>&& _other) noexcept { move_from_other(_other, seq_); }
+  Tuple(Tuple<Types...>&& _other) noexcept {
+    move_from_other(std::move(_other), seq_);
+  }
 
   ~Tuple() { destroy_if_necessary(seq_); }
 
@@ -49,16 +52,16 @@ class Tuple {
   template <int _index>
   auto& get() {
     using Type = internal::nth_element_t<_index, Types...>;
-    return *reinterpret_cast<Type>(data_.data() +
-                                   std::get<_index>(accumulated_sizes_));
+    return *reinterpret_cast<Type*>(data_.data() +
+                                    std::get<_index>(accumulated_sizes_));
   }
 
   /// Gets an element by index.
   template <int _index>
   const auto& get() const {
     using Type = internal::nth_element_t<_index, Types...>;
-    return *reinterpret_cast<Type>(data_.data() +
-                                   std::get<_index>(accumulated_sizes_));
+    return *reinterpret_cast<const Type*>(data_.data() +
+                                          std::get<_index>(accumulated_sizes_));
   }
 
   /// Assigns the underlying object.
@@ -94,6 +97,7 @@ class Tuple {
     (copy_one(_other, Index<_is>{}), ...);
   }
 
+  template <int... _is>
   void copy_from_types(const Types&... _types,
                        std::integer_sequence<int, _is...>) {
     const auto copy_one = [this]<int _i>(const auto& _t, Index<_i>) {
@@ -144,6 +148,62 @@ class Tuple {
   /// The underlying data, can be any of the underlying types.
   alignas(Types...) DataType data_;
 };
+
+/// Gets an element by index.
+template <int _index, class... Types>
+auto& get(rfl::Tuple<Types...>& _tup) {
+  return _tup.template get<_index>();
+}
+
+/// Gets an element by index.
+template <int _index, class... Types>
+const auto& get(const rfl::Tuple<Types...>& _tup) {
+  return _tup.template get<_index>();
+}
+
+/// Gets an element by index.
+template <int _index, class... Types>
+auto& get(std::tuple<Types...>& _tup) {
+  return std::get<_index>(_tup);
+}
+
+/// Gets an element by index.
+template <int _index, class... Types>
+const auto& get(const std::tuple<Types...>& _tup) {
+  return std::get<_index>(_tup);
+}
+
+template <int N, class T>
+struct tuple_element;
+
+template <int N, class... Ts>
+struct tuple_element<N, rfl::Tuple<Ts...>> {
+  using type = internal::nth_element_t<N, Ts...>;
+};
+
+template <int N, class... Ts>
+struct tuple_element<N, std::tuple<Ts...>> {
+  using type = internal::nth_element_t<N, Ts...>;
+};
+
+template <int N, class T>
+using tuple_element_t = typename tuple_element<N, std::remove_cvref_t<T>>::type;
+
+template <class T>
+struct tuple_size;
+
+template <class... Ts>
+struct tuple_size<rfl::Tuple<Ts...>> {
+  static constexpr auto value = sizeof...(Ts);
+};
+
+template <class... Ts>
+struct tuple_size<std::tuple<Ts...>> {
+  static constexpr auto value = sizeof...(Ts);
+};
+
+template <class T>
+constexpr auto tuple_size_v = tuple_size<std::remove_cvref_t<T>>::value;
 
 }  // namespace rfl
 

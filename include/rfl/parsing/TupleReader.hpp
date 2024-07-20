@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "../Result.hpp"
+#include "../Tuple.hpp"
 #include "../internal/is_array.hpp"
 #include "../internal/nth_tuple_element_t.hpp"
 
@@ -17,7 +18,7 @@ template <class R, class W, class TupleType, bool _ignore_empty_containers,
 class TupleReader {
  private:
   using InputVarType = typename R::InputVarType;
-  static constexpr size_t size_ = std::tuple_size_v<TupleType>;
+  static constexpr size_t size_ = rfl::tuple_size_v<TupleType>;
 
  public:
   TupleReader(const R* _r, TupleType* _tuple) : i_(0), r_(_r), tuple_(_tuple) {}
@@ -47,13 +48,13 @@ class TupleReader {
         return;
       }
       using CurrentType =
-          std::remove_cvref_t<internal::nth_tuple_element_t<_i, TupleType>>;
+          std::remove_cvref_t<rfl::tuple_element_t<_i, TupleType>>;
       if constexpr (!std::is_array_v<CurrentType> &&
                     std::is_pointer_v<CurrentType> &&
                     std::is_destructible_v<CurrentType>) {
-        std::get<_i>(*tuple_)->~CurrentType();
+        rfl::get<_i>(*tuple_)->~CurrentType();
       } else if constexpr (std::is_array_v<CurrentType>) {
-        auto ptr = std::get<_i>(*tuple_);
+        auto ptr = rfl::get<_i>(*tuple_);
         call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
       }
       call_destructors_where_necessary<_i + 1>();
@@ -66,7 +67,7 @@ class TupleReader {
     if constexpr (_i < size_) {
       if (i_ == _i) {
         using CurrentType =
-            std::remove_cvref_t<internal::nth_tuple_element_t<_i, TupleType>>;
+            std::remove_cvref_t<rfl::tuple_element_t<_i, TupleType>>;
 
         if constexpr (_all_required ||
                       is_required<CurrentType, _ignore_empty_containers>()) {
@@ -74,7 +75,7 @@ class TupleReader {
                         " was required, but missing.");
           return;
         } else {
-          ::new (&(std::get<_i>(*tuple_))) CurrentType();
+          ::new (&(rfl::get<_i>(*tuple_))) CurrentType();
           ++i_;
         }
       }
@@ -87,12 +88,12 @@ class TupleReader {
     if constexpr (_i < size_) {
       if (i_ == _i) {
         using CurrentType =
-            std::remove_cvref_t<internal::nth_tuple_element_t<_i, TupleType>>;
+            std::remove_cvref_t<rfl::tuple_element_t<_i, TupleType>>;
 
         auto res = Parser<R, W, CurrentType, ProcessorsType>::read(*r_, _var);
 
         if (res) {
-          move_to(&(std::get<_i>(*tuple_)), &(*res));
+          move_to(&(rfl::get<_i>(*tuple_)), &(*res));
           ++i_;
         } else {
           *_err = Error("Failed to parse field " + std::to_string(_i) + ": " +

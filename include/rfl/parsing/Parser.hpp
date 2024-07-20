@@ -16,6 +16,7 @@
 #include "Parser_rename.hpp"
 #include "Parser_result.hpp"
 #include "Parser_rfl_array.hpp"
+#include "Parser_rfl_tuple.hpp"
 #include "Parser_rfl_variant.hpp"
 #include "Parser_shared_ptr.hpp"
 #include "Parser_skip.hpp"
