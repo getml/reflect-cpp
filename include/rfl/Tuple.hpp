@@ -12,7 +12,7 @@
 #include <utility>
 
 #include "internal/nth_element_t.hpp"
-#include "internal/tuple/accumulate_sizes.hpp"
+#include "internal/tuple/calculate_positions.hpp"
 
 namespace rfl {
 
@@ -29,13 +29,12 @@ template <class... Types>
 class Tuple {
   static constexpr size_t size_ = sizeof...(Types);
 
-  static constexpr auto accumulated_sizes_ =
-      internal::tuple::accumulate_sizes<Types...>();
+  static constexpr auto positions_ =
+      internal::tuple::calculate_positions<Types...>();
 
   static constexpr auto seq_ = std::make_integer_sequence<int, size_>{};
 
-  static constexpr unsigned int num_bytes_ =
-      std::get<size_>(accumulated_sizes_);
+  static constexpr unsigned int num_bytes_ = std::get<size_>(positions_);
 
   using DataType = std::array<unsigned char, num_bytes_>;
 
@@ -61,16 +60,14 @@ class Tuple {
   template <int _index>
   auto& get() {
     using Type = internal::nth_element_t<_index, Types...>;
-    return *(reinterpret_cast<Type*>(data_.data() +
-                                     std::get<_index>(accumulated_sizes_)));
+    return *(reinterpret_cast<Type*>(data_.data() + pos<_index>()));
   }
 
   /// Gets an element by index.
   template <int _index>
   const auto& get() const {
     using Type = internal::nth_element_t<_index, Types...>;
-    return *(reinterpret_cast<const Type*>(
-        data_.data() + std::get<_index>(accumulated_sizes_)));
+    return *(reinterpret_cast<const Type*>(data_.data() + pos<_index>()));
   }
 
   /// Assigns the underlying object.
@@ -150,7 +147,7 @@ class Tuple {
 
   template <int _i>
   static consteval unsigned int pos() {
-    return std::get<_i>(accumulated_sizes_);
+    return std::get<_i>(positions_);
   }
 
  private:
