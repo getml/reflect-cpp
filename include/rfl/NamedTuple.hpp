@@ -1,6 +1,8 @@
 #ifndef RFL_NAMEDTUPLE_HPP_
 #define RFL_NAMEDTUPLE_HPP_
 
+#include <bits/utility.h>
+
 #include <algorithm>
 #include <string_view>
 #include <type_traits>
@@ -33,6 +35,12 @@ class NamedTuple;
 
 template <class... FieldTypes>
 class NamedTuple {
+  template <int _i>
+  struct Index {};
+
+  static constexpr auto seq_ =
+      std::make_integer_sequence<int, sizeof...(FieldTypes)>();
+
  public:
   using Fields = rfl::Tuple<std::remove_cvref_t<FieldTypes>...>;
   using Names = Literal<std::remove_cvref_t<FieldTypes>::name_...>;
@@ -117,11 +125,11 @@ class NamedTuple {
     using Head = Field<_name, FType>;
     if constexpr (sizeof...(Tail) > 0) {
       return NamedTuple<FieldTypes..., std::remove_cvref_t<Head>>(
-                 make_fields<1, Head>(std::forward<Head>(_head)))
+                 make_fields(seq_, std::forward<Head>(_head)))
           .add(std::forward<Tail>(_tail)...);
     } else {
       return NamedTuple<FieldTypes..., std::remove_cvref_t<Head>>(
-          make_fields<1, Head>(std::forward<Head>(_head)));
+          make_fields(seq_, std::forward<Head>(_head)));
     }
   }
 
@@ -131,11 +139,11 @@ class NamedTuple {
     using Head = Field<_name, FType>;
     if constexpr (sizeof...(Tail) > 0) {
       return NamedTuple<FieldTypes..., std::remove_cvref_t<Head>>(
-                 make_fields<1, Head>(_head))
+                 make_fields(seq_, _head))
           .add(_tail...);
     } else {
       return NamedTuple<FieldTypes..., std::remove_cvref_t<Head>>(
-          make_fields<1, Head>(_head));
+          make_fields(seq_, _head));
     }
   }
 
@@ -225,10 +233,10 @@ class NamedTuple {
   }
 
   /// Returns a tuple containing the fields.
-  Fields fields() { return make_fields(); }
+  Fields fields() { return make_fields(seq_); }
 
   /// Returns a tuple containing the fields.
-  Fields fields() const { return make_fields(); }
+  Fields fields() const { return make_fields(seq_); }
 
   /// Gets a field by index.
   template <int _index>
@@ -466,74 +474,43 @@ class NamedTuple {
   }
 
   /// Generates the fields.
-  template <int num_additional_fields = 0, class... Args>
-  auto make_fields(Args&&... _args) {
-    constexpr auto size = sizeof...(Args) - num_additional_fields;
-    constexpr auto num_fields = rfl::tuple_size_v<Fields>;
-    constexpr auto i = num_fields - size - 1;
-
-    constexpr bool retrieved_all_fields = size == num_fields;
-
-    // TODO: non-recursive implementation
-    if constexpr (retrieved_all_fields) {
-      return rfl::make_tuple(std::forward<Args>(_args)...);
-    } else {
-      // When we add additional fields, it is more intuitive to add
-      // them to the end, that is why we do it like this.
-      using FieldType = internal::nth_element_t<i, FieldTypes...>;
+  template <int... _is, class... AdditionalArgs>
+  auto make_fields(std::integer_sequence<int, _is...>,
+                   AdditionalArgs&&... _args) {
+    const auto wrap = [this]<int _i>(Index<_i>) {
+      using FieldType = internal::nth_element_t<_i, FieldTypes...>;
       using T = std::remove_cvref_t<typename FieldType::Type>;
-      return make_fields<num_additional_fields>(
-          FieldType(std::forward<T>(rfl::get<i>(values_))),
-          std::forward<Args>(_args)...);
-    }
+      return FieldType(std::forward<T>(rfl::get<_i>(values_)));
+    };
+    return rfl::make_tuple(wrap(Index<_is>{})...,
+                           std::forward<AdditionalArgs>(_args)...);
   }
 
   /// Generates the fields.
-  template <int num_additional_fields = 0, class... Args>
-  auto make_fields(Args... _args) const {
-    constexpr auto size = sizeof...(Args) - num_additional_fields;
-    constexpr auto num_fields = rfl::tuple_size_v<Fields>;
-    constexpr auto i = num_fields - size - 1;
-
-    constexpr bool retrieved_all_fields = size == num_fields;
-
-    // TODO: non-recursive implementation
-    if constexpr (retrieved_all_fields) {
-      return rfl::make_tuple(std::move(_args)...);
-    } else {
-      // When we add additional fields, it is more intuitive to add
-      // them to the end, that is why we do it like this.
-      using FieldType = internal::nth_element_t<i, FieldTypes...>;
-      return make_fields<num_additional_fields>(FieldType(rfl::get<i>(values_)),
-                                                std::move(_args)...);
-    }
+  template <int... _is, class... AdditionalArgs>
+  auto make_fields(std::integer_sequence<int, _is...>,
+                   AdditionalArgs... _args) const {
+    const auto wrap = [this]<int _i>(Index<_i>) {
+      using FieldType = internal::nth_element_t<_i, FieldTypes...>;
+      return FieldType(rfl::get<_i>(values_));
+    };
+    return rfl::make_tuple(wrap(Index<_is>{})..., _args...);
   }
 
   /// Generates a new named tuple with one value replaced with a new value.
-  // TODO: Non-recursive implementation
-  template <int _index, class V, class T, class... Args>
-  auto make_replaced(V&& _values, T&& _val, Args&&... _args) const {
-    constexpr auto size = sizeof...(Args);
-
-    constexpr bool retrieved_all_fields = size == rfl::tuple_size_v<Fields>;
-
-    if constexpr (retrieved_all_fields) {
-      return NamedTuple<FieldTypes...>(std::forward<Args>(_args)...);
-    } else {
-      using FieldType = internal::nth_element_t<size, FieldTypes...>;
-
-      if constexpr (size == _index) {
-        return make_replaced<_index, V, T>(
-            std::forward<V>(_values), std::forward<T>(_val),
-            std::forward<Args>(_args)..., FieldType(std::forward<T>(_val)));
+  template <int _index, class V, class T, int... _is>
+  auto make_replaced(V&& _values, T&& _val,
+                     std::integer_sequence<int, _is...>) const {
+    const auto wrap = [&]<int _i>(Index<_i>) {
+      if constexpr (_i == _index) {
+        return std::forward<T>(_val);
       } else {
+        using FieldType = internal::nth_element_t<_i, FieldTypes...>;
         using U = typename FieldType::Type;
-        return make_replaced<_index, V, T>(
-            std::forward<V>(_values), std::forward<T>(_val),
-            std::forward<Args>(_args)...,
-            FieldType(std::forward<U>(rfl::get<size>(_values))));
+        return FieldType(std::forward<U>(rfl::get<_i>(_values)));
       }
-    }
+    };
+    return NamedTuple<FieldTypes...>(wrap(Index<_is>{})...);
   }
 
   /// We cannot allow duplicate field names.
@@ -546,8 +523,8 @@ class NamedTuple {
   NamedTuple<FieldTypes...> replace_value(T&& _val) {
     using FieldType = std::remove_cvref_t<Field>;
     constexpr auto index = internal::find_index<FieldType::name_, Fields>();
-    return make_replaced<index, Values, T>(std::forward<Values>(values_),
-                                           std::forward<T>(_val));
+    return make_replaced<index>(std::forward<Values>(values_),
+                                std::forward<T>(_val), seq_);
   }
 
   /// Replaced the field signified by the field type.
@@ -556,8 +533,7 @@ class NamedTuple {
     using FieldType = std::remove_cvref_t<Field>;
     constexpr auto index = internal::find_index<FieldType::name_, Fields>();
     auto values = values_;
-    return make_replaced<index, Values, T>(std::move(values),
-                                           std::forward<T>(_val));
+    return make_replaced<index>(std::move(values), std::forward<T>(_val), seq_);
   }
 
   /// Adds the elements of a tuple to a newly created named tuple,
