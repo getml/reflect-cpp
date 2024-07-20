@@ -102,7 +102,7 @@ class NamedTuple {
   /// Copy constructor.
   template <class... OtherFieldTypes>
   NamedTuple(const NamedTuple<OtherFieldTypes...>& _other)
-      : NamedTuple(retrieve_fields(_other.fields())) {
+      : NamedTuple(retrieve_fields(_other.fields(), seq_)) {
     // TODO
     // static_assert(no_duplicate_field_names(),
     //              "Duplicate field names are not allowed");
@@ -111,7 +111,7 @@ class NamedTuple {
   /// Move constructor.
   template <class... OtherFieldTypes>
   NamedTuple(NamedTuple<OtherFieldTypes...>&& _other)
-      : NamedTuple(retrieve_fields(_other.fields())) {
+      : NamedTuple(retrieve_fields(_other.fields(), seq_)) {
     // TODO
     // static_assert(no_duplicate_field_names(),
     //              "Duplicate field names are not allowed");
@@ -557,32 +557,20 @@ class NamedTuple {
   }
 
   /// Retrieves the fields from another tuple.
-  // TODO: Non-recursive implementation
-  template <class... OtherFieldTypes, class... Args>
+  template <class... OtherFieldTypes, int... _is>
   constexpr static Fields retrieve_fields(
-      rfl::Tuple<OtherFieldTypes...>&& _other_fields, Args&&... _args) {
-    constexpr auto size = sizeof...(Args);
-
-    constexpr bool retrieved_all_fields = size == rfl::tuple_size_v<Fields>;
-
-    if constexpr (retrieved_all_fields) {
-      return rfl::make_tuple(std::forward<Args>(_args)...);
-    } else {
+      rfl::Tuple<OtherFieldTypes...>&& _other_fields,
+      std::integer_sequence<int, _is...>) {
+    const auto get_field = [&]<int _i>(Index<_i>) {
       constexpr auto field_name =
-          internal::nth_element_t<size, FieldTypes...>::name_;
-
+          internal::nth_element_t<_i, FieldTypes...>::name_;
       constexpr auto index =
           internal::find_index<field_name, rfl::Tuple<OtherFieldTypes...>>();
-
-      using FieldType = internal::nth_element_t<size, FieldTypes...>;
-
+      using FieldType = internal::nth_element_t<_i, FieldTypes...>;
       using T = std::remove_cvref_t<typename FieldType::Type>;
-
-      return retrieve_fields(
-          std::forward<rfl::Tuple<OtherFieldTypes...>>(_other_fields),
-          std::forward<Args>(_args)...,
-          FieldType(std::forward<T>(rfl::get<index>(_other_fields).value_)));
-    }
+      return FieldType(std::forward<T>(rfl::get<index>(_other_fields).value_));
+    };
+    return rfl::make_tuple(get_field(Index<_is>{})...);
   }
 
  private:
