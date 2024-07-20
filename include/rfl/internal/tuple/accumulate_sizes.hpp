@@ -19,7 +19,7 @@ struct Sizes {
 template <class T, unsigned long _last, unsigned long... _is>
 consteval auto operator+(const Sizes<_last, _is...>& _sizes,
                          const SizeWrapper<T>& _w) {
-  constexpr auto last = _last + sizeof(T);
+  constexpr auto last = _last + alignof(T);
   return Sizes<last, _is..., last>{};
 }
 

@@ -10,6 +10,7 @@ namespace rfl {
 namespace internal {
 
 /// Finds the index of the field signified by _field_name
+// TODO: Non-recursive implementation
 template <StringLiteral _field_name, class Fields, int I = 0>
 constexpr static int find_index() {
   using FieldType = std::remove_cvref_t<nth_tuple_element_t<I, Fields>>;
@@ -19,7 +20,7 @@ constexpr static int find_index() {
   if constexpr (name_i_matches) {
     return I;
   } else {
-    constexpr bool out_of_range = I + 1 == std::tuple_size_v<Fields>;
+    constexpr bool out_of_range = I + 1 == rfl::tuple_size_v<Fields>;
 
     static_assert(!out_of_range, "Field name not found!");
 

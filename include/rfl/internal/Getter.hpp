@@ -24,7 +24,7 @@ struct Getter {
   /// Retrieves the indicated value from the tuple.
   template <int _index>
   static inline auto& get(NamedTupleType& _tup) {
-    return std::get<_index>(_tup.values());
+    return rfl::get<_index>(_tup.values());
   }
 
   /// Gets a field by name.
@@ -53,7 +53,7 @@ struct Getter {
   /// Retrieves the indicated value from the tuple.
   template <int _index>
   static inline const auto& get_const(const NamedTupleType& _tup) {
-    return std::get<_index>(_tup.values());
+    return rfl::get<_index>(_tup.values());
   }
 
   /// Gets a field by name.

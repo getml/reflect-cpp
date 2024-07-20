@@ -16,6 +16,15 @@
 
 namespace rfl {
 
+template <class... FieldTypes>
+class Tuple;
+
+template <>
+class Tuple<> {
+ public:
+  Tuple() {}
+};
+
 template <class... Types>
 class Tuple {
   static constexpr size_t size_ = sizeof...(Types);
@@ -52,16 +61,16 @@ class Tuple {
   template <int _index>
   auto& get() {
     using Type = internal::nth_element_t<_index, Types...>;
-    return *reinterpret_cast<Type*>(data_.data() +
-                                    std::get<_index>(accumulated_sizes_));
+    return *(reinterpret_cast<Type*>(data_.data() +
+                                     std::get<_index>(accumulated_sizes_)));
   }
 
   /// Gets an element by index.
   template <int _index>
   const auto& get() const {
     using Type = internal::nth_element_t<_index, Types...>;
-    return *reinterpret_cast<const Type*>(data_.data() +
-                                          std::get<_index>(accumulated_sizes_));
+    return *(reinterpret_cast<const Type*>(
+        data_.data() + std::get<_index>(accumulated_sizes_)));
   }
 
   /// Assigns the underlying object.
@@ -197,7 +206,8 @@ struct tuple_element<N, std::tuple<Ts...>> {
 };
 
 template <int N, class T>
-using tuple_element_t = typename tuple_element<N, std::remove_cvref_t<T>>::type;
+using tuple_element_t =
+    typename rfl::tuple_element<N, std::remove_cvref_t<T>>::type;
 
 template <class T>
 struct tuple_size;
@@ -213,8 +223,25 @@ struct tuple_size<std::tuple<Ts...>> {
 };
 
 template <class T>
-constexpr auto tuple_size_v = tuple_size<std::remove_cvref_t<T>>::value;
+inline constexpr auto tuple_size_v =
+    rfl::tuple_size<std::remove_cvref_t<T>>::value;
 
 }  // namespace rfl
+
+namespace std {
+
+/// Gets an element by index.
+template <int _index, class... Types>
+auto& get(rfl::Tuple<Types...>& _tup) {
+  return _tup.template get<_index>();
+}
+
+/// Gets an element by index.
+template <int _index, class... Types>
+const auto& get(const rfl::Tuple<Types...>& _tup) {
+  return _tup.template get<_index>();
+}
+
+}  // namespace std
 
 #endif

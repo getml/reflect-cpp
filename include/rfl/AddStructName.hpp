@@ -5,6 +5,7 @@
 
 #include "Field.hpp"
 #include "Literal.hpp"
+#include "apply.hpp"
 #include "internal/StringLiteral.hpp"
 #include "internal/get_type_name.hpp"
 #include "internal/remove_namespaces.hpp"
@@ -23,7 +24,7 @@ struct AddStructName {
     const auto add_new_field = [](auto&&... _fields) {
       return make_named_tuple(FieldType(LiteralType()), std::move(_fields)...);
     };
-    return std::apply(add_new_field, std::move(_view.fields()));
+    return rfl::apply(add_new_field, std::move(_view.fields()));
   }
 };
 
