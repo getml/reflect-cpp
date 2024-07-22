@@ -1,5 +1,5 @@
-#ifndef RFL_INTERNAL_HASREFLECTIOR_HPP_
-#define RFL_INTERNAL_HASREFLECTIOR_HPP_
+#ifndef RFL_INTERNAL_HASREFLECTOR_HPP_
+#define RFL_INTERNAL_HASREFLECTOR_HPP_
 
 #include <type_traits>
 
@@ -15,11 +15,12 @@ concept has_write_reflector = requires(Type&& item) {
 };
 
 template <typename Type>
-concept has_read_reflector = requires(const typename Reflector<Type>::ReflType& item) {
+concept has_read_reflector =
+    requires(const typename Reflector<Type>::ReflType& item) {
   Reflector<Type>::to(item);
 };
 
 }  // namespace internal
 }  // namespace rfl
 
-#endif 
+#endif
