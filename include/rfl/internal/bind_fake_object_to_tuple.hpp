@@ -34,7 +34,7 @@ struct fake_object_tuple_view_helper {
 
 template <class T>
 struct fake_object_tuple_view_helper<T, 0> {
-  static consteval auto tuple_view() { return std::tie(); }
+  static consteval auto tuple_view() { return std::make_tuple(); }
 };
 
 #define RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS( \
@@ -43,11 +43,10 @@ struct fake_object_tuple_view_helper<T, 0> {
   struct fake_object_tuple_view_helper<T, n> {                                           \
     static consteval auto tuple_view() {                                                 \
       const auto& [__VA_ARGS__] = get_fake_object<std::remove_cvref_t<T>>();             \
-      const auto ref_tup = std::tie(__VA_ARGS__);                                        \
       const auto get_ptrs = [](const auto&... _refs) {                                   \
         return std::make_tuple(&_refs...);                                               \
       };                                                                                 \
-      return std::apply(get_ptrs, ref_tup);                                              \
+      return get_ptrs(__VA_ARGS__);                                                      \
     }                                                                                    \
   }
 
