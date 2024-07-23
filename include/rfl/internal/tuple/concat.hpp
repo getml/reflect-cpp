@@ -12,9 +12,9 @@ struct TupleWrapper {
   rfl::Tuple<Types...> tuple_;
 };
 
-template <class T>
-auto wrap_tuple(const T& _tuple) {
-  return TupleWrapper{_tuple};
+template <class... Types>
+auto wrap_tuple(const rfl::Tuple<Types...>& _tuple) {
+  return TupleWrapper<Types...>{_tuple};
 }
 
 template <class T>
