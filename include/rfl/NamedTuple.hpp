@@ -1,8 +1,6 @@
 #ifndef RFL_NAMEDTUPLE_HPP_
 #define RFL_NAMEDTUPLE_HPP_
 
-#include <bits/utility.h>
-
 #include <algorithm>
 #include <string_view>
 #include <type_traits>
