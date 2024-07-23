@@ -17,9 +17,9 @@ auto wrap_tuple(const rfl::Tuple<Types...>& _tuple) {
   return TupleWrapper<Types...>{_tuple};
 }
 
-template <class T>
-auto wrap_tuple(T&& _tuple) {
-  return TupleWrapper{std::move(_tuple)};
+template <class... Types>
+auto wrap_tuple(rfl::Tuple<Types...>&& _tuple) {
+  return TupleWrapper<Types...>{std::move(_tuple)};
 }
 
 template <class... Types1, class... Types2, int... _is, int... _js>
