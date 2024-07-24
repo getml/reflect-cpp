@@ -25,12 +25,23 @@ struct Parser<msgpack::Reader, msgpack::Writer, NamedTuple<FieldTypes...>,
 };
 
 template <class ProcessorsType, class... Ts>
+requires AreReaderAndWriter<msgpack::Reader, msgpack::Writer, rfl::Tuple<Ts...>>
+struct Parser<msgpack::Reader, msgpack::Writer, rfl::Tuple<Ts...>,
+              ProcessorsType>
+    : public TupleParser<msgpack::Reader, msgpack::Writer,
+                         /*_ignore_empty_containers=*/false,
+                         /*_all_required=*/true, ProcessorsType,
+                         rfl::Tuple<Ts...>> {
+};
+
+template <class ProcessorsType, class... Ts>
 requires AreReaderAndWriter<msgpack::Reader, msgpack::Writer, std::tuple<Ts...>>
 struct Parser<msgpack::Reader, msgpack::Writer, std::tuple<Ts...>,
               ProcessorsType>
     : public TupleParser<msgpack::Reader, msgpack::Writer,
                          /*_ignore_empty_containers=*/false,
-                         /*_all_required=*/true, ProcessorsType, Ts...> {
+                         /*_all_required=*/true, ProcessorsType,
+                         std::tuple<Ts...>> {
 };
 
 }  // namespace parsing

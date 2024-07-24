@@ -1,6 +1,8 @@
 #ifndef RFL_PARSING_PARSER_TUPLE_HPP_
 #define RFL_PARSING_PARSER_TUPLE_HPP_
 
+#include <tuple>
+
 #include "Parser_base.hpp"
 #include "TupleParser.hpp"
 
