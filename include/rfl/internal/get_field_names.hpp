@@ -9,7 +9,7 @@
 #endif
 
 #include "../Literal.hpp"
-#include "bind_fake_object_to_tuple.hpp"
+#include "get_ith_field_from_fake_object.hpp"
 #include "is_flatten_field.hpp"
 #include "is_rename.hpp"
 #include "num_fields.hpp"
@@ -141,12 +141,13 @@ auto get_field_names() {
 #if defined(__clang__)
     const auto get = []<std::size_t... _is>(std::index_sequence<_is...>) {
       return concat_literals(
-          get_field_name<Type, wrap(bind_fake_object_to_tuple<T, _is>())>()...);
+          get_field_name<Type,
+                         wrap(get_ith_field_from_fake_object<T, _is>())>()...);
     };
 #else
     const auto get = []<std::size_t... _is>(std::index_sequence<_is...>) {
       return concat_literals(
-          get_field_name<Type, bind_fake_object_to_tuple<T, _is>()>()...);
+          get_field_name<Type, get_ith_field_from_fake_object<T, _is>()>()...);
     };
 #endif
     return get(std::make_index_sequence<num_fields<T>>());
