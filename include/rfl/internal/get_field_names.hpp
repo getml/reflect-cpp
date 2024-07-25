@@ -139,16 +139,14 @@ auto get_field_names() {
     return get_field_names<std::remove_pointer_t<T>>();
   } else {
 #if defined(__clang__)
-    const auto get = []<std::size_t... Is>(std::index_sequence<Is...>) {
+    const auto get = []<std::size_t... _is>(std::index_sequence<_is...>) {
       return concat_literals(
-          get_field_name<Type, wrap(std::get<Is>(
-                                   bind_fake_object_to_tuple<T>()))>()...);
+          get_field_name<Type, wrap(bind_fake_object_to_tuple<T, _is>())>()...);
     };
 #else
-    const auto get = []<std::size_t... Is>(std::index_sequence<Is...>) {
+    const auto get = []<std::size_t... _is>(std::index_sequence<_is...>) {
       return concat_literals(
-          get_field_name<Type,
-                         std::get<Is>(bind_fake_object_to_tuple<T>())>()...);
+          get_field_name<Type, bind_fake_object_to_tuple<T, _is>()>()...);
     };
 #endif
     return get(std::make_index_sequence<num_fields<T>>());

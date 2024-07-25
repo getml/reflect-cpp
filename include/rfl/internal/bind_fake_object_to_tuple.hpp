@@ -9,13 +9,14 @@
 
 #include "../always_false.hpp"
 #include "get_fake_object.hpp"
+#include "nth_element.hpp"
 #include "num_fields.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class T, std::size_t n>
 struct fake_object_tuple_view_helper {
+  template <int _i>
   static consteval auto tuple_view() {
     static_assert(
         rfl::always_false_v<T>,
@@ -32,19 +33,15 @@ struct fake_object_tuple_view_helper {
   }
 };
 
-template <class T>
-struct fake_object_tuple_view_helper<T, 0> {
-  static consteval auto tuple_view() { return std::make_tuple(); }
-};
-
 #define RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS( \
     n, ...)                                                                              \
   template <class T>                                                                     \
   struct fake_object_tuple_view_helper<T, n> {                                           \
+    template <int _i>                                                                    \
     static consteval auto tuple_view() {                                                 \
       const auto& [__VA_ARGS__] = get_fake_object<std::remove_cvref_t<T>>();             \
       const auto get_ptrs = [](const auto&... _refs) {                                   \
-        return std::make_tuple(&_refs...);                                               \
+        return nth_element<_i>(&_refs...);                                               \
       };                                                                                 \
       return get_ptrs(__VA_ARGS__);                                                      \
     }                                                                                    \
@@ -546,12 +543,12 @@ RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS(
 
 #undef RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS
 
-template <class T>
+template <class T, int _i>
 consteval auto bind_fake_object_to_tuple() {
-  return fake_object_tuple_view_helper<T, num_fields<T>>::tuple_view();
+  return fake_object_tuple_view_helper<T, num_fields<T>>::template tuple_view<
+      _i>();
 }
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif
