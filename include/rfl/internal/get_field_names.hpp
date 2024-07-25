@@ -9,7 +9,7 @@
 #endif
 
 #include "../Literal.hpp"
-#include "get_fake_object_field_ptrs.hpp"
+#include "bind_fake_object_to_tuple.hpp"
 #include "is_flatten_field.hpp"
 #include "is_rename.hpp"
 #include "num_fields.hpp"
@@ -139,16 +139,16 @@ auto get_field_names() {
     return get_field_names<std::remove_pointer_t<T>>();
   } else {
 #if defined(__clang__)
-    const auto get = []<std::size_t... _is>(std::index_sequence<_is...>) {
+    const auto get = []<std::size_t... Is>(std::index_sequence<Is...>) {
       return concat_literals(
-          get_field_name<Type, wrap(std::get<_is>(
-                                   get_fake_object_field_ptrs<T>()))>()...);
+          get_field_name<Type, wrap(std::get<Is>(
+                                   bind_fake_object_to_tuple<T>()))>()...);
     };
 #else
-    const auto get = []<std::size_t... _is>(std::index_sequence<_is...>) {
+    const auto get = []<std::size_t... Is>(std::index_sequence<Is...>) {
       return concat_literals(
-          get_field_name<
-              Type, get_fake_object_field_ptrs<T>().template get<_is>()>()...);
+          get_field_name<Type,
+                         std::get<Is>(bind_fake_object_to_tuple<T>())>()...);
     };
 #endif
     return get(std::make_index_sequence<num_fields<T>>());

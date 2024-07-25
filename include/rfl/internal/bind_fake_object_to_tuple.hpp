@@ -1,5 +1,5 @@
-#ifndef RFL_INTERNAL_GET_FAKE_OBJECT_FIELD_PTRS_HPP_
-#define RFL_INTERNAL_GET_FAKE_OBJECT_FIELD_PTRS_HPP_
+#ifndef RFL_INTERNAL_BIND_FAKE_OBJECT_TO_TUPLE_HPP_
+#define RFL_INTERNAL_BIND_FAKE_OBJECT_TO_TUPLE_HPP_
 
 #include <cstddef>
 #include <iostream>
@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "../always_false.hpp"
-#include "FieldPointers.hpp"
 #include "get_fake_object.hpp"
 #include "num_fields.hpp"
 
@@ -16,8 +15,8 @@ namespace rfl {
 namespace internal {
 
 template <class T, std::size_t n>
-struct fake_object_field_ptrs_helper {
-  static consteval auto field_ptrs() {
+struct fake_object_tuple_view_helper {
+  static consteval auto tuple_view() {
     static_assert(
         rfl::always_false_v<T>,
         "\n\nThis error occurs for one of two reasons:\n\n"
@@ -34,23 +33,15 @@ struct fake_object_field_ptrs_helper {
 };
 
 template <class T>
-struct fake_object_field_ptrs_helper<T, 0> {
-  static consteval auto field_ptrs() {
-#ifdef __clang__
-    return std::make_tuple();
-#else
-    return FieldPointers<const void>{std::array<const void*, 0>{}};
-#endif
-  }
+struct fake_object_tuple_view_helper<T, 0> {
+  static consteval auto tuple_view() { return std::make_tuple(); }
 };
-
-#ifdef __clang__
 
 #define RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS( \
     n, ...)                                                                              \
   template <class T>                                                                     \
-  struct fake_object_field_ptrs_helper<T, n> {                                           \
-    static consteval auto field_ptrs() {                                                 \
+  struct fake_object_tuple_view_helper<T, n> {                                           \
+    static consteval auto tuple_view() {                                                 \
       const auto& [__VA_ARGS__] = get_fake_object<std::remove_cvref_t<T>>();             \
       const auto get_ptrs = [](const auto&... _refs) {                                   \
         return std::make_tuple(&_refs...);                                               \
@@ -58,25 +49,6 @@ struct fake_object_field_ptrs_helper<T, 0> {
       return get_ptrs(__VA_ARGS__);                                                      \
     }                                                                                    \
   }
-
-#else
-
-#define RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS( \
-    n, ...)                                                                              \
-  template <class T>                                                                     \
-  struct fake_object_field_ptrs_helper<T, n> {                                           \
-    static consteval auto field_ptrs() {                                                 \
-      const auto& [__VA_ARGS__] = get_fake_object<std::remove_cvref_t<T>>();             \
-      const auto get_ptrs = [](const auto&... _refs) {                                   \
-        return FieldPointers<const void,                                                 \
-                             std::remove_reference_t<decltype(_refs)>...>{               \
-            std::array<const void*, n>{{&_refs...}}};                                    \
-      };                                                                                 \
-      return get_ptrs(__VA_ARGS__);                                                      \
-    }                                                                                    \
-  }
-
-#endif
 
 /*The following boilerplate code was generated using a Python script:
 macro =
@@ -575,8 +547,8 @@ RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS(
 #undef RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS
 
 template <class T>
-consteval auto get_fake_object_field_ptrs() {
-  return fake_object_field_ptrs_helper<T, num_fields<T>>::field_ptrs();
+consteval auto bind_fake_object_to_tuple() {
+  return fake_object_tuple_view_helper<T, num_fields<T>>::tuple_view();
 }
 
 }  // namespace internal
