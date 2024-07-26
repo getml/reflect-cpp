@@ -33,6 +33,7 @@ constexpr auto wrap_elements(Ts... _ts, std::integer_sequence<int, _is...>) {
 
 template <int N, class... Ts>
 constexpr auto nth_element(Ts... _ts) {
+  static_assert(N >= 0, "N out of bounds.");
   static_assert(N < sizeof...(Ts), "N out of bounds.");
   return wrap_elements<N, Ts...>(
       _ts..., std::make_integer_sequence<int, sizeof...(Ts)>());
