@@ -1,8 +1,6 @@
 #ifndef RFL_INTERNAL_HASFIELDS_HPP_
 #define RFL_INTERNAL_HASFIELDS_HPP_
 
-#include <bits/utility.h>
-
 #include <tuple>
 #include <type_traits>
 #include <utility>
