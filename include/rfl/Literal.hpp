@@ -10,8 +10,8 @@
 #include <type_traits>
 #include <utility>
 
-#include "../Tuple.hpp"
 #include "Result.hpp"
+#include "Tuple.hpp"
 #include "internal/StringLiteral.hpp"
 #include "internal/no_duplicate_field_names.hpp"
 #include "internal/nth_tuple_element_t.hpp"
