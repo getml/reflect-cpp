@@ -43,4 +43,5 @@ auto wrap_in_fields(auto&& _tuple, Fields&&... _fields) {
 
 }  // namespace internal
 }  // namespace rfl
+
 #endif
