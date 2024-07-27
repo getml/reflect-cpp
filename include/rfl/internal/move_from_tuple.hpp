@@ -4,6 +4,8 @@
 #include <functional>
 #include <type_traits>
 
+#include "../Tuple.hpp"
+#include "../tuple_cat.hpp"
 #include "Array.hpp"
 #include "is_flatten_field.hpp"
 #include "is_named_tuple.hpp"
@@ -16,7 +18,7 @@ namespace internal {
 
 template <class Tuple, int _i = 0>
 constexpr int calc_flattened_size() {
-  if constexpr (_i == std::tuple_size_v<Tuple>) {
+  if constexpr (_i == rfl::tuple_size_v<Tuple>) {
     return 0;
   } else {
     using T = std::remove_pointer_t<nth_tuple_element_t<_i, Tuple>>;
@@ -29,14 +31,15 @@ constexpr int calc_flattened_size() {
   }
 }
 
+// TODO: Non-recursive implementation
 template <class TargetTupleType, class PtrTupleType, int _j = 0, class... Args>
 auto unflatten_ptr_tuple(PtrTupleType& _t, Args... _args) {
   constexpr auto i = sizeof...(Args);
 
-  constexpr auto size = std::tuple_size_v<std::remove_cvref_t<TargetTupleType>>;
+  constexpr auto size = rfl::tuple_size_v<std::remove_cvref_t<TargetTupleType>>;
 
   if constexpr (i == size) {
-    return std::make_tuple(_args...);
+    return rfl::make_tuple(_args...);
   } else {
     using T = std::remove_cvref_t<
         std::remove_pointer_t<nth_tuple_element_t<i, TargetTupleType>>>;
@@ -62,7 +65,7 @@ auto unflatten_ptr_tuple(PtrTupleType& _t, Args... _args) {
 template <class T, class Pointers, class... Args>
 auto move_from_pointers(Pointers& _ptrs, Args&&... _args) {
   constexpr auto i = sizeof...(Args);
-  if constexpr (i == std::tuple_size_v<std::remove_cvref_t<Pointers>>) {
+  if constexpr (i == rfl::tuple_size_v<std::remove_cvref_t<Pointers>>) {
     return std::remove_cvref_t<T>{std::move(_args)...};
   } else {
     using FieldType = nth_tuple_element_t<i, std::remove_cvref_t<Pointers>>;
@@ -85,20 +88,20 @@ auto move_from_pointers(Pointers& _ptrs, Args&&... _args) {
 
 template <class T>
 auto flatten_array(T* _v) {
-  return std::make_tuple(_v);
+  return rfl::make_tuple(_v);
 }
 
 template <class T, std::size_t _n>
 auto flatten_array(std::array<T, _n>* _arr) {
   const auto fct = [](auto&... _v) {
-    return std::tuple_cat(flatten_array(&_v)...);
+    return rfl::tuple_cat(flatten_array(&_v)...);
   };
-  return std::apply(fct, *_arr);
+  return rfl::apply(fct, *_arr);
 }
 
 template <class T>
 auto make_tuple_from_element(T _v) {
-  return std::make_tuple(_v);
+  return rfl::make_tuple(_v);
 }
 
 template <class T>
@@ -108,9 +111,9 @@ auto make_tuple_from_element(Array<T>* _arr) {
 
 auto flatten_c_arrays(const auto& _tup) {
   const auto fct = [](auto... _v) {
-    return std::tuple_cat(make_tuple_from_element(_v)...);
+    return rfl::tuple_cat(make_tuple_from_element(_v)...);
   };
-  return std::apply(fct, _tup);
+  return rfl::apply(fct, _tup);
 }
 
 /// Creates a struct of type T from a tuple by moving the underlying

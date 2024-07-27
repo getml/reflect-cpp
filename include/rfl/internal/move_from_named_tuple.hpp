@@ -14,15 +14,16 @@
 namespace rfl {
 namespace internal {
 
+// TODO: Non-recursive implementation
 template <class PtrFieldTupleType, class PtrNamedTupleType, class... Args>
 auto make_ptr_fields(PtrNamedTupleType& _n, Args... _args) {
   constexpr auto i = sizeof...(Args);
 
   constexpr auto size =
-      std::tuple_size_v<std::remove_cvref_t<PtrFieldTupleType>>;
+      rfl::tuple_size_v<std::remove_cvref_t<PtrFieldTupleType>>;
 
   if constexpr (i == size) {
-    return std::make_tuple(_args...);
+    return rfl::make_tuple(_args...);
   } else {
     using Field =
         std::remove_cvref_t<nth_tuple_element_t<i, PtrFieldTupleType>>;
@@ -49,10 +50,11 @@ auto make_ptr_fields(PtrNamedTupleType& _n, Args... _args) {
   }
 }
 
+// TODO: Non-recursive
 template <class T, class Pointers, class... Args>
 auto move_from_ptr_fields(Pointers& _ptrs, Args&&... _args) {
   constexpr auto i = sizeof...(Args);
-  if constexpr (i == std::tuple_size_v<std::remove_cvref_t<Pointers>>) {
+  if constexpr (i == rfl::tuple_size_v<std::remove_cvref_t<Pointers>>) {
     return T{std::move(_args)...};
   } else {
     using FieldType = nth_tuple_element_t<i, std::remove_cvref_t<Pointers>>;

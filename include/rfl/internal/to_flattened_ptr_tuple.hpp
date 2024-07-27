@@ -11,13 +11,14 @@
 namespace rfl {
 namespace internal {
 
+// TODO: Non-recursive implementation
 template <class PtrTuple, class... Args>
 auto flatten_ptr_tuple(PtrTuple&& _t, Args... _args) {
   constexpr auto i = sizeof...(Args);
   if constexpr (i == 0 && !has_flatten_fields<PtrTuple>()) {
     return std::forward<PtrTuple>(_t);
-  } else if constexpr (i == std::tuple_size_v<std::remove_cvref_t<PtrTuple>>) {
-    return std::tuple_cat(std::forward<Args>(_args)...);
+  } else if constexpr (i == rfl::tuple_size_v<std::remove_cvref_t<PtrTuple>>) {
+    return rfl::tuple_cat(std::forward<Args>(_args)...);
   } else {
     using T = nth_tuple_element_t<i, std::remove_cvref_t<PtrTuple>>;
     if constexpr (is_flatten_field_v<T>) {
@@ -27,7 +28,7 @@ auto flatten_ptr_tuple(PtrTuple&& _t, Args... _args) {
     } else {
       return flatten_ptr_tuple(std::forward<PtrTuple>(_t),
                                std::forward<Args>(_args)...,
-                               std::make_tuple(std::get<i>(_t)));
+                               rfl::make_tuple(std::get<i>(_t)));
     }
   }
 }

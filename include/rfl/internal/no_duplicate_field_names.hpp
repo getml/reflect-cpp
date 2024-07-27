@@ -40,7 +40,7 @@ constexpr inline void iterate_over_i(std::integer_sequence<int, _is...>) {
 
 template <class Fields>
 constexpr inline bool no_duplicate_field_names() {
-  constexpr auto num_fields = std::tuple_size_v<Fields>;
+  constexpr auto num_fields = rfl::tuple_size_v<Fields>;
 
   if constexpr (num_fields <= 1) {
     return true;

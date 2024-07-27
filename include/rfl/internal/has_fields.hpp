@@ -5,6 +5,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "../Tuple.hpp"
 #include "all_fields.hpp"
 #include "is_field.hpp"
 #include "is_flatten_field.hpp"
@@ -14,9 +15,10 @@
 namespace rfl {
 namespace internal {
 
+// TODO: Non-recursive implementation
 template <class TupleType, int _i = 0>
 constexpr bool all_fields_or_flatten() {
-  if constexpr (_i == std::tuple_size_v<TupleType>) {
+  if constexpr (_i == rfl::tuple_size_v<TupleType>) {
     return true;
   } else {
     using T = std::remove_cvref_t<nth_tuple_element_t<_i, TupleType>>;
@@ -30,9 +32,10 @@ constexpr bool all_fields_or_flatten() {
   }
 }
 
+// TODO: Non-recursive implementation
 template <class TupleType, int _i = 0>
 constexpr bool some_fields_or_flatten() {
-  if constexpr (_i == std::tuple_size_v<TupleType>) {
+  if constexpr (_i == rfl::tuple_size_v<TupleType>) {
     return false;
   } else {
     using T = std::remove_cvref_t<nth_tuple_element_t<_i, TupleType>>;

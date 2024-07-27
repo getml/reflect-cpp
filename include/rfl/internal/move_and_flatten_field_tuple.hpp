@@ -3,6 +3,8 @@
 
 #include <tuple>
 
+#include "../Tuple.hpp"
+#include "../tuple_cat.hpp"
 #include "is_flatten_field.hpp"
 #include "move_to_field_tuple.hpp"
 #include "nth_tuple_element_t.hpp"
@@ -13,8 +15,8 @@ namespace internal {
 template <class FieldTuple, class... Args>
 auto move_and_flatten_field_tuple(FieldTuple&& _t, Args&&... _args) {
   constexpr auto i = sizeof...(Args);
-  if constexpr (i == std::tuple_size_v<std::remove_cvref_t<FieldTuple>>) {
-    return std::tuple_cat(std::move(_args)...);
+  if constexpr (i == rfl::tuple_size_v<std::remove_cvref_t<FieldTuple>>) {
+    return rfl::tuple_cat(std::move(_args)...);
   } else {
     using T = nth_tuple_element_t<i, std::remove_cvref_t<FieldTuple>>;
     if constexpr (is_flatten_field<T>::value) {
@@ -25,7 +27,7 @@ auto move_and_flatten_field_tuple(FieldTuple&& _t, Args&&... _args) {
     } else {
       return move_and_flatten_field_tuple(
           std::move(_t), std::move(_args)...,
-          std::make_tuple(std::move(std::get<i>(_t))));
+          rfl::make_tuple(std::move(std::get<i>(_t))));
     }
   }
 }

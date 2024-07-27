@@ -13,7 +13,7 @@ namespace internal {
 
 template <class TupleType, int _i = 0>
 constexpr bool all_fields() {
-  if constexpr (_i == std::tuple_size_v<TupleType>) {
+  if constexpr (_i == rfl::tuple_size_v<TupleType>) {
     return true;
   } else {
     using T = nth_tuple_element_t<_i, TupleType>;

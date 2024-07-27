@@ -4,6 +4,7 @@
 #include <exception>
 #include <tuple>
 
+#include "../Tuple.hpp"
 #include "../internal/has_to_class_method_v.hpp"
 #include "../internal/to_ptr_field_tuple.hpp"
 #include "Parser.hpp"
@@ -25,7 +26,7 @@ struct CustomParser {
           const auto class_from_ptrs = [](auto&... _ptrs) {
             return OriginalClass(std::move(*_ptrs.value_)...);
           };
-          return std::apply(class_from_ptrs, ptr_field_tuple);
+          return rfl::apply(class_from_ptrs, ptr_field_tuple);
         }
       } catch (std::exception& e) {
         return Error(e.what());

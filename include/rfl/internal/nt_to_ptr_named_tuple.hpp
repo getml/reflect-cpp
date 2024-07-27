@@ -39,7 +39,7 @@ auto nt_to_ptr_named_tuple(const NamedTupleType& _nt, AlreadyExtracted... _a) {
   using Fields = typename NamedTupleType::Fields;
 
   constexpr auto i = sizeof...(AlreadyExtracted);
-  constexpr auto num_fields = std::tuple_size_v<Fields>;
+  constexpr auto num_fields = rfl::tuple_size_v<Fields>;
 
   if constexpr (i == num_fields) {
     return make_named_tuple(_a...);

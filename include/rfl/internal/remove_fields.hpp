@@ -33,7 +33,7 @@ struct remove_single_field {
   using OldNamedTupleType = std::remove_cvref_t<_OldNamedTupleType>;
 
   constexpr static int num_fields =
-      std::tuple_size_v<typename OldNamedTupleType::Fields>;
+      rfl::tuple_size_v<typename OldNamedTupleType::Fields>;
 
   using FieldType = std::remove_cvref_t<
       nth_tuple_element_t<num_fields - _i, typename OldNamedTupleType::Fields>>;
@@ -57,7 +57,7 @@ struct remove_fields<_NamedTupleType, _head> {
   using NamedTupleType = std::remove_cvref_t<_NamedTupleType>;
 
   constexpr static int num_fields =
-      std::tuple_size_v<typename NamedTupleType::Fields>;
+      rfl::tuple_size_v<typename NamedTupleType::Fields>;
 
   using type = typename remove_single_field<NamedTupleType, _head, NamedTuple<>,
                                             num_fields>::type;
@@ -69,7 +69,7 @@ struct remove_fields {
   using NamedTupleType = std::remove_cvref_t<_NamedTupleType>;
 
   constexpr static int num_fields =
-      std::tuple_size_v<typename NamedTupleType::Fields>;
+      rfl::tuple_size_v<typename NamedTupleType::Fields>;
 
   using NewNamedTupleType =
       typename remove_single_field<NamedTupleType, _head, NamedTuple<>,

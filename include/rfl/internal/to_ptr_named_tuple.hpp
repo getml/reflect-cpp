@@ -4,6 +4,7 @@
 #include <iostream>
 #include <tuple>
 
+#include "../Tuple.hpp"
 #include "../always_false.hpp"
 #include "../field_names_t.hpp"
 #include "../make_named_tuple.hpp"
@@ -23,8 +24,8 @@ namespace internal {
 template <class PtrFieldTuple, class... Args>
 auto flatten_ptr_field_tuple(PtrFieldTuple& _t, Args&&... _args) {
   constexpr auto i = sizeof...(Args);
-  if constexpr (i == std::tuple_size_v<std::remove_cvref_t<PtrFieldTuple>>) {
-    return std::tuple_cat(std::forward<Args>(_args)...);
+  if constexpr (i == rfl::tuple_size_v<std::remove_cvref_t<PtrFieldTuple>>) {
+    return rfl::tuple_cat(std::forward<Args>(_args)...);
   } else {
     using T = nth_tuple_element_t<i, std::remove_cvref_t<PtrFieldTuple>>;
     if constexpr (internal::is_flatten_field<T>::value) {
@@ -33,7 +34,7 @@ auto flatten_ptr_field_tuple(PtrFieldTuple& _t, Args&&... _args) {
                                      flatten_ptr_field_tuple(subtuple));
     } else {
       return flatten_ptr_field_tuple(_t, std::forward<Args>(_args)...,
-                                     std::make_tuple(std::get<i>(_t)));
+                                     rfl::make_tuple(std::get<i>(_t)));
     }
   }
 }
@@ -45,10 +46,10 @@ auto field_tuple_to_named_tuple(PtrFieldTuple& _ptr_field_tuple) {
   };
 
   if constexpr (!has_flatten_fields<std::remove_cvref_t<PtrFieldTuple>>()) {
-    return std::apply(ft_to_nt, std::move(_ptr_field_tuple));
+    return rfl::apply(ft_to_nt, std::move(_ptr_field_tuple));
   } else {
     const auto flattened_tuple = flatten_ptr_field_tuple(_ptr_field_tuple);
-    return std::apply(ft_to_nt, flattened_tuple);
+    return rfl::apply(ft_to_nt, flattened_tuple);
   }
 }
 

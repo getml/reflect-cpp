@@ -24,7 +24,7 @@ auto copy_one_element(const auto& _flattened_tuple) {
 template <class FieldNames, class... Fields>
 auto copy_flattened_tuple_to_named_tuple(const auto& _flattened_tuple) {
   constexpr auto size =
-      std::tuple_size_v<std::remove_cvref_t<decltype(_flattened_tuple)>>;
+      rfl::tuple_size_v<std::remove_cvref_t<decltype(_flattened_tuple)>>;
   return [&]<int... _i>(std::integer_sequence<int, _i...>) {
     return make_named_tuple(
         copy_one_element<FieldNames, _i>(_flattened_tuple)...);

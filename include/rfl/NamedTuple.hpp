@@ -207,7 +207,7 @@ class NamedTuple {
     const auto to_nt = []<class... NewFields>(rfl::Tuple<NewFields...>&& _tup) {
       return NamedTuple<NewFields...>(_tup);
     };
-    auto new_fields = std::apply(transform_field, std::move(fields()));
+    auto new_fields = rfl::apply(transform_field, std::move(fields()));
     return to_nt(std::move(new_fields));
   }
 
