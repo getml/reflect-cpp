@@ -21,22 +21,24 @@
 namespace rfl {
 namespace internal {
 
-template <class PtrFieldTuple, class... Args>
-auto flatten_ptr_field_tuple(PtrFieldTuple& _t, Args&&... _args) {
-  constexpr auto i = sizeof...(Args);
-  if constexpr (i == rfl::tuple_size_v<std::remove_cvref_t<PtrFieldTuple>>) {
-    return rfl::tuple_cat(std::forward<Args>(_args)...);
-  } else {
-    using T = nth_tuple_element_t<i, std::remove_cvref_t<PtrFieldTuple>>;
+template <class PtrFieldTuple>
+auto flatten_ptr_field_tuple(PtrFieldTuple& _t) {
+  const auto get_one = [&]<int _i>(std::integral_constant<int, _i>) {
+    using T = nth_tuple_element_t<_i, std::remove_cvref_t<PtrFieldTuple>>;
     if constexpr (internal::is_flatten_field<T>::value) {
-      auto subtuple = internal::to_ptr_field_tuple(*std::get<i>(_t).get());
-      return flatten_ptr_field_tuple(_t, std::forward<Args>(_args)...,
-                                     flatten_ptr_field_tuple(subtuple));
+      auto subtuple = internal::to_ptr_field_tuple(*rfl::get<_i>(_t).get());
+      return flatten_ptr_field_tuple(subtuple);
     } else {
-      return flatten_ptr_field_tuple(_t, std::forward<Args>(_args)...,
-                                     rfl::make_tuple(std::get<i>(_t)));
+      return rfl::make_tuple(rfl::get<_i>(_t));
     }
+  };
+
+  constexpr auto size = rfl::tuple_size_v<std::remove_cvref_t<PtrFieldTuple>>;
+
+  return [&]<int... _is>(std::integer_sequence<int, _is...>) {
+    return rfl::tuple_cat(get_one(std::integral_constant<int, _is>{})...);
   }
+  (std::make_integer_sequence<int, size>());
 }
 
 template <class PtrFieldTuple>
