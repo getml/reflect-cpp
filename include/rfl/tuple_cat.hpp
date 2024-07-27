@@ -16,6 +16,8 @@ auto tuple_cat(Head&& _head, Tail&&... _tail) {
   return internal::tuple::concat(std::move(_head), std::move(_tail)...);
 }
 
+inline auto tuple_cat() { return rfl::Tuple(); }
+
 }  // namespace rfl
 
 #endif
