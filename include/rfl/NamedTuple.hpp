@@ -21,7 +21,7 @@
 
 namespace rfl {
 
-/// A named tuple behaves like std::tuple,
+/// A named tuple behaves like a tuple,
 /// but the fields have explicit names, which
 /// allows for reflection.
 /// IMPORTANT: We have two template specializations. One with fields, one

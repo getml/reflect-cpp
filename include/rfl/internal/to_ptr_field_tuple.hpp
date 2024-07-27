@@ -26,7 +26,7 @@ auto to_ptr_field_tuple(T& _t) {
   } else if constexpr (has_fields<T>()) {
     return bind_to_tuple(_t, [](auto* _ptr) { return to_ptr_field(*_ptr); });
   } else if constexpr (is_empty<T>()) {
-    return std::tuple();
+    return rfl::Tuple();
   } else {
     using FieldNames = field_names_t<T>;
     auto tup =

@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "../Tuple.hpp"
 #include "Result.hpp"
 #include "internal/StringLiteral.hpp"
 #include "internal/no_duplicate_field_names.hpp"
@@ -24,7 +25,7 @@ struct LiteralHelper {
 
 template <internal::StringLiteral... fields_>
 class Literal {
-  using FieldsType = std::tuple<LiteralHelper<fields_>...>;
+  using FieldsType = rfl::Tuple<LiteralHelper<fields_>...>;
 
  public:
   using ValueType =
