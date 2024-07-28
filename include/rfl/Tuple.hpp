@@ -38,9 +38,6 @@ class Tuple {
 
   using DataType = std::array<unsigned char, num_bytes_>;
 
-  template <int _i>
-  struct Index {};
-
  public:
   Tuple(const Types&... _t) { copy_from_types(_t..., seq_); }
 
@@ -91,26 +88,64 @@ class Tuple {
     return *this;
   }
 
+  /// Equality operator.
+  template <class... OtherTypes>
+  bool operator==(const Tuple<OtherTypes...>& _other) const noexcept {
+    static_assert(sizeof...(Types) == sizeof...(OtherTypes),
+                  "The size of the two tuples must be the same.");
+    const auto is_same = [&]<int _i>(std::integral_constant<int, _i>) -> bool {
+      return this->get<_i>() == _other.template get<_i>();
+    };
+    return [&]<int... _is>(std::integer_sequence<int, _is...>) {
+      return (true && ... && is_same(std::integral_constant<int, _is>{}));
+    }
+    (std::make_integer_sequence<int, sizeof...(Types)>());
+  }
+
+  /// Three-way comparison operator.
+  template <class... OtherTypes>
+  auto operator<=>(const Tuple<OtherTypes...>& _other) const noexcept {
+    static_assert(sizeof...(Types) == sizeof...(OtherTypes),
+                  "The size of the two tuples must be the same.");
+
+    const auto compare = [&]<int _i>(std::strong_ordering* _ordering,
+                                     std::integral_constant<int, _i>) {
+      if (*_ordering != std::strong_ordering::equivalent &&
+          this->get<_i>() != _other.template get<_i>()) {
+        *_ordering = (this->get<_i>() <=> _other.template get<_i>());
+      }
+    };
+
+    return [&]<int... _is>(std::integer_sequence<int, _is...>) {
+      auto ordering = std::strong_ordering::equivalent;
+      (compare(&ordering, std::integral_constant<int, _is>{}), ...);
+      return ordering;
+    }
+    (std::make_integer_sequence<int, sizeof...(Types)>());
+  }
+
  private:
   template <int... _is>
   void copy_from_other(const Tuple<Types...>& _other,
                        std::integer_sequence<int, _is...>) {
-    const auto copy_one = [this]<int _i>(const auto& _other, Index<_i>) {
+    const auto copy_one = [this]<int _i>(const auto& _other,
+                                         std::integral_constant<int, _i>) {
       using Type = internal::nth_element_t<_i, Types...>;
       new (reinterpret_cast<Type*>(data_.data() + pos<_i>()))
           Type(_other.template get<_i>());
     };
-    (copy_one(_other, Index<_is>{}), ...);
+    (copy_one(_other, std::integral_constant<int, _is>{}), ...);
   }
 
   template <int... _is>
   void copy_from_types(const Types&... _types,
                        std::integer_sequence<int, _is...>) {
-    const auto copy_one = [this]<int _i>(const auto& _t, Index<_i>) {
+    const auto copy_one = [this]<int _i>(const auto& _t,
+                                         std::integral_constant<int, _i>) {
       using Type = internal::nth_element_t<_i, Types...>;
       new (reinterpret_cast<Type*>(data_.data() + pos<_i>())) Type(_t);
     };
-    (copy_one(_types, Index<_is>{}), ...);
+    (copy_one(_types, std::integral_constant<int, _is>{}), ...);
   }
 
   template <int... _is>
@@ -127,22 +162,24 @@ class Tuple {
   template <int... _is>
   void move_from_other(Tuple<Types...>&& _other,
                        std::integer_sequence<int, _is...>) {
-    const auto move_one = [this]<int _i>(auto&& _other, Index<_i>) {
+    const auto move_one = [this]<int _i>(auto&& _other,
+                                         std::integral_constant<int, _i>) {
       using Type = internal::nth_element_t<_i, Types...>;
       new (reinterpret_cast<Type*>(data_.data() + pos<_i>()))
           Type(std::move(_other.template get<_i>()));
     };
-    (move_one(_other, Index<_is>{}), ...);
+    (move_one(_other, std::integral_constant<int, _is>{}), ...);
   }
 
   template <int... _is>
   void move_from_types(Types&&... _types, std::integer_sequence<int, _is...>) {
-    const auto move_one = [this]<int _i>(auto&& _t, Index<_i>) {
+    const auto move_one = [this]<int _i>(auto&& _t,
+                                         std::integral_constant<int, _i>) {
       using Type = internal::nth_element_t<_i, Types...>;
       new (reinterpret_cast<Type*>(data_.data() + pos<_i>()))
           Type(std::move(_t));
     };
-    (move_one(std::move(_types), Index<_is>{}), ...);
+    (move_one(std::move(_types), std::integral_constant<int, _is>{}), ...);
   }
 
   template <int _i>

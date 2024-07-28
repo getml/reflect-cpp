@@ -58,37 +58,37 @@ class NamedTuple {
   NamedTuple(
       const typename std::remove_cvref<FieldTypes>::type::Type&... _values)
       : values_(rfl::make_tuple(_values...)) {
-    // static_assert(no_duplicate_field_names(),
-    //               "Duplicate field names are not allowed");
+    static_assert(no_duplicate_field_names(),
+                  "Duplicate field names are not allowed");
   }
 
   /// Construct from the fields.
   NamedTuple(FieldTypes&&... _fields)
       : values_(rfl::make_tuple(std::move(_fields.value_)...)) {
-    // static_assert(no_duplicate_field_names(),
-    //               "Duplicate field names are not allowed");
+    static_assert(no_duplicate_field_names(),
+                  "Duplicate field names are not allowed");
   }
 
   /// Construct from the fields.
   NamedTuple(const FieldTypes&... _fields)
       : values_(rfl::make_tuple(_fields.value_...)) {
-    // static_assert(no_duplicate_field_names(),
-    //               "Duplicate field names are not allowed");
+    static_assert(no_duplicate_field_names(),
+                  "Duplicate field names are not allowed");
   }
 
   /// Construct from a tuple containing fields.
   NamedTuple(rfl::Tuple<FieldTypes...>&& _tup)
       : NamedTuple(rfl::make_from_tuple<NamedTuple<FieldTypes...>>(
             std::forward<rfl::Tuple<FieldTypes...>>(_tup))) {
-    // static_assert(no_duplicate_field_names(),
-    //               "Duplicate field names are not allowed");
+    static_assert(no_duplicate_field_names(),
+                  "Duplicate field names are not allowed");
   }
 
   /// Construct from a tuple containing fields.
   NamedTuple(const rfl::Tuple<FieldTypes...>& _tup)
       : NamedTuple(rfl::make_from_tuple<NamedTuple<FieldTypes...>>(_tup)) {
-    // static_assert(no_duplicate_field_names(),
-    //               "Duplicate field names are not allowed");
+    static_assert(no_duplicate_field_names(),
+                  "Duplicate field names are not allowed");
   }
 
   /// Copy constructor.
@@ -101,18 +101,16 @@ class NamedTuple {
   template <class... OtherFieldTypes>
   NamedTuple(const NamedTuple<OtherFieldTypes...>& _other)
       : NamedTuple(retrieve_fields(_other.fields(), seq_)) {
-    // TODO
-    // static_assert(no_duplicate_field_names(),
-    //              "Duplicate field names are not allowed");
+    static_assert(no_duplicate_field_names(),
+                  "Duplicate field names are not allowed");
   }
 
   /// Move constructor.
   template <class... OtherFieldTypes>
   NamedTuple(NamedTuple<OtherFieldTypes...>&& _other)
       : NamedTuple(retrieve_fields(_other.fields(), seq_)) {
-    // TODO
-    // static_assert(no_duplicate_field_names(),
-    //              "Duplicate field names are not allowed");
+    static_assert(no_duplicate_field_names(),
+                  "Duplicate field names are not allowed");
   }
 
   ~NamedTuple() = default;
@@ -288,8 +286,7 @@ class NamedTuple {
 
   /// Equality operator
   inline auto operator==(const rfl::NamedTuple<FieldTypes...>& _other) const {
-    // TODO
-    return true;  // values() == _other.values();
+    return values() == _other.values();
   }
 
   /// Inequality operator
