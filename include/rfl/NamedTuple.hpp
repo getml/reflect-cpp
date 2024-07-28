@@ -289,9 +289,9 @@ class NamedTuple {
     return values() == _other.values();
   }
 
-  /// Inequality operator
-  inline auto operator!=(const rfl::NamedTuple<FieldTypes...>& _other) const {
-    return !(*this == _other);
+  /// Three-way comparison operator.
+  inline auto operator<=>(const rfl::NamedTuple<FieldTypes...>& _other) const {
+    return values() <=> _other.values();
   }
 
   /// Returns the number of fields. Note that this is not necessary the same
