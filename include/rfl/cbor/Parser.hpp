@@ -1,6 +1,7 @@
 #ifndef RFL_CBOR_PARSER_HPP_
 #define RFL_CBOR_PARSER_HPP_
 
+#include "../Tuple.hpp"
 #include "../parsing/Parser.hpp"
 #include "Reader.hpp"
 #include "Writer.hpp"
@@ -25,11 +26,21 @@ struct Parser<cbor::Reader, cbor::Writer, NamedTuple<FieldTypes...>,
 };
 
 template <class ProcessorsType, class... Ts>
+requires AreReaderAndWriter<cbor::Reader, cbor::Writer, rfl::Tuple<Ts...>>
+struct Parser<cbor::Reader, cbor::Writer, rfl::Tuple<Ts...>, ProcessorsType>
+    : public TupleParser<cbor::Reader, cbor::Writer,
+                         /*_ignore_empty_containers=*/false,
+                         /*_all_required=*/true, ProcessorsType,
+                         rfl::Tuple<Ts...>> {
+};
+
+template <class ProcessorsType, class... Ts>
 requires AreReaderAndWriter<cbor::Reader, cbor::Writer, std::tuple<Ts...>>
 struct Parser<cbor::Reader, cbor::Writer, std::tuple<Ts...>, ProcessorsType>
     : public TupleParser<cbor::Reader, cbor::Writer,
                          /*_ignore_empty_containers=*/false,
-                         /*_all_required=*/true, ProcessorsType, Ts...> {
+                         /*_all_required=*/true, ProcessorsType,
+                         std::tuple<Ts...>> {
 };
 
 }  // namespace parsing

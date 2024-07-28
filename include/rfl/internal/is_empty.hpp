@@ -4,6 +4,7 @@
 #include <tuple>
 #include <type_traits>
 
+#include "../Tuple.hpp"
 #include "is_named_tuple.hpp"
 
 namespace rfl::internal {
@@ -15,7 +16,7 @@ constexpr bool is_empty() {
     return U::size() == 0;
   } else {
     using TupleType = ptr_tuple_t<U>;
-    return std::tuple_size_v<TupleType> == 0;
+    return rfl::tuple_size_v<TupleType> == 0;
   }
 }
 

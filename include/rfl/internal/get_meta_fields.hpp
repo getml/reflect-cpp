@@ -6,8 +6,8 @@
 #include <utility>
 
 #include "../MetaField.hpp"
+#include "../Tuple.hpp"
 #include "../type_name_t.hpp"
-#include "nth_tuple_element_t.hpp"
 
 namespace rfl {
 namespace internal {
@@ -18,7 +18,7 @@ auto get_meta_fields(AlreadyExtracted&&... _already_extracted) {
   if constexpr (NamedTupleType::size() == i) {
     return std::array<MetaField, i>{std::move(_already_extracted)...};
   } else {
-    using FieldType = nth_tuple_element_t<i, typename NamedTupleType::Fields>;
+    using FieldType = tuple_element_t<i, typename NamedTupleType::Fields>;
     auto name = typename FieldType::Name().str();
     auto type = type_name_t<typename FieldType::Type>().str();
     return get_meta_fields<NamedTupleType>(

@@ -1,5 +1,5 @@
-#ifndef RFL_INTERNAL_BIND_FAKE_OBJECT_TO_TUPLE_HPP_
-#define RFL_INTERNAL_BIND_FAKE_OBJECT_TO_TUPLE_HPP_
+#ifndef RFL_INTERNAL_GET_ITH_FIELD_FROM_FAKE_OBJECT_HPP_
+#define RFL_INTERNAL_GET_ITH_FIELD_FROM_FAKE_OBJECT_HPP_
 
 #include <cstddef>
 #include <iostream>
@@ -9,14 +9,15 @@
 
 #include "../always_false.hpp"
 #include "get_fake_object.hpp"
+#include "nth_element.hpp"
 #include "num_fields.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class T, std::size_t n>
-struct fake_object_tuple_view_helper {
-  static consteval auto tuple_view() {
+struct fake_object_helper {
+  template <int _i>
+  static consteval auto get_field() {
     static_assert(
         rfl::always_false_v<T>,
         "\n\nThis error occurs for one of two reasons:\n\n"
@@ -32,22 +33,17 @@ struct fake_object_tuple_view_helper {
   }
 };
 
-template <class T>
-struct fake_object_tuple_view_helper<T, 0> {
-  static consteval auto tuple_view() { return std::tie(); }
-};
-
 #define RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS( \
     n, ...)                                                                              \
   template <class T>                                                                     \
-  struct fake_object_tuple_view_helper<T, n> {                                           \
-    static consteval auto tuple_view() {                                                 \
+  struct fake_object_helper<T, n> {                                                      \
+    template <int _i>                                                                    \
+    static consteval auto get_field() {                                                  \
       const auto& [__VA_ARGS__] = get_fake_object<std::remove_cvref_t<T>>();             \
-      const auto ref_tup = std::tie(__VA_ARGS__);                                        \
       const auto get_ptrs = [](const auto&... _refs) {                                   \
-        return std::make_tuple(&_refs...);                                               \
+        return nth_element<_i>(&_refs...);                                               \
       };                                                                                 \
-      return std::apply(get_ptrs, ref_tup);                                              \
+      return get_ptrs(__VA_ARGS__);                                                      \
     }                                                                                    \
   }
 
@@ -547,12 +543,11 @@ RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS(
 
 #undef RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS
 
-template <class T>
-consteval auto bind_fake_object_to_tuple() {
-  return fake_object_tuple_view_helper<T, num_fields<T>>::tuple_view();
+template <class T, int _i>
+consteval auto get_ith_field_from_fake_object() {
+  return fake_object_helper<T, num_fields<T>>::template get_field<_i>();
 }
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

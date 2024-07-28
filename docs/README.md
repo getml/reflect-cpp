@@ -68,7 +68,9 @@
 
 5.3) [rfl::NamedTuple](https://github.com/getml/reflect-cpp/blob/main/docs/named_tuple.md) - For structural typing.
 
-5.4) [rfl::to_view](https://github.com/getml/reflect-cpp/blob/main/docs/to_view.md) - For accessing fields of a struct by index or name.
+5.4) [rfl::Tuple](https://github.com/getml/reflect-cpp/blob/main/docs/rfl_tuple.md) - An alternative to `std::tuple` that compiles more quickly.
+
+5.5) [rfl::to_view](https://github.com/getml/reflect-cpp/blob/main/docs/to_view.md) - For accessing fields of a struct by index or name.
 
 ## 6) Supported formats
 

@@ -1,6 +1,7 @@
 # `rfl::NamedTuple`
 
-`rfl::NamedTuple` is very similar to `std::tuple`, but unlike `std::tuple`, the fields have names.
+`rfl::NamedTuple` is very similar to `std::tuple` or `rfl::Tuple`, but unlike 
+these two structures, the fields have names.
 
 In other words, consider the following struct:
 

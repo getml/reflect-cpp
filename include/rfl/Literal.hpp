@@ -11,9 +11,9 @@
 #include <utility>
 
 #include "Result.hpp"
+#include "Tuple.hpp"
 #include "internal/StringLiteral.hpp"
 #include "internal/no_duplicate_field_names.hpp"
-#include "internal/nth_tuple_element_t.hpp"
 
 namespace rfl {
 
@@ -24,7 +24,7 @@ struct LiteralHelper {
 
 template <internal::StringLiteral... fields_>
 class Literal {
-  using FieldsType = std::tuple<LiteralHelper<fields_>...>;
+  using FieldsType = rfl::Tuple<LiteralHelper<fields_>...>;
 
  public:
   using ValueType =
@@ -269,7 +269,7 @@ class Literal {
 
   template <int _i>
   static void allowed_strings_vec_add_one(std::vector<std::string>* _values) {
-    using FieldType = internal::nth_tuple_element_t<_i, FieldsType>;
+    using FieldType = tuple_element_t<_i, FieldsType>;
     _values->emplace_back(FieldType::name_.str());
   }
 
@@ -289,7 +289,7 @@ class Literal {
   template <int _i>
   void find_name_set_if_matches(std::string* _name) const {
     if (_i == value_) {
-      using FieldType = internal::nth_tuple_element_t<_i, FieldsType>;
+      using FieldType = tuple_element_t<_i, FieldsType>;
       *_name = FieldType::name_.str();
     }
   }
@@ -298,7 +298,7 @@ class Literal {
   /// the string at compile time within the Literal's own fields.
   template <int _i>
   constexpr static auto find_name_within_own_fields() {
-    return internal::nth_tuple_element_t<_i, FieldsType>::name_;
+    return tuple_element_t<_i, FieldsType>::name_;
   }
 
   /// Finds the correct value associated with
@@ -326,7 +326,7 @@ class Literal {
   template <int _i>
   static void find_value_set_if_matches(const std::string& _str, bool* _found,
                                         int* _idx) {
-    using FieldType = internal::nth_tuple_element_t<_i, FieldsType>;
+    using FieldType = tuple_element_t<_i, FieldsType>;
     if (!*_found && FieldType::name_.string_view() == _str) {
       *_idx = _i;
       *_found = true;
@@ -339,7 +339,7 @@ class Literal {
     if constexpr (_i == num_fields_) {
       return -1;
     } else {
-      using FieldType = internal::nth_tuple_element_t<_i, FieldsType>;
+      using FieldType = tuple_element_t<_i, FieldsType>;
       if constexpr (FieldType::name_ == _name) {
         return _i;
       } else {

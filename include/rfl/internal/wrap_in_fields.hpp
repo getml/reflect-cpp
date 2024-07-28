@@ -4,6 +4,7 @@
 #include <tuple>
 #include <type_traits>
 
+#include "../Tuple.hpp"
 #include "flattened_ptr_tuple_t.hpp"
 #include "is_flatten_field.hpp"
 #include "lit_name.hpp"
@@ -11,20 +12,21 @@
 namespace rfl {
 namespace internal {
 
+// TODO: Non-recursive implementation
 template <class FieldNames, int j = 0, class... Fields>
 auto wrap_in_fields(auto&& _tuple, Fields&&... _fields) {
   constexpr auto size =
-      std::tuple_size_v<std::remove_cvref_t<decltype(_tuple)>>;
+      rfl::tuple_size_v<std::remove_cvref_t<decltype(_tuple)>>;
   constexpr auto i = sizeof...(_fields);
   if constexpr (i == size) {
-    return std::make_tuple(std::move(_fields)...);
+    return rfl::make_tuple(std::move(_fields)...);
   } else {
     auto value = std::move(std::get<i>(_tuple));
     using Type = std::remove_cvref_t<std::remove_pointer_t<decltype(value)>>;
     if constexpr (is_flatten_field_v<Type>) {
       // The problem here is that the FieldNames are already flattened, but this
       // is not, so we need to determine how many field names to skip.
-      constexpr auto n_skip = std::tuple_size_v<
+      constexpr auto n_skip = rfl::tuple_size_v<
           std::remove_cvref_t<flattened_ptr_tuple_t<typename Type::Type>>>;
       return wrap_in_fields<FieldNames, j + n_skip>(
           std::move(_tuple), std::move(_fields)..., std::move(value));
@@ -41,4 +43,5 @@ auto wrap_in_fields(auto&& _tuple, Fields&&... _fields) {
 
 }  // namespace internal
 }  // namespace rfl
+
 #endif

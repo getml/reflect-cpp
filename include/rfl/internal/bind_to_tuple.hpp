@@ -7,17 +7,17 @@
 #include <type_traits>
 #include <utility>
 
+#include "../Tuple.hpp"
 #include "../always_false.hpp"
 #include "is_named_tuple.hpp"
 #include "num_fields.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <std::size_t n>
 struct tuple_view_helper {
   template <class T>
-  static constexpr auto tuple_view(T&) {
+  static auto tuple_view(T&) {
     static_assert(
         rfl::always_false_v<T>,
         "\n\nThis error occurs for one of two reasons:\n\n"
@@ -35,16 +35,18 @@ struct tuple_view_helper {
 
 template <>
 struct tuple_view_helper<0> {
-  static constexpr auto tuple_view(auto&) { return std::tie(); }
+  static auto tuple_view(auto&) { return rfl::make_tuple(); }
 };
 
 #define RFL_INTERNAL_TUPLE_VIEW_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS( \
     n, ...)                                                                             \
   template <>                                                                           \
   struct tuple_view_helper<n> {                                                         \
-    static constexpr auto tuple_view(auto& t) {                                         \
+    static auto tuple_view(auto& t) {                                                   \
       auto& [__VA_ARGS__] = t;                                                          \
-      return std::tie(__VA_ARGS__);                                                     \
+      return [](auto&... _refs) {                                                       \
+        return rfl::make_tuple(&_refs...);                                              \
+      }(__VA_ARGS__);                                                                   \
     }                                                                                   \
   }
 
@@ -545,20 +547,19 @@ RFL_INTERNAL_TUPLE_VIEW_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS(
 #undef RFL_INTERNAL_TUPLE_VIEW_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS
 
 template <class T>
-constexpr auto tuple_view(T& t) {
+auto tuple_view(T& t) {
   return tuple_view_helper<num_fields<T>>::tuple_view(t);
 }
 
 template <class T, typename F>
-constexpr auto bind_to_tuple(T& _t, const F& _f) {
+auto bind_to_tuple(T& _t, const F& _f) {
   auto view = tuple_view(_t);
-  return [&]<std::size_t... Is>(std::index_sequence<Is...>) {
-    return std::make_tuple(_f(std::get<Is>(view))...);
+  return [&]<std::size_t... _is>(std::index_sequence<_is...>) {
+    return rfl::make_tuple(_f(rfl::get<_is>(view))...);
   }
-  (std::make_index_sequence<std::tuple_size_v<decltype(view)>>());
+  (std::make_index_sequence<rfl::tuple_size_v<decltype(view)>>());
 }
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

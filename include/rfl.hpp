@@ -38,6 +38,7 @@
 #include "rfl/Validator.hpp"
 #include "rfl/Variant.hpp"
 #include "rfl/always_false.hpp"
+#include "rfl/apply.hpp"
 #include "rfl/as.hpp"
 #include "rfl/comparisons.hpp"
 #include "rfl/default.hpp"
@@ -51,6 +52,7 @@
 #include "rfl/fields.hpp"
 #include "rfl/from_named_tuple.hpp"
 #include "rfl/get.hpp"
+#include "rfl/make_from_tuple.hpp"
 #include "rfl/make_named_tuple.hpp"
 #include "rfl/name_t.hpp"
 #include "rfl/named_tuple_t.hpp"
@@ -60,6 +62,7 @@
 #include "rfl/replace.hpp"
 #include "rfl/to_named_tuple.hpp"
 #include "rfl/to_view.hpp"
+#include "rfl/tuple_cat.hpp"
 #include "rfl/type_name_t.hpp"
 #include "rfl/visit.hpp"
 

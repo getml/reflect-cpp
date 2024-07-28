@@ -4,9 +4,9 @@
 #include <tuple>
 #include <variant>
 
+#include "../Tuple.hpp"
 #include "StringLiteral.hpp"
 #include "find_index.hpp"
-#include "nth_tuple_element_t.hpp"
 
 namespace rfl::internal {
 
@@ -24,7 +24,7 @@ struct Getter {
   /// Retrieves the indicated value from the tuple.
   template <int _index>
   static inline auto& get(NamedTupleType& _tup) {
-    return std::get<_index>(_tup.values());
+    return rfl::get<_index>(_tup.values());
   }
 
   /// Gets a field by name.
@@ -41,7 +41,7 @@ struct Getter {
     constexpr auto index =
         find_index<Field::name_, typename NamedTupleType::Fields>();
     static_assert(
-        std::is_same<typename nth_tuple_element_t<
+        std::is_same<typename tuple_element_t<
                          index, typename NamedTupleType::Fields>::Type,
                      typename Field::Type>(),
         "If two fields have the same name, "
@@ -53,7 +53,7 @@ struct Getter {
   /// Retrieves the indicated value from the tuple.
   template <int _index>
   static inline const auto& get_const(const NamedTupleType& _tup) {
-    return std::get<_index>(_tup.values());
+    return rfl::get<_index>(_tup.values());
   }
 
   /// Gets a field by name.
@@ -70,7 +70,7 @@ struct Getter {
     constexpr auto index =
         find_index<Field::name_, typename NamedTupleType::Fields>();
     static_assert(
-        std::is_same<typename nth_tuple_element_t<
+        std::is_same<typename tuple_element_t<
                          index, typename NamedTupleType::Fields>::Type,
                      typename Field::Type>(),
         "If two fields have the same name, "

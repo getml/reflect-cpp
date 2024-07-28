@@ -7,6 +7,7 @@
 #include <type_traits>
 
 #include "../Result.hpp"
+#include "../Tuple.hpp"
 #include "../Variant.hpp"
 #include "../always_false.hpp"
 #include "../visit.hpp"
@@ -34,7 +35,7 @@ struct FieldVariantParser {
 
   static ResultType read(const R& _r, const InputVarType& _var) noexcept {
     static_assert(
-        internal::no_duplicate_field_names<std::tuple<FieldTypes...>>(),
+        internal::no_duplicate_field_names<rfl::Tuple<FieldTypes...>>(),
         "Externally tagged variants cannot have duplicate field "
         "names.");
 
@@ -62,7 +63,7 @@ struct FieldVariantParser {
   static void write(const W& _w, const rfl::Variant<FieldTypes...>& _v,
                     const P& _parent) noexcept {
     static_assert(
-        internal::no_duplicate_field_names<std::tuple<FieldTypes...>>(),
+        internal::no_duplicate_field_names<rfl::Tuple<FieldTypes...>>(),
         "Externally tagged variants cannot have duplicate field "
         "names.");
 
