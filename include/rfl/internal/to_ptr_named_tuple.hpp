@@ -14,7 +14,6 @@
 #include "is_empty.hpp"
 #include "is_field.hpp"
 #include "is_named_tuple.hpp"
-#include "nth_tuple_element_t.hpp"
 #include "to_flattened_ptr_tuple.hpp"
 #include "to_ptr_field_tuple.hpp"
 
@@ -24,7 +23,7 @@ namespace internal {
 template <class PtrFieldTuple>
 auto flatten_ptr_field_tuple(PtrFieldTuple& _t) {
   const auto get_one = [&]<int _i>(std::integral_constant<int, _i>) {
-    using T = nth_tuple_element_t<_i, std::remove_cvref_t<PtrFieldTuple>>;
+    using T = tuple_element_t<_i, std::remove_cvref_t<PtrFieldTuple>>;
     if constexpr (internal::is_flatten_field<T>::value) {
       auto subtuple = internal::to_ptr_field_tuple(*rfl::get<_i>(_t).get());
       return flatten_ptr_field_tuple(subtuple);

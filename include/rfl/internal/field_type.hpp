@@ -7,10 +7,10 @@
 
 #include "../NamedTuple.hpp"
 #include "../TaggedUnion.hpp"
+#include "../Tuple.hpp"
 #include "../named_tuple_t.hpp"
 #include "StringLiteral.hpp"
 #include "find_index.hpp"
-#include "nth_tuple_element_t.hpp"
 
 namespace rfl {
 namespace internal {
@@ -30,9 +30,8 @@ struct FieldType {
   static constexpr int field_ix_ =
       internal::find_index<_field_name, typename NamedTupleType::Fields>();
 
-  using Type =
-      typename nth_tuple_element_t<field_ix_,
-                                   typename NamedTupleType::Fields>::Type;
+  using Type = typename tuple_element_t<field_ix_,
+                                        typename NamedTupleType::Fields>::Type;
 };
 
 /// For variants - in this case the FieldType returned by all options must be

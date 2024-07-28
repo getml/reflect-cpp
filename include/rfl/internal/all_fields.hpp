@@ -5,8 +5,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "../Tuple.hpp"
 #include "is_field.hpp"
-#include "nth_tuple_element_t.hpp"
 
 namespace rfl {
 namespace internal {
@@ -16,7 +16,7 @@ constexpr bool all_fields() {
   if constexpr (_i == rfl::tuple_size_v<TupleType>) {
     return true;
   } else {
-    using T = nth_tuple_element_t<_i, TupleType>;
+    using T = tuple_element_t<_i, TupleType>;
     return is_field_v<T> && all_fields<TupleType, _i + 1>();
   }
 }

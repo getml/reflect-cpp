@@ -3,10 +3,10 @@
 
 #include <tuple>
 
+#include "../Tuple.hpp"
 #include "../tuple_cat.hpp"
 #include "has_flatten_fields.hpp"
 #include "is_flatten_field.hpp"
-#include "nth_tuple_element_t.hpp"
 #include "to_ptr_tuple.hpp"
 
 namespace rfl {
@@ -18,7 +18,7 @@ auto flatten_ptr_tuple(PtrTuple&& _t) {
     return std::forward<PtrTuple>(_t);
   } else {
     const auto get_one = [&]<int _i>(std::integral_constant<int, _i>) {
-      using T = nth_tuple_element_t<_i, std::remove_cvref_t<PtrTuple>>;
+      using T = tuple_element_t<_i, std::remove_cvref_t<PtrTuple>>;
       if constexpr (is_flatten_field_v<T>) {
         return flatten_ptr_tuple(to_ptr_tuple(std::get<_i>(_t)->get()));
       } else {

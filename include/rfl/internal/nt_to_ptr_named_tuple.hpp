@@ -6,7 +6,6 @@
 #include "../Field.hpp"
 #include "../Tuple.hpp"
 #include "../make_named_tuple.hpp"
-#include "nth_tuple_element_t.hpp"
 
 namespace rfl {
 namespace internal {
@@ -18,7 +17,7 @@ auto nt_to_ptr_named_tuple(NamedTupleType& _nt) {
   using Fields = typename NamedTupleType::Fields;
 
   const auto get_one = [&]<int _i>(std::integral_constant<int, _i>) {
-    using FieldType = nth_tuple_element_t<_i, Fields>;
+    using FieldType = tuple_element_t<_i, Fields>;
     using T = std::remove_cvref_t<typename FieldType::Type>;
     return Field<FieldType::name_, T*>(&rfl::get<_i>(_nt.values()));
   };
@@ -38,7 +37,7 @@ auto nt_to_ptr_named_tuple(const NamedTupleType& _nt) {
   using Fields = typename NamedTupleType::Fields;
 
   const auto get_one = [&]<int _i>(std::integral_constant<int, _i>) {
-    using FieldType = nth_tuple_element_t<_i, Fields>;
+    using FieldType = tuple_element_t<_i, Fields>;
     using T = std::remove_cvref_t<typename FieldType::Type>;
     return Field<FieldType::name_, const T*>(&rfl::get<_i>(_nt.values()));
   };

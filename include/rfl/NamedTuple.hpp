@@ -15,7 +15,6 @@
 #include "internal/find_index.hpp"
 #include "internal/is_extra_fields.hpp"
 #include "internal/no_duplicate_field_names.hpp"
-#include "internal/nth_tuple_element_t.hpp"
 #include "make_from_tuple.hpp"
 #include "tuple_cat.hpp"
 

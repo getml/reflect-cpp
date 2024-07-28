@@ -5,8 +5,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "../Tuple.hpp"
 #include "is_flatten_field.hpp"
-#include "nth_tuple_element_t.hpp"
 
 namespace rfl {
 namespace internal {
@@ -15,7 +15,7 @@ template <class TupleType>
 constexpr bool has_flatten_fields() {
   const auto is_true_for_one =
       []<int _i>(std::integral_constant<int, _i>) -> bool {
-    using T = std::remove_cvref_t<nth_tuple_element_t<_i, TupleType>>;
+    using T = std::remove_cvref_t<tuple_element_t<_i, TupleType>>;
     return is_flatten_field_v<T>;
   };
 

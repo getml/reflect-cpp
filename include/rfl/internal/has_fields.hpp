@@ -9,7 +9,6 @@
 #include "all_fields.hpp"
 #include "is_field.hpp"
 #include "is_flatten_field.hpp"
-#include "nth_tuple_element_t.hpp"
 #include "ptr_tuple_t.hpp"
 
 namespace rfl {
@@ -19,7 +18,7 @@ template <class TupleType>
 constexpr bool all_fields_or_flatten() {
   const auto is_true_for_one =
       []<int _i>(std::integral_constant<int, _i>) -> bool {
-    using T = std::remove_cvref_t<nth_tuple_element_t<_i, TupleType>>;
+    using T = std::remove_cvref_t<tuple_element_t<_i, TupleType>>;
     if constexpr (is_flatten_field_v<T>) {
       return all_fields_or_flatten<
           ptr_tuple_t<typename std::remove_pointer_t<T>::Type>>();
@@ -38,7 +37,7 @@ template <class TupleType>
 constexpr bool some_fields_or_flatten() {
   const auto is_true_for_one =
       []<int _i>(std::integral_constant<int, _i>) -> bool {
-    using T = std::remove_cvref_t<nth_tuple_element_t<_i, TupleType>>;
+    using T = std::remove_cvref_t<tuple_element_t<_i, TupleType>>;
     if constexpr (is_flatten_field_v<T>) {
       return some_fields_or_flatten<
           ptr_tuple_t<typename std::remove_pointer_t<T>::Type>>();

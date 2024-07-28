@@ -4,7 +4,6 @@
 #include <type_traits>
 
 #include "StringLiteral.hpp"
-#include "nth_tuple_element_t.hpp"
 
 namespace rfl {
 namespace internal {
