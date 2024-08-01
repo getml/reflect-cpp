@@ -6,6 +6,7 @@
 #include "Parser_box.hpp"
 #include "Parser_c_array.hpp"
 #include "Parser_default.hpp"
+#include "Parser_filepath.hpp"
 #include "Parser_map_like.hpp"
 #include "Parser_named_tuple.hpp"
 #include "Parser_optional.hpp"

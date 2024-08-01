@@ -444,6 +444,7 @@ reflect-cpp supports the following containers from the C++ standard library:
 
 - `std::array`
 - `std::deque`
+- `std::filesystem::path`
 - `std::forward_list`
 - `std::map`
 - `std::multimap`
