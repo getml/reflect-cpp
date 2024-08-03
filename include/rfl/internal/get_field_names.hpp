@@ -119,6 +119,13 @@ auto concat_literals(const Head& _head, const Tail&... _tail) {
   return (wrap_literal(_head) + ... + wrap_literal(_tail)).literal_;
 }
 
+// Special case - the struct does not contain rfl::Flatten.
+template <StringLiteral _head, StringLiteral... _tail>
+auto concat_literals(const rfl::Literal<_head>&,
+                     const rfl::Literal<_tail>&...) {
+  return rfl::Literal<_head, _tail...>::template from_value<0>();
+}
+
 inline auto concat_literals() { return rfl::Literal<>(); }
 
 #ifdef __clang__
