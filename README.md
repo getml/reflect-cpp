@@ -31,7 +31,7 @@ The following table lists the serialization formats currently supported by refle
 | Format       | Library                                              | Version      | License    | Remarks                                              |
 |--------------|------------------------------------------------------|--------------|------------| -----------------------------------------------------|
 | JSON         | [yyjson](https://github.com/ibireme/yyjson)          |    0.8.0     | MIT        | out-of-the-box support, included in this repository  |
-| BSON         | [libbson](https://github.com/mongodb/libbson)        | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
+| BSON         | [libbson](https://github.com/mongodb/mongo-c-driver) | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
 | CBOR         | [tinycbor](https://github.com/intel/tinycbor)        | >= 0.6.0     | MIT        | JSON-like binary format                              |
 | flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 | Schema-less version of flatbuffers, binary format    |
 | msgpack      | [msgpack-c](https://github.com/msgpack/msgpack-c)    | >= 6.0.0     | BSL 1.0    | JSON-like binary format                              |
