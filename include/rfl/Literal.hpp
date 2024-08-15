@@ -9,6 +9,7 @@
 #include <tuple>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "Result.hpp"
 #include "Tuple.hpp"
