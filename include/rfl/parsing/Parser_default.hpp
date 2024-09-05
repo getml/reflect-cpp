@@ -9,9 +9,9 @@
 #include "../always_false.hpp"
 #include "../from_named_tuple.hpp"
 #include "../internal/enums/StringConverter.hpp"
-#include "../internal/has_reflector.hpp"
 #include "../internal/has_reflection_method_v.hpp"
 #include "../internal/has_reflection_type_v.hpp"
+#include "../internal/has_reflector.hpp"
 #include "../internal/is_basic_type.hpp"
 #include "../internal/is_description.hpp"
 #include "../internal/is_literal.hpp"
@@ -49,8 +49,9 @@ struct Parser {
           return Error(e.what());
         }
       };
-      return Parser<R, W, typename Reflector<T>::ReflType, ProcessorsType>::read(_r, _var).and_then(
-          wrap_in_t);
+      return Parser<R, W, typename Reflector<T>::ReflType,
+                    ProcessorsType>::read(_r, _var)
+          .and_then(wrap_in_t);
     } else if constexpr (R::template has_custom_constructor<T>) {
       return _r.template use_custom_constructor<T>(_var);
     } else {
@@ -237,7 +238,7 @@ struct Parser {
   /// fields might not be default-constructible.
   static Result<T> read_struct(const R& _r, const InputVarType& _var) {
     alignas(T) unsigned char buf[sizeof(T)];
-    auto ptr = reinterpret_cast<T*>(buf);
+    auto ptr = std::launder(reinterpret_cast<T*>(buf));
     auto view = ProcessorsType::template process<T>(to_view(*ptr));
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto err =
