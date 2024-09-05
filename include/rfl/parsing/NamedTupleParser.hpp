@@ -73,7 +73,7 @@ struct NamedTupleParser {
       const R& _r, const InputVarType& _var) noexcept {
     alignas(NamedTuple<FieldTypes...>) unsigned char
         buf[sizeof(NamedTuple<FieldTypes...>)];
-    auto ptr = reinterpret_cast<NamedTuple<FieldTypes...>*>(buf);
+    auto ptr = std::launder(reinterpret_cast<NamedTuple<FieldTypes...>*>(buf));
     auto view = rfl::to_view(*ptr);
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto err =

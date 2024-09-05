@@ -76,7 +76,7 @@ class Variant {
     auto t = T{std::forward<Args>(_args)...};
     destroy_if_necessary();
     move_from_type(std::move(t));
-    return *(reinterpret_cast<T*>(data_.data()));
+    return *std::launder(reinterpret_cast<T*>(data_.data()));
   }
 
   /// Emplaces a new element into the variant.
@@ -225,7 +225,7 @@ class Variant {
     index_ =
         internal::element_index<CurrentType,
                                 std::remove_cvref_t<AlternativeTypes>...>();
-    new (reinterpret_cast<CurrentType*>(data_.data())) CurrentType(_t);
+    new (data_.data()) CurrentType(_t);
   }
 
   void destroy_if_necessary() {
@@ -345,13 +345,13 @@ class Variant {
   template <IndexType _i>
   auto& get_alternative() noexcept {
     using CurrentType = internal::nth_element_t<_i, AlternativeTypes...>;
-    return *(reinterpret_cast<CurrentType*>(data_.data()));
+    return *std::launder(reinterpret_cast<CurrentType*>(data_.data()));
   }
 
   template <IndexType _i>
   const auto& get_alternative() const noexcept {
     using CurrentType = internal::nth_element_t<_i, AlternativeTypes...>;
-    return *(reinterpret_cast<const CurrentType*>(data_.data()));
+    return *std::launder(reinterpret_cast<const CurrentType*>(data_.data()));
   }
 
   void move_from_other(Variant<AlternativeTypes...>&& _other) noexcept {
@@ -367,8 +367,7 @@ class Variant {
     index_ =
         internal::element_index<CurrentType,
                                 std::remove_cvref_t<AlternativeTypes>...>();
-    new (reinterpret_cast<CurrentType*>(data_.data()))
-        CurrentType(std::forward<T>(_t));
+    new (data_.data()) CurrentType(std::forward<T>(_t));
   }
 
  private:
