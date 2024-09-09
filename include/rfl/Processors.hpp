@@ -3,6 +3,7 @@
 
 #include <type_traits>
 
+#include "internal/is_default_if_missing_v.hpp"
 #include "internal/is_no_field_names_v.hpp"
 #include "internal/is_no_optionals_v.hpp"
 
@@ -14,6 +15,7 @@ struct Processors;
 template <>
 struct Processors<> {
   static constexpr bool all_required_ = false;
+  static constexpr bool default_if_missing_ = false;
   static constexpr bool no_field_names_ = false;
 
   template <class T, class NamedTupleType>
@@ -27,6 +29,10 @@ struct Processors<Head, Tail...> {
   static constexpr bool all_required_ =
       std::disjunction_v<internal::is_no_optionals<Head>,
                          internal::is_no_optionals<Tail>...>;
+
+  static constexpr bool default_if_missing_ =
+      std::disjunction_v<internal::is_default_if_missing<Head>,
+                         internal::is_default_if_missing<Tail>...>;
 
   static constexpr bool no_field_names_ =
       std::disjunction_v<internal::is_no_field_names<Head>,
