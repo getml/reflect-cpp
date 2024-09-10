@@ -7,7 +7,7 @@
 
 #include "write_and_read.hpp"
 
-namespace test_enum8 {
+namespace test_underlying_enums {
 
 enum class Color { red, green, blue, yellow };
 
@@ -16,7 +16,7 @@ struct Circle {
   Color color;
 };
 
-TEST(json, test_enum8) {
+TEST(json, test_underlying_enums) {
   const auto circle = Circle{.radius = 2.0, .color = Color::green};
 
   write_and_read<rfl::UnderlyingEnum>(circle, R"({"radius":2.0,"color":1})");
