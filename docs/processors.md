@@ -121,7 +121,7 @@ rfl::json::read<Person, rfl::NoOptionals>(json_string);
 
 ### `rfl::UnderlyingEnums`
 
-By passing the processor `rfl::UnderlyingEnums`, fields of type enum will be written and read as integer.
+By passing the processor `rfl::UnderlyingEnums`, fields of the enum type will be written and read as integers
 
 ```cpp
 enum class Color { red, green, blue, yellow };
