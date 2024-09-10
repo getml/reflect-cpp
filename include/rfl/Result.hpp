@@ -314,18 +314,20 @@ class Result {
     }
   }
 
-  T& get_t() noexcept { return *(reinterpret_cast<T*>(t_or_err_.data())); }
+  T& get_t() noexcept {
+    return *std::launder((reinterpret_cast<T*>(t_or_err_.data())));
+  }
 
   const T& get_t() const noexcept {
-    return *(reinterpret_cast<const T*>(t_or_err_.data()));
+    return *std::launder((reinterpret_cast<const T*>(t_or_err_.data())));
   }
 
   Error& get_err() noexcept {
-    return *(reinterpret_cast<Error*>(t_or_err_.data()));
+    return *std::launder((reinterpret_cast<Error*>(t_or_err_.data())));
   }
 
   const Error& get_err() const noexcept {
-    return *(reinterpret_cast<const Error*>(t_or_err_.data()));
+    return *std::launder((reinterpret_cast<const Error*>(t_or_err_.data())));
   }
 
   void move_from_other(Result<T>& _other) noexcept {
