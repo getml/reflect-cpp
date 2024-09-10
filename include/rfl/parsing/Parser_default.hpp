@@ -15,7 +15,7 @@
 #include "../internal/is_basic_type.hpp"
 #include "../internal/is_description.hpp"
 #include "../internal/is_literal.hpp"
-#include "../internal/is_underlying_enum_v.hpp"
+#include "../internal/is_underlying_enums_v.hpp"
 #include "../internal/is_validator.hpp"
 #include "../internal/processed_t.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
@@ -69,7 +69,7 @@ struct Parser {
       } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
         return read_struct(_r, _var);
       } else if constexpr (std::is_enum_v<T>) {
-        if constexpr (ProcessorsType::underlying_enum_) {
+        if constexpr (ProcessorsType::underlying_enums_) {
           return static_cast<T>(*_r.template to_basic_type<int>(_var));
         } else {
             using StringConverter = internal::enums::StringConverter<T>;
@@ -103,7 +103,7 @@ struct Parser {
       Parser<R, W, PtrNamedTupleType, ProcessorsType>::write(
           _w, ptr_named_tuple, _parent);
     } else if constexpr (std::is_enum_v<T>) {
-      if constexpr (ProcessorsType::underlying_enum_) {
+      if constexpr (ProcessorsType::underlying_enums_) {
          const auto val = static_cast<std::underlying_type_t<T>>(_var);
         ParentType::add_value(_w, val, _parent);
       } else {
@@ -188,7 +188,7 @@ struct Parser {
       std::map<std::string, schema::Type>* _definitions) {
     using Type = schema::Type;
     using S = internal::enums::StringConverter<U>;
-    if constexpr (ProcessorsType::underlying_enum_) {
+    if constexpr (ProcessorsType::underlying_enums_) {
       return Type{Type::Integer{}};
     }
     else if constexpr (S::is_flag_enum_) {

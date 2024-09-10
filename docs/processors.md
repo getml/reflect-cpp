@@ -34,6 +34,7 @@ The resulting JSON string looks like this:
 reflect-cpp currently supports the following processors:
 
 - `rfl::AddStructName` 
+- `rfl::NoFieldNames` 
 - `rfl::NoOptionals` 
 - `rfl::SnakeCaseToCamelCase` 
 - `rfl::SnakeCaseToPascalCase` 
