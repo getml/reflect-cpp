@@ -24,7 +24,7 @@
 #include "rfl/NamedTuple.hpp"
 #include "rfl/NoFieldNames.hpp"
 #include "rfl/NoOptionals.hpp"
-#include "rfl/UnderlyingEnum.hpp"
+#include "rfl/UnderlyingEnums.hpp"
 #include "rfl/Object.hpp"
 #include "rfl/Oct.hpp"
 #include "rfl/OneOf.hpp"
