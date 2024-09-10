@@ -34,6 +34,8 @@
 
 1.15) [rfl::Bytestring](https://github.com/getml/reflect-cpp/blob/main/docs/bytestring.md) - Describes how reflect-cpp handles binary strings for formats that support them. 
 
+1.16) [rfl::Binary, rfl::Hex and rfl::Oct](https://github.com/getml/reflect-cpp/blob/main/docs/number_systems.md)- For expressing numbers in different formats. 
+
 ## 2) Validation
 
 2.1) [Regex patterns](https://github.com/getml/reflect-cpp/blob/main/docs/patterns.md) - For requiring that strings follow used-defined regex patterns.
