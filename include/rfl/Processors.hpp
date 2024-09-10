@@ -5,6 +5,7 @@
 
 #include "internal/is_no_field_names_v.hpp"
 #include "internal/is_no_optionals_v.hpp"
+#include "internal/is_underlying_enum_v.hpp"
 
 namespace rfl {
 
@@ -15,6 +16,7 @@ template <>
 struct Processors<> {
   static constexpr bool all_required_ = false;
   static constexpr bool no_field_names_ = false;
+  static constexpr bool underlying_enum_ = false;
 
   template <class T, class NamedTupleType>
   static auto process(NamedTupleType&& _named_tuple) {
@@ -31,6 +33,10 @@ struct Processors<Head, Tail...> {
   static constexpr bool no_field_names_ =
       std::disjunction_v<internal::is_no_field_names<Head>,
                          internal::is_no_field_names<Tail>...>;
+
+  static constexpr bool underlying_enum_ =
+      std::disjunction_v<internal::is_underlying_enum<Head>,
+                         internal::is_underlying_enum<Tail>...>;
 
   template <class T, class NamedTupleType>
   static auto process(NamedTupleType&& _named_tuple) {
