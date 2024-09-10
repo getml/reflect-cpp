@@ -71,7 +71,7 @@ struct Parser {
         return read_struct(_r, _var);
       } else if constexpr (std::is_enum_v<T>) {
         if constexpr (ProcessorsType::underlying_enums_) {
-          return static_cast<T>(*_r.template to_basic_type<int>(_var));
+          return static_cast<T>(*_r.template to_basic_type<std::underlying_type_t<T>>(_var));
         } else {
             using StringConverter = internal::enums::StringConverter<T>;
             return _r.template to_basic_type<std::string>(_var).and_then(
