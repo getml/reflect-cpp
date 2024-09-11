@@ -19,7 +19,7 @@ struct Circle {
 TEST(json, test_underlying_enums) {
   const auto circle = Circle{.radius = 2.0, .color = Color::green};
 
-  write_and_read<rfl::UnderlyingEnum>(circle, R"({"radius":2.0,"color":1})");
+  write_and_read<rfl::UnderlyingEnums>(circle, R"({"radius":2.0,"color":1})");
 }
 
 }  // namespace test_enum1
