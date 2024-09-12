@@ -34,7 +34,9 @@ The resulting JSON string looks like this:
 reflect-cpp currently supports the following processors:
 
 - `rfl::AddStructName` 
+- `rfl::NoFieldNames` 
 - `rfl::NoOptionals` 
+- `rfl::UnderlyingEnums` 
 - `rfl::SnakeCaseToCamelCase` 
 - `rfl::SnakeCaseToPascalCase` 
 
@@ -115,6 +117,29 @@ leaving out the field `town`. However, if you want to require the field
 
 ```
 rfl::json::read<Person, rfl::NoOptionals>(json_string);
+```
+
+### `rfl::UnderlyingEnums`
+
+By passing the processor `rfl::UnderlyingEnums`, fields of the enum type will be written and read as integers
+
+```cpp
+enum class Color { red, green, blue, yellow };
+
+struct Circle {
+  float radius;
+  Color color;
+};
+
+const auto circle = Circle{.radius = 2.0, .color = Color::green};
+
+rfl::json::write<rfl::UnderlyingEnums>(circle);
+```
+
+The resulting JSON string looks like this:
+
+```json
+{"radius":2.0,"color":1}
 ```
 
 ### `rfl::SnakeCaseToCamelCase`

@@ -38,6 +38,7 @@
 #include "rfl/SnakeCaseToPascalCase.hpp"
 #include "rfl/TaggedUnion.hpp"
 #include "rfl/Timestamp.hpp"
+#include "rfl/UnderlyingEnums.hpp"
 #include "rfl/Validator.hpp"
 #include "rfl/Variant.hpp"
 #include "rfl/always_false.hpp"
