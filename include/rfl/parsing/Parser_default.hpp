@@ -68,7 +68,11 @@ struct Parser {
         return Parser<R, W, ReflectionType, ProcessorsType>::read(_r, _var)
             .and_then(wrap_in_t);
       } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
-        return read_struct(_r, _var);
+        if constexpr (ProcessorsType::default_if_missing_) {
+          return read_struct_with_default(_r, _var);
+        } else {
+          return read_struct(_r, _var);
+        }
       } else if constexpr (std::is_enum_v<T>) {
         if constexpr (ProcessorsType::underlying_enums_) {
           return static_cast<T>(*_r.template to_basic_type<std::underlying_type_t<T>>(_var));
@@ -260,6 +264,24 @@ struct Parser {
       return *err;
     }
     return std::move(*ptr);
+  }
+
+  /// This is actually more straight-forward than the standard case - we just
+  /// allocate a struct and then fill it. But it is less efficient and it
+  /// assumes that all values on the struct have a default constructor, so we
+  /// only use it when the DefaultIfMissing preprocessor is added.
+  static Result<T> read_struct_with_default(const R& _r,
+                                            const InputVarType& _var) {
+    auto t = T{};
+    auto view = ProcessorsType::template process<T>(to_view(t));
+    using ViewType = std::remove_cvref_t<decltype(view)>;
+    const auto err =
+        Parser<R, W, ViewType, ProcessorsType>::read_view_with_default(_r, _var,
+                                                                       &view);
+    if (err) [[unlikely]] {
+      return *err;
+    }
+    return t;
   }
 
   static std::string replace_non_alphanumeric(std::string _str) {

@@ -34,6 +34,7 @@ The resulting JSON string looks like this:
 reflect-cpp currently supports the following processors:
 
 - `rfl::AddStructName` 
+- `rfl::DefaultIfMissing` 
 - `rfl::NoFieldNames` 
 - `rfl::NoOptionals` 
 - `rfl::UnderlyingEnums` 
@@ -42,7 +43,7 @@ reflect-cpp currently supports the following processors:
 
 ### `rfl::AddStructName` 
 
-It is also possible to add the struct name as an addtional field, like this:
+It is also possible to add the struct name as an additional field, like this:
 
 ```cpp
 const auto json_string = 
@@ -57,6 +58,46 @@ The resulting JSON string looks like this:
 ```json
 {"type":"Person","first_name":"Homer","last_name":"Simpson","age":45}
 ```
+
+### `rfl::DefaultIfMissing`
+
+The `rfl::DefaultIfMissing` processor is only relevant for reading data. For writing data, it will make no difference.
+
+Usually, when fields are missing in the input data, this will lead to an error 
+(unless they are optional fields).
+But if you pass the `rfl::DefaultIfMissing` processor, then missing fields will be
+replaced by their default value.
+
+For instance, consider the following struct:
+
+```cpp
+struct Person {
+  std::string first_name;
+  std::string last_name = "Simpson";
+  std::string town;
+};
+```
+
+Suppose you are reading a JSON like this:
+
+```json
+{"first_name":"Homer"}
+```
+
+```cpp
+rfl::json::read<Person, rfl::DefaultIfMissing>(json_string);
+```
+
+Then the resulting struct will be equivalent to what you would
+have gotten had you read the following JSON string:
+
+```json
+{"first_name":"Homer","last_name":"Simpson","town":""}
+```
+
+`last_name` and `town` have been replaced by the default values.
+Because you have not passed a default value to town, the default value
+of the type is used instead.
 
 ### `rfl::NoFieldNames`
 

@@ -44,3 +44,5 @@ Now, the field "children" is missing for Bart, Lisa and Maggie:
 ```json
 {"firstName":"Homer","lastName":"Simpson","children":[{"firstName":"Bart","lastName":"Simpson"},{"firstName":"Lisa","lastName":"Simpson"},{"firstName":"Maggie","lastName":"Simpson"}]}
 ```
+
+**NOTE**: If you want to explicitly set default values for your fields and/or you want all fields to be optional, please consider using the `rfl::DefaultIfMissing` processor. You will find more information in the section on processors in this documentation.

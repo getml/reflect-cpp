@@ -23,6 +23,8 @@
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "ViewReader.hpp"
+#include "ViewReaderWithDefault.hpp"
+#include "ViewReaderWithDefaultAndStrippedFieldNames.hpp"
 #include "ViewReaderWithStrippedFieldNames.hpp"
 #include "is_empty.hpp"
 #include "is_required.hpp"
@@ -47,6 +49,12 @@ struct NamedTupleParser {
       _no_field_names,
       ViewReaderWithStrippedFieldNames<R, W, NamedTupleType, ProcessorsType>,
       ViewReader<R, W, NamedTupleType, ProcessorsType>>;
+
+  using ViewReaderWithDefaultType = std::conditional_t<
+      _no_field_names,
+      ViewReaderWithDefaultAndStrippedFieldNames<R, W, NamedTupleType,
+                                                 ProcessorsType>,
+      ViewReaderWithDefault<R, W, NamedTupleType, ProcessorsType>>;
 
   using InputObjectOrArrayType =
       std::conditional_t<_no_field_names, typename R::InputArrayType,
@@ -84,7 +92,7 @@ struct NamedTupleParser {
     return *ptr;
   }
 
-  /// Reads the data into a view.
+  /// Reads the data into a view assuming no default values.
   static std::optional<Error> read_view(
       const R& _r, const InputVarType& _var,
       NamedTuple<FieldTypes...>* _view) noexcept {
@@ -100,6 +108,25 @@ struct NamedTupleParser {
         return obj.error();
       }
       return read_object_or_array(_r, *obj, _view);
+    }
+  }
+
+  /// Reads the data into a view assuming default values.
+  static std::optional<Error> read_view_with_default(
+      const R& _r, const InputVarType& _var,
+      NamedTuple<FieldTypes...>* _view) noexcept {
+    if constexpr (_no_field_names) {
+      auto arr = _r.to_array(_var);
+      if (!arr) [[unlikely]] {
+        return arr.error();
+      }
+      return read_object_or_array_with_default(_r, *arr, _view);
+    } else {
+      auto obj = _r.to_object(_var);
+      if (!obj) [[unlikely]] {
+        return obj.error();
+      }
+      return read_object_or_array_with_default(_r, *obj, _view);
     }
   }
 
@@ -273,6 +300,26 @@ struct NamedTupleParser {
                           std::make_integer_sequence<int, size_>());
     if (errors.size() != 0) {
       reader.call_destructors_where_necessary();
+      return to_single_error_message(errors);
+    }
+    return std::nullopt;
+  }
+
+  static std::optional<Error> read_object_or_array_with_default(
+      const R& _r, const InputObjectOrArrayType& _obj_or_arr,
+      NamedTupleType* _view) noexcept {
+    std::vector<Error> errors;
+    const auto reader = ViewReaderWithDefaultType(&_r, _view, &errors);
+    std::optional<Error> err;
+    if constexpr (_no_field_names) {
+      err = _r.read_array(reader, _obj_or_arr);
+    } else {
+      err = _r.read_object(reader, _obj_or_arr);
+    }
+    if (err) {
+      return err;
+    }
+    if (errors.size() != 0) {
       return to_single_error_message(errors);
     }
     return std::nullopt;
