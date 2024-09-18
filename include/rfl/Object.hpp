@@ -198,7 +198,23 @@ class Object {
   }
 
  private:
-  iterator find(const std::string& _key) const {
+  iterator find(const std::string& _key) {
+    for (auto it = it_; it != end(); ++it) {
+      if (it->first == _key) {
+        it_ = it + 1;
+        return it;
+      }
+    }
+    for (auto it = begin(); it != it_; ++it) {
+      if (it->first == _key) {
+        it_ = it + 1;
+        return it;
+      }
+    }
+    return end();
+  }
+
+  const_iterator find(const std::string& _key) const {
     for (auto it = it_; it != end(); ++it) {
       if (it->first == _key) {
         it_ = it + 1;
