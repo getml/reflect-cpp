@@ -144,17 +144,9 @@ class Object {
 
   /// Returns the element signified by the key or creates a new one.
   T& operator[](const std::string& _key) {
-    for (auto it = it_; it != end(); ++it) {
-      if (it->first == _key) {
-        it_ = it + 1;
-        return it->second;
-      }
-    }
-    for (auto it = begin(); it != it_; ++it) {
-      if (it->first == _key) {
-        it_ = it + 1;
-        return it->second;
-      }
+    const auto it = find(_key);
+    if (it != end()) {
+      return it->second;
     }
     data_.emplace_back(std::make_pair(_key, T()));
     it_ = data_.begin();
@@ -163,17 +155,9 @@ class Object {
 
   /// Returns the element signified by the key or creates a new one.
   T& operator[](std::string&& _key) {
-    for (auto it = it_; it != end(); ++it) {
-      if (it->first == _key) {
-        it_ = it + 1;
-        return it->second;
-      }
-    }
-    for (auto it = begin(); it != it_; ++it) {
-      if (it->first == _key) {
-        it_ = it + 1;
-        return it->second;
-      }
+    const auto it = find(_key);
+    if (it != end()) {
+      return it->second;
     }
     data_.emplace_back(std::make_pair(std::move(_key), T()));
     it_ = data_.begin();
@@ -188,35 +172,46 @@ class Object {
 
   /// Returns the element signified by the key or throws an exception.
   T& at(const std::string& _key) {
-    for (auto it = it_; it != end(); ++it) {
-      if (it->first == _key) {
-        it_ = it + 1;
-        return it->second;
-      }
+    const auto it = find(_key);
+    if (it == end()) {
+      throw std::runtime_error("Key named '" + _key + "' not found.");
     }
-    throw std::runtime_error("Key named '" + _key + "' not found.");
+    return it->second;
   }
 
   /// Returns the element signified by the key or throws an exception.
   const T& at(const std::string& _key) const {
-    for (auto it = it_; it != end(); ++it) {
-      if (it->first == _key) {
-        it_ = it + 1;
-        return it->second;
-      }
+    const auto it = find(_key);
+    if (it == end()) {
+      throw std::runtime_error("Key named '" + _key + "' not found.");
     }
-    throw std::runtime_error("Key named '" + _key + "' not found.");
+    return it->second;
   }
 
   /// Returns a result wrapping the element signified by the key.
   Result<T> get(const std::string& _key) const noexcept {
+    const auto it = find(_key);
+    if (it == end()) {
+      return Error("Key named '" + _key + "' not found.");
+    }
+    return it->second;
+  }
+
+ private:
+  iterator find(const std::string& _key) const {
     for (auto it = it_; it != end(); ++it) {
       if (it->first == _key) {
         it_ = it + 1;
-        return it->second;
+        return it;
       }
     }
-    return Error("Key named '" + _key + "' not found.");
+    for (auto it = begin(); it != it_; ++it) {
+      if (it->first == _key) {
+        it_ = it + 1;
+        return it;
+      }
+    }
+    return end();
   }
 
  private:
