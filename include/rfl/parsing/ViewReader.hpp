@@ -117,6 +117,13 @@ class ViewReader {
         assign_to_extra_fields<pos>(_r, _current_name, _var, _view, _errors,
                                     _found, _set);
       }
+    } else if constexpr (ProcessorsType::no_extra_fields_) {
+      if (!already_assigned) {
+        _errors->emplace_back(
+            Error("Value named '" + std::string(_current_name) +
+                  "' not used. Remove the rfl::NoExtraFields processor or add "
+                  "rfl::ExtraFields to avoid this error message."));
+      }
     }
   }
 
