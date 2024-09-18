@@ -223,7 +223,7 @@ class Object {
   DataType data_;
 
   /// Allows faster access
-  iterator it_;
+  mutable iterator it_;
 };
 
 }  // namespace rfl
