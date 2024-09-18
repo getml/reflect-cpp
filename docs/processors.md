@@ -35,6 +35,7 @@ reflect-cpp currently supports the following processors:
 
 - `rfl::AddStructName` 
 - `rfl::DefaultIfMissing` 
+- `rfl::NoExtraFields` 
 - `rfl::NoFieldNames` 
 - `rfl::NoOptionals` 
 - `rfl::UnderlyingEnums` 
@@ -98,6 +99,48 @@ have gotten had you read the following JSON string:
 `last_name` and `town` have been replaced by the default values.
 Because you have not passed a default value to town, the default value
 of the type is used instead.
+
+### `rfl::NoExtraFields`
+
+When reading an object and the object contains a field that cannot be 
+matched to any of the fields in the struct, that field is simply ignored.
+
+However, when `rfl::NoExtraFields` is added to `read`, then such extra fields
+will lead to an error. 
+
+This can be overriden by adding `rfl::ExtraFields` to the struct.
+
+Example:
+
+```cpp
+struct Person {
+  std::string first_name;
+  std::string last_name = "Simpson";
+};
+```
+
+```json
+{"first_name":"Homer","last_name":"Simpson","extra_field":0}
+```
+
+If you call `rfl::json::read<Person>(json_string)`, then `extra_field` will 
+simply be ignored.
+
+But if you call `rfl::json::read<Person, rfl::NoExtraFields>(json_string)`,
+you will get an error.
+
+However, suppose the struct looked like this:
+
+```cpp
+struct Person {
+  std::string first_name;
+  std::string last_name = "Simpson";
+  rfl::ExtraFields<int> extras;
+};
+```
+
+In this case, `rfl::json::read<Person, rfl::NoExtraFields>(json_string)`
+will not fail, because `extra_field` would be included in `extras`.
 
 ### `rfl::NoFieldNames`
 
