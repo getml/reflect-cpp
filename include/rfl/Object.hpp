@@ -36,7 +36,7 @@ class Object {
   using reverse_iterator = typename DataType::reverse_iterator;
   using const_reverse_iterator = typename DataType::const_reverse_iterator;
 
-  Object() : data_(), it_(data_.begin()) {}
+  Object() : data_(), i_(0) {}
 
   Object(const Object<T>& _f) = default;
 
@@ -96,13 +96,13 @@ class Object {
   /// Inserts a new element at the end.
   void insert(const value_type& _value) {
     data_.push_back(_value);
-    it_ = data_.begin();
+    i_ = 0;
   }
 
   /// Inserts a new element at the end.
   void insert(value_type&& _value) {
     data_.emplace_back(std::move(_value));
-    it_ = data_.begin();
+    i_ = 0;
   }
 
   /// Inserts several new elements at the end.
@@ -144,97 +144,81 @@ class Object {
 
   /// Returns the element signified by the key or creates a new one.
   T& operator[](const std::string& _key) {
-    const auto it = find(_key);
-    if (it != end()) {
-      return it->second;
+    const auto i = find(_key);
+    if (i != size()) {
+      return data_[i].second;
     }
     data_.emplace_back(std::make_pair(_key, T()));
-    it_ = data_.begin();
+    i_ = 0;
     return data_.back().second;
   }
 
   /// Returns the element signified by the key or creates a new one.
   T& operator[](std::string&& _key) {
-    const auto it = find(_key);
-    if (it != end()) {
-      return it->second;
+    const auto i = find(_key);
+    if (i != size()) {
+      return data_[i].second;
     }
     data_.emplace_back(std::make_pair(std::move(_key), T()));
-    it_ = data_.begin();
+    i_ = 0;
     return data_.back().second;
   }
 
   /// Deletes all elements.
   void clear() {
     data_.clear();
-    it_ = data_.begin();
+    i_ = 0;
   }
 
   /// Returns the element signified by the key or throws an exception.
   T& at(const std::string& _key) {
-    const auto it = find(_key);
-    if (it == end()) {
+    const auto i = find(_key);
+    if (i == size()) {
       throw std::runtime_error("Key named '" + _key + "' not found.");
     }
-    return it->second;
+    return data_[i].second;
   }
 
   /// Returns the element signified by the key or throws an exception.
   const T& at(const std::string& _key) const {
-    const auto it = find(_key);
-    if (it == end()) {
+    const auto i = find(_key);
+    if (i == size()) {
       throw std::runtime_error("Key named '" + _key + "' not found.");
     }
-    return it->second;
+    return data_[i].second;
   }
 
   /// Returns a result wrapping the element signified by the key.
   Result<T> get(const std::string& _key) const noexcept {
-    const auto it = find(_key);
-    if (it == end()) {
+    const auto i = find(_key);
+    if (i == size()) {
       return Error("Key named '" + _key + "' not found.");
     }
-    return it->second;
+    return data_[i].second;
   }
 
  private:
-  iterator find(const std::string& _key) {
-    for (auto it = it_; it != end(); ++it) {
-      if (it->first == _key) {
-        it_ = it + 1;
-        return it;
+  size_t find(const std::string& _key) const {
+    for (auto i = i_; i < size(); ++i) {
+      if (data_[i].first == _key) {
+        i_ = i + 1;
+        return i;
       }
     }
-    for (auto it = begin(); it != it_; ++it) {
-      if (it->first == _key) {
-        it_ = it + 1;
-        return it;
+    for (auto i = 0; i < i_; ++i) {
+      if (data_[i].first == _key) {
+        i_ = i + 1;
+        return i;
       }
     }
-    return end();
-  }
-
-  const_iterator find(const std::string& _key) const {
-    for (auto it = it_; it != end(); ++it) {
-      if (it->first == _key) {
-        it_ = it + 1;
-        return it;
-      }
-    }
-    for (auto it = begin(); it != it_; ++it) {
-      if (it->first == _key) {
-        it_ = it + 1;
-        return it;
-      }
-    }
-    return end();
+    return size();
   }
 
  private:
   DataType data_;
 
   /// Allows faster access
-  mutable iterator it_;
+  mutable size_t i_;
 };
 
 }  // namespace rfl
