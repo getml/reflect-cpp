@@ -17,9 +17,6 @@ struct TaggedUnion {
   /// The type of the underlying variant.
   using VariantType = rfl::Variant<Ts...>;
 
-  /// A literal containing all the tags that are possible
-  using PossibleTags = define_literal_t<internal::tag_t<_discriminator, Ts>...>;
-
   TaggedUnion(const VariantType& _variant) : variant_(_variant) {}
 
   TaggedUnion(VariantType&& _variant) noexcept
@@ -111,13 +108,21 @@ struct TaggedUnion {
     return variant_.visit(_f);
   }
 
-  static_assert(!PossibleTags::has_duplicates(),
-                "Duplicate tags are not allowed inside tagged unions.");
-
   /// The underlying variant - a TaggedUnion is a thin wrapper
   /// around a variant that is mainly used for parsing.
   VariantType variant_;
 };
+
+template <class T>
+class PossibleTags;
+
+template <internal::StringLiteral _discriminator, class... Ts>
+class PossibleTags<TaggedUnion<_discriminator, Ts...>> {
+  using Type = define_literal_t<internal::tag_t<_discriminator, Ts>...>;
+};
+
+template <class T>
+using possible_tags_t = typename PossibleTags<T>::Type;
 
 }  // namespace rfl
 
