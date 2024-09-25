@@ -26,6 +26,7 @@
 #include "ViewReaderWithDefault.hpp"
 #include "ViewReaderWithDefaultAndStrippedFieldNames.hpp"
 #include "ViewReaderWithStrippedFieldNames.hpp"
+#include "internal/no_duplicate_field_names.hpp"
 #include "is_empty.hpp"
 #include "is_required.hpp"
 #include "schema/Type.hpp"
@@ -79,6 +80,8 @@ struct NamedTupleParser {
   /// fields might not be default-constructible.
   static Result<NamedTuple<FieldTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
+    static_assert(
+        internal::no_duplicate_field_names<typename NamedTupleType::Fields>());
     alignas(NamedTuple<FieldTypes...>) unsigned char
         buf[sizeof(NamedTuple<FieldTypes...>)];
     auto ptr = std::launder(reinterpret_cast<NamedTuple<FieldTypes...>*>(buf));
@@ -96,6 +99,8 @@ struct NamedTupleParser {
   static std::optional<Error> read_view(
       const R& _r, const InputVarType& _var,
       NamedTuple<FieldTypes...>* _view) noexcept {
+    static_assert(
+        internal::no_duplicate_field_names<typename NamedTupleType::Fields>());
     if constexpr (_no_field_names) {
       auto arr = _r.to_array(_var);
       if (!arr) [[unlikely]] {
@@ -115,6 +120,8 @@ struct NamedTupleParser {
   static std::optional<Error> read_view_with_default(
       const R& _r, const InputVarType& _var,
       NamedTuple<FieldTypes...>* _view) noexcept {
+    static_assert(
+        internal::no_duplicate_field_names<typename NamedTupleType::Fields>());
     if constexpr (_no_field_names) {
       auto arr = _r.to_array(_var);
       if (!arr) [[unlikely]] {
