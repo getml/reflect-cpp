@@ -114,10 +114,10 @@ struct TaggedUnion {
 };
 
 template <class T>
-class PossibleTags;
+struct PossibleTags;
 
 template <internal::StringLiteral _discriminator, class... Ts>
-class PossibleTags<TaggedUnion<_discriminator, Ts...>> {
+struct PossibleTags<TaggedUnion<_discriminator, Ts...>> {
   using Type = define_literal_t<internal::tag_t<_discriminator, Ts>...>;
 };
 
