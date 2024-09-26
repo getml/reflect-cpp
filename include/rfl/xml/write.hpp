@@ -52,7 +52,11 @@ std::ostream& write(const auto& _obj, std::ostream& _stream,
 
   auto w = Writer(doc, root_name.str());
 
-  Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
+  using ProcessorsType = Processors<Ps...>;
+  static_assert(!ProcessorsType::no_field_names_,
+                "The NoFieldNames processor is not supported for BSON, XML, "
+                "TOML, or YAML.");
+  Parser<T, ProcessorsType>::write(w, _obj, typename ParentType::Root{});
 
   doc->save(_stream, _indent.c_str());
 

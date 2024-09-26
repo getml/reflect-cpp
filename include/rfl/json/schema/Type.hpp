@@ -5,10 +5,10 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <variant>
 
 #include "../../Literal.hpp"
 #include "../../Rename.hpp"
+#include "../../Variant.hpp"
 
 namespace rfl::json::schema {
 
@@ -32,9 +32,11 @@ struct Type {
   struct String {
     Literal<"string"> type;
     std::optional<std::string> description;
+    rfl::Rename<"minLength", std::optional<size_t>> minSize;
+    rfl::Rename<"maxLength", std::optional<size_t>> maxSize;
   };
 
-  using NumericType = std::variant<Integer, Number>;
+  using NumericType = rfl::Variant<Integer, Number>;
 
   struct AllOf {
     std::optional<std::string> description;
@@ -48,13 +50,13 @@ struct Type {
 
   struct ExclusiveMaximum {
     std::optional<std::string> description;
-    std::variant<double, int> exclusiveMaximum;
+    rfl::Variant<double, int> exclusiveMaximum;
     std::string type;
   };
 
   struct ExclusiveMinimum {
     std::optional<std::string> description;
-    std::variant<double, int> exclusiveMinimum;
+    rfl::Variant<double, int> exclusiveMinimum;
     std::string type;
   };
 
@@ -62,19 +64,19 @@ struct Type {
     Literal<"array"> type;
     std::optional<std::string> description;
     rfl::Ref<Type> items;
-    size_t minContains;
-    size_t maxContains;
+    size_t minItems;
+    size_t maxItems;
   };
 
   struct Maximum {
     std::optional<std::string> description;
-    std::variant<double, int> maximum;
+    rfl::Variant<double, int> maximum;
     std::string type;
   };
 
   struct Minimum {
     std::optional<std::string> description;
-    std::variant<double, int> minimum;
+    rfl::Variant<double, int> minimum;
     std::string type;
   };
 
@@ -88,6 +90,7 @@ struct Type {
     std::optional<std::string> description;
     std::map<std::string, Type> properties;
     std::vector<std::string> required;
+    std::shared_ptr<Type> additionalProperties;
   };
 
   struct OneOf {
@@ -129,10 +132,12 @@ struct Type {
     Literal<"array"> type;
     std::optional<std::string> description;
     rfl::Ref<Type> items;
+    rfl::Rename<"minItems", std::optional<size_t>> minSize;
+    rfl::Rename<"maxItems", std::optional<size_t>> maxSize;
   };
 
   using ReflectionType =
-      std::variant<AllOf, AnyOf, Boolean, ExclusiveMaximum, ExclusiveMinimum,
+      rfl::Variant<AllOf, AnyOf, Boolean, ExclusiveMaximum, ExclusiveMinimum,
                    FixedSizeTypedArray, Integer, Maximum, Minimum, Number, Null,
                    Object, OneOf, Reference, Regex, String, StringEnum,
                    StringMap, Tuple, TypedArray>;

@@ -26,8 +26,8 @@ struct EqualTo {
     using ValidationType = parsing::schema::ValidationType;
     const auto value =
         std::is_floating_point_v<T>
-            ? std::variant<double, int>(static_cast<double>(_threshold))
-            : std::variant<double, int>(static_cast<int>(_threshold));
+            ? rfl::Variant<double, int>(static_cast<double>(_threshold))
+            : rfl::Variant<double, int>(static_cast<int>(_threshold));
     return ValidationType{ValidationType::EqualTo{.value_ = value}};
   }
 };
@@ -50,8 +50,8 @@ struct Minimum {
     using ValidationType = parsing::schema::ValidationType;
     const auto value =
         std::is_floating_point_v<T>
-            ? std::variant<double, int>(static_cast<double>(_threshold))
-            : std::variant<double, int>(static_cast<int>(_threshold));
+            ? rfl::Variant<double, int>(static_cast<double>(_threshold))
+            : rfl::Variant<double, int>(static_cast<int>(_threshold));
     return ValidationType{ValidationType::Minimum{.value_ = value}};
   }
 };
@@ -74,8 +74,8 @@ struct ExclusiveMinimum {
     using ValidationType = parsing::schema::ValidationType;
     const auto value =
         std::is_floating_point_v<T>
-            ? std::variant<double, int>(static_cast<double>(_threshold))
-            : std::variant<double, int>(static_cast<int>(_threshold));
+            ? rfl::Variant<double, int>(static_cast<double>(_threshold))
+            : rfl::Variant<double, int>(static_cast<int>(_threshold));
     return ValidationType{ValidationType::ExclusiveMinimum{.value_ = value}};
   }
 };
@@ -98,8 +98,8 @@ struct Maximum {
     using ValidationType = parsing::schema::ValidationType;
     const auto value =
         std::is_floating_point_v<T>
-            ? std::variant<double, int>(static_cast<double>(_threshold))
-            : std::variant<double, int>(static_cast<int>(_threshold));
+            ? rfl::Variant<double, int>(static_cast<double>(_threshold))
+            : rfl::Variant<double, int>(static_cast<int>(_threshold));
     return ValidationType{ValidationType::Maximum{.value_ = value}};
   }
 };
@@ -122,8 +122,8 @@ struct ExclusiveMaximum {
     using ValidationType = parsing::schema::ValidationType;
     const auto value =
         std::is_floating_point_v<T>
-            ? std::variant<double, int>(static_cast<double>(_threshold))
-            : std::variant<double, int>(static_cast<int>(_threshold));
+            ? rfl::Variant<double, int>(static_cast<double>(_threshold))
+            : rfl::Variant<double, int>(static_cast<int>(_threshold));
     return ValidationType{ValidationType::ExclusiveMaximum{.value_ = value}};
   }
 };
@@ -146,8 +146,8 @@ struct NotEqualTo {
     using ValidationType = parsing::schema::ValidationType;
     const auto value =
         std::is_floating_point_v<T>
-            ? std::variant<double, int>(static_cast<double>(_threshold))
-            : std::variant<double, int>(static_cast<int>(_threshold));
+            ? rfl::Variant<double, int>(static_cast<double>(_threshold))
+            : rfl::Variant<double, int>(static_cast<int>(_threshold));
     return ValidationType{ValidationType::NotEqualTo{.value_ = value}};
   }
 };

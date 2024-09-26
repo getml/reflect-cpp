@@ -1,9 +1,9 @@
-name: linux-clang 
+name: linux-clang-14 
 
-on: [ push, pull_request ]
+on: [ pull_request ]
 
 jobs:
-  linux-clang:
+  linux-clang-14:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -15,11 +15,11 @@ jobs:
         uses: lukka/run-vcpkg@v11
       - uses: KyleMayes/install-llvm-action@v1
         with:
-          version: "16"
+          version: "14"
       - name: link clang lib
         run: |
-          sudo mkdir -p /usr/lib/llvm-16/lib
-          sudo ln -s clang /usr/lib/llvm-16/lib/clang
+          sudo mkdir -p /usr/lib/llvm-14/lib
+          sudo ln -s clang /usr/lib/llvm-14/lib/clang
         working-directory: ${{ env.LLVM_PATH }}/lib
       - name: Compile 
         env:
@@ -29,7 +29,7 @@ jobs:
           clang --version
           cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build -j 4
-      - name: Run tess 
+      - name: Run tests 
         run: |
           ./build/tests/bson/reflect-cpp-bson-tests
           ./build/tests/cbor/reflect-cpp-cbor-tests

@@ -11,9 +11,11 @@
 #include "../internal/enums/StringConverter.hpp"
 #include "../internal/has_reflection_method_v.hpp"
 #include "../internal/has_reflection_type_v.hpp"
+#include "../internal/has_reflector.hpp"
 #include "../internal/is_basic_type.hpp"
 #include "../internal/is_description.hpp"
 #include "../internal/is_literal.hpp"
+#include "../internal/is_underlying_enums_v.hpp"
 #include "../internal/is_validator.hpp"
 #include "../internal/processed_t.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
@@ -40,14 +42,25 @@ struct Parser {
 
   /// Expresses the variables as type T.
   static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
-    if constexpr (R::template has_custom_constructor<T>) {
+    if constexpr (internal::has_read_reflector<T>) {
+      const auto wrap_in_t = [](auto _named_tuple) -> Result<T> {
+        try {
+          return Reflector<T>::to(_named_tuple);
+        } catch (std::exception& e) {
+          return Error(e.what());
+        }
+      };
+      return Parser<R, W, typename Reflector<T>::ReflType,
+                    ProcessorsType>::read(_r, _var)
+          .and_then(wrap_in_t);
+    } else if constexpr (R::template has_custom_constructor<T>) {
       return _r.template use_custom_constructor<T>(_var);
     } else {
       if constexpr (internal::has_reflection_type_v<T>) {
         using ReflectionType = std::remove_cvref_t<typename T::ReflectionType>;
         const auto wrap_in_t = [](auto _named_tuple) -> Result<T> {
           try {
-            return T(_named_tuple);
+            return T{_named_tuple};
           } catch (std::exception& e) {
             return Error(e.what());
           }
@@ -55,11 +68,19 @@ struct Parser {
         return Parser<R, W, ReflectionType, ProcessorsType>::read(_r, _var)
             .and_then(wrap_in_t);
       } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
-        return read_struct(_r, _var);
+        if constexpr (ProcessorsType::default_if_missing_) {
+          return read_struct_with_default(_r, _var);
+        } else {
+          return read_struct(_r, _var);
+        }
       } else if constexpr (std::is_enum_v<T>) {
-        using StringConverter = internal::enums::StringConverter<T>;
-        return _r.template to_basic_type<std::string>(_var).and_then(
-            StringConverter::string_to_enum);
+        if constexpr (ProcessorsType::underlying_enums_) {
+          return static_cast<T>(*_r.template to_basic_type<std::underlying_type_t<T>>(_var));
+        } else {
+            using StringConverter = internal::enums::StringConverter<T>;
+            return _r.template to_basic_type<std::string>(_var).and_then(
+                StringConverter::string_to_enum);
+        }
       } else {
         return _r.template to_basic_type<std::remove_cvref_t<T>>(_var);
       }
@@ -68,7 +89,10 @@ struct Parser {
 
   template <class P>
   static void write(const W& _w, const T& _var, const P& _parent) noexcept {
-    if constexpr (internal::has_reflection_type_v<T>) {
+    if constexpr (internal::has_write_reflector<T>) {
+      Parser<R, W, typename Reflector<T>::ReflType, ProcessorsType>::write(
+          _w, Reflector<T>::from(_var), _parent);
+    } else if constexpr (internal::has_reflection_type_v<T>) {
       using ReflectionType = std::remove_cvref_t<typename T::ReflectionType>;
       if constexpr (internal::has_reflection_method_v<T>) {
         Parser<R, W, ReflectionType, ProcessorsType>::write(
@@ -84,9 +108,14 @@ struct Parser {
       Parser<R, W, PtrNamedTupleType, ProcessorsType>::write(
           _w, ptr_named_tuple, _parent);
     } else if constexpr (std::is_enum_v<T>) {
-      using StringConverter = internal::enums::StringConverter<T>;
-      const auto str = StringConverter::enum_to_string(_var);
-      ParentType::add_value(_w, str, _parent);
+      if constexpr (ProcessorsType::underlying_enums_) {
+         const auto val = static_cast<std::underlying_type_t<T>>(_var);
+        ParentType::add_value(_w, val, _parent);
+      } else {
+        using StringConverter = internal::enums::StringConverter<T>;
+        const auto str = StringConverter::enum_to_string(_var);
+        ParentType::add_value(_w, str, _parent);
+      }
     } else {
       ParentType::add_value(_w, _var, _parent);
     }
@@ -140,8 +169,7 @@ struct Parser {
       return make_validated<U>(_definitions);
 
     } else if constexpr (internal::has_reflection_type_v<U>) {
-      return Parser<R, W, typename U::ReflectionType,
-                    ProcessorsType>::to_schema(_definitions);
+      return make_reference<U>(_definitions);
 
     } else {
       static_assert(rfl::always_false_v<U>, "Unsupported type.");
@@ -165,7 +193,10 @@ struct Parser {
       std::map<std::string, schema::Type>* _definitions) {
     using Type = schema::Type;
     using S = internal::enums::StringConverter<U>;
-    if constexpr (S::is_flag_enum_) {
+    if constexpr (ProcessorsType::underlying_enums_) {
+      return Type{Type::Integer{}};
+    }
+    else if constexpr (S::is_flag_enum_) {
       return Type{Type::String{}};
     } else {
       return Parser<R, W, typename S::NamesLiteral, ProcessorsType>::to_schema(
@@ -181,9 +212,16 @@ struct Parser {
     if (_definitions->find(name) == _definitions->end()) {
       (*_definitions)[name] =
           Type{Type::Integer{}};  // Placeholder to avoid infinite loop.
-      using NamedTupleType = internal::processed_t<U, ProcessorsType>;
-      (*_definitions)[name] =
-          Parser<R, W, NamedTupleType, ProcessorsType>::to_schema(_definitions);
+      if constexpr (internal::has_reflection_type_v<U>) {
+        (*_definitions)[name] =
+            Parser<R, W, typename U::ReflectionType, ProcessorsType>::to_schema(
+                _definitions);
+      } else {
+        using NamedTupleType = internal::processed_t<U, ProcessorsType>;
+        (*_definitions)[name] =
+            Parser<R, W, NamedTupleType, ProcessorsType>::to_schema(
+                _definitions);
+      }
     }
     return Type{Type::Reference{name}};
   }
@@ -217,7 +255,7 @@ struct Parser {
   /// fields might not be default-constructible.
   static Result<T> read_struct(const R& _r, const InputVarType& _var) {
     alignas(T) unsigned char buf[sizeof(T)];
-    auto ptr = reinterpret_cast<T*>(buf);
+    auto ptr = std::launder(reinterpret_cast<T*>(buf));
     auto view = ProcessorsType::template process<T>(to_view(*ptr));
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto err =
@@ -226,6 +264,24 @@ struct Parser {
       return *err;
     }
     return std::move(*ptr);
+  }
+
+  /// This is actually more straight-forward than the standard case - we just
+  /// allocate a struct and then fill it. But it is less efficient and it
+  /// assumes that all values on the struct have a default constructor, so we
+  /// only use it when the DefaultIfMissing preprocessor is added.
+  static Result<T> read_struct_with_default(const R& _r,
+                                            const InputVarType& _var) {
+    auto t = T{};
+    auto view = ProcessorsType::template process<T>(to_view(t));
+    using ViewType = std::remove_cvref_t<decltype(view)>;
+    const auto err =
+        Parser<R, W, ViewType, ProcessorsType>::read_view_with_default(_r, _var,
+                                                                       &view);
+    if (err) [[unlikely]] {
+      return *err;
+    }
+    return t;
   }
 
   static std::string replace_non_alphanumeric(std::string _str) {

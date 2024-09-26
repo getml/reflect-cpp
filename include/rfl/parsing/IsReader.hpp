@@ -18,15 +18,15 @@ namespace parsing {
 
 template <class R>
 struct MockArrayReader {
-  std::optional<Error> read(typename R::InputVarType& _var) const {
+  std::optional<Error> read(typename R::InputVarType&) const {
     return std::nullopt;
   }
 };
 
 template <class R>
 struct MockObjectReader {
-  void read(const std::string_view& _name,
-            typename R::InputVarType& _var) const {}
+  void read(const std::string_view&,
+            typename R::InputVarType&) const {}
 };
 
 template <class R, class T>
@@ -36,7 +36,7 @@ concept IsReader = requires(R r, std::string name,
                             MockObjectReader<R> object_reader,
                             typename R::InputArrayType arr,
                             typename R::InputObjectType obj,
-                            typename R::InputVarType var) {
+                            typename R::InputVarType var, size_t idx) {
   /// Any Reader needs to define the following:
   ///
   /// 1) An InputArrayType, which must be an array-like data structure.
@@ -48,9 +48,14 @@ concept IsReader = requires(R r, std::string name,
   ///    whether the class in question as a custom constructor, which might
   ///    be called something like from_json_obj(...).
 
+  /// Retrieves a particular field from an array.
+  {
+    r.get_field_from_array(idx, arr)
+    } -> std::same_as<rfl::Result<typename R::InputVarType>>;
+
   /// Retrieves a particular field from an object.
   {
-    r.get_field(name, obj)
+    r.get_field_from_object(name, obj)
     } -> std::same_as<rfl::Result<typename R::InputVarType>>;
 
   /// Determines whether a variable is empty (the NULL type).

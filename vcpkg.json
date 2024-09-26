@@ -4,6 +4,10 @@
   "builtin-baseline": "50bffcc62d7f6571eb32bc1a0b1807e77af1166c",
   "dependencies": [
     {
+      "name": "ctre",
+      "version>=": "3.8"
+    },
+    {
       "name": "flatbuffers",
       "version>=": "23.5.26#1"
     },
@@ -29,7 +33,7 @@
     },
     {
       "name": "simdjson",
-      "version>=": "3.6.2"
+      "version>=": "3.9.3"
     },
     {
       "name": "tinycbor",
@@ -42,6 +46,9 @@
     {
       "name": "yaml-cpp",
       "version>=": "0.8.0#1"
+    },
+    {
+      "name": "yyjson"
     },
     {
       "name": "benchmark",
@@ -58,6 +65,12 @@
     {
       "name": "vcpkg-cmake-config",
       "version>=": "2022-02-06#1"
+    }
+  ],
+  "overrides": [
+    {
+      "name": "yyjson",
+      "version": "0.8.0"
     }
   ]
 }

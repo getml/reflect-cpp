@@ -3,30 +3,32 @@
 
 #include <tuple>
 
+#include "../Tuple.hpp"
+#include "../tuple_cat.hpp"
 #include "is_flatten_field.hpp"
 #include "move_to_field_tuple.hpp"
 
 namespace rfl {
 namespace internal {
 
-template <class FieldTuple, class... Args>
-auto move_and_flatten_field_tuple(FieldTuple&& _t, Args&&... _args) {
-  constexpr auto i = sizeof...(Args);
-  if constexpr (i == std::tuple_size_v<std::remove_cvref_t<FieldTuple>>) {
-    return std::tuple_cat(std::move(_args)...);
-  } else {
-    using T = std::tuple_element_t<i, std::remove_cvref_t<FieldTuple>>;
-    if constexpr (is_flatten_field<T>::value) {
+template <class FieldTuple>
+auto move_and_flatten_field_tuple(FieldTuple&& _t) {
+  const auto get_one = [&]<int _i>(std::integral_constant<int, _i>) {
+    using T = tuple_element_t<_i, std::remove_cvref_t<FieldTuple>>;
+    if constexpr (is_flatten_field_v<T>) {
       return move_and_flatten_field_tuple(
-          std::move(_t), std::move(_args)...,
-          move_and_flatten_field_tuple(
-              move_to_field_tuple(std::move(std::get<i>(_t).value_))));
+          move_to_field_tuple(std::move(rfl::get<_i>(_t).value_)));
     } else {
-      return move_and_flatten_field_tuple(
-          std::move(_t), std::move(_args)...,
-          std::make_tuple(std::move(std::get<i>(_t))));
+      return rfl::make_tuple(std::move(rfl::get<_i>(_t)));
     }
+  };
+
+  constexpr auto size = rfl::tuple_size_v<std::remove_cvref_t<FieldTuple>>;
+
+  return [&]<int... _is>(std::integer_sequence<int, _is...>) {
+    return rfl::tuple_cat(get_one(std::integral_constant<int, _is>{})...);
   }
+  (std::make_integer_sequence<int, size>());
 }
 
 }  // namespace internal

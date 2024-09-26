@@ -1,22 +1,28 @@
 #ifndef RFL_INTERNAL_GETTYPENAME_HPP_
 #define RFL_INTERNAL_GETTYPENAME_HPP_
 
-#include <source_location>
-#include <string>
 #include <utility>
+
+#include "StringLiteral.hpp"
+
+#if __has_include(<source_location>)
+#include <source_location>
+#endif
 
 namespace rfl {
 namespace internal {
 
 template <class T>
 consteval auto get_type_name_str_view() {
-  // Unfortunately, we cannot avoid the use of a compiler-specific macro for
-  // Clang on Windows. For all other compilers, function_name works as intended.
-#if defined(__clang__) && defined(_MSC_VER)
-  const auto func_name = std::string_view{__PRETTY_FUNCTION__};
-#else
+#if __cpp_lib_source_location >= 201907L
   const auto func_name =
       std::string_view{std::source_location::current().function_name()};
+#elif defined(_MSC_VER)
+  // Officially, we only support MSVC versions that are modern enough to contain
+  // <source_location>, but inofficially, this might work.
+  const auto func_name = std::string_view{__FUNCSIG__};
+#else
+  const auto func_name = std::string_view{__PRETTY_FUNCTION__};
 #endif
 #if defined(__clang__)
   const auto split = func_name.substr(0, func_name.size() - 1);

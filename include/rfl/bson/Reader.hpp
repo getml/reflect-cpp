@@ -5,6 +5,7 @@
 
 #include <array>
 #include <concepts>
+#include <cstddef>
 #include <exception>
 #include <map>
 #include <memory>
@@ -18,6 +19,7 @@
 #include <vector>
 
 #include "../Box.hpp"
+#include "../Bytestring.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
 
@@ -47,7 +49,30 @@ struct Reader {
     T::from_bson_obj(var);
   });
 
-  rfl::Result<InputVarType> get_field(
+  rfl::Result<InputVarType> get_field_from_array(
+      const size_t _idx, const InputArrayType& _arr) const noexcept {
+    bson_t b;
+    bson_iter_t iter;
+    const auto doc = _arr.val_->value.v_doc;
+    if (bson_init_static(&b, doc.data, doc.data_len)) {
+      if (bson_iter_init(&iter, &b)) {
+        size_t i = 0;
+        while (bson_iter_next(&iter)) {
+          if (i == _idx) {
+            return to_input_var(&iter);
+          }
+          ++i;
+        }
+      } else {
+        return Error("Could not init the array iteration.");
+      }
+    } else {
+      return Error("Could not init array.");
+    }
+    return Error("Index " + std::to_string(_idx) + " of of bounds.");
+  }
+
+  rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType& _obj) const noexcept {
     bson_t b;
     bson_iter_t iter;
@@ -85,6 +110,19 @@ struct Reader {
           return rfl::Error(
               "Could not cast to string. The type must be UTF8 or symbol.");
       }
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      if (btype != BSON_TYPE_BINARY) {
+        return rfl::Error("Could not cast to bytestring.");
+      }
+      if (value.v_binary.subtype != BSON_SUBTYPE_BINARY) {
+        return rfl::Error(
+            "The BSON subtype must be a binary in order to read into a "
+            "bytestring.");
+      }
+      return rfl::Bytestring(
+          reinterpret_cast<const std::byte*>(value.v_binary.data),
+          value.v_binary.data_len);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (btype != BSON_TYPE_BOOL) {
         return rfl::Error("Could not cast to boolean.");

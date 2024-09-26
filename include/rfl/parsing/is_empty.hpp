@@ -14,7 +14,7 @@ namespace rfl {
 namespace parsing {
 
 template <class T>
-static const bool is_empty(const T& _var) {
+static bool is_empty(const T& _var) {
   using Type = std::remove_cvref_t<T>;
   if constexpr (std::is_pointer_v<Type>) {
     return !_var || is_empty(*_var);

@@ -20,7 +20,11 @@ std::ostream& write(const auto& _obj, std::ostream& _stream) {
   using ParentType = parsing::Parent<Writer>;
   ::toml::table root;
   auto w = Writer(&root);
-  Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
+  using ProcessorsType = Processors<Ps...>;
+  static_assert(!ProcessorsType::no_field_names_,
+                "The NoFieldNames processor is not supported for BSON, XML, "
+                "TOML, or YAML.");
+  Parser<T, ProcessorsType>::write(w, _obj, typename ParentType::Root{});
   _stream << root;
   return _stream;
 }
@@ -33,7 +37,11 @@ std::string write(const auto& _obj) {
   std::stringstream sstream;
   ::toml::table root;
   auto w = Writer(&root);
-  Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
+  using ProcessorsType = Processors<Ps...>;
+  static_assert(!ProcessorsType::no_field_names_,
+                "The NoFieldNames processor is not supported for BSON, XML, "
+                "TOML, or YAML.");
+  Parser<T, ProcessorsType>::write(w, _obj, typename ParentType::Root{});
   sstream << root;
   return sstream.str();
 }

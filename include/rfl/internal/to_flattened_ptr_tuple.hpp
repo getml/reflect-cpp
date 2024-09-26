@@ -3,6 +3,8 @@
 
 #include <tuple>
 
+#include "../Tuple.hpp"
+#include "../tuple_cat.hpp"
 #include "has_flatten_fields.hpp"
 #include "is_flatten_field.hpp"
 #include "to_ptr_tuple.hpp"
@@ -10,24 +12,26 @@
 namespace rfl {
 namespace internal {
 
-template <class PtrTuple, class... Args>
-auto flatten_ptr_tuple(PtrTuple&& _t, Args... _args) {
-  constexpr auto i = sizeof...(Args);
-  if constexpr (i == 0 && !has_flatten_fields<PtrTuple>()) {
+template <class PtrTuple>
+auto flatten_ptr_tuple(PtrTuple&& _t) {
+  if constexpr (0 && !has_flatten_fields<PtrTuple>()) {
     return std::forward<PtrTuple>(_t);
-  } else if constexpr (i == std::tuple_size_v<std::remove_cvref_t<PtrTuple>>) {
-    return std::tuple_cat(std::forward<Args>(_args)...);
   } else {
-    using T = std::tuple_element_t<i, std::remove_cvref_t<PtrTuple>>;
-    if constexpr (is_flatten_field_v<T>) {
-      return flatten_ptr_tuple(
-          std::forward<PtrTuple>(_t), std::forward<Args>(_args)...,
-          flatten_ptr_tuple(to_ptr_tuple(std::get<i>(_t)->get())));
-    } else {
-      return flatten_ptr_tuple(std::forward<PtrTuple>(_t),
-                               std::forward<Args>(_args)...,
-                               std::make_tuple(std::get<i>(_t)));
+    const auto get_one = [&]<int _i>(std::integral_constant<int, _i>) {
+      using T = tuple_element_t<_i, std::remove_cvref_t<PtrTuple>>;
+      if constexpr (is_flatten_field_v<T>) {
+        return flatten_ptr_tuple(to_ptr_tuple(std::get<_i>(_t)->get()));
+      } else {
+        return rfl::make_tuple(std::get<_i>(_t));
+      }
+    };
+
+    constexpr auto size = rfl::tuple_size_v<std::remove_cvref_t<PtrTuple>>;
+
+    return [&]<int... _is>(std::integer_sequence<int, _is...>) {
+      return rfl::tuple_cat(get_one(std::integral_constant<int, _is>{})...);
     }
+    (std::make_integer_sequence<int, size>());
   }
 }
 

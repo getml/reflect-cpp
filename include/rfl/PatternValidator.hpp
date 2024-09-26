@@ -3,7 +3,12 @@
 
 #include <string>
 
-#include "../ctre.hpp"
+#if __has_include(<ctre.h>)
+#include <ctre.hpp>
+#else
+#include "thirdparty/ctre.hpp"
+#endif
+
 #include "Literal.hpp"
 #include "Result.hpp"
 #include "internal/StringLiteral.hpp"

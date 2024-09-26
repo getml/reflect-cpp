@@ -1,7 +1,74 @@
 # Custom parsers
 
+## `rfl::Reflector` 
+
 If you absolutely do not want to make any changes to your original classes whatsoever,
-you can implement a custom parser using `rfl::parsing::CustomParser`.
+You can create a Reflector template specialization for your type:
+
+```cpp
+namespace rfl {
+template <>
+struct Reflector<Person> {
+  struct ReflType {
+    std::string first_name;
+    std::string last_name;
+  };
+  
+  static Person to(const ReflType& v) noexcept {
+    return {v.first_name, v.last_name};
+  }
+
+  static ReflType from(const Person& v) {
+    return {v.first_name, v.last_name};
+  }
+};
+}
+```
+
+It's also fine to define just the `from` method when the original class is 
+only written, or `to` when the original class is only read:
+
+```cpp
+// This can only be used for writing.
+namespace rfl {
+template <>
+struct Reflector<Person> {
+  struct ReflType {
+    std::string first_name;
+    std::string last_name;
+  };
+
+  static ReflType from(const Person& v) {
+    return {v.first_name, v.last_name};
+  }
+};
+}
+```
+
+Note that the `ReflType` does not have to be a struct. For instance, if you have
+a custom type called `MyCustomType` that you want to be serialized as a string, 
+you can do the following:
+
+```cpp
+namespace rfl {
+template <>
+struct Reflector<MyCustomType> {
+  using ReflType = std::string;
+
+  static MyCustomType to(const ReflType& str) noexcept {
+    return MyCustomType::from_string(str);
+  }
+
+  static ReflType from(const MyCustomType& v) {
+    return v.to_string();
+  }
+};
+}
+```
+
+## `rfl::parsing::CustomParser`
+
+Alternatively, you can implement a custom parser using `rfl::parsing::CustomParser`.
 
 In order to do so, you must do the following:
 
@@ -78,7 +145,7 @@ You then implement the custom parser:
 namespace rfl::parsing {
 
 template <class ReaderType, class WriterType, class ProcessorsType>
-struct Parser<ReaderType, WriterType, Person>
+struct Parser<ReaderType, WriterType, Person, ProcessorsType>
     : public CustomParser<ReaderType, WriterType, ProcessorsType, Person, PersonImpl> {};
 
 }  // namespace rfl::parsing

@@ -1,6 +1,6 @@
 name: macos-clang-x64
 
-on: [ push, pull_request ]
+on: [ pull_request ]
 
 jobs:
   macos-clang-x64:

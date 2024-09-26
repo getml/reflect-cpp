@@ -3,11 +3,12 @@
 
 #include <cstddef>
 #include <map>
+#include <memory>
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "../../Ref.hpp"
+#include "../../Variant.hpp"
 #include "ValidationType.hpp"
 
 namespace rfl::parsing::schema {
@@ -51,6 +52,7 @@ struct Type {
 
   struct Object {
     std::map<std::string, Type> types_;
+    std::shared_ptr<Type> additional_properties_;
   };
 
   /// All values are assumed to be required unless explicitly stated otherwise
@@ -84,10 +86,16 @@ struct Type {
   };
 
   using VariantType =
-      std::variant<Boolean, Int32, Int64, UInt32, UInt64, Integer, Float,
+      rfl::Variant<Boolean, Int32, Int64, UInt32, UInt64, Integer, Float,
                    Double, String, AnyOf, Description, FixedSizeTypedArray,
                    Literal, Object, Optional, Reference, StringMap, Tuple,
                    TypedArray, Validated>;
+
+  Type();
+
+  Type(const VariantType& _variant);
+
+  ~Type();
 
   /// A type can be determined to be any of the above.
   VariantType variant_;

@@ -34,6 +34,11 @@ class ArrayReader {
   }
 
   std::optional<Error> read(const InputVarType& _var) const {
+    if (i_ == size_) {
+      return Error("Expected " + std::to_string(size_) +
+                   " elements, got at least " + std::to_string(size_ + 1) +
+                   ".");
+    }
     auto res =
         Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(*r_, _var);
     if (res) {

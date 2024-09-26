@@ -1,18 +1,15 @@
 #ifndef RFL_INTERNAL_GETFIELDNAMES_HPP_
 #define RFL_INTERNAL_GETFIELDNAMES_HPP_
 
-#include <array>
-#include <iostream>
-#include <memory>
-#include <source_location>
-#include <string>
-#include <tuple>
 #include <type_traits>
 #include <utility>
 
+#if __has_include(<source_location>)
+#include <source_location>
+#endif
+
 #include "../Literal.hpp"
-#include "bind_fake_object_to_tuple.hpp"
-#include "get_fake_object.hpp"
+#include "get_ith_field_from_fake_object.hpp"
 #include "is_flatten_field.hpp"
 #include "is_rename.hpp"
 #include "num_fields.hpp"
@@ -42,13 +39,15 @@ constexpr auto wrap(const T& arg) noexcept {
 
 template <class T, auto ptr>
 consteval auto get_field_name_str_view() {
-  // Unfortunately, we cannot avoid the use of a compiler-specific macro for
-  // Clang on Windows. For all other compilers, function_name works as intended.
-#if defined(__clang__) && defined(_MSC_VER)
-  const auto func_name = std::string_view{__PRETTY_FUNCTION__};
-#else
+#if __cpp_lib_source_location >= 201907L
   const auto func_name =
       std::string_view{std::source_location::current().function_name()};
+#elif defined(_MSC_VER)
+  // Officially, we only support MSVC versions that are modern enough to contain
+  // <source_location>, but inofficially, this might work.
+  const auto func_name = std::string_view{__FUNCSIG__};
+#else
+  const auto func_name = std::string_view{__PRETTY_FUNCTION__};
 #endif
 #if defined(__clang__)
   const auto split = func_name.substr(0, func_name.size() - 2);
@@ -96,19 +95,35 @@ auto get_field_name() {
   }
 }
 
+// We don't want the operator+ to apply to normal literals,
+// so we introduce this wrapper.
+template <StringLiteral... _names>
+struct LiteralWrapper {
+  Literal<_names...> literal_;
+};
+
+template <StringLiteral... _names>
+auto wrap_literal(const Literal<_names...>& _literal) {
+  return LiteralWrapper<_names...>{_literal};
+}
+
 template <StringLiteral... _names1, StringLiteral... _names2>
-auto concat_two_literals(const rfl::Literal<_names1...>& _lit1,
-                         const rfl::Literal<_names2...>& _lit2) {
-  return rfl::Literal<_names1..., _names2...>::template from_value<0>();
+auto operator+(const LiteralWrapper<_names1...>&,
+               const LiteralWrapper<_names2...>&) {
+  return LiteralWrapper<_names1..., _names2...>{
+      rfl::Literal<_names1..., _names2...>::template from_value<0>()};
 }
 
 template <class Head, class... Tail>
 auto concat_literals(const Head& _head, const Tail&... _tail) {
-  if constexpr (sizeof...(_tail) == 0) {
-    return _head;
-  } else {
-    return concat_two_literals(_head, concat_literals(_tail...));
-  }
+  return (wrap_literal(_head) + ... + wrap_literal(_tail)).literal_;
+}
+
+// Special case - the struct does not contain rfl::Flatten.
+template <StringLiteral _head, StringLiteral... _tail>
+auto concat_literals(const rfl::Literal<_head>&,
+                     const rfl::Literal<_tail>&...) {
+  return rfl::Literal<_head, _tail...>::template from_value<0>();
 }
 
 inline auto concat_literals() { return rfl::Literal<>(); }
@@ -131,16 +146,15 @@ auto get_field_names() {
     return get_field_names<std::remove_pointer_t<T>>();
   } else {
 #if defined(__clang__)
-    const auto get = []<std::size_t... Is>(std::index_sequence<Is...>) {
-      return concat_literals(
-          get_field_name<Type, wrap(std::get<Is>(
-                                   bind_fake_object_to_tuple<T>()))>()...);
-    };
-#else
-    const auto get = []<std::size_t... Is>(std::index_sequence<Is...>) {
+    const auto get = []<std::size_t... _is>(std::index_sequence<_is...>) {
       return concat_literals(
           get_field_name<Type,
-                         std::get<Is>(bind_fake_object_to_tuple<T>())>()...);
+                         wrap(get_ith_field_from_fake_object<T, _is>())>()...);
+    };
+#else
+    const auto get = []<std::size_t... _is>(std::index_sequence<_is...>) {
+      return concat_literals(
+          get_field_name<Type, get_ith_field_from_fake_object<T, _is>()>()...);
     };
 #endif
     return get(std::make_index_sequence<num_fields<T>>());

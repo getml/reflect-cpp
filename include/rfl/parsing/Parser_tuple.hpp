@@ -1,6 +1,8 @@
 #ifndef RFL_PARSING_PARSER_TUPLE_HPP_
 #define RFL_PARSING_PARSER_TUPLE_HPP_
 
+#include <tuple>
+
 #include "Parser_base.hpp"
 #include "TupleParser.hpp"
 
@@ -12,7 +14,7 @@ requires AreReaderAndWriter<R, W, std::tuple<Ts...>>
 struct Parser<R, W, std::tuple<Ts...>, ProcessorsType>
     : public TupleParser<R, W, /*_ignore_empty_containers=*/false,
                          /*_all_required=*/ProcessorsType::all_required_,
-                         ProcessorsType, Ts...> {
+                         ProcessorsType, std::tuple<Ts...>> {
 };
 
 }  // namespace parsing

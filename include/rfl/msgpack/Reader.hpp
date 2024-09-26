@@ -3,21 +3,13 @@
 
 #include <msgpack.h>
 
-#include <array>
-#include <concepts>
+#include <cstddef>
 #include <exception>
-#include <map>
-#include <memory>
-#include <source_location>
-#include <sstream>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
-#include <unordered_map>
-#include <vector>
 
-#include "../Box.hpp"
+#include "../Bytestring.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
 
@@ -34,7 +26,15 @@ struct Reader {
     T::from_msgpack_obj(var);
   });
 
-  rfl::Result<InputVarType> get_field(
+  rfl::Result<InputVarType> get_field_from_array(
+      const size_t _idx, const InputArrayType _arr) const noexcept {
+    if (_idx >= _arr.size) {
+      return rfl::Error("Index " + std::to_string(_idx) + " of of bounds.");
+    }
+    return _arr.ptr[_idx];
+  }
+
+  rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType& _obj) const noexcept {
     for (uint32_t i = 0; i < _obj.size; ++i) {
       const auto& key = _obj.ptr[i].key;
@@ -64,6 +64,14 @@ struct Reader {
       }
       const auto str = _var.via.str;
       return std::string(str.ptr, str.size);
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      if (type != MSGPACK_OBJECT_BIN) {
+        return Error("Could not cast to a bytestring.");
+      }
+      const auto bin = _var.via.bin;
+      return rfl::Bytestring(reinterpret_cast<const std::byte*>(bin.ptr),
+                             bin.size);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != MSGPACK_OBJECT_BOOLEAN) {
         return Error("Could not cast to boolean.");

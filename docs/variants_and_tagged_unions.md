@@ -1,10 +1,19 @@
 # `std::variant`, `rfl::Variant` and `rfl::TaggedUnion`
 
-## `std::variant` or `rfl::Variant` (untagged)
+## `rfl::Variant` (untagged)
 
 Sometimes you know that the JSON object can be one of several alternatives. For example,
 you might have several shapes like `Circle`, `Rectangle` or `Square`. For these kind of 
-cases, the C++ standard library contains `std::variant`, even though we we recommend you to use `rfl::Variant` instead:
+cases, the C++ standard library contains `std::variant` and it is supported by reflect-cpp. 
+
+However, we recommend you use `rfl::Variant` instead.
+
+`rfl::Variant` behaves just like `std::variant`, but it compiles considerably faster,
+particularly for variants with many alternatives.
+
+You can use the functions `rfl::get`, `rfl::get_if`, `rfl::holds_alternative`, `rfl::visit`, 
+`rfl::variant_alternative_t` and `rfl::variant_size_v` to access the variant and they work
+the same way as their equivalents in the standard library.
 
 ```cpp
 struct Circle {
@@ -34,7 +43,7 @@ several problems with this:
 
 1) It is in inefficient: The parser has to read the fields for all of the different alternatives until it can't find a required field in the JSON object. It will then move on to the next alternative.
 2) It leads to confusing error messages: If none of the alternatives can be matched, you will get an error message telling you why each of the alternatives couldn't be matched. Such error messages are very long-winding and hard to read.
-3) It is dangerous. Imagine we had written `std::variant<Circle, Square, Rectangle>` instead of `std::variant<Circle, Rectangle, Square>`. This would mean that `Rectangle` could never be matched, because the fields in `Square` are a subset of `Rectangle`. This leads to very confusing bugs.
+3) It is dangerous. Imagine we had written `rfl::Variant<Circle, Square, Rectangle>` instead of `rfl::Variant<Circle, Rectangle, Square>`. This would mean that `Rectangle` could never be matched, because the fields in `Square` are a subset of `Rectangle`. This leads to very confusing bugs.
 
 ## `rfl::TaggedUnion` (internally tagged)
 
@@ -153,7 +162,9 @@ const auto r2 = rfl::json::read<Shapes>(json_string);
 ```
 
 Note that in this case the type of the field `shape` MUST be `rfl::Literal`.
-Also note that this is exactly how tagged unions work in Pydantic.
+Also note that this is exactly how tagged unions work in Pydantic. When you 
+use the `rfl::NoFieldNames` processor, the tag MUST always be the first entry 
+of the array.
 
 ## `std::variant` or `rfl::Variant` (externally tagged)
 
@@ -194,7 +205,7 @@ Because the tag is external, this is called *externally tagged*. It is the stand
 
 ## The visitor pattern
 
-In C++, the idiomatic way to handle `std::variant` and `rfl::TaggedUnion` is the [visitor pattern](https://en.cppreference.com/w/cpp/utility/variant/visit).
+In C++, the idiomatic way to handle `std::variant`, `rfl::Variant` and `rfl::TaggedUnion` is the [visitor pattern](https://en.cppreference.com/w/cpp/utility/variant/visit).
 
 For instance, the externally tagged `rfl::Variant` from the example above could be handled like this:
 
@@ -221,10 +232,13 @@ const auto handle_shapes = [](const auto& field) {
   }
 };
 
-std::visit(handle_shapes, my_shape.variant());
+rfl::visit(handle_shapes, my_shape); // OK
+
+my_shape.visit(handle_shapes); // also OK
+
 ```
 
-Likewise, `rfl::TaggedUnion` contains `std::variant` under-the-hood. The original variant can be
+You can also apply `rfl::visit` to `rfl::TaggedUnion`. The underlying `rfl::Variant` can be
 retrieved using `.variant()`:
 
 ```cpp
@@ -245,7 +259,7 @@ const auto handle_shapes = [](const auto& s) {
   }
 };
 
-std::visit(handle_shapes, my_shape.variant());
+rfl::visit(handle_shapes, my_shape); // OK
+
+my_shape.visit(handle_shapes); // also OK
 ```
-
-

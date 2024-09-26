@@ -5,6 +5,7 @@
 #include <type_traits>
 
 #include "../Field.hpp"
+#include "../Tuple.hpp"
 #include "has_flatten_fields.hpp"
 #include "move_and_flatten_field_tuple.hpp"
 
@@ -18,11 +19,11 @@ auto move_field_tuple_to_named_tuple(FieldTuple&& _field_tuple) {
   };
 
   if constexpr (!has_flatten_fields<std::remove_cvref_t<FieldTuple>>()) {
-    return std::apply(ft_to_nt, std::move(_field_tuple));
+    return rfl::apply(ft_to_nt, std::move(_field_tuple));
   } else {
     auto flattened_tuple =
         move_and_flatten_field_tuple(std::move(_field_tuple));
-    return std::apply(ft_to_nt, std::move(flattened_tuple));
+    return rfl::apply(ft_to_nt, std::move(flattened_tuple));
   }
 }
 

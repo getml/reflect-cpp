@@ -4,6 +4,7 @@
 #include <tuple>
 #include <type_traits>
 
+#include "../Tuple.hpp"
 #include "../field_names_t.hpp"
 #include "Array.hpp"
 #include "bind_to_tuple.hpp"
@@ -21,17 +22,17 @@ auto move_to_field_tuple(OriginalStruct&& _t) {
   if constexpr (is_named_tuple_v<T>) {
     return _t.fields();
   } else if constexpr (has_fields<T>()) {
-    return bind_to_tuple(_t, [](auto& x) { return std::move(x); });
+    return bind_to_tuple(_t, [](auto _ptr) { return std::move(*_ptr); });
   } else if constexpr (is_empty<T>()) {
-    return std::tuple();
+    return rfl::Tuple();
   } else {
     using FieldNames = field_names_t<T>;
-    const auto fct = []<class T>(T& _v) {
+    const auto fct = []<class T>(T* _ptr) {
       using Type = std::remove_cvref_t<T>;
       if constexpr (std::is_array_v<Type>) {
-        return Array<Type>(_v);
+        return Array<Type>(*_ptr);
       } else {
-        return std::move(_v);
+        return std::move(*_ptr);
       }
     };
     auto tup = bind_to_tuple(_t, fct);

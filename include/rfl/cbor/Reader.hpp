@@ -3,21 +3,14 @@
 
 #include <cbor.h>
 
-#include <array>
-#include <concepts>
+#include <cstddef>
 #include <exception>
-#include <map>
-#include <memory>
-#include <source_location>
-#include <sstream>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
-#include <unordered_map>
 #include <vector>
 
-#include "../Box.hpp"
+#include "../Bytestring.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
 
@@ -47,10 +40,34 @@ struct Reader {
     T::from_cbor_obj(var);
   });
 
-  rfl::Result<InputVarType> get_field(
+  rfl::Result<InputVarType> get_field_from_array(
+      const size_t _idx, const InputArrayType& _arr) const noexcept {
+    InputVarType var;
+    auto err = cbor_value_enter_container(&_arr.val_, &var.val_);
+    if (err != CborNoError && err != CborErrorOutOfMemory) {
+      return Error(cbor_error_string(err));
+    }
+    size_t length = 0;
+    err = cbor_value_get_array_length(&_arr.val_, &length);
+    if (err != CborNoError && err != CborErrorOutOfMemory) {
+      return Error(cbor_error_string(err));
+    }
+    if (_idx >= length) {
+      return Error("Index " + std::to_string(_idx) + " of of bounds.");
+    }
+    for (size_t i = 0; i < _idx; ++i) {
+      err = cbor_value_advance(&var.val_);
+      if (err != CborNoError && err != CborErrorOutOfMemory) {
+        return Error(cbor_error_string(err));
+      }
+    }
+    return var;
+  }
+
+  rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType& _obj) const noexcept {
     InputVarType var;
-    auto buffer = std::vector<char>();
+    auto buffer = std::string();
     auto err = cbor_value_enter_container(&_obj.val_, &var.val_);
     if (err != CborNoError) {
       return Error(cbor_error_string(err));
@@ -72,7 +89,7 @@ struct Reader {
       if (err != CborNoError) {
         return Error(cbor_error_string(err));
       }
-      if (_name == buffer.data()) {
+      if (_name == buffer) {
         return var;
       }
       err = cbor_value_advance(&var.val_);
@@ -93,12 +110,23 @@ struct Reader {
       if (!cbor_value_is_text_string(&_var.val_)) {
         return Error("Could not cast to string.");
       }
-      std::vector<char> buffer;
-      const auto err = get_string(&_var.val_, &buffer);
+      std::string str;
+      const auto err = get_string(&_var.val_, &str);
       if (err != CborNoError) {
         return Error(cbor_error_string(err));
       }
-      return std::string(buffer.data());
+      return str;
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      if (!cbor_value_is_byte_string(&_var.val_)) {
+        return Error("Could not cast to bytestring.");
+      }
+      rfl::Bytestring bstr;
+      const auto err = get_bytestring(&_var.val_, &bstr);
+      if (err != CborNoError) {
+        return Error(cbor_error_string(err));
+      }
+      return bstr;
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!cbor_value_is_boolean(&_var.val_)) {
         return rfl::Error("Could not cast to boolean.");
@@ -200,7 +228,7 @@ struct Reader {
       return Error(cbor_error_string(err));
     }
 
-    auto buffer = std::vector<char>();
+    auto buffer = std::string();
 
     for (size_t i = 0; i < length; ++i) {
       err = get_string(&var.val_, &buffer);
@@ -211,7 +239,7 @@ struct Reader {
       if (err != CborNoError) {
         return Error(cbor_error_string(err));
       }
-      const auto name = std::string_view(buffer.data(), buffer.size() - 1);
+      const auto name = std::string_view(buffer);
       _object_reader.read(name, var);
       cbor_value_advance(&var.val_);
     }
@@ -230,16 +258,35 @@ struct Reader {
   }
 
  private:
-  CborError get_string(const CborValue* _ptr,
-                       std::vector<char>* _buffer) const noexcept {
+  CborError get_bytestring(const CborValue* _ptr,
+                           rfl::Bytestring* _str) const noexcept {
     size_t length = 0;
     auto err = cbor_value_get_string_length(_ptr, &length);
     if (err != CborNoError && err != CborErrorOutOfMemory) {
       return err;
     }
-    _buffer->resize(length + 1);
-    _buffer->back() = '\0';
-    return cbor_value_copy_text_string(_ptr, _buffer->data(), &length, NULL);
+    _str->resize(length);
+    if (length > 0) {
+      return cbor_value_copy_byte_string(
+          _ptr, reinterpret_cast<uint8_t*>(&((*_str)[0])), &length, NULL);
+    } else {
+      return CborNoError;
+    }
+  }
+
+  CborError get_string(const CborValue* _ptr,
+                       std::string* _str) const noexcept {
+    size_t length = 0;
+    auto err = cbor_value_get_string_length(_ptr, &length);
+    if (err != CborNoError && err != CborErrorOutOfMemory) {
+      return err;
+    }
+    _str->resize(length);
+    if (length > 0) {
+      return cbor_value_copy_text_string(_ptr, &((*_str)[0]), &length, NULL);
+    } else {
+      return CborNoError;
+    }
   }
 };
 

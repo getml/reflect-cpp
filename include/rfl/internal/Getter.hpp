@@ -4,6 +4,7 @@
 #include <tuple>
 #include <variant>
 
+#include "../Tuple.hpp"
 #include "StringLiteral.hpp"
 #include "find_index.hpp"
 
@@ -23,7 +24,7 @@ struct Getter {
   /// Retrieves the indicated value from the tuple.
   template <int _index>
   static inline auto& get(NamedTupleType& _tup) {
-    return std::get<_index>(_tup.values());
+    return rfl::get<_index>(_tup.values());
   }
 
   /// Gets a field by name.
@@ -40,8 +41,8 @@ struct Getter {
     constexpr auto index =
         find_index<Field::name_, typename NamedTupleType::Fields>();
     static_assert(
-        std::is_same<typename std::tuple_element<
-                         index, typename NamedTupleType::Fields>::type::Type,
+        std::is_same<typename tuple_element_t<
+                         index, typename NamedTupleType::Fields>::Type,
                      typename Field::Type>(),
         "If two fields have the same name, "
         "their type must be the same as "
@@ -52,7 +53,7 @@ struct Getter {
   /// Retrieves the indicated value from the tuple.
   template <int _index>
   static inline const auto& get_const(const NamedTupleType& _tup) {
-    return std::get<_index>(_tup.values());
+    return rfl::get<_index>(_tup.values());
   }
 
   /// Gets a field by name.
@@ -69,83 +70,13 @@ struct Getter {
     constexpr auto index =
         find_index<Field::name_, typename NamedTupleType::Fields>();
     static_assert(
-        std::is_same<typename std::tuple_element<
-                         index, typename NamedTupleType::Fields>::type::Type,
+        std::is_same<typename tuple_element_t<
+                         index, typename NamedTupleType::Fields>::Type,
                      typename Field::Type>(),
         "If two fields have the same name, "
         "their type must be the same as "
         "well.");
     return Getter<NamedTupleType>::template get_const<index>(_tup);
-  }
-};
-
-// ----------------------------------------------------------------------------
-
-/// For handling std::variant.
-template <class... NamedTupleTypes>
-struct Getter<std::variant<NamedTupleTypes...>> {
- public:
-  /// Retrieves the indicated value from the tuple.
-  template <int _index>
-  static inline auto& get(std::variant<NamedTupleTypes...>& _tup) {
-    const auto apply = [](auto& _t) -> auto& {
-      using NamedTupleType = std::remove_cvref_t<decltype(_t)>;
-      return Getter<NamedTupleType>::template get<_index>(_t);
-    };
-    return std::visit(apply, _tup);
-  }
-
-  /// Gets a field by name.
-  template <StringLiteral _field_name>
-  static inline auto& get(std::variant<NamedTupleTypes...>& _tup) {
-    const auto apply = [](auto& _t) -> auto& {
-      using NamedTupleType = std::remove_cvref_t<decltype(_t)>;
-      return Getter<NamedTupleType>::template get<_field_name>(_t);
-    };
-    return std::visit(apply, _tup);
-  }
-
-  /// Gets a field by the field type.
-  template <class Field>
-  static inline auto& get(std::variant<NamedTupleTypes...>& _tup) {
-    const auto apply = [](auto& _t) -> auto& {
-      using NamedTupleType = std::remove_cvref_t<decltype(_t)>;
-      return Getter<NamedTupleType>::template get<Field>(_t);
-    };
-    return std::visit(apply, _tup);
-  }
-
-  /// Retrieves the indicated value from the tuple.
-  template <int _index>
-  static inline const auto& get_const(
-      const std::variant<NamedTupleTypes...>& _tup) {
-    const auto apply = [](const auto& _tup) -> const auto& {
-      using NamedTupleType = std::remove_cvref_t<decltype(_tup)>;
-      return Getter<NamedTupleType>::template get_const<_index>(_tup);
-    };
-    return std::visit(apply, _tup);
-  }
-
-  /// Gets a field by name.
-  template <StringLiteral _field_name>
-  static inline const auto& get_const(
-      const std::variant<NamedTupleTypes...>& _tup) {
-    const auto apply = [](const auto& _t) -> const auto& {
-      using NamedTupleType = std::remove_cvref_t<decltype(_t)>;
-      return Getter<NamedTupleType>::template get_const<_field_name>(_t);
-    };
-    return std::visit(apply, _tup);
-  }
-
-  /// Gets a field by the field type.
-  template <class Field>
-  static inline const auto& get_const(
-      const std::variant<NamedTupleTypes...>& _tup) {
-    const auto apply = [](const auto& _t) -> const auto& {
-      using NamedTupleType = std::remove_cvref_t<decltype(_t)>;
-      return Getter<NamedTupleType>::template get_const<Field>(_t);
-    };
-    return std::visit(apply, _tup);
   }
 };
 

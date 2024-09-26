@@ -1,7 +1,11 @@
 #ifndef RFL_JSON_READ_HPP_
 #define RFL_JSON_READ_HPP_
 
+#if __has_include(<yyjson.h>)
 #include <yyjson.h>
+#else
+#include "../thirdparty/yyjson.h"
+#endif
 
 #include <istream>
 #include <string>

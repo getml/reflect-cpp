@@ -68,16 +68,29 @@ static void BM_canada_write_reflect_cpp_cbor(benchmark::State &state) {
 }
 BENCHMARK(BM_canada_write_reflect_cpp_cbor);
 
-static void BM_canada_write_reflect_cpp_flexbuf(benchmark::State &state) {
+static void BM_canada_write_reflect_cpp_cbor_without_field_names(
+    benchmark::State &state) {
   const auto data = load_data();
   for (auto _ : state) {
-    const auto output = rfl::flexbuf::write(data);
+    const auto output = rfl::cbor::write<rfl::NoFieldNames>(data);
     if (output.size() == 0) {
       std::cout << "No output" << std::endl;
     }
   }
 }
-BENCHMARK(BM_canada_write_reflect_cpp_flexbuf);
+BENCHMARK(BM_canada_write_reflect_cpp_cbor_without_field_names);
+
+static void BM_canada_write_reflect_cpp_flexbuf_without_field_names(
+    benchmark::State &state) {
+  const auto data = load_data();
+  for (auto _ : state) {
+    const auto output = rfl::flexbuf::write<rfl::NoFieldNames>(data);
+    if (output.size() == 0) {
+      std::cout << "No output" << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_canada_write_reflect_cpp_flexbuf_without_field_names);
 
 static void BM_canada_write_reflect_cpp_json(benchmark::State &state) {
   const auto data = load_data();
@@ -90,6 +103,18 @@ static void BM_canada_write_reflect_cpp_json(benchmark::State &state) {
 }
 BENCHMARK(BM_canada_write_reflect_cpp_json);
 
+static void BM_canada_write_reflect_cpp_json_without_field_names(
+    benchmark::State &state) {
+  const auto data = load_data();
+  for (auto _ : state) {
+    const auto output = rfl::json::write<rfl::NoFieldNames>(data);
+    if (output.size() == 0) {
+      std::cout << "No output" << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_canada_write_reflect_cpp_json_without_field_names);
+
 static void BM_canada_write_reflect_cpp_msgpack(benchmark::State &state) {
   const auto data = load_data();
   for (auto _ : state) {
@@ -100,6 +125,18 @@ static void BM_canada_write_reflect_cpp_msgpack(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_canada_write_reflect_cpp_msgpack);
+
+static void BM_canada_write_reflect_cpp_msgpack_without_field_names(
+    benchmark::State &state) {
+  const auto data = load_data();
+  for (auto _ : state) {
+    const auto output = rfl::msgpack::write<rfl::NoFieldNames>(data);
+    if (output.size() == 0) {
+      std::cout << "No output" << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_canada_write_reflect_cpp_msgpack_without_field_names);
 
 static void BM_canada_write_reflect_cpp_toml(benchmark::State &state) {
   const auto data = load_data();

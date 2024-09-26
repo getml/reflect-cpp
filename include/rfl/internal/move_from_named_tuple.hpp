@@ -4,75 +4,64 @@
 #include <functional>
 #include <type_traits>
 
+#include "../Tuple.hpp"
+#include "../named_tuple_t.hpp"
 #include "is_field.hpp"
 #include "is_named_tuple.hpp"
 #include "nt_to_ptr_named_tuple.hpp"
 #include "ptr_field_tuple_t.hpp"
-#include "../named_tuple_t.hpp"
 
 namespace rfl {
 namespace internal {
 
-template <class PtrFieldTupleType, class PtrNamedTupleType, class... Args>
-auto make_ptr_fields(PtrNamedTupleType& _n, Args... _args) {
-  constexpr auto i = sizeof...(Args);
-
-  constexpr auto size =
-      std::tuple_size_v<std::remove_cvref_t<PtrFieldTupleType>>;
-
-  if constexpr (i == size) {
-    return std::make_tuple(_args...);
-  } else {
-    using Field =
-        std::remove_cvref_t<std::tuple_element_t<i, PtrFieldTupleType>>;
+template <class PtrFieldTupleType, class PtrNamedTupleType>
+auto make_ptr_fields(PtrNamedTupleType& _n) {
+  const auto get_one = [&]<int _i>(std::integral_constant<int, _i>) {
+    using Field = std::remove_cvref_t<tuple_element_t<_i, PtrFieldTupleType>>;
     using T = std::remove_cvref_t<std::remove_pointer_t<typename Field::Type>>;
-
     if constexpr (is_named_tuple_v<T>) {
       using SubPtrNamedTupleType =
           typename std::invoke_result<decltype(nt_to_ptr_named_tuple<T>),
                                       T>::type;
-
-      return make_ptr_fields<PtrFieldTupleType>(
-          _n, _args..., SubPtrNamedTupleType(_n).fields());
-
+      return SubPtrNamedTupleType(_n).fields();
     } else if constexpr (is_flatten_field<Field>::value) {
       using SubPtrFieldTupleType = std::remove_cvref_t<ptr_field_tuple_t<T>>;
-
-      return make_ptr_fields<PtrFieldTupleType>(
-          _n, _args..., make_ptr_fields<SubPtrFieldTupleType>(_n));
-
+      return make_ptr_fields<SubPtrFieldTupleType>(_n);
     } else {
-      return make_ptr_fields<PtrFieldTupleType>(
-          _n, _args..., _n.template get_field<Field::name_>());
+      return _n.template get_field<Field::name_>();
     }
+  };
+
+  constexpr auto size =
+      rfl::tuple_size_v<std::remove_cvref_t<PtrFieldTupleType>>;
+
+  return [&]<int... _is>(std::integer_sequence<int, _is...>) {
+    return rfl::make_tuple(get_one(std::integral_constant<int, _is>{})...);
   }
+  (std::make_integer_sequence<int, size>());
 }
 
-template <class T, class Pointers, class... Args>
-auto move_from_ptr_fields(Pointers& _ptrs, Args&&... _args) {
-  constexpr auto i = sizeof...(Args);
-  if constexpr (i == std::tuple_size_v<std::remove_cvref_t<Pointers>>) {
-    return T{std::move(_args)...};
-  } else {
-    using FieldType = std::tuple_element_t<i, std::remove_cvref_t<Pointers>>;
-
+template <class T, class Pointers>
+auto move_from_ptr_fields(Pointers& _ptrs) {
+  const auto get_one = [&]<int _i>(std::integral_constant<int, _i>) {
+    using FieldType = tuple_element_t<_i, std::remove_cvref_t<Pointers>>;
     if constexpr (is_field_v<FieldType>) {
-      return move_from_ptr_fields<T>(
-          _ptrs, std::move(_args)...,
-          rfl::make_field<FieldType::name_>(
-              std::move(*std::get<i>(_ptrs).value())));
-
+      return rfl::make_field<FieldType::name_>(
+          std::move(*rfl::get<_i>(_ptrs).value()));
     } else {
       using PtrFieldTupleType = std::remove_cvref_t<ptr_field_tuple_t<T>>;
-
       using U = std::remove_cvref_t<std::remove_pointer_t<
-          typename std::tuple_element_t<i, PtrFieldTupleType>::Type>>;
-
-      return move_from_ptr_fields<T>(
-          _ptrs, std::move(_args)...,
-          move_from_ptr_fields<U>(std::get<i>(_ptrs)));
+          typename tuple_element_t<_i, PtrFieldTupleType>::Type>>;
+      return move_from_ptr_fields<U>(rfl::get<_i>(_ptrs));
     }
+  };
+
+  constexpr auto size = rfl::tuple_size_v<std::remove_cvref_t<Pointers>>;
+
+  return [&]<int... _is>(std::integer_sequence<int, _is...>) {
+    return T{std::move(get_one(std::integral_constant<int, _is>{}))...};
   }
+  (std::make_integer_sequence<int, size>());
 }
 
 /// Creates a struct of type T from a named tuple by moving the underlying

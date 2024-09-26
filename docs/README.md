@@ -30,6 +30,12 @@
 
 1.13) [Standard containers](https://github.com/getml/reflect-cpp/blob/main/docs/standard_containers.md) - Describes how reflect-cpp treats containers in the standard library.
 
+1.14) [C arrays and inheritance](https://github.com/getml/reflect-cpp/blob/main/docs/c_arrays_and_inheritance.md) - Describes how reflect-cpp handles C arrays and inheritance. 
+
+1.15) [rfl::Bytestring](https://github.com/getml/reflect-cpp/blob/main/docs/bytestring.md) - Describes how reflect-cpp handles binary strings for formats that support them. 
+
+1.16) [rfl::Binary, rfl::Hex and rfl::Oct](https://github.com/getml/reflect-cpp/blob/main/docs/number_systems.md)- For expressing numbers in different formats. 
+
 ## 2) Validation
 
 2.1) [Regex patterns](https://github.com/getml/reflect-cpp/blob/main/docs/patterns.md) - For requiring that strings follow used-defined regex patterns.
@@ -42,42 +48,52 @@
 
 2.5) [JSON schema](https://github.com/getml/reflect-cpp/blob/main/docs/json_schema.md) - For validating your schema before you even send it to your C++ backend.
 
-## 3) Custom classes
+## 3) Generic elements
 
-3.1) [Custom classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_classes.md) - For custom classes with private fields.
+3.1) [rfl::Object](https://github.com/getml/reflect-cpp/blob/main/docs/object.md) - A map-like type representing a object with field names that are unknown at compile time.
 
-3.2) [Custom parsers for your classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_parser.md) - For custom classes with private fields that you want to leave absolutely untouched.
+3.2) [rfl::Generic](https://github.com/getml/reflect-cpp/blob/main/docs/generic.md) - A catch-all type that can represent (almost) anything.
 
-## 4) Useful helper functions and classes
+3.3) [rfl::ExtraFields](https://github.com/getml/reflect-cpp/blob/main/docs/extra_fields.md) - For adding extra fields to your structs, the names of which are unknown at compile time.
 
-4.1) [rfl::replace](https://github.com/getml/reflect-cpp/blob/main/docs/replace.md) - For replacing one or several fields in a struct.
+## 4) Custom classes
 
-4.2) [rfl::as](https://github.com/getml/reflect-cpp/blob/main/docs/as.md) - For casting structs as other structs.
+4.1) [Custom classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_classes.md) - For custom classes with private fields.
 
-4.3) [rfl::NamedTuple](https://github.com/getml/reflect-cpp/blob/main/docs/named_tuple.md) - For structural typing.
+4.2) [Custom parsers for your classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_parser.md) - For custom classes with private fields that you want to leave absolutely untouched.
 
-4.4) [rfl::to_view](https://github.com/getml/reflect-cpp/blob/main/docs/to_view.md) - For accessing fields of a struct by index or name.
+## 5) Useful helper functions and classes
 
-## 5) Supported formats
+5.1) [rfl::replace](https://github.com/getml/reflect-cpp/blob/main/docs/replace.md) - For replacing one or several fields in a struct.
 
-5.1) [JSON](https://github.com/getml/reflect-cpp/blob/main/docs/json.md)
+5.2) [rfl::as](https://github.com/getml/reflect-cpp/blob/main/docs/as.md) - For casting structs as other structs.
 
-5.2) [BSON](https://github.com/getml/reflect-cpp/blob/main/docs/bson.md)
+5.3) [rfl::NamedTuple](https://github.com/getml/reflect-cpp/blob/main/docs/named_tuple.md) - For structural typing.
 
-5.3) [CBOR](https://github.com/getml/reflect-cpp/blob/main/docs/cbor.md)
+5.4) [rfl::Tuple](https://github.com/getml/reflect-cpp/blob/main/docs/rfl_tuple.md) - An alternative to `std::tuple` that compiles more quickly.
 
-5.4) [flexbuffers](https://github.com/getml/reflect-cpp/blob/main/docs/flexbuffers.md)
+5.5) [rfl::to_view](https://github.com/getml/reflect-cpp/blob/main/docs/to_view.md) - For accessing fields of a struct by index or name.
 
-5.5) [msgpack](https://github.com/getml/reflect-cpp/blob/main/docs/msgpack.md)
+## 6) Supported formats
 
-5.6) [TOML](https://github.com/getml/reflect-cpp/blob/main/docs/toml.md)
+6.1) [JSON](https://github.com/getml/reflect-cpp/blob/main/docs/json.md)
 
-5.7) [XML](https://github.com/getml/reflect-cpp/blob/main/docs/xml.md)
+6.2) [BSON](https://github.com/getml/reflect-cpp/blob/main/docs/bson.md)
 
-5.8) [YAML](https://github.com/getml/reflect-cpp/blob/main/docs/yaml.md)
+6.3) [CBOR](https://github.com/getml/reflect-cpp/blob/main/docs/cbor.md)
 
-## 6) Advanced topics
+6.4) [flexbuffers](https://github.com/getml/reflect-cpp/blob/main/docs/flexbuffers.md)
 
-6.1) [Supporting your own format](https://github.com/getml/reflect-cpp/blob/main/docs/supporting_your_own_format.md) - For supporting your own serialization and deserialization formats.
+6.5) [msgpack](https://github.com/getml/reflect-cpp/blob/main/docs/msgpack.md)
 
-6.2) [Maintaining backwards compatability](https://github.com/getml/reflect-cpp/blob/main/docs/backwards_compatability.md) - Instructions on how to ensure that your API is backwards-compatible with older versions.
+6.6) [TOML](https://github.com/getml/reflect-cpp/blob/main/docs/toml.md)
+
+6.7) [XML](https://github.com/getml/reflect-cpp/blob/main/docs/xml.md)
+
+6.8) [YAML](https://github.com/getml/reflect-cpp/blob/main/docs/yaml.md)
+
+## 7) Advanced topics
+
+7.1) [Supporting your own format](https://github.com/getml/reflect-cpp/blob/main/docs/supporting_your_own_format.md) - For supporting your own serialization and deserialization formats.
+
+7.2) [Maintaining backwards compatability](https://github.com/getml/reflect-cpp/blob/main/docs/backwards_compatability.md) - Instructions on how to ensure that your API is backwards-compatible with older versions.

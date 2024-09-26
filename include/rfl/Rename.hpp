@@ -55,7 +55,7 @@ struct Rename {
   template <class U = Type,
             typename std::enable_if<std::is_default_constructible_v<U>,
                                     bool>::type = true>
-  Rename(const Default& _default) : value_(Type()) {}
+  Rename(const Default&) : value_(Type()) {}
 
   ~Rename() = default;
 
@@ -95,7 +95,7 @@ struct Rename {
   template <class U = Type,
             typename std::enable_if<std::is_default_constructible_v<U>,
                                     bool>::type = true>
-  auto& operator=(const Default& _default) {
+  auto& operator=(const Default&) {
     value_ = Type();
     return *this;
   }

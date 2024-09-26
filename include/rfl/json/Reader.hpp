@@ -1,7 +1,11 @@
 #ifndef RFL_JSON_READER_HPP_
 #define RFL_JSON_READER_HPP_
 
+#if __has_include(<yyjson.h>)
 #include <yyjson.h>
+#else
+#include "../thirdparty/yyjson.h"
+#endif
 
 #include <array>
 #include <concepts>
@@ -48,7 +52,16 @@ struct Reader {
     T::from_json_obj(var);
   });
 
-  rfl::Result<InputVarType> get_field(
+  rfl::Result<InputVarType> get_field_from_array(
+      const size_t _idx, const InputArrayType _arr) const noexcept {
+    const auto var = InputVarType(yyjson_arr_get(_arr.val_, _idx));
+    if (!var.val_) {
+      return rfl::Error("Index " + std::to_string(_idx) + " of of bounds.");
+    }
+    return var;
+  }
+
+  rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType _obj) const noexcept {
     const auto var = InputVarType(yyjson_obj_get(_obj.val_, _name.c_str()));
     if (!var.val_) {

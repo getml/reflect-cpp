@@ -3,6 +3,7 @@
 
 #include <flatbuffers/flexbuffers.h>
 
+#include <cstddef>
 #include <exception>
 #include <map>
 #include <sstream>
@@ -12,6 +13,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "../Bytestring.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
 
@@ -41,7 +43,15 @@ struct Reader {
   template <class T>
   static constexpr bool has_custom_constructor = has_from_flexbuf<T>::value;
 
-  rfl::Result<InputVarType> get_field(
+  rfl::Result<InputVarType> get_field_from_array(
+      const size_t _idx, const InputArrayType& _arr) const noexcept {
+    if (_idx >= _arr.size()) {
+      return rfl::Error("Index " + std::to_string(_idx) + " of of bounds.");
+    }
+    return _arr[_idx];
+  }
+
+  rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType& _obj) const noexcept {
     const auto keys = _obj.Keys();
     for (size_t i = 0; i < keys.size(); ++i) {
@@ -61,9 +71,17 @@ struct Reader {
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       if (!_var.IsString()) {
-        return rfl::Error("Could not cast to string.");
+        return rfl::Error("Could not cast to a string.");
       }
       return std::string(_var.AsString().c_str());
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      if (!_var.IsBlob()) {
+        return rfl::Error("Could not cast to a bytestring.");
+      }
+      const auto blob = _var.AsBlob();
+      return rfl::Bytestring(reinterpret_cast<const std::byte*>(blob.data()),
+                             blob.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var.IsBool()) {
         return rfl::Error("Could not cast to boolean.");
