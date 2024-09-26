@@ -7,20 +7,27 @@ theme:
   name: 'material'
     #custom_dir: 'docs/theme'
   palette:
-    #- media: "(prefers-color-scheme: light)"
-    #  scheme: default
-    #  primary: #F0685C
-    #  accent: #F0685C
-    #  toggle:
-    #    icon: material/lightbulb-outline
-    #    name: "Switch to dark mode"
-    #- media: "(prefers-color-scheme: dark)"
-    #  scheme: slate
-    #  primary: pink
-    #  accent: pink
-    #  toggle:
-    #    icon: material/lightbulb
-    #    name: "Switch to light mode"
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-5
+        name: "Switch to light mode"
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple 
+      accent: deep purple
+      toggle:
+        icon: material/brightness-2
+        name: "Switch to dark mode"
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black 
+      accent: deep purple
+      toggle:
+        icon: material/brightness-6
+        name: "Switch to system preference"
+  font:
+    text: Roboto
+    code: Roboto Mono
   features:
     - content.tabs.link
     - content.code.annotate
@@ -36,7 +43,8 @@ theme:
     - navigation.tracking
     - search.suggest
     - toc.follow
-      #logo: 'banner2.png'
+  logo: 'reflect-cpp-head.png'
+  logo_dark_mode: "reflect-cpp-white.png"
   favicon: 'banner2.png'
 
 extra_css:

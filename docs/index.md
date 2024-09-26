@@ -15,6 +15,7 @@
 As the aforementioned libraries are among the most widely used in the respective languages, reflect-cpp fills an important gap in C++ development. It reduces boilerplate code and increases code safety.
 
 ## Why use reflect-cpp?
+
 - Close integration with containers from the C++ standard library
 - Close adherence to C++ idioms
 - Out-of-the-box support for JSON
@@ -39,9 +40,10 @@ The following table lists the serialization formats currently supported by refle
 | XML          | [pugixml](https://github.com/zeux/pugixml)           | >= 1.14      | MIT        | Textual format used in many legacy projects          |
 | YAML         | [yaml-cpp](https://github.com/jbeder/yaml-cpp)       | >= 0.8.0     | MIT        | Textual format with an emphasis on readability       |
 
-Support for more serialization formats is in development. Refer to the [issues](https://github.com/getml/reflect-cpp/issues) for details.
+!!! note
+    Support for more serialization formats is in development. Refer to the [issues](https://github.com/getml/reflect-cpp/issues) for details.
 
-Please also refer to the *vcpkg.json* in this repository.
+    Please also refer to the *vcpkg.json* in this repository.
 
 ## Simple Example
 

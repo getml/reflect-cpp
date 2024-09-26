@@ -1,12 +1,13 @@
-# JSON schema
 
 JSON schemata are a powerful tool for expressing the expected structure of your input. You can use it to validate your input before you even send it to your C++ backend, which will result in better UX.
 
 It can also be used for code generation. For instance, tools such as https://app.quicktype.io/ allow you to generate code in multiple programming languages from the JSON schema (even though the validations are usually omitted). 
 
-If you are interacting with Python, we warmly recommend https://docs.pydantic.dev/latest/integrations/datamodel_code_generator/. This allows you to generate Pydantic dataclasses, including the validation, from the JSON schema.
+!!! note
+    If you are interacting with Python, we warmly recommend https://docs.pydantic.dev/latest/integrations/datamodel_code_generator/. 
+    This allows you to generate Pydantic dataclasses, including the validation, from the JSON schema.
 
-Note that this is only supported for JSON, not for other formats.
+    Note that this is only supported for JSON, not for other formats.
 
 ## Basic idea
 

@@ -11,10 +11,10 @@
     extra-substituters = "https://devenv.cachix.org";
   };
 
-  outputs = { self, nixpkgs, devenv, getml_flake, ... } @ inputs:
+  outputs = { self, nixpkgs, devenv, ... } @ inputs:
     let
       system = "x86_64-linux";
-      #pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = nixpkgs.legacyPackages.${system};
     in
     {
       packages.${system}.devenv-up = self.devShells.${system}.default.config.procfileScript;
@@ -24,15 +24,28 @@
         modules = [
           ({ pkgs, config, ... }: {
             # This is your devenv configuration
-            languages.python = {
-              enable = true;
-              version = "3.11.3";
+            languages = {
+              python = {
+                enable = true;
+                version = "3.11.3";
 
-              venv.enable = true;
-              venv.requirements = ''
-                mkdocs mkdocs-material mkdocsstrings
-              '';
+                venv.enable = true;
+                venv.requirements = ''
+                  mkdocs 
+                  mkdocs-material 
+                  mkdocstrings
+                  mkdoxy
+                  pymdown-extensions
+                '';
+              };
+              cplusplus = {
+                enable = true;
+              };
             };
+            packages = with pkgs; [
+              ninja
+              zip
+            ];
 
             #enterShell = ''
             #  export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath [pkgs.zlib]}:$LD_LIBRARY_PATH

@@ -218,36 +218,37 @@ This results in the following JSON string:
 {"radius":2.0,"color":"green"}
 ```
 
-However, some limitations apply:
+!!! note
+    However, some limitations apply:
 
-1. They must be be scoped enumerations.
+    1. They must be be scoped enumerations.
 
-```cpp
-/// OK - scoped enumeration
-enum class Color1 { red, green, blue, yellow };
+    ```cpp
+    /// OK - scoped enumeration
+    enum class Color1 { red, green, blue, yellow };
 
-/// OK - scoped enumeration
-enum struct Color2 { red, green, blue, yellow };
+    /// OK - scoped enumeration
+    enum struct Color2 { red, green, blue, yellow };
 
-/// unsupported - unscoped enumerations
-enum Color3 { red, green, blue, yellow };
-```
+    /// unsupported - unscoped enumerations
+    enum Color3 { red, green, blue, yellow };
+    ```
 
-2. You cannot have more than 128 values and if you explicitly assign values, they must be between 0 and 127.
+    2. You cannot have more than 128 values and if you explicitly assign values, they must be between 0 and 127.
 
-```cpp
-/// OK
-enum class Color1 { red, green, blue, yellow };
+    ```cpp
+    /// OK
+    enum class Color1 { red, green, blue, yellow };
 
-/// OK
-enum struct Color2 { red, green, blue = 50, yellow };
+    /// OK
+    enum struct Color2 { red, green, blue = 50, yellow };
 
-/// unsupported - red is a negative value
-enum Color3 { red = -10, green, blue, yellow };
+    /// unsupported - red is a negative value
+    enum Color3 { red = -10, green, blue, yellow };
 
-/// unsupported - red is greater than 127
-enum Color3 { red = 200, green, blue, yellow };
-```
+    /// unsupported - red is greater than 127
+    enum Color3 { red = 200, green, blue, yellow };
+    ```
 
 ### Flag enums
 
@@ -503,7 +504,7 @@ is a key-value-pair will be represented as arrays of pairs.
 
 ## Variants and tagged unions
 
-### untagged
+### Untagged
 
 Sometimes you know that the JSON object can be one of several alternatives. For example,
 you might have several shapes like `Circle`, `Rectangle` or `Square`. For these kind of 
@@ -541,7 +542,7 @@ several problems with this:
 
 3. It is dangerous. Imagine we had written `std::variant<Circle, Square, Rectangle>` instead of `std::variant<Circle, Rectangle, Square>`. This would mean that `Rectangle` could never be matched, because the fields in `Square` are a subset of `Rectangle`. This leads to very confusing bugs.
 
-### internally tagged
+### Internally tagged
 
 One way to solve this problem is to add a tag inside the class. That is why we have provided a helper class for these purposes: `rfl::TaggedUnion`.
 
@@ -660,7 +661,7 @@ const auto r2 = rfl::json::read<Shapes>(json_string);
 Note that in this case the type of the field `shape` MUST be `rfl::Literal`.
 Also note that this is exactly how tagged unions work in Pydantic.
 
-### externally tagged
+### Externally tagged
 
 Another approach is to add external tags. 
 

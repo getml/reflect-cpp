@@ -16,9 +16,10 @@ These annotations are required if you are planning to use a compiler other than 
 
 There are a two things you have to keep in mind:
 
-!!! tip 1. If you annotate *some* of the fields using `rfl::Field`, then you must annotate *all* of them.
+!!! note
+    1. If you annotate *some* of the fields using `rfl::Field`, then you must annotate *all* of them.
 
-2. If you are combining structs using `rfl::Flatten`, then they structs combined like this must either be annotated or not.
+    2. If you are combining structs using `rfl::Flatten`, then they structs combined like this must either be annotated or not.
 
 You can initilize your struct like this:
 
@@ -90,7 +91,7 @@ all fields will be flattened to a single JSON object.
 
 If there are duplicate field names, you will get a compile-time error.
 
-** Example: Every employee is a person **
+**Example: Every employee is a person**
 
 ```cpp
 struct Person {
@@ -121,7 +122,7 @@ This flattens all fields into a single JSON object:
 {"first_name":"Homer","last_name":"Simpson","age":45,"salary":60000.0}
 ```
 
-** Example, using the `rfl::Field`-syntax.**
+**Example, using the `rfl::Field`-syntax.**
 
 ```cpp
 struct Person {
@@ -168,8 +169,8 @@ This can be fully serialized and deserialized using `rfl::json::read` and `rfl::
 
 However, there are a two things you have to keep in mind:
 
-1) If you annotate *some* of the fields using either `rfl::Field`, then you must annotate *all* of them using one of these two.
-2) If you are combining structs using `rfl::Flatten`, then they structs combined like this must either be annotated or not.
+1. If you annotate *some* of the fields using either `rfl::Field`, then you must annotate *all* of them using one of these two.
+2. If you are combining structs using `rfl::Flatten`, then they structs combined like this must either be annotated or not.
 
 ### Struct flattening with anonymous fields
 
