@@ -8,6 +8,7 @@
 #include "internal/StringLiteral.hpp"
 #include "internal/VisitTree.hpp"
 #include "internal/VisitorWrapper.hpp"
+#include "internal/variant/result_t.hpp"
 
 namespace rfl {
 
@@ -22,66 +23,84 @@ inline auto visit(const Visitor& _visitor, const Literal<_fields...> _literal,
 }
 
 template <class F, class... AlternativeTypes>
-inline auto visit(F& _f, Variant<AlternativeTypes...>& _v) {
+inline internal::variant::result_t<F, AlternativeTypes...> visit(
+    F& _f, Variant<AlternativeTypes...>& _v) {
   return _v.visit(_f);
 }
 
 template <class F, class... AlternativeTypes>
-inline auto visit(F& _f, Variant<AlternativeTypes...>&& _v) {
+inline internal::variant::result_t<F, AlternativeTypes...> visit(
+    F& _f, Variant<AlternativeTypes...>&& _v) {
   return _v.visit(_f);
 }
 
 template <class F, class... AlternativeTypes>
-inline auto visit(F& _f, const Variant<AlternativeTypes...>& _v) {
+inline internal::variant::result_t<F, AlternativeTypes...> visit(
+    F& _f, const Variant<AlternativeTypes...>& _v) {
   return _v.visit(_f);
 }
 
 template <class F, class... AlternativeTypes>
-inline auto visit(const F& _f, Variant<AlternativeTypes...>& _v) {
+inline internal::variant::result_t<F, AlternativeTypes...> visit(
+    const F& _f, Variant<AlternativeTypes...>& _v) {
   return _v.visit(_f);
 }
 
 template <class F, class... AlternativeTypes>
-inline auto visit(const F& _f, Variant<AlternativeTypes...>&& _v) {
+inline internal::variant::result_t<F, AlternativeTypes...> visit(
+    const F& _f, Variant<AlternativeTypes...>&& _v) {
   return _v.visit(_f);
 }
 
 template <class F, class... AlternativeTypes>
-inline auto visit(const F& _f, const Variant<AlternativeTypes...>& _v) {
+inline internal::variant::result_t<F, AlternativeTypes...> visit(
+    const F& _f, const Variant<AlternativeTypes...>& _v) {
   return _v.visit(_f);
 }
 
-template <class F, internal::StringLiteral _discriminator, class... Args>
-inline auto visit(F& _f, TaggedUnion<_discriminator, Args...>& _tagged_union) {
+template <class F, internal::StringLiteral _discriminator,
+          class... AlternativeTypes>
+inline internal::variant::result_t<F, AlternativeTypes...> visit(
+    F& _f, TaggedUnion<_discriminator, AlternativeTypes...>& _tagged_union) {
   return _tagged_union.variant().visit(_f);
 }
 
-template <class F, internal::StringLiteral _discriminator, class... Args>
-inline auto visit(F& _f, TaggedUnion<_discriminator, Args...>&& _tagged_union) {
+template <class F, internal::StringLiteral _discriminator,
+          class... AlternativeTypes>
+inline internal::variant::result_t<F, AlternativeTypes...> visit(
+    F& _f, TaggedUnion<_discriminator, AlternativeTypes...>&& _tagged_union) {
   return _tagged_union.variant().visit(_f);
 }
 
-template <class F, internal::StringLiteral _discriminator, class... Args>
-inline auto visit(F& _f,
-                  const TaggedUnion<_discriminator, Args...>& _tagged_union) {
+template <class F, internal::StringLiteral _discriminator,
+          class... AlternativeTypes>
+inline internal::variant::result_t<F, AlternativeTypes...> visit(
+    F& _f,
+    const TaggedUnion<_discriminator, AlternativeTypes...>& _tagged_union) {
   return _tagged_union.variant().visit(_f);
 }
 
-template <class F, internal::StringLiteral _discriminator, class... Args>
-inline auto visit(const F& _f,
-                  TaggedUnion<_discriminator, Args...>& _tagged_union) {
+template <class F, internal::StringLiteral _discriminator,
+          class... AlternativeTypes>
+inline internal::variant::result_t<F, AlternativeTypes...> visit(
+    const F& _f,
+    TaggedUnion<_discriminator, AlternativeTypes...>& _tagged_union) {
   return _tagged_union.variant().visit(_f);
 }
 
-template <class F, internal::StringLiteral _discriminator, class... Args>
-inline auto visit(const F& _f,
-                  TaggedUnion<_discriminator, Args...>&& _tagged_union) {
+template <class F, internal::StringLiteral _discriminator,
+          class... AlternativeTypes>
+inline internal::variant::result_t<F, AlternativeTypes...> visit(
+    const F& _f,
+    TaggedUnion<_discriminator, AlternativeTypes...>&& _tagged_union) {
   return _tagged_union.variant().visit(_f);
 }
 
-template <class F, internal::StringLiteral _discriminator, class... Args>
-inline auto visit(const F& _f,
-                  const TaggedUnion<_discriminator, Args...>& _tagged_union) {
+template <class F, internal::StringLiteral _discriminator,
+          class... AlternativeTypes>
+inline internal::variant::result_t<F, AlternativeTypes...> visit(
+    const F& _f,
+    const TaggedUnion<_discriminator, AlternativeTypes...>& _tagged_union) {
   return _tagged_union.variant().visit(_f);
 }
 

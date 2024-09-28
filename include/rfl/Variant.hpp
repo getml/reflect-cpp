@@ -14,6 +14,7 @@
 #include "internal/nth_element_t.hpp"
 #include "internal/variant/find_max_size.hpp"
 #include "internal/variant/is_alternative_type.hpp"
+#include "internal/variant/result_t.hpp"
 
 namespace rfl {
 
@@ -24,8 +25,6 @@ class Variant {
 
   static constexpr unsigned long num_bytes_ = max_size_wrapper_.size_;
 
-  using LargestType = typename decltype(max_size_wrapper_)::Type;
-
   using DataType = std::array<unsigned char, num_bytes_>;
 
   using IndexType =
@@ -33,13 +32,10 @@ class Variant {
                              std::numeric_limits<std::uint8_t>::max(),
                          std::uint8_t, std::uint16_t>;
 
-  using FirstAlternative = internal::nth_element_t<0, AlternativeTypes...>;
+  static constexpr IndexType size_ = sizeof...(AlternativeTypes);
 
   template <class F>
-  using result_t = std::remove_cv_t<
-      std::invoke_result_t<std::remove_cvref_t<F>, FirstAlternative&>>;
-
-  static constexpr IndexType size_ = sizeof...(AlternativeTypes);
+  using result_t = internal::variant::result_t<F, AlternativeTypes...>;
 
   template <IndexType _i>
   using Index = std::integral_constant<IndexType, _i>;
@@ -442,7 +438,7 @@ class Variant {
   IndexType index_;
 
   /// The underlying data, can be any of the underlying types.
-  alignas(LargestType) DataType data_;
+  alignas(AlternativeTypes...) DataType data_;
 };
 
 template <class T, class... Types>
