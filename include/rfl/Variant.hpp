@@ -42,7 +42,7 @@ class Variant {
   static constexpr IndexType size_ = sizeof...(AlternativeTypes);
 
   template <IndexType _i>
-  struct Index {};
+  using Index = std::integral_constant<IndexType, _i>;
 
  public:
   Variant() {
