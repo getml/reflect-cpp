@@ -2,7 +2,9 @@ name: Deploy MkDocs documentation
 
 on:
   push:
-    branches: ["main"]
+    branches: 
+      - main
+      - feature/docs_migration_mkdocs
   workflow_dispatch:
 
 jobs:
