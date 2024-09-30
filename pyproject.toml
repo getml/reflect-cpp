@@ -1,6 +1,8 @@
 [project]
 name = "reflect-cpp"
 version = "0.14.1"
+
+[tool.hatch.envs.default]
 dependencies = [
     "mkdocs", 
     "mkdocs-material",

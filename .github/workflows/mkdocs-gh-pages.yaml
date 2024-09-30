@@ -1,0 +1,41 @@
+name: Deploy MkDocs documentation
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout reflect-cpp repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: Install Hatch
+        uses: pypa/hatch@install
+        with:
+          version: 1.12
+
+      - name: Create virtual environment
+        run: hatch env create
+
+      - name: Set git credentials
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: Deploy MkDocs documentation
+        run: hatch run mkdocs gh-deploy
+
+      
+        
+        
+
+
+
