@@ -63,3 +63,5 @@ compile_commands.json
 # docs
 site
 !pyproject.toml
+!mkdocs.yaml
+*.egg-info
