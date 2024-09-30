@@ -84,6 +84,9 @@ extra:
     #  - 'extra/fluff.js'
     #  - 'https://samuelcolvin.github.io/mkdocs-run-code/run_code_main.js'
 
+exclude_docs: |
+  README.md
+
 nav:
 - Overview:
   - Welcome to Reflect-cpp: index.md
