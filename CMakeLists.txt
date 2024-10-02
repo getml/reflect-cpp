@@ -40,49 +40,45 @@ project(reflectcpp LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
-if(REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
-    if (REFLECTCPP_BUILD_SHARED)
-        add_library(reflectcpp SHARED)
-    else()
-        add_library(reflectcpp STATIC)
-    endif()
+if (REFLECTCPP_BUILD_SHARED)
+    add_library(reflectcpp SHARED)
+else()
+    add_library(reflectcpp STATIC)
+endif()
 
-    target_sources(reflectcpp PRIVATE src/reflectcpp.cpp src/yyjson.c)
+if (MSVC)
+    target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall>)
+else()
+    target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall -Wextra>)
+endif()
+
+target_compile_features(reflectcpp PUBLIC cxx_std_20)
+
+set(REFLECT_CPP_SOURCES
+    src/reflectcpp.cpp
+)
+
+target_include_directories(
+    reflectcpp PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+
+if(REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/yyjson.c
+    )
     set_source_files_properties(src/yyjson.c PROPERTIES LANGUAGE CXX)
 
-    target_compile_features(reflectcpp PUBLIC cxx_std_20)
-
-    if (MSVC)
-        target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall>)
-    else()
-        target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall -Wextra>)
-    endif()
-
     target_include_directories(
         reflectcpp PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rfl/thirdparty>)
 else()
-    if (REFLECTCPP_BUILD_SHARED)
-        add_library(reflectcpp SHARED)
-    else()
-        add_library(reflectcpp STATIC)
-    endif()
-
-    target_sources(reflectcpp PRIVATE src/reflectcpp.cpp)
-
-    target_include_directories(
-        reflectcpp PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>)
-
-    target_compile_features(reflectcpp PUBLIC cxx_std_20)
-
     find_package(ctre CONFIG REQUIRED)
     find_package(yyjson CONFIG REQUIRED)
     target_link_libraries(reflectcpp INTERFACE ctre::ctre yyjson::yyjson)
 endif()
+
+target_sources(reflectcpp PRIVATE ${REFLECT_CPP_SOURCES})
 
 set_target_properties(reflectcpp PROPERTIES LINKER_LANGUAGE CXX)
 
