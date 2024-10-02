@@ -24,11 +24,17 @@ SOFTWARE.
 
 */
 
-// This file include all other source files, so that the user of the library
-// don't need to add multiple source files into their build.
-// Also, this speeds up compile time, compared to multiple separate .cpp files
-// compilation.
+#include "rfl/parsing/schema/Type.hpp"
 
-#include "Generic.cpp"
-#include "to_schema.cpp"
-#include "Type.cpp"
+namespace rfl::parsing::schema {
+
+/// Requires a lot of template instantiation, so we do not want this to be
+/// inlined.
+
+Type::Type() : variant_() {}
+
+Type::Type(const VariantType& _variant) : variant_(_variant) {}
+
+Type::~Type() = default;
+
+}  // namespace rfl::parsing::schema
