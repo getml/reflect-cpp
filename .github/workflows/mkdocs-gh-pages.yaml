@@ -32,6 +32,10 @@ jobs:
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
+      - name: Fetch latest commit from gh-pages
+        run: |
+          git fetch origin gh-pages --depth=1
+
       - name: Deploy MkDocs documentation
         run: hatch run mkdocs gh-deploy
 
