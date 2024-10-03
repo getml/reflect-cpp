@@ -15,7 +15,6 @@ template <class R, class W, class ProcessorsType>
 requires AreReaderAndWriter<R, W, bson_oid_t>
 struct Parser<R, W, ProcessorsType, bson_oid_t> {
   using InputVarType = typename R::InputVarType;
-  using OutputVarType = typename W::OutputVarType;
 
   using ParentType = Parent<W>;
 

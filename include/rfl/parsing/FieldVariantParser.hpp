@@ -30,9 +30,6 @@ struct FieldVariantParser {
   using InputObjectType = typename R::InputObjectType;
   using InputVarType = typename R::InputVarType;
 
-  using OutputObjectType = typename W::OutputObjectType;
-  using OutputVarType = typename W::OutputVarType;
-
   static ResultType read(const R& _r, const InputVarType& _var) noexcept {
     static_assert(
         internal::no_duplicate_field_names<rfl::Tuple<FieldTypes...>>(),

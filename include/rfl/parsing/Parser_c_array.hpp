@@ -23,9 +23,6 @@ struct Parser<R, W, T[_size], ProcessorsType> {
   using InputArrayType = typename R::InputArrayType;
   using InputVarType = typename R::InputVarType;
 
-  using OutputArrayType = typename W::OutputArrayType;
-  using OutputVarType = typename W::OutputVarType;
-
   using ParentType = Parent<W>;
   using CArray = T[_size];
 

@@ -15,7 +15,6 @@ template <class R, class W, class ProcessorsType>
 requires AreReaderAndWriter<R, W, std::filesystem::path>
 struct Parser<R, W, std::filesystem::path, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
-  using OutputVarType = typename W::OutputVarType;
 
   /// Expresses the variables as type T.
   static Result<std::filesystem::path> read(const R& _r,

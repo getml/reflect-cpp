@@ -40,7 +40,6 @@ template <class R, class W, bool _ignore_empty_containers, bool _all_required,
 requires AreReaderAndWriter<R, W, NamedTuple<FieldTypes...>>
 struct NamedTupleParser {
   using InputVarType = typename R::InputVarType;
-  using OutputVarType = typename W::OutputVarType;
 
   using ParentType = Parent<W>;
 
