@@ -276,4 +276,23 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type) {
   return rfl::visit(handle_variant, _type.variant_);
 }
 
+std::string to_schema_internal_schema(
+    const parsing::schema::Definition& internal_schema,
+    const yyjson_write_flag _flag) {
+  auto definitions = std::map<std::string, schema::Type>();
+  for (const auto& [k, v] : internal_schema.definitions_) {
+    definitions[k] = type_to_json_schema_type(v);
+  }
+  using JSONSchemaType =
+      typename TypeHelper<schema::Type::ReflectionType>::JSONSchemaType;
+  const auto to_schema = [&](auto&& _root) -> JSONSchemaType {
+    using U = std::decay_t<decltype(_root)>;
+    return schema::JSONSchema<U>{.root = std::move(_root),
+                                 .definitions = definitions};
+  };
+  auto root = type_to_json_schema_type(internal_schema.root_);
+  const auto json_schema = rfl::visit(to_schema, std::move(root.value));
+  return write(json_schema, _flag);
+}
+
 }  // namespace rfl::json
