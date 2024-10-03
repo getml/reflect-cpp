@@ -30,5 +30,7 @@ SOFTWARE.
 // compilation.
 
 #include "Generic.cpp"
-#include "to_schema.cpp"
 #include "Type.cpp"
+#include "json/Reader.cpp"
+#include "json/Writer.cpp"
+#include "to_schema.cpp"
