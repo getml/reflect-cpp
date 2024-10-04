@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.23)
 
 option(REFLECTCPP_BUILD_SHARED "Build shared library" ${BUILD_SHARED_LIBS})
 
+option(REFLECTCPP_JSON "Enable JSON support" ON) # enabled by default
 option(REFLECTCPP_BSON "Enable BSON support" OFF)
 option(REFLECTCPP_CBOR "Enable CBOR support" OFF)
 option(REFLECTCPP_FLEXBUFFERS "Enable flexbuffers support" OFF)
@@ -17,6 +18,7 @@ option(REFLECTCPP_USE_BUNDLED_DEPENDENCIES "Use the bundled dependencies" ON)
 
 set(REFLECTCPP_USE_VCPKG_DEFAULT OFF)
 if(REFLECTCPP_BUILD_BENCHMARKS)
+    set(REFLECTCPP_JSON ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_BSON ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_CBOR ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_FLEXBUFFERS ON CACHE BOOL "" FORCE)
@@ -25,7 +27,9 @@ if(REFLECTCPP_BUILD_BENCHMARKS)
     set(REFLECTCPP_TOML ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_YAML ON CACHE BOOL "" FORCE)
 endif()
-if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_BUILD_BENCHMARKS OR REFLECTCPP_BSON OR REFLECTCPP_CBOR OR REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_MSGPACK OR REFLECTCPP_XML OR REFLECTCPP_TOML OR REFLECTCPP_YAML)
+if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_BUILD_BENCHMARKS OR
+    (REFLECTCPP_JSON AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES) OR
+    REFLECTCPP_BSON OR REFLECTCPP_CBOR OR REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_MSGPACK OR REFLECTCPP_XML OR REFLECTCPP_TOML OR REFLECTCPP_YAML)
     # enable vcpkg per default if require features other than JSON
     set(REFLECTCPP_USE_VCPKG_DEFAULT ON)
 endif()
@@ -63,20 +67,30 @@ target_include_directories(
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
 
-if(REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
-    list(APPEND REFLECT_CPP_SOURCES
-        src/yyjson.c
-    )
-    set_source_files_properties(src/yyjson.c PROPERTIES LANGUAGE CXX)
-
+if (REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
     target_include_directories(
         reflectcpp PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rfl/thirdparty>)
-else()
+else ()
     find_package(ctre CONFIG REQUIRED)
-    find_package(yyjson CONFIG REQUIRED)
-    target_link_libraries(reflectcpp INTERFACE ctre::ctre yyjson::yyjson)
-endif()
+    target_link_libraries(reflectcpp INTERFACE ctre::ctre)
+endif ()
+
+if (REFLECTCPP_JSON)
+    if (REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
+        list(APPEND REFLECT_CPP_SOURCES
+            src/yyjson.c
+        )
+        set_source_files_properties(src/yyjson.c PROPERTIES LANGUAGE CXX)
+
+        target_include_directories(
+            reflectcpp PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rfl/thirdparty>)
+    else ()
+        find_package(yyjson CONFIG REQUIRED)
+        target_link_libraries(reflectcpp INTERFACE yyjson::yyjson)
+    endif ()
+endif ()
 
 target_sources(reflectcpp PRIVATE ${REFLECT_CPP_SOURCES})
 
