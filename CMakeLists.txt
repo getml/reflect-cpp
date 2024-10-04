@@ -77,6 +77,9 @@ else ()
 endif ()
 
 if (REFLECTCPP_JSON)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_json.cpp
+    )
     if (REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
         list(APPEND REFLECT_CPP_SOURCES
             src/yyjson.c
