@@ -31,4 +31,3 @@ SOFTWARE.
 
 #include "Generic.cpp"
 #include "Type.cpp"
-#include "to_schema.cpp"

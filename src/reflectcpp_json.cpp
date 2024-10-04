@@ -31,3 +31,4 @@ SOFTWARE.
 
 #include "json/Reader.cpp"
 #include "json/Writer.cpp"
+#include "json/to_schema.cpp"
