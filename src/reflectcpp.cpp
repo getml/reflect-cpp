@@ -29,5 +29,5 @@ SOFTWARE.
 // Also, this speeds up compile time, compared to multiple separate .cpp files
 // compilation.
 
-#include "Generic.cpp"
-#include "Type.cpp"
+#include "rfl/Generic.cpp"
+#include "rfl/parsing/schema/Type.cpp"
