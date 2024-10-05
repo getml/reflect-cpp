@@ -95,8 +95,6 @@ if (REFLECTCPP_JSON)
     endif ()
 endif ()
 
-target_sources(reflectcpp PRIVATE ${REFLECT_CPP_SOURCES})
-
 set_target_properties(reflectcpp PROPERTIES LINKER_LANGUAGE CXX)
 
 if (REFLECTCPP_BSON)
@@ -135,6 +133,9 @@ if (REFLECTCPP_TOML)
 endif()
 
 if (REFLECTCPP_XML)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_xml.cpp
+    )
     find_package(pugixml CONFIG REQUIRED)
     target_link_libraries(reflectcpp INTERFACE pugixml::pugixml)
 endif ()
@@ -143,6 +144,8 @@ if (REFLECTCPP_YAML)
     find_package(yaml-cpp CONFIG REQUIRED)
     target_link_libraries(reflectcpp INTERFACE yaml-cpp::yaml-cpp)
 endif ()
+
+target_sources(reflectcpp PRIVATE ${REFLECT_CPP_SOURCES})
 
 if (REFLECTCPP_BUILD_TESTS)
     if (MSVC)

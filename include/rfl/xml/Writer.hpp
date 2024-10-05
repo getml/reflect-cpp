@@ -43,28 +43,15 @@ struct Writer {
   using OutputObjectType = XMLOutputObject;
   using OutputVarType = XMLOutputVar;
 
-  Writer(const Ref<pugi::xml_node>& _root, const std::string& _root_name)
-      : root_(_root), root_name_(_root_name) {}
+  Writer(const Ref<pugi::xml_node>& _root, const std::string& _root_name);
 
-  ~Writer() = default;
+  ~Writer();
 
-  OutputArrayType array_as_root(const size_t _size) const noexcept {
-    auto node_child =
-        Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
-    return OutputArrayType(root_name_, node_child);
-  }
+  OutputArrayType array_as_root(const size_t _size) const noexcept;
 
-  OutputObjectType object_as_root(const size_t _size) const noexcept {
-    auto node_child =
-        Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
-    return OutputObjectType(node_child);
-  }
+  OutputObjectType object_as_root(const size_t _size) const noexcept;
 
-  OutputVarType null_as_root() const noexcept {
-    auto node_child =
-        Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
-    return OutputVarType(node_child);
-  }
+  OutputVarType null_as_root() const noexcept;
 
   template <class T>
   OutputVarType value_as_root(const T& _var) const noexcept {
@@ -76,30 +63,18 @@ struct Writer {
   }
 
   OutputArrayType add_array_to_array(const size_t _size,
-                                     OutputArrayType* _parent) const noexcept {
-    return *_parent;
-  }
+                                     OutputArrayType* _parent) const noexcept;
 
-  OutputArrayType add_array_to_object(
-      const std::string_view& _name, const size_t _size,
-      OutputObjectType* _parent) const noexcept {
-    return OutputArrayType(_name, _parent->node_);
-  }
+  OutputArrayType add_array_to_object(const std::string_view& _name,
+                                      const size_t _size,
+                                      OutputObjectType* _parent) const noexcept;
 
-  OutputObjectType add_object_to_array(
-      const size_t _size, OutputArrayType* _parent) const noexcept {
-    auto node_child = Ref<pugi::xml_node>::make(
-        _parent->node_->append_child(_parent->name_.data()));
-    return OutputObjectType(node_child);
-  }
+  OutputObjectType add_object_to_array(const size_t _size,
+                                       OutputArrayType* _parent) const noexcept;
 
   OutputObjectType add_object_to_object(
       const std::string_view& _name, const size_t _size,
-      OutputObjectType* _parent) const noexcept {
-    auto node_child =
-        Ref<pugi::xml_node>::make(_parent->node_->append_child(_name.data()));
-    return OutputObjectType(node_child);
-  }
+      OutputObjectType* _parent) const noexcept;
 
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
@@ -130,29 +105,15 @@ struct Writer {
     }
   }
 
-  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept {
-    auto node_child = Ref<pugi::xml_node>::make(
-        _parent->node_->append_child(_parent->name_.data()));
-    return OutputVarType(node_child);
-  }
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept;
 
   OutputVarType add_null_to_object(
       const std::string_view& _name, OutputObjectType* _parent,
-      const bool _is_attribute = false) const noexcept {
-    if (_is_attribute) {
-      return OutputVarType(_parent->node_);
-    } else if (_name == XML_CONTENT) {
-      return OutputVarType(_parent->node_);
-    } else {
-      auto node_child =
-          Ref<pugi::xml_node>::make(_parent->node_->append_child(_name.data()));
-      return OutputVarType(node_child);
-    }
-  }
+      const bool _is_attribute = false) const noexcept;
 
-  void end_array(OutputArrayType* _arr) const noexcept {}
+  void end_array(OutputArrayType* _arr) const noexcept;
 
-  void end_object(OutputObjectType* _obj) const noexcept {}
+  void end_object(OutputObjectType* _obj) const noexcept;
 
  private:
   template <class T>
@@ -178,4 +139,4 @@ struct Writer {
 }  // namespace xml
 }  // namespace rfl
 
-#endif  // XML_PARSER_HPP_
+#endif  // RFL_XML_WRITER_HPP_
