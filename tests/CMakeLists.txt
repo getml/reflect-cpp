@@ -7,6 +7,7 @@ else()
 endif()
 
 add_subdirectory(json)
+add_subdirectory(json_c_arrays_and_inheritance)
 
 if (REFLECTCPP_BSON)
     add_subdirectory(bson)

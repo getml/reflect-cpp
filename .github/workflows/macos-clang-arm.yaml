@@ -30,6 +30,7 @@ jobs:
           ./build/tests/cbor/reflect-cpp-cbor-tests
           ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
           ./build/tests/json/reflect-cpp-json-tests
+          ./build/tests/json_c_arrays_and_inheritance/reflect-cpp-json-c-arrays-and-inheritance-tests
           ./build/tests/msgpack/reflect-cpp-msgpack-tests
           ./build/tests/toml/reflect-cpp-toml-tests
           ./build/tests/xml/reflect-cpp-xml-tests
