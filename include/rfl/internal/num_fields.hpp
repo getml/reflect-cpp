@@ -99,12 +99,12 @@ struct CountFieldsHelper {
   }
 
   template <std::size_t n = 0>
-  static consteval std::size_t count_max_args_in_agg() {
+  static consteval std::size_t count_max_args_in_agg_init() {
     static_assert(n <= static_cast<std::size_t>(sizeof(T)));
     if constexpr (constructible<n>() && !constructible<n + 1>()) {
       return n;
     } else {
-      return count_max_args_in_agg<n + 1>();
+      return count_max_args_in_agg_init<n + 1>();
     }
   }
 
@@ -181,8 +181,8 @@ struct CountFieldsHelper {
   }
 
   static consteval std::size_t count_fields() {
-    constexpr std::size_t max_agg_args = count_max_args_in_agg();
-#ifdef REFLECTCPP_C_ARRAYS_OR_INHERITANCE
+    constexpr std::size_t max_agg_args = count_max_args_in_agg_init();
+#ifdef REFLECT_CPP_C_ARRAYS_OR_INHERITANCE
     constexpr std::size_t no_brace_ellison_args =
         constructible_no_brace_elision<0, max_agg_args>();
     constexpr std::size_t base_args = base_param_num<no_brace_ellison_args>();
