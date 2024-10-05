@@ -96,7 +96,7 @@ auto flatten_array(std::array<T, _n>* _arr) {
   const auto fct = [](auto&... _v) {
     return rfl::tuple_cat(flatten_array(&_v)...);
   };
-  return rfl::apply(fct, *_arr);
+  return std::apply(fct, *_arr);
 }
 
 template <class T>
