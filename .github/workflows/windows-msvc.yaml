@@ -20,7 +20,7 @@ jobs:
       - name: Run tests 
         run: |
           .\build\tests\json\Release\reflect-cpp-json-tests.exe
-          .\build\tests\json_c_arrays_and_inheritance\reflect-cpp-json-c-arrays-and-inheritance-tests.exe
+          .\build\tests\json_c_arrays_and_inheritance\Release\reflect-cpp-json-c-arrays-and-inheritance-tests.exe
           .\build\tests\bson\Release\reflect-cpp-bson-tests.exe
           .\build\tests\cbor\Release\reflect-cpp-cbor-tests.exe
           .\build\tests\flexbuffers\Release\reflect-cpp-flexbuffers-tests.exe
