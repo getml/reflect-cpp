@@ -1,26 +1,17 @@
 #ifndef RFL_XML_WRITER_HPP_
 #define RFL_XML_WRITER_HPP_
 
-#include <exception>
-#include <map>
-#include <pugixml.hpp>
-#include <sstream>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
-#include <vector>
 
 #include "../Ref.hpp"
-#include "../Result.hpp"
 #include "../always_false.hpp"
 
 namespace rfl {
 namespace xml {
 
 struct Writer {
-  static constexpr const char* XML_CONTENT = "xml_content";
-
   struct XMLOutputArray {
     XMLOutputArray(const std::string_view& _name,
                    const Ref<pugi::xml_node>& _node)
@@ -56,10 +47,7 @@ struct Writer {
   template <class T>
   OutputVarType value_as_root(const T& _var) const noexcept {
     const auto str = to_string(_var);
-    auto node_child =
-        Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
-    node_child->append_child(pugi::node_pcdata).set_value(str.c_str());
-    return OutputVarType(node_child);
+    return value_as_root_impl(str);
   }
 
   OutputArrayType add_array_to_array(const size_t _size,
@@ -80,10 +68,7 @@ struct Writer {
   OutputVarType add_value_to_array(const T& _var,
                                    OutputArrayType* _parent) const noexcept {
     const auto str = to_string(_var);
-    auto node_child = Ref<pugi::xml_node>::make(
-        _parent->node_->append_child(_parent->name_.data()));
-    node_child->append_child(pugi::node_pcdata).set_value(str.c_str());
-    return OutputVarType(node_child);
+    return add_value_to_array_impl(str, _parent);
   }
 
   template <class T>
@@ -91,18 +76,7 @@ struct Writer {
       const std::string_view& _name, const T& _var, OutputObjectType* _parent,
       const bool _is_attribute = false) const noexcept {
     const auto str = to_string(_var);
-    if (_is_attribute) {
-      _parent->node_->append_attribute(_name.data()) = str.c_str();
-      return OutputVarType(_parent->node_);
-    } else if (_name == XML_CONTENT) {
-      _parent->node_->append_child(pugi::node_pcdata).set_value(str.c_str());
-      return OutputVarType(_parent->node_);
-    } else {
-      auto node_child =
-          Ref<pugi::xml_node>::make(_parent->node_->append_child(_name.data()));
-      node_child->append_child(pugi::node_pcdata).set_value(str.c_str());
-      return OutputVarType(node_child);
-    }
+    return add_value_to_object_impl(_name, str, _parent, _is_attribute);
   }
 
   OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept;
@@ -129,6 +103,16 @@ struct Writer {
       static_assert(always_false_v<T>, "Unsupported type");
     }
   }
+
+  OutputVarType value_as_root_impl(const std::string& _str) const noexcept;
+
+  OutputVarType add_value_to_array_impl(
+      const std::string& _str, OutputArrayType* _parent) const noexcept;
+
+  OutputVarType add_value_to_object_impl(
+      const std::string_view& _name, const std::string& _str,
+      OutputObjectType* _parent,
+      const bool _is_attribute = false) const noexcept;
 
  public:
   Ref<pugi::xml_node> root_;
