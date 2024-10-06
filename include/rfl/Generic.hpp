@@ -7,15 +7,18 @@
 
 #include "Object.hpp"
 #include "Result.hpp"
+#include "Variant.hpp"
 
 namespace rfl {
 
 class Generic {
  public:
+  struct Null {};
+
   using Array = std::vector<Generic>;
   using Object = rfl::Object<Generic>;
   using ReflectionType =
-      std::variant<bool, int, double, std::string, Object, Array>;
+      std::variant<bool, int, double, std::string, Object, Array, Null>;
 
   Generic();
 
@@ -42,6 +45,9 @@ class Generic {
   /// Returns the underlying object.
   const ReflectionType& get() const { return value_; }
 
+  /// Whether the object contains the null value.
+  bool is_null() const noexcept;
+
   /// Assigns the underlying object.
   Generic& operator=(const ReflectionType& _value);
 
@@ -64,7 +70,7 @@ class Generic {
   Generic& operator=(Generic&& _other);
 
   /// Returns the underlying object, necessary for the serialization to work.
-  const ReflectionType& reflection() const { return value_; };
+  const ReflectionType& reflection() const noexcept { return value_; };
 
   /// Casts the underlying value to an rfl::Generic::Array or returns an
   /// rfl::Error, if the underlying value is not an rfl::Generic::Array.
@@ -86,9 +92,19 @@ class Generic {
   /// rfl::Error, if the underlying value is not an rfl::Generic::Object.
   Result<Object> to_object() const noexcept;
 
+  /// Casts the underlying value to a rfl::Generic::Null or returns an
+  /// rfl::Error, if the underlying value is not a rfl::Generic::Null.
+  Result<Null> to_null() const noexcept;
+
   /// Casts the underlying value to a string or returns an rfl::Error, if the
   /// underlying value is not a string.
   Result<std::string> to_string() const noexcept;
+
+  /// Returns the underlying variant.
+  ReflectionType& variant() noexcept { return value_; };
+
+  /// Returns the underlying variant.
+  const ReflectionType& variant() const noexcept { return value_; };
 
  private:
   ReflectionType value_;

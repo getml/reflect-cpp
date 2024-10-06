@@ -43,6 +43,10 @@ Generic::Generic(ReflectionType&& _value) noexcept
 
 Generic::~Generic() = default;
 
+bool Generic::is_null() const noexcept {
+  return std::get_if<Null>(&value_) && true;
+}
+
 Generic& Generic::operator=(const ReflectionType& _value) {
   value_ = _value;
   return *this;
@@ -101,6 +105,16 @@ Result<Generic::Object> Generic::to_object() const noexcept {
     return Error(
         "rfl::Generic: Could not cast the underlying value to an "
         "rfl::Generic::Object.");
+  }
+}
+
+Result<Generic::Null> Generic::to_null() const noexcept {
+  if (const auto* ptr = std::get_if<Null>(&value_)) {
+    return *ptr;
+  } else {
+    return Error(
+        "rfl::Generic: Could not cast the underlying value to an "
+        "rfl::Generic::Null.");
   }
 }
 
