@@ -14,6 +14,7 @@
 #include "internal/nth_element_t.hpp"
 #include "internal/variant/find_max_size.hpp"
 #include "internal/variant/is_alternative_type.hpp"
+#include "internal/variant/is_convertible_to.hpp"
 #include "internal/variant/result_t.hpp"
 
 namespace rfl {
@@ -39,6 +40,9 @@ class Variant {
 
   template <IndexType _i>
   using Index = std::integral_constant<IndexType, _i>;
+
+  template <class T>
+  struct TypeWrapper {};
 
  public:
   Variant() {
@@ -68,6 +72,16 @@ class Variant {
                                     bool>::type = true>
   Variant(T&& _t) noexcept {
     move_from_type(std::forward<T>(_t));
+  }
+
+  template <
+      class T,
+      typename std::enable_if<
+          internal::variant::is_convertible_to<T, AlternativeTypes...>() &&
+              !internal::variant::is_alternative_type<T, AlternativeTypes...>(),
+          bool>::type = true>
+  Variant(const T& _t) {
+    copy_from_other_type(_t);
   }
 
   ~Variant() { destroy_if_necessary(); }
@@ -112,6 +126,17 @@ class Variant {
     destroy_if_necessary();
     move_from_type(std::forward<T>(_t));
     return *this;
+  }
+
+  /// Assigns the underlying object.
+  template <
+      class T,
+      typename std::enable_if<
+          internal::variant::is_convertible_to<T, AlternativeTypes...>() &&
+              !internal::variant::is_alternative_type<T, AlternativeTypes...>(),
+          bool>::type = true>
+  Variant<AlternativeTypes...>& operator=(const T& _t) {
+    copy_from_other_type(_t);
   }
 
   /// Assigns the underlying object.
@@ -231,6 +256,21 @@ class Variant {
   void copy_from_other(const Variant<AlternativeTypes...>& _other) {
     const auto copy_one = [this](const auto& _t) { this->copy_from_type(_t); };
     _other.visit(copy_one);
+  }
+
+  template <class T>
+  void copy_from_other_type(const T& _t) {
+    bool set = false;
+    const auto copy_one = [&, this]<class AltType>(const T& _t,
+                                                   const TypeWrapper<AltType>) {
+      if constexpr (std::is_convertible_v<T, AltType>) {
+        if (!set) {
+          move_from_type(AltType(_t));
+          set = true;
+        }
+      }
+    };
+    (copy_one(_t, TypeWrapper<AlternativeTypes>{}), ...);
   }
 
   template <class T>
@@ -442,7 +482,7 @@ class Variant {
 };
 
 template <class T, class... Types>
-constexpr T* get_if(Variant<Types...>& _v) noexcept {
+constexpr T* get_if(Variant<Types...>* _v) noexcept {
   const auto get = [](auto& _v) -> T* {
     using Type = std::remove_cvref_t<decltype(_v)>;
     if constexpr (std::is_same<Type, std::remove_cvref_t<T>>()) {
@@ -451,11 +491,11 @@ constexpr T* get_if(Variant<Types...>& _v) noexcept {
       return nullptr;
     }
   };
-  return _v.visit(get);
+  return _v->visit(get);
 }
 
 template <class T, class... Types>
-constexpr const T* get_if(const Variant<Types...>& _v) noexcept {
+constexpr const T* get_if(const Variant<Types...>* _v) noexcept {
   const auto get = [](const auto& _v) -> const T* {
     using Type = std::remove_cvref_t<decltype(_v)>;
     if constexpr (std::is_same<Type, std::remove_cvref_t<T>>()) {
@@ -464,24 +504,24 @@ constexpr const T* get_if(const Variant<Types...>& _v) noexcept {
       return nullptr;
     }
   };
-  return _v.visit(get);
+  return _v->visit(get);
 }
 
 template <int _i, class... Types>
-constexpr auto* get_if(Variant<Types...>& _v) noexcept {
+constexpr auto* get_if(Variant<Types...>* _v) noexcept {
   using T = internal::nth_element_t<_i, Types...>;
   return get_if<T>(_v);
 }
 
 template <int _i, class... Types>
-constexpr auto* get_if(const Variant<Types...>& _v) noexcept {
+constexpr auto* get_if(const Variant<Types...>* _v) noexcept {
   using T = internal::nth_element_t<_i, Types...>;
   return get_if<T>(_v);
 }
 
 template <class T, class... Types>
 constexpr T& get(Variant<Types...>& _v) {
-  auto ptr = get_if<T>(_v);
+  auto ptr = get_if<T>(&_v);
   if (!ptr) {
     throw std::runtime_error("Variant does not contain signified type.");
   }
@@ -490,7 +530,7 @@ constexpr T& get(Variant<Types...>& _v) {
 
 template <class T, class... Types>
 constexpr T&& get(Variant<Types...>&& _v) {
-  auto ptr = get_if<T>(_v);
+  auto ptr = get_if<T>(&_v);
   if (!ptr) {
     throw std::runtime_error("Variant does not contain signified type.");
   }
@@ -499,7 +539,7 @@ constexpr T&& get(Variant<Types...>&& _v) {
 
 template <class T, class... Types>
 constexpr const T& get(const Variant<Types...>& _v) {
-  auto ptr = get_if<T>(_v);
+  auto ptr = get_if<T>(&_v);
   if (!ptr) {
     throw std::runtime_error("Variant does not contain signified type.");
   }
@@ -508,7 +548,7 @@ constexpr const T& get(const Variant<Types...>& _v) {
 
 template <int _i, class... Types>
 constexpr auto& get(Variant<Types...>& _v) {
-  auto ptr = get_if<_i>(_v);
+  auto ptr = get_if<_i>(&_v);
   if (!ptr) {
     throw std::runtime_error("Variant does not contain signified type.");
   }
@@ -517,7 +557,7 @@ constexpr auto& get(Variant<Types...>& _v) {
 
 template <int _i, class... Types>
 constexpr auto&& get(Variant<Types...>&& _v) {
-  auto ptr = get_if<_i>(_v);
+  auto ptr = get_if<_i>(&_v);
   if (!ptr) {
     throw std::runtime_error("Variant does not contain signified type.");
   }
@@ -526,7 +566,7 @@ constexpr auto&& get(Variant<Types...>&& _v) {
 
 template <int _i, class... Types>
 constexpr const auto& get(const Variant<Types...>& _v) {
-  auto ptr = get_if<_i>(_v);
+  auto ptr = get_if<_i>(&_v);
   if (!ptr) {
     throw std::runtime_error("Variant does not contain signified type.");
   }
