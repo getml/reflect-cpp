@@ -6,6 +6,7 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -Wall -Wno-sign-compare -Wno-missing-braces -Wno-psabi -pthread -fno-strict-aliasing -fwrapv -O2 -ftemplate-backtrace-limit=0 -fsanitize=undefined")
 endif()
 
+add_subdirectory(generic)
 add_subdirectory(json)
 add_subdirectory(json_c_arrays_and_inheritance)
 
