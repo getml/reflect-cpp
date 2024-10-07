@@ -1,6 +1,10 @@
-"""Use the github API to get lists of people who have contributed in various ways to Pydantic.
+"""Use the github API to get lists of people who have contributed in various ways to reflect-cpp.
 
-This logic is inspired by that of @tiangolo's
+The script is borrowed from the
+[pydantic project](https://github.com/pydantic/pydantic/blob/main/.github/actions/people/people.py),
+and modified to work with the reflect-cpp repository.
+
+Originally, the logic was inspired by that of @tiangolo's
 [FastAPI people script](https://github.com/tiangolo/fastapi/blob/master/.github/actions/people/app/main.py).
 """
 
@@ -19,7 +23,7 @@ from pydantic_settings import BaseSettings
 
 from pydantic import BaseModel, SecretStr
 
-github_graphql_url = 'https://api.github.com/graphql'
+github_graphql_url = "https://api.github.com/graphql"
 
 discussions_query = """
 query Q($after: String) {
@@ -289,7 +293,7 @@ class PRsResponse(BaseModel):
 
 class Settings(BaseSettings):
     input_token: SecretStr
-    github_repository: str = 'pydantic/pydantic'
+    github_repository: str = "pydantic/pydantic"
     request_timeout: int = 30
 
 
@@ -299,22 +303,22 @@ def get_graphql_response(
     query: str,
     after: Union[str, None] = None,
 ) -> Dict[str, Any]:
-    headers = {'Authorization': f'token {settings.input_token.get_secret_value()}'}
-    variables = {'after': after}
+    headers = {"Authorization": f"token {settings.input_token.get_secret_value()}"}
+    variables = {"after": after}
     response = requests.post(
         github_graphql_url,
         headers=headers,
         timeout=settings.request_timeout,
-        json={'query': query, 'variables': variables, 'operationName': 'Q'},
+        json={"query": query, "variables": variables, "operationName": "Q"},
     )
     if response.status_code != 200:
-        logging.error(f'Response was not 200, after: {after}')
+        logging.error(f"Response was not 200, after: {after}")
         logging.error(response.text)
         raise RuntimeError(response.text)
     data = response.json()
-    if 'errors' in data:
-        logging.error(f'Errors in response, after: {after}')
-        logging.error(data['errors'])
+    if "errors" in data:
+        logging.error(f"Errors in response, after: {after}")
+        logging.error(data["errors"])
         logging.error(response.text)
         raise RuntimeError(response.text)
     return data
@@ -390,7 +394,9 @@ def get_discussions_experts(settings: Settings):
         for discussion_edge in discussion_edges:
             discussion_nodes.append(discussion_edge.node)
         last_edge = discussion_edges[-1]
-        discussion_edges = get_graphql_question_discussion_edges(settings=settings, after=last_edge.cursor)
+        discussion_edges = get_graphql_question_discussion_edges(
+            settings=settings, after=last_edge.cursor
+        )
 
     commentors = Counter()
     last_month_commentors = Counter()
@@ -481,7 +487,7 @@ def get_contributors(settings: Settings):
                 pr_reviewers.add(review.author.login)
         for reviewer in pr_reviewers:
             reviewers[reviewer] += 1
-        if pr.state == 'MERGED' and pr.author:
+        if pr.state == "MERGED" and pr.author:
             contributors[pr.author.login] += 1
     return contributors, commentors, reviewers, authors
 
@@ -501,45 +507,49 @@ def get_top_users(
             author = authors[commentor]
             users.append(
                 {
-                    'login': commentor,
-                    'count': count,
-                    'avatarUrl': author.avatarUrl,
-                    'url': author.url,
+                    "login": commentor,
+                    "count": count,
+                    "avatarUrl": author.avatarUrl,
+                    "url": author.url,
                 }
             )
     return users
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     settings = Settings()
-    logging.info(f'Using config: {settings.model_dump_json()}')
+    logging.info(f"Using config: {settings.model_dump_json()}")
     g = Github(settings.input_token.get_secret_value())
     repo = g.get_repo(settings.github_repository)
-    question_commentors, question_last_month_commentors, question_authors = get_experts(settings=settings)
-    contributors, pr_commentors, reviewers, pr_authors = get_contributors(settings=settings)
+    question_commentors, question_last_month_commentors, question_authors = get_experts(
+        settings=settings
+    )
+    contributors, pr_commentors, reviewers, pr_authors = get_contributors(
+        settings=settings
+    )
     authors = {**question_authors, **pr_authors}
     maintainers_logins = {
-        'samuelcolvin',
-        'adriangb',
-        'dmontagu',
-        'hramezani',
-        'Kludex',
-        'davidhewitt',
-        'sydney-runkle',
-        'alexmojaki',
+        "samuelcolvin",
+        "adriangb",
+        "dmontagu",
+        "hramezani",
+        "Kludex",
+        "davidhewitt",
+        "sydney-runkle",
+        "alexmojaki",
     }
-    bot_names = {'codecov', 'github-actions', 'pre-commit-ci', 'dependabot'}
+    bot_names = {"codecov", "github-actions", "pre-commit-ci", "dependabot"}
     maintainers = []
     for login in maintainers_logins:
         user = authors[login]
         maintainers.append(
             {
-                'login': login,
-                'answers': question_commentors[login],
-                'prs': contributors[login],
-                'avatarUrl': user.avatarUrl,
-                'url': user.url,
+                "login": login,
+                "answers": question_commentors[login],
+                "prs": contributors[login],
+                "avatarUrl": user.avatarUrl,
+                "url": user.url,
             }
         )
 
@@ -575,45 +585,51 @@ if __name__ == '__main__':
 
     extra_experts = [
         {
-            'login': 'ybressler',
-            'count': None,
-            'avatarUrl': 'https://avatars.githubusercontent.com/u/40807730?v=4',
-            'url': 'https://github.com/ybressler',
+            "login": "ybressler",
+            "count": None,
+            "avatarUrl": "https://avatars.githubusercontent.com/u/40807730?v=4",
+            "url": "https://github.com/ybressler",
         },
     ]
-    expert_logins = {e['login'] for e in experts}
-    experts.extend([expert for expert in extra_experts if expert['login'] not in expert_logins])
+    expert_logins = {e["login"] for e in experts}
+    experts.extend(
+        [expert for expert in extra_experts if expert["login"] not in expert_logins]
+    )
 
     people = {
-        'maintainers': maintainers,
-        'experts': experts,
-        'last_month_active': last_month_active,
-        'top_contributors': top_contributors,
-        'top_reviewers': top_reviewers,
+        "maintainers": maintainers,
+        "experts": experts,
+        "last_month_active": last_month_active,
+        "top_contributors": top_contributors,
+        "top_reviewers": top_reviewers,
     }
-    people_path = Path('./docs/plugins/people.yml')
-    people_old_content = people_path.read_text(encoding='utf-8')
-    new_people_content = yaml.dump(people, sort_keys=False, width=200, allow_unicode=True)
+    people_path = Path("./docs/plugins/people.yml")
+    people_old_content = people_path.read_text(encoding="utf-8")
+    new_people_content = yaml.dump(
+        people, sort_keys=False, width=200, allow_unicode=True
+    )
     if people_old_content == new_people_content:
         logging.info("The Pydantic People data hasn't changed, finishing.")
         sys.exit(0)
-    people_path.write_text(new_people_content, encoding='utf-8')
+    people_path.write_text(new_people_content, encoding="utf-8")
 
-    logging.info('Setting up GitHub Actions git user')
-    subprocess.run(['git', 'config', 'user.name', 'github-actions'], check=True)
-    subprocess.run(['git', 'config', 'user.email', 'github-actions@github.com'], check=True)
+    logging.info("Setting up GitHub Actions git user")
+    subprocess.run(["git", "config", "user.name", "github-actions"], check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "github-actions@github.com"], check=True
+    )
 
-    branch_name = 'pydantic-people-update'
-    logging.info(f'Creating a new branch {branch_name}')
-    subprocess.run(['git', 'checkout', '-b', branch_name], check=True)
-    logging.info('Adding updated file')
-    subprocess.run(['git', 'add', str(people_path)], check=True)
-    logging.info('Committing updated file')
-    message = '👥 Update Pydantic People'
-    result = subprocess.run(['git', 'commit', '-m', message], check=True)
-    logging.info('Pushing branch')
-    subprocess.run(['git', 'push', 'origin', branch_name], check=True)
-    logging.info('Creating PR')
-    pr = repo.create_pull(title=message, body=message, base='main', head=branch_name)
-    logging.info(f'Created PR: {pr.number}')
-    logging.info('Finished')
+    branch_name = "pydantic-people-update"
+    logging.info(f"Creating a new branch {branch_name}")
+    subprocess.run(["git", "checkout", "-b", branch_name], check=True)
+    logging.info("Adding updated file")
+    subprocess.run(["git", "add", str(people_path)], check=True)
+    logging.info("Committing updated file")
+    message = "👥 Update Pydantic People"
+    result = subprocess.run(["git", "commit", "-m", message], check=True)
+    logging.info("Pushing branch")
+    subprocess.run(["git", "push", "origin", branch_name], check=True)
+    logging.info("Creating PR")
+    pr = repo.create_pull(title=message, body=message, base="main", head=branch_name)
+    logging.info(f"Created PR: {pr.number}")
+    logging.info("Finished")
