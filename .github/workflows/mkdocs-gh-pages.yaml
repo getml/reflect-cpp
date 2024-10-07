@@ -4,7 +4,6 @@ on:
   push:
     branches: 
       - main
-      - feature/docs_migration_mkdocs
   workflow_dispatch:
 
 jobs:

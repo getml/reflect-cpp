@@ -47,8 +47,6 @@ theme:
   logo_dark_mode: "reflect-cpp-white.png"
   favicon: 'banner2.png'
 
-extra_css:
-  - stylesheets/extra.css
 repo_name: getml/reflect-cpp
 repo_url: https://github.com/getml/reflect-cpp
 edit_uri: edit/main/docs/
