@@ -95,14 +95,20 @@ if (REFLECTCPP_JSON)
     endif ()
 endif ()
 
-set_target_properties(reflectcpp PROPERTIES LINKER_LANGUAGE CXX)
-
 if (REFLECTCPP_BSON)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_bson.cpp
+    )
     find_package(bson-1.0 CONFIG REQUIRED)
     target_link_libraries(reflectcpp PRIVATE $<IF:$<TARGET_EXISTS:mongo::bson_static>,mongo::bson_static,mongo::bson_shared>)
 endif ()
 
 if (REFLECTCPP_CBOR)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_cbor.cpp
+    )
+    target_include_directories(reflectcpp SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
+    target_include_directories(reflectcpp SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include/tinycbor")
     if (MSVC)
         target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/tinycbor${CMAKE_STATIC_LIBRARY_SUFFIX}")
     else ()
@@ -111,11 +117,17 @@ if (REFLECTCPP_CBOR)
 endif ()
 
 if (REFLECTCPP_FLEXBUFFERS)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_flexbuf.cpp
+    )
     find_package(flatbuffers CONFIG REQUIRED)
     target_link_libraries(reflectcpp INTERFACE flatbuffers::flatbuffers)
 endif ()
 
 if (REFLECTCPP_MSGPACK)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_msgpack.cpp
+    )
     find_package(msgpack-c CONFIG REQUIRED)
     if (MSVC)
         target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/msgpack-c${CMAKE_STATIC_LIBRARY_SUFFIX}")
@@ -125,6 +137,9 @@ if (REFLECTCPP_MSGPACK)
 endif ()
 
 if (REFLECTCPP_TOML)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_toml.cpp
+    )
     if (MSVC)
         target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/tomlplusplus${CMAKE_STATIC_LIBRARY_SUFFIX}")
     else ()
@@ -141,10 +156,14 @@ if (REFLECTCPP_XML)
 endif ()
 
 if (REFLECTCPP_YAML)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_yaml.cpp
+    )
     find_package(yaml-cpp CONFIG REQUIRED)
     target_link_libraries(reflectcpp INTERFACE yaml-cpp::yaml-cpp)
 endif ()
 
+set_target_properties(reflectcpp PROPERTIES LINKER_LANGUAGE CXX)
 target_sources(reflectcpp PRIVATE ${REFLECT_CPP_SOURCES})
 
 if (REFLECTCPP_BUILD_TESTS)

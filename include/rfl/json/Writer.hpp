@@ -129,4 +129,4 @@ class Writer {
 }  // namespace json
 }  // namespace rfl
 
-#endif  // JSON_PARSER_HPP_
+#endif
