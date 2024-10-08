@@ -26,7 +26,7 @@ using Shapes = rfl::Variant<Circle, Rectangle, std::unique_ptr<Square>>;
 
 TEST(json, test_rfl_variant_get_if) {
   const Shapes r = Rectangle{.height = 10, .width = 5};
-  EXPECT_TRUE(rfl::get_if<1>(r) && true);
-  EXPECT_FALSE(rfl::get_if<0>(r) && true);
+  EXPECT_TRUE(rfl::get_if<1>(&r) && true);
+  EXPECT_FALSE(rfl::get_if<0>(&r) && true);
 }
 }  // namespace test_rfl_variant_get_if
