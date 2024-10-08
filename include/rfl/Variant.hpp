@@ -74,7 +74,8 @@ class Variant {
     move_from_type(std::forward<T>(_t));
   }
 
-  template <
+  // TODO
+  /*template <
       class T,
       typename std::enable_if<
           internal::variant::is_convertible_to<T, AlternativeTypes...>() &&
@@ -82,7 +83,7 @@ class Variant {
           bool>::type = true>
   Variant(const T& _t) {
     copy_from_other_type(_t);
-  }
+  }*/
 
   ~Variant() { destroy_if_necessary(); }
 
@@ -129,7 +130,8 @@ class Variant {
   }
 
   /// Assigns the underlying object.
-  template <
+  // TODO
+  /*template <
       class T,
       typename std::enable_if<
           internal::variant::is_convertible_to<T, AlternativeTypes...>() &&
@@ -137,7 +139,7 @@ class Variant {
           bool>::type = true>
   Variant<AlternativeTypes...>& operator=(const T& _t) {
     copy_from_other_type(_t);
-  }
+  }*/
 
   /// Assigns the underlying object.
   Variant<AlternativeTypes...>& operator=(
