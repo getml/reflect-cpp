@@ -25,8 +25,6 @@
 
 namespace rfl::json {
 
-schema::Type type_to_json_schema_type(const parsing::schema::Type& _type);
-
 template <class T>
 struct TypeHelper {};
 
@@ -35,25 +33,16 @@ struct TypeHelper<rfl::Variant<Ts...>> {
   using JSONSchemaType = rfl::Variant<schema::JSONSchema<Ts>...>;
 };
 
+std::string to_schema_internal_schema(
+    const parsing::schema::Definition& internal_schema,
+    const yyjson_write_flag);
+
 /// Returns the JSON schema for a class.
 template <class T, class... Ps>
 std::string to_schema(const yyjson_write_flag _flag = 0) {
   const auto internal_schema =
       parsing::schema::make<Reader, Writer, T, Processors<Ps...>>();
-  auto definitions = std::map<std::string, schema::Type>();
-  for (const auto& [k, v] : internal_schema.definitions_) {
-    definitions[k] = type_to_json_schema_type(v);
-  }
-  using JSONSchemaType =
-      typename TypeHelper<schema::Type::ReflectionType>::JSONSchemaType;
-  const auto to_schema = [&](auto&& _root) -> JSONSchemaType {
-    using U = std::decay_t<decltype(_root)>;
-    return schema::JSONSchema<U>{.root = std::move(_root),
-                                 .definitions = definitions};
-  };
-  auto root = type_to_json_schema_type(internal_schema.root_);
-  const auto json_schema = rfl::visit(to_schema, std::move(root.value));
-  return write(json_schema, _flag);
+  return to_schema_internal_schema(internal_schema, _flag);
 }
 }  // namespace rfl::json
 

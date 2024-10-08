@@ -48,31 +48,16 @@ struct Reader {
   using InputVarType = YYJSONInputVar;
 
   template <class T>
-  static constexpr bool has_custom_constructor = (requires(InputVarType var) {
-    T::from_json_obj(var);
-  });
+  static constexpr bool has_custom_constructor =
+      (requires(InputVarType var) { T::from_json_obj(var); });
 
   rfl::Result<InputVarType> get_field_from_array(
-      const size_t _idx, const InputArrayType _arr) const noexcept {
-    const auto var = InputVarType(yyjson_arr_get(_arr.val_, _idx));
-    if (!var.val_) {
-      return rfl::Error("Index " + std::to_string(_idx) + " of of bounds.");
-    }
-    return var;
-  }
+      const size_t _idx, const InputArrayType _arr) const noexcept;
 
   rfl::Result<InputVarType> get_field_from_object(
-      const std::string& _name, const InputObjectType _obj) const noexcept {
-    const auto var = InputVarType(yyjson_obj_get(_obj.val_, _name.c_str()));
-    if (!var.val_) {
-      return rfl::Error("Object contains no field named '" + _name + "'.");
-    }
-    return var;
-  }
+      const std::string& _name, const InputObjectType _obj) const noexcept;
 
-  bool is_empty(const InputVarType _var) const noexcept {
-    return !_var.val_ || yyjson_is_null(_var.val_);
-  }
+  bool is_empty(const InputVarType _var) const noexcept;
 
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
@@ -135,20 +120,10 @@ struct Reader {
     }
   }
 
-  rfl::Result<InputArrayType> to_array(const InputVarType _var) const noexcept {
-    if (!yyjson_is_arr(_var.val_)) {
-      return rfl::Error("Could not cast to array!");
-    }
-    return InputArrayType(_var.val_);
-  }
+  rfl::Result<InputArrayType> to_array(const InputVarType _var) const noexcept;
 
   rfl::Result<InputObjectType> to_object(
-      const InputVarType _var) const noexcept {
-    if (!yyjson_is_obj(_var.val_)) {
-      return rfl::Error("Could not cast to object!");
-    }
-    return InputObjectType(_var.val_);
-  }
+      const InputVarType _var) const noexcept;
 
   template <class T>
   rfl::Result<T> use_custom_constructor(
@@ -164,4 +139,4 @@ struct Reader {
 }  // namespace json
 }  // namespace rfl
 
-#endif  // JSON_PARSER_HPP_
+#endif

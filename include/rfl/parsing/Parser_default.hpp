@@ -36,7 +36,6 @@ requires AreReaderAndWriter<R, W, T>
 struct Parser {
  public:
   using InputVarType = typename R::InputVarType;
-  using OutputVarType = typename W::OutputVarType;
 
   using ParentType = Parent<W>;
 

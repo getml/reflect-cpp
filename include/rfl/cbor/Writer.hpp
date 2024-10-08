@@ -40,22 +40,15 @@ class Writer {
   using OutputObjectType = CBOROutputObject;
   using OutputVarType = CBOROutputVar;
 
-  Writer(CborEncoder* _encoder) : encoder_(_encoder) {}
+  Writer(CborEncoder* _encoder);
 
-  ~Writer() = default;
+  ~Writer();
 
-  OutputArrayType array_as_root(const size_t _size) const noexcept {
-    return new_array(_size, encoder_);
-  }
+  OutputArrayType array_as_root(const size_t _size) const noexcept;
 
-  OutputObjectType object_as_root(const size_t _size) const noexcept {
-    return new_object(_size, encoder_);
-  }
+  OutputObjectType object_as_root(const size_t _size) const noexcept;
 
-  OutputVarType null_as_root() const noexcept {
-    cbor_encode_null(encoder_);
-    return OutputVarType{};
-  }
+  OutputVarType null_as_root() const noexcept;
 
   template <class T>
   OutputVarType value_as_root(const T& _var) const noexcept {
@@ -63,28 +56,18 @@ class Writer {
   }
 
   OutputArrayType add_array_to_array(const size_t _size,
-                                     OutputArrayType* _parent) const noexcept {
-    return new_array(_size, _parent->encoder_);
-  }
+                                     OutputArrayType* _parent) const noexcept;
 
   OutputArrayType add_array_to_object(
       const std::string_view& _name, const size_t _size,
-      OutputObjectType* _parent) const noexcept {
-    cbor_encode_text_string(_parent->encoder_, _name.data(), _name.size());
-    return new_array(_size, _parent->encoder_);
-  }
+                                      OutputObjectType* _parent) const noexcept;
 
-  OutputObjectType add_object_to_array(
-      const size_t _size, OutputArrayType* _parent) const noexcept {
-    return new_object(_size, _parent->encoder_);
-  }
+  OutputObjectType add_object_to_array(const size_t _size,
+                                       OutputArrayType* _parent) const noexcept;
 
   OutputObjectType add_object_to_object(
       const std::string_view& _name, const size_t _size,
-      OutputObjectType* _parent) const noexcept {
-    cbor_encode_text_string(_parent->encoder_, _name.data(), _name.size());
-    return new_object(_size, _parent->encoder_);
-  }
+      OutputObjectType* _parent) const noexcept;
 
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
@@ -100,40 +83,21 @@ class Writer {
     return new_value(_var, _parent->encoder_);
   }
 
-  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept {
-    cbor_encode_null(_parent->encoder_);
-    return OutputVarType{};
-  }
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept;
 
   OutputVarType add_null_to_object(const std::string_view& _name,
-                                   OutputObjectType* _parent) const noexcept {
-    cbor_encode_text_string(_parent->encoder_, _name.data(), _name.size());
-    cbor_encode_null(_parent->encoder_);
-    return OutputVarType{};
-  }
+                                   OutputObjectType* _parent) const noexcept;
 
-  void end_array(OutputArrayType* _arr) const noexcept {
-    cbor_encoder_close_container(_arr->parent_, _arr->encoder_);
-  }
+  void end_array(OutputArrayType* _arr) const noexcept;
 
-  void end_object(OutputObjectType* _obj) const noexcept {
-    cbor_encoder_close_container(_obj->parent_, _obj->encoder_);
-  }
+  void end_object(OutputObjectType* _obj) const noexcept;
 
  private:
   OutputArrayType new_array(const size_t _size,
-                            CborEncoder* _parent) const noexcept {
-    subencoders_->emplace_back(rfl::Box<CborEncoder>::make());
-    cbor_encoder_create_array(_parent, subencoders_->back().get(), _size);
-    return OutputArrayType{subencoders_->back().get(), _parent};
-  }
+                            CborEncoder* _parent) const noexcept;
 
   OutputObjectType new_object(const size_t _size,
-                              CborEncoder* _parent) const noexcept {
-    subencoders_->emplace_back(rfl::Box<CborEncoder>::make());
-    cbor_encoder_create_map(_parent, subencoders_->back().get(), _size);
-    return OutputObjectType{subencoders_->back().get(), _parent};
-  }
+                              CborEncoder* _parent) const noexcept;
 
   template <class T>
   OutputVarType new_value(const T& _var, CborEncoder* _parent) const noexcept {
@@ -166,4 +130,4 @@ class Writer {
 }  // namespace cbor
 }  // namespace rfl
 
-#endif  // CBOR_PARSER_HPP_
+#endif

@@ -28,7 +28,6 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
 
  public:
   using InputVarType = typename R::InputVarType;
-  using OutputVarType = typename W::OutputVarType;
 
   static Result<std::variant<AlternativeTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {

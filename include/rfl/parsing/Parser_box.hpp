@@ -16,7 +16,6 @@ template <class R, class W, class T, class ProcessorsType>
 requires AreReaderAndWriter<R, W, Box<T>>
 struct Parser<R, W, Box<T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
-  using OutputVarType = typename W::OutputVarType;
 
   static Result<Box<T>> read(const R& _r, const InputVarType& _var) noexcept {
     const auto to_box = [](auto&& _t) { return Box<T>::make(std::move(_t)); };

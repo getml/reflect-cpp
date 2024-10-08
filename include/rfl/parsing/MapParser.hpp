@@ -25,9 +25,6 @@ struct MapParser {
   using InputObjectType = typename R::InputObjectType;
   using InputVarType = typename R::InputVarType;
 
-  using OutputObjectType = typename W::OutputObjectType;
-  using OutputVarType = typename W::OutputVarType;
-
   using KeyType = std::remove_cvref_t<typename MapType::value_type::first_type>;
   using ValueType =
       std::remove_cvref_t<typename MapType::value_type::second_type>;

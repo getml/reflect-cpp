@@ -62,4 +62,4 @@ std::ostream& write(const auto& _obj, std::ostream& _stream) noexcept {
 }  // namespace bson
 }  // namespace rfl
 
-#endif  // BSON_PARSER_HPP_
+#endif

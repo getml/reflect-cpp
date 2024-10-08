@@ -31,21 +31,15 @@ class Writer {
   using OutputObjectType = YAMLObject;
   using OutputVarType = YAMLVar;
 
-  Writer(const Ref<YAML::Emitter>& _out) : out_(_out) {}
+  Writer(const Ref<YAML::Emitter>& _out);
 
-  ~Writer() = default;
+  ~Writer();
 
-  OutputArrayType array_as_root(const size_t _size) const noexcept {
-    return new_array();
-  }
+  OutputArrayType array_as_root(const size_t _size) const noexcept;
 
-  OutputObjectType object_as_root(const size_t _size) const noexcept {
-    return new_object();
-  }
+  OutputObjectType object_as_root(const size_t _size) const noexcept;
 
-  OutputVarType null_as_root() const noexcept {
-    return insert_value(YAML::Null);
-  }
+  OutputVarType null_as_root() const noexcept;
 
   template <class T>
   OutputVarType value_as_root(const T& _var) const noexcept {
@@ -53,26 +47,18 @@ class Writer {
   }
 
   OutputArrayType add_array_to_array(const size_t _size,
-                                     OutputArrayType* _parent) const noexcept {
-    return new_array();
-  }
+                                     OutputArrayType* _parent) const noexcept;
 
-  OutputArrayType add_array_to_object(
-      const std::string_view& _name, const size_t _size,
-      OutputObjectType* _parent) const noexcept {
-    return new_array(_name);
-  }
+  OutputArrayType add_array_to_object(const std::string_view& _name,
+                                      const size_t _size,
+                                      OutputObjectType* _parent) const noexcept;
 
-  OutputObjectType add_object_to_array(
-      const size_t _size, OutputArrayType* _parent) const noexcept {
-    return new_object();
-  }
+  OutputObjectType add_object_to_array(const size_t _size,
+                                       OutputArrayType* _parent) const noexcept;
 
   OutputObjectType add_object_to_object(
       const std::string_view& _name, const size_t _size,
-      OutputObjectType* _parent) const noexcept {
-    return new_object(_name);
-  }
+      OutputObjectType* _parent) const noexcept;
 
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
@@ -87,22 +73,14 @@ class Writer {
     return insert_value(_name, _var);
   }
 
-  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept {
-    return insert_value(YAML::Null);
-  }
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept;
 
   OutputVarType add_null_to_object(const std::string_view& _name,
-                                   OutputObjectType* _parent) const noexcept {
-    return insert_value(_name, YAML::Null);
-  }
+                                   OutputObjectType* _parent) const noexcept;
 
-  void end_array(OutputArrayType* _arr) const noexcept {
-    (*out_) << YAML::EndSeq;
-  }
+  void end_array(OutputArrayType* _arr) const noexcept;
 
-  void end_object(OutputObjectType* _obj) const noexcept {
-    (*out_) << YAML::EndMap;
-  }
+  void end_object(OutputObjectType* _obj) const noexcept;
 
  private:
   template <class T>
@@ -118,25 +96,13 @@ class Writer {
     return OutputVarType{};
   }
 
-  OutputArrayType new_array(const std::string_view& _name) const noexcept {
-    (*out_) << YAML::Key << _name.data() << YAML::Value << YAML::BeginSeq;
-    return OutputArrayType{};
-  }
+  OutputArrayType new_array(const std::string_view& _name) const noexcept;
 
-  OutputArrayType new_array() const noexcept {
-    (*out_) << YAML::BeginSeq;
-    return OutputArrayType{};
-  }
+  OutputArrayType new_array() const noexcept;
 
-  OutputObjectType new_object(const std::string_view& _name) const noexcept {
-    (*out_) << YAML::Key << _name.data() << YAML::Value << YAML::BeginMap;
-    return OutputObjectType{};
-  }
+  OutputObjectType new_object(const std::string_view& _name) const noexcept;
 
-  OutputObjectType new_object() const noexcept {
-    (*out_) << YAML::BeginMap;
-    return OutputObjectType{};
-  }
+  OutputObjectType new_object() const noexcept;
 
  public:
   const Ref<YAML::Emitter> out_;
@@ -145,4 +111,4 @@ class Writer {
 }  // namespace yaml
 }  // namespace rfl
 
-#endif  // JSON_PARSER_HPP_
+#endif

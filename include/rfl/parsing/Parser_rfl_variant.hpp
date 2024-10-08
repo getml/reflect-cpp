@@ -20,7 +20,6 @@ requires AreReaderAndWriter<R, W, rfl::Variant<AlternativeTypes...>>
 class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
  public:
   using InputVarType = typename R::InputVarType;
-  using OutputVarType = typename W::OutputVarType;
 
   static Result<rfl::Variant<AlternativeTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {

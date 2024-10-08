@@ -38,22 +38,15 @@ struct Writer {
   using OutputObjectType = OutputObject;
   using OutputVarType = OutputVar;
 
-  Writer(const Ref<flexbuffers::Builder>& _fbb) : fbb_(_fbb) {}
+  Writer(const Ref<flexbuffers::Builder>& _fbb);
 
-  ~Writer() = default;
+  ~Writer();
 
-  OutputArrayType array_as_root(const size_t _size) const noexcept {
-    return new_array();
-  }
+  OutputArrayType array_as_root(const size_t _size) const noexcept;
 
-  OutputObjectType object_as_root(const size_t _size) const noexcept {
-    return new_object();
-  }
+  OutputObjectType object_as_root(const size_t _size) const noexcept;
 
-  OutputVarType null_as_root() const noexcept {
-    fbb_->Null();
-    return OutputVarType{};
-  }
+  OutputVarType null_as_root() const noexcept;
 
   template <class T>
   OutputVarType value_as_root(const T& _var) const noexcept {
@@ -61,26 +54,18 @@ struct Writer {
   }
 
   OutputArrayType add_array_to_array(const size_t _size,
-                                     OutputArrayType* _parent) const noexcept {
-    return new_array();
-  }
+                                     OutputArrayType* _parent) const noexcept;
 
   OutputArrayType add_array_to_object(
       const std::string_view& _name, const size_t _size,
-      OutputObjectType* _parent) const noexcept {
-    return new_array(_name);
-  }
+      OutputObjectType* _parent) const noexcept;
 
   OutputObjectType add_object_to_array(
-      const size_t _size, OutputArrayType* _parent) const noexcept {
-    return new_object();
-  }
+      const size_t _size, OutputArrayType* _parent) const noexcept;
 
   OutputObjectType add_object_to_object(
       const std::string_view& _name, const size_t _size,
-      OutputObjectType* _parent) const noexcept {
-    return new_object(_name);
-  }
+      OutputObjectType* _parent) const noexcept;
 
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
@@ -95,24 +80,14 @@ struct Writer {
     return insert_value(_name, _var);
   }
 
-  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept {
-    fbb_->Null();
-    return OutputVarType{};
-  }
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept;
 
   OutputVarType add_null_to_object(const std::string_view& _name,
-                                   OutputObjectType* _parent) const noexcept {
-    fbb_->Null(_name.data());
-    return OutputVarType{};
-  }
+                                   OutputObjectType* _parent) const noexcept;
 
-  void end_array(OutputArrayType* _arr) const noexcept {
-    fbb_->EndVector(_arr->start_, false, false);
-  }
+  void end_array(OutputArrayType* _arr) const noexcept;
 
-  void end_object(OutputObjectType* _obj) const noexcept {
-    fbb_->EndMap(_obj->start_);
-  }
+  void end_object(OutputObjectType* _obj) const noexcept;
 
  private:
   template <class T>
@@ -154,25 +129,13 @@ struct Writer {
     return OutputVarType{};
   }
 
-  OutputArrayType new_array(const std::string_view& _name) const noexcept {
-    const auto start = fbb_->StartVector(_name.data());
-    return OutputArrayType{start};
-  }
+  OutputArrayType new_array(const std::string_view& _name) const noexcept;
 
-  OutputArrayType new_array() const noexcept {
-    const auto start = fbb_->StartVector();
-    return OutputArrayType{start};
-  }
+  OutputArrayType new_array() const noexcept;
 
-  OutputObjectType new_object(const std::string_view& _name) const noexcept {
-    const auto start = fbb_->StartMap(_name.data());
-    return OutputObjectType{start};
-  }
+  OutputObjectType new_object(const std::string_view& _name) const noexcept;
 
-  OutputObjectType new_object() const noexcept {
-    const auto start = fbb_->StartMap();
-    return OutputObjectType{start};
-  }
+  OutputObjectType new_object() const noexcept;
 
  private:
   Ref<flexbuffers::Builder> fbb_;

@@ -18,7 +18,6 @@ template <class R, class W, class ProcessorsType>
 requires AreReaderAndWriter<R, W, std::string_view>
 struct Parser<R, W, std::string_view, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
-  using OutputVarType = typename W::OutputVarType;
 
   static Result<std::string_view> read(const R&,
                                        const InputVarType&) noexcept {

@@ -53,4 +53,4 @@ std::ostream& write(const auto& _obj, std::ostream& _stream,
 }  // namespace json
 }  // namespace rfl
 
-#endif  // JSON_PARSER_HPP_
+#endif

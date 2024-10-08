@@ -45,30 +45,16 @@ struct Reader {
   struct has_from_json_obj : std::false_type {};
 
   template <class T>
-  static constexpr bool has_custom_constructor = (requires(InputVarType var) {
-    T::from_yaml_obj(var);
-  });
+  static constexpr bool has_custom_constructor =
+      (requires(InputVarType var) { T::from_yaml_obj(var); });
 
   rfl::Result<InputVarType> get_field_from_array(
-      const size_t _idx, const InputArrayType& _arr) const noexcept {
-    if (_idx >= _arr.node_.size()) {
-      return rfl::Error("Index " + std::to_string(_idx) + " of of bounds.");
-    }
-    return InputVarType(_arr.node_[_idx]);
-  }
+      const size_t _idx, const InputArrayType& _arr) const noexcept;
 
   rfl::Result<InputVarType> get_field_from_object(
-      const std::string& _name, const InputObjectType& _obj) const noexcept {
-    auto var = InputVarType(_obj.node_[_name]);
-    if (!var.node_) {
-      return rfl::Error("Object contains no field named '" + _name + "'.");
-    }
-    return var;
-  }
+      const std::string& _name, const InputObjectType& _obj) const noexcept;
 
-  bool is_empty(const InputVarType& _var) const noexcept {
-    return !_var.node_ && true;
-  }
+  bool is_empty(const InputVarType& _var) const noexcept;
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
@@ -86,13 +72,7 @@ struct Reader {
     }
   }
 
-  rfl::Result<InputArrayType> to_array(
-      const InputVarType& _var) const noexcept {
-    if (!_var.node_.IsSequence()) {
-      return rfl::Error("Could not cast to sequence!");
-    }
-    return InputArrayType(_var.node_);
-  }
+  rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept;
 
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
@@ -121,12 +101,7 @@ struct Reader {
   }
 
   rfl::Result<InputObjectType> to_object(
-      const InputVarType& _var) const noexcept {
-    if (!_var.node_.IsMap()) {
-      return rfl::Error("Could not cast to map!");
-    }
-    return InputObjectType(_var.node_);
-  }
+      const InputVarType& _var) const noexcept;
 
   template <class T>
   rfl::Result<T> use_custom_constructor(

@@ -19,7 +19,6 @@ template <class R, class W, class FirstType, class SecondType,
 requires AreReaderAndWriter<R, W, std::pair<FirstType, SecondType>>
 struct Parser<R, W, std::pair<FirstType, SecondType>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
-  using OutputVarType = typename W::OutputVarType;
 
   /// Expresses the variables as type T.
   static Result<std::pair<FirstType, SecondType>> read(

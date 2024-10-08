@@ -48,27 +48,13 @@ class Writer {
   using OutputObjectType = YYJSONOutputObject;
   using OutputVarType = YYJSONOutputVar;
 
-  Writer(yyjson_mut_doc* _doc) : doc_(_doc) {}
+  Writer(yyjson_mut_doc* _doc);
 
-  ~Writer() = default;
+  OutputArrayType array_as_root(const size_t) const noexcept;
 
-  OutputArrayType array_as_root(const size_t) const noexcept {
-    const auto arr = yyjson_mut_arr(doc_);
-    yyjson_mut_doc_set_root(doc_, arr);
-    return OutputArrayType(arr);
-  }
+  OutputObjectType object_as_root(const size_t) const noexcept;
 
-  OutputObjectType object_as_root(const size_t) const noexcept {
-    const auto obj = yyjson_mut_obj(doc_);
-    yyjson_mut_doc_set_root(doc_, obj);
-    return OutputObjectType(obj);
-  }
-
-  OutputVarType null_as_root() const noexcept {
-    const auto null = yyjson_mut_null(doc_);
-    yyjson_mut_doc_set_root(doc_, null);
-    return OutputVarType(null);
-  }
+  OutputVarType null_as_root() const noexcept;
 
   template <class T>
   OutputVarType value_as_root(const T& _var) const noexcept {
@@ -78,36 +64,18 @@ class Writer {
   }
 
   OutputArrayType add_array_to_array(const size_t,
-                                     OutputArrayType* _parent) const noexcept {
-    const auto arr = yyjson_mut_arr(doc_);
-    yyjson_mut_arr_add_val(_parent->val_, arr);
-    return OutputArrayType(arr);
-  }
+                                     OutputArrayType* _parent) const noexcept;
 
-  OutputArrayType add_array_to_object(
-      const std::string_view& _name, const size_t,
-      OutputObjectType* _parent) const noexcept {
-    const auto arr = yyjson_mut_arr(doc_);
-    yyjson_mut_obj_add(_parent->val_, yyjson_mut_strcpy(doc_, _name.data()),
-                       arr);
-    return OutputArrayType(arr);
-  }
+  OutputArrayType add_array_to_object(const std::string_view& _name,
+                                      const size_t,
+                                      OutputObjectType* _parent) const noexcept;
 
-  OutputObjectType add_object_to_array(
-      const size_t, OutputArrayType* _parent) const noexcept {
-    const auto obj = yyjson_mut_obj(doc_);
-    yyjson_mut_arr_add_val(_parent->val_, obj);
-    return OutputObjectType(obj);
-  }
+  OutputObjectType add_object_to_array(const size_t,
+                                       OutputArrayType* _parent) const noexcept;
 
   OutputObjectType add_object_to_object(
       const std::string_view& _name, const size_t,
-      OutputObjectType* _parent) const noexcept {
-    const auto obj = yyjson_mut_obj(doc_);
-    yyjson_mut_obj_add(_parent->val_, yyjson_mut_strcpy(doc_, _name.data()),
-                       obj);
-    return OutputObjectType(obj);
-  }
+      OutputObjectType* _parent) const noexcept;
 
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
@@ -127,23 +95,14 @@ class Writer {
     return OutputVarType(val);
   }
 
-  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept {
-    const auto null = yyjson_mut_null(doc_);
-    yyjson_mut_arr_add_val(_parent->val_, null);
-    return OutputVarType(null);
-  }
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept;
 
   OutputVarType add_null_to_object(const std::string_view& _name,
-                                   OutputObjectType* _parent) const noexcept {
-    const auto null = yyjson_mut_null(doc_);
-    yyjson_mut_obj_add(_parent->val_, yyjson_mut_strcpy(doc_, _name.data()),
-                       null);
-    return OutputVarType(null);
-  }
+                                   OutputObjectType* _parent) const noexcept;
 
-  void end_array(OutputArrayType*) const noexcept {}
+  void end_array(OutputArrayType*) const noexcept;
 
-  void end_object(OutputObjectType*) const noexcept {}
+  void end_object(OutputObjectType*) const noexcept;
 
  private:
   template <class T>
@@ -170,4 +129,4 @@ class Writer {
 }  // namespace json
 }  // namespace rfl
 
-#endif  // JSON_PARSER_HPP_
+#endif

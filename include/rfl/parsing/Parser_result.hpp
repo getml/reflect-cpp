@@ -17,7 +17,6 @@ template <class R, class W, class T, class ProcessorsType>
 requires AreReaderAndWriter<R, W, Result<T>>
 struct Parser<R, W, Result<T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
-  using OutputVarType = typename W::OutputVarType;
 
   using ErrorType = NamedTuple<Field<"error", std::string>>;
   using VariantType = std::variant<std::remove_cvref_t<T>, ErrorType>;

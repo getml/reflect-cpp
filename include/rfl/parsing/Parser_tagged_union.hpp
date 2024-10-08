@@ -30,9 +30,6 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
   using InputObjectType = typename R::InputObjectType;
   using InputVarType = typename R::InputVarType;
 
-  using OutputObjectType = typename W::OutputObjectType;
-  using OutputVarType = typename W::OutputVarType;
-
   constexpr static bool no_field_names_ = ProcessorsType::no_field_names_;
 
   using InputObjectOrArrayType =
