@@ -11,11 +11,12 @@ template <class... Ps>
 void write_and_read(const auto& _struct) {
   using T = std::remove_cvref_t<decltype(_struct)>;
   const auto serialized1 = rfl::to_generic<Ps...>(_struct);
+  EXPECT_EQ(rfl::json::write(serialized1), rfl::json::write<Ps...>(_struct));
   const auto res = rfl::from_generic<T, Ps...>(serialized1);
   EXPECT_TRUE(res && true) << "Test failed on read. Error: "
                            << res.error().value().what();
-  const auto serialized2 = rfl::to_generic<Ps...>(res.value());
-  EXPECT_EQ(rfl::json::write(serialized1), rfl::json::write(serialized2));
+  EXPECT_EQ(rfl::json::write(serialized1),
+            rfl::json::write<Ps...>(res.value()));
 }
 
 #endif

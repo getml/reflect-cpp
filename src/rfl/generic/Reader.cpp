@@ -24,12 +24,35 @@ SOFTWARE.
 
 */
 
-// This file include all other source files, so that the user of the library
-// don't need to add multiple source files into their build.
-// Also, this speeds up compile time, compared to multiple separate .cpp files
-// compilation.
+#include "rfl/generic/Reader.hpp"
 
-#include "rfl/Generic.cpp"
-#include "rfl/generic/Reader.cpp"
-#include "rfl/generic/Writer.cpp"
-#include "rfl/parsing/schema/Type.cpp"
+namespace rfl::generic {
+
+rfl::Result<Reader::InputVarType> Reader::get_field_from_array(
+    const size_t _idx, const InputArrayType& _arr) const noexcept {
+  if (_idx >= _arr.size()) {
+    return rfl::Error("Index " + std::to_string(_idx) + " of of bounds.");
+  }
+  return _arr[_idx];
+}
+
+rfl::Result<Reader::InputVarType> Reader::get_field_from_object(
+    const std::string& _name, const InputObjectType& _obj) const noexcept {
+  return _obj.get(_name);
+}
+
+bool Reader::is_empty(const InputVarType& _var) const noexcept {
+  return _var.is_null();
+}
+
+rfl::Result<Reader::InputArrayType> Reader::to_array(
+    const InputVarType& _var) const noexcept {
+  return _var.to_array();
+}
+
+rfl::Result<Reader::InputObjectType> Reader::to_object(
+    const InputVarType& _var) const noexcept {
+  return _var.to_object();
+}
+
+}  // namespace rfl::generic

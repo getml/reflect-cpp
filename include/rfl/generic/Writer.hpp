@@ -18,8 +18,7 @@
 #include "../Variant.hpp"
 #include "../always_false.hpp"
 
-namespace rfl {
-namespace generic {
+namespace rfl::generic {
 
 struct Writer {
   struct OutputArray {
@@ -38,20 +37,11 @@ struct Writer {
 
   ~Writer() = default;
 
-  OutputArrayType array_as_root(const size_t _size) const noexcept {
-    root_ = Generic::Array();
-    return OutputArray{get_if<Generic::Array>(&root_.variant())};
-  }
+  OutputArrayType array_as_root(const size_t _size) const noexcept;
 
-  OutputObjectType object_as_root(const size_t _size) const noexcept {
-    root_ = Generic::Object();
-    return OutputObject{get_if<Generic::Object>(&root_.variant())};
-  }
+  OutputObjectType object_as_root(const size_t _size) const noexcept;
 
-  OutputVarType null_as_root() const noexcept {
-    root_ = Generic::Null{};
-    return root_;
-  }
+  OutputVarType null_as_root() const noexcept;
 
   template <class T>
   OutputVarType value_as_root(const T& _var) const noexcept {
@@ -60,34 +50,18 @@ struct Writer {
   }
 
   OutputArrayType add_array_to_array(const size_t _size,
-                                     OutputArrayType* _parent) const noexcept {
-    _parent->val_->push_back(Generic(Generic::Array()));
-    return OutputArrayType{
-        get_if<Generic::Array>(&_parent->val_->rbegin()->variant())};
-  }
+                                     OutputArrayType* _parent) const noexcept;
 
-  OutputArrayType add_array_to_object(
-      const std::string_view& _name, const size_t _size,
-      OutputObjectType* _parent) const noexcept {
-    _parent->val_->insert(_name, Generic(Generic::Array()));
-    return OutputArrayType{
-        get_if<Generic::Array>(&_parent->val_->rbegin()->second.variant())};
-  }
+  OutputArrayType add_array_to_object(const std::string_view& _name,
+                                      const size_t _size,
+                                      OutputObjectType* _parent) const noexcept;
 
-  OutputObjectType add_object_to_array(
-      const size_t _size, OutputArrayType* _parent) const noexcept {
-    _parent->val_->push_back(Generic(Generic::Object()));
-    return OutputObjectType{
-        get_if<Generic::Object>(&_parent->val_->rbegin()->variant())};
-  }
+  OutputObjectType add_object_to_array(const size_t _size,
+                                       OutputArrayType* _parent) const noexcept;
 
   OutputObjectType add_object_to_object(
       const std::string_view& _name, const size_t _size,
-      OutputObjectType* _parent) const noexcept {
-    _parent->val_->insert(_name, Generic(Generic::Object()));
-    return OutputObjectType{
-        get_if<Generic::Object>(&_parent->val_->rbegin()->second.variant())};
-  }
+      OutputObjectType* _parent) const noexcept;
 
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
@@ -106,16 +80,10 @@ struct Writer {
     return g;
   }
 
-  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept {
-    _parent->val_->push_back(Generic(Generic::Null{}));
-    return Generic::Null{};
-  }
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept;
 
   OutputVarType add_null_to_object(const std::string_view& _name,
-                                   OutputObjectType* _parent) const noexcept {
-    _parent->val_->insert(_name, Generic(Generic::Null{}));
-    return Generic::Null{};
-  }
+                                   OutputObjectType* _parent) const noexcept;
 
   void end_array(OutputArrayType* _arr) const noexcept {}
 
@@ -144,7 +112,6 @@ struct Writer {
   mutable OutputVarType root_;
 };
 
-}  // namespace generic
-}  // namespace rfl
+}  // namespace rfl::generic
 
 #endif

@@ -16,8 +16,7 @@
 #include "../Result.hpp"
 #include "../always_false.hpp"
 
-namespace rfl {
-namespace generic {
+namespace rfl::generic {
 
 struct Reader {
   using InputArrayType = Generic::Array;
@@ -28,21 +27,12 @@ struct Reader {
   static constexpr bool has_custom_constructor = false;
 
   rfl::Result<InputVarType> get_field_from_array(
-      const size_t _idx, const InputArrayType& _arr) const noexcept {
-    if (_idx >= _arr.size()) {
-      return rfl::Error("Index " + std::to_string(_idx) + " of of bounds.");
-    }
-    return _arr[_idx];
-  }
+      const size_t _idx, const InputArrayType& _arr) const noexcept;
 
   rfl::Result<InputVarType> get_field_from_object(
-      const std::string& _name, const InputObjectType& _obj) const noexcept {
-    return _obj.get(_name);
-  }
+      const std::string& _name, const InputObjectType& _obj) const noexcept;
 
-  bool is_empty(const InputVarType& _var) const noexcept {
-    return _var.is_null();
-  }
+  bool is_empty(const InputVarType& _var) const noexcept;
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
@@ -51,9 +41,11 @@ struct Reader {
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       return _var.to_bool();
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-      return static_cast<T>(_var.to_double());
+      return _var.to_double().transform(
+          [](const auto& _v) { return static_cast<T>(_v); });
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      return static_cast<T>(_var.to_int());
+      return _var.to_int().transform(
+          [](const auto& _v) { return static_cast<T>(_v); });
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
@@ -80,15 +72,10 @@ struct Reader {
     return std::nullopt;
   }
 
-  rfl::Result<InputArrayType> to_array(
-      const InputVarType& _var) const noexcept {
-    return _var.to_array();
-  }
+  rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept;
 
   rfl::Result<InputObjectType> to_object(
-      const InputVarType& _var) const noexcept {
-    return _var.to_object();
-  }
+      const InputVarType& _var) const noexcept;
 
   template <class T>
   rfl::Result<T> use_custom_constructor(
@@ -97,7 +84,6 @@ struct Reader {
   }
 };
 
-}  // namespace generic
-}  // namespace rfl
+}  // namespace rfl::generic
 
 #endif
