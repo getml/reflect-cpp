@@ -67,3 +67,5 @@ site
 *.egg-info
 *.pyc
 !people.yml
+!.github/actions/people/action.yml
+!.github/workflows/update-people.yml

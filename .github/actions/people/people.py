@@ -10,7 +10,7 @@ Originally, the logic comes from
 
 import logging
 
-# import subprocess
+import subprocess
 import sys
 from collections import Counter
 from datetime import datetime, timedelta, timezone
@@ -595,23 +595,28 @@ if __name__ == "__main__":
         sys.exit(0)
     people_path.write_text(new_people_content, encoding="utf-8")
 
-    # logging.info("Setting up GitHub Actions git user")
-    # subprocess.run(["git", "config", "user.name", "github-actions"], check=True)
-    # subprocess.run(
-    #     ["git", "config", "user.email", "github-actions@github.com"], check=True
-    # )
+    logging.info("Setting up GitHub Actions git user")
+    subprocess.run(["git", "config", "user.name", "github-actions"], check=True)
+    subprocess.run(
+        ["git", "config", "user.email", "github-actions@github.com"], check=True
+    )
 
-    # branch_name = "people-update"
-    # logging.info(f"Creating a new branch {branch_name}")
-    # subprocess.run(["git", "checkout", "-b", branch_name], check=True)
-    # logging.info("Adding updated file")
-    # subprocess.run(["git", "add", str(people_path)], check=True)
-    # logging.info("Committing updated file")
-    # message = "Update People behind reflect-cpp"
-    # result = subprocess.run(["git", "commit", "-m", message], check=True)
-    # logging.info("Pushing branch")
-    # subprocess.run(["git", "push", "origin", branch_name], check=True)
-    # logging.info("Creating PR")
-    # pr = repo.create_pull(title=message, body=message, base="main", head=branch_name)
-    # logging.info(f"Created PR: {pr.number}")
+    branch_name = "people-update"
+    logging.info(f"Creating a new branch {branch_name}")
+    subprocess.run(["git", "checkout", "-b", branch_name], check=True)
+    logging.info("Adding updated file")
+    subprocess.run(["git", "add", str(people_path)], check=True)
+    logging.info("Committing updated file")
+    message = "Update People information in documentation"
+    result = subprocess.run(["git", "commit", "-m", message], check=True)
+    logging.info("Pushing branch")
+    subprocess.run(["git", "push", "origin", branch_name], check=True)
+    logging.info("Creating PR")
+    pr = repo.create_pull(
+        title=message,
+        body=message,
+        base="feature/docs_migration_mkdocs",
+        head=branch_name,
+    )
+    logging.info(f"Created PR: {pr.number}")
     logging.info("Finished")
