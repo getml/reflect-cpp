@@ -74,17 +74,6 @@ class Variant {
     move_from_type(std::forward<T>(_t));
   }
 
-  // TODO
-  /*template <
-      class T,
-      typename std::enable_if<
-          internal::variant::is_convertible_to<T, AlternativeTypes...>() &&
-              !internal::variant::is_alternative_type<T, AlternativeTypes...>(),
-          bool>::type = true>
-  Variant(const T& _t) {
-    copy_from_other_type(_t);
-  }*/
-
   ~Variant() { destroy_if_necessary(); }
 
   /// Emplaces a new element into the variant.
@@ -128,18 +117,6 @@ class Variant {
     move_from_type(std::forward<T>(_t));
     return *this;
   }
-
-  /// Assigns the underlying object.
-  // TODO
-  /*template <
-      class T,
-      typename std::enable_if<
-          internal::variant::is_convertible_to<T, AlternativeTypes...>() &&
-              !internal::variant::is_alternative_type<T, AlternativeTypes...>(),
-          bool>::type = true>
-  Variant<AlternativeTypes...>& operator=(const T& _t) {
-    copy_from_other_type(_t);
-  }*/
 
   /// Assigns the underlying object.
   Variant<AlternativeTypes...>& operator=(
