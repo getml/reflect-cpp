@@ -23,9 +23,6 @@ struct Parser<R, W, std::array<T, _size>, ProcessorsType> {
   using InputArrayType = typename R::InputArrayType;
   using InputVarType = typename R::InputVarType;
 
-  using OutputArrayType = typename W::OutputArrayType;
-  using OutputVarType = typename W::OutputVarType;
-
   using ParentType = Parent<W>;
 
   static Result<std::array<T, _size>> read(const R& _r,

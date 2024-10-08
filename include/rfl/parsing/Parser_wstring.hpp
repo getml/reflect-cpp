@@ -18,7 +18,6 @@ requires AreReaderAndWriter<R, W, std::wstring>
 struct Parser<R, W, std::wstring, ProcessorsType> {
  public:
   using InputVarType = typename R::InputVarType;
-  using OutputVarType = typename W::OutputVarType;
 
   using ParentType = Parent<W>;
 

@@ -18,7 +18,6 @@ template <class R, class W, class T, class ProcessorsType>
 requires AreReaderAndWriter<R, W, T*>
 struct Parser<R, W, T*, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
-  using OutputVarType = typename W::OutputVarType;
 
   using ParentType = Parent<W>;
 

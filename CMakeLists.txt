@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.23)
 
 option(REFLECTCPP_BUILD_SHARED "Build shared library" ${BUILD_SHARED_LIBS})
 
+option(REFLECTCPP_JSON "Enable JSON support" ON) # enabled by default
 option(REFLECTCPP_BSON "Enable BSON support" OFF)
 option(REFLECTCPP_CBOR "Enable CBOR support" OFF)
 option(REFLECTCPP_FLEXBUFFERS "Enable flexbuffers support" OFF)
@@ -17,6 +18,7 @@ option(REFLECTCPP_USE_BUNDLED_DEPENDENCIES "Use the bundled dependencies" ON)
 
 set(REFLECTCPP_USE_VCPKG_DEFAULT OFF)
 if(REFLECTCPP_BUILD_BENCHMARKS)
+    set(REFLECTCPP_JSON ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_BSON ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_CBOR ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_FLEXBUFFERS ON CACHE BOOL "" FORCE)
@@ -25,7 +27,9 @@ if(REFLECTCPP_BUILD_BENCHMARKS)
     set(REFLECTCPP_TOML ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_YAML ON CACHE BOOL "" FORCE)
 endif()
-if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_BUILD_BENCHMARKS OR REFLECTCPP_BSON OR REFLECTCPP_CBOR OR REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_MSGPACK OR REFLECTCPP_XML OR REFLECTCPP_TOML OR REFLECTCPP_YAML)
+if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_BUILD_BENCHMARKS OR
+    (REFLECTCPP_JSON AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES) OR
+    REFLECTCPP_BSON OR REFLECTCPP_CBOR OR REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_MSGPACK OR REFLECTCPP_XML OR REFLECTCPP_TOML OR REFLECTCPP_YAML)
     # enable vcpkg per default if require features other than JSON
     set(REFLECTCPP_USE_VCPKG_DEFAULT ON)
 endif()
@@ -40,58 +44,71 @@ project(reflectcpp LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
-if(REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
-    if (REFLECTCPP_BUILD_SHARED)
-        add_library(reflectcpp SHARED)
-    else()
-        add_library(reflectcpp STATIC)
-    endif()
-
-    target_sources(reflectcpp PRIVATE src/reflectcpp.cpp src/yyjson.c)
-    set_source_files_properties(src/yyjson.c PROPERTIES LANGUAGE CXX)
-
-    target_compile_features(reflectcpp PUBLIC cxx_std_20)
-
-    if (MSVC)
-        target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall>)
-    else()
-        target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall -Wextra>)
-    endif()
-
-    target_include_directories(
-        reflectcpp PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rfl/thirdparty>)
+if (REFLECTCPP_BUILD_SHARED)
+    add_library(reflectcpp SHARED)
 else()
-    if (REFLECTCPP_BUILD_SHARED)
-        add_library(reflectcpp SHARED)
-    else()
-        add_library(reflectcpp STATIC)
-    endif()
-
-    target_sources(reflectcpp PRIVATE src/reflectcpp.cpp)
-
-    target_include_directories(
-        reflectcpp PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>)
-
-    target_compile_features(reflectcpp PUBLIC cxx_std_20)
-
-    find_package(ctre CONFIG REQUIRED)
-    find_package(yyjson CONFIG REQUIRED)
-    target_link_libraries(reflectcpp INTERFACE ctre::ctre yyjson::yyjson)
+    add_library(reflectcpp STATIC)
 endif()
 
-set_target_properties(reflectcpp PROPERTIES LINKER_LANGUAGE CXX)
+if (MSVC)
+    target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall>)
+else()
+    target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall -Wextra>)
+endif()
+
+target_compile_features(reflectcpp PUBLIC cxx_std_20)
+
+set(REFLECT_CPP_SOURCES
+    src/reflectcpp.cpp
+)
+
+target_include_directories(
+    reflectcpp PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+
+if (REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
+    target_include_directories(
+        reflectcpp PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rfl/thirdparty>)
+else ()
+    find_package(ctre CONFIG REQUIRED)
+    target_link_libraries(reflectcpp INTERFACE ctre::ctre)
+endif ()
+
+if (REFLECTCPP_JSON)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_json.cpp
+    )
+    if (REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
+        list(APPEND REFLECT_CPP_SOURCES
+            src/yyjson.c
+        )
+        set_source_files_properties(src/yyjson.c PROPERTIES LANGUAGE CXX)
+
+        target_include_directories(
+            reflectcpp PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rfl/thirdparty>)
+    else ()
+        find_package(yyjson CONFIG REQUIRED)
+        target_link_libraries(reflectcpp INTERFACE yyjson::yyjson)
+    endif ()
+endif ()
 
 if (REFLECTCPP_BSON)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_bson.cpp
+    )
     find_package(bson-1.0 CONFIG REQUIRED)
     target_link_libraries(reflectcpp PRIVATE $<IF:$<TARGET_EXISTS:mongo::bson_static>,mongo::bson_static,mongo::bson_shared>)
 endif ()
 
 if (REFLECTCPP_CBOR)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_cbor.cpp
+    )
+    target_include_directories(reflectcpp SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
+    target_include_directories(reflectcpp SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include/tinycbor")
     if (MSVC)
         target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/tinycbor${CMAKE_STATIC_LIBRARY_SUFFIX}")
     else ()
@@ -100,11 +117,17 @@ if (REFLECTCPP_CBOR)
 endif ()
 
 if (REFLECTCPP_FLEXBUFFERS)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_flexbuf.cpp
+    )
     find_package(flatbuffers CONFIG REQUIRED)
     target_link_libraries(reflectcpp INTERFACE flatbuffers::flatbuffers)
 endif ()
 
 if (REFLECTCPP_MSGPACK)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_msgpack.cpp
+    )
     find_package(msgpack-c CONFIG REQUIRED)
     if (MSVC)
         target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/msgpack-c${CMAKE_STATIC_LIBRARY_SUFFIX}")
@@ -114,6 +137,9 @@ if (REFLECTCPP_MSGPACK)
 endif ()
 
 if (REFLECTCPP_TOML)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_toml.cpp
+    )
     if (MSVC)
         target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/tomlplusplus${CMAKE_STATIC_LIBRARY_SUFFIX}")
     else ()
@@ -122,14 +148,23 @@ if (REFLECTCPP_TOML)
 endif()
 
 if (REFLECTCPP_XML)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_xml.cpp
+    )
     find_package(pugixml CONFIG REQUIRED)
     target_link_libraries(reflectcpp INTERFACE pugixml::pugixml)
 endif ()
 
 if (REFLECTCPP_YAML)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_yaml.cpp
+    )
     find_package(yaml-cpp CONFIG REQUIRED)
     target_link_libraries(reflectcpp INTERFACE yaml-cpp::yaml-cpp)
 endif ()
+
+set_target_properties(reflectcpp PROPERTIES LINKER_LANGUAGE CXX)
+target_sources(reflectcpp PRIVATE ${REFLECT_CPP_SOURCES})
 
 if (REFLECTCPP_BUILD_TESTS)
     if (MSVC)

@@ -75,4 +75,4 @@ std::string write(const auto& _obj, const std::string& _indent = "    ") {
 }  // namespace xml
 }  // namespace rfl
 
-#endif  // XML_PARSER_HPP_
+#endif

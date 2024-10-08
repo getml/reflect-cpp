@@ -24,9 +24,6 @@ struct TupleParser {
   using InputArrayType = typename R::InputArrayType;
   using InputVarType = typename R::InputVarType;
 
-  using OutputArrayType = typename W::OutputArrayType;
-  using OutputVarType = typename W::OutputVarType;
-
   using ParentType = Parent<W>;
 
   static Result<TupleType> read(const R& _r,

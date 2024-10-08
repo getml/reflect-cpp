@@ -44,28 +44,12 @@ struct Reader {
   static constexpr bool has_custom_constructor = has_from_flexbuf<T>::value;
 
   rfl::Result<InputVarType> get_field_from_array(
-      const size_t _idx, const InputArrayType& _arr) const noexcept {
-    if (_idx >= _arr.size()) {
-      return rfl::Error("Index " + std::to_string(_idx) + " of of bounds.");
-    }
-    return _arr[_idx];
-  }
+      const size_t _idx, const InputArrayType& _arr) const noexcept;
 
   rfl::Result<InputVarType> get_field_from_object(
-      const std::string& _name, const InputObjectType& _obj) const noexcept {
-    const auto keys = _obj.Keys();
-    for (size_t i = 0; i < keys.size(); ++i) {
-      if (_name == keys[i].AsString().c_str()) {
-        return _obj.Values()[i];
-      }
-    }
-    return rfl::Error("Map does not contain any element called '" + _name +
-                      "'.");
-  }
+      const std::string& _name, const InputObjectType& _obj) const noexcept;
 
-  bool is_empty(const InputVarType& _var) const noexcept {
-    return _var.IsNull();
-  }
+  bool is_empty(const InputVarType& _var) const noexcept;
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
@@ -130,21 +114,10 @@ struct Reader {
     return std::nullopt;
   }
 
-  rfl::Result<InputArrayType> to_array(
-      const InputVarType& _var) const noexcept {
-    if (!_var.IsVector()) {
-      return rfl::Error("Could not cast to Vector.");
-    }
-    return _var.AsVector();
-  }
+  rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept;
 
   rfl::Result<InputObjectType> to_object(
-      const InputVarType& _var) const noexcept {
-    if (!_var.IsMap()) {
-      return rfl::Error("Could not cast to Map!");
-    }
-    return _var.AsMap();
-  }
+      const InputVarType& _var) const noexcept;
 
   template <class T>
   rfl::Result<T> use_custom_constructor(

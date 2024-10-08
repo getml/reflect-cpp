@@ -21,7 +21,6 @@ struct Parser<R, W,
               internal::Skip<T, _skip_serialization, _skip_deserialization>,
               ProcessorsType> {
   using InputVarType = typename R::InputVarType;
-  using OutputVarType = typename W::OutputVarType;
 
   static Result<internal::Skip<T, _skip_serialization, _skip_deserialization>>
   read(const R& _r, const InputVarType& _var) noexcept {

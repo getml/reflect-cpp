@@ -19,7 +19,6 @@ template <class R, class W, class T, internal::StringLiteral _name,
 requires AreReaderAndWriter<R, W, Rename<_name, T>>
 struct Parser<R, W, Rename<_name, T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
-  using OutputVarType = typename W::OutputVarType;
 
   static Result<Rename<_name, T>> read(const R& _r,
                                        const InputVarType& _var) noexcept {

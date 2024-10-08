@@ -10,6 +10,7 @@
 #include "../Result.hpp"
 #include "../Tuple.hpp"
 #include "../internal/is_array.hpp"
+#include "Parser_base.hpp"
 
 namespace rfl::parsing {
 
