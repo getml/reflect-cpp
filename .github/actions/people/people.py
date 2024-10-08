@@ -4,12 +4,13 @@ The script is borrowed from the
 [pydantic project](https://github.com/pydantic/pydantic/blob/main/.github/actions/people/people.py),
 and modified to work with the reflect-cpp repository.
 
-Originally, the logic was inspired by that of @tiangolo's
-[FastAPI people script](https://github.com/tiangolo/fastapi/blob/master/.github/actions/people/app/main.py).
+Originally, the logic comes from
+[FastAPI](https://github.com/tiangolo/fastapi/blob/master/.github/actions/people/app/main.py).
 """
 
 import logging
-import subprocess
+
+# import subprocess
 import sys
 from collections import Counter
 from datetime import datetime, timedelta, timezone
@@ -27,7 +28,7 @@ github_graphql_url = "https://api.github.com/graphql"
 
 discussions_query = """
 query Q($after: String) {
-  repository(name: "pydantic", owner: "samuelcolvin") {
+  repository(name: "reflect-cpp", owner: "getml") {
     discussions(first: 100, after: $after) {
       edges {
         cursor
@@ -70,7 +71,7 @@ query Q($after: String) {
 
 issues_query = """
 query Q($after: String) {
-  repository(name: "pydantic", owner: "samuelcolvin") {
+  repository(name: "reflect-cpp", owner: "getml") {
     issues(first: 100, after: $after) {
       edges {
         cursor
@@ -103,7 +104,7 @@ query Q($after: String) {
 
 prs_query = """
 query Q($after: String) {
-  repository(name: "pydantic", owner: "samuelcolvin") {
+  repository(name: "reflect-cpp", owner: "getml") {
     pullRequests(first: 100, after: $after) {
       edges {
         cursor
@@ -293,7 +294,7 @@ class PRsResponse(BaseModel):
 
 class Settings(BaseSettings):
     input_token: SecretStr
-    github_repository: str = "pydantic/pydantic"
+    github_repository: str = "getml/reflect-cpp"
     request_timeout: int = 30
 
 
@@ -529,17 +530,8 @@ if __name__ == "__main__":
         settings=settings
     )
     authors = {**question_authors, **pr_authors}
-    maintainers_logins = {
-        "samuelcolvin",
-        "adriangb",
-        "dmontagu",
-        "hramezani",
-        "Kludex",
-        "davidhewitt",
-        "sydney-runkle",
-        "alexmojaki",
-    }
-    bot_names = {"codecov", "github-actions", "pre-commit-ci", "dependabot"}
+    maintainers_logins = {"liuzicheng1987", "Urfoex"}
+    bot_names = {"github-actions"}
     maintainers = []
     for login in maintainers_logins:
         user = authors[login]
@@ -553,10 +545,10 @@ if __name__ == "__main__":
             }
         )
 
-    min_count_expert = 10
-    min_count_last_month = 3
-    min_count_contributor = 4
-    min_count_reviewer = 4
+    min_count_expert = 1
+    min_count_last_month = 1
+    min_count_contributor = 1
+    min_count_reviewer = 1
     skip_users = maintainers_logins | bot_names
     experts = get_top_users(
         counter=question_commentors,
@@ -583,19 +575,6 @@ if __name__ == "__main__":
         skip_users=skip_users,
     )
 
-    extra_experts = [
-        {
-            "login": "ybressler",
-            "count": None,
-            "avatarUrl": "https://avatars.githubusercontent.com/u/40807730?v=4",
-            "url": "https://github.com/ybressler",
-        },
-    ]
-    expert_logins = {e["login"] for e in experts}
-    experts.extend(
-        [expert for expert in extra_experts if expert["login"] not in expert_logins]
-    )
-
     people = {
         "maintainers": maintainers,
         "experts": experts,
@@ -604,32 +583,35 @@ if __name__ == "__main__":
         "top_reviewers": top_reviewers,
     }
     people_path = Path("./docs/plugins/people.yml")
+    if not people_path.exists():
+        people_path.parent.mkdir(parents=True, exist_ok=True)
+        people_path.touch()
     people_old_content = people_path.read_text(encoding="utf-8")
     new_people_content = yaml.dump(
         people, sort_keys=False, width=200, allow_unicode=True
     )
     if people_old_content == new_people_content:
-        logging.info("The Pydantic People data hasn't changed, finishing.")
+        logging.info("The people data hasn't changed, finishing.")
         sys.exit(0)
     people_path.write_text(new_people_content, encoding="utf-8")
 
-    logging.info("Setting up GitHub Actions git user")
-    subprocess.run(["git", "config", "user.name", "github-actions"], check=True)
-    subprocess.run(
-        ["git", "config", "user.email", "github-actions@github.com"], check=True
-    )
+    # logging.info("Setting up GitHub Actions git user")
+    # subprocess.run(["git", "config", "user.name", "github-actions"], check=True)
+    # subprocess.run(
+    #     ["git", "config", "user.email", "github-actions@github.com"], check=True
+    # )
 
-    branch_name = "pydantic-people-update"
-    logging.info(f"Creating a new branch {branch_name}")
-    subprocess.run(["git", "checkout", "-b", branch_name], check=True)
-    logging.info("Adding updated file")
-    subprocess.run(["git", "add", str(people_path)], check=True)
-    logging.info("Committing updated file")
-    message = "👥 Update Pydantic People"
-    result = subprocess.run(["git", "commit", "-m", message], check=True)
-    logging.info("Pushing branch")
-    subprocess.run(["git", "push", "origin", branch_name], check=True)
-    logging.info("Creating PR")
-    pr = repo.create_pull(title=message, body=message, base="main", head=branch_name)
-    logging.info(f"Created PR: {pr.number}")
+    # branch_name = "people-update"
+    # logging.info(f"Creating a new branch {branch_name}")
+    # subprocess.run(["git", "checkout", "-b", branch_name], check=True)
+    # logging.info("Adding updated file")
+    # subprocess.run(["git", "add", str(people_path)], check=True)
+    # logging.info("Committing updated file")
+    # message = "Update People behind reflect-cpp"
+    # result = subprocess.run(["git", "commit", "-m", message], check=True)
+    # logging.info("Pushing branch")
+    # subprocess.run(["git", "push", "origin", branch_name], check=True)
+    # logging.info("Creating PR")
+    # pr = repo.create_pull(title=message, body=message, base="main", head=branch_name)
+    # logging.info(f"Created PR: {pr.number}")
     logging.info("Finished")

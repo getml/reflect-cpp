@@ -74,9 +74,9 @@ extra:
 #  absolute_links: warn
 #  unrecognized_links: warn
 
-    #extra_css:
+extra_css:
+  - 'assets/stylesheets/tweaks.css'
     #  - 'extra/terminal.css'
-    #  - 'extra/tweaks.css'
     #extra_javascript:
     #  - 'extra/feedback.js'
     #  - 'extra/fluff.js'
@@ -113,6 +113,7 @@ nav:
   - YAML: concepts/supported_formats/yaml.md
   - Custom Format: concepts/supported_formats/supporting_your_own_format.md
 - Reflective Programming: ./reflective_programming.md
+- People: people.md
 
 markdown_extensions:
 - tables
@@ -236,3 +237,6 @@ plugins:
             #      'blog/pydantic-v2-final.md': 'https://blog.pydantic.dev/blog/2023/06/30/pydantic-v2-is-here/'
             #      'blog/pydantic-v2.md': 'https://blog.pydantic.dev/blog/2022/07/10/pydantic-v2-plan/'
             #- external-markdown:
+
+hooks:
+- 'docs/plugins/main.py'

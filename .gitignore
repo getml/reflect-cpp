@@ -65,3 +65,5 @@ site
 !pyproject.toml
 !mkdocs.yaml
 *.egg-info
+*.pyc
+!people.yml
