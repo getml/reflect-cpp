@@ -41,6 +41,10 @@ Generic::Generic(ReflectionType&& _value) noexcept
 
 Generic::~Generic() = default;
 
+bool Generic::is_null() const noexcept {
+  return std::get_if<Null>(&value_) && true;
+}
+
 Generic& Generic::operator=(const ReflectionType& _value) {
   value_ = _value;
   return *this;
@@ -66,7 +70,7 @@ Result<Generic::Array> Generic::to_array() const noexcept {
 }
 
 Result<bool> Generic::to_bool() const noexcept {
-  if (const auto* ptr = std::get_if<bool>(&value_)) {
+  if (const bool* ptr = std::get_if<bool>(&value_)) {
     return *ptr;
   } else {
     return Error(
@@ -75,7 +79,7 @@ Result<bool> Generic::to_bool() const noexcept {
 }
 
 Result<double> Generic::to_double() const noexcept {
-  if (const auto* ptr = std::get_if<double>(&value_)) {
+  if (const double* ptr = std::get_if<double>(&value_)) {
     return *ptr;
   } else {
     return Error(
@@ -84,7 +88,7 @@ Result<double> Generic::to_double() const noexcept {
 }
 
 Result<int> Generic::to_int() const noexcept {
-  if (const auto* ptr = std::get_if<int>(&value_)) {
+  if (const int* ptr = std::get_if<int>(&value_)) {
     return *ptr;
   } else {
     return Error(
@@ -99,6 +103,16 @@ Result<Generic::Object> Generic::to_object() const noexcept {
     return Error(
         "rfl::Generic: Could not cast the underlying value to an "
         "rfl::Generic::Object.");
+  }
+}
+
+Result<Generic::Null> Generic::to_null() const noexcept {
+  if (const auto* ptr = std::get_if<Null>(&value_)) {
+    return *ptr;
+  } else {
+    return Error(
+        "rfl::Generic: Could not cast the underlying value to an "
+        "rfl::Generic::Null.");
   }
 }
 

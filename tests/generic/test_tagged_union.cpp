@@ -1,13 +1,12 @@
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
 
-namespace test_rfl_variant_get_if {
+namespace test_tagged_union {
 
 struct Circle {
   double radius;
@@ -22,11 +21,10 @@ struct Square {
   double width;
 };
 
-using Shapes = rfl::Variant<Circle, Rectangle, std::unique_ptr<Square>>;
+using Shapes = rfl::TaggedUnion<"shape", Circle, Square, Rectangle>;
 
-TEST(json, test_rfl_variant_get_if) {
+TEST(generic, test_tagged_union) { 
   const Shapes r = Rectangle{.height = 10, .width = 5};
-  EXPECT_TRUE(rfl::get_if<1>(&r) && true);
-  EXPECT_FALSE(rfl::get_if<0>(&r) && true);
+  write_and_read(r);
 }
-}  // namespace test_rfl_variant_get_if
+}  // namespace test_tagged_union

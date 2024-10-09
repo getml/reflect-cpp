@@ -128,6 +128,16 @@ class Object {
     insert(std::make_pair(std::move(_k), std::move(_v)));
   }
 
+  /// Inserts a new element at the end.
+  void insert(const std::string_view& _k, const T& _v) {
+    insert(std::make_pair(std::string(_k), _v));
+  }
+
+  /// Inserts a new element at the end.
+  void insert(const std::string_view& _k, T&& _v) {
+    insert(std::make_pair(std::string(_k), std::move(_v)));
+  }
+
   /// Alias for insert that primarily exists for compatability with standard
   /// containers.
   template <class... Args>
