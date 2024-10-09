@@ -26,6 +26,7 @@ jobs:
           ./build/tests/bson/reflect-cpp-bson-tests
           ./build/tests/cbor/reflect-cpp-cbor-tests
           ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
+          ./build/tests/generic/reflect-cpp-generic-tests
           ./build/tests/json/reflect-cpp-json-tests
           ./build/tests/json_c_arrays_and_inheritance/reflect-cpp-json-c-arrays-and-inheritance-tests
           ./build/tests/msgpack/reflect-cpp-msgpack-tests
