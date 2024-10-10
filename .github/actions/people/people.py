@@ -617,10 +617,8 @@ if __name__ == "__main__":
     ).stdout.strip()
 
     if remote_branch_exists:
-        logging.info("Pulling latest changes from remote branch")
-        subprocess.run(["git", "pull", "--rebase", "origin", branch_name], check=True)
-    else:
-        logging.info(f"No remote branch named {branch_name} exists. Skipping pull.")
+        logging.info(f"Remote branch {branch_name} exists. Deleting it.")
+        subprocess.run(["git", "push", "origin", "--delete", branch_name], check=True)
 
     logging.info("Pushing branch")
     subprocess.run(["git", "push", "origin", branch_name], check=True)
