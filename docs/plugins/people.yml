@@ -1,14 +1,14 @@
 maintainers:
-- login: Urfoex
-  answers: 0
-  prs: 1
-  avatarUrl: https://avatars.githubusercontent.com/u/1561354?v=4
-  url: https://github.com/Urfoex
 - login: liuzicheng1987
   answers: 0
   prs: 50
   avatarUrl: https://avatars.githubusercontent.com/u/19538706?u=1ca794b4e5aa9bbe50277f249e701eea86b0fdd3&v=4
   url: https://github.com/liuzicheng1987
+- login: Urfoex
+  answers: 0
+  prs: 1
+  avatarUrl: https://avatars.githubusercontent.com/u/1561354?v=4
+  url: https://github.com/Urfoex
 experts: []
 last_month_active: []
 top_contributors:
