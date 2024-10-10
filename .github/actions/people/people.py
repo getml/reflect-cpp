@@ -609,6 +609,19 @@ if __name__ == "__main__":
     logging.info("Committing updated file")
     message = "Update People information in documentation"
     result = subprocess.run(["git", "commit", "-m", message], check=True)
+
+    remote_branch_exists = subprocess.run(
+        ["git", "ls-remote", "--heads", "origin", branch_name],
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+    if remote_branch_exists:
+        logging.info("Pulling latest changes from remote branch")
+        subprocess.run(["git", "pull", "--rebase", "origin", branch_name], check=True)
+    else:
+        logging.info(f"No remote branch named {branch_name} exists. Skipping pull.")
+
     logging.info("Pushing branch")
     subprocess.run(["git", "push", "origin", branch_name], check=True)
     logging.info("Creating PR")
