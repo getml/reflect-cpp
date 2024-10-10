@@ -1,3 +1,5 @@
+name: 'Update People Action'  
+description: 'Retrieves people information from GitHub, saves it in people.yaml and opens a PR'
 inputs:
   token:
     description: 'User token for accessing the GitHub API. Can be passed in using {{ secrets.GITHUB_TOKEN }}'

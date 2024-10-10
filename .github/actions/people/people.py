@@ -519,7 +519,7 @@ def get_top_users(
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    settings = Settings()
+    settings = Settings()  # type: ignore[reportCallIssue]
     logging.info(f"Using config: {settings.model_dump_json()}")
     g = Github(settings.input_token.get_secret_value())
     repo = g.get_repo(settings.github_repository)
@@ -612,9 +612,16 @@ if __name__ == "__main__":
     logging.info("Pushing branch")
     subprocess.run(["git", "push", "origin", branch_name], check=True)
     logging.info("Creating PR")
+    body = """
+    This PR is created automatically by `update-people` GitHub workflow to update 
+    the People information in the documentation. The workflow runs every first day 
+    of a month.
+    """
     pr = repo.create_pull(
         title=message,
-        body=message,
+        body=body,
+        # base branch needs to be changed to main once
+        # feature/docs_migration_mkdocs is merged into main
         base="feature/docs_migration_mkdocs",
         head=branch_name,
     )
