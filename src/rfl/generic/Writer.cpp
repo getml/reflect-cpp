@@ -41,7 +41,7 @@ Writer::OutputObjectType Writer::object_as_root(
 }
 
 Writer::OutputVarType Writer::null_as_root() const noexcept {
-  root_ = Generic::Null{};
+  root_ = Generic::Null;
   return root_;
 }
 
@@ -77,14 +77,14 @@ Writer::OutputObjectType Writer::add_object_to_object(
 
 Writer::OutputVarType Writer::add_null_to_array(
     OutputArrayType* _parent) const noexcept {
-  _parent->val_->push_back(Generic(Generic::Null{}));
-  return Generic::Null{};
+  _parent->val_->push_back(Generic(Generic::Null));
+  return Generic::Null;
 }
 
 Writer::OutputVarType Writer::add_null_to_object(
     const std::string_view& _name, OutputObjectType* _parent) const noexcept {
-  _parent->val_->insert(_name, Generic(Generic::Null{}));
-  return Generic::Null{};
+  _parent->val_->insert(_name, Generic(Generic::Null));
+  return Generic::Null;
 }
 
 }  // namespace rfl::generic

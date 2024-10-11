@@ -34,23 +34,33 @@ Generic::Generic(Generic&& _other) noexcept = default;
 
 Generic::Generic(const Generic& _other) = default;
 
-Generic::Generic(const ReflectionType& _value) : value_(_value) {}
+Generic::Generic(const VariantType& _value) : value_(_value) {}
 
-Generic::Generic(ReflectionType&& _value) noexcept
-    : value_(std::move(_value)) {}
+Generic::Generic(VariantType&& _value) noexcept : value_(std::move(_value)) {}
+
+Generic::Generic(const ReflectionType& _r) : value_(from_reflection_type(_r)) {}
 
 Generic::~Generic() = default;
 
-bool Generic::is_null() const noexcept {
-  return std::get_if<Null>(&value_) && true;
+Generic::VariantType Generic::from_reflection_type(
+    const ReflectionType& _r) noexcept {
+  if (!_r) {
+    return std::nullopt;
+  } else {
+    return std::visit([](const auto& _v) -> VariantType { return _v; }, *_r);
+  }
 }
 
-Generic& Generic::operator=(const ReflectionType& _value) {
+bool Generic::is_null() const noexcept {
+  return std::get_if<std::nullopt_t>(&value_) && true;
+}
+
+Generic& Generic::operator=(const VariantType& _value) {
   value_ = _value;
   return *this;
 }
 
-Generic& Generic::operator=(ReflectionType&& _value) noexcept {
+Generic& Generic::operator=(VariantType&& _value) noexcept {
   value_ = std::move(_value);
   return *this;
 }
@@ -58,6 +68,11 @@ Generic& Generic::operator=(ReflectionType&& _value) noexcept {
 Generic& Generic::operator=(const Generic& _other) = default;
 
 Generic& Generic::operator=(Generic&& _other) = default;
+
+Generic::ReflectionType Generic::reflection() const noexcept {
+  return std::visit([](const auto& _v) -> ReflectionType { return _v; },
+                    value_);
+}
 
 Result<Generic::Array> Generic::to_array() const noexcept {
   if (const auto* ptr = std::get_if<Array>(&value_)) {
@@ -106,12 +121,12 @@ Result<Generic::Object> Generic::to_object() const noexcept {
   }
 }
 
-Result<Generic::Null> Generic::to_null() const noexcept {
-  if (const auto* ptr = std::get_if<Null>(&value_)) {
+Result<std::nullopt_t> Generic::to_null() const noexcept {
+  if (const auto* ptr = std::get_if<std::nullopt_t>(&value_)) {
     return *ptr;
   } else {
     return Error(
-        "rfl::Generic: Could not cast the underlying value to an "
+        "rfl::Generic: Could not cast the underlying value to "
         "rfl::Generic::Null.");
   }
 }
