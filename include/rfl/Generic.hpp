@@ -2,6 +2,7 @@
 #define RFL_GENERIC_HPP_
 
 #include <optional>
+#include <ostream>
 #include <string>
 #include <variant>
 #include <vector>
@@ -142,6 +143,12 @@ inline Result<int> to_int(const Generic& _g) noexcept { return _g.to_int(); }
 /// rfl::Error, if the underlying value is not an rfl::Generic::Object.
 inline Result<Generic::Object> to_object(const Generic& _g) noexcept {
   return _g.to_object();
+}
+
+/// Casts the underlying value to a double or returns an rfl::Error, if the
+/// underlying value is not a double.
+inline Result<std::nullopt_t> to_null(const Generic& _g) noexcept {
+  return _g.to_null();
 }
 
 /// Casts the underlying value to a string or returns an rfl::Error, if the
