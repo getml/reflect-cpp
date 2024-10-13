@@ -16,8 +16,8 @@ template <class TupleType, unsigned long _size, int _i>
 void call_destructor_on_one_tuple_element_if_necessary(const size_t _num_set,
                                                        TupleType* _tup) {
   using FieldType = tuple_element_t<_i, TupleType>;
-  using OriginalType = std::remove_cvref_t<FieldType>;
-  using ValueType = std::remove_cvref_t<std::remove_pointer_t<FieldType>>;
+  using OriginalType = std::remove_cv_t<FieldType>;
+  using ValueType = std::remove_cv_t<std::remove_pointer_t<FieldType>>;
   if constexpr (!std::is_array_v<ValueType> &&
                 std::is_destructible_v<ValueType>) {
     if (_i < _num_set) {

@@ -306,7 +306,7 @@ class Result {
 
   void destroy() {
     if (success_) {
-      if constexpr (std::is_destructible_v<T> /*&& !internal::is_array_v<T>*/) {
+      if constexpr (std::is_destructible_v<std::remove_cv_t<T>>) {
         get_t().~T();
       }
     } else {

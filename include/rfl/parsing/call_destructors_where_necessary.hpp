@@ -14,7 +14,7 @@ void call_destructor_on_array(const size_t _size, T* _ptr) {
   for (size_t i = 0; i < _size; ++i) {
     if constexpr (std::is_array_v<T>) {
       call_destructor_on_array(sizeof(*_ptr) / sizeof(**_ptr), *(_ptr + i));
-    } else if constexpr (std::is_destructible_v<std::remove_const_t<T>>) {
+    } else if constexpr (std::is_destructible_v<std::remove_cv_t<T>>) {
       (_ptr + i)->~T();
     }
   }
@@ -24,7 +24,7 @@ template <class ViewType, unsigned long _size, int _i>
 void call_destructor_on_one_if_necessary(const std::array<bool, _size>& _set,
                                          ViewType* _view) {
   using FieldType = tuple_element_t<_i, typename ViewType::Fields>;
-  using OriginalType = std::remove_cvref_t<typename FieldType::Type>;
+  using OriginalType = std::remove_cv_t<typename FieldType::Type>;
   using ValueType =
       std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
   if constexpr (!std::is_array_v<ValueType> &&
@@ -32,12 +32,6 @@ void call_destructor_on_one_if_necessary(const std::array<bool, _size>& _set,
                 std::is_destructible_v<ValueType>) {
     if (std::get<_i>(_set)) {
       rfl::get<_i>(*_view)->~ValueType();
-    }
-  } else if constexpr (!std::is_array_v<ValueType> &&
-                       !std::is_pointer_v<OriginalType> &&
-                       std::is_destructible_v<ValueType>) {
-    if (std::get<_i>(_set)) {
-      rfl::get<_i>(*_view).~ValueType();
     }
   } else if constexpr (std::is_array_v<ValueType>) {
     if (std::get<_i>(_set)) {
