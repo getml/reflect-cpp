@@ -7,6 +7,8 @@ add_executable(
     ${SOURCES}
     "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/src/gtest_main.cc"
 )
+target_precompile_headers(reflect-cpp-json-c-arrays-and-inheritance-tests PRIVATE [["rfl.hpp"]] <iostream> <string> <functional> <gtest/gtest.h>)
+
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DREFLECT_CPP_C_ARRAYS_OR_INHERITANCE")
 

@@ -46,15 +46,6 @@ class ViewReaderWithStrippedFieldNames {
     return std::nullopt;
   }
 
-  /// Because of the way we have allocated the fields, we need to manually
-  /// trigger the destructors.
-  void call_destructors_where_necessary() const {
-    [&]<int... is>(std::integer_sequence<int, is...>) {
-      (call_destructor_on_one_if_necessary<is>(), ...);
-    }
-    (std::make_integer_sequence<int, size_>());
-  }
-
  private:
   template <int i>
   static void assign_if_field_is_field_i(const R& _r, const auto& _var,
@@ -89,39 +80,6 @@ class ViewReaderWithStrippedFieldNames {
                                 std::integer_sequence<int, is...>) {
     (assign_if_field_is_field_i<is>(_r, _var, _view, _errors, _found, _set, _i),
      ...);
-  }
-
-  // TODO: Unnecessary code duplication.
-  template <class T>
-  static void call_destructor_on_array(const size_t _size, T* _ptr) {
-    for (size_t i = 0; i < _size; ++i) {
-      if constexpr (std::is_array_v<T>) {
-        call_destructor_on_array(sizeof(*_ptr) / sizeof(**_ptr), *(_ptr + i));
-      } else if constexpr (std::is_destructible_v<T>) {
-        (_ptr + i)->~T();
-      }
-    }
-  }
-
-  // TODO: Unnecessary code duplication.
-  template <int _i>
-  void call_destructor_on_one_if_necessary() const {
-    using FieldType = tuple_element_t<_i, typename ViewType::Fields>;
-    using OriginalType = std::remove_cvref_t<typename FieldType::Type>;
-    using ValueType =
-        std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
-    if constexpr (!std::is_array_v<ValueType> &&
-                  std::is_pointer_v<OriginalType> &&
-                  std::is_destructible_v<ValueType>) {
-      if (std::get<_i>(*set_)) {
-        rfl::get<_i>(*view_)->~ValueType();
-      }
-    } else if constexpr (std::is_array_v<ValueType>) {
-      if (std::get<_i>(*set_)) {
-        auto ptr = rfl::get<_i>(*view_);
-        call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
-      }
-    }
   }
 
   // TODO: Unnecessary code duplication.

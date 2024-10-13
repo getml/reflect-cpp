@@ -34,15 +34,6 @@ class ViewReader {
                              std::make_integer_sequence<int, size_>());
   }
 
-  /// Because of the way we have allocated the fields, we need to manually
-  /// trigger the destructors.
-  void call_destructors_where_necessary() const {
-    [&]<int... is>(std::integer_sequence<int, is...>) {
-      (call_destructor_on_one_if_necessary<is>(), ...);
-    }
-    (std::make_integer_sequence<int, size_>());
-  }
-
  private:
   template <int i>
   static void assign_if_field_matches(const R& _r,
@@ -124,37 +115,6 @@ class ViewReader {
             Error("Value named '" + std::string(_current_name) +
                   "' not used. Remove the rfl::NoExtraFields processor or add "
                   "rfl::ExtraFields to avoid this error message."));
-      }
-    }
-  }
-
-  template <class T>
-  static void call_destructor_on_array(const size_t _size, T* _ptr) {
-    for (size_t i = 0; i < _size; ++i) {
-      if constexpr (std::is_array_v<T>) {
-        call_destructor_on_array(sizeof(*_ptr) / sizeof(**_ptr), *(_ptr + i));
-      } else if constexpr (std::is_destructible_v<T>) {
-        (_ptr + i)->~T();
-      }
-    }
-  }
-
-  template <int _i>
-  void call_destructor_on_one_if_necessary() const {
-    using FieldType = tuple_element_t<_i, typename ViewType::Fields>;
-    using OriginalType = std::remove_cvref_t<typename FieldType::Type>;
-    using ValueType =
-        std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
-    if constexpr (!std::is_array_v<ValueType> &&
-                  std::is_pointer_v<OriginalType> &&
-                  std::is_destructible_v<ValueType>) {
-      if (std::get<_i>(*set_)) {
-        rfl::get<_i>(*view_)->~ValueType();
-      }
-    } else if constexpr (std::is_array_v<ValueType>) {
-      if (std::get<_i>(*set_)) {
-        auto ptr = rfl::get<_i>(*view_);
-        call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
       }
     }
   }

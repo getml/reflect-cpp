@@ -24,6 +24,7 @@
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
+#include "call_destructors_where_necessary.hpp"
 #include "is_tagged_union_wrapper.hpp"
 #include "schema/Type.hpp"
 
@@ -74,11 +75,12 @@ struct Parser {
         }
       } else if constexpr (std::is_enum_v<T>) {
         if constexpr (ProcessorsType::underlying_enums_) {
-          return static_cast<T>(*_r.template to_basic_type<std::underlying_type_t<T>>(_var));
+          return static_cast<T>(
+              *_r.template to_basic_type<std::underlying_type_t<T>>(_var));
         } else {
-            using StringConverter = internal::enums::StringConverter<T>;
-            return _r.template to_basic_type<std::string>(_var).and_then(
-                StringConverter::string_to_enum);
+          using StringConverter = internal::enums::StringConverter<T>;
+          return _r.template to_basic_type<std::string>(_var).and_then(
+              StringConverter::string_to_enum);
         }
       } else {
         return _r.template to_basic_type<std::remove_cvref_t<T>>(_var);
@@ -108,7 +110,7 @@ struct Parser {
           _w, ptr_named_tuple, _parent);
     } else if constexpr (std::is_enum_v<T>) {
       if constexpr (ProcessorsType::underlying_enums_) {
-         const auto val = static_cast<std::underlying_type_t<T>>(_var);
+        const auto val = static_cast<std::underlying_type_t<T>>(_var);
         ParentType::add_value(_w, val, _parent);
       } else {
         using StringConverter = internal::enums::StringConverter<T>;
@@ -194,8 +196,7 @@ struct Parser {
     using S = internal::enums::StringConverter<U>;
     if constexpr (ProcessorsType::underlying_enums_) {
       return Type{Type::Integer{}};
-    }
-    else if constexpr (S::is_flag_enum_) {
+    } else if constexpr (S::is_flag_enum_) {
       return Type{Type::String{}};
     } else {
       return Parser<R, W, typename S::NamesLiteral, ProcessorsType>::to_schema(
@@ -257,12 +258,15 @@ struct Parser {
     auto ptr = std::launder(reinterpret_cast<T*>(buf));
     auto view = ProcessorsType::template process<T>(to_view(*ptr));
     using ViewType = std::remove_cvref_t<decltype(view)>;
-    const auto err =
+    const auto [set, err] =
         Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
     if (err) [[unlikely]] {
+      call_destructors_where_necessary(set, &view);
       return *err;
     }
-    return std::move(*ptr);
+    auto res = Result<T>(std::move(*ptr));
+    call_destructors_where_necessary(set, &view);
+    return res;
   }
 
   /// This is actually more straight-forward than the standard case - we just
