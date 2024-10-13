@@ -14,7 +14,7 @@ void call_destructor_on_array(const size_t _size, T* _ptr) {
   for (size_t i = 0; i < _size; ++i) {
     if constexpr (std::is_array_v<T>) {
       call_destructor_on_array(sizeof(*_ptr) / sizeof(**_ptr), *(_ptr + i));
-    } else if constexpr (std::is_destructible_v<T>) {
+    } else if constexpr (std::is_destructible_v<std::remove_const_t<T>>) {
       (_ptr + i)->~T();
     }
   }
