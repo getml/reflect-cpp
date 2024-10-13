@@ -27,6 +27,7 @@
 #include "ViewReaderWithDefault.hpp"
 #include "ViewReaderWithDefaultAndStrippedFieldNames.hpp"
 #include "ViewReaderWithStrippedFieldNames.hpp"
+#include "call_destructors_where_necessary.hpp"
 #include "is_empty.hpp"
 #include "is_required.hpp"
 #include "schema/Type.hpp"
@@ -86,30 +87,36 @@ struct NamedTupleParser {
     auto ptr = std::launder(reinterpret_cast<NamedTuple<FieldTypes...>*>(buf));
     auto view = rfl::to_view(*ptr);
     using ViewType = std::remove_cvref_t<decltype(view)>;
-    const auto err =
+    const auto [set, err] =
         Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
     if (err) [[unlikely]] {
+      call_destructors_where_necessary(set, &view);
       return *err;
     }
-    return *ptr;
+    auto res = Result<NamedTuple<FieldTypes...>>(std::move(*ptr));
+    call_destructors_where_necessary(set, &view);
+    return res;
   }
 
   /// Reads the data into a view assuming no default values.
-  static std::optional<Error> read_view(
-      const R& _r, const InputVarType& _var,
-      NamedTuple<FieldTypes...>* _view) noexcept {
+  static std::pair<std::array<bool, NamedTupleType::size()>,
+                   std::optional<Error>>
+  read_view(const R& _r, const InputVarType& _var,
+            NamedTuple<FieldTypes...>* _view) noexcept {
     static_assert(
         internal::no_duplicate_field_names<typename NamedTupleType::Fields>());
     if constexpr (_no_field_names) {
       auto arr = _r.to_array(_var);
       if (!arr) [[unlikely]] {
-        return arr.error();
+        auto set = std::array<bool, NamedTupleType::size()>{};
+        return std::make_pair(set, arr.error());
       }
       return read_object_or_array(_r, *arr, _view);
     } else {
       auto obj = _r.to_object(_var);
       if (!obj) [[unlikely]] {
-        return obj.error();
+        auto set = std::array<bool, NamedTupleType::size()>{};
+        return std::make_pair(set, obj.error());
       }
       return read_object_or_array(_r, *obj, _view);
     }
@@ -284,9 +291,10 @@ struct NamedTupleParser {
     }
   }
 
-  static std::optional<Error> read_object_or_array(
-      const R& _r, const InputObjectOrArrayType& _obj_or_arr,
-      NamedTupleType* _view) noexcept {
+  static std::pair<std::array<bool, NamedTupleType::size()>,
+                   std::optional<Error>>
+  read_object_or_array(const R& _r, const InputObjectOrArrayType& _obj_or_arr,
+                       NamedTupleType* _view) noexcept {
     auto found = std::array<bool, NamedTupleType::size()>();
     found.fill(false);
     auto set = std::array<bool, NamedTupleType::size()>();
@@ -300,15 +308,14 @@ struct NamedTupleParser {
       err = _r.read_object(reader, _obj_or_arr);
     }
     if (err) {
-      return err;
+      return std::make_pair(set, err);
     }
     handle_missing_fields(found, *_view, &set, &errors,
                           std::make_integer_sequence<int, size_>());
     if (errors.size() != 0) {
-      reader.call_destructors_where_necessary();
-      return to_single_error_message(errors);
+      return std::make_pair(set, to_single_error_message(errors));
     }
-    return std::nullopt;
+    return std::make_pair(set, std::optional<Error>());
   }
 
   static std::optional<Error> read_object_or_array_with_default(

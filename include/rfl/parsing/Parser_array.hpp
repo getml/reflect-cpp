@@ -12,6 +12,7 @@
 #include "ArrayReader.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
+#include "call_destructors_on_array_where_necessary.hpp"
 #include "schema/Type.hpp"
 
 namespace rfl {
@@ -36,15 +37,17 @@ struct Parser<R, W, std::array<T, _size>, ProcessorsType> {
           ArrayReader<R, W, ProcessorsType, T, _size>(&_r, ptr);
       auto err = _r.read_array(array_reader, _arr);
       if (err) {
-        array_reader.call_destructors_where_necessary();
+        call_destructors_on_array_where_necessary(array_reader.num_set(), ptr);
         return *err;
       }
       err = array_reader.check_size();
       if (err) {
-        array_reader.call_destructors_where_necessary();
+        call_destructors_on_array_where_necessary(array_reader.num_set(), ptr);
         return *err;
       }
-      return std::move(*ptr);
+      auto result = Result<std::array<T, _size>>(std::move(*ptr));
+      call_destructors_on_array_where_necessary(array_reader.num_set(), ptr);
+      return result;
     };
 
     return _r.to_array(_var).and_then(parse);

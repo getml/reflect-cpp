@@ -21,20 +21,22 @@ class ArrayReader {
 
  public:
   ArrayReader(const R* _r, std::array<T, _size>* _array)
-      : array_(_array), i_(0), r_(_r) {}
+      : array_(_array), num_set_(0), r_(_r) {}
 
   ~ArrayReader() = default;
 
   std::optional<Error> check_size() const {
-    if (i_ != size_) {
+    if (num_set_ != size_) {
       return Error("Expected " + std::to_string(size_) + " elements, got " +
-                   std::to_string(i_) + ".");
+                   std::to_string(num_set_) + ".");
     }
     return std::nullopt;
   }
 
+  size_t num_set() const { return num_set_; }
+
   std::optional<Error> read(const InputVarType& _var) const {
-    if (i_ == size_) {
+    if (num_set_ == size_) {
       return Error("Expected " + std::to_string(size_) +
                    " elements, got at least " + std::to_string(size_ + 1) +
                    ".");
@@ -42,41 +44,16 @@ class ArrayReader {
     auto res =
         Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(*r_, _var);
     if (res) {
-      move_to(&((*array_)[i_]), &(*res));
+      move_to(&((*array_)[num_set_]), &(*res));
     } else {
-      return Error("Failed to parse element " + std::to_string(i_) + ": " +
-                   res.error()->what());
+      return Error("Failed to parse element " + std::to_string(num_set_) +
+                   ": " + res.error()->what());
     }
-    ++i_;
-    return std::nullopt;
-  }
-
-  /// Because of the way we have allocated the fields, we need to manually
-  /// trigger the destructors.
-  void call_destructors_where_necessary() const {
-    for (size_t i = 0; i < std::min(i_, size_); ++i) {
-      if constexpr (!std::is_array_v<T> && std::is_pointer_v<T> &&
-                    std::is_destructible_v<T>) {
-        (*array_)[i].~T();
-      } else if constexpr (std::is_array_v<T>) {
-        auto ptr = (*array_)[i];
-        call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
-      }
-    }
+    ++num_set_;
+    return std::optional<Error>();
   }
 
  private:
-  template <class U>
-  void call_destructor_on_array(const size_t _size2, U* _ptr) const {
-    for (size_t i = 0; i < _size2; ++i) {
-      if constexpr (std::is_array_v<U>) {
-        call_destructor_on_array(sizeof(*_ptr) / sizeof(**_ptr), *(_ptr + i));
-      } else if constexpr (std::is_destructible_v<U>) {
-        (_ptr + i)->~U();
-      }
-    }
-  }
-
   template <class Target, class Source>
   void move_to(Target* _t, Source* _s) const {
     if constexpr (std::is_const_v<Target>) {
@@ -100,7 +77,7 @@ class ArrayReader {
   std::array<T, size_>* array_;
 
   /// Indicates the current field
-  mutable size_t i_;
+  mutable size_t num_set_;
 
   /// The underlying reader.
   const R* r_;

@@ -12,6 +12,7 @@
 #include "../internal/nth_element_t.hpp"
 #include "Parent.hpp"
 #include "TupleReader.hpp"
+#include "call_destructors_on_tuple_where_necessary.hpp"
 #include "schema/Type.hpp"
 
 namespace rfl::parsing {
@@ -36,15 +37,17 @@ struct TupleParser {
                       ProcessorsType>(&_r, ptr);
       auto err = _r.read_array(tuple_reader, _arr);
       if (err) {
-        tuple_reader.call_destructors_where_necessary();
+        call_destructors_on_tuple_where_necessary(tuple_reader.num_set(), ptr);
         return *err;
       }
       err = tuple_reader.handle_missing_fields();
       if (err) {
-        tuple_reader.call_destructors_where_necessary();
+        call_destructors_on_tuple_where_necessary(tuple_reader.num_set(), ptr);
         return *err;
       }
-      return std::move(*ptr);
+      auto res = Result<TupleType>(std::move(*ptr));
+      call_destructors_on_tuple_where_necessary(tuple_reader.num_set(), ptr);
+      return res;
     };
 
     return _r.to_array(_var).and_then(parse);
