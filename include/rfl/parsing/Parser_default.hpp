@@ -264,7 +264,7 @@ struct Parser {
       call_destructors_where_necessary(set, &view);
       return *err;
     }
-    auto res = std::move(*ptr);
+    auto res = Result<T>(std::move(*ptr));
     call_destructors_where_necessary(set, &view);
     return res;
   }

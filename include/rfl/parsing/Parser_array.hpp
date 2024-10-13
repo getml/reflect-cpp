@@ -45,7 +45,7 @@ struct Parser<R, W, std::array<T, _size>, ProcessorsType> {
         call_destructors_on_array_where_necessary(array_reader.num_set(), ptr);
         return *err;
       }
-      auto result = std::move(*ptr);
+      auto result = Result<std::array<T, _size>>(std::move(*ptr));
       call_destructors_on_array_where_necessary(array_reader.num_set(), ptr);
       return result;
     };

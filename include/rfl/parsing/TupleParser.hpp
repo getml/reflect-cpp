@@ -45,7 +45,7 @@ struct TupleParser {
         call_destructors_on_tuple_where_necessary(tuple_reader.num_set(), ptr);
         return *err;
       }
-      auto res = std::move(*ptr);
+      auto res = Result<TupleType>(std::move(*ptr));
       call_destructors_on_tuple_where_necessary(tuple_reader.num_set(), ptr);
       return res;
     };
