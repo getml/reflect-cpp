@@ -33,6 +33,12 @@ void call_destructor_on_one_if_necessary(const std::array<bool, _size>& _set,
     if (std::get<_i>(_set)) {
       rfl::get<_i>(*_view)->~ValueType();
     }
+  } else if constexpr (!std::is_array_v<ValueType> &&
+                       !std::is_pointer_v<OriginalType> &&
+                       std::is_destructible_v<ValueType>) {
+    if (std::get<_i>(_set)) {
+      rfl::get<_i>(*_view).~ValueType();
+    }
   } else if constexpr (std::is_array_v<ValueType>) {
     if (std::get<_i>(_set)) {
       auto ptr = rfl::get<_i>(*_view);

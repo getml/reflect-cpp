@@ -20,17 +20,20 @@ class TupleReader {
   static constexpr size_t size_ = rfl::tuple_size_v<TupleType>;
 
  public:
-  TupleReader(const R* _r, TupleType* _tuple) : i_(0), r_(_r), tuple_(_tuple) {}
+  TupleReader(const R* _r, TupleType* _tuple)
+      : num_set_(0), r_(_r), tuple_(_tuple) {}
 
   ~TupleReader() = default;
 
   std::optional<Error> handle_missing_fields() const {
     std::optional<Error> err;
-    if (i_ < size_) {
+    if (num_set_ < size_) {
       handle_missing_fields_impl(&err);
     }
     return err;
   }
+
+  size_t num_set() const { return num_set_; }
 
   std::optional<Error> read(const InputVarType& _var) const {
     std::optional<Error> err;
@@ -38,33 +41,11 @@ class TupleReader {
     return err;
   }
 
-  /// Because of the way we have allocated the fields, we need to manually
-  /// trigger the destructors.
-  template <size_t _i = 0>
-  void call_destructors_where_necessary() const {
-    if constexpr (_i < size_) {
-      if (_i >= i_) {
-        return;
-      }
-      using CurrentType =
-          std::remove_cvref_t<rfl::tuple_element_t<_i, TupleType>>;
-      if constexpr (!std::is_array_v<CurrentType> &&
-                    std::is_pointer_v<CurrentType> &&
-                    std::is_destructible_v<CurrentType>) {
-        rfl::get<_i>(*tuple_)->~CurrentType();
-      } else if constexpr (std::is_array_v<CurrentType>) {
-        auto ptr = rfl::get<_i>(*tuple_);
-        call_destructor_on_array(sizeof(*ptr) / sizeof(**ptr), *ptr);
-      }
-      call_destructors_where_necessary<_i + 1>();
-    }
-  }
-
  private:
   template <int _i = 0>
   void handle_missing_fields_impl(std::optional<Error>* _err) const noexcept {
     if constexpr (_i < size_) {
-      if (i_ == _i) {
+      if (num_set_ == _i) {
         using CurrentType =
             std::remove_cvref_t<rfl::tuple_element_t<_i, TupleType>>;
 
@@ -75,7 +56,7 @@ class TupleReader {
           return;
         } else {
           ::new (&(rfl::get<_i>(*tuple_))) CurrentType();
-          ++i_;
+          ++num_set_;
         }
       }
       handle_missing_fields_impl<_i + 1>(_err);
@@ -85,7 +66,7 @@ class TupleReader {
   template <size_t _i = 0>
   void read_impl(const InputVarType& _var, std::optional<Error>* _err) const {
     if constexpr (_i < size_) {
-      if (i_ == _i) {
+      if (num_set_ == _i) {
         using CurrentType =
             std::remove_cvref_t<rfl::tuple_element_t<_i, TupleType>>;
 
@@ -93,7 +74,7 @@ class TupleReader {
 
         if (res) {
           move_to(&(rfl::get<_i>(*tuple_)), &(*res));
-          ++i_;
+          ++num_set_;
         } else {
           *_err = Error("Failed to parse field " + std::to_string(_i) + ": " +
                         res.error()->what());
@@ -105,17 +86,6 @@ class TupleReader {
       *_err = Error("Expected " + std::to_string(size_) +
                     " fields, but got at least one more.");
       return;
-    }
-  }
-
-  template <class T>
-  void call_destructor_on_array(const size_t _size, T* _ptr) const {
-    for (size_t i = 0; i < _size; ++i) {
-      if constexpr (std::is_array_v<T>) {
-        call_destructor_on_array(sizeof(*_ptr) / sizeof(**_ptr), *(_ptr + i));
-      } else if constexpr (std::is_destructible_v<T>) {
-        (_ptr + i)->~T();
-      }
     }
   }
 
@@ -139,7 +109,7 @@ class TupleReader {
 
  private:
   /// Indicates the last field that was set.
-  mutable size_t i_;
+  mutable size_t num_set_;
 
   /// The underlying reader.
   const R* r_;
