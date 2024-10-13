@@ -8,7 +8,7 @@ have `rfl::Generic`.
 `rfl::Generic` is a convenience wrapper around the following type:
 
 ```cpp
-std::variant<bool, int, double, std::string, Object, Array>;
+std::variant<bool, int, double, std::string, Object, Array, std::nullopt_t>;
 ```
 
 `Object` and `Array` are defined as follows:
@@ -53,14 +53,14 @@ The resulting JSON strings looks as follows:
 
 `rfl::Generic` contains some convenience methods that allow you to handle parsed data:
 
-You can retrieve the underlying `std::variant` using `.get()`. This then allows you to handle allow possible six cases using the [visitor pattern](https://en.cppreference.com/w/cpp/utility/variant/visit).
+You can retrieve the underlying `std::variant` using `.get()`. This then allows you to handle allow possible seven cases using the [visitor pattern](https://en.cppreference.com/w/cpp/utility/variant/visit).
 
-If you have a guess what the types of a particular field might be, you can use any of the six convenience methods `.to_array()`, `.to_bool()`, `.to_double()`, `.to_int()`, `.to_object()`, `.to_string()`. Each
+If you have a guess what the types of a particular field might be, you can use any of the seven convenience methods `.to_array()`, `.to_bool()`, `.to_double()`, `.to_int()`, `.to_null()`, `.to_object()`, `.to_string()`. Each
 of these methods will return an `rfl::Result<...>` with the corresponding type, if the `rfl::Generic` does indeed contain such a type.
 
-If you prefer, you can also use the following six convenience *functions*:
+If you prefer, you can also use the following seven convenience *functions*:
 
-`rfl::to_array(...)`, `rfl::to_bool(...)`, `rfl::to_double(...)`, `rfl::to_int(...)`, `rfl::to_object(...)`, `rfl::to_string(...)`.
+`rfl::to_array(...)`, `rfl::to_bool(...)`, `rfl::to_double(...)`, `rfl::to_int(...)`, `rfl::to_null`, `rfl::to_object(...)`, `rfl::to_string(...)`.
 
 These functions are particularly useful for monadic error handling:
 
@@ -85,3 +85,59 @@ int age = homer.get("age").and_then(rfl::to_int).value();
 This will throw an exception if any of our assumptions are false. 
 
 Please refer to the part of the documentation on `rfl::Result` to learn more about monadic error handling.
+
+## `rfl::to_generic` and `rfl::from_generic`
+
+You can transform any struct that can be converted to a JSON to the equivalent generic instead.
+
+In other words:
+
+```cpp
+assert(rfl::json::write(my_struct) == rfl::json::write(rfl::to_generic(my_struct)));
+```
+
+And:
+
+```cpp
+assert(rfl::json::read<rfl::Generic>(rfl::json::write(my_struct)).value() == rfl::to_generic(my_struct));
+```
+
+What is more, you can apply any processors you want to:
+
+```cpp
+assert(rfl::json::write<rfl::SnakeCaseToCamelCase>(my_struct) == rfl::json::write(rfl::to_generic<rfl::SnakeCaseToCamelCase>(my_struct)));
+
+assert(rfl::json::read<rfl::Generic>(rfl::json::write<rfl::SnakeCaseToCamelCase>(my_struct)).value() == rfl::to_generic<rfl::SnakeCaseToCamelCase>(my_struct));
+```
+
+Conversely, the same statements hold for reading. In other words:
+
+```cpp
+assert(rfl::json::read<MyStruct>(my_json_string).value() == rfl::from_generic<MyStruct>(rfl::json::read<rfl::Generic>(my_json_string).value()).value());
+```
+
+Likewise, you can apply processors:
+
+```cpp
+assert(rfl::json::read<MyStruct, rfl::SnakeCaseToCamelCase>(my_json_string).value() == rfl::from_generic<MyStruct, rfl::SnakeCaseToCamelCase>(rfl::json::read<rfl::Generic>(my_json_string).value()).value());
+```
+
+In fact, you can think of `rfl::from_generic` and `rfl::to_generic` as manifestations of the reader and writer interface. You could as well write `rfl::generic::read<...>(...)` and `rfl::generic::write(...)`.
+
+This can be used to dynamically build structs:
+
+```cpp
+struct Person {
+    std::string first_name;
+    std::string last_name;
+    int age;
+};
+
+auto bart = rfl::Generic::Object();
+bart["first_name"] = "Bart";
+bart["last_name"] = "Simpson";
+bart["age"] = 10;
+
+const auto person = rfl::from_generic<Person>(bart).value();
+```
+

@@ -529,8 +529,8 @@ The following compilers are supported:
 
 Simply copy the contents of the folders `include` and `src` into your source repository or add it to your include path
 and also add `src/reflectcpp.cpp` and `src/reflectcpp_json.cpp` and `src/yyjson.c` to your source files for compilation.
-If you want to link to your own version of YYJSON, then only copy `src/reflectcpp.cpp` and `src/reflectcpp_json.cpp`.
-If you don't need JSON support, then only copy `src/reflectcpp.cpp`.
+If you want to link to your own version of YYJSON, then only add `src/reflectcpp.cpp` and `src/reflectcpp_json.cpp`.
+If you don't need JSON support, then only add `src/reflectcpp.cpp`.
 
 If you need support for other serialization formats like flexbuffers or XML, you should also add `src/reflectcpp_<format>.cpp`
 and include and link the respective libraries, as listed in the section on serialization formats.
