@@ -1,6 +1,6 @@
-name: macos-clang-arm 
+name: macos-clang
 
-on: [ pull_request ]
+on: [ pull_request, workflow_dispatch ]
 
 env: 
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
