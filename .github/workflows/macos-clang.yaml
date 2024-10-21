@@ -33,7 +33,7 @@ jobs:
           CC: clang
           CXX: clang++
         run: |
-          if [[ ${{ matrix.os == 'macos-latest' }} ]]; then
+          if [[ "${{ matrix.os == 'macos-latest' }}" == "true" ]]; then
             export VCPKG_FORCE_SYSTEM_BINARIES=arm
             export CMAKE_GENERATOR=Ninja
           fi
