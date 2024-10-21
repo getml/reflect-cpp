@@ -53,6 +53,7 @@
 *.yaml
 
 !vcpkg.json
+!.github/**/*.yml
 !.github/**/*.yaml
 !benchmarks/**/*.json
 
