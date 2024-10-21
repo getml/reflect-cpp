@@ -15,3 +15,6 @@ target_link_libraries(
     PRIVATE 
     "${REFLECT_CPP_GTEST_LIB}"
 )
+
+find_package(GTest)
+gtest_discover_tests(reflect-cpp-msgpack-tests)

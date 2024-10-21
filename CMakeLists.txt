@@ -168,6 +168,7 @@ target_sources(reflectcpp PRIVATE ${REFLECT_CPP_SOURCES})
 target_precompile_headers(reflectcpp PRIVATE [["rfl.hpp"]] <iostream> <string> <functional>)
 
 if (REFLECTCPP_BUILD_TESTS)
+    enable_testing()
     find_package(GTest CONFIG REQUIRED)
     set(REFLECT_CPP_GTEST_LIB reflectcpp GTest::gtest_main)
     add_subdirectory(tests)
