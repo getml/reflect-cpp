@@ -6,8 +6,11 @@ env:
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
 jobs:
-  macos-clang-arm:
-    runs-on: macos-latest
+  macos-clang:
+    strategy:
+      matrix:
+        os: ["macos-latest", "macos-13"]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -23,13 +26,17 @@ jobs:
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
       - name: Install ninja 
-        run: brew install ninja 
+        run: brew install ninja
+        if: matrix.os == 'macos-latest'
       - name: Compile 
         env:
           CC: clang
           CXX: clang++
-          VCPKG_FORCE_SYSTEM_BINARIES: arm  
         run: |
+          if [[ ${{ matrix.os == 'macos-latest' }} ]]; then
+            export VCPKG_FORCE_SYSTEM_BINARIES=arm
+            export CMAKE_GENERATOR=Ninja
+          fi
           clang --version
           cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_MAKE_PROGRAM=make 
           cmake --build build -j 4
