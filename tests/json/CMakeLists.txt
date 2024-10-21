@@ -5,7 +5,6 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "*.cpp")
 add_executable(
     reflect-cpp-json-tests 
     ${SOURCES}
-    "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/src/gtest_main.cc"
 )
 target_precompile_headers(reflect-cpp-json-tests PRIVATE [["rfl.hpp"]] <iostream> <string> <functional> <gtest/gtest.h>)
 
@@ -13,7 +12,6 @@ target_include_directories(reflect-cpp-json-tests SYSTEM PRIVATE "${VCPKG_INSTAL
 
 target_link_libraries(
     reflect-cpp-json-tests 
-    PRIVATE 
-    reflectcpp
+    PRIVATE
     "${REFLECT_CPP_GTEST_LIB}"
 )
