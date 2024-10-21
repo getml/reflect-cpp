@@ -3,7 +3,7 @@
 
 #include <string>
 
-#if __has_include(<ctre.h>)
+#if __has_include(<ctre.hpp>)
 #include <ctre.hpp>
 #else
 #include "thirdparty/ctre.hpp"
