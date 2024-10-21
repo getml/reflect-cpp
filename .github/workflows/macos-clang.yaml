@@ -8,6 +8,7 @@ env:
 jobs:
   macos-clang:
     strategy:
+      fail-fast: false
       matrix:
         os: ["macos-latest", "macos-13"]
     runs-on: ${{ matrix.os }}
