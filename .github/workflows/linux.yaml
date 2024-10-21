@@ -10,11 +10,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        compiler: [ llvm ]
-        compiler-version: [ 14, 16, 18 ]
         include:
+          - compiler: llvm
+            compiler-version: 16
+          - compiler: llvm
+            compiler-version: 18
           - compiler: gcc
-            compiler-version: current
+            compiler-version: 12
+          - compiler: gcc
+            compiler-version: 14
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -30,31 +34,20 @@ jobs:
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
-      - uses: KyleMayes/install-llvm-action@v2
-        with:
-          version: ${{ matrix.compiler-version }}
-        if: matrix.compiler == 'llvm'
-      - name: link clang lib
-        run: |
-          sudo mkdir -p /usr/lib/llvm-${{ matrix.compiler-version }}/lib
-          sudo ln -s clang /usr/lib/llvm-${{ matrix.compiler-version }}/lib/clang
-        working-directory: ${{ env.LLVM_PATH }}/lib
-        if: matrix.compiler == 'llvm'
-      - name: install gcc
-        run: |
-          sudo apt update
-          sudo apt install -y g++
-        if: matrix.compiler == 'gcc'
-      - name: install ninja
+      - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y ninja-build
       - name: Compile 
-        env:
-          CC: clang
-          CXX: clang++
         run: |
-          clang --version
+          if [[ "${{ matrix.compiler }}" == "llvm" ]]; then
+            export CC=clang-${{ matrix.compiler-version }}
+            export CXX=clang++-${{ matrix.compiler-version }}
+          elif [[ "${{ matrix.compiler }}" == "gcc" ]]; then
+            export CC=gcc-${{ matrix.compiler-version }}
+            export CXX=g++-${{ matrix.compiler-version }}
+          fi
+          $CXX --version
           cmake -S . -B build -G Ninja -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build
       - name: Run tests 
