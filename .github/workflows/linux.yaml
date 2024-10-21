@@ -1,4 +1,4 @@
-name: linux-clang
+name: linux
 
 on: [ pull_request, workflow_dispatch ]
 
@@ -6,10 +6,14 @@ env:
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
 jobs:
-  linux-clang:
+  linux:
     strategy:
       matrix:
-        llvm-version: [14, 16]
+        compiler: [ llvm ]
+        compiler-version: [ 14, 16, 18 ]
+        include:
+          - compiler: gcc
+            compiler-version: current
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,20 +31,31 @@ jobs:
         uses: lukka/run-vcpkg@v11
       - uses: KyleMayes/install-llvm-action@v1
         with:
-          version: ${{ matrix.llvm-version }}
+          version: ${{ matrix.compiler-version }}
+        if: matrix.compiler == 'llvm'
       - name: link clang lib
         run: |
-          sudo mkdir -p /usr/lib/llvm-${{ matrix.llvm-version }}/lib
-          sudo ln -s clang /usr/lib/llvm-${{ matrix.llvm-version }}/lib/clang
+          sudo mkdir -p /usr/lib/llvm-${{ matrix.compiler-version }}/lib
+          sudo ln -s clang /usr/lib/llvm-${{ matrix.compiler-version }}/lib/clang
         working-directory: ${{ env.LLVM_PATH }}/lib
+        if: matrix.compiler == 'llvm'
+      - name: install gcc
+        run: |
+          sudo apt update
+          sudo apt install -y g++
+        if: matrix.compiler == 'gcc'
+      - name: install ninja
+        run: |
+          sudo apt update
+          sudo apt install -y ninja-build
       - name: Compile 
         env:
           CC: clang
           CXX: clang++
         run: |
           clang --version
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
-          cmake --build build -j 4
+          cmake -S . -B build -G Ninja -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
       - name: Run tests 
         run: |
           ctest --test-dir build --output-on-failure
@@ -62,4 +77,3 @@ jobs:
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=licenses >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-
