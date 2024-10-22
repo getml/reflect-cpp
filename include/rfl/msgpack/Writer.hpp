@@ -43,7 +43,9 @@ class Writer {
   OutputVarType null_as_root() const noexcept;
 
   template <class T>
-  OutputVarType value_as_root(const T& _var) const noexcept;
+  OutputVarType value_as_root(const T& _var) const noexcept {
+    return new_value(_var);
+  }
 
   OutputArrayType add_array_to_array(const size_t _size,
                                      OutputArrayType* _parent) const noexcept;
