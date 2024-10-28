@@ -4,6 +4,8 @@
 #include <array>
 #include <type_traits>
 
+#include "../get.hpp"
+
 namespace rfl::parsing {
 
 /// Because of the way we have allocated the fields, we need to manually
@@ -47,8 +49,7 @@ void call_destructors_where_necessary(const std::array<bool, _size>& _set,
   [&]<int... is>(std::integer_sequence<int, is...>) {
     (call_destructor_on_one_if_necessary<ViewType, _size, is>(_set, _view),
      ...);
-  }
-  (std::make_integer_sequence<int, _size>());
+  }(std::make_integer_sequence<int, _size>());
 }
 
 }  // namespace rfl::parsing

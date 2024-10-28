@@ -330,7 +330,7 @@ class Variant {
                                           std::optional<ResultType>* _res,
                                           Index<_i>) {
       if (!*_res && index_ == _i) {
-        *_res = _f(get_alternative<_i>());
+        _res->emplace(_f(get_alternative<_i>()));
       }
     };
     (visit_one(_f, _res, Index<_is>{}), ...);
@@ -343,7 +343,7 @@ class Variant {
                                           std::optional<ResultType>* _res,
                                           Index<_i>) {
       if (!*_res && index_ == _i) {
-        *_res = _f(get_alternative<_i>());
+        _res->emplace(_f(get_alternative<_i>()));
       }
     };
     (visit_one(_f, _res, Index<_is>{}), ...);
@@ -356,7 +356,7 @@ class Variant {
                                                 std::optional<ResultType>* _res,
                                                 Index<_i>) {
       if (!*_res && index_ == _i) {
-        *_res = _f(get_alternative<_i>());
+        _res->emplace(_f(get_alternative<_i>()));
       }
     };
     (visit_one(_f, _res, Index<_is>{}), ...);
@@ -369,7 +369,7 @@ class Variant {
                                                 std::optional<ResultType>* _res,
                                                 Index<_i>) {
       if (!*_res && index_ == _i) {
-        *_res = _f(get_alternative<_i>());
+        _res->emplace(_f(get_alternative<_i>()));
       }
     };
     (visit_one(_f, _res, Index<_is>{}), ...);
