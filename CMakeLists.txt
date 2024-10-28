@@ -74,7 +74,9 @@ if (REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
         reflectcpp PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rfl/thirdparty>)
 else ()
-    find_package(ctre CONFIG REQUIRED)
+    if (NOT TARGET ctre::ctre)
+        find_package(ctre CONFIG REQUIRED)
+    endif ()
     target_link_libraries(reflectcpp PUBLIC ctre::ctre)
 endif ()
 
@@ -92,7 +94,9 @@ if (REFLECTCPP_JSON)
             reflectcpp PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rfl/thirdparty>)
     else ()
-        find_package(yyjson CONFIG REQUIRED)
+        if (NOT PACKAGE yyjson::yyjson)
+            find_package(yyjson CONFIG REQUIRED)
+        endif ()
         target_link_libraries(reflectcpp PUBLIC yyjson::yyjson)
     endif ()
 endif ()
@@ -101,7 +105,9 @@ if (REFLECTCPP_BSON)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_bson.cpp
     )
-    find_package(bson-1.0 CONFIG REQUIRED)
+    if (NOT TARGET mongo::bson_static AND NOT TARGET mongo::bson_shared)
+        find_package(bson-1.0 CONFIG REQUIRED)
+    endif ()
     target_link_libraries(reflectcpp PRIVATE $<IF:$<TARGET_EXISTS:mongo::bson_static>,mongo::bson_static,mongo::bson_shared>)
 endif ()
 
@@ -122,7 +128,9 @@ if (REFLECTCPP_FLEXBUFFERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_flexbuf.cpp
     )
-    find_package(flatbuffers CONFIG REQUIRED)
+    if (NOT TARGET flatbuffers::flatbuffers)
+        find_package(flatbuffers CONFIG REQUIRED)
+    endif ()
     target_link_libraries(reflectcpp PUBLIC flatbuffers::flatbuffers)
 endif ()
 
@@ -162,7 +170,9 @@ if (REFLECTCPP_XML)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_xml.cpp
     )
-    find_package(pugixml CONFIG REQUIRED)
+    if (NOT TARGET pugixml::pugixml)
+        find_package(pugixml CONFIG REQUIRED)
+    endif ()
     target_link_libraries(reflectcpp PUBLIC pugixml::pugixml)
 endif ()
 
@@ -170,7 +180,9 @@ if (REFLECTCPP_YAML)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_yaml.cpp
     )
-    find_package(yaml-cpp CONFIG REQUIRED)
+    if (NOT TARGET yaml-cpp::yaml-cpp)
+        find_package(yaml-cpp CONFIG REQUIRED)
+    endif ()
     target_link_libraries(reflectcpp PUBLIC yaml-cpp::yaml-cpp)
 endif ()
 
@@ -186,8 +198,12 @@ if (REFLECTCPP_BUILD_TESTS)
 endif ()
 
 if (REFLECTCPP_BUILD_BENCHMARKS)
-    find_package(benchmark CONFIG REQUIRED)
-    find_package(simdjson CONFIG REQUIRED)
+    if (NOT TARGET benchmark::benchmark)
+        find_package(benchmark CONFIG REQUIRED)
+    endif ()
+    if (NOT TARGET simdjson::simdjson)
+        find_package(simdjson CONFIG REQUIRED)
+    endif ()
     target_link_libraries(reflectcpp PUBLIC benchmark::benchmark simdjson::simdjson)
     add_subdirectory(benchmarks)
 endif ()
