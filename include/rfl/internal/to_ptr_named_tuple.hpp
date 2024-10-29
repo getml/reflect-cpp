@@ -57,7 +57,7 @@ auto field_tuple_to_named_tuple(PtrFieldTuple& _ptr_field_tuple) {
 /// Generates a named tuple that contains pointers to the original values in
 /// the struct.
 template <class T>
-auto to_ptr_named_tuple(T&& _t) {
+auto to_ptr_named_tuple(T& _t) {
   if constexpr (has_fields<std::remove_cvref_t<T>>()) {
     if constexpr (std::is_pointer_v<std::remove_cvref_t<T>>) {
       return to_ptr_named_tuple(*_t);

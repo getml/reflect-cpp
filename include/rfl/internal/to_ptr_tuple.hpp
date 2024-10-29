@@ -15,7 +15,7 @@ auto to_ptr_tuple(T& _t) {
   if constexpr (std::is_pointer_v<std::remove_cvref_t<T>>) {
     return to_ptr_tuple(*_t);
   } else {
-    return bind_to_tuple(_t, [](auto* _ptr) { return _ptr; });
+    return bind_to_tuple(_t);
   }
 }
 

@@ -14,15 +14,15 @@ namespace internal {
 
 template <class PtrTuple>
 auto flatten_ptr_tuple(PtrTuple&& _t) {
-  if constexpr (0 && !has_flatten_fields<PtrTuple>()) {
+  if constexpr (!has_flatten_fields<PtrTuple>()) {
     return std::forward<PtrTuple>(_t);
   } else {
     const auto get_one = [&]<int _i>(std::integral_constant<int, _i>) {
       using T = tuple_element_t<_i, std::remove_cvref_t<PtrTuple>>;
       if constexpr (is_flatten_field_v<T>) {
-        return flatten_ptr_tuple(to_ptr_tuple(std::get<_i>(_t)->get()));
+        return flatten_ptr_tuple(to_ptr_tuple(rfl::get<_i>(_t)->get()));
       } else {
-        return rfl::make_tuple(std::get<_i>(_t));
+        return rfl::make_tuple(rfl::get<_i>(_t));
       }
     };
 
@@ -36,7 +36,7 @@ auto flatten_ptr_tuple(PtrTuple&& _t) {
 }
 
 template <class T>
-auto to_flattened_ptr_tuple(T&& _t) {
+auto to_flattened_ptr_tuple(T& _t) {
   return flatten_ptr_tuple(to_ptr_tuple(_t));
 }
 

@@ -2,6 +2,7 @@
 #define RFL_TO_VIEW_HPP_
 
 #include <iostream>
+#include <stdexcept>
 #include <tuple>
 #include <type_traits>
 
