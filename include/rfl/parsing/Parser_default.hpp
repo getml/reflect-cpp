@@ -277,7 +277,7 @@ struct Parser {
                                             const InputVarType& _var) {
     auto t = T{};
     auto view = ProcessorsType::template process<T>(to_view(t));
-    using ViewType = std::remove_cvref_t<decltype(view)>;
+    using ViewType = decltype(view);
     const auto err =
         Parser<R, W, ViewType, ProcessorsType>::read_view_with_default(_r, _var,
                                                                        &view);
