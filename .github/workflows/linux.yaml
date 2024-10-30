@@ -16,6 +16,9 @@ jobs:
           - compiler: llvm
             compiler-version: 18
           - compiler: gcc
+            compiler-version: 11
+            additional-dep: "g++-11"
+          - compiler: gcc
             compiler-version: 12
           - compiler: gcc
             compiler-version: 14
@@ -37,8 +40,8 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y ninja-build
-      - name: Compile 
+          sudo apt install -y ninja-build ${{ matrix.additional-dep }}
+      - name: Compile
         run: |
           if [[ "${{ matrix.compiler }}" == "llvm" ]]; then
             export CC=clang-${{ matrix.compiler-version }}
