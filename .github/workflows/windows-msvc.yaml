@@ -1,6 +1,6 @@
 name: windows-msvc 
 
-on: [ pull_request ]
+on: [ pull_request, workflow_dispatch ]
 
 env: 
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
@@ -22,22 +22,13 @@ jobs:
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
       - uses: ilammy/msvc-dev-cmd@v1
       - uses: lukka/run-vcpkg@v11
-      - name: Compile 
+      - name: Compile
         run: |
           cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release -j4 
-      - name: Run tests 
+      - name: Run tests
         run: |
-          .\build\tests\json\Release\reflect-cpp-json-tests.exe
-          .\build\tests\json_c_arrays_and_inheritance\Release\reflect-cpp-json-c-arrays-and-inheritance-tests.exe
-          .\build\tests\bson\Release\reflect-cpp-bson-tests.exe
-          .\build\tests\cbor\Release\reflect-cpp-cbor-tests.exe
-          .\build\tests\flexbuffers\Release\reflect-cpp-flexbuffers-tests.exe
-          .\build\tests\generic\Release\reflect-cpp-generic-tests.exe
-          .\build\tests\msgpack\Release\reflect-cpp-msgpack-tests.exe
-          .\build\tests\toml\Release\reflect-cpp-toml-tests.exe
-          .\build\tests\xml\Release\reflect-cpp-xml-tests.exe
-          .\build\tests\yaml\Release\reflect-cpp-yaml-tests.exe
+          ctest --test-dir build --output-on-failure
       - name: Run benchmarks
         run: |
           echo '# Benchmarks' >> $env:GITHUB_STEP_SUMMARY 
