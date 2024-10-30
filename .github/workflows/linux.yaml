@@ -22,7 +22,7 @@ jobs:
             compiler-version: 12
           - compiler: gcc
             compiler-version: 14
-    name: "linux (${{matrix.compiler}}-${{matrix.compiler-version}})"
+    name: "${{ github.job }} (${{ matrix.compiler }}-${{ matrix.compiler-version }})"
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -36,6 +36,11 @@ jobs:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      - name: Enable ccache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: "${{ github.job }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}"
+          max-size: "2G"
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
       - name: Install dependencies
@@ -52,7 +57,7 @@ jobs:
             export CXX=g++-${{ matrix.compiler-version }}
           fi
           $CXX --version
-          cmake -S . -B build -G Ninja -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B build -G Ninja -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build
       - name: Run tests 
         run: |
