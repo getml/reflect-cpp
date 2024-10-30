@@ -22,6 +22,7 @@ jobs:
             compiler-version: 12
           - compiler: gcc
             compiler-version: 14
+    name: "linux (${{matrix.compiler}}-${{matrix.compiler-version}})"
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
