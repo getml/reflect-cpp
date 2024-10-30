@@ -4,6 +4,8 @@
 #include <array>
 #include <type_traits>
 
+#include "../get.hpp"
+
 namespace rfl::parsing {
 
 /// Because of the way we have allocated the fields, we need to manually
