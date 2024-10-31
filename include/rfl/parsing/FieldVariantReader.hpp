@@ -3,6 +3,7 @@
 
 #include <array>
 #include <optional>
+#include <sstream>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -35,10 +36,11 @@ class FieldVariantReader {
         _disc_value, _var,
         std::make_integer_sequence<int, sizeof...(FieldTypes)>());
     if (!*field_variant_) {
-      *field_variant_ = Error(
-          "Could not parse rfl::Variant, could not match field named "
-          "'" +
-          std::string(_disc_value) + "'.");
+      std::stringstream stream;
+      stream << "Could not parse rfl::Variant, could not match field named "
+                "'"
+             << _disc_value << "'.";
+      *field_variant_ = Error(stream.str());
     }
   }
 
@@ -62,8 +64,10 @@ class FieldVariantReader {
         return rfl::Variant<FieldTypes...>(FieldType(std::move(_val)));
       };
       const auto embellish_error = [&](const Error& _e) {
-        return Error("Could not parse rfl::Variant with field '" +
-                     std::string(_disc_value) + "': " + _e.what());
+        std::stringstream stream;
+        stream << "Could not parse rfl::Variant with field '"
+               << std::string(_disc_value) << "': " << _e.what();
+        return Error(stream.str());
       };
       *field_variant_ = Parser<R, W, ValueType, ProcessorsType>::read(*r_, _var)
                             .transform(to_variant)
