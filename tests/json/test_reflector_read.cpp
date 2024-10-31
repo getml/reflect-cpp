@@ -28,7 +28,7 @@ struct Reflector<test_reflector_read::Parent> {
     std::vector<test_reflector_read::Person> children;
   };
   static test_reflector_read::Parent to(const ReflType& v) noexcept {
-    return {v.first_name, v.last_name, v.children};
+    return {{v.first_name, v.last_name}, v.children};
   }
 };
 }  // namespace rfl
@@ -36,8 +36,8 @@ struct Reflector<test_reflector_read::Parent> {
 namespace test_reflector_read {
 
 TEST(json, test_reflector_read) {
-  const auto homer =
-      test_reflector_read::Parent{"Homer", "Simpson", {{"Bart", "Simpson"}, {"Lisa", "Simpson"}}};
+  const auto homer = test_reflector_read::Parent{
+      "Homer", "Simpson", {{"Bart", "Simpson"}, {"Lisa", "Simpson"}}};
 
   read(
       R"({"first_name":"Homer","last_name":"Simpson","children":[{"first_name":"Bart","last_name":"Simpson"},{"first_name":"Lisa","last_name":"Simpson"}]})",

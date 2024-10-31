@@ -41,7 +41,7 @@ namespace test_reflector {
 
 TEST(json, test_reflector) {
   const auto homer = test_reflector::Parent{
-      "Homer", "Simpson", {{"Bart", "Simpson"}, {"Lisa", "Simpson"}}};
+      {"Homer", "Simpson"}, {{"Bart", "Simpson"}, {"Lisa", "Simpson"}}};
 
   write_and_read(
       homer,
