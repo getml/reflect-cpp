@@ -3,6 +3,7 @@
 
 #include <flatbuffers/flexbuffers.h>
 
+#include <bit>
 #include <cstddef>
 #include <exception>
 #include <map>
@@ -64,7 +65,7 @@ struct Reader {
         return rfl::Error("Could not cast to a bytestring.");
       }
       const auto blob = _var.AsBlob();
-      return rfl::Bytestring(reinterpret_cast<const std::byte*>(blob.data()),
+      return rfl::Bytestring(std::bit_cast<const std::byte*>(blob.data()),
                              blob.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var.IsBool()) {

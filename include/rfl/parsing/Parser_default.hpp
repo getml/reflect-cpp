@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_PARSER_DEFAULT_HPP_
 #define RFL_PARSING_PARSER_DEFAULT_HPP_
 
+#include <bit>
 #include <map>
 #include <stdexcept>
 #include <type_traits>
@@ -254,8 +255,8 @@ struct Parser {
   /// views and placement new. This is how we deal with the fact that some
   /// fields might not be default-constructible.
   static Result<T> read_struct(const R& _r, const InputVarType& _var) {
-    alignas(T) unsigned char buf[sizeof(T)];
-    auto ptr = std::launder(reinterpret_cast<T*>(buf));
+    alignas(T) unsigned char buf[sizeof(T)]{};
+    auto ptr = std::bit_cast<T*>(&buf);
     auto view = ProcessorsType::template process<T>(to_view(*ptr));
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto [set, err] =
