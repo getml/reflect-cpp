@@ -4,7 +4,6 @@
 #include <compare>
 #include <cstdint>
 #include <functional>
-#include <limits>
 #include <string>
 #include <tuple>
 #include <type_traits>
@@ -28,10 +27,8 @@ class Literal {
   using FieldsType = rfl::Tuple<LiteralHelper<fields_>...>;
 
  public:
-  using ValueType =
-      std::conditional_t<sizeof...(fields_) <=
-                             std::numeric_limits<std::uint8_t>::max(),
-                         std::uint8_t, std::uint16_t>;
+  using ValueType = std::conditional_t<sizeof...(fields_) <= 255, std::uint8_t,
+                                       std::uint16_t>;
 
   /// The number of different fields or different options that the literal
   /// can assume.
