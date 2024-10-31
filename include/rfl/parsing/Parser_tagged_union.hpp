@@ -2,6 +2,7 @@
 #define RFL_PARSING_PARSER_TAGGED_UNION_HPP_
 
 #include <map>
+#include <sstream>
 #include <type_traits>
 
 #include "../Result.hpp"
@@ -91,10 +92,12 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
       return res;
     } else {
       const auto names = PossibleTags::names();
-      return Error("Could not parse tagged union, could not match " +
-                   _discriminator.str() + " '" + _disc_value +
-                   "'. The following tags are allowed: " +
-                   internal::strings::join(", ", names));
+      std::stringstream stream;
+      stream << "Could not parse tagged union, could not match "
+             << _discriminator.str() << " '" << _disc_value
+             << "'. The following tags are allowed: "
+             << internal::strings::join(", ", names);
+      return Error(stream.str());
     }
   }
 
@@ -122,10 +125,12 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
       };
 
       const auto embellish_error = [&](Error&& _e) {
-        return Error(
-            "Could not parse tagged union with "
-            "discrimininator " +
-            _discriminator.str() + " '" + _disc_value + "': " + _e.what());
+        std::stringstream stream;
+        stream << "Could not parse tagged union with "
+                  "discrimininator "
+               << _discriminator.str() << " '" << _disc_value
+               << "': " << _e.what();
+        return Error(stream.str());
       };
 
       if constexpr (no_field_names_) {
