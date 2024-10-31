@@ -1,6 +1,7 @@
 #ifndef RFL_ONEOF_HPP_
 #define RFL_ONEOF_HPP_
 
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,15 +29,14 @@ struct OneOf {
 
  private:
   static Error make_error_message(const std::vector<Error>& _errors) {
-    std::string msg = "Expected exactly 1 out of " +
-                      std::to_string(sizeof...(Cs) + 1) +
-                      " validations to pass, but " +
-                      std::to_string(sizeof...(Cs) + 1 - _errors.size()) +
-                      " of them did. The following errors were generated: ";
+    std::stringstream stream;
+    stream << "Expected exactly 1 out of " << sizeof...(Cs) + 1
+           << " validations to pass, but " << sizeof...(Cs) + 1 - _errors.size()
+           << " of them did. The following errors were generated: ";
     for (size_t i = 0; i < _errors.size(); ++i) {
-      msg += "\n" + std::to_string(i + 1) + ") " + _errors.at(i).what();
+      stream << "\n" << i + 1 << ") " << _errors.at(i).what();
     }
-    return Error(msg);
+    return Error(stream.str());
   }
 
   template <class T, class Head, class... Tail>

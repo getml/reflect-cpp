@@ -1,6 +1,7 @@
 #ifndef RFL_PATTERNVALIDATOR_HPP_
 #define RFL_PATTERNVALIDATOR_HPP_
 
+#include <sstream>
 #include <string>
 
 #if __has_include(<ctre.hpp>)
@@ -25,8 +26,10 @@ struct PatternValidator {
     if (ctre::match<_regex.arr_>(_str)) {
       return _str;
     } else {
-      return rfl::Error("String '" + _str + "' did not match format '" +
-                        _name.str() + "': '" + _regex.str() + "'.");
+      std::stringstream stream;
+      stream << "String '" << _str << "' did not match format '" << _name.str()
+             << "': '" << _regex.str() << "'.";
+      return rfl::Error(stream.str());
     }
   }
 

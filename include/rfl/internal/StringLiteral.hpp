@@ -23,7 +23,7 @@ struct StringLiteral {
   }
 
   /// Returns the value as a string.
-  std::string str() const { return std::string(std::data(arr_), N - 1); }
+  std::string str() const { return std::string(string_view()); }
 
   /// Returns the value as a string.
   constexpr std::string_view string_view() const {
