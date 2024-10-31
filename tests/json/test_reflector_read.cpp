@@ -37,7 +37,7 @@ namespace test_reflector_read {
 
 TEST(json, test_reflector_read) {
   const auto homer = test_reflector_read::Parent{
-      "Homer", "Simpson", {{"Bart", "Simpson"}, {"Lisa", "Simpson"}}};
+      {"Homer", "Simpson"}, {{"Bart", "Simpson"}, {"Lisa", "Simpson"}}};
 
   read(
       R"({"first_name":"Homer","last_name":"Simpson","children":[{"first_name":"Bart","last_name":"Simpson"},{"first_name":"Lisa","last_name":"Simpson"}]})",
