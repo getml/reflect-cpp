@@ -3,6 +3,7 @@
 
 #include <cbor.h>
 
+#include <bit>
 #include <cstdint>
 #include <ostream>
 #include <sstream>
@@ -20,7 +21,7 @@ void write_into_buffer(const auto& _obj, CborEncoder* _encoder,
                        std::vector<char>* _buffer) noexcept {
   using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
-  cbor_encoder_init(_encoder, reinterpret_cast<uint8_t*>(_buffer->data()),
+  cbor_encoder_init(_encoder, std::bit_cast<uint8_t*>(_buffer->data()),
                     _buffer->size(), 0);
   const auto writer = Writer(_encoder);
   Parser<T, Processors<Ps...>>::write(writer, _obj,
@@ -40,7 +41,7 @@ std::vector<char> write(const auto& _obj) noexcept {
     write_into_buffer<Ps...>(_obj, &encoder, &buffer);
   }
   const auto length = cbor_encoder_get_buffer_size(
-      &encoder, reinterpret_cast<uint8_t*>(buffer.data()));
+      &encoder, std::bit_cast<uint8_t*>(buffer.data()));
   buffer.resize(length);
   return buffer;
 }

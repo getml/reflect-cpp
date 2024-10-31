@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_TUPLEPARSER_HPP_
 #define RFL_PARSING_TUPLEPARSER_HPP_
 
+#include <bit>
 #include <cstddef>
 #include <map>
 #include <type_traits>
@@ -31,7 +32,7 @@ struct TupleParser {
                                 const InputVarType& _var) noexcept {
     const auto parse = [&](const InputArrayType& _arr) -> Result<TupleType> {
       alignas(TupleType) unsigned char buf[sizeof(TupleType)];
-      auto ptr = std::launder(reinterpret_cast<TupleType*>(buf));
+      auto ptr = std::bit_cast<TupleType*>(&buf);
       const auto tuple_reader =
           TupleReader<R, W, TupleType, _ignore_empty_containers, _all_required,
                       ProcessorsType>(&_r, ptr);

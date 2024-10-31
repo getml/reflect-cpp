@@ -4,6 +4,7 @@
 #include <bson/bson.h>
 
 #include <array>
+#include <bit>
 #include <concepts>
 #include <cstddef>
 #include <exception>
@@ -84,7 +85,7 @@ struct Reader {
             "bytestring.");
       }
       return rfl::Bytestring(
-          reinterpret_cast<const std::byte*>(value.v_binary.data),
+          std::bit_cast<const std::byte*>(value.v_binary.data),
           value.v_binary.data_len);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (btype != BSON_TYPE_BOOL) {
@@ -121,8 +122,7 @@ struct Reader {
     }
   }
 
-  rfl::Result<InputArrayType> to_array(
-      const InputVarType& _var) const noexcept;
+  rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept;
 
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,

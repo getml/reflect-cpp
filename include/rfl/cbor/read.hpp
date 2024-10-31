@@ -3,6 +3,7 @@
 
 #include <cbor.h>
 
+#include <bit>
 #include <istream>
 #include <string>
 
@@ -30,7 +31,7 @@ Result<internal::wrap_in_rfl_array_t<T>> read(const char* _bytes,
                                               const size_t _size) {
   CborParser parser;
   InputVarType doc;
-  cbor_parser_init(reinterpret_cast<const uint8_t*>(_bytes), _size, 0, &parser,
+  cbor_parser_init(std::bit_cast<const uint8_t*>(_bytes), _size, 0, &parser,
                    &doc.val_);
   auto result = read<T, Ps...>(doc);
   return result;

@@ -2,6 +2,7 @@
 #define RFL_PARSING_NAMEDTUPLEPARSER_HPP_
 
 #include <array>
+#include <bit>
 #include <map>
 #include <tuple>
 #include <type_traits>
@@ -84,7 +85,7 @@ struct NamedTupleParser {
         internal::no_duplicate_field_names<typename NamedTupleType::Fields>());
     alignas(NamedTuple<FieldTypes...>) unsigned char
         buf[sizeof(NamedTuple<FieldTypes...>)];
-    auto ptr = std::launder(reinterpret_cast<NamedTuple<FieldTypes...>*>(buf));
+    auto ptr = std::bit_cast<NamedTuple<FieldTypes...>*>(&buf);
     auto view = rfl::to_view(*ptr);
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto [set, err] =
