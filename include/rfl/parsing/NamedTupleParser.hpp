@@ -4,6 +4,7 @@
 #include <array>
 #include <bit>
 #include <map>
+#include <sstream>
 #include <tuple>
 #include <type_traits>
 #include <unordered_map>
@@ -260,8 +261,10 @@ struct NamedTupleParser {
       if constexpr (is_required_field) {
         constexpr auto current_name =
             internal::nth_element_t<_i, FieldTypes...>::name();
-        _errors->emplace_back(Error(
-            "Field named '" + std::string(current_name) + "' not found."));
+        std::stringstream stream;
+        stream << "Field named '" << std::string(current_name)
+               << "' not found.";
+        _errors->emplace_back(Error(stream.str()));
       } else {
         if constexpr (!std::is_const_v<ValueType>) {
           ::new (rfl::get<_i>(_view)) ValueType();

@@ -2,6 +2,7 @@
 #define RFL_PARSING_VIEWREADER_HPP_
 
 #include <array>
+#include <sstream>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -52,9 +53,10 @@ class ViewReader {
       *_already_assigned = true;
       auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
       if (!res) {
-        _errors->emplace_back(Error("Failed to parse field '" +
-                                    std::string(name) +
-                                    "': " + std::move(res.error()->what())));
+        std::stringstream stream;
+        stream << "Failed to parse field '" << std::string(name)
+               << "': " << res.error()->what();
+        _errors->emplace_back(Error(stream.str()));
         return;
       }
       if constexpr (std::is_pointer_v<OriginalType>) {
@@ -83,9 +85,10 @@ class ViewReader {
     }
     auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
     if (!res) {
-      _errors->emplace_back(Error("Failed to parse field '" +
-                                  std::string(_current_name) +
-                                  "': " + std::move(res.error()->what())));
+      std::stringstream stream;
+      stream << "Failed to parse field '" << _current_name
+             << "': " << res.error()->what();
+      _errors->emplace_back(Error(stream.str()));
       return;
     }
     extra_fields->emplace(std::string(_current_name), std::move(*res));
@@ -111,10 +114,11 @@ class ViewReader {
       }
     } else if constexpr (ProcessorsType::no_extra_fields_) {
       if (!already_assigned) {
-        _errors->emplace_back(
-            Error("Value named '" + std::string(_current_name) +
-                  "' not used. Remove the rfl::NoExtraFields processor or add "
-                  "rfl::ExtraFields to avoid this error message."));
+        std::stringstream stream;
+        stream << "Value named '" << _current_name
+               << "' not used. Remove the rfl::NoExtraFields processor or add "
+                  "rfl::ExtraFields to avoid this error message.";
+        _errors->emplace_back(Error(stream.str()));
       }
     }
   }

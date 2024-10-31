@@ -2,6 +2,7 @@
 #define RFL_PARSING_VIEWREADERWITHSTRIPPEDFIELDNAMES_HPP_
 
 #include <array>
+#include <sstream>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -37,8 +38,10 @@ class ViewReaderWithStrippedFieldNames {
   /// used when the field names are stripped.
   std::optional<Error> read(const InputVarType& _var) const {
     if (i_ == size_) {
-      return Error("Expected a maximum of " + std::to_string(size_) +
-                   " fields, but got at least one more.");
+      std::stringstream stream;
+      stream << "Expected a maximum of " << std::to_string(size_)
+             << " fields, but got at least one more.";
+      return Error(stream.str());
     }
     assign_to_field_i(*r_, _var, view_, errors_, found_, set_, i_,
                       std::make_integer_sequence<int, size_>());
@@ -60,9 +63,10 @@ class ViewReaderWithStrippedFieldNames {
       std::get<i>(*_found) = true;
       auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
       if (!res) {
-        _errors->emplace_back(Error("Failed to parse field '" +
-                                    std::string(name) +
-                                    "': " + std::move(res.error()->what())));
+        std::stringstream stream;
+        stream << "Failed to parse field '" << std::string(name)
+               << "': " << res.error()->what();
+        _errors->emplace_back(Error(stream.str()));
         return;
       }
       if constexpr (std::is_pointer_v<OriginalType>) {
