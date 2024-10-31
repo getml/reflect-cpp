@@ -17,8 +17,8 @@ struct Positions {
 };
 
 template <class T, unsigned long _last, unsigned long... _is>
-consteval auto operator+(const Positions<_last, _is...>& _sizes,
-                         const PositionWrapper<T>& _w) {
+consteval auto operator+(const Positions<_last, _is...>&,
+                         const PositionWrapper<T>&) {
   if constexpr (_last % alignof(T) == 0) {
     constexpr auto last_new = _last + sizeof(T);
     return Positions<last_new, _is..., _last>{};
