@@ -37,8 +37,8 @@ struct Reflector<test_reflector_write::Parent> {
 namespace test_reflector_write {
 
 TEST(json, test_reflector_write) {
-  const auto homer =
-      test_reflector_write::Parent{"Homer", "Simpson", {{"Bart", "Simpson"}, {"Lisa", "Simpson"}}};
+  const auto homer = test_reflector_write::Parent{
+      {"Homer", "Simpson"}, {{"Bart", "Simpson"}, {"Lisa", "Simpson"}}};
 
   write(
       homer,
