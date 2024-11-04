@@ -3,6 +3,7 @@
 
 #include <type_traits>
 
+#include "internal/is_add_tags_to_variants_v.hpp"
 #include "internal/is_default_if_missing_v.hpp"
 #include "internal/is_no_extra_fields_v.hpp"
 #include "internal/is_no_field_names_v.hpp"
@@ -16,6 +17,7 @@ struct Processors;
 
 template <>
 struct Processors<> {
+  static constexpr bool add_tags_to_variants_ = false;
   static constexpr bool all_required_ = false;
   static constexpr bool default_if_missing_ = false;
   static constexpr bool no_extra_fields_ = false;
@@ -30,6 +32,10 @@ struct Processors<> {
 
 template <class Head, class... Tail>
 struct Processors<Head, Tail...> {
+  static constexpr bool add_tags_to_variants_ =
+      std::disjunction_v<internal::is_add_tags_to_variants<Head>,
+                         internal::is_add_tags_to_variants<Tail>...>;
+
   static constexpr bool all_required_ =
       std::disjunction_v<internal::is_no_optionals<Head>,
                          internal::is_no_optionals<Tail>...>;
