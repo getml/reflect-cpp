@@ -15,6 +15,7 @@ struct button_pressed_t {};
 struct button_released_t {};
 
 struct key_pressed_t {
+  using Tag = rfl::Literal<"key_pressed">;
   char key;
 };
 
@@ -27,6 +28,6 @@ TEST(json, test_add_tag_to_rfl_variant) {
 
   write_and_read<rfl::AddTagsToVariants>(
       vec,
-      R"([{"button_pressed_t":{}},{"button_released_t":{}},{"key_pressed_t":{"key":99}},{"int":3}])");
+      R"([{"button_pressed_t":{}},{"button_released_t":{}},{"key_pressed":{"key":99}},{"int":3}])");
 }
 }  // namespace test_add_tag_to_rfl_variant

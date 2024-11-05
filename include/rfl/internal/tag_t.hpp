@@ -9,8 +9,7 @@
 namespace rfl::internal {
 
 template <internal::StringLiteral _discriminator, class T>
-using tag_t =
-    typename std::invoke_result<decltype(make_tag<_discriminator, T>), T>::type;
+using tag_t = std::invoke_result_t<decltype(make_tag<_discriminator, T>), T>;
 
 }  // namespace rfl::internal
 
