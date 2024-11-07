@@ -3,6 +3,7 @@
 
 #include <msgpack.h>
 
+#include <bit>
 #include <cstddef>
 #include <exception>
 #include <string>
@@ -30,7 +31,7 @@ struct Reader {
       const size_t _idx, const InputArrayType _arr) const noexcept;
 
   rfl::Result<InputVarType> get_field_from_object(
-      const std::string& _name, const InputObjectType& _obj) const noexcept ;
+      const std::string& _name, const InputObjectType& _obj) const noexcept;
 
   bool is_empty(const InputVarType& _var) const noexcept;
 
@@ -49,7 +50,7 @@ struct Reader {
         return Error("Could not cast to a bytestring.");
       }
       const auto bin = _var.via.bin;
-      return rfl::Bytestring(reinterpret_cast<const std::byte*>(bin.ptr),
+      return rfl::Bytestring(std::bit_cast<const std::byte*>(bin.ptr),
                              bin.size);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != MSGPACK_OBJECT_BOOLEAN) {
@@ -74,8 +75,7 @@ struct Reader {
     }
   }
 
-  rfl::Result<InputArrayType> to_array(
-      const InputVarType& _var) const noexcept;
+  rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept;
 
   rfl::Result<InputObjectType> to_object(
       const InputVarType& _var) const noexcept;

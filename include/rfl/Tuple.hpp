@@ -3,8 +3,10 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cstdint>
 #include <limits>
+#include <memory>
 #include <optional>
 #include <stdexcept>
 #include <tuple>
@@ -55,17 +57,16 @@ class Tuple {
 
   /// Gets an element by index.
   template <int _index>
-  auto& get() {
+  constexpr auto& get() {
     using Type = internal::nth_element_t<_index, Types...>;
-    return *std::launder(reinterpret_cast<Type*>(data_.data() + pos<_index>()));
+    return *std::bit_cast<Type*>(data_.data() + pos<_index>());
   }
 
   /// Gets an element by index.
   template <int _index>
-  const auto& get() const {
+  constexpr const auto& get() const {
     using Type = internal::nth_element_t<_index, Types...>;
-    return *std::launder(
-        reinterpret_cast<const Type*>(data_.data() + pos<_index>()));
+    return *std::bit_cast<const Type*>(data_.data() + pos<_index>());
   }
 
   /// Assigns the underlying object.
@@ -132,7 +133,8 @@ class Tuple {
     const auto copy_one = [this]<int _i>(const auto& _other,
                                          std::integral_constant<int, _i>) {
       using Type = internal::nth_element_t<_i, Types...>;
-      new (data_.data() + pos<_i>()) Type(_other.template get<_i>());
+      ::new (static_cast<void*>(data_.data() + pos<_i>()))
+          Type(_other.template get<_i>());
     };
     (copy_one(_other, std::integral_constant<int, _is>{}), ...);
   }
@@ -143,7 +145,7 @@ class Tuple {
     const auto copy_one = [this]<int _i>(const auto& _t,
                                          std::integral_constant<int, _i>) {
       using Type = internal::nth_element_t<_i, Types...>;
-      new (data_.data() + pos<_i>()) Type(_t);
+      ::new (static_cast<void*>(data_.data() + pos<_i>())) Type(_t);
     };
     (copy_one(_types, std::integral_constant<int, _is>{}), ...);
   }
@@ -165,7 +167,8 @@ class Tuple {
     const auto move_one = [this]<int _i>(auto&& _other,
                                          std::integral_constant<int, _i>) {
       using Type = internal::nth_element_t<_i, Types...>;
-      new (data_.data() + pos<_i>()) Type(std::move(_other.template get<_i>()));
+      ::new (static_cast<void*>(data_.data() + pos<_i>()))
+          Type(std::move(_other.template get<_i>()));
     };
     (move_one(_other, std::integral_constant<int, _is>{}), ...);
   }
@@ -175,7 +178,7 @@ class Tuple {
     const auto move_one = [this]<int _i>(auto&& _t,
                                          std::integral_constant<int, _i>) {
       using Type = internal::nth_element_t<_i, Types...>;
-      new (data_.data() + pos<_i>()) Type(std::move(_t));
+      ::new (static_cast<void*>(data_.data() + pos<_i>())) Type(std::move(_t));
     };
     (move_one(std::move(_types), std::integral_constant<int, _is>{}), ...);
   }
@@ -192,25 +195,25 @@ class Tuple {
 
 /// Gets an element by index.
 template <int _index, class... Types>
-auto& get(rfl::Tuple<Types...>& _tup) {
+constexpr auto& get(rfl::Tuple<Types...>& _tup) {
   return _tup.template get<_index>();
 }
 
 /// Gets an element by index.
 template <int _index, class... Types>
-const auto& get(const rfl::Tuple<Types...>& _tup) {
+constexpr const auto& get(const rfl::Tuple<Types...>& _tup) {
   return _tup.template get<_index>();
 }
 
 /// Gets an element by index.
 template <int _index, class... Types>
-auto& get(std::tuple<Types...>& _tup) {
+constexpr auto& get(std::tuple<Types...>& _tup) {
   return std::get<_index>(_tup);
 }
 
 /// Gets an element by index.
 template <int _index, class... Types>
-const auto& get(const std::tuple<Types...>& _tup) {
+constexpr const auto& get(const std::tuple<Types...>& _tup) {
   return std::get<_index>(_tup);
 }
 
@@ -259,13 +262,13 @@ namespace std {
 
 /// Gets an element by index.
 template <int _index, class... Types>
-auto& get(rfl::Tuple<Types...>& _tup) {
+constexpr auto& get(rfl::Tuple<Types...>& _tup) {
   return _tup.template get<_index>();
 }
 
 /// Gets an element by index.
 template <int _index, class... Types>
-const auto& get(const rfl::Tuple<Types...>& _tup) {
+constexpr const auto& get(const rfl::Tuple<Types...>& _tup) {
   return _tup.template get<_index>();
 }
 

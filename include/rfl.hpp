@@ -8,7 +8,9 @@
 #endif
 
 #include "rfl/AddStructName.hpp"
+#include "rfl/AddTagsToVariants.hpp"
 #include "rfl/AllOf.hpp"
+#include "rfl/AllowRawPtrs.hpp"
 #include "rfl/AnyOf.hpp"
 #include "rfl/Attribute.hpp"
 #include "rfl/Binary.hpp"

@@ -24,6 +24,7 @@ concurrency:
 jobs:
   # Build job
   build:
+    if: github.repository == 'getml/reflect-cpp'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -40,6 +41,7 @@ jobs:
 
   # Deployment job
   deploy:
+    if: github.repository == 'getml/reflect-cpp'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

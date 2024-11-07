@@ -45,9 +45,21 @@ several problems with this:
 2) It leads to confusing error messages: If none of the alternatives can be matched, you will get an error message telling you why each of the alternatives couldn't be matched. Such error messages are very long-winding and hard to read.
 3) It is dangerous. Imagine we had written `rfl::Variant<Circle, Square, Rectangle>` instead of `rfl::Variant<Circle, Rectangle, Square>`. This would mean that `Rectangle` could never be matched, because the fields in `Square` are a subset of `Rectangle`. This leads to very confusing bugs.
 
+## Automatic tags
+
+The easiest way to solve this problem is to simply add tags automatically. You can do so by using `rfl::AddTagsToVariants`:
+
+```cpp
+const auto json_string = rfl::json::write<rfl::AddTagsToVariants>(r);
+
+const auto r2 = rfl::json::read<Shapes, rfl::AddTagsToVariants>(json_string);
+```
+
+Please refer to the section on processors in this documentation for more information.
+
 ## `rfl::TaggedUnion` (internally tagged)
 
-One way to solve this problem is to add a tag inside the class. That is why we have provided a helper class for these purposes: `rfl::TaggedUnion`.
+Another way to solve this problem is to add a tag inside the class. That is why we have provided a helper class for these purposes: `rfl::TaggedUnion`.
 
 TaggedUnions use the name of the struct as an identifying tag. It will then try to take that field from the JSON object, match it to the correct alternative and then only parse the correct alternative.
 

@@ -19,7 +19,7 @@ auto wrap_tuple(const rfl::Tuple<Types...>& _tuple) {
 
 template <class... Types>
 auto wrap_tuple(rfl::Tuple<Types...>&& _tuple) {
-  return TupleWrapper<Types...>{std::move(_tuple)};
+  return TupleWrapper<Types...>{std::forward<rfl::Tuple<Types...> >(_tuple)};
 }
 
 template <class... Types1, class... Types2, int... _is, int... _js>
@@ -46,7 +46,8 @@ auto concat(const Head& _head, const Tail&... _tail) {
 
 template <class Head, class... Tail>
 auto concat(Head&& _head, Tail&&... _tail) {
-  return (wrap_tuple(std::move(_head)) + ... + wrap_tuple(std::move(_tail)))
+  return (wrap_tuple(std::forward<Head>(_head)) + ... +
+          wrap_tuple(std::forward<Tail>(_tail)))
       .tuple_;
 }
 

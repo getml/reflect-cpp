@@ -34,6 +34,8 @@ The resulting JSON string looks like this:
 reflect-cpp currently supports the following processors:
 
 - `rfl::AddStructName` 
+- `rfl::AddTagsToVariants` 
+- `rfl::AllowRawPtrs` 
 - `rfl::DefaultIfMissing` 
 - `rfl::NoExtraFields` 
 - `rfl::NoFieldNames` 
@@ -58,6 +60,93 @@ The resulting JSON string looks like this:
 
 ```json
 {"type":"Person","first_name":"Homer","last_name":"Simpson","age":45}
+```
+
+### `rfl::AddStructsToVariants` 
+
+This processor automatically adds structs to variants. Consider the following example:
+
+```cpp
+struct button_pressed_t {};
+
+struct button_released_t {};
+
+struct key_pressed_t {
+  char key;
+};
+
+using my_event_type_t =
+    std::variant<button_pressed_t, button_released_t, key_pressed_t, int>;
+```
+
+The problem here is that `button_pressed_t` and `butten_released_t` virtually look
+indistinguishable. The will both be serialized to `{}`.
+
+But you can add this processor to automatically add tags and avoid the problem:
+
+```cpp
+const auto vec = std::vector<my_event_type_t>(
+  {button_pressed_t{}, button_released_t{}, key_pressed_t{'c'}, 3});
+
+const auto json_string = rfl::json::write<rfl::AddTagsToVariants>(vec);
+
+rfl::json::write<std::vector<my_event_type_t>, rfl::AddTagsToVariants>(json_string);
+```
+
+`vec` will now be serialized as follows:
+
+```json
+[{"button_pressed_t":{}},{"button_released_t":{}},{"key_pressed_t":{"key":99}},{"int":3}]
+```
+
+You can also set your own custom tags like this:
+
+```cpp
+struct key_pressed_t {
+  using Tag = rfl::Literal<"your_custom_tag">;
+  char key;
+};
+```
+
+`key_pressed_t` will now be serialized as follows:
+
+```json
+{"your_custom_tag":{"key":99}}
+```
+
+### `rfl::AllowRawPtrs`
+
+By default, reflect-cpp does not allow *reading into* raw pointers. (*Writing from* raw pointers is never a problem.) This is because reading into raw pointers means that the library will allocate memory that the user then has to manually delete. This can lead to misunderstandings and memory leaks.
+
+You might want to consider using some alternatives, such as `std::unique_ptr`, `rfl::Box`, 
+`std::shared_ptr`, `rfl::Ref` or `std::optional`. But if you absolutely have to use raw pointers, you can pass `rfl::AllowRawPtrs` to `read`:
+
+```cpp
+struct Person {
+  rfl::Rename<"firstName", std::string> first_name;
+  rfl::Rename<"lastName", std::string> last_name = "Simpson";
+  std::vector<Person>* children;`
+};
+
+const auto person =
+  rfl::json::read<Person, rfl::AllowRawPtrs>(json_str);
+```
+
+However, you must keep in mind that it is now **YOUR** responsibility
+to clean up. Otherwise, there **WILL** be a memory leak.
+
+```cpp
+void delete_raw_pointers(const Person& _person) {
+    if (!_person.children) {
+        return;
+    }
+    for (const auto& child: _person.children) {
+        delete_raw_pointers(child);
+    }
+    delete _person.children;
+}
+
+delete_raw_pointers(person);
 ```
 
 ### `rfl::DefaultIfMissing`

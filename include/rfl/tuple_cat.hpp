@@ -13,7 +13,8 @@ auto tuple_cat(const Head& _head, const Tail&... _tail) {
 
 template <class Head, class... Tail>
 auto tuple_cat(Head&& _head, Tail&&... _tail) {
-  return internal::tuple::concat(std::move(_head), std::move(_tail)...);
+  return internal::tuple::concat(std::forward<Head>(_head),
+                                 std::forward<Tail>(_tail)...);
 }
 
 inline auto tuple_cat() { return rfl::Tuple(); }

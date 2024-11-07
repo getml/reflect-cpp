@@ -1,16 +1,32 @@
-name: linux-gcc 
+name: linux
 
-on: [ pull_request ]
+on: [ pull_request, workflow_dispatch ]
 
 env: 
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
 jobs:
-  linux-gcc:
-    runs-on: ubuntu-latest
+  linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - compiler: llvm
+            compiler-version: 16
+          - compiler: llvm
+            compiler-version: 18
+          - compiler: gcc
+            compiler-version: 11
+            additional-dep: "g++-11"
+          - compiler: gcc
+            compiler-version: 12
+          - compiler: gcc
+            compiler-version: 14
+    name: "${{ github.job }} (${{ matrix.compiler }}-${{ matrix.compiler-version }})"
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
@@ -20,29 +36,34 @@ jobs:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: "${{ github.job }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}"
+          max-size: "2G"
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
-      - name: install dependencies
+      - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y g++
-      - name: Compile 
+          sudo apt install -y ninja-build ${{ matrix.additional-dep }}
+      - name: Compile
         run: |
-          g++ --version
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
-          cmake --build build -j 4
-      - name: Run tests 
+          if [[ "${{ matrix.compiler }}" == "llvm" ]]; then
+            export CC=clang-${{ matrix.compiler-version }}
+            export CXX=clang++-${{ matrix.compiler-version }}
+          elif [[ "${{ matrix.compiler }}" == "gcc" ]]; then
+            export CC=gcc-${{ matrix.compiler-version }}
+            export CXX=g++-${{ matrix.compiler-version }}
+          fi
+          sudo ln -s $(which ccache) /usr/local/bin/$CC
+          sudo ln -s $(which ccache) /usr/local/bin/$CXX
+          $CXX --version
+          cmake -S . -B build -G Ninja -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
+      - name: Run tests
         run: |
-          ./build/tests/bson/reflect-cpp-bson-tests
-          ./build/tests/cbor/reflect-cpp-cbor-tests
-          ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
-          ./build/tests/generic/reflect-cpp-generic-tests
-          ./build/tests/json/reflect-cpp-json-tests
-          ./build/tests/json_c_arrays_and_inheritance/reflect-cpp-json-c-arrays-and-inheritance-tests
-          ./build/tests/msgpack/reflect-cpp-msgpack-tests
-          ./build/tests/toml/reflect-cpp-toml-tests
-          ./build/tests/xml/reflect-cpp-xml-tests
-          ./build/tests/yaml/reflect-cpp-yaml-tests
+          ctest --test-dir build --output-on-failure
       - name: Run benchmarks
         run: |
           echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY 
@@ -61,5 +82,3 @@ jobs:
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=licenses >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-
-

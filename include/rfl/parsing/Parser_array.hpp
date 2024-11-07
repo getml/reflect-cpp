@@ -2,6 +2,7 @@
 #define RFL_PARSING_PARSER_ARRAY_HPP_
 
 #include <array>
+#include <bit>
 #include <map>
 #include <type_traits>
 #include <vector>
@@ -32,7 +33,7 @@ struct Parser<R, W, std::array<T, _size>, ProcessorsType> {
         [&](const InputArrayType& _arr) -> Result<std::array<T, _size>> {
       alignas(
           std::array<T, _size>) unsigned char buf[sizeof(std::array<T, _size>)];
-      auto ptr = std::launder(reinterpret_cast<std::array<T, _size>*>(buf));
+      auto ptr = std::bit_cast<std::array<T, _size>*>(&buf);
       const auto array_reader =
           ArrayReader<R, W, ProcessorsType, T, _size>(&_r, ptr);
       auto err = _r.read_array(array_reader, _arr);

@@ -22,14 +22,28 @@ struct Parser<R, W, T*, ProcessorsType> {
   using ParentType = Parent<W>;
 
   /// Expresses the variables as type T.
-  static Result<T*> read(const R&, const InputVarType&) noexcept {
-    static_assert(always_false_v<T>,
-                  "Reading into raw pointers is dangerous and "
-                  "therefore unsupported. "
-                  "Please consider using std::unique_ptr, rfl::Box, "
-                  "std::shared_ptr, "
-                  "rfl::Ref or std::optional instead.");
-    return Error("Unsupported.");
+  static Result<T*> read(const R& _r, const InputVarType& _var) noexcept {
+    if constexpr (!ProcessorsType::allow_raw_ptrs_) {
+      static_assert(
+          always_false_v<T>,
+          "Reading into raw pointers is dangerous and "
+          "therefore unsupported by default. "
+          "Please consider using std::unique_ptr, rfl::Box, "
+          "std::shared_ptr, "
+          "rfl::Ref or std::optional instead. "
+          "If you absolutely must use raw pointers, "
+          "you can pass the rfl::AllowRawPtrs processor. "
+          "Please note that it is then YOUR responsibility "
+          "to delete the allocated memory. Please also refer "
+          "to the related documentation (in the section on processors).");
+      return Error("Unsupported.");
+    } else {
+      if (_r.is_empty(_var)) {
+        return nullptr;
+      }
+      return Parser<R, W, T, ProcessorsType>::read(_r, _var).transform(
+          [](T&& _t) { return new T(std::move(_t)); });
+    }
   }
 
   template <class P>

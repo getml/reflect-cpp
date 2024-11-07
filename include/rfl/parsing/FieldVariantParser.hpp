@@ -64,14 +64,12 @@ struct FieldVariantParser {
         "Externally tagged variants cannot have duplicate field "
         "names.");
 
-    const auto handle = [&](const auto& _field) {
+    _v.visit([&](const auto& _field) {
       const auto named_tuple = make_named_tuple(internal::to_ptr_field(_field));
       using NamedTupleType = std::remove_cvref_t<decltype(named_tuple)>;
       Parser<R, W, NamedTupleType, ProcessorsType>::write(_w, named_tuple,
                                                           _parent);
-    };
-
-    rfl::visit(handle, _v);
+    });
   }
 
   static schema::Type to_schema(

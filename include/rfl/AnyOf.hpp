@@ -1,6 +1,7 @@
 #ifndef RFL_ANYOF_HPP_
 #define RFL_ANYOF_HPP_
 
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,13 +29,13 @@ struct AnyOf {
 
  private:
   static Error make_error_message(const std::vector<Error>& _errors) {
-    std::string msg =
-        "Expected at least one of the following validations to pass, but none "
-        "of them did:";
+    std::stringstream stream;
+    stream << "Expected at least one of the following validations to pass, but "
+              "none of them did:";
     for (size_t i = 0; i < _errors.size(); ++i) {
-      msg += "\n" + std::to_string(i + 1) + ") " + _errors.at(i).what();
+      stream << "\n" << i + 1 << ") " << _errors.at(i).what();
     }
-    return Error(msg);
+    return Error(stream.str());
   }
 
   template <class T, class Head, class... Tail>

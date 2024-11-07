@@ -1,9 +1,9 @@
 #ifndef RFL_INTERNAL_BIND_TO_TUPLE_HPP_
 #define RFL_INTERNAL_BIND_TO_TUPLE_HPP_
 
+#include <cassert>
 #include <cstddef>
 #include <iostream>
-#include <tuple>
 #include <type_traits>
 #include <utility>
 
@@ -42,8 +42,8 @@ struct tuple_view_helper<0> {
     n, ...)                                                                             \
   template <>                                                                           \
   struct tuple_view_helper<n> {                                                         \
-    static auto tuple_view(auto& t) {                                                   \
-      auto& [__VA_ARGS__] = t;                                                          \
+    static auto tuple_view(auto& _t) {                                                  \
+      auto& [__VA_ARGS__] = _t;                                                         \
       return [](auto&... _refs) {                                                       \
         return rfl::make_tuple(&_refs...);                                              \
       }(__VA_ARGS__);                                                                   \
@@ -2822,13 +2822,13 @@ RFL_INTERNAL_TUPLE_VIEW_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS(
 #undef RFL_INTERNAL_TUPLE_VIEW_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS
 
 template <class T>
-auto tuple_view(T& t) {
-  return tuple_view_helper<num_fields<T>>::tuple_view(t);
+auto bind_to_tuple(T& _t) {
+  return tuple_view_helper<num_fields<T>>::tuple_view(_t);
 }
 
 template <class T, typename F>
 auto bind_to_tuple(T& _t, const F& _f) {
-  auto view = tuple_view(_t);
+  auto view = bind_to_tuple(_t);
   return [&]<std::size_t... _is>(std::index_sequence<_is...>) {
     return rfl::make_tuple(_f(rfl::get<_is>(view))...);
   }

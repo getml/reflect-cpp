@@ -85,9 +85,9 @@ struct Writer {
   OutputVarType add_null_to_object(const std::string_view& _name,
                                    OutputObjectType* _parent) const noexcept;
 
-  void end_array(OutputArrayType* _arr) const noexcept {}
+  void end_array(OutputArrayType*) const noexcept {}
 
-  void end_object(OutputObjectType* _obj) const noexcept {}
+  void end_object(OutputObjectType*) const noexcept {}
 
   OutputVarType& root() { return root_; }
 

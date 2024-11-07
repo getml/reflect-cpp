@@ -1,16 +1,20 @@
-name: macos-clang-arm 
+name: macos-clang
 
-on: [ pull_request ]
+on: [ pull_request, workflow_dispatch ]
 
 env: 
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
 jobs:
-  macos-clang-arm:
-    runs-on: macos-latest
+  macos-clang:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["macos-latest", "macos-13"]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
           fetch-depth: 0
@@ -20,31 +24,32 @@ jobs:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: "${{ github.job }}-${{ matrix.os }}"
+          max-size: "2G"
+          create-symlink: true
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
       - name: Install ninja 
-        run: brew install ninja 
-      - name: Compile 
+        run: brew install ninja
+        if: matrix.os == 'macos-latest'
+      - name: Compile
         env:
           CC: clang
           CXX: clang++
-          VCPKG_FORCE_SYSTEM_BINARIES: arm  
         run: |
-          clang --version
-          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_MAKE_PROGRAM=make 
+          if [[ "${{ matrix.os == 'macos-latest' }}" == "true" ]]; then
+            export VCPKG_FORCE_SYSTEM_BINARIES=arm
+            export CMAKE_GENERATOR=Ninja
+          fi
+          $CXX --version
+          cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
           cmake --build build -j 4
-      - name: Run tests 
+      - name: Run tests
         run: |
-          ./build/tests/bson/reflect-cpp-bson-tests
-          ./build/tests/cbor/reflect-cpp-cbor-tests
-          ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
-          ./build/tests/generic/reflect-cpp-generic-tests
-          ./build/tests/json/reflect-cpp-json-tests
-          ./build/tests/json_c_arrays_and_inheritance/reflect-cpp-json-c-arrays-and-inheritance-tests
-          ./build/tests/msgpack/reflect-cpp-msgpack-tests
-          ./build/tests/toml/reflect-cpp-toml-tests
-          ./build/tests/xml/reflect-cpp-xml-tests
-          ./build/tests/yaml/reflect-cpp-yaml-tests
+          ctest --test-dir build --output-on-failure
       - name: Run benchmarks
         run: |
           echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY 

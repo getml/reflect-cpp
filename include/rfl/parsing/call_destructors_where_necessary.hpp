@@ -43,7 +43,7 @@ void call_destructor_on_one_if_necessary(const std::array<bool, _size>& _set,
   }
 }
 
-template <class ViewType, unsigned long _size>
+template <class ViewType, auto _size>
 void call_destructors_where_necessary(const std::array<bool, _size>& _set,
                                       ViewType* _view) {
   [&]<int... is>(std::integer_sequence<int, is...>) {

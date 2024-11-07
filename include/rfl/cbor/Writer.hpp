@@ -3,6 +3,7 @@
 
 #include <cbor.h>
 
+#include <bit>
 #include <exception>
 #include <map>
 #include <sstream>
@@ -58,8 +59,8 @@ class Writer {
   OutputArrayType add_array_to_array(const size_t _size,
                                      OutputArrayType* _parent) const noexcept;
 
-  OutputArrayType add_array_to_object(
-      const std::string_view& _name, const size_t _size,
+  OutputArrayType add_array_to_object(const std::string_view& _name,
+                                      const size_t _size,
                                       OutputObjectType* _parent) const noexcept;
 
   OutputObjectType add_object_to_array(const size_t _size,
@@ -106,7 +107,7 @@ class Writer {
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
       cbor_encode_byte_string(
-          _parent, reinterpret_cast<const uint8_t*>(_var.c_str()), _var.size());
+          _parent, std::bit_cast<const uint8_t*>(_var.c_str()), _var.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       cbor_encode_boolean(_parent, _var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
