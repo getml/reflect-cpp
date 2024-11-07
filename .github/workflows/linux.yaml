@@ -17,6 +17,7 @@ jobs:
             compiler-version: 18
           - compiler: llvm
             compiler-version: 19
+            additional-dep: "clang++-19"
           - compiler: gcc
             compiler-version: 11
             additional-dep: "g++-11"
