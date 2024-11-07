@@ -62,9 +62,9 @@ The resulting JSON string looks like this:
 {"type":"Person","first_name":"Homer","last_name":"Simpson","age":45}
 ```
 
-### `rfl::AddStructsToVariants` 
+### `rfl::AddTagsToVariants` 
 
-This processor automatically adds structs to variants. Consider the following example:
+This processor automatically adds tags to variants. Consider the following example:
 
 ```cpp
 struct button_pressed_t {};
@@ -79,8 +79,8 @@ using my_event_type_t =
     std::variant<button_pressed_t, button_released_t, key_pressed_t, int>;
 ```
 
-The problem here is that `button_pressed_t` and `butten_released_t` virtually look
-indistinguishable. The will both be serialized to `{}`.
+The problem here is that `button_pressed_t` and `button_released_t` virtually look
+indistinguishable when they are serialized. The will both be serialized to `{}`.
 
 But you can add this processor to automatically add tags and avoid the problem:
 
@@ -113,6 +113,9 @@ struct key_pressed_t {
 ```json
 {"your_custom_tag":{"key":99}}
 ```
+
+Note that there are other ways to address problems like this, for instance `rfl::TaggedUnion`.
+Please refer to the relevant sections of the documentation.
 
 ### `rfl::AllowRawPtrs`
 
