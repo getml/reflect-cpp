@@ -2,7 +2,6 @@
 #define RFL_VARIANT_HPP_
 
 #include <array>
-#include <bit>
 #include <cstdint>
 #include <limits>
 #include <optional>
@@ -14,7 +13,6 @@
 #include "internal/nth_element_t.hpp"
 #include "internal/variant/find_max_size.hpp"
 #include "internal/variant/is_alternative_type.hpp"
-#include "internal/variant/is_convertible_to.hpp"
 #include "internal/variant/result_t.hpp"
 
 namespace rfl {
@@ -152,80 +150,40 @@ class Variant {
   }
 
   template <class F>
-  result_t<F> visit(F& _f) {
+  result_t<F> visit(F&& _f) {
     using ResultType = result_t<F>;
     if constexpr (std::is_same_v<ResultType, void>) {
       bool visited = false;
-      do_visit_no_result(_f, &visited,
+      do_visit_no_result(std::forward<F>(_f), &visited,
                          std::make_integer_sequence<IndexType, size_>());
     } else if constexpr (std::is_reference_v<ResultType>) {
       std::remove_reference_t<ResultType>* res = nullptr;
-      do_visit_with_reference(_f, &res,
+      do_visit_with_reference(std::forward<F>(_f), &res,
                               std::make_integer_sequence<IndexType, size_>());
       return *res;
     } else {
       auto res = std::optional<ResultType>();
-      do_visit_with_result(_f, &res,
+      do_visit_with_result(std::forward<F>(_f), &res,
                            std::make_integer_sequence<IndexType, size_>());
       return std::move(*res);
     }
   }
 
   template <class F>
-  result_t<F> visit(F& _f) const {
+  result_t<F> visit(F&& _f) const {
     using ResultType = result_t<F>;
     if constexpr (std::is_same_v<ResultType, void>) {
       bool visited = false;
-      do_visit_no_result(_f, &visited,
+      do_visit_no_result(std::forward<F>(_f), &visited,
                          std::make_integer_sequence<IndexType, size_>());
     } else if constexpr (std::is_reference_v<ResultType>) {
       std::remove_reference_t<ResultType>* res = nullptr;
-      do_visit_with_reference(_f, &res,
+      do_visit_with_reference(std::forward<F>(_f), &res,
                               std::make_integer_sequence<IndexType, size_>());
       return *res;
     } else {
       auto res = std::optional<ResultType>();
-      do_visit_with_result(_f, &res,
-                           std::make_integer_sequence<IndexType, size_>());
-      return std::move(*res);
-    }
-  }
-
-  template <class F>
-  result_t<F> visit(const F& _f) {
-    using ResultType = std::remove_reference_t<result_t<F>>;
-    if constexpr (std::is_same_v<ResultType, void>) {
-      bool visited = false;
-      do_visit_no_result(_f, &visited,
-                         std::make_integer_sequence<IndexType, size_>());
-    } else if constexpr (std::is_reference_v<ResultType>) {
-      std::remove_reference_t<ResultType>* res = nullptr;
-      do_visit_with_reference(_f, &res,
-                              std::make_integer_sequence<IndexType, size_>());
-      return *res;
-    } else {
-      auto res = std::optional<ResultType>();
-      do_visit_with_result(_f, &res,
-                           std::make_integer_sequence<IndexType, size_>());
-      return std::move(*res);
-    }
-  }
-
-  template <class F>
-  result_t<F> visit(const F& _f) const {
-    using ResultType = result_t<F>;
-    if constexpr (std::is_same_v<ResultType, void>) {
-      bool visited = false;
-      do_visit_no_result(_f, &visited,
-                         std::make_integer_sequence<IndexType, size_>());
-    } else if constexpr (std::is_reference_v<ResultType>) {
-      std::remove_reference_t<ResultType>* res = nullptr;
-      do_visit_with_reference(_f, &res,
-                              std::make_integer_sequence<IndexType, size_>());
-      return *res;
-    } else {
-      auto res = std::optional<ResultType>();
-      do_visit_with_result(_f, &res,
+      do_visit_with_result(std::forward<F>(_f), &res,
                            std::make_integer_sequence<IndexType, size_>());
       return std::move(*res);
     }
@@ -458,6 +416,11 @@ class Variant {
 
   /// The underlying data, can be any of the underlying types.
   alignas(AlternativeTypes...) DataType data_;
+};
+
+template <typename V>
+concept VariantBased = requires(std::decay_t<V> v) {
+  []<typename... Args>(Variant<Args...> const&) {}(v);
 };
 
 template <class T, class... Types>
