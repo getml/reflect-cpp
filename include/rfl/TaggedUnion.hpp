@@ -113,6 +113,12 @@ struct TaggedUnion {
   VariantType variant_;
 };
 
+template <typename T>
+concept TaggedUnionBased = requires(T t) {
+  []<internal::StringLiteral _discriminator, typename... Args>(
+      TaggedUnion<_discriminator, Args...> const&) {}(t);
+};
+
 template <class T>
 struct PossibleTags;
 
