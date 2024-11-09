@@ -3,7 +3,7 @@
 
 #include <cstddef>
 #include <exception>
-#include <jsoncons_ext/ubjson/ubjson_cursor.hpp>
+#include <jsoncons/json.hpp>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -15,24 +15,27 @@
 
 namespace rfl::ubjson {
 
-struct Reader {
-  using CursorType = jsoncons::ubjson::ubjson_bytes_cursor;
-
+class Reader {
+ public:
   struct UBJSONInputArray {
-    CursorType* cursor_;
+    jsoncons::json* val_;
   };
 
   struct UBJSONInputObject {
-    CursorType* cursor_;
+    jsoncons::json* val_;
   };
 
   struct UBJSONInputVar {
-    CursorType* cursor_;
+    jsoncons::json* val_;
   };
 
   using InputArrayType = UBJSONInputArray;
   using InputObjectType = UBJSONInputObject;
   using InputVarType = UBJSONInputVar;
+
+  Reader() {}
+
+  ~Reader() = default;
 
   template <class T>
   static constexpr bool has_custom_constructor = (requires(InputVarType var) {
@@ -49,85 +52,63 @@ struct Reader {
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
-    const auto& event = _var.cursor_->current();
-    const auto event_type = event.event_type();
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      if (event_type != jsoncons::staj_event_type::string_value) {
+      if (!_var.val_->is_string()) {
         return Error("Could not cast to string.");
       }
-      return std::string(event.get<std::string_view>());
-
-      /*    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                            rfl::Bytestring>()) {
-            if (!ubjson_value_is_byte_string(&_var.val_)) {
-              return Error("Could not cast to bytestring.");
-            }
-            rfl::Bytestring bstr;
-            const auto err = get_bytestring(&_var.val_, &bstr);
-            if (err != CborNoError) {
-              return Error(ubjson_error_string(err));
-            }
-            return bstr;*/
+      return _var.val_->as<std::string>();
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      if (!_var.val_->is_byte_string()) {
+        return Error("Could not cast to bytestring.");
+      }
+      return rfl::Bytestring();  // TODO
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
-      if (event_type != jsoncons::staj_event_type::bool_value) {
+      if (!_var.val_->is_bool()) {
         return rfl::Error("Could not cast to boolean.");
       }
-      return std::string(event.get<bool>());
+      return _var.val_->as<bool>();
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
                          std::is_integral<std::remove_cvref_t<T>>()) {
-      switch (event_type) {
-        case jsoncons::staj_event_type::int64_value:
-          return static_cast<T>(event.get<int64_t>());
-        case jsoncons::staj_event_type::uint64_value:
-          return static_cast<T>(event.get<uint64_t>());
-        case jsoncons::staj_event_type::double_value:
-          return static_cast<T>(event.get<double>());
-        default:
-          return rfl::Error(
-              "Could not cast to numeric value. The type must be integral, "
-              "float or double.");
+      if (_var.val_->is_double()) {
+        return static_cast<T>(_var.val_->as<double>());
       }
+      if (_var.val_->is_int64()) {
+        return static_cast<T>(_var.val_->as<int64_t>());
+      }
+      if (_var.val_->is_uint64()) {
+        return static_cast<T>(_var.val_->as<uint64_t>());
+      }
+      return rfl::Error(
+          "Could not cast to numeric value. The type must be integral, "
+          "float or double.");
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
   }
 
-  rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept;
+  rfl::Result<InputArrayType> to_array(InputVarType _var) const noexcept;
 
-  rfl::Result<InputObjectType> to_object(
-      const InputVarType& _var) const noexcept;
+  rfl::Result<InputObjectType> to_object(InputVarType _var) const noexcept;
 
   template <class ArrayReader>
-  std::optional<Error> read_array(const ArrayReader& _array_reader,
-                                  const InputArrayType& _arr) const noexcept {
-    for (const auto& event = _arr.cursor_->current();
-         event.event_type() != jsoncons::staj_event_type::end_array;
-         _arr.cursor_->next()) {
-      const auto err = _array_reader.read(InputVarType{_arr.cursor_});
+  std::optional<Error> read_array(ArrayReader _array_reader,
+                                  InputArrayType _arr) const noexcept {
+    for (auto& val : _arr.val_->array_range()) {
+      const auto err = _array_reader.read(InputVarType{&val});
       if (err) {
-        // TODO: Go to end of cursor
         return err;
       }
     }
-    _arr.cursor_->next();
     return std::nullopt;
   }
 
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
-                                   const InputObjectType& _obj) const noexcept {
-    for (const auto& event = _obj.cursor_->current();
-         event.event_type() != jsoncons::staj_event_type::end_object;
-         _obj.cursor_->next()) {
-      if (event.event_type() != jsoncons::staj_event_type::key) {
-        _obj.cursor_->reset();
-        _obj.cursor_->reset();
-        return Error("Expected a key.");
-      }
-      const auto key = event.get<std::string_view>();
-      _object_reader.read(key, InputVarType{_obj.cursor_});
+                                   InputObjectType _obj) const noexcept {
+    for (auto& kv : _obj.val_->object_range()) {
+      _object_reader.read(kv.key(), InputVarType{&kv.value()});
     }
-    _obj.cursor_->next();
     return std::nullopt;
   }
 

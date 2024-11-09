@@ -3,7 +3,8 @@
 
 #include <bit>
 #include <istream>
-#include <jsoncons_ext/ubjson/ubjson_cursor.hpp>
+#include <jsoncons/json.hpp>
+#include <jsoncons_ext/ubjson/decode_ubjson.hpp>
 #include <string>
 
 #include "../Processors.hpp"
@@ -23,9 +24,9 @@ Result<internal::wrap_in_rfl_array_t<T>> read(const char* _bytes,
   auto buffer =
       std::vector<uint8_t>(std::bit_cast<const uint8_t*>(_bytes),
                            std::bit_cast<const uint8_t*>(_bytes) + _size);
-  auto cursor = jsoncons::ubjson::ubjson_bytes_cursor(buffer);
+  auto val = jsoncons::ubjson::decode_ubjson<jsoncons::json>(buffer);
   auto r = Reader();
-  auto result = Parser<T, Processors<Ps...>>::read(r, InputVarType{&cursor});
+  auto result = Parser<T, Processors<Ps...>>::read(r, InputVarType{&val});
   return result;
 }
 
