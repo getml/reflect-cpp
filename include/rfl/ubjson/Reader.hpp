@@ -59,10 +59,12 @@ class Reader {
       return _var.val_->as<std::string>();
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
-      if (!_var.val_->is_byte_string()) {
+      if (!_var.val_->is<std::vector<uint8_t>>()) {
         return Error("Could not cast to bytestring.");
       }
-      return rfl::Bytestring();  // TODO
+      const auto vec = _var.val_->as<std::vector<uint8_t>>();
+      return rfl::Bytestring(std::bit_cast<const std::byte*>(vec.data()),
+                             vec.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var.val_->is_bool()) {
         return rfl::Error("Could not cast to boolean.");
