@@ -88,9 +88,11 @@
 
 6.6) [TOML](https://github.com/getml/reflect-cpp/blob/main/docs/toml.md)
 
-6.7) [XML](https://github.com/getml/reflect-cpp/blob/main/docs/xml.md)
+6.7) [UBJSON](https://github.com/getml/reflect-cpp/blob/main/docs/ubjson.md)
 
-6.8) [YAML](https://github.com/getml/reflect-cpp/blob/main/docs/yaml.md)
+6.8) [XML](https://github.com/getml/reflect-cpp/blob/main/docs/xml.md)
+
+6.9) [YAML](https://github.com/getml/reflect-cpp/blob/main/docs/yaml.md)
 
 ## 7) Advanced topics
 
