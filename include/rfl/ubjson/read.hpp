@@ -19,29 +19,18 @@ using InputVarType = typename Reader::InputVarType;
 
 /// Parses an object from UBJSON using reflection.
 template <class T, class... Ps>
-Result<internal::wrap_in_rfl_array_t<T>> read(const char* _bytes,
-                                              const size_t _size) {
-  auto buffer =
-      std::vector<uint8_t>(std::bit_cast<const uint8_t*>(_bytes),
-                           std::bit_cast<const uint8_t*>(_bytes) + _size);
-  auto val = jsoncons::ubjson::decode_ubjson<jsoncons::json>(buffer);
+Result<internal::wrap_in_rfl_array_t<T>> read(const std::vector<char>& _bytes) {
+  auto val = jsoncons::ubjson::decode_ubjson<jsoncons::json>(_bytes);
   auto r = Reader();
-  auto result = Parser<T, Processors<Ps...>>::read(r, InputVarType{&val});
-  return result;
-}
-
-/// Parses an object from UBJSON using reflection.
-template <class T, class... Ps>
-auto read(const std::vector<char>& _bytes) {
-  return read<T, Ps...>(_bytes.data(), _bytes.size());
+  return Parser<T, Processors<Ps...>>::read(r, InputVarType{&val});
 }
 
 /// Parses an object from a stream.
 template <class T, class... Ps>
-auto read(std::istream& _stream) {
-  std::istreambuf_iterator<char> begin(_stream), end;
-  auto bytes = std::vector<char>(begin, end);
-  return read<T, Ps...>(bytes.data(), bytes.size());
+Result<internal::wrap_in_rfl_array_t<T>> read(std::istream& _stream) {
+  auto val = jsoncons::ubjson::decode_ubjson<jsoncons::json>(_stream);
+  auto r = Reader();
+  return Parser<T, Processors<Ps...>>::read(r, InputVarType{&val});
 }
 
 }  // namespace rfl::ubjson
