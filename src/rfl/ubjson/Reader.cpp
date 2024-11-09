@@ -25,7 +25,7 @@ bool Reader::is_empty(const InputVarType& _var) const noexcept {
 }
 
 rfl::Result<Reader::InputArrayType> Reader::to_array(
-    InputVarType _var) const noexcept {
+    const InputVarType& _var) const noexcept {
   if (!_var.val_->is_array()) {
     return Error("Could not cast to an array.");
   }
@@ -33,7 +33,7 @@ rfl::Result<Reader::InputArrayType> Reader::to_array(
 }
 
 rfl::Result<Reader::InputObjectType> Reader::to_object(
-    InputVarType _var) const noexcept {
+    const InputVarType& _var) const noexcept {
   if (!_var.val_->is_object()) {
     return Error("Could not cast to an object.");
   }
