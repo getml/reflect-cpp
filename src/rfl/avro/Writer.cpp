@@ -1,83 +1,74 @@
-#include "rfl/cbor/Writer.hpp"
+#include "rfl/avro/Writer.hpp"
 
-namespace rfl::cbor {
+namespace rfl::avro {
 
-Writer::Writer(CborEncoder* _encoder) : encoder_(_encoder) {}
+Writer::Writer() {}
 
 Writer::~Writer() = default;
 
 Writer::OutputArrayType Writer::array_as_root(
     const size_t _size) const noexcept {
-  return new_array(_size, encoder_);
+  return OutputArrayType{*root_};
 }
 
 Writer::OutputObjectType Writer::object_as_root(
     const size_t _size) const noexcept {
-  return new_object(_size, encoder_);
+  return OutputObjectType{*root_};
 }
 
 Writer::OutputVarType Writer::null_as_root() const noexcept {
-  cbor_encode_null(encoder_);
-  return OutputVarType{};
+  avro_value_set_null(root_);
+  return OutputVarType{*root_};
 }
 
 Writer::OutputArrayType Writer::add_array_to_array(
     const size_t _size, OutputArrayType* _parent) const noexcept {
-  return new_array(_size, _parent->encoder_);
+  avro_value_t new_array;
+  avro_value_append(&_parent->val_, &new_array, nullptr);
+  return OutputArrayType{new_array};
 }
 
 Writer::OutputArrayType Writer::add_array_to_object(
     const std::string_view& _name, const size_t _size,
     OutputObjectType* _parent) const noexcept {
-  cbor_encode_text_string(_parent->encoder_, _name.data(), _name.size());
-  return new_array(_size, _parent->encoder_);
+  avro_value_t new_array;
+  avro_value_get_by_name(&_parent->val_, _name.c_str(), &new_array, nullptr);
+  return OutputArrayType{new_array};
 }
 
 Writer::OutputObjectType Writer::add_object_to_array(
     const size_t _size, OutputArrayType* _parent) const noexcept {
-  return new_object(_size, _parent->encoder_);
+  avro_value_t new_object;
+  avro_value_append(&_parent->val_, &new_object, nullptr);
+  return OutputArrayType{new_object};
 }
 
 Writer::OutputObjectType Writer::add_object_to_object(
     const std::string_view& _name, const size_t _size,
     OutputObjectType* _parent) const noexcept {
-  cbor_encode_text_string(_parent->encoder_, _name.data(), _name.size());
-  return new_object(_size, _parent->encoder_);
+  avro_value_t new_object;
+  avro_value_get_by_name(&_parent->val_, _name.c_str(), &new_object, nullptr);
+  return OutputObjectType{new_object};
 }
 
 Writer::OutputVarType Writer::add_null_to_array(
     OutputArrayType* _parent) const noexcept {
-  cbor_encode_null(_parent->encoder_);
-  return OutputVarType{};
+  avro_value_t new_null;
+  avro_value_append(&_parent->val_, &new_null, nullptr);
+  avro_value_set_null(&new_null);
+  return OutputArrayType{new_object};
 }
 
 Writer::OutputVarType Writer::add_null_to_object(
     const std::string_view& _name, OutputObjectType* _parent) const noexcept {
-  cbor_encode_text_string(_parent->encoder_, _name.data(), _name.size());
-  cbor_encode_null(_parent->encoder_);
-  return OutputVarType{};
+  avro_value_t new_null;
+  avro_value_get_by_name(&_parent->val_, _name.c_str(), &new_object, nullptr);
+  avro_value_set_null(&new_null);
+  return OutputVarType{new_null};
 }
 
-void Writer::end_array(OutputArrayType* _arr) const noexcept {
-  cbor_encoder_close_container(_arr->parent_, _arr->encoder_);
-}
+void Writer::end_array(OutputArrayType* _arr) const noexcept {}
 
-void Writer::end_object(OutputObjectType* _obj) const noexcept {
-  cbor_encoder_close_container(_obj->parent_, _obj->encoder_);
-}
+void Writer::end_object(OutputObjectType* _obj) const noexcept {}
 
-Writer::OutputArrayType Writer::new_array(const size_t _size,
-                                          CborEncoder* _parent) const noexcept {
-  subencoders_->emplace_back(rfl::Box<CborEncoder>::make());
-  cbor_encoder_create_array(_parent, subencoders_->back().get(), _size);
-  return OutputArrayType{subencoders_->back().get(), _parent};
-}
-
-Writer::OutputObjectType Writer::new_object(
-    const size_t _size, CborEncoder* _parent) const noexcept {
-  subencoders_->emplace_back(rfl::Box<CborEncoder>::make());
-  cbor_encoder_create_map(_parent, subencoders_->back().get(), _size);
-  return OutputObjectType{subencoders_->back().get(), _parent};
-}
-
-}  // namespace rfl::cbor
+}  // namespace rfl::avro

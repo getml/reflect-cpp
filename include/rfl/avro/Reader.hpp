@@ -14,7 +14,7 @@
 #include "../Result.hpp"
 #include "../always_false.hpp"
 
-namespace rfl ::avro {
+namespace rfl::avro {
 
 /// Please refer to https://intel.github.io/tinyavro/current/index.html
 struct Reader {

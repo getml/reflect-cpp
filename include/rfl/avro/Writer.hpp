@@ -26,22 +26,22 @@ namespace avro {
 class Writer {
  public:
   struct AVROOutputArray {
-    AvroEncoder* encoder_;
-    AvroEncoder* parent_;
+    avro_value_t val_;
   };
 
   struct AVROOutputObject {
-    AvroEncoder* encoder_;
-    AvroEncoder* parent_;
+    avro_value_t val_;
   };
 
-  struct AVROOutputVar {};
+  struct AVROOutputVar {
+    avro_value_t val_;
+  };
 
   using OutputArrayType = AVROOutputArray;
   using OutputObjectType = AVROOutputObject;
   using OutputVarType = AVROOutputVar;
 
-  Writer(AvroEncoder* _encoder);
+  Writer(avro_value_t* _root) : root_(_root){};
 
   ~Writer();
 
@@ -53,7 +53,8 @@ class Writer {
 
   template <class T>
   OutputVarType value_as_root(const T& _var) const noexcept {
-    return new_value(_var, encoder_);
+    set_value(_var, root_);
+    return OutputVarType{*root_};
   }
 
   OutputArrayType add_array_to_array(const size_t _size,
@@ -73,15 +74,20 @@ class Writer {
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
                                    OutputArrayType* _parent) const noexcept {
-    return new_value(_var, _parent->encoder_);
+    avro_value_t new_value;
+    avro_value_append(&_parent->val_, &new_value, nullptr);
+    set_value(_var, &new_value);
+    return OutputVarType{new_value};
   }
 
   template <class T>
   OutputVarType add_value_to_object(const std::string_view& _name,
                                     const T& _var,
                                     OutputObjectType* _parent) const noexcept {
-    avro_encode_text_string(_parent->encoder_, _name.data(), _name.size());
-    return new_value(_var, _parent->encoder_);
+    avro_value_t new_value;
+    avro_value_get_by_name(&_parent->val_, _name.c_str(), &new_value, nullptr);
+    set_value(_var, &new_value);
+    return OutputVarType{new_value};
   }
 
   OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept;
@@ -94,38 +100,26 @@ class Writer {
   void end_object(OutputObjectType* _obj) const noexcept;
 
  private:
-  OutputArrayType new_array(const size_t _size,
-                            AvroEncoder* _parent) const noexcept;
-
-  OutputObjectType new_object(const size_t _size,
-                              AvroEncoder* _parent) const noexcept;
-
   template <class T>
-  OutputVarType new_value(const T& _var, AvroEncoder* _parent) const noexcept {
+  void set_value(const T& _var, avro_value_t* _val) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      avro_encode_text_string(_parent, _var.c_str(), _var.size());
+      avro_value_set_string_len(_val, _var.c_str(), _var.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
-      avro_encode_byte_string(
-          _parent, std::bit_cast<const uint8_t*>(_var.c_str()), _var.size());
+      avro_value_set_bytes(_val, _var.c_str(), _var.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
-      avro_encode_boolean(_parent, _var);
+      avro_value_set_boolean(_val, _var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-      avro_encode_double(_parent, static_cast<double>(_var));
+      avro_value_set_double(_val, static_cast<double>(_var));
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      avro_encode_int(_parent, static_cast<std::int64_t>(_var));
+      avro_value_set_long(_val, static_cast<std::int64_t>(_var));
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
-    return OutputVarType{};
   }
 
  private:
-  /// The underlying TinyAVRO encoder.
-  AvroEncoder* const encoder_;
-
-  /// Contain all of the subobjects and subarrays.
-  const rfl::Box<std::vector<rfl::Box<AvroEncoder>>> subencoders_;
+  avro_value_t* root_;
 };
 
 }  // namespace avro
