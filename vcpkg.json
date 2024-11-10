@@ -4,6 +4,10 @@
   "builtin-baseline": "50bffcc62d7f6571eb32bc1a0b1807e77af1166c",
   "dependencies": [
     {
+      "name": "avro-c",
+      "version>=": "1.11.3"
+    },
+    {
       "name": "ctre",
       "version>=": "3.8"
     },

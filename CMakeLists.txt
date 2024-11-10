@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.23)
 option(REFLECTCPP_BUILD_SHARED "Build shared library" ${BUILD_SHARED_LIBS})
 
 option(REFLECTCPP_JSON "Enable JSON support" ON) # enabled by default
+option(REFLECTCPP_AVRO "Enable AVRO support" OFF)
 option(REFLECTCPP_BSON "Enable BSON support" OFF)
 option(REFLECTCPP_CBOR "Enable CBOR support" OFF)
 option(REFLECTCPP_FLEXBUFFERS "Enable flexbuffers support" OFF)
@@ -19,6 +20,7 @@ option(REFLECTCPP_USE_BUNDLED_DEPENDENCIES "Use the bundled dependencies" ON)
 set(REFLECTCPP_USE_VCPKG_DEFAULT OFF)
 if(REFLECTCPP_BUILD_BENCHMARKS)
     set(REFLECTCPP_JSON ON CACHE BOOL "" FORCE)
+    set(REFLECTCPP_AVRO ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_BSON ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_CBOR ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_FLEXBUFFERS ON CACHE BOOL "" FORCE)
@@ -28,7 +30,7 @@ if(REFLECTCPP_BUILD_BENCHMARKS)
     set(REFLECTCPP_YAML ON CACHE BOOL "" FORCE)
 endif()
 if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_BUILD_BENCHMARKS OR
-    (REFLECTCPP_JSON AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES) OR
+    (REFLECTCPP_JSON AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES) OR REFLECTCPP_AVRO OR
     REFLECTCPP_BSON OR REFLECTCPP_CBOR OR REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_MSGPACK OR REFLECTCPP_XML OR REFLECTCPP_TOML OR REFLECTCPP_YAML)
     # enable vcpkg per default if require features other than JSON
     set(REFLECTCPP_USE_VCPKG_DEFAULT ON)
@@ -92,6 +94,18 @@ if (REFLECTCPP_JSON)
     else ()
         find_package(yyjson CONFIG REQUIRED)
         target_link_libraries(reflectcpp INTERFACE yyjson::yyjson)
+    endif ()
+endif ()
+
+if (REFLECTCPP_AVRO)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_avro.cpp
+    )
+    target_include_directories(reflectcpp SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
+    if (MSVC)
+        target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/avro${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    else ()
+        target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libavro${CMAKE_STATIC_LIBRARY_SUFFIX}")
     endif ()
 endif ()
 
