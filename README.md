@@ -36,6 +36,7 @@ The following table lists the serialization formats currently supported by refle
 | flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 | Schema-less version of flatbuffers, binary format    |
 | msgpack      | [msgpack-c](https://github.com/msgpack/msgpack-c)    | >= 6.0.0     | BSL 1.0    | JSON-like binary format                              |
 | TOML         | [toml++](https://github.com/marzer/tomlplusplus)     | >= 3.4.0     | MIT        | Textual format with an emphasis on readability       |
+| UBJSON       | [jsoncons](https://github.com/danielaparker/jsoncons)| >= 0.176.0   | BSL 1.0    | JSON-like binary format                              |
 | XML          | [pugixml](https://github.com/zeux/pugixml)           | >= 1.14      | MIT        | Textual format used in many legacy projects          |
 | YAML         | [yaml-cpp](https://github.com/jbeder/yaml-cpp)       | >= 0.8.0     | MIT        | Textual format with an emphasis on readability       |
 
@@ -114,6 +115,7 @@ rfl::cbor::write(homer);
 rfl::flexbuf::write(homer);
 rfl::msgpack::write(homer);
 rfl::toml::write(homer);
+rfl::ubjson::write(homer);
 rfl::xml::write(homer);
 
 rfl::bson::read<Person>(bson_bytes);
@@ -121,6 +123,7 @@ rfl::cbor::read<Person>(cbor_bytes);
 rfl::flexbuf::read<Person>(flexbuf_bytes);
 rfl::msgpack::read<Person>(msgpack_bytes);
 rfl::toml::read<Person>(toml_string);
+rfl::ubjson::read<Person>(ubjson_bytes);
 rfl::xml::read<Person>(xml_string);
 ```
 
@@ -471,7 +474,7 @@ In addition, it supports the following custom containers:
 
 - `rfl::Binary`: Used to express numbers in binary format.
 - `rfl::Box`: Similar to `std::unique_ptr`, but (almost) guaranteed to never be null.
-- `rfl::Bytestring`: An alias for `std::basic_string<std::byte>`. Supported by BSON, CBOR, flexbuffers and msgpack. 
+- `rfl::Bytestring`: An alias for `std::basic_string<std::byte>`. Supported by BSON, CBOR, flexbuffers, msgpack and UBJSON. 
 - `rfl::Generic`: A catch-all type that can represent (almost) anything.
 - `rfl::Hex`: Used to express numbers in hex format.
 - `rfl::Literal`: An explicitly enumerated string.
@@ -569,6 +572,7 @@ set(REFLECTCPP_CBOR ON) # Optional
 set(REFLECTCPP_FLEXBUFFERS ON) # Optional
 set(REFLECTCPP_MSGPACK ON) # Optional
 set(REFLECTCPP_TOML ON) # Optional
+set(REFLECTCPP_UBJSON ON) # Optional
 set(REFLECTCPP_XML ON) # Optional
 set(REFLECTCPP_YAML ON) # Optional
 
@@ -619,7 +623,7 @@ To run the tests, do the following:
 To compile the tests with serialization formats other than JSON, do the following:
 
 ```bash
-cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_UBJSON=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
 ```
@@ -633,6 +637,7 @@ To run the tests, do the following:
 ./build/tests/msgpack/reflect-cpp-msgpack-tests
 ./build/tests/json/reflect-cpp-json-tests
 ./build/tests/toml/reflect-cpp-toml-tests
+./build/tests/ubjson/reflect-cpp-ubjson-tests
 ./build/tests/xml/reflect-cpp-xml-tests
 ./build/tests/yaml/reflect-cpp-yaml-tests
 ```

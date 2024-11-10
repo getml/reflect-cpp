@@ -28,12 +28,16 @@ if (REFLECTCPP_MSGPACK)
     add_subdirectory(msgpack)
 endif()
 
-if (REFLECTCPP_XML)
-    add_subdirectory(xml)
-endif()
-
 if (REFLECTCPP_TOML)
     add_subdirectory(toml)
+endif()
+
+if (REFLECTCPP_UBJSON)
+    add_subdirectory(ubjson)
+endif()
+
+if (REFLECTCPP_XML)
+    add_subdirectory(xml)
 endif()
 
 if (REFLECTCPP_YAML)
