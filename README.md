@@ -115,6 +115,7 @@ rfl::cbor::write(homer);
 rfl::flexbuf::write(homer);
 rfl::msgpack::write(homer);
 rfl::toml::write(homer);
+rfl::ubjson::write(homer);
 rfl::xml::write(homer);
 
 rfl::bson::read<Person>(bson_bytes);
@@ -122,6 +123,7 @@ rfl::cbor::read<Person>(cbor_bytes);
 rfl::flexbuf::read<Person>(flexbuf_bytes);
 rfl::msgpack::read<Person>(msgpack_bytes);
 rfl::toml::read<Person>(toml_string);
+rfl::ubjson::read<Person>(ubjson_bytes);
 rfl::xml::read<Person>(xml_string);
 ```
 
@@ -635,7 +637,7 @@ To run the tests, do the following:
 ./build/tests/msgpack/reflect-cpp-msgpack-tests
 ./build/tests/json/reflect-cpp-json-tests
 ./build/tests/toml/reflect-cpp-toml-tests
-./build/tests/toml/reflect-cpp-ubjson-tests
+./build/tests/ubjson/reflect-cpp-ubjson-tests
 ./build/tests/xml/reflect-cpp-xml-tests
 ./build/tests/yaml/reflect-cpp-yaml-tests
 ```
