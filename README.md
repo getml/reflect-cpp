@@ -720,7 +720,7 @@ reflect-cpp was originally developed for [getml-community](https://github.com/ge
 
 ## The Team
 
-reflect-cpp has been developed by [getML (Code17 GmbH)](https://getml.com), a company specializing in software engineering and machine learning for enterprise applications. reflect-cpp is currently maintained by Patrick Urbanke and Manuel Bellersen, with major contributiongs coming from the community.
+reflect-cpp has been developed by [getML (Code17 GmbH)](https://getml.com), a company specializing in software engineering and machine learning for enterprise applications. reflect-cpp is currently maintained by Patrick Urbanke and Manuel Bellersen, with major contributions coming from the community.
 
 ## Professional Support
 
