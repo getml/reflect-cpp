@@ -12,49 +12,38 @@
 
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
+#include "Schema.hpp"
 
-namespace rfl {
-namespace avro {
-
-template <class... Ps>
-void write_into_buffer(const auto& _obj, AvroEncoder* _encoder,
-                       std::vector<char>* _buffer) noexcept {
-  using T = std::remove_cvref_t<decltype(_obj)>;
-  using ParentType = parsing::Parent<Writer>;
-  avro_encoder_init(_encoder, std::bit_cast<uint8_t*>(_buffer->data()),
-                    _buffer->size(), 0);
-  const auto writer = Writer(_encoder);
-  Parser<T, Processors<Ps...>>::write(writer, _obj,
-                                      typename ParentType::Root{});
-}
+namespace rfl::avro {
 
 /// Returns AVRO bytes.
 template <class... Ps>
-std::vector<char> write(const auto& _obj) noexcept {
+std::vector<char> write(const auto& _obj, const Schema& _schema) noexcept {
   std::vector<char> buffer(4096);
-  AvroEncoder encoder;
-  write_into_buffer<Ps...>(_obj, &encoder, &buffer);
-  const auto total_bytes_needed =
-      buffer.size() + avro_encoder_get_extra_bytes_needed(&encoder);
-  if (total_bytes_needed != buffer.size()) {
-    buffer.resize(total_bytes_needed);
-    write_into_buffer<Ps...>(_obj, &encoder, &buffer);
-  }
-  const auto length = avro_encoder_get_buffer_size(
-      &encoder, std::bit_cast<uint8_t*>(buffer.data()));
-  buffer.resize(length);
+  avro_value_t root;
+  avro_generic_value_new(_schema.iface(), &root);
+  const auto writer = Writer(&root);
+  Parser<T, Processors<Ps...>>::write(writer, _obj,
+                                      typename ParentType::Root{});
+  avro_writer_t avro_writer;
+  avro_writer_memory(buffer.data(), buffer.size());
+  // TODO: Handle cases in which the buffer isn't large enough.
+  avro_value_write(avro_writer, &root);
+  const auto len = avro_writer_tell(writer);
+  avro_value_decref(&root);
+  buffer.resize(len);
   return buffer;
 }
 
 /// Writes a AVRO into an ostream.
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) noexcept {
-  auto buffer = write<Ps...>(_obj);
-  _stream.write(buffer.data(), buffer.size());
+  // TODO
+  /*auto buffer = write<Ps...>(_obj);
+  _stream.write(buffer.data(), buffer.size());*/
   return _stream;
 }
 
-}  // namespace avro
-}  // namespace rfl
+}  // namespace rfl::avro
 
 #endif
