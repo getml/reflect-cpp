@@ -13,12 +13,12 @@ rfl::Result<Reader::InputVarType> Reader::get_field_from_object(
 }
 
 bool Reader::is_empty(const InputVarType& _var) const noexcept {
-  return avro_value_get_type(_val.val_) == AVRO_NULL;
+  return avro_value_get_type(_var.val_) == AVRO_NULL;
 }
 
 rfl::Result<Reader::InputArrayType> Reader::to_array(
     const InputVarType& _var) const noexcept {
-  if (avro_value_get_type(_val.val_) != AVRO_ARRAY) {
+  if (avro_value_get_type(_var.val_) != AVRO_ARRAY) {
     return Error("Could not cast to an array.");
   }
   return InputArrayType{_var.val_};
@@ -26,7 +26,7 @@ rfl::Result<Reader::InputArrayType> Reader::to_array(
 
 rfl::Result<Reader::InputObjectType> Reader::to_object(
     const InputVarType& _var) const noexcept {
-  const auto type = avro_value_get_type(_val.val_);
+  const auto type = avro_value_get_type(_var.val_);
   if (type != AVRO_RECORD && type != AVRO_MAP) {
     return Error("Could not cast to an object.");
   }

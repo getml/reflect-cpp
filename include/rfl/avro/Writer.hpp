@@ -41,7 +41,7 @@ class Writer {
   using OutputObjectType = AVROOutputObject;
   using OutputVarType = AVROOutputVar;
 
-  Writer(avro_value_t* _root) : root_(_root){};
+  Writer(avro_value_t* _root);
 
   ~Writer();
 
@@ -85,7 +85,7 @@ class Writer {
                                     const T& _var,
                                     OutputObjectType* _parent) const noexcept {
     avro_value_t new_value;
-    avro_value_get_by_name(&_parent->val_, _name.c_str(), &new_value, nullptr);
+    avro_value_get_by_name(&_parent->val_, _name.data(), &new_value, nullptr);
     set_value(_var, &new_value);
     return OutputVarType{new_value};
   }

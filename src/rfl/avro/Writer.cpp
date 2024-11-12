@@ -2,7 +2,7 @@
 
 namespace rfl::avro {
 
-Writer::Writer() {}
+Writer::Writer(avro_value_t* _root) : root_(_root){};
 
 Writer::~Writer() = default;
 
@@ -32,7 +32,7 @@ Writer::OutputArrayType Writer::add_array_to_object(
     const std::string_view& _name, const size_t _size,
     OutputObjectType* _parent) const noexcept {
   avro_value_t new_array;
-  avro_value_get_by_name(&_parent->val_, _name.c_str(), &new_array, nullptr);
+  avro_value_get_by_name(&_parent->val_, _name.data(), &new_array, nullptr);
   return OutputArrayType{new_array};
 }
 
@@ -40,14 +40,14 @@ Writer::OutputObjectType Writer::add_object_to_array(
     const size_t _size, OutputArrayType* _parent) const noexcept {
   avro_value_t new_object;
   avro_value_append(&_parent->val_, &new_object, nullptr);
-  return OutputArrayType{new_object};
+  return OutputObjectType{new_object};
 }
 
 Writer::OutputObjectType Writer::add_object_to_object(
     const std::string_view& _name, const size_t _size,
     OutputObjectType* _parent) const noexcept {
   avro_value_t new_object;
-  avro_value_get_by_name(&_parent->val_, _name.c_str(), &new_object, nullptr);
+  avro_value_get_by_name(&_parent->val_, _name.data(), &new_object, nullptr);
   return OutputObjectType{new_object};
 }
 
@@ -56,13 +56,13 @@ Writer::OutputVarType Writer::add_null_to_array(
   avro_value_t new_null;
   avro_value_append(&_parent->val_, &new_null, nullptr);
   avro_value_set_null(&new_null);
-  return OutputArrayType{new_object};
+  return OutputVarType{new_null};
 }
 
 Writer::OutputVarType Writer::add_null_to_object(
     const std::string_view& _name, OutputObjectType* _parent) const noexcept {
   avro_value_t new_null;
-  avro_value_get_by_name(&_parent->val_, _name.c_str(), &new_object, nullptr);
+  avro_value_get_by_name(&_parent->val_, _name.data(), &new_null, nullptr);
   avro_value_set_null(&new_null);
   return OutputVarType{new_null};
 }

@@ -87,7 +87,7 @@ struct Reader {
         return static_cast<T>(result);
       } else if (type == AVRO_INT64) {
         int64_t result = 0;
-        avro_value_get_int64(_var.val_, &result);
+        avro_value_get_long(_var.val_, &result);
         return static_cast<T>(result);
       } else if (type == AVRO_FLOAT) {
         double result = 0.0;
@@ -128,7 +128,7 @@ struct Reader {
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
     size_t size = 0;
-    avro_value_get_size(_arr.val_, &size);
+    avro_value_get_size(_obj.val_, &size);
     for (size_t ix = 0; ix < size; ++ix) {
       avro_value_t element;
       const char* key = nullptr;
