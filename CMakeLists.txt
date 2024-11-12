@@ -58,7 +58,7 @@ else()
     target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall -Wextra>)
 endif()
 
-target_compile_features(reflectcpp PUBLIC cxx_std_20)
+# target_compile_features(reflectcpp PUBLIC cxx_std_20)
 
 set(REFLECT_CPP_SOURCES
     src/reflectcpp.cpp
