@@ -30,4 +30,5 @@ SOFTWARE.
 // compilation.
 
 #include "rfl/avro/Reader.cpp"
+#include "rfl/avro/Schema.cpp"
 #include "rfl/avro/Writer.cpp"
