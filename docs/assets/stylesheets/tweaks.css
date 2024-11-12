@@ -1,5 +1,5 @@
 [data-md-color-primary=getml] {
-  --md-primary-fg-color: hsl(255 47% 55% / 1);
+  --md-primary-fg-color: hsl(255 55% 60% / 1);
   --md-primary-fg-color--light: hsl(255 47% 63% / 1);
   --md-primary-fg-color--dark: hsl(255 52% 47% / 1);
   --md-primary-bg-color: #fff;
@@ -16,7 +16,8 @@
   --md-hue: 255; 
 }
 
-blockquote {
+.md-typeset blockquote {
+  color: var(--md-code-fg-color);
   background-color: var(--md-code-bg-color--light);
 }
 
