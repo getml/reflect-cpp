@@ -37,10 +37,10 @@ Reflect-cpp fills an important gap in C++ development. It minimizes boilerplate 
 <h3> Key Features of reflect-cpp:</h3>
 
 - [**Standard Library Integration:**](https://github.com/getml/reflect-cpp?tab=readme-ov-file#support-for-containers) Works seamlessly with C++ standard containers.
-- [**C++ Idiomatic:**] Adheres closely to C++ idioms for an intuitive experience.
+- [**C++ Idiomatic:**](https://rfl.getml.com) Adheres closely to C++ idioms for an intuitive experience.
 - [**Built-in JSON Support:**](supported_formats/json.md) Ready-to-use JSON serialization and deserialization.
 - [**Simple Installation:**](install.md) Quick setup with minimal configuration.
-- [**Easily Extensible:**](concepts/structs.md) Supports additional serialization formats and [custom classes](concepts/custom_classes.md).
+- [**Easily Extensible:**](concepts/structs.md) Supports [custom serialization formats](supported_formats/supporting_your_own_format.md) and [custom classes](concepts/custom_classes.md).
 - [**Benchmarks:**](benchmarks.md) Up to 10x faster than other libraries, such as RapidJSON and nlohmann/json.
 
 ## reflect-cpp in a nutshell

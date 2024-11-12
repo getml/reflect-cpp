@@ -100,6 +100,6 @@ hide:
 
 ## Advanced topics
 
-[Supporting your own format](supporting_your_own_format.md) - For supporting your own serialization and deserialization formats.
+<!-- [Supporting your own format](supporting_your_own_format.md) - For supporting your own serialization and deserialization formats. -->
 
 [Maintaining backwards compatability](backwards_compatability.md) - Instructions on how to ensure that your API is backwards-compatible with older versions.
