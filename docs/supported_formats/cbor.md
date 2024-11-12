@@ -17,7 +17,7 @@ struct Person {
 };
 ```
 
-A `Person` can be turned into a bytes vector like this:
+A `Person` can be serialized to a bytes vector like this:
 
 ```cpp
 const auto person = Person{...};

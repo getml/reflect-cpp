@@ -43,14 +43,13 @@ void call_destructor_on_one_if_necessary(const std::array<bool, _size>& _set,
   }
 }
 
-template <class ViewType, unsigned long _size>
+template <class ViewType, auto _size>
 void call_destructors_where_necessary(const std::array<bool, _size>& _set,
                                       ViewType* _view) {
   [&]<int... is>(std::integer_sequence<int, is...>) {
     (call_destructor_on_one_if_necessary<ViewType, _size, is>(_set, _view),
      ...);
-  }
-  (std::make_integer_sequence<int, _size>());
+  }(std::make_integer_sequence<int, _size>());
 }
 
 }  // namespace rfl::parsing

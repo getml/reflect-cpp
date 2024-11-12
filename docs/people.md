@@ -1,10 +1,16 @@
+---
+hide:
+    - navigation
+---
+
+
 # People
 
 reflect-cpp is supported by a group of contributors and reviewers who help improve the project constantly. This page is dedicated to recognizing their efforts and contributions.
 
 ## Maintainers
 
-The following people maintain the reflect-cpp repository. The main author of the library is Dr Patrick Urbanke ([@liuzicheng1987](https://github.com/liuzicheng1987)).
+The following people maintain the reflect-cpp repository on behalf of the Code17 GmbH. The main author of the library is Dr. Patrick Urbanke ([@liuzicheng1987](https://github.com/liuzicheng1987)).
 
 {{ maintainers }}
 

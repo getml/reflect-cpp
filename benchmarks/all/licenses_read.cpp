@@ -9,6 +9,7 @@
 #include <rfl/json.hpp>
 #include <rfl/msgpack.hpp>
 #include <rfl/toml.hpp>
+#include <rfl/ubjson.hpp>
 #include <rfl/xml.hpp>
 #include <rfl/yaml.hpp>
 #include <type_traits>
@@ -186,6 +187,29 @@ static void BM_licenses_read_reflect_cpp_toml(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_licenses_read_reflect_cpp_toml);
+
+static void BM_licenses_read_reflect_cpp_ubjson(benchmark::State &state) {
+  const auto data = rfl::ubjson::write(load_data());
+  for (auto _ : state) {
+    const auto res = rfl::ubjson::read<Licenses>(data);
+    if (!res) {
+      std::cout << res.error()->what() << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_licenses_read_reflect_cpp_ubjson);
+
+static void BM_licenses_read_reflect_cpp_ubjson_without_field_names(
+    benchmark::State &state) {
+  const auto data = rfl::ubjson::write<rfl::NoFieldNames>(load_data());
+  for (auto _ : state) {
+    const auto res = rfl::ubjson::read<Licenses, rfl::NoFieldNames>(data);
+    if (!res) {
+      std::cout << res.error()->what() << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_licenses_read_reflect_cpp_ubjson_without_field_names);
 
 static void BM_licenses_read_reflect_cpp_yaml(benchmark::State &state) {
   const auto data = rfl::yaml::write(load_data());

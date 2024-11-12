@@ -1,14 +1,13 @@
 #ifndef RFL_VISIT_HPP_
 #define RFL_VISIT_HPP_
 
-#include <variant>
+#include <utility>
 
 #include "Literal.hpp"
 #include "TaggedUnion.hpp"
 #include "internal/StringLiteral.hpp"
 #include "internal/VisitTree.hpp"
 #include "internal/VisitorWrapper.hpp"
-#include "internal/variant/result_t.hpp"
 
 namespace rfl {
 
@@ -22,104 +21,29 @@ inline auto visit(const Visitor& _visitor, const Literal<_fields...> _literal,
       wrapper, _literal.value(), _args...);
 }
 
-template <class F, class... AlternativeTypes>
-inline internal::variant::result_t<F, AlternativeTypes...> visit(
-    F& _f, Variant<AlternativeTypes...>& _v) {
-  return _v.visit(_f);
+template <class F, VariantBased V>
+inline auto visit(F&& _f, V&& _v)
+    -> decltype(std::declval<V&&>().visit(std::declval<F&&>())) {
+  return std::forward<V>(_v).visit(std::forward<F>(_f));
 }
 
-template <class F, class... AlternativeTypes>
-inline internal::variant::result_t<F, AlternativeTypes...> visit(
-    F& _f, Variant<AlternativeTypes...>&& _v) {
-  return _v.visit(_f);
-}
-
-template <class F, class... AlternativeTypes>
-inline internal::variant::result_t<F, AlternativeTypes...> visit(
-    F& _f, const Variant<AlternativeTypes...>& _v) {
-  return _v.visit(_f);
-}
-
-template <class F, class... AlternativeTypes>
-inline internal::variant::result_t<F, AlternativeTypes...> visit(
-    const F& _f, Variant<AlternativeTypes...>& _v) {
-  return _v.visit(_f);
-}
-
-template <class F, class... AlternativeTypes>
-inline internal::variant::result_t<F, AlternativeTypes...> visit(
-    const F& _f, Variant<AlternativeTypes...>&& _v) {
-  return _v.visit(_f);
-}
-
-template <class F, class... AlternativeTypes>
-inline internal::variant::result_t<F, AlternativeTypes...> visit(
-    const F& _f, const Variant<AlternativeTypes...>& _v) {
-  return _v.visit(_f);
-}
-
-template <class F, internal::StringLiteral _discriminator,
+template <class F, TaggedUnionBased T, internal::StringLiteral _discriminator,
           class... AlternativeTypes>
-inline internal::variant::result_t<F, AlternativeTypes...> visit(
-    F& _f, TaggedUnion<_discriminator, AlternativeTypes...>& _tagged_union) {
-  return _tagged_union.variant().visit(_f);
-}
-
-template <class F, internal::StringLiteral _discriminator,
-          class... AlternativeTypes>
-inline internal::variant::result_t<F, AlternativeTypes...> visit(
-    F& _f, TaggedUnion<_discriminator, AlternativeTypes...>&& _tagged_union) {
-  return _tagged_union.variant().visit(_f);
-}
-
-template <class F, internal::StringLiteral _discriminator,
-          class... AlternativeTypes>
-inline internal::variant::result_t<F, AlternativeTypes...> visit(
-    F& _f,
-    const TaggedUnion<_discriminator, AlternativeTypes...>& _tagged_union) {
-  return _tagged_union.variant().visit(_f);
-}
-
-template <class F, internal::StringLiteral _discriminator,
-          class... AlternativeTypes>
-inline internal::variant::result_t<F, AlternativeTypes...> visit(
-    const F& _f,
-    TaggedUnion<_discriminator, AlternativeTypes...>& _tagged_union) {
-  return _tagged_union.variant().visit(_f);
-}
-
-template <class F, internal::StringLiteral _discriminator,
-          class... AlternativeTypes>
-inline internal::variant::result_t<F, AlternativeTypes...> visit(
-    const F& _f,
-    TaggedUnion<_discriminator, AlternativeTypes...>&& _tagged_union) {
-  return _tagged_union.variant().visit(_f);
-}
-
-template <class F, internal::StringLiteral _discriminator,
-          class... AlternativeTypes>
-inline internal::variant::result_t<F, AlternativeTypes...> visit(
-    const F& _f,
-    const TaggedUnion<_discriminator, AlternativeTypes...>& _tagged_union) {
-  return _tagged_union.variant().visit(_f);
+inline auto visit(
+    F&& _f, TaggedUnion<_discriminator, AlternativeTypes...>&& _tagged_union)
+    -> decltype(std::declval<T&&>().variant().visit(std::declval<F&&>())) {
+  return std::forward<T>(_tagged_union).variant().visit(std::forward<F>(_f));
 }
 
 template <class F, class Head, class... Tail>
-inline auto visit(F& _f, Head& _head, Tail&... _tail) {
+inline auto visit(F&& _f, Head&& _head, Tail&&... _tail) {
   const auto f_outer = [&](auto& _h) {
-    const auto f_inner = [&](auto&... _t) { return _f(_h, _t...); };
-    return visit(f_inner, _tail...);
+    const auto f_inner = [&](auto&... _t) {
+      return std::forward<F>(_f)(_h, _t...);
+    };
+    return visit(f_inner, std::forward<Tail>(_tail)...);
   };
-  return _head.visit(f_outer);
-}
-
-template <class F, class Head, class... Tail>
-inline auto visit(const F& _f, Head& _head, Tail&... _tail) {
-  const auto f_outer = [&](auto& _h) {
-    const auto f_inner = [&](auto&... _t) { return _f(_h, _t...); };
-    return visit(f_inner, _tail...);
-  };
-  return _head.visit(f_outer);
+  return std::forward<Head>(_head).visit(f_outer);
 }
 
 }  // namespace rfl

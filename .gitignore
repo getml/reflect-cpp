@@ -48,6 +48,7 @@
 *.flexbuf
 *.msgpack
 *.toml
+*.ubjson
 *.xml
 *.yml
 *.yaml
