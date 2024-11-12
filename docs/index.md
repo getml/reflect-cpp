@@ -8,7 +8,7 @@ hide:
 
 <div align="center" style="text-align: center;" markdown>
 
-# ![C++](https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white) reflect-cpp
+# ![C++](https://img.shields.io/badge/c++-%237156c2.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white) reflect-cpp
 
 **reflect-cpp** is a C++-20 library for **fast serialization, deserialization and validation** using reflection, similar to [pydantic](https://github.com/pydantic/pydantic) in Python, [serde](https://github.com/serde-rs) in Rust, [encoding](https://github.com/golang/go/tree/master/src/encoding) in Go or [aeson](https://github.com/haskell/aeson/tree/master) in Haskell.
 
