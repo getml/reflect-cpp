@@ -50,10 +50,10 @@ Reflect-cpp fills an important gap in C++ development. It minimizes boilerplate 
   - [License](#license)
 
 ### More in our [documentation](https://rfl.getml.com):
-  - [Installation ↗](#installation)
-  - [Benchmarks ↗](#benchmarks)
-  - [How to contribute ↗](#how-to-contribute) 
-  - [Compiling and running the tests ↗](#compiling-and-running-the-tests)
+  - [Installation ↗](https://rfl.getml.cominstall/#option-2-compilation-using-cmake)
+  - [Benchmarks ↗](https://rfl.getml.com/benchmarks)
+  - [How to contribute ↗](https://rfl.getml.com/contributing) 
+  - [Compiling and running the tests ↗](https://rfl.getml.com/contributing/#compiling-and-running-the-tests)
 
 
 
