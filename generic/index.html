@@ -6,11 +6,13 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="fast serialization, deserialization and validation using reflection.">
+        <meta name="description" content="A C++20 library for fast serialization, deserialization and validation using reflection.  Supports JSON, BSON, CBOR, flexbuffers, msgpack, TOML, XML, YAML / msgpack.org[C++20]">
       
       
+        <meta name="author" content="Code17 GmbH">
       
-        <link rel="canonical" href="https://docs.reflect-cpp.dev/generic/">
+      
+        <link rel="canonical" href="https://rfl.getml.com/generic/">
       
       
       
@@ -18,12 +20,12 @@
         
       
       
-      <link rel="icon" href="../banner2.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.39+insiders-4.53.14">
     
     
       
-        <title>rfl::Generic - Reflect-cpp</title>
+        <title>rfl::Generic - reflect-cpp</title>
       
     
     
@@ -49,7 +51,7 @@
       
     
     
-      <link rel="stylesheet" href="../stylesheets/extra.css">
+      <link rel="stylesheet" href="../assets/stylesheets/tweaks.css">
     
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -85,18 +87,15 @@
       
     </div>
     
-      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
-        
-      </div>
-    
     
       
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="Reflect-cpp" class="md-header__button md-logo" aria-label="Reflect-cpp" data-md-component="logo">
+    <a href=".." title="reflect-cpp" class="md-header__button md-logo" aria-label="reflect-cpp" data-md-component="logo">
       
-  <img src="../reflect-cpp-head.png" alt="logo">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -107,7 +106,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Reflect-cpp
+            reflect-cpp
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -136,7 +135,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="getml" data-md-color-accent="getml"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 2c-1.82 0-3.53.5-5 1.35C8 5.08 10 8.3 10 12s-2 6.92-5 8.65C6.47 21.5 8.18 22 10 22a10 10 0 0 0 10-10A10 10 0 0 0 10 2"/></svg>
@@ -146,7 +145,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="deep-purple"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="getml" data-md-color-accent="getml"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
     
       <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18V6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-2.69L23.31 12 20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20z"/></svg>
@@ -231,17 +230,16 @@
   
   
   
-    
-    
-      <li class="md-tabs__item">
-        <a href=".." class="md-tabs__link">
-          
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
   
-  Overview
-
-        </a>
-      </li>
     
+  
+  Welcome
+
+      </a>
+    </li>
   
 
       
@@ -270,7 +268,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../concepts/supported_formats/bson/" class="md-tabs__link">
+        <a href="../supported_formats/bson/" class="md-tabs__link">
           
   
   Supported Formats
@@ -286,12 +284,63 @@
   
   
     <li class="md-tabs__item">
-      <a href="../reflective_programming/" class="md-tabs__link">
+      <a href="../install/" class="md-tabs__link">
         
   
     
   
-  Reflective Programming
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../docs-readme/" class="md-tabs__link">
+        
+  
+    
+  
+  Documentation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../contributing/" class="md-tabs__link">
+        
+  
+    
+  
+  Contributing
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../people/" class="md-tabs__link">
+        
+  
+    
+  
+  People
 
       </a>
     </li>
@@ -320,12 +369,13 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Reflect-cpp" class="md-nav__button md-logo" aria-label="Reflect-cpp" data-md-component="logo">
+    <a href=".." title="reflect-cpp" class="md-nav__button md-logo" aria-label="reflect-cpp" data-md-component="logo">
       
-  <img src="../reflect-cpp-head.png" alt="logo">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Reflect-cpp
+    reflect-cpp
   </label>
   
     <div class="md-nav__source">
@@ -348,54 +398,6 @@
   
   
   
-    
-    
-    
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
-        
-          
-          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_1">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Overview
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
     <li class="md-nav__item">
       <a href=".." class="md-nav__link">
         
@@ -403,7 +405,7 @@
   <span class="md-ellipsis">
     
   
-    Welcome to Reflect-cpp
+    Welcome
   
 
     
@@ -412,122 +414,6 @@
   
 
       </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../why/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Why use Reflect-cpp
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../install/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Installation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../contributing/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Contributing
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../changelog/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Changelog
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
     </li>
   
 
@@ -668,33 +554,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/types/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Type
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../concepts/processors/" class="md-nav__link">
         
   
@@ -702,87 +561,6 @@
     
   
     Processors
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../concepts/serialization/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Serialization
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../concepts/validators/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Validators
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../concepts/errors/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Errors handling
   
 
     
@@ -858,7 +636,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/supported_formats/bson/" class="md-nav__link">
+      <a href="../supported_formats/bson/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -885,7 +663,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/supported_formats/cbor/" class="md-nav__link">
+      <a href="../supported_formats/cbor/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -912,7 +690,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/supported_formats/flexbuffers/" class="md-nav__link">
+      <a href="../supported_formats/flexbuffers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -939,7 +717,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/supported_formats/json/" class="md-nav__link">
+      <a href="../supported_formats/json/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -966,7 +744,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/supported_formats/json_schema/" class="md-nav__link">
+      <a href="../supported_formats/json_schema/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -993,7 +771,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/supported_formats/msgpack/" class="md-nav__link">
+      <a href="../supported_formats/msgpack/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1020,7 +798,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/supported_formats/toml/" class="md-nav__link">
+      <a href="../supported_formats/toml/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1047,7 +825,34 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/supported_formats/xml/" class="md-nav__link">
+      <a href="../supported_formats/ubjson/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    UBJSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported_formats/xml/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1074,7 +879,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/supported_formats/yaml/" class="md-nav__link">
+      <a href="../supported_formats/yaml/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1101,7 +906,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/supported_formats/supporting_your_own_format/" class="md-nav__link">
+      <a href="../supported_formats/supporting_your_own_format/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1135,13 +940,91 @@
   
   
     <li class="md-nav__item">
-      <a href="../reflective_programming/" class="md-nav__link">
+      <a href="../install/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     
   
-    Reflective Programming
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs-readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../people/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    People
   
 
     
@@ -1176,6 +1059,25 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#rflto_generic-and-rflfrom_generic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rfl::to_generic and rfl::from_generic
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1188,6 +1090,8 @@
                 
 
 
+
+  
 
 
               
@@ -1205,7 +1109,7 @@
 <p>But in some cases, we simply cannot anticipate the complete structure of the data at compile time. For these cases, we
 have <code>rfl::Generic</code>.</p>
 <p><code>rfl::Generic</code> is a convenience wrapper around the following type:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="p">,</span><span class="w"> </span><span class="n">Array</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="language-cpp highlight"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="p">,</span><span class="w"> </span><span class="n">Array</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt_t</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p><code>Object</code> and <code>Array</code> are defined as follows:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">using</span><span class="w"> </span><span class="n">Array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Generic</span><span class="o">&gt;</span><span class="p">;</span>
@@ -1238,11 +1142,11 @@ have <code>rfl::Generic</code>.</p>
 <div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;first_name&quot;</span><span class="p">:</span><span class="s2">&quot;Homer&quot;</span><span class="p">,</span><span class="nt">&quot;last_name&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">,</span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="mi">45</span><span class="p">,</span><span class="nt">&quot;children&quot;</span><span class="p">:[{</span><span class="nt">&quot;first_name&quot;</span><span class="p">:</span><span class="s2">&quot;Bart&quot;</span><span class="p">,</span><span class="nt">&quot;last_name&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">,</span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">},{</span><span class="nt">&quot;first_name&quot;</span><span class="p">:</span><span class="s2">&quot;Lisa&quot;</span><span class="p">,</span><span class="nt">&quot;last_name&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">,</span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="mi">8</span><span class="p">},{</span><span class="nt">&quot;first_name&quot;</span><span class="p">:</span><span class="s2">&quot;Lisa&quot;</span><span class="p">,</span><span class="nt">&quot;last_name&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">,</span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">}]}</span>
 </code></pre></div>
 <p><code>rfl::Generic</code> contains some convenience methods that allow you to handle parsed data:</p>
-<p>You can retrieve the underlying <code>std::variant</code> using <code>.get()</code>. This then allows you to handle allow possible six cases using the <a href="https://en.cppreference.com/w/cpp/utility/variant/visit">visitor pattern</a>.</p>
-<p>If you have a guess what the types of a particular field might be, you can use any of the six convenience methods <code>.to_array()</code>, <code>.to_bool()</code>, <code>.to_double()</code>, <code>.to_int()</code>, <code>.to_object()</code>, <code>.to_string()</code>. Each
+<p>You can retrieve the underlying <code>std::variant</code> using <code>.get()</code>. This then allows you to handle allow possible seven cases using the <a href="https://en.cppreference.com/w/cpp/utility/variant/visit">visitor pattern</a>.</p>
+<p>If you have a guess what the types of a particular field might be, you can use any of the seven convenience methods <code>.to_array()</code>, <code>.to_bool()</code>, <code>.to_double()</code>, <code>.to_int()</code>, <code>.to_null()</code>, <code>.to_object()</code>, <code>.to_string()</code>. Each
 of these methods will return an <code>rfl::Result&lt;...&gt;</code> with the corresponding type, if the <code>rfl::Generic</code> does indeed contain such a type.</p>
-<p>If you prefer, you can also use the following six convenience <em>functions</em>:</p>
-<p><code>rfl::to_array(...)</code>, <code>rfl::to_bool(...)</code>, <code>rfl::to_double(...)</code>, <code>rfl::to_int(...)</code>, <code>rfl::to_object(...)</code>, <code>rfl::to_string(...)</code>.</p>
+<p>If you prefer, you can also use the following seven convenience <em>functions</em>:</p>
+<p><code>rfl::to_array(...)</code>, <code>rfl::to_bool(...)</code>, <code>rfl::to_double(...)</code>, <code>rfl::to_int(...)</code>, <code>rfl::to_null</code>, <code>rfl::to_object(...)</code>, <code>rfl::to_string(...)</code>.</p>
 <p>These functions are particularly useful for monadic error handling:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">auto</span><span class="w"> </span><span class="n">homer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Generic</span><span class="o">::</span><span class="n">Object</span><span class="p">();</span>
 <span class="p">...</span>
@@ -1257,6 +1161,40 @@ In the end, we will get an <code>rfl::Result&lt;int&gt;</code> which will contai
 </code></pre></div>
 <p>This will throw an exception if any of our assumptions are false. </p>
 <p>Please refer to the part of the documentation on <code>rfl::Result</code> to learn more about monadic error handling.</p>
+<h2 id="rflto_generic-and-rflfrom_generic"><code>rfl::to_generic</code> and <code>rfl::from_generic</code><a class="headerlink" href="#rflto_generic-and-rflfrom_generic" title="Permanent link">&para;</a></h2>
+<p>You can transform any struct that can be converted to a JSON to the equivalent generic instead.</p>
+<p>In other words:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="n">assert</span><span class="p">(</span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">my_struct</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">rfl</span><span class="o">::</span><span class="n">to_generic</span><span class="p">(</span><span class="n">my_struct</span><span class="p">)));</span>
+</code></pre></div>
+<p>And:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="n">assert</span><span class="p">(</span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">Generic</span><span class="o">&gt;</span><span class="p">(</span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">my_struct</span><span class="p">)).</span><span class="n">value</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">to_generic</span><span class="p">(</span><span class="n">my_struct</span><span class="p">));</span>
+</code></pre></div>
+<p>What is more, you can apply any processors you want to:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="n">assert</span><span class="p">(</span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">SnakeCaseToCamelCase</span><span class="o">&gt;</span><span class="p">(</span><span class="n">my_struct</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">rfl</span><span class="o">::</span><span class="n">to_generic</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">SnakeCaseToCamelCase</span><span class="o">&gt;</span><span class="p">(</span><span class="n">my_struct</span><span class="p">)));</span>
+
+<span class="n">assert</span><span class="p">(</span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">Generic</span><span class="o">&gt;</span><span class="p">(</span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">SnakeCaseToCamelCase</span><span class="o">&gt;</span><span class="p">(</span><span class="n">my_struct</span><span class="p">)).</span><span class="n">value</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">to_generic</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">SnakeCaseToCamelCase</span><span class="o">&gt;</span><span class="p">(</span><span class="n">my_struct</span><span class="p">));</span>
+</code></pre></div>
+<p>Conversely, the same statements hold for reading. In other words:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="n">assert</span><span class="p">(</span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">MyStruct</span><span class="o">&gt;</span><span class="p">(</span><span class="n">my_json_string</span><span class="p">).</span><span class="n">value</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">from_generic</span><span class="o">&lt;</span><span class="n">MyStruct</span><span class="o">&gt;</span><span class="p">(</span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">Generic</span><span class="o">&gt;</span><span class="p">(</span><span class="n">my_json_string</span><span class="p">).</span><span class="n">value</span><span class="p">()).</span><span class="n">value</span><span class="p">());</span>
+</code></pre></div>
+<p>Likewise, you can apply processors:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="n">assert</span><span class="p">(</span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">MyStruct</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">SnakeCaseToCamelCase</span><span class="o">&gt;</span><span class="p">(</span><span class="n">my_json_string</span><span class="p">).</span><span class="n">value</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">from_generic</span><span class="o">&lt;</span><span class="n">MyStruct</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">SnakeCaseToCamelCase</span><span class="o">&gt;</span><span class="p">(</span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">Generic</span><span class="o">&gt;</span><span class="p">(</span><span class="n">my_json_string</span><span class="p">).</span><span class="n">value</span><span class="p">()).</span><span class="n">value</span><span class="p">());</span>
+</code></pre></div>
+<p>In fact, you can think of <code>rfl::from_generic</code> and <code>rfl::to_generic</code> as manifestations of the reader and writer interface. You could as well write <code>rfl::generic::read&lt;...&gt;(...)</code> and <code>rfl::generic::write(...)</code>.</p>
+<p>This can be used to dynamically build structs:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">age</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">bart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Generic</span><span class="o">::</span><span class="n">Object</span><span class="p">();</span>
+<span class="n">bart</span><span class="p">[</span><span class="s">&quot;first_name&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Bart&quot;</span><span class="p">;</span>
+<span class="n">bart</span><span class="p">[</span><span class="s">&quot;last_name&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">;</span>
+<span class="n">bart</span><span class="p">[</span><span class="s">&quot;age&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">from_generic</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">(</span><span class="n">bart</span><span class="p">).</span><span class="n">value</span><span class="p">();</span>
+</code></pre></div>
 
 
 
@@ -1301,6 +1239,43 @@ In the end, we will get an <code>rfl::Result&lt;int&gt;</code> which will contai
   
 </div>
       
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/getml" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.youtube.com/@code17-gmbh" target="_blank" rel="noopener" title="www.youtube.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305m-317.51 213.508V175.185l142.739 81.205z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/company/code17-gmbh" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5m282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
     </div>
   </div>
 </footer>
@@ -1313,7 +1288,7 @@ In the end, we will get an <code>rfl::Result&lt;int&gt;</code> which will contai
       <div class="md-progress" data-md-component="progress" role="progressbar"></div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "announce.dismiss", "navigation.tabs", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.preview", "navigation.instant.progress", "navigation.path", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow"], "search": "../assets/javascripts/workers/search.c7c1ca2c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "patrick"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "announce.dismiss", "navigation.tabs", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.preview", "navigation.instant.progress", "navigation.path", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow"], "search": "../assets/javascripts/workers/search.c7c1ca2c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="../assets/javascripts/bundle.9c5b6415.min.js"></script>
