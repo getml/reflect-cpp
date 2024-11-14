@@ -15,6 +15,8 @@ struct Flatten {
   /// The underlying type.
   using Type = std::remove_cvref_t<T>;
 
+  Flatten() = default;
+
   Flatten(const Type& _value) : value_(_value) {}
 
   Flatten(Type&& _value) noexcept : value_(std::forward<Type>(_value)) {}
@@ -89,6 +91,18 @@ struct Flatten {
   Flatten<T>& operator=(Flatten<U>&& _f) {
     value_ = std::forward<U>(_f);
     return *this;
+  }
+
+  /// Three-way comparison operator
+  template <class U>
+  auto operator<=>(const Flatten<U>& _f) const {
+    return value_ <=> _f.value_;
+  }
+
+  /// Equality comparison operator.
+  template <class U>
+  bool operator==(const Flatten<U>& _f) const {
+    return value_ == _f.get();
   }
 
   /// Assigns the underlying object.
