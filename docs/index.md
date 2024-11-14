@@ -49,6 +49,16 @@ Reflect-cpp fills an important gap in C++ development. It minimizes boilerplate 
 
 Suppose your C++ program has complex data structures it needs to save and load. Or maybe it needs to interact with some kind of external API. If you do this the traditional way, you will have a lot of boilerplate code. This is annoying and error-prone.
 
+!!! example
+
+    If you are new to reflect-cpp, please refer to our [GitHub repository](https://github.com/getml/reflect-cpp) for the latest list of supported [serialization formats]. You will also find a [simple] and [more comprehensive code example].
+
+  [github repo]: https://github.com/getml/reflect-cpp
+  [serialization formats]: https://github.com/getml/reflect-cpp#serialization-formats
+  [simple]: https://github.com/getml/reflect-cpp#simple-example
+  [more comprehensive code example]: https://github.com/getml/reflect-cpp#more-comprehensive-example
+
+  
 reflect-cpp is not just a reflection library, it is for **serialization, deserialization and validation** through reflection.
 
 That means that you can encode your requirements about the input data in the type system and have them validated upfront. This is why the library also includes algebraic data types like tagged unions and numerous validation routines. Having your requirements encoded in the type system is the most reliable way of ensuring they are met. If your requirements are not met, the user of your software gets a very clear error message. Encoding your requirements in the type system also makes it a lot easier for anyone reading your code.
