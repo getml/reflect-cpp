@@ -1308,6 +1308,10 @@
 <h3> Why do we need this?</h3>
 
 <p>Suppose your C++ program has complex data structures it needs to save and load. Or maybe it needs to interact with some kind of external API. If you do this the traditional way, you will have a lot of boilerplate code. This is annoying and error-prone.</p>
+<div class="admonition example">
+<p class="admonition-title">Example</p>
+<p>If you are new to reflect-cpp, please refer to our <a href="https://github.com/getml/reflect-cpp">GitHub repository</a> for the latest list of supported <a href="https://github.com/getml/reflect-cpp#serialization-formats">serialization formats</a>. You will also find a <a href="https://github.com/getml/reflect-cpp#simple-example">simple</a> and <a href="https://github.com/getml/reflect-cpp#more-comprehensive-example">more comprehensive code example</a>.</p>
+</div>
 <p>reflect-cpp is not just a reflection library, it is for <strong>serialization, deserialization and validation</strong> through reflection.</p>
 <p>That means that you can encode your requirements about the input data in the type system and have them validated upfront. This is why the library also includes algebraic data types like tagged unions and numerous validation routines. Having your requirements encoded in the type system is the most reliable way of ensuring they are met. If your requirements are not met, the user of your software gets a very clear error message. Encoding your requirements in the type system also makes it a lot easier for anyone reading your code.</p>
 <p>This increases user experience and developer experience, it makes your code safer (fewer bugs) and more secure (less prone to malicious attacks).</p>
