@@ -18,17 +18,19 @@
 
 ![image](banner1.png)
 
-Reflect-cpp fills an important gap in C++ development. It minimizes boilerplate code and enhances code safety for seamless and efficient data exchange across system components.
+**reflect-cpp** is a C++-20 library for **fast serialization, deserialization and validation** using reflection, similar to [pydantic](https://github.com/pydantic/pydantic) in Python, [serde](https://github.com/serde-rs) in Rust, [encoding](https://github.com/golang/go/tree/master/src/encoding) in Go or [aeson](https://github.com/haskell/aeson/tree/master) in Haskell.
+
+As the aforementioned libraries are among the most widely used in the respective languages, reflect-cpp fills an important gap in C++ development. It reduces boilerplate code and increases code safety.
 
 
 ### Key Features of reflect-cpp:
 
 - [**Standard Library Integration:**](https://github.com/getml/reflect-cpp?tab=readme-ov-file#support-for-containers) Works seamlessly with C++ standard containers.
 - [**C++ Idiomatic:**](https://rfl.getml.com) Adheres closely to C++ idioms for an intuitive experience.
-- [**Built-in JSON Support:**](https://rfl.getml.com/supported_formats/json.md) Ready-to-use JSON serialization and deserialization.
-- [**Simple Installation:**](https://rfl.getml.com/install.md) Quick setup with minimal configuration.
-- [**Easily Extensible:**](https://rfl.getml.com/concepts/structs.md) Supports [custom serialization formats](https://rfl.getml.com/supported_formats/supporting_your_own_format) and [custom classes](https://rfl.getml.com/concepts/custom_classes.md).
-- [**Benchmarks:**](https://rfl.getml.com/benchmarks.md) Up to 10x faster than other libraries, such as RapidJSON and nlohmann/json.
+- [**Built-in JSON Support:**](https://rfl.getml.com/supported_formats/json) Ready-to-use JSON serialization and deserialization.
+- [**Simple Installation:**](https://rfl.getml.com/install) Quick setup with minimal configuration.
+- [**Easily Extensible:**](https://rfl.getml.com/concepts/structs) Supports [custom serialization formats](https://rfl.getml.com/supported_formats/supporting_your_own_format) and [custom classes](https://rfl.getml.com/concepts/custom_classes).
+- [**Benchmarks:**](https://rfl.getml.com/benchmarks) Up to 10x faster than other libraries, such as RapidJSON and nlohmann/json.
 
 <br>
 
@@ -37,15 +39,16 @@ Reflect-cpp fills an important gap in C++ development. It minimizes boilerplate 
 
 ### On this page
   - [Serialization formats](#serialization-formats)
-  - [Simple Example](#simple-example)
-  - [More Comprehensive Example](#more-comprehensive-example)
+  - [Feature Overview]()
+    - [Simple Example](#simple-example)
+    - [More Comprehensive Example](#more-comprehensive-example)
     - [Error messages](#error-messages)
     - [JSON schema](#json-schema)
     - [Enums](#enums)
     - [Algebraic data types](#algebraic-data-types)
     - [Extra fields](#extra-fields)
     - [Reflective programming](#reflective-programming)
-  - [Standard Library Integration](#support-for-containers) 
+    - [Standard Library Integration](#support-for-containers) 
   - [The team behind reflect-cpp](#the-team-behind-reflect-cpp)
   - [License](#license)
 
@@ -54,7 +57,6 @@ Reflect-cpp fills an important gap in C++ development. It minimizes boilerplate 
   - [Benchmarks ↗](https://rfl.getml.com/benchmarks)
   - [How to contribute ↗](https://rfl.getml.com/contributing) 
   - [Compiling and running the tests ↗](https://rfl.getml.com/contributing/#compiling-and-running-the-tests)
-
 
 
 ## Serialization formats
@@ -78,6 +80,9 @@ The following table lists the serialization formats currently supported by refle
 Support for more serialization formats is in development. Refer to the [issues](https://github.com/getml/reflect-cpp/issues) for details.
 
 Please also refer to the *vcpkg.json* in this repository.
+
+
+# Feature Overview
 
 ## Simple Example
 

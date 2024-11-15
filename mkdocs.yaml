@@ -76,15 +76,15 @@ exclude_docs: |
 
 nav:
   - Welcome: index.md
-  - Concepts:
-      - Structs: concepts/structs.md
-      - Custom Classes: concepts/custom_classes.md
-      - Fields: concepts/field_syntax.md
-      # - Type: concepts/types.md
-      - Processors: concepts/processors.md
-      # - Serialization: concepts/serialization.md
-      # - Validators: concepts/validators.md
-      # - Errors handling: concepts/errors.md
+  # - Concepts:
+  #    - Structs: concepts/structs.md
+  #    - Custom Classes: concepts/custom_classes.md
+  #    - Fields: concepts/field_syntax.md
+  #    # - Type: concepts/types.md
+  #    - Processors: concepts/processors.md
+  #    # - Serialization: concepts/serialization.md
+  #    # - Validators: concepts/validators.md
+  #    # - Errors handling: concepts/errors.md
   - Supported Formats:
       - BSON: supported_formats/bson.md
       - CBOR: supported_formats/cbor.md
