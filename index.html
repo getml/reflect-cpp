@@ -1114,15 +1114,16 @@
 <p><br></p>
 <p><strong>reflect-cpp</strong> is a C++-20 library for <strong>fast serialization, deserialization and validation</strong> using reflection, similar to <a href="https://github.com/pydantic/pydantic">pydantic</a> in Python, <a href="https://github.com/serde-rs">serde</a> in Rust, <a href="https://github.com/golang/go/tree/master/src/encoding">encoding</a> in Go or <a href="https://github.com/haskell/aeson/tree/master">aeson</a> in Haskell.</p>
 <p>reflect-cpp fills an important gap in C++ development. It minimizes boilerplate code and enhances code safety for seamless and efficient data exchange across system components.</p>
-<h3> Key Features of reflect-cpp:</h3>
+<h3>Design principles for reflect-cpp include:</h3>
 
 <ul>
-<li><a href="https://github.com/getml/reflect-cpp?tab=readme-ov-file#support-for-containers"><strong>Standard Library Integration:</strong></a> Works seamlessly with C++ standard containers.</li>
-<li><a href="https://rfl.getml.com"><strong>C++ Idiomatic:</strong></a> Adheres closely to C++ idioms for an intuitive experience.</li>
-<li><a href="supported_formats/json/"><strong>Built-in JSON Support:</strong></a> Ready-to-use JSON serialization and deserialization.</li>
-<li><a href="install/"><strong>Simple Installation:</strong></a> Quick setup with minimal configuration.</li>
-<li><a href="concepts/structs/"><strong>Easily Extensible:</strong></a> Supports <a href="supported_formats/supporting_your_own_format/">custom serialization formats</a> and <a href="concepts/custom_classes/">custom classes</a>.</li>
-<li><a href="benchmarks/"><strong>Benchmarks:</strong></a> Up to 10x faster than other libraries, such as RapidJSON and nlohmann/json.</li>
+<li>Close integration with <a href="https://github.com/getml/reflect-cpp?tab=readme-ov-file#support-for-containers">containers</a> from the C++ standard library</li>
+<li>Close adherence to C++ idioms</li>
+<li>Out-of-the-box support for <a href="https://rfl.getml.com/supported_formats/json">JSON</a></li>
+<li>Simple <a href="https://rfl.getml.com/install">installation</a></li>
+<li>Simple extendability to <a href="https://rfl.getml.com/supported_formats/supporting_your_own_format">other serialization formats</a></li>
+<li>Simple extendability to <a href="https://rfl.getml.com/concepts/custom_classes">custom classes</a></li>
+<li>Being one of the fastest serialization libraries in existence, as demonstrated by our <a href="https://getml.com/benchmarks">benchmarks</a></li>
 </ul>
 <h2 id="reflect-cpp-in-a-nutshell">reflect-cpp in a nutshell<a class="headerlink" href="#reflect-cpp-in-a-nutshell" title="Permanent link">&para;</a></h2>
 <h3> Why do we need this?</h3>
