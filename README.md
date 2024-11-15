@@ -23,14 +23,15 @@
 As the aforementioned libraries are among the most widely used in the respective languages, reflect-cpp fills an important gap in C++ development. It reduces boilerplate code and increases code safety.
 
 
-### Key Features of reflect-cpp:
+### Design principles for reflect-cpp include:
 
-- [**Standard Library Integration:**](https://github.com/getml/reflect-cpp?tab=readme-ov-file#support-for-containers) Works seamlessly with C++ standard containers.
-- [**C++ Idiomatic:**](https://rfl.getml.com) Adheres closely to C++ idioms for an intuitive experience.
-- [**Built-in JSON Support:**](https://rfl.getml.com/supported_formats/json) Ready-to-use JSON serialization and deserialization.
-- [**Simple Installation:**](https://rfl.getml.com/install) Quick setup with minimal configuration.
-- [**Easily Extensible:**](https://rfl.getml.com/concepts/structs) Supports [custom serialization formats](https://rfl.getml.com/supported_formats/supporting_your_own_format) and [custom classes](https://rfl.getml.com/concepts/custom_classes).
-- [**Benchmarks:**](https://rfl.getml.com/benchmarks) Up to 10x faster than other libraries, such as RapidJSON and nlohmann/json.
+- Close integration with [containers](https://github.com/getml/reflect-cpp?tab=readme-ov-file#support-for-containers) from the C++ standard library
+- Close adherence to C++ idioms
+- Out-of-the-box support for [JSON](https://rfl.getml.com/supported_formats/json)
+- Simple [installation](https://rfl.getml.com/install)
+- Simple extendability to [other serialization formats](https://rfl.getml.com/supported_formats/supporting_your_own_format)
+- Simple extendability to [custom classes](https://rfl.getml.com/concepts/custom_classes)
+- Being one of the fastest serialization libraries in existence, as demonstrated by our [benchmarks](https://getml.com/benchmarks)
 
 <br>
 
@@ -39,7 +40,7 @@ As the aforementioned libraries are among the most widely used in the respective
 
 ### On this page
   - [Serialization formats](#serialization-formats)
-  - [Feature Overview]()
+  - [Feature Overview](#feature-overview)
     - [Simple Example](#simple-example)
     - [More Comprehensive Example](#more-comprehensive-example)
     - [Error messages](#error-messages)
