@@ -65,9 +65,15 @@ extra:
 
 # https://www.mkdocs.org/user-guide/configuration/#validation
 #validation:
-#  omitted_files: warn
 #  absolute_links: warn
 #  unrecognized_links: warn
+
+validation:
+  omitted_files: warn
+  links:
+    absolute_links: relative_to_docs
+    anchors: warn
+    unrecognized_links: warn
 
 extra_css:
   - assets/stylesheets/tweaks.css
@@ -127,6 +133,20 @@ watch:
 plugins:
   - search
   - meta
+  - htmlproofer:
+      enabled: !ENV [ENABLED_HTMLPROOFER, False]
+      raise_error_after_finish: True
+      raise_error_excludes:
+        403: ['*']
+        502: ['*']
+        504: ['*']
+
+      ignore_urls:
+        - localhost:8080/*
+        - mailto:*
+        - 'data:image/*'
+        - '#*'
+
 
 hooks:
   - docs/plugins/main.py

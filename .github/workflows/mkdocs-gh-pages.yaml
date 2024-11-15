@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_C17_DEV_TOKEN: ${{ secrets.GH_C17_DEV_TOKEN }}
+      ENABLED_HTMLPROOFER: ${{ vars.ENABLED_HTMLPROOFER || 'False' }}
     steps:
       - name: Checkout reflect-cpp repo
         uses: actions/checkout@v4

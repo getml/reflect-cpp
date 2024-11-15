@@ -8,15 +8,15 @@ hide:
 
 ## The basics
 
-<!-- [Structs](concepts/structs.md) - Recaps the motivating example in the README. A struct is the equivalent of an AND statement or a product type in type theory. -->
+[Structs](concepts/structs.md) - Recaps the motivating example in the README. A struct is the equivalent of an AND statement or a product type in type theory.
 
 [Optional fields](optional_fields.md) - For defining fields in your serialized format that might be absent in some cases.
 
 [Struct flattening](flatten_structs.md) - For making struct A "inherit" the fields of struct B.
 
-<!-- [Processors](concepts/processors.md) - For modifying the structs before serialization and deserialization. For instance, processors can be used to transform all field names from `snake_case` to `camelCase`. -->
+[Processors](concepts/processors.md) - For modifying the structs before serialization and deserialization. For instance, processors can be used to transform all field names from `snake_case` to `camelCase`.
 
-<!-- [The rfl::Field-syntax](concepts/field_syntax.md) - Describes an alternative syntax which requires slightly more effort, but allows for some powerful functionalities. -->
+[The rfl::Field-syntax](concepts/field_syntax.md) - Describes an alternative syntax which requires slightly more effort, but allows for some powerful functionalities.
 
 [String literals](literals.md) - For representing strings that can only assume a limited number of enumerated values.
 
@@ -62,7 +62,7 @@ hide:
 
 ## Custom classes
 
-<!-- [Custom classes](concepts/custom_classes.md) - For custom classes with private fields. -->
+[Custom classes](concepts/custom_classes.md) - For custom classes with private fields.
 
 [Custom parsers for your classes](custom_parser.md) - For custom classes with private fields that you want to leave absolutely untouched.
 
@@ -98,7 +98,7 @@ hide:
 
 ## Advanced topics
 
-<!-- [Supporting your own format](supported_formats/supporting_your_own_format.md) - For supporting your own serialization and deserialization formats. -->
+[Supporting your own format](supported_formats/supporting_your_own_format.md) - For supporting your own serialization and deserialization formats.
 
 [Maintaining backwards compatability](backwards_compatability.md) - Instructions on how to ensure that your API is backwards-compatible with older versions.
 
