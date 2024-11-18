@@ -2,198 +2,198 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://rfl.getml.com/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/anonymous_fields/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/as/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/backwards_compatability/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/benchmarks/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/bytestring/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/c_arrays_and_inheritance/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/composing_validators/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/contributing/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/custom_parser/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/docs-readme/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/enums/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/extra_fields/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/flatten_structs/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/generic/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/install/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/literals/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/named_tuple/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/number_systems/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/object/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/optional_fields/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/patterns/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/people/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/replace/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/result/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/rfl_ref/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/rfl_skip/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/rfl_tuple/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/size_validation/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/standard_containers/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/timestamps/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/to_view/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/validating_numbers/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/variants_and_tagged_unions/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/concepts/custom_classes/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/concepts/field_syntax/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/concepts/processors/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/concepts/structs/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/supported_formats/bson/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/supported_formats/cbor/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/supported_formats/flexbuffers/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/supported_formats/json/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/supported_formats/json_schema/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/supported_formats/msgpack/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/supported_formats/supporting_your_own_format/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/supported_formats/toml/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/supported_formats/ubjson/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/supported_formats/xml/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
     <url>
          <loc>https://rfl.getml.com/supported_formats/yaml/</loc>
-         <lastmod>2024-11-15</lastmod>
+         <lastmod>2024-11-18</lastmod>
     </url>
 </urlset>
