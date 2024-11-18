@@ -31,7 +31,7 @@ As the aforementioned libraries are among the most widely used in the respective
 - Simple [installation](https://rfl.getml.com/install)
 - Simple extendability to [other serialization formats](https://rfl.getml.com/supported_formats/supporting_your_own_format)
 - Simple extendability to [custom classes](https://rfl.getml.com/concepts/custom_classes)
-- Being one of the fastest serialization libraries in existence, as demonstrated by our [benchmarks](https://getml.com/benchmarks)
+- Being one of the fastest serialization libraries in existence, as demonstrated by our [benchmarks](https://rfl.getml.com/benchmarks)
 
 <br>
 
@@ -83,9 +83,9 @@ Support for more serialization formats is in development. Refer to the [issues](
 Please also refer to the *vcpkg.json* in this repository.
 
 
-# Feature Overview
+## Feature Overview
 
-## Simple Example
+### Simple Example
 
 ```cpp
 #include <rfl/json.hpp>
@@ -168,7 +168,7 @@ rfl::ubjson::read<Person>(ubjson_bytes);
 rfl::xml::read<Person>(xml_string);
 ```
 
-## More Comprehensive Example
+### More Comprehensive Example
 
 ```cpp
 #include <iostream>
@@ -241,7 +241,7 @@ std::cout << "Hello, my name is " << homer2.first_name() << " "
           << homer2.last_name() << "." << std::endl;
 ```
 
-## Error messages
+### Error messages
 
 reflect-cpp returns clear and comprehensive error messages:
 
@@ -262,7 +262,7 @@ Found 5 errors:
 5) Field named 'children' not found.
 ```
 
-## JSON schema
+### JSON schema
 
 reflect-cpp also supports generating JSON schemata:
 
@@ -291,7 +291,7 @@ The resulting JSON schema looks like this:
 
 Note that this is currently supported for JSON only, since most other formats do not support schemata in the first place.
 
-## Enums
+### Enums
 
 reflect-cpp supports scoped enumerations:
 
@@ -324,7 +324,7 @@ This results in the following JSON string:
 You can also directly convert between enumerator values and strings with `rfl::enum_to_string()` and `rfl::string_to_enum()`, or
 obtain list of enumerator name and value pairs with `rfl::get_enumerators<EnumType>()` or `rfl::get_enumerator_array<EnumType>()`.
 
-## Algebraic data types
+### Algebraic data types
 
 reflect-cpp supports Pydantic-style tagged unions, which allow you to form algebraic data types:
 
@@ -357,7 +357,7 @@ This results in the following JSON string:
 
 Other forms of tagging are supported as well. Refer to the [documentation](https://rfl.getml.com/docs-readme) for details.
 
-## Extra fields
+### Extra fields
 
 If you don't know all of your fields at compile time, no problem. Just use `rfl::ExtraFields`:
 
@@ -381,7 +381,7 @@ This results in the following JSON string:
 {"firstName":"Homer","lastName":"Simpson","age":45,"email":"homer@simpson.com","town":"Springfield"}
 ```
 
-## Reflective programming
+### Reflective programming
 
 Beyond serialization and deserialization, reflect-cpp also supports reflective programming in general.
 
@@ -480,9 +480,9 @@ const auto c2 = rfl::replace(c, a);
 ```
 
 
-## Support for containers
+### Support for containers
 
-### C++ standard library
+#### C++ standard library
 
 reflect-cpp supports the following containers from the C++ standard library:
 
@@ -509,7 +509,7 @@ reflect-cpp supports the following containers from the C++ standard library:
 - `std::vector`
 - `std::wstring`
 
-### Additional containers
+#### Additional containers
 
 In addition, it supports the following custom containers:
 
@@ -529,7 +529,7 @@ In addition, it supports the following custom containers:
 - `rfl::Validator`: Allows for automatic input validation.
 - `rfl::Variant`: An alternative to `std::variant` that compiles considerably faster.
 
-### Custom classes
+#### Custom classes
 
 Finally, it is very easy to extend full support to your own classes, refer to the [documentation](https://rfl.getml.com/docs-readme) for details.
 

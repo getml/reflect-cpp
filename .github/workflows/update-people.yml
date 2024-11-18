@@ -3,7 +3,8 @@ name: update-people
 on:
   push:
     branches: 
-      - feature/docs_migration_mkdocs
+      - f/mkdocs
+      - main
   schedule:
     - cron: "0 12 1 * *"
   workflow_dispatch: {}

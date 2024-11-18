@@ -105,7 +105,49 @@ nav:
       - Custom Format: supported_formats/supporting_your_own_format.md
   # - Reflective Programming: ./reflective_programming.md
   - Installation: install.md
-  - Documentation: docs-readme.md
+  - Documentation: 
+    - docs-readme.md
+    - The basics:
+      - Structs: concepts/structs.md
+      - Optional fields: optional_fields.md
+      - Struct flattening: flatten_structs.md
+      - Processors: concepts/processors.md
+      - The rfl::Field-syntax: concepts/field_syntax.md
+      - String literals: literals.md
+      - Enums: enums.md
+      - std::variant and rfl::TaggedUnion: variants_and_tagged_unions.md
+      - rfl::Box and rfl::Ref: rfl_ref.md
+      - rfl::Timestamp: timestamps.md
+      - rfl::Skip: rfl_skip.md
+      - rfl::Result: result.md
+      - Standard containers: standard_containers.md
+      - C arrays and inheritance: c_arrays_and_inheritance.md
+      - rfl::Bytestring: bytestring.md
+      - rfl::Binary, rfl::Hex and rfl::Oct: number_systems.md
+      - Anonymous fields: anonymous_fields.md
+    - Validation:
+      - Regex patterns: patterns.md
+      - Validating numbers: validating_numbers.md
+      - Composing validators: composing_validators.md
+      - Size validation: size_validation.md
+      - JSON schema: supported_formats/json_schema.md
+    - Generic elements:
+      - rfl::Object: object.md
+      - rfl::Generic: generic.md
+      - rfl::ExtraFields: extra_fields.md
+    - Custom classes:
+      - Custom classes: concepts/custom_classes.md
+      - Custom parsers for your classes: custom_parser.md
+    - Useful helper functions and classes:
+      - rfl::replace: replace.md
+      - rfl::as: as.md
+      - rfl::NamedTuple: named_tuple.md
+      - rfl::Tuple: rfl_tuple.md
+      - rfl::to_view: to_view.md
+    - Advanced topics:
+      - Supporting your own format: supported_formats/supporting_your_own_format.md
+      - Maintaining backwards compatability: backwards_compatability.md
+      - Benchmarks: benchmarks.md
   - Contributing: contributing.md
   - People: people.md
 
@@ -146,6 +188,7 @@ plugins:
         - mailto:*
         - 'data:image/*'
         - '#*'
+        - https://github.com/getml/reflect-cpp/tree/main/.github/actions/people/people.py
 
 
 hooks:

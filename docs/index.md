@@ -41,12 +41,10 @@ reflect-cpp fills an important gap in C++ development. It minimizes boilerplate 
 - Simple [installation](https://rfl.getml.com/install)
 - Simple extendability to [other serialization formats](https://rfl.getml.com/supported_formats/supporting_your_own_format)
 - Simple extendability to [custom classes](https://rfl.getml.com/concepts/custom_classes)
-- Being one of the fastest serialization libraries in existence, as demonstrated by our [benchmarks](https://getml.com/benchmarks)
+- Being one of the fastest serialization libraries in existence, as demonstrated by our [benchmarks](https://rfl.getml.com/benchmarks)
   
 
-## reflect-cpp in a nutshell
-
-<h3> Why do we need this?</h3>
+## Why do we need this?
 
 Suppose your C++ program has complex data structures it needs to save and load. Or maybe it needs to interact with some kind of external API. If you do this the traditional way, you will have a lot of boilerplate code. This is annoying and error-prone.
 
