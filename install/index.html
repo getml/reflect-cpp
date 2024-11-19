@@ -2405,7 +2405,7 @@
 - GCC 11.4 or higher
 - Clang 14.0 or higher
 - MSVC 17.8 (19.38) or higher</p>
-<p>You can <a href="">include the source files</a> into your build or compile it using <a href="">cmake and vcpkg.</a> For detailed installation instructions, please refer to the <a href="">install guide</a>.</p>
+<p>You can include the source files into your build or compile it using cmake and vcpkg.</p>
 <h2 id="option-1-include-source-files-into-your-own-build">Option 1: Include source files into your own build<a class="headerlink" href="#option-1-include-source-files-into-your-own-build" title="Permanent link">&para;</a></h2>
 <p>Simply copy the contents of the folders <code>include</code> and <code>src</code> into your source repository or add it to your include path and also add <code>src/reflectcpp.cpp</code> and <code>src/reflectcpp_json.cpp</code> and <code>src/yyjson.c</code> to your source files for compilation.
 If you want to link to your own version of YYJSON, then only add <code>src/reflectcpp.cpp</code> and <code>src/reflectcpp_json.cpp</code>. If you don't need JSON support, then only add <code>src/reflectcpp.cpp</code>.</p>
