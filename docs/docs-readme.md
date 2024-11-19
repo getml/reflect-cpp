@@ -34,8 +34,6 @@
 
 [rfl::Binary, rfl::Hex and rfl::Oct](number_systems.md)- For expressing numbers in different formats. 
 
-[Anonymous fields](anonymous_fields.md) - For defining fields without using `rfl::Field`.
-
 ## Validation
 
 [Regex patterns](patterns.md) - For requiring that strings follow used-defined regex patterns.
@@ -73,24 +71,6 @@
 [rfl::Tuple](rfl_tuple.md) - An alternative to `std::tuple` that compiles more quickly.
 
 [rfl::to_view](to_view.md) - For accessing fields of a struct by index or name.
-
-<!-- ## 6) Supported formats
-
-[JSON](json.md)
-
-[BSON](bson.md)
-
-[CBOR](cbor.md)
-
-[flexbuffers](flexbuffers.md)
-
-[msgpack](msgpack.md)
-
-[TOML](toml.md)
-
-[XML](xml.md)
-
-[YAML](yaml.md) -->
 
 ## Advanced topics
 
