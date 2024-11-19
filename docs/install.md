@@ -10,7 +10,7 @@ The following compilers are supported:
 - Clang 14.0 or higher
 - MSVC 17.8 (19.38) or higher
 
-You can [include the source files]() into your build or compile it using [cmake and vcpkg.]() For detailed installation instructions, please refer to the [install guide]().
+You can include the source files into your build or compile it using cmake and vcpkg.
 
 ## Option 1: Include source files into your own build
 
