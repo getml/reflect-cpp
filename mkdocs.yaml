@@ -1,0 +1,195 @@
+# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+
+site_name: "reflect-cpp"
+strict: false
+site_url: https://rfl.getml.com/
+site_author: Code17 GmbH
+site_description: >-
+  A C++20 library for fast serialization, deserialization and validation using reflection. 
+  Supports JSON, BSON, CBOR, flexbuffers, msgpack, TOML, XML, YAML / msgpack.org[C++20]
+
+theme:
+  name: "material"
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-5
+        name: "Switch to light mode"
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: getml
+      accent: getml
+      toggle:
+        icon: material/brightness-2
+        name: "Switch to dark mode"
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: getml
+      accent: getml
+      toggle:
+        icon: material/brightness-6
+        name: "Switch to system preference"
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
+    - announce.dismiss
+    - navigation.tabs
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.preview
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.top
+    - navigation.tracking
+    - search.suggest
+    - toc.follow
+  # logo: assets/images/rfl-favicon.png
+  # favicon: assets/images/rfl-favicon-square.png
+
+repo_name: getml/reflect-cpp
+repo_url: https://github.com/getml/reflect-cpp
+edit_uri: edit/main/docs/
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/getml
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/@code17-gmbh
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/company/code17-gmbh
+
+# https://www.mkdocs.org/user-guide/configuration/#validation
+#validation:
+#  absolute_links: warn
+#  unrecognized_links: warn
+
+validation:
+  omitted_files: warn
+  links:
+    absolute_links: relative_to_docs
+    anchors: warn
+    unrecognized_links: warn
+
+extra_css:
+  - assets/stylesheets/tweaks.css
+
+exclude_docs: |
+
+nav:
+  - Welcome: index.md
+  # - Concepts:
+  #    - Structs: concepts/structs.md
+  #    - Custom Classes: concepts/custom_classes.md
+  #    - Fields: concepts/field_syntax.md
+  #    # - Type: concepts/types.md
+  #    - Processors: concepts/processors.md
+  #    # - Serialization: concepts/serialization.md
+  #    # - Validators: concepts/validators.md
+  #    # - Errors handling: concepts/errors.md
+  - Supported Formats:
+      - BSON: supported_formats/bson.md
+      - CBOR: supported_formats/cbor.md
+      - FlexBuffers: supported_formats/flexbuffers.md
+      - JSON: supported_formats/json.md
+      - JSON Schema: supported_formats/json_schema.md
+      - MessagePack: supported_formats/msgpack.md
+      - TOML: supported_formats/toml.md
+      - UBJSON: supported_formats/ubjson.md
+      - XML: supported_formats/xml.md
+      - YAML: supported_formats/yaml.md
+      - Custom Format: supported_formats/supporting_your_own_format.md
+  # - Reflective Programming: ./reflective_programming.md
+  - Installation: install.md
+  - Documentation: 
+    - docs-readme.md
+    - The basics:
+      - Structs: concepts/structs.md
+      - Optional fields: optional_fields.md
+      - Struct flattening: flatten_structs.md
+      - Processors: concepts/processors.md
+      - The rfl::Field-syntax: concepts/field_syntax.md
+      - String literals: literals.md
+      - Enums: enums.md
+      - std::variant and rfl::TaggedUnion: variants_and_tagged_unions.md
+      - rfl::Box and rfl::Ref: rfl_ref.md
+      - rfl::Timestamp: timestamps.md
+      - rfl::Skip: rfl_skip.md
+      - rfl::Result: result.md
+      - Standard containers: standard_containers.md
+      - C arrays and inheritance: c_arrays_and_inheritance.md
+      - rfl::Bytestring: bytestring.md
+      - rfl::Binary, rfl::Hex and rfl::Oct: number_systems.md
+    - Validation:
+      - Regex patterns: patterns.md
+      - Validating numbers: validating_numbers.md
+      - Composing validators: composing_validators.md
+      - Size validation: size_validation.md
+      - JSON schema: supported_formats/json_schema.md
+    - Generic elements:
+      - rfl::Object: object.md
+      - rfl::Generic: generic.md
+      - rfl::ExtraFields: extra_fields.md
+    - Custom classes:
+      - Custom classes: concepts/custom_classes.md
+      - Custom parsers for your classes: custom_parser.md
+    - Useful helper functions and classes:
+      - rfl::replace: replace.md
+      - rfl::as: as.md
+      - rfl::NamedTuple: named_tuple.md
+      - rfl::Tuple: rfl_tuple.md
+      - rfl::to_view: to_view.md
+    - Advanced topics:
+      - Supporting your own format: supported_formats/supporting_your_own_format.md
+      - Maintaining backwards compatability: backwards_compatability.md
+      - Benchmarks: benchmarks.md
+  - Contributing: contributing.md
+  - People: people.md
+
+markdown_extensions:
+  - tables
+  - def_list
+  - toc:
+      permalink: true
+      title: Page contents
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      pygments_lang_class: true
+  - pymdownx.extra
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.tabbed:
+      alternate_style: true
+
+watch:
+  - docs
+
+plugins:
+  - search
+  - meta
+  - htmlproofer:
+      enabled: !ENV [ENABLED_HTMLPROOFER, False]
+      raise_error_after_finish: True
+      raise_error_excludes:
+        403: ['*']
+        502: ['*']
+        504: ['*']
+        429: ['*']
+
+      ignore_urls:
+        - localhost:8080/*
+        - mailto:*
+        - 'data:image/*'
+        - '#*'
+        - https://github.com/getml/reflect-cpp/tree/main/.github/actions/people/people.py
+
+
+hooks:
+  - docs/plugins/main.py

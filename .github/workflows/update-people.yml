@@ -1,0 +1,19 @@
+name: update-people
+
+on:
+  push:
+    branches: 
+      # - f/mkdocs
+      - main
+  schedule:
+    - cron: "0 12 1 * *"
+  workflow_dispatch: {}
+
+jobs:
+  people:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/people
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
