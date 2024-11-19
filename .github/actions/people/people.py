@@ -632,8 +632,8 @@ if __name__ == "__main__":
         title=message,
         body=body,
         # base branch needs to be changed to main once
-        # feature/docs_migration_mkdocs is merged into main
-        base="feature/docs_migration_mkdocs",
+        # f/mkdocs is merged into main
+        base="f/mkdocs",
         head=branch_name,
     )
     logging.info(f"Created PR: {pr.number}")
