@@ -94,7 +94,7 @@ if (REFLECTCPP_JSON)
             reflectcpp PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rfl/thirdparty>)
     else ()
-        if (NOT PACKAGE yyjson::yyjson)
+        if (NOT TARGET yyjson::yyjson)
             find_package(yyjson CONFIG REQUIRED)
         endif ()
         target_link_libraries(reflectcpp PUBLIC yyjson::yyjson)
