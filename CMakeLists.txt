@@ -216,36 +216,38 @@ if (REFLECTCPP_BUILD_BENCHMARKS)
     add_subdirectory(benchmarks)
 endif ()
 
-include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
+if (PROJECT_IS_TOP_LEVEL)
+    include(GNUInstallDirs)
+    include(CMakePackageConfigHelpers)
 
-configure_package_config_file(reflectcpp-config.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/reflectcpp-config.cmake
-  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp
-  )
+    configure_package_config_file(reflectcpp-config.cmake.in
+      ${CMAKE_CURRENT_BINARY_DIR}/reflectcpp-config.cmake
+      INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp
+      )
 
-install(
-    FILES "${CMAKE_CURRENT_BINARY_DIR}/reflectcpp-config.cmake"
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp"
-)
-
-file(GLOB_RECURSE RFL_HEADERS RELATIVE ${CMAKE_CURRENT_LIST_DIR} "${CMAKE_CURRENT_LIST_DIR}/include/*" )
-
-target_sources(reflectcpp
-    PUBLIC
-    FILE_SET reflectcpp_headers
-    TYPE HEADERS
-    BASE_DIRS $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-    FILES ${RFL_HEADERS})
-
-install(
-    TARGETS reflectcpp
-    EXPORT reflectcpp-exports
-    FILE_SET reflectcpp_headers DESTINATION ${INCLUDE_INSTALL_DIR}
+    install(
+        FILES "${CMAKE_CURRENT_BINARY_DIR}/reflectcpp-config.cmake"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp"
     )
 
-install(
-    EXPORT reflectcpp-exports
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp
-    NAMESPACE reflectcpp::
-)
+    file(GLOB_RECURSE RFL_HEADERS RELATIVE ${CMAKE_CURRENT_LIST_DIR} "${CMAKE_CURRENT_LIST_DIR}/include/*" )
+
+    target_sources(reflectcpp
+        PUBLIC
+        FILE_SET reflectcpp_headers
+        TYPE HEADERS
+        BASE_DIRS $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+        FILES ${RFL_HEADERS})
+
+    install(
+        TARGETS reflectcpp
+        EXPORT reflectcpp-exports
+        FILE_SET reflectcpp_headers DESTINATION ${INCLUDE_INSTALL_DIR}
+        )
+
+    install(
+        EXPORT reflectcpp-exports
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp
+        NAMESPACE reflectcpp::
+    )
+endif ()
