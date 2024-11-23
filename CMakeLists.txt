@@ -160,7 +160,9 @@ if (REFLECTCPP_UBJSON)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_ubjson.cpp
     )
-    target_include_directories(reflectcpp SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
+    if(REFLECTCPP_USE_VCPKG)
+        target_include_directories(reflectcpp SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
+    endif()
     find_package(jsoncons CONFIG REQUIRED)
 endif ()
 
