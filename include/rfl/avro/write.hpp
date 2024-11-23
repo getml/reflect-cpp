@@ -8,6 +8,7 @@
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "../parsing/Parent.hpp"
@@ -18,7 +19,10 @@ namespace rfl::avro {
 
 /// Returns AVRO bytes.
 template <class... Ps>
-std::vector<char> write(const auto& _obj, const Schema& _schema) noexcept {
+std::vector<char> write(const auto& _obj, const auto& _schema) noexcept {
+  static_assert(std::is_same<std::remove_cvref_t<decltype(_obj)>,
+                             typename decltype(_schema)::Type>(),
+                "The schema must fit to the type to write.");
   std::vector<char> buffer(4096);
   avro_value_t root;
   avro_generic_value_new(_schema.iface(), &root);
@@ -38,9 +42,8 @@ std::vector<char> write(const auto& _obj, const Schema& _schema) noexcept {
 /// Writes a AVRO into an ostream.
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) noexcept {
-  // TODO
-  /*auto buffer = write<Ps...>(_obj);
-  _stream.write(buffer.data(), buffer.size());*/
+  auto buffer = write<Ps...>(_obj);
+  _stream.write(buffer.data(), buffer.size());
   return _stream;
 }
 
