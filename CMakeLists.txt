@@ -135,7 +135,11 @@ if (REFLECTCPP_MSGPACK)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_msgpack.cpp
     )
-    find_package(msgpack-c CONFIG REQUIRED)
+    if(REFLECTCPP_USE_VCPKG)
+        find_package(msgpack-c CONFIG REQUIRED)
+    else()
+        find_package(msgpack CONFIG REQUIRED)
+    endif()
     target_link_libraries(reflectcpp PUBLIC msgpack-c)
 endif ()
 
