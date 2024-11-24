@@ -43,10 +43,16 @@ jobs:
           max-size: "2G"
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
+      - name: Get Conan
+        uses: turtlebrowser/get-conan@v1.0
+      - name: Create default profile
+        run: conan profile new default --detect
       - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y ninja-build ${{ matrix.additional-dep }}
+      - name: Make sure the library compiles with Conan
+        run: conan build . --build=missing -s compiler.cppstd=gnu20 -o with_cbor=True -o with_flatbuffers=True -o with_msgpack=True -o with_toml=True -o with_ubjson=True -o with_xml=True -o with_yaml=True
       - name: Compile
         run: |
           if [[ "${{ matrix.compiler }}" == "llvm" ]]; then
