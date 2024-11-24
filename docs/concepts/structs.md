@@ -82,5 +82,5 @@ Person{"Bart", "Simpson", ...};
 But if you create a custom constructor, then C++ will no longer allow this kind of constructions.
 
 If you want to create the struct from one of your classes (the most like reason, you want to create custom constructors in the first place),
-you might want to check out the section on [custom classes](https://github.com/getml/reflect-cpp/blob/main/docs/custom_classes.md) or [custom parsers](https://github.com/getml/reflect-cpp/blob/main/docs/custom_parser.md).
+you might want to check out the section on [custom classes](custom_classes.md) or [custom parsers](../custom_parser.md).
 

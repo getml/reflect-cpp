@@ -1,0 +1,17 @@
+[project]
+name = "reflect-cpp"
+version = "0.14.1"
+
+[tool.hatch.envs.default]
+dependencies = [
+    "mkdocs~=1.6", 
+    "mkdocs-material~=9.5",
+      "mkdocs-htmlproofer-plugin~=1.2",
+]
+
+[tool.hatch.envs.insiders]
+dependencies = [
+    "mkdocs~=1.6", 
+    "mkdocs-material @ git+https://{env:GH_C17_DEV_TOKEN}@github.com/squidfunk/mkdocs-material-insiders.git@9.5.39-insiders-4.53.14",
+    "mkdocs-htmlproofer-plugin~=1.2",
+]

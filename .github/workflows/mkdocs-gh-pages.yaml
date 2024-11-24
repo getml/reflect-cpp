@@ -1,0 +1,47 @@
+name: Deploy MkDocs documentation
+
+on:
+  push:
+    branches: 
+      - main
+      - f/mkdocs
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      GH_C17_DEV_TOKEN: ${{ secrets.GH_C17_DEV_TOKEN }}
+      ENABLED_HTMLPROOFER: ${{ vars.ENABLED_HTMLPROOFER || 'False' }}
+    steps:
+      - name: Checkout reflect-cpp repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: Install Hatch
+        uses: pypa/hatch@install
+        with:
+          version: 1.12.0
+
+      - name: Set git credentials
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: Fetch latest commit from gh-pages
+        run: |
+          git fetch origin gh-pages --depth=1
+
+      - name: Deploy MkDocs documentation
+        run: hatch run insiders:mkdocs gh-deploy
+
+      
+        
+        
+
+
+
