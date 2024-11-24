@@ -22,7 +22,7 @@ template <class... Ps>
 std::vector<char> write(const auto& _obj, const auto& _schema) noexcept {
   static_assert(std::is_same<std::remove_cvref_t<decltype(_obj)>,
                              typename decltype(_schema)::Type>(),
-                "The schema must fit to the type to write.");
+                "The schema must be compatible with the type to write.");
   std::vector<char> buffer(4096);
   avro_value_t root;
   avro_generic_value_new(_schema.iface(), &root);
