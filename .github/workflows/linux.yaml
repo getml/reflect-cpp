@@ -43,10 +43,11 @@ jobs:
           max-size: "2G"
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
-      - name: Get Conan
-        uses: turtlebrowser/get-conan@v1.0
+      - name: Install Conan
+        id: conan
+        uses: turtlebrowser/get-conan@main
       - name: Create default profile
-        run: conan profile new default --detect
+        run: conan profile detect
       - name: Install dependencies
         run: |
           sudo apt update
