@@ -11,6 +11,7 @@
 #include "../internal/wrap_in_rfl_array_t.hpp"
 #include "Parser.hpp"
 #include "Reader.hpp"
+#include "Schema.hpp"
 
 namespace rfl::avro {
 
@@ -26,20 +27,20 @@ auto read(const InputVarType& _obj) {
 
 /// Parses an object from AVRO using reflection.
 template <class T, class... Ps>
-Result<internal::wrap_in_rfl_array_t<T>> read(const char* _bytes,
-                                              const size_t _size) {
-  AvroParser parser;
-  InputVarType doc;
-  avro_parser_init(std::bit_cast<const uint8_t*>(_bytes), _size, 0, &parser,
-                   &doc.val_);
-  auto result = read<T, Ps...>(doc);
+Result<internal::wrap_in_rfl_array_t<T>> read(
+    const char* _bytes, const size_t _size, const Schema<T>& _schema) noexcept {
+  avro_reader_t avro_reader = avro_reader_memory(_bytes, _size);
+  avro_value_t root;
+  avro_generic_value_new(_schema.iface(), &root);
+  auto result = read<T, Ps...>(InputVarType{&root});
+  avro_reader_free(avro_reader);
   return result;
 }
 
 /// Parses an object from AVRO using reflection.
 template <class T, class... Ps>
-auto read(const std::vector<char>& _bytes, const auto& _schema) {
-  return read<T, Ps...>(_bytes.data(), _bytes.size());
+auto read(const std::vector<char>& _bytes, const Schema<T>& _schema) {
+  return read<T, Ps...>(_bytes.data(), _bytes.size(), _schema);
 }
 
 /// Parses an object from a stream.

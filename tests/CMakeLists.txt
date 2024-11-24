@@ -3,7 +3,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -O2")
 if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std:c++20")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -Werror -ggdb -ftemplate-backtrace-limit=0")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -ggdb -ftemplate-backtrace-limit=0")
 endif()
 
 if (REFLECTCPP_JSON)

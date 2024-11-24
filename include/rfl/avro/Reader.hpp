@@ -80,18 +80,30 @@ struct Reader {
       if (type == AVRO_DOUBLE) {
         double result = 0.0;
         const auto err = avro_value_get_double(_var.val_, &result);
+        if (err) {
+          return Error("Could not cast to double.");
+        }
         return static_cast<T>(result);
       } else if (type == AVRO_INT32) {
         int32_t result = 0;
-        avro_value_get_int(_var.val_, &result);
+        const auto err = avro_value_get_int(_var.val_, &result);
+        if (err) {
+          return Error("Could not cast to int32.");
+        }
         return static_cast<T>(result);
       } else if (type == AVRO_INT64) {
         int64_t result = 0;
-        avro_value_get_long(_var.val_, &result);
+        const auto err = avro_value_get_long(_var.val_, &result);
+        if (err) {
+          return Error("Could not cast to int64.");
+        }
         return static_cast<T>(result);
       } else if (type == AVRO_FLOAT) {
-        double result = 0.0;
+        float result = 0.0;
         const auto err = avro_value_get_float(_var.val_, &result);
+        if (err) {
+          return Error("Could not cast to float.");
+        }
         return static_cast<T>(result);
       }
       return rfl::Error(

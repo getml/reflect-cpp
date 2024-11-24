@@ -28,7 +28,7 @@ class SchemaImpl {
   const std::string& json_str() const { return json_str_; }
 
   /// The interface used to create new values.
-  const avro_value_iface_t* iface() const { return iface_; };
+  avro_value_iface_t* iface() const { return iface_; };
 
  private:
   /// The JSON string used to create the schema.

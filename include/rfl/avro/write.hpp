@@ -14,14 +14,17 @@
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
 #include "Schema.hpp"
+#include "Writer.hpp"
 
 namespace rfl::avro {
 
 /// Returns AVRO bytes.
 template <class... Ps>
 std::vector<char> write(const auto& _obj, const auto& _schema) noexcept {
-  static_assert(std::is_same<std::remove_cvref_t<decltype(_obj)>,
-                             typename decltype(_schema)::Type>(),
+  using T = std::remove_cvref_t<decltype(_obj)>;
+  using U = typename std::remove_cvref_t<decltype(_schema)>::Type;
+  using ParentType = parsing::Parent<Writer>;
+  static_assert(std::is_same<T, U>(),
                 "The schema must be compatible with the type to write.");
   std::vector<char> buffer(4096);
   avro_value_t root;
@@ -29,12 +32,12 @@ std::vector<char> write(const auto& _obj, const auto& _schema) noexcept {
   const auto writer = Writer(&root);
   Parser<T, Processors<Ps...>>::write(writer, _obj,
                                       typename ParentType::Root{});
-  avro_writer_t avro_writer;
-  avro_writer_memory(buffer.data(), buffer.size());
+  avro_writer_t avro_writer = avro_writer_memory(buffer.data(), buffer.size());
   // TODO: Handle cases in which the buffer isn't large enough.
   avro_value_write(avro_writer, &root);
-  const auto len = avro_writer_tell(writer);
+  const auto len = avro_writer_tell(avro_writer);
   avro_value_decref(&root);
+  avro_writer_free(avro_writer);
   buffer.resize(len);
   return buffer;
 }
