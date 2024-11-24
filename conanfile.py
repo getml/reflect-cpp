@@ -1,6 +1,8 @@
 from conan import ConanFile
 from conan.tools.files import get, copy, rmdir
 from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout, CMakeDeps
+
+
 from conan.tools.env import VirtualBuildEnv
 from conan.tools.build import check_min_cppstd
 from conan.tools.scm import Version
@@ -39,6 +41,7 @@ class ReflectCppConan(ConanFile):
         "with_flatbuffers": [True, False],
         "with_msgpack": [True, False],
         "with_toml": [True, False],
+        "with_ubjson": [True, False],
         "with_xml": [True, False],
         "with_yaml": [True, False],
     }
@@ -49,6 +52,7 @@ class ReflectCppConan(ConanFile):
         "with_flatbuffers": False,
         "with_msgpack": False,
         "with_toml": False,
+        "with_ubjson": False,
         "with_xml": False,
         "with_yaml": False,
     }
@@ -63,7 +67,7 @@ class ReflectCppConan(ConanFile):
 
     def requirements(self):
         self.requires("ctre/3.9.0", transitive_headers=True)
-        self.requires("yyjson/0.8.0", transitive_headers=True)
+        self.requires("yyjson/0.10.0", transitive_headers=True)
         if self.options.with_cbor:
             self.requires("tinycbor/0.6.0", transitive_headers=True)
         if self.options.with_flatbuffers:
@@ -72,6 +76,8 @@ class ReflectCppConan(ConanFile):
             self.requires("msgpack-c/6.0.0", transitive_headers=True)
         if self.options.with_toml:
             self.requires("tomlplusplus/3.4.0", transitive_headers=True)
+        if self.options.with_ubjson:
+            self.requires("jsoncons/0.176.0", transitive_headers=True)
         if self.options.with_xml:
             self.requires("pugixml/1.14", transitive_headers=True)
         if self.options.with_yaml:
@@ -106,7 +112,7 @@ class ReflectCppConan(ConanFile):
         deps = CMakeDeps(self)
         deps.generate()
         tc = CMakeToolchain(self)
-        tc.cache_variables["BUILD_SHARED_LIBS"] = self.options.shared
+        tc.cache_variables["REFLECTCPP_BUILD_SHARED"] = self.options.shared
         tc.cache_variables["REFLECTCPP_USE_BUNDLED_DEPENDENCIES"] = False
         tc.cache_variables["REFLECTCPP_USE_VCPKG"] = False
         tc.cache_variables["REFLECTCPP_CBOR"] = self.options.with_cbor
