@@ -93,5 +93,5 @@ You can call `conan inspect .` to get an overview of the supported options.
 So, if you want XML and YAML support as well, you can call the following:
 
 ```bash
-conan build . --build=missing -s compiler.cppstd=gnu20 -o with_xml=True -o with_yaml=True
+conan build . --build=missing -s compiler.cppstd=gnu20 -o &:with_xml=True -o &:with_yaml=True
 ```
