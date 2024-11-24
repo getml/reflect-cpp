@@ -6,8 +6,12 @@ SchemaImpl::SchemaImpl(const std::string& _json_str)
     : json_str_(_json_str),
       schema_(Box<avro_schema_t>::make()),
       iface_(nullptr) {
-  if (avro_schema_from_json_literal(_json_str.c_str(), schema_.get())) {
-    throw std::runtime_error("Cannot create schema from JSON.");
+  const auto err = avro_schema_from_json_length(
+      _json_str.c_str(), _json_str.size(), schema_.get());
+  if (err) {
+    throw std::runtime_error(
+        "Cannot create schema from the following JSON: \"" + _json_str +
+        "\": " + avro_strerror());
   }
   iface_ = avro_generic_class_from_schema(*schema_);
 }
