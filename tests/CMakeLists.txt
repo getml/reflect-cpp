@@ -12,6 +12,10 @@ if (REFLECTCPP_JSON)
     add_subdirectory(json_c_arrays_and_inheritance)
 endif ()
 
+if (REFLECTCPP_AVRO)
+    add_subdirectory(avro)
+endif()
+
 if (REFLECTCPP_BSON)
     add_subdirectory(bson)
 endif()
