@@ -97,7 +97,8 @@ class ReflectCppConan(ConanFile):
             and Version(self.settings.compiler.version) < minimum_version
         ):
             raise ConanInvalidConfiguration(
-                f"{self.ref} requires C++{self._min_cppstd}, which your compiler does not support."
+                f"{self.ref} requires C++{self._min_cppstd}, which your compiler does not support. "
+                f"Your compiler only supports {self.settings.compiler.version}."
             )
 
     def layout(self):
