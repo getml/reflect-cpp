@@ -33,10 +33,10 @@ jobs:
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
       - name: Install Conan
-        id: conan
-        uses: turtlebrowser/get-conan@main
-      - name: Create default profile
-        run: conan profile detect
+        run: |
+          brew install pipx
+          pipx install conan
+          conan profile detect
       - name: Install ninja 
         run: brew install ninja
         if: matrix.os == 'macos-latest'
