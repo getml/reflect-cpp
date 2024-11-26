@@ -541,9 +541,13 @@ The following compilers are supported:
 - Clang 14.0 or higher
 - MSVC 17.8 (19.38) or higher
 
+### Using Conan
+
+https://conan.io/center/recipes/reflect-cpp
+
 ### Compilation using cmake
 
-This will simply compile YYJSON, which is the JSON library underlying reflect-cpp. You can then include reflect-cpp in your project and link to the binary to get reflect-cpp with JSON support.
+This will compile reflect-cpp with JSON support only. You can then include reflect-cpp in your project and link to the binary.
 
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -554,7 +558,6 @@ cmake --build build --config Release -j 4  # MSVC
 If you need support for any other supported [serialization formats](#serialization-formats), refer to the [documentation](https://rfl.getml.com/docs-readme) for installation instructions.
 
 You can also [include the source files](https://rfl.getml.com/install/#option-1-include-source-files-into-your-own-build) into your build or compile it using [cmake and vcpkg.](https://rfl.getml.com/install/#option-3-compilation-using-cmake-and-vcpkg) For detailed installation instructions, please refer to the [install guide](https://rfl.getml.com/install).
-
 
 ## The team behind reflect-cpp
 
