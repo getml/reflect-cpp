@@ -9,6 +9,7 @@
 #include "avro/load.hpp"
 #include "avro/read.hpp"
 #include "avro/save.hpp"
+#include "avro/to_schema.hpp"
 #include "avro/write.hpp"
 
 #endif

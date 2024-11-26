@@ -32,3 +32,4 @@ SOFTWARE.
 #include "rfl/avro/Reader.cpp"
 #include "rfl/avro/SchemaImpl.cpp"
 #include "rfl/avro/Writer.cpp"
+#include "rfl/avro/to_schema.cpp"

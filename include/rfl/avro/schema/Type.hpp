@@ -47,7 +47,7 @@ struct Type {
 
   struct RecordField {
     std::string name;
-    rfl::Variant<std::string, std::vector<std::string>> type;
+    rfl::Ref<Type> type;
   };
 
   struct Record {
@@ -65,18 +65,19 @@ struct Type {
 
   struct Array {
     Literal<"array"> type;
-    rfl::Variant<std::string, std::vector<std::string>> items;
+    rfl::Ref<Type> items;
     Rename<"default", std::vector<std::string>> default_;
   };
 
   struct Map {
     Literal<"map"> type;
-    rfl::Variant<std::string, std::vector<std::string>> values;
+    rfl::Ref<Type> values;
     Rename<"default", std::map<std::string, std::string>> default_;
   };
 
-  using ReflectionType = rfl::Variant<Null, Boolean, Int, Long, Float, Double,
-                                      Bytes, String, Record, Enum, Array, Map>;
+  using ReflectionType =
+      rfl::Variant<Null, Boolean, Int, Long, Float, Double, Bytes, String,
+                   Record, Enum, Array, Map, std::string, std::vector<Type>>;
 
   const auto& reflection() const { return value; }
 

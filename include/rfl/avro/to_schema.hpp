@@ -18,32 +18,24 @@
 #include "../parsing/schema/ValidationType.hpp"
 #include "../parsing/schema/make.hpp"
 #include "Reader.hpp"
+#include "Schema.hpp"
 #include "Writer.hpp"
-#include "schema/JSONSchema.hpp"
 #include "schema/Type.hpp"
 #include "write.hpp"
 
-namespace rfl::json {
+namespace rfl::avro {
 
-template <class T>
-struct TypeHelper {};
+std::string to_json_representation(
+    const parsing::schema::Definition& internal_schema);
 
-template <class... Ts>
-struct TypeHelper<rfl::Variant<Ts...>> {
-  using JSONSchemaType = rfl::Variant<schema::JSONSchema<Ts>...>;
-};
-
-std::string to_schema_internal_schema(
-    const parsing::schema::Definition& internal_schema,
-    const yyjson_write_flag);
-
-/// Returns the JSON schema for a class.
+/// Returns the Avro schema for a class.
 template <class T, class... Ps>
-std::string to_schema(const yyjson_write_flag _flag = 0) {
+Schema<T> to_schema() {
   const auto internal_schema =
       parsing::schema::make<Reader, Writer, T, Processors<Ps...>>();
-  return to_schema_internal_schema(internal_schema, _flag);
+  const auto json_str = to_json_representation(internal_schema);
+  return Schema<T>::from_json(json_str).value();
 }
-}  // namespace rfl::json
+}  // namespace rfl::avro
 
 #endif
