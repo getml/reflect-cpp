@@ -56,7 +56,8 @@
       "version>=": "0.8.0#1"
     },
     {
-      "name": "yyjson"
+      "name": "yyjson",
+      "version>=": "0.9.0"
     },
     {
       "name": "benchmark",
@@ -73,12 +74,6 @@
     {
       "name": "vcpkg-cmake-config",
       "version>=": "2022-02-06#1"
-    }
-  ],
-  "overrides": [
-    {
-      "name": "yyjson",
-      "version": "0.8.0"
     }
   ]
 }
