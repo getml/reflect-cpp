@@ -24,13 +24,22 @@ SOFTWARE.
 
 */
 
-// This file include all other source files, so that the user of the library
-// don't need to add multiple source files into their build.
-// Also, this speeds up compile time, compared to multiple separate .cpp files
-// compilation.
+#include "rfl/avro/schema/Type.hpp"
 
-#include "rfl/avro/Reader.cpp"
-#include "rfl/avro/SchemaImpl.cpp"
-#include "rfl/avro/Type.cpp"
-#include "rfl/avro/Writer.cpp"
-#include "rfl/avro/to_schema.cpp"
+namespace rfl::avro::schema {
+
+Type Type::with_name(const std::string& _name) const {
+  const auto set_name = [&](const auto& _v) -> ReflectionType {
+    using T = std::remove_cvref_t<decltype(_v)>;
+    if constexpr (std::is_same<T, Record>() || std::is_same<T, Enum>()) {
+      auto v_with_name = _v;
+      v_with_name.name = _name;
+      return v_with_name;
+    } else {
+      return _v;
+    }
+  };
+  return Type{.value = value.visit(set_name)};
+}
+
+}  // namespace rfl::avro::schema

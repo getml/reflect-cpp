@@ -75,11 +75,17 @@ struct Type {
     Rename<"default", std::map<std::string, std::string>> default_;
   };
 
+  struct Reference {
+    std::string type;
+  };
+
   using ReflectionType =
       rfl::Variant<Null, Boolean, Int, Long, Float, Double, Bytes, String,
-                   Record, Enum, Array, Map, std::string, std::vector<Type>>;
+                   Record, Enum, Array, Map, Reference, std::vector<Type>>;
 
   const auto& reflection() const { return value; }
+
+  Type with_name(const std::string& _name) const;
 
   ReflectionType value;
 };

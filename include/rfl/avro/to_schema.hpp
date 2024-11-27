@@ -21,7 +21,6 @@
 #include "Schema.hpp"
 #include "Writer.hpp"
 #include "schema/Type.hpp"
-#include "write.hpp"
 
 namespace rfl::avro {
 
@@ -34,7 +33,7 @@ Schema<T> to_schema() {
   const auto internal_schema =
       parsing::schema::make<Reader, Writer, T, Processors<Ps...>>();
   const auto json_str = to_json_representation(internal_schema);
-  return Schema<T>::from_json(json_str).value();
+  return std::move(Schema<T>::from_json(json_str).value());
 }
 }  // namespace rfl::avro
 

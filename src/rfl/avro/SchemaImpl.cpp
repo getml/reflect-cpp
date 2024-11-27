@@ -4,7 +4,7 @@ namespace rfl::avro {
 
 SchemaImpl::SchemaImpl(const std::string& _json_str)
     : json_str_(_json_str),
-      schema_(Box<avro_schema_t>::make()),
+      schema_(Ref<avro_schema_t>::make()),
       iface_(nullptr) {
   const auto err = avro_schema_from_json_length(
       _json_str.c_str(), _json_str.size(), schema_.get());

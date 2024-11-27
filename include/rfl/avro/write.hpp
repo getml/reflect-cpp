@@ -15,6 +15,7 @@
 #include "Parser.hpp"
 #include "Schema.hpp"
 #include "Writer.hpp"
+#include "to_schema.hpp"
 
 namespace rfl::avro {
 
@@ -40,6 +41,14 @@ std::vector<char> write(const auto& _obj, const auto& _schema) noexcept {
   avro_writer_free(avro_writer);
   buffer.resize(len);
   return buffer;
+}
+
+/// Returns AVRO bytes.
+template <class... Ps>
+std::vector<char> write(const auto& _obj) noexcept {
+  using T = std::remove_cvref_t<decltype(_obj)>;
+  const auto schema = to_schema<T, Ps...>();
+  return write(_obj, schema);
 }
 
 /// Writes a AVRO into an ostream.
