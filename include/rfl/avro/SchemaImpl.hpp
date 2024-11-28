@@ -5,7 +5,7 @@
 
 #include <string>
 
-#include "../Ref.hpp"
+#include "../Box.hpp"
 #include "../Result.hpp"
 
 namespace rfl::avro {
@@ -27,9 +27,6 @@ class SchemaImpl {
   /// The JSON string used to create this schema.
   const std::string& json_str() const { return json_str_; }
 
-  /// The JSON string used to create this schema.
-  const std::string& str() const { return json_str_; }
-
   /// The interface used to create new values.
   avro_value_iface_t* iface() const { return iface_; };
 
@@ -38,7 +35,7 @@ class SchemaImpl {
   std::string json_str_;
 
   /// The actual schema
-  Ref<avro_schema_t> schema_;
+  Box<avro_schema_t> schema_;
 
   /// The interface used to create new, generic classes.
   avro_value_iface_t* iface_;
