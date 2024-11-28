@@ -50,13 +50,16 @@ struct Reader {
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
     const auto type = avro_value_get_type(_var.val_);
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      if (type != AVRO_STRING) {
-        return Error("Could not cast to string.");
-      }
       const char* c_str = nullptr;
       size_t size = 0;
-      avro_value_get_string(_var.val_, &c_str, &size);
-      return std::string(c_str, size);
+      const auto err = avro_value_get_string(_var.val_, &c_str, &size);
+      if (err) {
+        return Error("Could not cast to string.");
+      }
+      if (size == 0) {
+        return std::string("");
+      }
+      return std::string(c_str, size - 1);
       /*} else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                         rfl::Bytestring>()) {
         if (!avro_value_is_byte_string(&_var.val_)) {

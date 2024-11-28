@@ -16,8 +16,7 @@ struct Person {
   // rfl::Timestamp<"%Y-%m-%d"> birthday;
   std::string birthday;
   Age age;
-  // rfl::Email email;
-  std::string email;
+  rfl::Email email;
   std::vector<Person> child;
 };
 
