@@ -14,6 +14,7 @@
 #include "../Literal.hpp"
 #include "../Processors.hpp"
 #include "../Variant.hpp"
+#include "../json.hpp"
 #include "../parsing/schema/Type.hpp"
 #include "../parsing/schema/ValidationType.hpp"
 #include "../parsing/schema/make.hpp"
@@ -29,7 +30,7 @@ std::string to_json_representation(
 
 /// Returns the Avro schema for a class.
 template <class T, class... Ps>
-Schema<T> to_schema() {
+Schema<T> to_schema() noexcept {
   const auto internal_schema =
       parsing::schema::make<Reader, Writer, T, Processors<Ps...>>();
   const auto json_str = to_json_representation(internal_schema);

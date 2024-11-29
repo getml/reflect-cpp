@@ -13,8 +13,7 @@ struct Person {
   rfl::Rename<"firstName", std::string> first_name;
   rfl::Rename<"lastName", std::string> last_name = "Simpson";
   std::string town = "Springfield";
-  // rfl::Timestamp<"%Y-%m-%d"> birthday;
-  std::string birthday;
+  rfl::Timestamp<"%Y-%m-%d"> birthday;
   Age age;
   rfl::Email email;
   std::vector<Person> child;

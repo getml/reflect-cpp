@@ -31,9 +31,17 @@ SOFTWARE.
 
 namespace rfl::avro {
 
+inline bool is_named_type(const parsing::schema::Type& _type) {
+  return _type.variant_.visit([&](const auto& _v) -> bool {
+    using T = std::remove_cvref_t<decltype(_v)>;
+    return std::is_same<T, parsing::schema::Type::Object>() ||
+           std::is_same<T, parsing::schema::Type::Literal>();
+  });
+}
+
 schema::Type type_to_avro_schema_type(
     const parsing::schema::Type& _type,
-    const std::map<std::string, schema::Type>& _definitions,
+    const std::map<std::string, parsing::schema::Type>& _definitions,
     std::set<std::string>* _already_known) {
   auto handle_variant = [&](const auto& _t) -> schema::Type {
     using T = std::remove_cvref_t<decltype(_t)>;
@@ -100,13 +108,20 @@ schema::Type type_to_avro_schema_type(
                                schema::Type{schema::Type::Null{}}})};
 
     } else if constexpr (std::is_same<T, Type::Reference>()) {
-      if (!_already_known ||
-          _already_known->find(_t.name_) != _already_known->end() ||
-          _definitions.find(_t.name_) == _definitions.end()) {
+      if (_definitions.find(_t.name_) != _definitions.end() &&
+          !is_named_type(_definitions.at(_t.name_))) {
+        return type_to_avro_schema_type(_definitions.at(_t.name_), _definitions,
+                                        _already_known);
+
+      } else if (_already_known->find(_t.name_) != _already_known->end() ||
+                 _definitions.find(_t.name_) == _definitions.end()) {
         return schema::Type{.value = schema::Type::Reference{.type = _t.name_}};
+
       } else {
         _already_known->insert(_t.name_);
-        return _definitions.at(_t.name_);
+        return type_to_avro_schema_type(_definitions.at(_t.name_), _definitions,
+                                        _already_known)
+            .with_name(_t.name_);
       }
 
     } else if constexpr (std::is_same<T, Type::StringMap>()) {
@@ -137,21 +152,11 @@ schema::Type type_to_avro_schema_type(
   return rfl::visit(handle_variant, _type.variant_);
 }
 
-std::map<std::string, schema::Type> transform_definitions(
-    const std::map<std::string, parsing::schema::Type>& _definitions) {
-  std::map<std::string, schema::Type> definitions;
-  for (const auto& [k, v] : _definitions) {
-    definitions[k] = type_to_avro_schema_type(v, {}, nullptr).with_name(k);
-  }
-  return definitions;
-}
-
 std::string to_json_representation(
     const parsing::schema::Definition& _internal_schema) {
-  const auto definitions = transform_definitions(_internal_schema.definitions_);
   std::set<std::string> already_known;
   const auto avro_schema = type_to_avro_schema_type(
-      _internal_schema.root_, definitions, &already_known);
+      _internal_schema.root_, _internal_schema.definitions_, &already_known);
   return rfl::json::write(avro_schema);
 }
 
