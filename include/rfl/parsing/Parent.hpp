@@ -6,6 +6,7 @@
 #include <type_traits>
 
 #include "../always_false.hpp"
+#include "IsSchemafulWriter.hpp"
 #include "supports_attributes.hpp"
 
 namespace rfl {
@@ -28,6 +29,12 @@ struct Parent {
     Object as_attribute() const { return Object{name_, obj_, true}; }
   };
 
+  template <class T>
+  struct Union {
+    size_t index_;
+    T* union_;
+  };
+
   struct Root {};
 
   template <class ParentType>
@@ -36,10 +43,16 @@ struct Parent {
     using Type = std::remove_cvref_t<ParentType>;
     if constexpr (std::is_same<Type, Array>()) {
       return _w.add_array_to_array(_size, _parent.arr_);
+
     } else if constexpr (std::is_same<Type, Object>()) {
       return _w.add_array_to_object(_parent.name_, _size, _parent.obj_);
+
     } else if constexpr (std::is_same<Type, Root>()) {
       return _w.array_as_root(_size);
+
+    } else if constexpr (IsSchemafulWriter<W>) {
+      return _w.add_array_to_union(_parent.index_, _size, _parent.union_);
+
     } else {
       static_assert(always_false_v<Type>, "Unsupported option.");
     }
@@ -51,10 +64,16 @@ struct Parent {
     using Type = std::remove_cvref_t<ParentType>;
     if constexpr (std::is_same<Type, Array>()) {
       return _w.add_object_to_array(_size, _parent.arr_);
+
     } else if constexpr (std::is_same<Type, Object>()) {
       return _w.add_object_to_object(_parent.name_, _size, _parent.obj_);
+
     } else if constexpr (std::is_same<Type, Root>()) {
       return _w.object_as_root(_size);
+
+    } else if constexpr (IsSchemafulWriter<W>) {
+      return _w.add_object_to_union(_parent.index_, _size, _parent.union_);
+
     } else {
       static_assert(always_false_v<Type>, "Unsupported option.");
     }
@@ -65,6 +84,7 @@ struct Parent {
     using Type = std::remove_cvref_t<ParentType>;
     if constexpr (std::is_same<Type, Array>()) {
       return _w.add_null_to_array(_parent.arr_);
+
     } else if constexpr (std::is_same<Type, Object>()) {
       if constexpr (supports_attributes<std::remove_cvref_t<W>>) {
         return _w.add_null_to_object(_parent.name_, _parent.obj_,
@@ -72,8 +92,34 @@ struct Parent {
       } else {
         return _w.add_null_to_object(_parent.name_, _parent.obj_);
       }
+
     } else if constexpr (std::is_same<Type, Root>()) {
       return _w.null_as_root();
+
+    } else if constexpr (IsSchemafulWriter<W>) {
+      return _w.add_null_to_union(_parent.index_, _parent.union_);
+
+    } else {
+      static_assert(always_false_v<Type>, "Unsupported option.");
+    }
+  }
+
+  template <class ParentType>
+  static auto add_union(const W& _w, const ParentType& _parent) {
+    using Type = std::remove_cvref_t<ParentType>;
+    if constexpr (std::is_same<Type, Array>()) {
+      return _w.add_union_to_array(_parent.arr_);
+
+    } else if constexpr (std::is_same<Type, Object>()) {
+      return _w.add_union_to_object(_parent.name_, _parent.obj_);
+
+    } else if constexpr (std::is_same<Type,
+                                      Union<typename W::OutputUnionType>>()) {
+      return _w.add_union_to_union(_parent.index_, _parent.obj_);
+
+    } else if constexpr (std::is_same<Type, Root>()) {
+      return _w.union_as_root();
+
     } else {
       static_assert(always_false_v<Type>, "Unsupported option.");
     }
@@ -85,6 +131,7 @@ struct Parent {
     using Type = std::remove_cvref_t<ParentType>;
     if constexpr (std::is_same<Type, Array>()) {
       return _w.add_value_to_array(_var, _parent.arr_);
+
     } else if constexpr (std::is_same<Type, Object>()) {
       if constexpr (supports_attributes<std::remove_cvref_t<W>>) {
         return _w.add_value_to_object(_parent.name_, _var, _parent.obj_,
@@ -92,8 +139,13 @@ struct Parent {
       } else {
         return _w.add_value_to_object(_parent.name_, _var, _parent.obj_);
       }
+
     } else if constexpr (std::is_same<Type, Root>()) {
       return _w.value_as_root(_var);
+
+    } else if constexpr (IsSchemafulWriter<W>) {
+      return _w.add_value_to_union(_parent.index_, _var, _parent.union_);
+
     } else {
       static_assert(always_false_v<Type>, "Unsupported option.");
     }
