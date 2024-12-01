@@ -19,6 +19,7 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/is_literal.hpp"
 
 namespace rfl {
 namespace avro {
@@ -113,6 +114,8 @@ class Writer {
       avro_value_set_double(_val, static_cast<double>(_var));
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       avro_value_set_long(_val, static_cast<std::int64_t>(_var));
+    } else if constexpr (internal::is_literal_v<T>) {
+      avro_value_set_enum(_val, static_cast<int>(_var.value()));
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }

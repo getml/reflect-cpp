@@ -13,6 +13,7 @@
 #include "../Bytestring.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/is_literal.hpp"
 
 namespace rfl::avro {
 
@@ -112,6 +113,15 @@ struct Reader {
       return rfl::Error(
           "Could not cast to numeric value. The type must be integral, float "
           "or double.");
+
+    } else if constexpr (internal::is_literal_v<T>) {
+      int value = 0;
+      const auto err = avro_value_get_enum(_var.val_, &value);
+      if (err) {
+        return Error("Could not cast to enum.");
+      }
+      return std::remove_cvref_t<T>::from_value(
+          static_cast<typename std::remove_cvref_t<T>::ValueType>(value));
 
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
