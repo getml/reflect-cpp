@@ -6,7 +6,17 @@ env:
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
 jobs:
-  windows-msvc:
+  windows-msvc-conan:
+    runs-on: windows-latest
+    steps:
+      - name: Install Conan
+        id: conan
+        uses: turtlebrowser/get-conan@main
+      - name: Create default profile
+        run: conan profile detect
+      - name: Make sure the library compiles with Conan
+        run: conan build . --build=missing -s compiler.cppstd=20 -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True
+  windows-msvc-vcpkg:
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -47,11 +57,4 @@ jobs:
           .\build\benchmarks\json\Release\reflect-cpp-json-benchmarks.exe --benchmark_filter=canada >> $env:GITHUB_STEP_SUMMARY
           .\build\benchmarks\json\Release\reflect-cpp-json-benchmarks.exe --benchmark_filter=licenses >> $env:GITHUB_STEP_SUMMARY
           echo '```' >> $env:GITHUB_STEP_SUMMARY
-      - name: Install Conan
-        id: conan
-        uses: turtlebrowser/get-conan@main
-      - name: Create default profile
-        run: conan profile detect
-      - name: Make sure the library compiles with Conan
-        run: conan build . --build=missing -s compiler.cppstd=20 -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True
  
