@@ -1,6 +1,11 @@
 #include "rfl/avro/Writer.hpp"
 
+#include "rfl/parsing/IsSchemafulWriter.hpp"
+
 namespace rfl::avro {
+
+static_assert(parsing::IsSchemafulWriter<Writer>,
+              "This must be a schemaful writer.");
 
 Writer::Writer(avro_value_t* _root) : root_(_root){};
 
@@ -19,6 +24,10 @@ Writer::OutputObjectType Writer::object_as_root(
 Writer::OutputVarType Writer::null_as_root() const noexcept {
   avro_value_set_null(root_);
   return OutputVarType{*root_};
+}
+
+Writer::OutputUnionType Writer::union_as_root() const noexcept {
+  return OutputUnionType{*root_};
 }
 
 Writer::OutputArrayType Writer::add_array_to_array(

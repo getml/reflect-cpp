@@ -13,8 +13,6 @@ concept IsSchemafulWriter = requires(
     W w, typename W::OutputVarType var, typename W::OutputArrayType arr,
     typename W::OutputObjectType obj, typename W::OutputUnionType u,
     size_t index, std::string_view name) {
-  { W::OutputUnionType };
-
   {
     w.add_array_to_union(index, index, &u)
   } -> std::same_as<typename W::OutputArrayType>;
@@ -30,7 +28,7 @@ concept IsSchemafulWriter = requires(
   } -> std::same_as<typename W::OutputUnionType>;
 
   {
-    w.add_union_to_union(index, &obj)
+    w.add_union_to_union(index, &u)
   } -> std::same_as<typename W::OutputUnionType>;
 
   { w.add_null_to_union(index, &u) } -> std::same_as<typename W::OutputVarType>;

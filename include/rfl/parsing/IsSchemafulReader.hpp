@@ -20,8 +20,6 @@ struct MockVariantParser {
 template <class R>
 concept IsSchemafulReader = requires(R r, typename R::InputVarType var,
                                      typename R::InputUnionType u, size_t idx) {
-  { R::InputUnionType };
-
   { r.to_union(var) } -> std::same_as<rfl::Result<typename R::InputUnionType>>;
 
   {

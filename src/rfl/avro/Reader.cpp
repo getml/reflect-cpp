@@ -1,6 +1,11 @@
 #include "rfl/avro/Reader.hpp"
 
+#include "rfl/parsing/IsSchemafulReader.hpp"
+
 namespace rfl::avro {
+
+static_assert(parsing::IsSchemafulReader<Reader>,
+              "This must be a schemaful reader.");
 
 rfl::Result<Reader::InputVarType> Reader::get_field_from_array(
     const size_t _idx, const InputArrayType& _arr) const noexcept {

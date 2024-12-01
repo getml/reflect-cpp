@@ -58,6 +58,8 @@ class Writer {
 
   OutputVarType null_as_root() const noexcept;
 
+  OutputUnionType union_as_root() const noexcept;
+
   template <class T>
   OutputVarType value_as_root(const T& _var) const noexcept {
     set_value(_var, root_);
