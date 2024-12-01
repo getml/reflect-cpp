@@ -555,7 +555,8 @@ or:
 vcpkg add port reflectcpp
 ```
 
-If the library cannot be found, please update vcpkg itself.
+If the library cannot be found, please update vcpkg itself and/or update the `builtin-baseline`
+tag in the *vcpkg.json* of your project.
 
 ### Using Conan
 

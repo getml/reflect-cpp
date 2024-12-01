@@ -24,7 +24,8 @@ or, if you are in manifest mode:
 vcpkg add port reflectcpp
 ```
 
-If the library cannot be found, please update vcpkg itself to make sure the newest ports are installed.
+If the library cannot be found, please update vcpkg itself to make sure the newest ports are installed. You
+might also want to update the `builtin-baseline` tag in the *vcpkg.json* of your project.
 
 ## Option 2: Using Conan
 
