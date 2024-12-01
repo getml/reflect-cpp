@@ -4,6 +4,7 @@
 #include <avro.h>
 
 #include <bit>
+#include <cstdint>
 #include <exception>
 #include <map>
 #include <sstream>
@@ -34,12 +35,17 @@ class Writer {
     avro_value_t val_;
   };
 
+  struct AVROOutputUnion {
+    avro_value_t val_;
+  };
+
   struct AVROOutputVar {
     avro_value_t val_;
   };
 
   using OutputArrayType = AVROOutputArray;
   using OutputObjectType = AVROOutputObject;
+  using OutputUnionType = AVROOutputUnion;
   using OutputVarType = AVROOutputVar;
 
   Writer(avro_value_t* _root);
@@ -65,12 +71,26 @@ class Writer {
                                       const size_t _size,
                                       OutputObjectType* _parent) const noexcept;
 
+  OutputArrayType add_array_to_union(const size_t _index, const size_t _size,
+                                     OutputUnionType* _parent) const noexcept;
+
   OutputObjectType add_object_to_array(const size_t _size,
                                        OutputArrayType* _parent) const noexcept;
 
   OutputObjectType add_object_to_object(
       const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept;
+
+  OutputObjectType add_object_to_union(const size_t _index, const size_t _size,
+                                       OutputUnionType* _parent) const noexcept;
+
+  OutputUnionType add_union_to_array(OutputArrayType* _parent) const noexcept;
+
+  OutputUnionType add_union_to_object(const std::string_view& _name,
+                                      OutputObjectType* _parent) const noexcept;
+
+  OutputUnionType add_union_to_union(const size_t _index,
+                                     OutputUnionType* _parent) const noexcept;
 
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
@@ -95,6 +115,9 @@ class Writer {
 
   OutputVarType add_null_to_object(const std::string_view& _name,
                                    OutputObjectType* _parent) const noexcept;
+
+  OutputVarType add_null_to_union(const size_t _index,
+                                  OutputUnionType* _parent) const noexcept;
 
   void end_array(OutputArrayType* _arr) const noexcept;
 
