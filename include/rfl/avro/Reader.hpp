@@ -50,9 +50,6 @@ struct Reader {
   rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType& _obj) const noexcept;
 
-  rfl::Result<InputVarType> get_field_from_union(
-      const size_t _index, const InputUnionType& _union) const noexcept;
-
   bool is_empty(const InputVarType& _var) const noexcept;
 
   template <class T>

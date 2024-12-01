@@ -92,6 +92,14 @@ class Writer {
   OutputUnionType add_union_to_union(const size_t _index,
                                      OutputUnionType* _parent) const noexcept;
 
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept;
+
+  OutputVarType add_null_to_object(const std::string_view& _name,
+                                   OutputObjectType* _parent) const noexcept;
+
+  OutputVarType add_null_to_union(const size_t _index,
+                                  OutputUnionType* _parent) const noexcept;
+
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
                                    OutputArrayType* _parent) const noexcept {
@@ -111,13 +119,14 @@ class Writer {
     return OutputVarType{new_value};
   }
 
-  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept;
-
-  OutputVarType add_null_to_object(const std::string_view& _name,
-                                   OutputObjectType* _parent) const noexcept;
-
-  OutputVarType add_null_to_union(const size_t _index,
-                                  OutputUnionType* _parent) const noexcept;
+  template <class T>
+  OutputVarType add_value_to_union(const size_t _index, const T& _var,
+                                   OutputUnionType* _parent) const noexcept {
+    avro_value_t new_value;
+    avro_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_value);
+    set_value(_var, &new_value);
+    return OutputVarType{new_value};
+  }
 
   void end_array(OutputArrayType* _arr) const noexcept;
 
