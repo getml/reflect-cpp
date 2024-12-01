@@ -12,17 +12,13 @@ The following compilers are supported:
 
 You can include the source files into your build or compile it using cmake and vcpkg.
 
-## Option 1: Include source files into your own build
+## Option 1: Using Conan
 
-Simply copy the contents of the folders `include` and `src` into your source repository or add it to your include path and also add `src/reflectcpp.cpp` and `src/reflectcpp_json.cpp` and `src/yyjson.c` to your source files for compilation.
-If you want to link to your own version of YYJSON, then only add `src/reflectcpp.cpp` and `src/reflectcpp_json.cpp`. If you don't need JSON support, then only add `src/reflectcpp.cpp`.
-
-If you need support for other serialization formats like flexbuffers or XML, you should also add `src/reflectcpp_<format>.cpp` and include and link the respective libraries, as listed in the section on serialization formats.
+Simply use the following [recipe](https://conan.io/center/recipes/reflect-cpp).
 
 ## Option 2: Compilation using cmake
 
-This will simply compile YYJSON, which is the JSON library underlying reflect-cpp. You can then include reflect-cpp in your project and link to the binary
-to get reflect-cpp with JSON support.
+This will compile reflect-cpp with JSON support only. You can then include reflect-cpp in your project and link to the binary.
 
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -30,7 +26,14 @@ cmake --build build -j 4  # gcc, clang
 cmake --build build --config Release -j 4  # MSVC
 ```
 
-## Option 3: Compilation using cmake and vcpkg
+## Option 3: Include source files into your own build
+
+Simply copy the contents of the folders `include` and `src` into your source repository or add it to your include path and also add `src/reflectcpp.cpp` and `src/reflectcpp_json.cpp` and `src/yyjson.c` to your source files for compilation.
+If you want to link to your own version of YYJSON, then only add `src/reflectcpp.cpp` and `src/reflectcpp_json.cpp`. If you don't need JSON support, then only add `src/reflectcpp.cpp`.
+
+If you need support for other serialization formats like flexbuffers or XML, you should also add `src/reflectcpp_<format>.cpp` and include and link the respective libraries, as listed in the section on serialization formats.
+
+## Option 4: Compilation using cmake and vcpkg
 
 If you want serialization formats other than JSON, you can either install them manually or use vcpkg.
 
