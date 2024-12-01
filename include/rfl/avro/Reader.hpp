@@ -27,12 +27,17 @@ struct Reader {
     const avro_value_t* val_;
   };
 
+  struct AVROInputUnion {
+    const avro_value_t* val_;
+  };
+
   struct AVROInputVar {
     const avro_value_t* val_;
   };
 
   using InputArrayType = AVROInputArray;
   using InputObjectType = AVROInputObject;
+  using InputUnionType = AVROInputUnion;
   using InputVarType = AVROInputVar;
 
   template <class T>
@@ -44,6 +49,9 @@ struct Reader {
 
   rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType& _obj) const noexcept;
+
+  rfl::Result<InputVarType> get_field_from_union(
+      const size_t _index, const InputUnionType& _union) const noexcept;
 
   bool is_empty(const InputVarType& _var) const noexcept;
 
@@ -133,6 +141,8 @@ struct Reader {
   rfl::Result<InputObjectType> to_object(
       const InputVarType& _var) const noexcept;
 
+  rfl::Result<InputUnionType> to_union(const InputVarType& _var) const noexcept;
+
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
                                   const InputArrayType& _arr) const noexcept {
@@ -161,6 +171,23 @@ struct Reader {
       _object_reader.read(std::string_view(key), InputVarType{&element});
     }
     return std::nullopt;
+  }
+
+  template <class VariantType, class VariantParserType>
+  rfl::Result<VariantType> to_variant(
+      const size_t _index, const InputUnionType& _union) const noexcept {
+    int disc = 0;
+    auto err = avro_value_get_discriminant(_union.val_, &disc);
+    if (err) {
+      return Error("Could not get the discriminant.");
+    }
+    avro_value_t value;
+    err = avro_value_get_current_branch(_union.val_, &value);
+    if (err) {
+      return Error("Could not cast the union type.");
+    }
+    return VariantParserType::parse(static_cast<size_t>(disc),
+                                    InputVarType{&value});
   }
 
   template <class T>
