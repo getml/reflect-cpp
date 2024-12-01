@@ -70,7 +70,7 @@ The following table lists the serialization formats currently supported by refle
 
 | Format       | Library                                              | Version      | License    | Remarks                                              |
 |--------------|------------------------------------------------------|--------------|------------| -----------------------------------------------------|
-| JSON         | [yyjson](https://github.com/ibireme/yyjson)          |    0.8.0     | MIT        | out-of-the-box support, included in this repository  |
+| JSON         | [yyjson](https://github.com/ibireme/yyjson)          | >= 0.8.0     | MIT        | out-of-the-box support, included in this repository  |
 | BSON         | [libbson](https://github.com/mongodb/mongo-c-driver) | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
 | CBOR         | [tinycbor](https://github.com/intel/tinycbor)        | >= 0.6.0     | MIT        | JSON-like binary format                              |
 | flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 | Schema-less version of flatbuffers, binary format    |
@@ -82,7 +82,7 @@ The following table lists the serialization formats currently supported by refle
 
 Support for more serialization formats is in development. Refer to the [issues](https://github.com/getml/reflect-cpp/issues) for details.
 
-Please also refer to the *vcpkg.json* in this repository.
+Please also refer to the *conanfile.py* or *vcpkg.json* in this repository.
 
 
 ## Feature Overview
@@ -542,6 +542,21 @@ The following compilers are supported:
 - GCC 11.4 or higher
 - Clang 14.0 or higher
 - MSVC 17.8 (19.38) or higher
+
+### Using vcpkg
+
+```bash
+vcpkg install reflectcpp
+```
+
+or:
+
+```bash
+vcpkg add port reflectcpp
+```
+
+If the library cannot be found, please update vcpkg itself and/or update the `builtin-baseline`
+tag in the *vcpkg.json* of your project.
 
 ### Using Conan
 

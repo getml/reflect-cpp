@@ -77,7 +77,6 @@ if (REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rfl/thirdparty>)
 else ()
     find_package(ctre CONFIG REQUIRED)
-    target_link_libraries(reflectcpp PUBLIC ctre::ctre)
 endif ()
 
 if (REFLECTCPP_JSON)
