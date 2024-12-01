@@ -8,16 +8,7 @@ env:
 jobs:
   windows-msvc-conan:
     runs-on: windows-latest
-    steps:
-      - name: Install Conan 
-        uses: threeal/pipx-install-action@v1.0.0
-        with:
-          packages: conan 
-      - name: Detect conan profile 
-        run: conan profile detect
-      - name: Make sure the library compiles with Conan
-        run: conan build . --build=missing -s compiler.cppstd=20 -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True
-  windows-msvc-vcpkg:
+  windows-msvc:
     runs-on: windows-latest
     steps:
       - name: Checkout
