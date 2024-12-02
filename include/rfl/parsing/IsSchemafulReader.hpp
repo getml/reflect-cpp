@@ -11,21 +11,23 @@ using MockVariantType = std::variant<std::string, int>;
 
 template <class R>
 struct MockVariantParser {
-  static rfl::Result<MockVariantType> parse(const size_t,
+  static rfl::Result<MockVariantType> parse(const R&, const size_t,
                                             typename R::InputVarType&) {
     return Error("This is a mock type.");
   }
 };
 
 template <class R>
-concept IsSchemafulReader = requires(R r, typename R::InputVarType var,
-                                     typename R::InputUnionType u, size_t idx) {
-  { r.to_union(var) } -> std::same_as<rfl::Result<typename R::InputUnionType>>;
+concept IsSchemafulReader =
+    requires(R r, typename R::InputVarType var, typename R::InputUnionType u) {
+      {
+        r.to_union(var)
+      } -> std::same_as<rfl::Result<typename R::InputUnionType>>;
 
-  {
-    r.template to_variant<MockVariantType, MockVariantParser<R>>(idx, u)
-  } -> std::same_as<rfl::Result<MockVariantType>>;
-};
+      {
+        r.template to_variant<MockVariantType, MockVariantParser<R>>(u)
+      } -> std::same_as<rfl::Result<MockVariantType>>;
+    };
 
 }  // namespace rfl::parsing
 
