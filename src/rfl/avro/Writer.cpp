@@ -1,10 +1,10 @@
 #include "rfl/avro/Writer.hpp"
 
-#include "rfl/parsing/IsSchemafulWriter.hpp"
+#include "rfl/parsing/schemaful/IsSchemafulWriter.hpp"
 
 namespace rfl::avro {
 
-static_assert(parsing::IsSchemafulWriter<Writer>,
+static_assert(parsing::schemaful::IsSchemafulWriter<Writer>,
               "This must be a schemaful writer.");
 
 Writer::Writer(avro_value_t* _root) : root_(_root){};

@@ -6,7 +6,7 @@
 #include <type_traits>
 
 #include "../always_false.hpp"
-#include "IsSchemafulWriter.hpp"
+#include "schemaful/IsSchemafulWriter.hpp"
 #include "supports_attributes.hpp"
 
 namespace rfl {
@@ -50,7 +50,7 @@ struct Parent {
     } else if constexpr (std::is_same<Type, Root>()) {
       return _w.array_as_root(_size);
 
-    } else if constexpr (IsSchemafulWriter<W>) {
+    } else if constexpr (schemaful::IsSchemafulWriter<W>) {
       return _w.add_array_to_union(_parent.index_, _size, _parent.union_);
 
     } else {
@@ -71,7 +71,7 @@ struct Parent {
     } else if constexpr (std::is_same<Type, Root>()) {
       return _w.object_as_root(_size);
 
-    } else if constexpr (IsSchemafulWriter<W>) {
+    } else if constexpr (schemaful::IsSchemafulWriter<W>) {
       return _w.add_object_to_union(_parent.index_, _size, _parent.union_);
 
     } else {
@@ -96,7 +96,7 @@ struct Parent {
     } else if constexpr (std::is_same<Type, Root>()) {
       return _w.null_as_root();
 
-    } else if constexpr (IsSchemafulWriter<W>) {
+    } else if constexpr (schemaful::IsSchemafulWriter<W>) {
       return _w.add_null_to_union(_parent.index_, _parent.union_);
 
     } else {
@@ -143,7 +143,7 @@ struct Parent {
     } else if constexpr (std::is_same<Type, Root>()) {
       return _w.value_as_root(_var);
 
-    } else if constexpr (IsSchemafulWriter<W>) {
+    } else if constexpr (schemaful::IsSchemafulWriter<W>) {
       return _w.add_value_to_union(_parent.index_, _var, _parent.union_);
 
     } else {

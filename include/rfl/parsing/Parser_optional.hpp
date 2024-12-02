@@ -8,11 +8,11 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
-#include "IsSchemafulReader.hpp"
-#include "IsSchemafulWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
+#include "schemaful/IsSchemafulReader.hpp"
+#include "schemaful/IsSchemafulWriter.hpp"
 #include "schemaful/OptionalParser.hpp"
 
 namespace rfl {
@@ -27,7 +27,7 @@ struct Parser<R, W, std::optional<T>, ProcessorsType> {
 
   static Result<std::optional<T>> read(const R& _r,
                                        const InputVarType& _var) noexcept {
-    if constexpr (IsSchemafulReader<R>) {
+    if constexpr (schemaful::IsSchemafulReader<R>) {
       using O = schemaful::OptionalParser<R, W, std::remove_cvref_t<T>,
                                           ProcessorsType>;
       const auto to_optional = [&](const auto& _u) -> Result<std::optional<T>> {
@@ -48,7 +48,7 @@ struct Parser<R, W, std::optional<T>, ProcessorsType> {
   template <class P>
   static void write(const W& _w, const std::optional<T>& _o,
                     const P& _parent) noexcept {
-    if constexpr (IsSchemafulWriter<W>) {
+    if constexpr (schemaful::IsSchemafulWriter<W>) {
       auto u = ParentType::add_union(_w, _parent);
       auto p = typename ParentType::Union<decltype(u)>{.index_ = _o ? 0 : 1,
                                                        .union_ = &u};

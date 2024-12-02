@@ -8,11 +8,11 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
-#include "IsSchemafulReader.hpp"
-#include "IsSchemafulWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
+#include "schemaful/IsSchemafulReader.hpp"
+#include "schemaful/IsSchemafulWriter.hpp"
 #include "schemaful/UniquePtrParser.hpp"
 
 namespace rfl {
@@ -27,7 +27,7 @@ struct Parser<R, W, std::unique_ptr<T>, ProcessorsType> {
 
   static Result<std::unique_ptr<T>> read(const R& _r,
                                          const InputVarType& _var) noexcept {
-    if constexpr (IsSchemafulReader<R>) {
+    if constexpr (schemaful::IsSchemafulReader<R>) {
       using S = schemaful::UniquePtrParser<R, W, std::remove_cvref_t<T>,
                                            ProcessorsType>;
       const auto to_unique = [&](const auto& _u) -> Result<std::unique_ptr<T>> {
@@ -47,7 +47,7 @@ struct Parser<R, W, std::unique_ptr<T>, ProcessorsType> {
   template <class P>
   static void write(const W& _w, const std::unique_ptr<T>& _s,
                     const P& _parent) noexcept {
-    if constexpr (IsSchemafulWriter<W>) {
+    if constexpr (schemaful::IsSchemafulWriter<W>) {
       auto u = ParentType::add_union(_w, _parent);
       auto p = typename ParentType::Union<decltype(u)>{.index_ = _s ? 0 : 1,
                                                        .union_ = &u};

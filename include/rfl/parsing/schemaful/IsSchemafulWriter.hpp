@@ -1,12 +1,12 @@
-#ifndef RFL_PARSING_ISSCHEMAFULWRITER_HPP_
-#define RFL_PARSING_ISSCHEMAFULWRITER_HPP_
+#ifndef RFL_PARSING_SCHEMAFUL_ISSCHEMAFULWRITER_HPP_
+#define RFL_PARSING_SCHEMAFUL_ISSCHEMAFULWRITER_HPP_
 
 #include <concepts>
 #include <string>
 #include <string_view>
 #include <variant>
 
-namespace rfl::parsing {
+namespace rfl::parsing::schemaful {
 
 template <class W>
 concept IsSchemafulWriter = requires(
@@ -38,6 +38,6 @@ concept IsSchemafulWriter = requires(
   } -> std::same_as<typename W::OutputVarType>;
 };
 
-}  // namespace rfl::parsing
+}  // namespace rfl::parsing::schemaful
 
 #endif

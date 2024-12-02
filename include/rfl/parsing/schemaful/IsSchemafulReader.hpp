@@ -1,11 +1,11 @@
-#ifndef RFL_PARSING_ISSCHEMAFULREADER_HPP_
-#define RFL_PARSING_ISSCHEMAFULREADER_HPP_
+#ifndef RFL_PARSING_SCHEMAFUL_ISSCHEMAFULREADER_HPP_
+#define RFL_PARSING_SCHEMAFUL_ISSCHEMAFULREADER_HPP_
 
 #include <concepts>
 #include <string>
 #include <variant>
 
-namespace rfl::parsing {
+namespace rfl::parsing::schemaful {
 
 using MockVariantType = std::variant<std::string, int>;
 
@@ -29,6 +29,6 @@ concept IsSchemafulReader =
       } -> std::same_as<rfl::Result<MockVariantType>>;
     };
 
-}  // namespace rfl::parsing
+}  // namespace rfl::parsing::schemaful
 
 #endif
