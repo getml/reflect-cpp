@@ -8,14 +8,17 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "IsSchemafulReader.hpp"
+#include "IsSchemafulWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
+#include "schemaful/SharedPtrParser.hpp"
 
 namespace rfl::parsing {
 
 template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::shared_ptr<T>>
+  requires AreReaderAndWriter<R, W, std::shared_ptr<T>>
 struct Parser<R, W, std::shared_ptr<T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
@@ -23,25 +26,43 @@ struct Parser<R, W, std::shared_ptr<T>, ProcessorsType> {
 
   static Result<std::shared_ptr<T>> read(const R& _r,
                                          const InputVarType& _var) noexcept {
-    if (_r.is_empty(_var)) {
-      return std::shared_ptr<T>();
+    if constexpr (IsSchemafulReader<R>) {
+      using S = schemaful::SharedPtrParser<R, W, std::remove_cvref_t<T>,
+                                           ProcessorsType>;
+      const auto to_shared = [&](const auto& _u) -> Result<std::shared_ptr<T>> {
+        return _r.template to_variant<std::shared_ptr<T>, S>(_u);
+      };
+      return _r.to_union(_var).and_then(to_shared);
+    } else {
+      if (_r.is_empty(_var)) {
+        return std::shared_ptr<T>();
+      }
+      return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r,
+                                                                        _var)
+          .transform([](T&& _t) { return std::make_shared<T>(std::move(_t)); });
     }
-    const auto to_ptr = [](auto&& _t) {
-      return std::make_shared<T>(std::move(_t));
-    };
-    return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r, _var)
-        .transform(to_ptr);
   }
 
   template <class P>
   static void write(const W& _w, const std::shared_ptr<T>& _s,
                     const P& _parent) noexcept {
-    if (!_s) {
-      ParentType::add_null(_w, _parent);
-      return;
+    if constexpr (IsSchemafulWriter<W>) {
+      auto u = ParentType::add_union(_w, _parent);
+      auto p = typename ParentType::Union<decltype(u)>{.index_ = _s ? 0 : 1,
+                                                       .union_ = &u};
+      if (_s) {
+        Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, *_s, p);
+      } else {
+        ParentType::add_null(_w, p);
+      }
+    } else {
+      if (_s) {
+        Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, *_s,
+                                                                    _parent);
+      } else {
+        ParentType::add_null(_w, _parent);
+      }
     }
-    Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, *_s,
-                                                                _parent);
   }
 
   static schema::Type to_schema(
