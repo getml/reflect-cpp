@@ -115,7 +115,7 @@ struct Parent {
 
     } else if constexpr (std::is_same<Type,
                                       Union<typename W::OutputUnionType>>()) {
-      return _w.add_union_to_union(_parent.index_, _parent.obj_);
+      return _w.add_union_to_union(_parent.index_, _parent.union_);
 
     } else if constexpr (std::is_same<Type, Root>()) {
       return _w.union_as_root();
