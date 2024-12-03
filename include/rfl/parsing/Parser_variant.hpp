@@ -12,19 +12,25 @@
 #include "../always_false.hpp"
 #include "../internal/to_ptr_field.hpp"
 #include "FieldVariantParser.hpp"
+#include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "VariantAlternativeWrapper.hpp"
 #include "schema/Type.hpp"
+#include "schemaful/IsSchemafulReader.hpp"
+#include "schemaful/IsSchemafulWriter.hpp"
+#include "schemaful/VariantParser.hpp"
 #include "to_single_error_message.hpp"
 
 namespace rfl::parsing {
 
 template <class R, class W, class... AlternativeTypes, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::variant<AlternativeTypes...>>
+  requires AreReaderAndWriter<R, W, std::variant<AlternativeTypes...>>
 class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
   template <class T>
   using ptr_field_t =
       decltype(internal::to_ptr_field(std::declval<const T&>()));
+
+  using ParentType = Parent<W>;
 
  public:
   using InputVarType = typename R::InputVarType;
@@ -41,6 +47,14 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
       return FieldVariantParser<R, W, ProcessorsType,
                                 AlternativeTypes...>::read(_r, _var)
           .transform(to_std_variant);
+
+    } else if constexpr (schemaful::IsSchemafulReader<R>) {
+      using V =
+          schemaful::VariantParser<R, W, std::variant<AlternativeTypes...>,
+                                   ProcessorsType, AlternativeTypes...>;
+      return _r.to_union(_var).and_then([&](const auto& _u) {
+        return _r.template to_variant<std::variant<AlternativeTypes...>, V>(_u);
+      });
 
     } else if constexpr (ProcessorsType::add_tags_to_variants_) {
       using FieldVariantType =
@@ -89,6 +103,18 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
           R, W, ProcessorsType,
           ptr_field_t<AlternativeTypes>...>::write(_w, to_rfl_variant(_variant),
                                                    _parent);
+
+    } else if constexpr (schemaful::IsSchemafulWriter<W>) {
+      return std::visit(
+          [&](const auto& _v) {
+            using Type = std::remove_cvref_t<decltype(_v)>;
+            auto u = ParentType::add_union(_w, _parent);
+            auto p = typename ParentType::Union<decltype(u)>{
+                .index_ = _variant.index(), .union_ = &u};
+            Parser<R, W, Type, ProcessorsType>::write(_w, _v, p);
+          },
+          _variant);
+
     } else if constexpr (ProcessorsType::add_tags_to_variants_) {
       using FieldVariantType =
           rfl::Variant<VariantAlternativeWrapper<const AlternativeTypes*>...>;
