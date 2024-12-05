@@ -13,12 +13,17 @@
 #include "Parser_base.hpp"
 #include "VariantAlternativeWrapper.hpp"
 #include "schema/Type.hpp"
+#include "schemaful/IsSchemafulReader.hpp"
+#include "schemaful/IsSchemafulWriter.hpp"
+#include "schemaful/VariantParser.hpp"
 
 namespace rfl::parsing {
 
 template <class R, class W, class... AlternativeTypes, class ProcessorsType>
-requires AreReaderAndWriter<R, W, rfl::Variant<AlternativeTypes...>>
+  requires AreReaderAndWriter<R, W, rfl::Variant<AlternativeTypes...>>
 class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
+  using ParentType = Parent<W>;
+
  public:
   using InputVarType = typename R::InputVarType;
 
@@ -27,6 +32,13 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
     if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
       return FieldVariantParser<R, W, ProcessorsType,
                                 AlternativeTypes...>::read(_r, _var);
+
+    } else if constexpr (schemaful::IsSchemafulReader<R>) {
+      using V = schemaful::VariantParser<R, W, Variant<AlternativeTypes...>,
+                                         ProcessorsType, AlternativeTypes...>;
+      return _r.to_union(_var).and_then([&](const auto& _u) {
+        return _r.template to_variant<Variant<AlternativeTypes...>, V>(_u);
+      });
 
     } else if constexpr (ProcessorsType::add_tags_to_variants_) {
       using FieldVariantType =
@@ -66,6 +78,17 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
     if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
       FieldVariantParser<R, W, ProcessorsType, AlternativeTypes...>::write(
           _w, _variant, _parent);
+
+    } else if constexpr (schemaful::IsSchemafulWriter<W>) {
+      return rfl::visit(
+          [&](const auto& _v) {
+            using Type = std::remove_cvref_t<decltype(_v)>;
+            auto u = ParentType::add_union(_w, _parent);
+            auto p = typename ParentType::Union<decltype(u)>{
+                .index_ = _variant.index(), .union_ = &u};
+            Parser<R, W, Type, ProcessorsType>::write(_w, _v, p);
+          },
+          _variant);
 
     } else if constexpr (ProcessorsType::add_tags_to_variants_) {
       using FieldVariantType =

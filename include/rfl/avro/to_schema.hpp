@@ -1,12 +1,6 @@
 #ifndef RFL_AVRO_TOSCHEMA_HPP_
 #define RFL_AVRO_TOSCHEMA_HPP_
 
-#if __has_include(<yyjson.h>)
-#include <yyjson.h>
-#else
-#include "../thirdparty/yyjson.h"
-#endif
-
 #include <map>
 #include <string>
 #include <type_traits>
