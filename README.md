@@ -545,18 +545,7 @@ The following compilers are supported:
 
 ### Using vcpkg
 
-```bash
-vcpkg install reflectcpp
-```
-
-or:
-
-```bash
-vcpkg add port reflectcpp
-```
-
-If the library cannot be found, please update vcpkg itself and/or update the `builtin-baseline`
-tag in the *vcpkg.json* of your project.
+https://vcpkg.io/en/package/reflectcpp
 
 ### Using Conan
 
