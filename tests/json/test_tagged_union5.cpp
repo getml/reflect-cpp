@@ -9,7 +9,18 @@
 
 namespace test_tagged_union5 {
 
-	template <typename T, typename... Ts>
+
+  struct Sa {
+    int a;
+    std::string b;
+  };
+
+  struct Sb {
+    std::string b;
+    int i;
+  };
+
+  template <typename T, typename... Ts>
   concept OneOf = (std::is_same_v<T, Ts> || ...);
 
 	template <typename T>
@@ -21,15 +32,6 @@ namespace test_tagged_union5 {
 		return rfl::to_named_tuple(lhs) == rfl::to_named_tuple(rhs);
 	}
 
-  struct Sa {
-    int a;
-    std::string b;
-  };
-
-  struct Sb {
-    std::string b;
-    int i;
-  };
 
   using Tu = rfl::TaggedUnion<"tu",Sa,Sb>;
 
