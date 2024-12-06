@@ -14,9 +14,7 @@ You can include the source files into your build or compile it using cmake and v
 
 ## Option 1: Using vcpkg
 
-Refer to the following port:
-
-https://vcpkg.io/en/package/reflectcpp
+Refer to [this port](https://vcpkg.io/en/package/reflectcpp):
 
 ```bash
 vcpkg install reflectcpp
@@ -33,7 +31,7 @@ might also want to update the `builtin-baseline` tag in the *vcpkg.json* of your
 
 ## Option 2: Using Conan
 
-Simply use the following [recipe](https://conan.io/center/recipes/reflect-cpp).
+Simply use [this recipe](https://conan.io/center/recipes/reflect-cpp).
 
 ## Option 3: Compilation using cmake
 
