@@ -14,6 +14,10 @@ You can include the source files into your build or compile it using cmake and v
 
 ## Option 1: Using vcpkg
 
+Refer to the following port:
+
+https://vcpkg.io/en/package/reflectcpp
+
 ```bash
 vcpkg install reflectcpp
 ```
