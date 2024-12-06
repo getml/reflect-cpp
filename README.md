@@ -6,6 +6,8 @@
 [![Generic badge](https://img.shields.io/badge/gcc-11+-blue.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/clang-14+-blue.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/MSVC-17+-blue.svg)](https://shields.io/)
+[![Conan Center](https://img.shields.io/conan/v/reflect-cpp)](https://conan.io/center/recipes/reflect-cpp)
+
 
 **📖 Documentation**: https://rfl.getml.com — **👨‍💻 Source Code**: https://github.com/getml/reflect-cpp
 
@@ -68,7 +70,7 @@ The following table lists the serialization formats currently supported by refle
 
 | Format       | Library                                              | Version      | License    | Remarks                                              |
 |--------------|------------------------------------------------------|--------------|------------| -----------------------------------------------------|
-| JSON         | [yyjson](https://github.com/ibireme/yyjson)          |    0.8.0     | MIT        | out-of-the-box support, included in this repository  |
+| JSON         | [yyjson](https://github.com/ibireme/yyjson)          | >= 0.8.0     | MIT        | out-of-the-box support, included in this repository  |
 | BSON         | [libbson](https://github.com/mongodb/mongo-c-driver) | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
 | CBOR         | [tinycbor](https://github.com/intel/tinycbor)        | >= 0.6.0     | MIT        | JSON-like binary format                              |
 | flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 | Schema-less version of flatbuffers, binary format    |
@@ -80,7 +82,7 @@ The following table lists the serialization formats currently supported by refle
 
 Support for more serialization formats is in development. Refer to the [issues](https://github.com/getml/reflect-cpp/issues) for details.
 
-Please also refer to the *vcpkg.json* in this repository.
+Please also refer to the *conanfile.py* or *vcpkg.json* in this repository.
 
 
 ## Feature Overview
@@ -541,9 +543,28 @@ The following compilers are supported:
 - Clang 14.0 or higher
 - MSVC 17.8 (19.38) or higher
 
+### Using vcpkg
+
+```bash
+vcpkg install reflectcpp
+```
+
+or:
+
+```bash
+vcpkg add port reflectcpp
+```
+
+If the library cannot be found, please update vcpkg itself and/or update the `builtin-baseline`
+tag in the *vcpkg.json* of your project.
+
+### Using Conan
+
+https://conan.io/center/recipes/reflect-cpp
+
 ### Compilation using cmake
 
-This will simply compile YYJSON, which is the JSON library underlying reflect-cpp. You can then include reflect-cpp in your project and link to the binary to get reflect-cpp with JSON support.
+This will compile reflect-cpp with JSON support only. You can then include reflect-cpp in your project and link to the binary.
 
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -554,7 +575,6 @@ cmake --build build --config Release -j 4  # MSVC
 If you need support for any other supported [serialization formats](#serialization-formats), refer to the [documentation](https://rfl.getml.com/docs-readme) for installation instructions.
 
 You can also [include the source files](https://rfl.getml.com/install/#option-1-include-source-files-into-your-own-build) into your build or compile it using [cmake and vcpkg.](https://rfl.getml.com/install/#option-3-compilation-using-cmake-and-vcpkg) For detailed installation instructions, please refer to the [install guide](https://rfl.getml.com/install).
-
 
 ## The team behind reflect-cpp
 

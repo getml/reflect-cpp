@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_TUPLEREADER_HPP_
 #define RFL_PARSING_TUPLEREADER_HPP_
 
+#include <sstream>
 #include <string_view>
 #include <tuple>
 #include <type_traits>
@@ -76,15 +77,18 @@ class TupleReader {
           move_to(&(rfl::get<_i>(*tuple_)), &(*res));
           ++num_set_;
         } else {
-          *_err = Error("Failed to parse field " + std::to_string(_i) + ": " +
-                        res.error()->what());
+          std::stringstream stream;
+          stream << "Failed to parse field " << _i << ": "
+                 << res.error()->what();
+          *_err = Error(stream.str());
         }
         return;
       }
       read_impl<_i + 1>(_var, _err);
     } else {
-      *_err = Error("Expected " + std::to_string(size_) +
-                    " fields, but got at least one more.");
+      std::stringstream stream;
+      stream << "Expected " << size_ << " fields, but got at least one more.";
+      *_err = Error(stream.str());
       return;
     }
   }

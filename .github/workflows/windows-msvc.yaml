@@ -6,6 +6,8 @@ env:
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
 jobs:
+  windows-msvc-conan:
+    runs-on: windows-latest
   windows-msvc:
     runs-on: windows-latest
     steps:
@@ -47,3 +49,4 @@ jobs:
           .\build\benchmarks\json\Release\reflect-cpp-json-benchmarks.exe --benchmark_filter=canada >> $env:GITHUB_STEP_SUMMARY
           .\build\benchmarks\json\Release\reflect-cpp-json-benchmarks.exe --benchmark_filter=licenses >> $env:GITHUB_STEP_SUMMARY
           echo '```' >> $env:GITHUB_STEP_SUMMARY
+ 
