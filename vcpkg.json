@@ -1,7 +1,7 @@
 {
   "name": "reflectcpp",
-  "version-string": "0.8.0",
-  "builtin-baseline": "50bffcc62d7f6571eb32bc1a0b1807e77af1166c",
+  "version-string": "0.16.0",
+  "builtin-baseline": "cd124b84feb0c02a24a2d90981e8358fdee0e077",
   "dependencies": [
     {
       "name": "ctre",
@@ -52,7 +52,8 @@
       "version>=": "0.8.0#1"
     },
     {
-      "name": "yyjson"
+      "name": "yyjson",
+      "version>=": "0.10.0"
     },
     {
       "name": "benchmark",
@@ -69,12 +70,10 @@
     {
       "name": "vcpkg-cmake-config",
       "version>=": "2022-02-06#1"
-    }
-  ],
-  "overrides": [
+    },
     {
-      "name": "yyjson",
-      "version": "0.8.0"
+      "name":"vcpkg-pkgconfig-get-modules",
+      "version>=": "2024-04-03"
     }
   ]
 }
