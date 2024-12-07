@@ -6,8 +6,6 @@ env:
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
 jobs:
-  windows-msvc-conan:
-    runs-on: windows-latest
   windows-msvc:
     runs-on: windows-latest
     steps:

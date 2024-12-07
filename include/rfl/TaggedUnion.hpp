@@ -120,6 +120,27 @@ struct PossibleTags<TaggedUnion<_discriminator, Ts...>> {
 template <class T>
 using possible_tags_t = typename PossibleTags<T>::Type;
 
+template <internal::StringLiteral _discriminator, class... Ts>
+bool operator==(
+  const TaggedUnion<_discriminator, Ts...>& lhs,
+  const TaggedUnion<_discriminator, Ts...>& rhs
+  ) {
+
+  return (lhs.variant().index() == rhs.variant().index()) &&
+         lhs.variant().visit(
+           [&rhs](const auto& l) {
+               return rhs.variant().visit(
+                 [&l](const auto& r) -> bool {
+                   if constexpr (std::is_same_v<std::decay_t<decltype(l)>, std::decay_t<decltype(r)>>)
+                     return l == r;
+                   else
+                     return false;
+               }
+             );
+           }
+         );
+}
+
 }  // namespace rfl
 
 #endif  // RFL_TAGGEDUNION_HPP_
