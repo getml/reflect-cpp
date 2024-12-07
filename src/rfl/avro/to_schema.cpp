@@ -42,7 +42,7 @@ inline bool is_named_type(const parsing::schema::Type& _type) {
 schema::Type type_to_avro_schema_type(
     const parsing::schema::Type& _type,
     const std::map<std::string, parsing::schema::Type>& _definitions,
-    std::set<std::string>* _already_known) {
+    std::set<std::string>* _already_known, size_t* _num_unnamed) {
   auto handle_variant = [&](const auto& _t) -> schema::Type {
     using T = std::remove_cvref_t<decltype(_t)>;
     using Type = parsing::schema::Type;
@@ -73,45 +73,51 @@ schema::Type type_to_avro_schema_type(
     } else if constexpr (std::is_same<T, Type::AnyOf>()) {
       auto any_of = std::vector<schema::Type>();
       for (const auto& t : _t.types_) {
-        any_of.emplace_back(
-            type_to_avro_schema_type(t, _definitions, _already_known));
+        any_of.emplace_back(type_to_avro_schema_type(
+            t, _definitions, _already_known, _num_unnamed));
       }
       return schema::Type{.value = any_of};
 
     } else if constexpr (std::is_same<T, Type::Description>()) {
       // TODO: Return descriptions
-      return type_to_avro_schema_type(*_t.type_, _definitions, _already_known);
+      return type_to_avro_schema_type(*_t.type_, _definitions, _already_known,
+                                      _num_unnamed);
 
     } else if constexpr (std::is_same<T, Type::FixedSizeTypedArray>()) {
       return schema::Type{
           .value = schema::Type::Array{
               .items = Ref<schema::Type>::make(type_to_avro_schema_type(
-                  *_t.type_, _definitions, _already_known))}};
+                  *_t.type_, _definitions, _already_known, _num_unnamed))}};
 
     } else if constexpr (std::is_same<T, Type::Literal>()) {
-      return schema::Type{.value = schema::Type::Enum{.symbols = _t.values_}};
+      return schema::Type{
+          .value = schema::Type::Enum{.name = std::string("unnamed_") +
+                                              std::to_string(++(*_num_unnamed)),
+                                      .symbols = _t.values_}};
 
     } else if constexpr (std::is_same<T, Type::Object>()) {
-      auto record = schema::Type::Record{};
+      auto record = schema::Type::Record{
+          .name = std::string("unnamed_") + std::to_string(++(*_num_unnamed))};
       for (const auto& [k, v] : _t.types_) {
         record.fields.push_back(schema::Type::RecordField{
             .name = k,
-            .type = Ref<schema::Type>::make(
-                type_to_avro_schema_type(v, _definitions, _already_known))});
+            .type = Ref<schema::Type>::make(type_to_avro_schema_type(
+                v, _definitions, _already_known, _num_unnamed))});
       }
       return schema::Type{.value = record};
 
     } else if constexpr (std::is_same<T, Type::Optional>()) {
-      return schema::Type{.value = std::vector<schema::Type>(
-                              {type_to_avro_schema_type(*_t.type_, _definitions,
-                                                        _already_known),
-                               schema::Type{schema::Type::Null{}}})};
+      return schema::Type{
+          .value = std::vector<schema::Type>(
+              {type_to_avro_schema_type(*_t.type_, _definitions, _already_known,
+                                        _num_unnamed),
+               schema::Type{schema::Type::Null{}}})};
 
     } else if constexpr (std::is_same<T, Type::Reference>()) {
       if (_definitions.find(_t.name_) != _definitions.end() &&
           !is_named_type(_definitions.at(_t.name_))) {
         return type_to_avro_schema_type(_definitions.at(_t.name_), _definitions,
-                                        _already_known);
+                                        _already_known, _num_unnamed);
 
       } else if (_already_known->find(_t.name_) != _already_known->end() ||
                  _definitions.find(_t.name_) == _definitions.end()) {
@@ -120,15 +126,16 @@ schema::Type type_to_avro_schema_type(
       } else {
         _already_known->insert(_t.name_);
         return type_to_avro_schema_type(_definitions.at(_t.name_), _definitions,
-                                        _already_known)
+                                        _already_known, _num_unnamed)
             .with_name(_t.name_);
       }
 
     } else if constexpr (std::is_same<T, Type::StringMap>()) {
       return schema::Type{
           .value = schema::Type::Map{
-              .values = Ref<schema::Type>::make(type_to_avro_schema_type(
-                  *_t.value_type_, _definitions, _already_known))}};
+              .values = Ref<schema::Type>::make(
+                  type_to_avro_schema_type(*_t.value_type_, _definitions,
+                                           _already_known, _num_unnamed))}};
 
     } else if constexpr (std::is_same<T, Type::Tuple>()) {
       // TODO: Handle tuples.
@@ -138,11 +145,12 @@ schema::Type type_to_avro_schema_type(
       return schema::Type{
           .value = schema::Type::Array{
               .items = Ref<schema::Type>::make(type_to_avro_schema_type(
-                  *_t.type_, _definitions, _already_known))}};
+                  *_t.type_, _definitions, _already_known, _num_unnamed))}};
 
     } else if constexpr (std::is_same<T, Type::Validated>()) {
       // Avro knows no validation.
-      return type_to_avro_schema_type(*_t.type_, _definitions, _already_known);
+      return type_to_avro_schema_type(*_t.type_, _definitions, _already_known,
+                                      _num_unnamed);
 
     } else {
       static_assert(rfl::always_false_v<T>, "Not all cases were covered.");
@@ -155,8 +163,10 @@ schema::Type type_to_avro_schema_type(
 std::string to_json_representation(
     const parsing::schema::Definition& _internal_schema) {
   std::set<std::string> already_known;
+  size_t num_unnamed = 0;
   const auto avro_schema = type_to_avro_schema_type(
-      _internal_schema.root_, _internal_schema.definitions_, &already_known);
+      _internal_schema.root_, _internal_schema.definitions_, &already_known,
+      &num_unnamed);
   return rfl::json::write(avro_schema);
 }
 
