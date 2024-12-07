@@ -2,6 +2,7 @@
 #define RFL_VARIANT_HPP_
 
 #include <array>
+#include <bit>
 #include <cstdint>
 #include <limits>
 #include <optional>
@@ -80,7 +81,7 @@ class Variant {
     auto t = T{std::forward<Args>(_args)...};
     destroy_if_necessary();
     move_from_type(std::move(t));
-    return *std::launder(reinterpret_cast<T*>(data_.data()));
+    return *std::bit_cast<T*>(data_.data());
   }
 
   /// Emplaces a new element into the variant.
@@ -384,13 +385,13 @@ class Variant {
   template <IndexType _i>
   auto& get_alternative() noexcept {
     using CurrentType = internal::nth_element_t<_i, AlternativeTypes...>;
-    return *std::launder(reinterpret_cast<CurrentType*>(data_.data()));
+    return *std::bit_cast<CurrentType*>(data_.data());
   }
 
   template <IndexType _i>
   const auto& get_alternative() const noexcept {
     using CurrentType = internal::nth_element_t<_i, AlternativeTypes...>;
-    return *std::launder(reinterpret_cast<const CurrentType*>(data_.data()));
+    return *std::bit_cast<const CurrentType*>(data_.data());
   }
 
   void move_from_other(Variant<AlternativeTypes...>&& _other) noexcept {
