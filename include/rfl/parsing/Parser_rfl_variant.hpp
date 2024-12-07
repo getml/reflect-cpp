@@ -30,8 +30,21 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
   static Result<rfl::Variant<AlternativeTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
     if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
-      return FieldVariantParser<R, W, ProcessorsType,
-                                AlternativeTypes...>::read(_r, _var);
+      if constexpr (schemaful::IsSchemafulReader<R>) {
+        using WrappedType = rfl::Variant<NamedTuple<AlternativeTypes>...>;
+        return Parser<R, W, WrappedType, ProcessorsType>::read(_r, _var)
+            .transform(
+                [](auto&& _variant) -> rfl::Variant<AlternativeTypes...> {
+                  return std::move(_variant).visit([](auto&& _named_tuple) {
+                    return rfl::Variant<AlternativeTypes...>(std::move(
+                        std::move(_named_tuple).fields().template get<0>()));
+                  });
+                });
+
+      } else {
+        return FieldVariantParser<R, W, ProcessorsType,
+                                  AlternativeTypes...>::read(_r, _var);
+      }
 
     } else if constexpr (schemaful::IsSchemafulReader<R>) {
       using V = schemaful::VariantParser<R, W, Variant<AlternativeTypes...>,
@@ -76,8 +89,22 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
                     const rfl::Variant<AlternativeTypes...>& _variant,
                     const P& _parent) noexcept {
     if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
-      FieldVariantParser<R, W, ProcessorsType, AlternativeTypes...>::write(
-          _w, _variant, _parent);
+      if constexpr (schemaful::IsSchemafulWriter<W>) {
+        using WrappedType = rfl::Variant<
+            NamedTuple<Field<AlternativeTypes::name_,
+                             const typename AlternativeTypes::Type*>>...>;
+        const auto to_wrapped = [](const auto& _variant) -> WrappedType {
+          return _variant.visit([](const auto& _field) -> WrappedType {
+            return make_named_tuple(internal::to_ptr_field(_field));
+          });
+        };
+        Parser<R, W, WrappedType, ProcessorsType>::write(
+            _w, to_wrapped(_variant), _parent);
+
+      } else {
+        FieldVariantParser<R, W, ProcessorsType, AlternativeTypes...>::write(
+            _w, _variant, _parent);
+      }
 
     } else if constexpr (schemaful::IsSchemafulWriter<W>) {
       return rfl::visit(
