@@ -22,12 +22,15 @@
 #include "../always_false.hpp"
 #include "../internal/is_literal.hpp"
 
-namespace rfl {
-namespace avro {
+namespace rfl::avro {
 
 class Writer {
  public:
   struct AVROOutputArray {
+    avro_value_t val_;
+  };
+
+  struct AVROOutputMap {
     avro_value_t val_;
   };
 
@@ -44,6 +47,7 @@ class Writer {
   };
 
   using OutputArrayType = AVROOutputArray;
+  using OutputMapType = AVROOutputMap;
   using OutputObjectType = AVROOutputObject;
   using OutputUnionType = AVROOutputUnion;
   using OutputVarType = AVROOutputVar;
@@ -53,6 +57,8 @@ class Writer {
   ~Writer();
 
   OutputArrayType array_as_root(const size_t _size) const noexcept;
+
+  OutputMapType map_as_root(const size_t _size) const noexcept;
 
   OutputObjectType object_as_root(const size_t _size) const noexcept;
 
@@ -69,6 +75,10 @@ class Writer {
   OutputArrayType add_array_to_array(const size_t _size,
                                      OutputArrayType* _parent) const noexcept;
 
+  OutputArrayType add_array_to_map(const std::string_view& _name,
+                                   const size_t _size,
+                                   OutputMapType* _parent) const noexcept;
+
   OutputArrayType add_array_to_object(const std::string_view& _name,
                                       const size_t _size,
                                       OutputObjectType* _parent) const noexcept;
@@ -76,8 +86,26 @@ class Writer {
   OutputArrayType add_array_to_union(const size_t _index, const size_t _size,
                                      OutputUnionType* _parent) const noexcept;
 
+  OutputMapType add_map_to_array(const size_t _size,
+                                 OutputArrayType* _parent) const noexcept;
+
+  OutputMapType add_map_to_map(const std::string_view& _name,
+                               const size_t _size,
+                               OutputMapType* _parent) const noexcept;
+
+  OutputMapType add_map_to_object(const std::string_view& _name,
+                                  const size_t _size,
+                                  OutputObjectType* _parent) const noexcept;
+
+  OutputMapType add_map_to_union(const size_t _index, const size_t _size,
+                                 OutputUnionType* _parent) const noexcept;
+
   OutputObjectType add_object_to_array(const size_t _size,
                                        OutputArrayType* _parent) const noexcept;
+
+  OutputObjectType add_object_to_map(const std::string_view& _name,
+                                     const size_t _size,
+                                     OutputMapType* _parent) const noexcept;
 
   OutputObjectType add_object_to_object(
       const std::string_view& _name, const size_t _size,
@@ -88,6 +116,9 @@ class Writer {
 
   OutputUnionType add_union_to_array(OutputArrayType* _parent) const noexcept;
 
+  OutputUnionType add_union_to_map(const std::string_view& _name,
+                                   OutputMapType* _parent) const noexcept;
+
   OutputUnionType add_union_to_object(const std::string_view& _name,
                                       OutputObjectType* _parent) const noexcept;
 
@@ -95,6 +126,9 @@ class Writer {
                                      OutputUnionType* _parent) const noexcept;
 
   OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept;
+
+  OutputVarType add_null_to_map(const std::string_view& _name,
+                                OutputMapType* _parent) const noexcept;
 
   OutputVarType add_null_to_object(const std::string_view& _name,
                                    OutputObjectType* _parent) const noexcept;
@@ -107,6 +141,15 @@ class Writer {
                                    OutputArrayType* _parent) const noexcept {
     avro_value_t new_value;
     avro_value_append(&_parent->val_, &new_value, nullptr);
+    set_value(_var, &new_value);
+    return OutputVarType{new_value};
+  }
+
+  template <class T>
+  OutputVarType add_value_to_map(const std::string_view& _name, const T& _var,
+                                 OutputMapType* _parent) const noexcept {
+    avro_value_t new_value;
+    avro_value_add(&_parent->val_, _name.data(), &new_value, nullptr, nullptr);
     set_value(_var, &new_value);
     return OutputVarType{new_value};
   }
@@ -131,6 +174,8 @@ class Writer {
   }
 
   void end_array(OutputArrayType* _arr) const noexcept;
+
+  void end_map(OutputMapType* _obj) const noexcept;
 
   void end_object(OutputObjectType* _obj) const noexcept;
 
@@ -159,7 +204,6 @@ class Writer {
   avro_value_t* root_;
 };
 
-}  // namespace avro
-}  // namespace rfl
+}  // namespace rfl::avro
 
 #endif
