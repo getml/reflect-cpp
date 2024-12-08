@@ -32,10 +32,19 @@ rfl::Result<Reader::InputArrayType> Reader::to_array(
 rfl::Result<Reader::InputObjectType> Reader::to_object(
     const InputVarType& _var) const noexcept {
   const auto type = avro_value_get_type(_var.val_);
-  if (type != AVRO_RECORD && type != AVRO_MAP) {
+  if (type != AVRO_RECORD) {
     return Error("Could not cast to an object.");
   }
   return InputObjectType{_var.val_};
+}
+
+rfl::Result<Reader::InputMapType> Reader::to_map(
+    const InputVarType& _var) const noexcept {
+  const auto type = avro_value_get_type(_var.val_);
+  if (type != AVRO_MAP) {
+    return Error("Could not cast to a map.");
+  }
+  return InputMapType{_var.val_};
 }
 
 rfl::Result<Reader::InputUnionType> Reader::to_union(

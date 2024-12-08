@@ -27,6 +27,10 @@ struct Reader {
     const avro_value_t* val_;
   };
 
+  struct AVROInputMap {
+    const avro_value_t* val_;
+  };
+
   struct AVROInputUnion {
     const avro_value_t* val_;
   };
@@ -37,6 +41,7 @@ struct Reader {
 
   using InputArrayType = AVROInputArray;
   using InputObjectType = AVROInputObject;
+  using InputMapType = AVROInputMap;
   using InputUnionType = AVROInputUnion;
   using InputVarType = AVROInputVar;
 
@@ -138,6 +143,8 @@ struct Reader {
   rfl::Result<InputObjectType> to_object(
       const InputVarType& _var) const noexcept;
 
+  rfl::Result<InputMapType> to_map(const InputVarType& _var) const noexcept;
+
   rfl::Result<InputUnionType> to_union(const InputVarType& _var) const noexcept;
 
   template <class ArrayReader>
@@ -156,6 +163,20 @@ struct Reader {
     return std::nullopt;
   }
 
+  template <class MapReader>
+  std::optional<Error> read_map(const MapReader& _map_reader,
+                                const InputMapType& _map) const noexcept {
+    size_t size = 0;
+    avro_value_get_size(_map.val_, &size);
+    for (size_t ix = 0; ix < size; ++ix) {
+      avro_value_t element;
+      const char* key = nullptr;
+      avro_value_get_by_index(_map.val_, ix, &element, &key);
+      _map_reader.read(std::string_view(key), InputVarType{&element});
+    }
+    return std::nullopt;
+  }
+
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
@@ -165,6 +186,7 @@ struct Reader {
       avro_value_t element;
       const char* key = nullptr;
       avro_value_get_by_index(_obj.val_, ix, &element, &key);
+      // TODO: Assign by index, not by name.
       _object_reader.read(std::string_view(key), InputVarType{&element});
     }
     return std::nullopt;
