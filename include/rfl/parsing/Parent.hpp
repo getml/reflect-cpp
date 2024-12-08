@@ -166,8 +166,7 @@ struct Parent {
     if constexpr (std::is_same<Type, Array>()) {
       return _w.add_union_to_array(_parent.arr_);
 
-    } else if constexpr (std::is_same<Type,
-                                      Union<typename W::OutputMapType>>()) {
+    } else if constexpr (std::is_same<Type, Map<typename W::OutputMapType>>()) {
       return _w.add_union_to_map(_parent.name_, _parent.map_);
 
     } else if constexpr (std::is_same<Type, Object>()) {
