@@ -80,8 +80,7 @@ struct Parent {
     if constexpr (std::is_same<Type, Array>()) {
       return _w.add_map_to_array(_size, _parent.arr_);
 
-    } else if constexpr (std::is_same<Type,
-                                      Union<typename W::OutputMapType>>()) {
+    } else if constexpr (std::is_same<Type, Map<typename W::OutputMapType>>()) {
       return _w.add_map_to_map(_parent.name_, _size, _parent.map_);
 
     } else if constexpr (std::is_same<Type, Object>()) {
