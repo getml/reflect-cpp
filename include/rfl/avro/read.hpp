@@ -36,6 +36,8 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
   avro_generic_value_new(_schema.iface(), &root);
   auto err = avro_value_read(avro_reader, &root);
   if (err) {
+    avro_value_decref(&root);
+    avro_reader_free(avro_reader);
     return Error(std::string("Could not read root value: ") + avro_strerror());
   }
   auto result = read<T, Ps...>(InputVarType{&root});
