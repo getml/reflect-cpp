@@ -19,7 +19,7 @@
 #include "schema/Type.hpp"
 #include "schemaful/IsSchemafulReader.hpp"
 #include "schemaful/IsSchemafulWriter.hpp"
-#include "schemaful/VariantParser.hpp"
+#include "schemaful/VariantReader.hpp"
 #include "to_single_error_message.hpp"
 
 namespace rfl::parsing {
@@ -64,10 +64,10 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
 
     } else if constexpr (schemaful::IsSchemafulReader<R>) {
       using V =
-          schemaful::VariantParser<R, W, std::variant<AlternativeTypes...>,
+          schemaful::VariantReader<R, W, std::variant<AlternativeTypes...>,
                                    ProcessorsType, AlternativeTypes...>;
       return _r.to_union(_var).and_then([&](const auto& _u) {
-        return _r.template to_variant<std::variant<AlternativeTypes...>, V>(_u);
+        return _r.template read_union<std::variant<AlternativeTypes...>, V>(_u);
       });
 
     } else if constexpr (ProcessorsType::add_tags_to_variants_) {

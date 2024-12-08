@@ -10,9 +10,9 @@ namespace rfl::parsing::schemaful {
 using MockVariantType = std::variant<std::string, int>;
 
 template <class R>
-struct MockVariantParser {
-  static rfl::Result<MockVariantType> parse(const R&, const size_t,
-                                            typename R::InputVarType&) {
+struct MockUnionReader {
+  static rfl::Result<MockVariantType> read(const R&, const size_t,
+                                           typename R::InputVarType&) {
     return Error("This is a mock type.");
   }
 };
@@ -25,7 +25,7 @@ concept IsSchemafulReader =
       } -> std::same_as<rfl::Result<typename R::InputUnionType>>;
 
       {
-        r.template to_variant<MockVariantType, MockVariantParser<R>>(u)
+        r.template read_union<MockVariantType, MockUnionReader<R>>(u)
       } -> std::same_as<rfl::Result<MockVariantType>>;
     };
 

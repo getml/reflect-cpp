@@ -13,7 +13,7 @@
 #include "schema/Type.hpp"
 #include "schemaful/IsSchemafulReader.hpp"
 #include "schemaful/IsSchemafulWriter.hpp"
-#include "schemaful/OptionalParser.hpp"
+#include "schemaful/OptionalReader.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -28,10 +28,10 @@ struct Parser<R, W, std::optional<T>, ProcessorsType> {
   static Result<std::optional<T>> read(const R& _r,
                                        const InputVarType& _var) noexcept {
     if constexpr (schemaful::IsSchemafulReader<R>) {
-      using O = schemaful::OptionalParser<R, W, std::remove_cvref_t<T>,
+      using O = schemaful::OptionalReader<R, W, std::remove_cvref_t<T>,
                                           ProcessorsType>;
       const auto to_optional = [&](const auto& _u) -> Result<std::optional<T>> {
-        return _r.template to_variant<std::optional<T>, O>(_u);
+        return _r.template read_union<std::optional<T>, O>(_u);
       };
       return _r.to_union(_var).and_then(to_optional);
     } else {

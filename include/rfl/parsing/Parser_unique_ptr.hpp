@@ -13,7 +13,7 @@
 #include "schema/Type.hpp"
 #include "schemaful/IsSchemafulReader.hpp"
 #include "schemaful/IsSchemafulWriter.hpp"
-#include "schemaful/UniquePtrParser.hpp"
+#include "schemaful/UniquePtrReader.hpp"
 
 namespace rfl {
 namespace parsing {
@@ -28,10 +28,10 @@ struct Parser<R, W, std::unique_ptr<T>, ProcessorsType> {
   static Result<std::unique_ptr<T>> read(const R& _r,
                                          const InputVarType& _var) noexcept {
     if constexpr (schemaful::IsSchemafulReader<R>) {
-      using S = schemaful::UniquePtrParser<R, W, std::remove_cvref_t<T>,
+      using S = schemaful::UniquePtrReader<R, W, std::remove_cvref_t<T>,
                                            ProcessorsType>;
       const auto to_unique = [&](const auto& _u) -> Result<std::unique_ptr<T>> {
-        return _r.template to_variant<std::unique_ptr<T>, S>(_u);
+        return _r.template read_union<std::unique_ptr<T>, S>(_u);
       };
       return _r.to_union(_var).and_then(to_unique);
     } else {

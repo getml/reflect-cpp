@@ -170,8 +170,8 @@ struct Reader {
     return std::nullopt;
   }
 
-  template <class VariantType, class VariantParserType>
-  rfl::Result<VariantType> to_variant(
+  template <class VariantType, class UnionReaderType>
+  rfl::Result<VariantType> read_union(
       const InputUnionType& _union) const noexcept {
     int disc = 0;
     auto err = avro_value_get_discriminant(_union.val_, &disc);
@@ -183,8 +183,8 @@ struct Reader {
     if (err) {
       return Error("Could not cast the union type.");
     }
-    return VariantParserType::parse(*this, static_cast<size_t>(disc),
-                                    InputVarType{&value});
+    return UnionReaderType::read(*this, static_cast<size_t>(disc),
+                                 InputVarType{&value});
   }
 
   template <class T>

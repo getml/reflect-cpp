@@ -16,7 +16,6 @@
 #include "schema/Type.hpp"
 #include "schemaful/IsSchemafulReader.hpp"
 #include "schemaful/IsSchemafulWriter.hpp"
-#include "schemaful/VariantParser.hpp"
 #include "tagged_union_wrapper_no_ptr.hpp"
 
 namespace rfl::parsing {

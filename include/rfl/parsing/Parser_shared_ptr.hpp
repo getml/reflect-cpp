@@ -13,7 +13,7 @@
 #include "schema/Type.hpp"
 #include "schemaful/IsSchemafulReader.hpp"
 #include "schemaful/IsSchemafulWriter.hpp"
-#include "schemaful/SharedPtrParser.hpp"
+#include "schemaful/SharedPtrReader.hpp"
 
 namespace rfl::parsing {
 
@@ -27,10 +27,10 @@ struct Parser<R, W, std::shared_ptr<T>, ProcessorsType> {
   static Result<std::shared_ptr<T>> read(const R& _r,
                                          const InputVarType& _var) noexcept {
     if constexpr (schemaful::IsSchemafulReader<R>) {
-      using S = schemaful::SharedPtrParser<R, W, std::remove_cvref_t<T>,
+      using S = schemaful::SharedPtrReader<R, W, std::remove_cvref_t<T>,
                                            ProcessorsType>;
       const auto to_shared = [&](const auto& _u) -> Result<std::shared_ptr<T>> {
-        return _r.template to_variant<std::shared_ptr<T>, S>(_u);
+        return _r.template read_union<std::shared_ptr<T>, S>(_u);
       };
       return _r.to_union(_var).and_then(to_shared);
     } else {

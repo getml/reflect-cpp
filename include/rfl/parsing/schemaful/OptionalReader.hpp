@@ -1,5 +1,5 @@
-#ifndef RFL_PARSING_SCHEMAFUL_OPTIONALPARSER_HPP_
-#define RFL_PARSING_SCHEMAFUL_OPTIONALPARSER_HPP_
+#ifndef RFL_PARSING_SCHEMAFUL_OPTIONALREADER_HPP_
+#define RFL_PARSING_SCHEMAFUL_OPTIONALREADER_HPP_
 
 #include <optional>
 #include <type_traits>
@@ -9,8 +9,8 @@
 namespace rfl::parsing::schemaful {
 
 template <class R, class W, class T, class ProcessorsType>
-struct OptionalParser {
-  static Result<std::optional<T>> parse(
+struct OptionalReader {
+  static Result<std::optional<T>> read(
       const R& _r, const size_t _index,
       const typename R::InputVarType& _var) noexcept {
     if (_index == 1) {

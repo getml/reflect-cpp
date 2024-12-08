@@ -1,5 +1,5 @@
-#ifndef RFL_PARSING_SCHEMAFUL_SHAREDPTRPARSER_HPP_
-#define RFL_PARSING_SCHEMAFUL_SHAREDPTRPARSER_HPP_
+#ifndef RFL_PARSING_SCHEMAFUL_SHAREDPTRREADER_HPP_
+#define RFL_PARSING_SCHEMAFUL_SHAREDPTRREADER_HPP_
 
 #include <memory>
 #include <type_traits>
@@ -9,8 +9,8 @@
 namespace rfl::parsing::schemaful {
 
 template <class R, class W, class T, class ProcessorsType>
-struct SharedPtrParser {
-  static Result<std::shared_ptr<T>> parse(
+struct SharedPtrReader {
+  static Result<std::shared_ptr<T>> read(
       const R& _r, const size_t _index,
       const typename R::InputVarType& _var) noexcept {
     if (_index == 1) {

@@ -1,5 +1,5 @@
-#ifndef RFL_PARSING_SCHEMAFUL_VARIANTPARSER_HPP_
-#define RFL_PARSING_SCHEMAFUL_VARIANTPARSER_HPP_
+#ifndef RFL_PARSING_SCHEMAFUL_VARIANTREADER_HPP_
+#define RFL_PARSING_SCHEMAFUL_VARIANTREADER_HPP_
 
 #include <type_traits>
 #include <utility>
@@ -11,9 +11,9 @@ namespace rfl::parsing::schemaful {
 
 template <class R, class W, class VariantType, class ProcessorsType,
           class... AlternativeTypes>
-class VariantParser {
+class VariantReader {
  public:
-  static Result<VariantType> parse(
+  static Result<VariantType> read(
       const R& _r, const size_t _index,
       const typename R::InputVarType& _var) noexcept {
     return [&]<size_t... _is>(std::integer_sequence<size_t, _is...>) {

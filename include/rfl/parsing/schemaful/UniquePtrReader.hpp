@@ -1,5 +1,5 @@
-#ifndef RFL_PARSING_SCHEMAFUL_UNIQUEPTRPARSER_HPP_
-#define RFL_PARSING_SCHEMAFUL_UNIQUEPTRPARSER_HPP_
+#ifndef RFL_PARSING_SCHEMAFUL_UNIQUEPTRREADER_HPP_
+#define RFL_PARSING_SCHEMAFUL_UNIQUEPTRREADER_HPP_
 
 #include <memory>
 #include <type_traits>
@@ -9,8 +9,8 @@
 namespace rfl::parsing::schemaful {
 
 template <class R, class W, class T, class ProcessorsType>
-struct UniquePtrParser {
-  static Result<std::unique_ptr<T>> parse(
+struct UniquePtrReader {
+  static Result<std::unique_ptr<T>> read(
       const R& _r, const size_t _index,
       const typename R::InputVarType& _var) noexcept {
     if (_index == 1) {
