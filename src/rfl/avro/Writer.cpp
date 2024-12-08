@@ -187,10 +187,4 @@ Writer::OutputVarType Writer::add_null_to_union(
   return OutputVarType{new_null};
 }
 
-void Writer::end_array(OutputArrayType* _arr) const noexcept {}
-
-void Writer::end_map(OutputMapType* _map) const noexcept {}
-
-void Writer::end_object(OutputObjectType* _obj) const noexcept {}
-
 }  // namespace rfl::avro

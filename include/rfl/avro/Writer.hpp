@@ -173,11 +173,11 @@ class Writer {
     return OutputVarType{new_value};
   }
 
-  void end_array(OutputArrayType* _arr) const noexcept;
+  void end_array(OutputArrayType* _arr) const noexcept {}
 
-  void end_map(OutputMapType* _obj) const noexcept;
+  void end_map(OutputMapType* _obj) const noexcept {}
 
-  void end_object(OutputObjectType* _obj) const noexcept;
+  void end_object(OutputObjectType* _obj) const noexcept {}
 
  private:
   template <class T>
