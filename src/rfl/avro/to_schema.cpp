@@ -28,6 +28,7 @@ SOFTWARE.
 
 #include "rfl/avro/schema/Type.hpp"
 #include "rfl/json.hpp"
+#include "rfl/parsing/schemaful/tuple_to_object.hpp"
 
 namespace rfl::avro {
 
@@ -138,8 +139,9 @@ schema::Type type_to_avro_schema_type(
                                            _already_known, _num_unnamed))}};
 
     } else if constexpr (std::is_same<T, Type::Tuple>()) {
-      // TODO: Handle tuples.
-      return schema::Type{.value = schema::Type::Record{}};
+      return type_to_avro_schema_type(
+          Type{parsing::schemaful::tuple_to_object(_t)}, _definitions,
+          _already_known, _num_unnamed);
 
     } else if constexpr (std::is_same<T, Type::TypedArray>()) {
       return schema::Type{
