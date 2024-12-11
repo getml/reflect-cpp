@@ -36,6 +36,10 @@ struct TupleToNamedTuple<std::tuple<Ts...>> {
                             Ts...>::Type;
 };
 
+/// Given
+/// std::tuple<T1, T2, T3, ...> or rfl::Tuple<T1, T2, T3, ...>
+/// return
+/// NamedTuple<Field<"f000", T1>, Field<"f001", T2>, Field<"f002", T3>, ...>
 template <class T>
 using tuple_to_named_tuple_t = typename TupleToNamedTuple<T>::Type;
 

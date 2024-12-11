@@ -2,11 +2,11 @@
 #define RFL_PARSING_SCHEMA_TYPE_HPP_
 
 #include <cstddef>
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "../../Object.hpp"
 #include "../../Ref.hpp"
 #include "../../Variant.hpp"
 #include "ValidationType.hpp"
@@ -51,7 +51,7 @@ struct Type {
   };
 
   struct Object {
-    std::map<std::string, Type> types_;
+    rfl::Object<Type> types_;
     std::shared_ptr<Type> additional_properties_;
   };
 

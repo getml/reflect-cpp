@@ -184,10 +184,8 @@ struct Reader {
     avro_value_get_size(_obj.val_, &size);
     for (size_t ix = 0; ix < size; ++ix) {
       avro_value_t element;
-      const char* key = nullptr;
-      avro_value_get_by_index(_obj.val_, ix, &element, &key);
-      // TODO: Assign by index, not by name.
-      _object_reader.read(std::string_view(key), InputVarType{&element});
+      avro_value_get_by_index(_obj.val_, ix, &element, nullptr);
+      _object_reader.read(static_cast<int>(ix), InputVarType{&element});
     }
     return std::nullopt;
   }
