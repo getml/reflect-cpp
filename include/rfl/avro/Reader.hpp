@@ -89,6 +89,7 @@ struct Reader {
       int result = 0;
       avro_value_get_boolean(_var.val_, &result);
       return (result != 0);
+
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
                          std::is_integral<std::remove_cvref_t<T>>()) {
       if (type == AVRO_DOUBLE) {

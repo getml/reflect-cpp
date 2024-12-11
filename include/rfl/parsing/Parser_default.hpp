@@ -28,13 +28,14 @@
 #include "call_destructors_where_necessary.hpp"
 #include "is_tagged_union_wrapper.hpp"
 #include "schema/Type.hpp"
+#include "schemaful/IsSchemafulReader.hpp"
+#include "schemaful/IsSchemafulWriter.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl ::parsing {
 
 /// Default case - anything that cannot be explicitly matched.
 template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, T>
+  requires AreReaderAndWriter<R, W, T>
 struct Parser {
  public:
   using InputVarType = typename R::InputVarType;
@@ -54,8 +55,14 @@ struct Parser {
       return Parser<R, W, typename Reflector<T>::ReflType,
                     ProcessorsType>::read(_r, _var)
           .and_then(wrap_in_t);
+
+    } else if constexpr (schemaful::IsSchemafulReader<R> &&
+                         internal::is_literal_v<T>) {
+      return _r.template to_basic_type<T>(_var);
+
     } else if constexpr (R::template has_custom_constructor<T>) {
       return _r.template use_custom_constructor<T>(_var);
+
     } else {
       if constexpr (internal::has_reflection_type_v<T>) {
         using ReflectionType = std::remove_cvref_t<typename T::ReflectionType>;
@@ -68,14 +75,17 @@ struct Parser {
         };
         return Parser<R, W, ReflectionType, ProcessorsType>::read(_r, _var)
             .and_then(wrap_in_t);
+
       } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
         if constexpr (ProcessorsType::default_if_missing_) {
           return read_struct_with_default(_r, _var);
         } else {
           return read_struct(_r, _var);
         }
+
       } else if constexpr (std::is_enum_v<T>) {
-        if constexpr (ProcessorsType::underlying_enums_) {
+        if constexpr (ProcessorsType::underlying_enums_ ||
+                      schemaful::IsSchemafulReader<R>) {
           return static_cast<T>(
               *_r.template to_basic_type<std::underlying_type_t<T>>(_var));
         } else {
@@ -83,6 +93,7 @@ struct Parser {
           return _r.template to_basic_type<std::string>(_var).and_then(
               StringConverter::string_to_enum);
         }
+
       } else {
         return _r.template to_basic_type<std::remove_cvref_t<T>>(_var);
       }
@@ -94,6 +105,11 @@ struct Parser {
     if constexpr (internal::has_write_reflector<T>) {
       Parser<R, W, typename Reflector<T>::ReflType, ProcessorsType>::write(
           _w, Reflector<T>::from(_var), _parent);
+
+    } else if constexpr (schemaful::IsSchemafulWriter<W> &&
+                         internal::is_literal_v<T>) {
+      ParentType::add_value(_w, _var, _parent);
+
     } else if constexpr (internal::has_reflection_type_v<T>) {
       using ReflectionType = std::remove_cvref_t<typename T::ReflectionType>;
       if constexpr (internal::has_reflection_method_v<T>) {
@@ -103,14 +119,17 @@ struct Parser {
         const auto& [r] = _var;
         Parser<R, W, ReflectionType, ProcessorsType>::write(_w, r, _parent);
       }
+
     } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
       const auto ptr_named_tuple = ProcessorsType::template process<T>(
           internal::to_ptr_named_tuple(_var));
       using PtrNamedTupleType = std::remove_cvref_t<decltype(ptr_named_tuple)>;
       Parser<R, W, PtrNamedTupleType, ProcessorsType>::write(
           _w, ptr_named_tuple, _parent);
+
     } else if constexpr (std::is_enum_v<T>) {
-      if constexpr (ProcessorsType::underlying_enums_) {
+      if constexpr (ProcessorsType::underlying_enums_ ||
+                    schemaful::IsSchemafulWriter<W>) {
         const auto val = static_cast<std::underlying_type_t<T>>(_var);
         ParentType::add_value(_w, val, _parent);
       } else {
@@ -118,6 +137,7 @@ struct Parser {
         const auto str = StringConverter::enum_to_string(_var);
         ParentType::add_value(_w, str, _parent);
       }
+
     } else {
       ParentType::add_value(_w, _var, _parent);
     }
@@ -195,7 +215,8 @@ struct Parser {
       std::map<std::string, schema::Type>* _definitions) {
     using Type = schema::Type;
     using S = internal::enums::StringConverter<U>;
-    if constexpr (ProcessorsType::underlying_enums_) {
+    if constexpr (ProcessorsType::underlying_enums_ ||
+                  schemaful::IsSchemafulReader<R>) {
       return Type{Type::Integer{}};
     } else if constexpr (S::is_flag_enum_) {
       return Type{Type::String{}};
@@ -296,7 +317,6 @@ struct Parser {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif
