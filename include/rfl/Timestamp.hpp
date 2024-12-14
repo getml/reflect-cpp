@@ -3,9 +3,6 @@
 
 #include <ctime>
 #include <iomanip>
-#include <iostream>
-#include <iterator>
-#include <locale>
 #include <sstream>
 #include <stdexcept>
 #include <string>
