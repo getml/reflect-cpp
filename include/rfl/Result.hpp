@@ -12,9 +12,10 @@
 #include "internal/is_array.hpp"
 #include "internal/to_std_array.hpp"
 
+/*
+  This define the parts common to both implementation (probably)
+*/
 namespace rfl {
-
-/// To be returned
 class Error {
  public:
   Error(const std::string& _what) : what_(_what) {}
@@ -28,6 +29,21 @@ class Error {
   /// Documents what went wrong
   std::string what_;
 };
+}  // namespace rfl
+
+#ifdef __cpp_lib_expected
+/*
+  Use std::expected for rfl::Result
+*/
+namespace rfl {
+template <typename T>
+using Result = std::expected<T, rfl::Error>;
+}
+#else
+/*
+  An implementation of rfl::Result
+*/
+namespace rfl {
 
 /// Can be used when we are simply interested in whether an operation was
 /// successful.
@@ -66,7 +82,7 @@ class Result {
   template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
                                              bool>::type = true>
   Result(Result<U>&& _other) : success_(_other && true) {
-    auto temp = std::forward<Result<U>>(_other).transform(
+    auto temp = std::forward<Result<U> >(_other).transform(
         [](U&& _u) { return T(std::forward<U>(_u)); });
     move_from_other(temp);
   }
@@ -306,7 +322,7 @@ class Result {
 
   void destroy() {
     if (success_) {
-      if constexpr (std::is_destructible_v<std::remove_cv_t<T>>) {
+      if constexpr (std::is_destructible_v<std::remove_cv_t<T> >) {
         get_t().~T();
       }
     } else {
@@ -347,5 +363,5 @@ class Result {
 };
 
 }  // namespace rfl
-
+#endif
 #endif
