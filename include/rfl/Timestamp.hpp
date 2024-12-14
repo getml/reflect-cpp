@@ -76,20 +76,6 @@ class Timestamp {
   const std::tm& tm() const { return tm_; }
 
  private:
-#ifdef _MSC_VER
-  // This workaround is necessary, because MSVC doesn't support strptime.
-  char* strptime(const char* _s, const char* _f, std::tm* _tm) {
-    std::istringstream input(_s);
-    input.imbue(std::locale(setlocale(LC_ALL, nullptr)));
-    input >> std::get_time(_tm, _f);
-    if (input.fail()) {
-      return NULL;
-    }
-    return (char*)(_s + input.tellg());
-  }
-#endif
-
- private:
   /// The underlying time stamp.
   std::tm tm_;
 };
