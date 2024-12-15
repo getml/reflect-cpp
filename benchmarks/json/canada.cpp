@@ -368,7 +368,7 @@ static void BM_canada_nlohmann(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_nlohmann(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -379,7 +379,7 @@ static void BM_canada_rapidjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_rapidjson(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -393,7 +393,7 @@ static void BM_canada_simdjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_simdjson(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -406,7 +406,7 @@ static void BM_canada_yyjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_yyjson(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -417,7 +417,7 @@ static void BM_canada_reflect_cpp(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::json::read<FeatureCollection>(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }

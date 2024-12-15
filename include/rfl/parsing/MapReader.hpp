@@ -33,7 +33,7 @@ class MapReader {
       map_->emplace(std::move(*res));
     } else {
       errors_->push_back(Error("Failed to parse field '" + std::string(_name) +
-                               "': " + res.error()->what()));
+                               "': " + res.error().what()));
     }
   }
 

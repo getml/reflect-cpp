@@ -13,7 +13,7 @@
 
 namespace rfl {
 
-class Generic {
+class  Generic {
  public:
   constexpr static std::nullopt_t Null = std::nullopt;
 

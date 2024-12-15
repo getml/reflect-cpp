@@ -158,7 +158,7 @@ rfl::Result<std::vector<Person>> yyjson_to_children(yyjson_val *_val) {
   while ((val = yyjson_arr_iter_next(&iter))) {
     auto r = yyjson_to_person(val);
     if (!r) {
-      return *r.error();
+      return r.error();
     }
     children.emplace_back(std::move(*r));
   }
@@ -200,7 +200,7 @@ rfl::Result<Person> yyjson_to_person(yyjson_val *_val) {
       auto children = yyjson_to_children(v);
       if (!children) {
         errors.push_back(rfl::Error("Error reading 'children': " +
-                                    children.error()->what()));
+                                    children.error().what()));
         continue;
       }
       person.children = std::move(*children);
@@ -244,7 +244,7 @@ static void BM_person_read_nlohmann(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_nlohmann();
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -254,7 +254,7 @@ static void BM_person_read_rapidjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_rapidjson();
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -264,7 +264,7 @@ static void BM_person_read_simdjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_simdjson();
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -274,7 +274,7 @@ static void BM_person_read_yyjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_yyjson();
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -284,7 +284,7 @@ static void BM_person_read_reflect_cpp(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::json::read<Person>(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }

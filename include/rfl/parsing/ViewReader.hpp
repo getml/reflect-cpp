@@ -55,7 +55,7 @@ class ViewReader {
       if (!res) {
         std::stringstream stream;
         stream << "Failed to parse field '" << std::string(name)
-               << "': " << res.error()->what();
+               << "': " << res.error().what();
         _errors->emplace_back(Error(stream.str()));
         return;
       }
@@ -87,7 +87,7 @@ class ViewReader {
     if (!res) {
       std::stringstream stream;
       stream << "Failed to parse field '" << _current_name
-             << "': " << res.error()->what();
+             << "': " << res.error().what();
       _errors->emplace_back(Error(stream.str()));
       return;
     }

@@ -28,9 +28,12 @@ struct Parser<R, W, std::wstring, ProcessorsType> {
     }
 
     auto inStr = Parser<R, W, std::string, ProcessorsType>::read(_r, _var);
-    if (auto err = inStr.error(); err.has_value()) {
-      return Result<std::wstring>(err.value());
+    if (!inStr) {
+      return Result<std::wstring>(inStr.error());
     }
+    // if (auto err = inStr.error(); err.has_value()) {
+    //   return Result<std::wstring>(err.value());
+    // }
 
     std::mbstate_t state = std::mbstate_t();
     auto val = inStr.value();

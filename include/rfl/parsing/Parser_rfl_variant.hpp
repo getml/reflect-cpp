@@ -136,7 +136,7 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
       if (res) {
         *_result = std::move(*res);
       } else {
-        _errors->emplace_back(*res.error());
+        _errors->emplace_back(res.error());
       }
     }
   }

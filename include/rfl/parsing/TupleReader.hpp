@@ -77,7 +77,7 @@ class TupleReader {
           ++num_set_;
         } else {
           *_err = Error("Failed to parse field " + std::to_string(_i) + ": " +
-                        res.error()->what());
+                        res.error().what());
         }
         return;
       }

@@ -25,7 +25,7 @@ void read(const std::string& _json, const auto& _expected) {
   using T = std::remove_cvref_t<decltype(_expected)>;
   const auto res = rfl::json::read<T, Ps...>(_json);
   EXPECT_TRUE(res && true) << "Test failed on read. Error: "
-                           << res.error().value().what();
+                           << res.error().what();
 }
 
 template <class... Ps>
@@ -40,7 +40,7 @@ void write_and_read(const auto& _struct, const std::string& _expected) {
       << std::endl;
   const auto res = rfl::json::read<T, Ps...>(json_string1);
   EXPECT_TRUE(res && true) << "Test failed on read. Error: "
-                           << res.error().value().what();
+                           << res.error().what();
   const auto json_string2 = rfl::json::write<Ps...>(res.value());
   EXPECT_EQ(json_string2, _expected)
       << "Test failed on read. Expected:" << std::endl

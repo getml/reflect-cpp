@@ -445,7 +445,7 @@ static void BM_licenses_nlohmann(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_nlohmann(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -456,7 +456,7 @@ static void BM_licenses_rapidjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_rapidjson(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -467,7 +467,7 @@ static void BM_licenses_simdjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_simdjson(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -478,7 +478,7 @@ static void BM_licenses_yyjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_yyjson(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -489,7 +489,7 @@ static void BM_licenses_reflect_cpp(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::json::read<Licenses>(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }

@@ -346,8 +346,14 @@ class Result {
 
     Not sure if the move overload should be included
   */
-  const Error& error() const& noexcept { return get_err(); }
-  Error& error() & noexcept { return get_err(); }
+  const Error& error() const&{
+    if (success_) throw get_err();
+    return get_err();
+  }
+  Error& error() & {
+    if (success_) throw get_err();
+    return get_err();
+  }
   /*
     Read access to the value inside. As specified by :
     https://en.cppreference.com/w/cpp/utility/expected
