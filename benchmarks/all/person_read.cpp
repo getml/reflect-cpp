@@ -3,6 +3,7 @@
 #include <array>
 #include <iostream>
 #include <optional>
+#include <rfl/avro.hpp>
 #include <rfl/bson.hpp>
 #include <rfl/cbor.hpp>
 #include <rfl/flexbuf.hpp>
@@ -41,6 +42,18 @@ static Person load_data() {
 }
 
 // ----------------------------------------------------------------------------
+
+static void BM_person_read_reflect_cpp_avro(benchmark::State &state) {
+  const auto schema = rfl::avro::to_schema<Person>();
+  const auto data = rfl::avro::write(load_data(), schema);
+  for (auto _ : state) {
+    const auto res = rfl::avro::read<Person>(data, schema);
+    if (!res) {
+      std::cout << res.error()->what() << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_person_read_reflect_cpp_avro);
 
 static void BM_person_read_reflect_cpp_bson(benchmark::State &state) {
   const auto data = rfl::bson::write(load_data());
