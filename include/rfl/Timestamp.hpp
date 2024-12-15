@@ -25,9 +25,8 @@ class Timestamp {
   Timestamp() : tm_(std::tm{}) {}
 
   Timestamp(const char* _str) : tm_(std::tm{}) {
-    std::istringstream ss(_str);
-    ss >> std::get_time(&tm_, _format.str().c_str());
-    if (ss.fail()) {
+    const auto r = strptime(_str, _format.str().c_str(), &tm_);
+    if (r == NULL) {
       throw std::runtime_error("String '" + std::string(_str) +
                                "' did not match format '" + Format().str() +
                                "'.");
