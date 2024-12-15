@@ -345,13 +345,15 @@ class Result {
     and will have undefined behaviour if the Result does not contain an error.
 
     Not sure if the move overload should be included
+    This exception based behaviour shall be retained to avoid weird bugs from
+    happening without being able to trace source.
   */
-  const Error& error() const&{
-    if (success_) throw get_err();
+  const Error& error() const& {
+    if (success_) throw std::runtime_error("Expected does not contain value");
     return get_err();
   }
   Error& error() & {
-    if (success_) throw get_err();
+    if (success_) throw std::runtime_error("Expected does not contain value");
     return get_err();
   }
   /*
