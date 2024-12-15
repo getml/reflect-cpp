@@ -184,9 +184,9 @@ class Writer {
   void set_value(const T& _var, avro_value_t* _val) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       avro_value_set_string_len(_val, _var.c_str(), _var.size() + 1);
-      /*} else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                        rfl::Bytestring>()) {
-        avro_value_set_bytes_len(_val, _var.c_str(), _var.size() + 1);*/
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      avro_value_set_bytes(_val, _var.c_str(), _var.size() + 1);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       avro_value_set_boolean(_val, _var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {

@@ -49,12 +49,6 @@ struct Reader {
   static constexpr bool has_custom_constructor =
       (requires(InputVarType var) { T::from_avro_obj(var); });
 
-  rfl::Result<InputVarType> get_field_from_array(
-      const size_t _idx, const InputArrayType& _arr) const noexcept;
-
-  rfl::Result<InputVarType> get_field_from_object(
-      const std::string& _name, const InputObjectType& _obj) const noexcept;
-
   bool is_empty(const InputVarType& _var) const noexcept;
 
   template <class T>
@@ -71,17 +65,15 @@ struct Reader {
         return std::string("");
       }
       return std::string(c_str, size - 1);
-      /*} else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                        rfl::Bytestring>()) {
-        if (!avro_value_is_byte_string(&_var.val_)) {
-          return Error("Could not cast to bytestring.");
-        }
-        rfl::Bytestring bstr;
-        const auto err = get_bytestring(&_var.val_, &bstr);
-        if (err != AvroNoError) {
-          return Error(avro_error_string(err));
-        }
-        return bstr;*/
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      std::byte* ptr = nullptr;
+      size_t size = 0;
+      const auto err = avro_value_get_bytes(_var.val_, &ptr, &size);
+      if (err) {
+        return Error("Could not cast to bytestring.");
+      }
+      return rfl::Bytestring(ptr, size - 1);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != AVRO_BOOLEAN) {
         return rfl::Error("Could not cast to boolean.");

@@ -7,16 +7,6 @@ namespace rfl::avro {
 static_assert(parsing::schemaful::IsSchemafulReader<Reader>,
               "This must be a schemaful reader.");
 
-rfl::Result<Reader::InputVarType> Reader::get_field_from_array(
-    const size_t _idx, const InputArrayType& _arr) const noexcept {
-  return Error("This should never be called - Avro has explicit union types.");
-}
-
-rfl::Result<Reader::InputVarType> Reader::get_field_from_object(
-    const std::string& _name, const InputObjectType& _obj) const noexcept {
-  return Error("This should never be called - Avro has explicit union types.");
-}
-
 bool Reader::is_empty(const InputVarType& _var) const noexcept {
   return avro_value_get_type(_var.val_) == AVRO_NULL;
 }
