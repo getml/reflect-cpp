@@ -67,13 +67,13 @@ struct Reader {
       return std::string(c_str, size - 1);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
-      std::byte* ptr = nullptr;
+      const void* ptr = nullptr;
       size_t size = 0;
       const auto err = avro_value_get_bytes(_var.val_, &ptr, &size);
       if (err) {
         return Error("Could not cast to bytestring.");
       }
-      return rfl::Bytestring(ptr, size - 1);
+      return rfl::Bytestring(static_cast<const std::byte*>(ptr), size - 1);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != AVRO_BOOLEAN) {
         return rfl::Error("Could not cast to boolean.");

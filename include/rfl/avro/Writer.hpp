@@ -184,17 +184,24 @@ class Writer {
   void set_value(const T& _var, avro_value_t* _val) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       avro_value_set_string_len(_val, _var.c_str(), _var.size() + 1);
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
-      avro_value_set_bytes(_val, _var.c_str(), _var.size() + 1);
+      auto var = _var;
+      avro_value_set_bytes(_val, var.data(), var.size() + 1);
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       avro_value_set_boolean(_val, _var);
+
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       avro_value_set_double(_val, static_cast<double>(_var));
+
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       avro_value_set_long(_val, static_cast<std::int64_t>(_var));
+
     } else if constexpr (internal::is_literal_v<T>) {
       avro_value_set_enum(_val, static_cast<int>(_var.value()));
+
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }

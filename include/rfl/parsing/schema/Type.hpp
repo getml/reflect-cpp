@@ -16,6 +16,8 @@ namespace rfl::parsing::schema {
 struct Type {
   struct Boolean {};
 
+  struct Bytestring {};
+
   struct Int32 {};
 
   struct Int64 {};
@@ -86,10 +88,10 @@ struct Type {
   };
 
   using VariantType =
-      rfl::Variant<Boolean, Int32, Int64, UInt32, UInt64, Integer, Float,
-                   Double, String, AnyOf, Description, FixedSizeTypedArray,
-                   Literal, Object, Optional, Reference, StringMap, Tuple,
-                   TypedArray, Validated>;
+      rfl::Variant<Boolean, Bytestring, Int32, Int64, UInt32, UInt64, Integer,
+                   Float, Double, String, AnyOf, Description,
+                   FixedSizeTypedArray, Literal, Object, Optional, Reference,
+                   StringMap, Tuple, TypedArray, Validated>;
 
   Type();
 
