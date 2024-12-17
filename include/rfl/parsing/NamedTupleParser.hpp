@@ -2,7 +2,6 @@
 #define RFL_PARSING_NAMEDTUPLEPARSER_HPP_
 
 #include <array>
-#include <bit>
 #include <map>
 #include <sstream>
 #include <tuple>
@@ -20,6 +19,7 @@
 #include "../internal/is_skip.hpp"
 #include "../internal/no_duplicate_field_names.hpp"
 #include "../internal/nth_element_t.hpp"
+#include "../internal/ptr_cast.hpp"
 #include "../internal/strings/replace_all.hpp"
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
@@ -40,7 +40,7 @@ namespace parsing {
 
 template <class R, class W, bool _ignore_empty_containers, bool _all_required,
           bool _no_field_names, class ProcessorsType, class... FieldTypes>
-requires AreReaderAndWriter<R, W, NamedTuple<FieldTypes...>>
+  requires AreReaderAndWriter<R, W, NamedTuple<FieldTypes...>>
 struct NamedTupleParser {
   using InputVarType = typename R::InputVarType;
 
@@ -86,7 +86,7 @@ struct NamedTupleParser {
         internal::no_duplicate_field_names<typename NamedTupleType::Fields>());
     alignas(NamedTuple<FieldTypes...>) unsigned char
         buf[sizeof(NamedTuple<FieldTypes...>)];
-    auto ptr = std::bit_cast<NamedTuple<FieldTypes...>*>(&buf);
+    auto ptr = internal::ptr_cast<NamedTuple<FieldTypes...>*>(&buf);
     auto view = rfl::to_view(*ptr);
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto [set, err] =

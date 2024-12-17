@@ -11,6 +11,7 @@
 #include "../Tuple.hpp"
 #include "../always_false.hpp"
 #include "../internal/nth_element_t.hpp"
+#include "../internal/ptr_cast.hpp"
 #include "Parent.hpp"
 #include "TupleReader.hpp"
 #include "call_destructors_on_tuple_where_necessary.hpp"
@@ -20,7 +21,7 @@ namespace rfl::parsing {
 
 template <class R, class W, bool _ignore_empty_containers, bool _all_required,
           class ProcessorsType, class TupleType>
-requires AreReaderAndWriter<R, W, TupleType>
+  requires AreReaderAndWriter<R, W, TupleType>
 struct TupleParser {
  public:
   using InputArrayType = typename R::InputArrayType;
@@ -31,8 +32,8 @@ struct TupleParser {
   static Result<TupleType> read(const R& _r,
                                 const InputVarType& _var) noexcept {
     const auto parse = [&](const InputArrayType& _arr) -> Result<TupleType> {
-      alignas(TupleType) unsigned char buf[sizeof(TupleType)];
-      auto ptr = std::bit_cast<TupleType*>(&buf);
+      alignas(TupleType) unsigned char buf[sizeof(TupleType)]{};
+      auto ptr = internal::ptr_cast<TupleType*>(&buf);
       const auto tuple_reader =
           TupleReader<R, W, TupleType, _ignore_empty_containers, _all_required,
                       ProcessorsType>(&_r, ptr);

@@ -4,7 +4,6 @@
 #include <bson/bson.h>
 
 #include <array>
-#include <bit>
 #include <concepts>
 #include <cstddef>
 #include <exception>
@@ -23,6 +22,7 @@
 #include "../Bytestring.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/ptr_cast.hpp"
 
 namespace rfl {
 namespace bson {
@@ -46,9 +46,8 @@ struct Reader {
   using InputVarType = BSONInputVar;
 
   template <class T>
-  static constexpr bool has_custom_constructor = (requires(InputVarType var) {
-    T::from_bson_obj(var);
-  });
+  static constexpr bool has_custom_constructor =
+      (requires(InputVarType var) { T::from_bson_obj(var); });
 
   rfl::Result<InputVarType> get_field_from_array(
       const size_t _idx, const InputArrayType& _arr) const noexcept;
@@ -85,7 +84,7 @@ struct Reader {
             "bytestring.");
       }
       return rfl::Bytestring(
-          std::bit_cast<const std::byte*>(value.v_binary.data),
+          internal::ptr_cast<const std::byte*>(value.v_binary.data),
           value.v_binary.data_len);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (btype != BSON_TYPE_BOOL) {

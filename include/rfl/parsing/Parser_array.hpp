@@ -10,6 +10,7 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/ptr_cast.hpp"
 #include "ArrayReader.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
@@ -19,7 +20,7 @@
 namespace rfl {
 namespace parsing {
 template <class R, class W, class T, size_t _size, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::array<T, _size>>
+  requires AreReaderAndWriter<R, W, std::array<T, _size>>
 struct Parser<R, W, std::array<T, _size>, ProcessorsType> {
  public:
   using InputArrayType = typename R::InputArrayType;
@@ -33,7 +34,7 @@ struct Parser<R, W, std::array<T, _size>, ProcessorsType> {
         [&](const InputArrayType& _arr) -> Result<std::array<T, _size>> {
       alignas(
           std::array<T, _size>) unsigned char buf[sizeof(std::array<T, _size>)];
-      auto ptr = std::bit_cast<std::array<T, _size>*>(&buf);
+      auto ptr = internal::ptr_cast<std::array<T, _size>*>(&buf);
       const auto array_reader =
           ArrayReader<R, W, ProcessorsType, T, _size>(&_r, ptr);
       auto err = _r.read_array(array_reader, _arr);
