@@ -12,6 +12,7 @@
 #include "../Bytestring.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/ptr_cast.hpp"
 
 namespace rfl::ubjson {
 
@@ -38,9 +39,8 @@ class Reader {
   ~Reader() = default;
 
   template <class T>
-  static constexpr bool has_custom_constructor = (requires(InputVarType var) {
-    T::from_ubjson_obj(var);
-  });
+  static constexpr bool has_custom_constructor =
+      (requires(InputVarType var) { T::from_ubjson_obj(var); });
 
   rfl::Result<InputVarType> get_field_from_array(
       const size_t _idx, const InputArrayType& _arr) const noexcept;
@@ -63,7 +63,7 @@ class Reader {
         return Error("Could not cast to bytestring.");
       }
       const auto vec = _var.val_->as<std::vector<uint8_t>>();
-      return rfl::Bytestring(std::bit_cast<const std::byte*>(vec.data()),
+      return rfl::Bytestring(internal::ptr_cast<const std::byte*>(vec.data()),
                              vec.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var.val_->is_bool()) {

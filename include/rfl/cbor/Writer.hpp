@@ -3,7 +3,6 @@
 
 #include <cbor.h>
 
-#include <bit>
 #include <exception>
 #include <map>
 #include <sstream>
@@ -19,6 +18,7 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/ptr_cast.hpp"
 
 namespace rfl {
 namespace cbor {
@@ -106,8 +106,9 @@ class Writer {
       cbor_encode_text_string(_parent, _var.c_str(), _var.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
-      cbor_encode_byte_string(
-          _parent, std::bit_cast<const uint8_t*>(_var.c_str()), _var.size());
+      cbor_encode_byte_string(_parent,
+                              internal::ptr_cast<const uint8_t*>(_var.c_str()),
+                              _var.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       cbor_encode_boolean(_parent, _var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {

@@ -10,6 +10,7 @@
 #include <type_traits>
 
 #include "internal/is_array.hpp"
+#include "internal/ptr_cast.hpp"
 #include "internal/to_std_array.hpp"
 
 namespace rfl {
@@ -315,19 +316,19 @@ class Result {
   }
 
   T& get_t() noexcept {
-    return *std::launder((reinterpret_cast<T*>(t_or_err_.data())));
+    return *std::launder(reinterpret_cast<T*>(t_or_err_.data()));
   }
 
   const T& get_t() const noexcept {
-    return *std::launder((reinterpret_cast<const T*>(t_or_err_.data())));
+    return *std::launder(reinterpret_cast<const T*>(t_or_err_.data()));
   }
 
   Error& get_err() noexcept {
-    return *std::launder((reinterpret_cast<Error*>(t_or_err_.data())));
+    return *std::launder(reinterpret_cast<Error*>(t_or_err_.data()));
   }
 
   const Error& get_err() const noexcept {
-    return *std::launder((reinterpret_cast<const Error*>(t_or_err_.data())));
+    return *std::launder(reinterpret_cast<const Error*>(t_or_err_.data()));
   }
 
   void move_from_other(Result<T>& _other) noexcept {

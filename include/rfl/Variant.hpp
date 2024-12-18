@@ -43,16 +43,18 @@ class Variant {
   struct TypeWrapper {};
 
  public:
-  Variant() {
+  Variant() : index_(IndexType()), data_(DataType()) {
     using FirstAlternative = internal::nth_element_t<0, AlternativeTypes...>;
     move_from_type(FirstAlternative());
   }
 
-  Variant(const Variant<AlternativeTypes...>& _other) {
+  Variant(const Variant<AlternativeTypes...>& _other)
+      : index_(IndexType()), data_(DataType()) {
     copy_from_other(_other);
   }
 
-  Variant(Variant<AlternativeTypes...>&& _other) noexcept {
+  Variant(Variant<AlternativeTypes...>&& _other) noexcept
+      : index_(IndexType()), data_(DataType()) {
     move_from_other(std::move(_other));
   }
 
@@ -60,7 +62,7 @@ class Variant {
             typename std::enable_if<internal::variant::is_alternative_type<
                                         T, AlternativeTypes...>(),
                                     bool>::type = true>
-  Variant(const T& _t) {
+  Variant(const T& _t) : index_(IndexType()), data_(DataType()) {
     copy_from_type(_t);
   }
 
@@ -68,7 +70,7 @@ class Variant {
             typename std::enable_if<internal::variant::is_alternative_type<
                                         T, AlternativeTypes...>(),
                                     bool>::type = true>
-  Variant(T&& _t) noexcept {
+  Variant(T&& _t) noexcept : index_(IndexType()), data_(DataType()) {
     move_from_type(std::forward<T>(_t));
   }
 
@@ -80,7 +82,7 @@ class Variant {
     auto t = T{std::forward<Args>(_args)...};
     destroy_if_necessary();
     move_from_type(std::move(t));
-    return *std::launder(reinterpret_cast<T*>(data_.data()));
+    return *internal::ptr_cast<T*>(data_.data());
   }
 
   /// Emplaces a new element into the variant.
@@ -384,13 +386,13 @@ class Variant {
   template <IndexType _i>
   auto& get_alternative() noexcept {
     using CurrentType = internal::nth_element_t<_i, AlternativeTypes...>;
-    return *std::launder(reinterpret_cast<CurrentType*>(data_.data()));
+    return *internal::ptr_cast<CurrentType*>(data_.data());
   }
 
   template <IndexType _i>
   const auto& get_alternative() const noexcept {
     using CurrentType = internal::nth_element_t<_i, AlternativeTypes...>;
-    return *std::launder(reinterpret_cast<const CurrentType*>(data_.data()));
+    return *internal::ptr_cast<const CurrentType*>(data_.data());
   }
 
   void move_from_other(Variant<AlternativeTypes...>&& _other) noexcept {

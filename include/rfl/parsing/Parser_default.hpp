@@ -1,7 +1,6 @@
 #ifndef RFL_PARSING_PARSER_DEFAULT_HPP_
 #define RFL_PARSING_PARSER_DEFAULT_HPP_
 
-#include <bit>
 #include <map>
 #include <stdexcept>
 #include <type_traits>
@@ -19,6 +18,7 @@
 #include "../internal/is_underlying_enums_v.hpp"
 #include "../internal/is_validator.hpp"
 #include "../internal/processed_t.hpp"
+#include "../internal/ptr_cast.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
 #include "../to_view.hpp"
 #include "../type_name_t.hpp"
@@ -34,7 +34,7 @@ namespace parsing {
 
 /// Default case - anything that cannot be explicitly matched.
 template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, T>
+  requires AreReaderAndWriter<R, W, T>
 struct Parser {
  public:
   using InputVarType = typename R::InputVarType;
@@ -256,7 +256,7 @@ struct Parser {
   /// fields might not be default-constructible.
   static Result<T> read_struct(const R& _r, const InputVarType& _var) {
     alignas(T) unsigned char buf[sizeof(T)]{};
-    auto ptr = std::bit_cast<T*>(&buf);
+    auto ptr = internal::ptr_cast<T*>(&buf);
     auto view = ProcessorsType::template process<T>(to_view(*ptr));
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto [set, err] =

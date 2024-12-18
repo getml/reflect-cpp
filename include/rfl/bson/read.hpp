@@ -3,11 +3,11 @@
 
 #include <bson/bson.h>
 
-#include <bit>
 #include <istream>
 #include <string>
 
 #include "../Processors.hpp"
+#include "../internal/ptr_cast.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
 #include "Parser.hpp"
 #include "Reader.hpp"
@@ -42,7 +42,7 @@ auto read(const uint8_t* _bytes, const size_t _size) {
 /// Parses an BSON object using reflection.
 template <class T, class... Ps>
 auto read(const char* _bytes, const size_t _size) {
-  return read<T, Ps...>(std::bit_cast<const uint8_t*>(_bytes), _size);
+  return read<T, Ps...>(internal::ptr_cast<const uint8_t*>(_bytes), _size);
 }
 
 /// Parses an object from BSON using reflection.

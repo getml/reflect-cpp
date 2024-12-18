@@ -3,13 +3,13 @@
 
 #include <bson/bson.h>
 
-#include <bit>
 #include <ostream>
 #include <sstream>
 #include <string>
 #include <utility>
 
 #include "../Processors.hpp"
+#include "../internal/ptr_cast.hpp"
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
 
@@ -45,8 +45,8 @@ std::pair<uint8_t*, size_t> to_buffer(const auto& _obj) noexcept {
 template <class... Ps>
 std::vector<char> write(const auto& _obj) noexcept {
   auto [buf, len] = to_buffer<Ps...>(_obj);
-  const auto result = std::vector<char>(std::bit_cast<char*>(buf),
-                                        std::bit_cast<char*>(buf) + len);
+  const auto result = std::vector<char>(internal::ptr_cast<char*>(buf),
+                                        internal::ptr_cast<char*>(buf) + len);
   bson_free(buf);
   return result;
 }
@@ -55,7 +55,7 @@ std::vector<char> write(const auto& _obj) noexcept {
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) noexcept {
   auto [buf, len] = to_buffer<Ps...>(_obj);
-  _stream.write(std::bit_cast<const char*>(buf), len);
+  _stream.write(internal::ptr_cast<const char*>(buf), len);
   bson_free(buf);
   return _stream;
 }
