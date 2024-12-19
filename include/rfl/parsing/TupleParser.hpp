@@ -11,6 +11,7 @@
 #include "../Tuple.hpp"
 #include "../always_false.hpp"
 #include "../internal/nth_element_t.hpp"
+#include "../internal/ptr_cast.hpp"
 #include "Parent.hpp"
 #include "TupleReader.hpp"
 #include "call_destructors_on_tuple_where_necessary.hpp"

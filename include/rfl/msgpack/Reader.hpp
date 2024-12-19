@@ -3,7 +3,6 @@
 
 #include <msgpack.h>
 
-#include <bit>
 #include <cstddef>
 #include <exception>
 #include <string>
@@ -13,6 +12,7 @@
 #include "../Bytestring.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/ptr_cast.hpp"
 
 namespace rfl {
 namespace msgpack {
@@ -23,9 +23,8 @@ struct Reader {
   using InputVarType = msgpack_object;
 
   template <class T>
-  static constexpr bool has_custom_constructor = (requires(InputVarType var) {
-    T::from_msgpack_obj(var);
-  });
+  static constexpr bool has_custom_constructor =
+      (requires(InputVarType var) { T::from_msgpack_obj(var); });
 
   rfl::Result<InputVarType> get_field_from_array(
       const size_t _idx, const InputArrayType _arr) const noexcept;
@@ -50,7 +49,7 @@ struct Reader {
         return Error("Could not cast to a bytestring.");
       }
       const auto bin = _var.via.bin;
-      return rfl::Bytestring(std::bit_cast<const std::byte*>(bin.ptr),
+      return rfl::Bytestring(internal::ptr_cast<const std::byte*>(bin.ptr),
                              bin.size);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != MSGPACK_OBJECT_BOOLEAN) {

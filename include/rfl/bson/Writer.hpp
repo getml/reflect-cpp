@@ -3,7 +3,6 @@
 
 #include <bson/bson.h>
 
-#include <bit>
 #include <cstddef>
 #include <exception>
 #include <map>
@@ -20,6 +19,7 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/ptr_cast.hpp"
 
 namespace rfl {
 namespace bson {
@@ -104,7 +104,7 @@ class Writer {
                                       rfl::Bytestring>()) {
       bson_array_builder_append_binary(
           _parent->val_, BSON_SUBTYPE_BINARY,
-          std::bit_cast<const uint8_t*>(_var.c_str()),
+          internal::ptr_cast<const uint8_t*>(_var.c_str()),
           static_cast<uint32_t>(_var.size()));
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       bson_array_builder_append_bool(_parent->val_, _var);
@@ -134,7 +134,7 @@ class Writer {
                                       rfl::Bytestring>()) {
       bson_append_binary(_parent->val_, _name.data(),
                          static_cast<int>(_name.size()), BSON_SUBTYPE_BINARY,
-                         std::bit_cast<const uint8_t*>(_var.c_str()),
+                         internal::ptr_cast<const uint8_t*>(_var.c_str()),
                          static_cast<uint32_t>(_var.size()));
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       bson_append_bool(_parent->val_, _name.data(),
