@@ -50,7 +50,7 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
 template <class T, class... Ps>
 auto read(const char* _bytes, const size_t _size) noexcept {
   const auto schema = to_schema<std::remove_cvref_t<T>, Ps...>();
-  return read(_bytes, _size, schema);
+  return read<T, Ps...>(_bytes, _size, schema);
 }
 
 /// Parses an object from AVRO using reflection.

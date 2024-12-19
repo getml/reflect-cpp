@@ -47,7 +47,7 @@ template <class... Ps>
 std::vector<char> write(const auto& _obj) noexcept {
   using T = std::remove_cvref_t<decltype(_obj)>;
   const auto schema = to_schema<T, Ps...>();
-  return write(_obj, schema);
+  return write<Ps...>(_obj, schema);
 }
 
 /// Writes a AVRO into an ostream.

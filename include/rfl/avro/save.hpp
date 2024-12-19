@@ -9,18 +9,17 @@
 #include "../io/save_bytes.hpp"
 #include "write.hpp"
 
-namespace rfl {
-namespace avro {
+namespace rfl::avro {
 
 template <class... Ps>
 Result<Nothing> save(const std::string& _fname, const auto& _obj) {
-  const auto write_func = [](const auto& _obj, auto& _stream) -> auto& {
+  const auto write_func = [](const auto& _obj,
+                             std::ostream& _stream) -> std::ostream& {
     return write<Ps...>(_obj, _stream);
   };
   return rfl::io::save_bytes(_fname, _obj, write_func);
 }
 
-}  // namespace avro
-}  // namespace rfl
+}  // namespace rfl::avro
 
 #endif
