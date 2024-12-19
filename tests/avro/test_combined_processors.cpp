@@ -19,32 +19,31 @@ struct Person {
 };
 
 TEST(avro, test_combined_processors) {
-  // TODO
-  /*  const auto bart = Person{.first_name = "Bart",
+  const auto bart = Person{.first_name = "Bart",
+                           .birthday = "1987-04-19",
+                           .age = 10,
+                           .email = "bart@simpson.com"};
+
+  const auto lisa = Person{.first_name = "Lisa",
+                           .birthday = "1987-04-19",
+                           .age = 8,
+                           .email = "lisa@simpson.com"};
+
+  const auto maggie = Person{.first_name = "Maggie",
                              .birthday = "1987-04-19",
-                             .age = 10,
-                             .email = "bart@simpson.com"};
+                             .age = 0,
+                             .email = "maggie@simpson.com"};
 
-    const auto lisa = Person{.first_name = "Lisa",
-                             .birthday = "1987-04-19",
-                             .age = 8,
-                             .email = "lisa@simpson.com"};
+  const auto homer =
+      Person{.first_name = "Homer",
+             .birthday = "1987-04-19",
+             .age = 45,
+             .email = "homer@simpson.com",
+             .children = std::vector<Person>({bart, lisa, maggie})};
 
-    const auto maggie = Person{.first_name = "Maggie",
-                               .birthday = "1987-04-19",
-                               .age = 0,
-                               .email = "maggie@simpson.com"};
+  using Processors =
+      rfl::Processors<rfl::SnakeCaseToCamelCase, rfl::AddStructName<"type">>;
 
-    const auto homer =
-        Person{.first_name = "Homer",
-               .birthday = "1987-04-19",
-               .age = 45,
-               .email = "homer@simpson.com",
-               .children = std::vector<Person>({bart, lisa, maggie})};
-
-    using Processors =
-        rfl::Processors<rfl::SnakeCaseToCamelCase, rfl::AddStructName<"type">>;
-
-    write_and_read<Processors>(homer);*/
+  write_and_read<Processors>(homer);
 }
 }  // namespace test_combined_processors
