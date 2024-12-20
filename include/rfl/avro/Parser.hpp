@@ -1,6 +1,7 @@
 #ifndef RFL_AVRO_PARSER_HPP_
 #define RFL_AVRO_PARSER_HPP_
 
+#include "../Generic.hpp"
 #include "../Tuple.hpp"
 #include "../parsing/Parser.hpp"
 #include "Reader.hpp"
@@ -39,6 +40,28 @@ struct Parser<avro::Reader, avro::Writer, std::tuple<Ts...>, ProcessorsType>
                          /*_ignore_empty_containers=*/false,
                          /*_all_required=*/true, ProcessorsType,
                          std::tuple<Ts...>> {};
+
+template <class ProcessorsType>
+  requires AreReaderAndWriter<avro::Reader, avro::Writer, Generic>
+struct Parser<avro::Reader, avro::Writer, Generic, ProcessorsType> {
+  using InputVarType = typename avro::Reader::InputVarType;
+
+  static Result<Generic> read(const avro::Reader &,
+                              const InputVarType &) noexcept {
+    static_assert(false, "Generics are unsupported in Avro.");
+    return Error("Unsupported");
+  }
+
+  template <class P>
+  static void write(const avro::Writer &, const Generic &, const P &) noexcept {
+    static_assert(false, "Generics are unsupported in Avro.");
+  }
+
+  static schema::Type to_schema(std::map<std::string, schema::Type> *) {
+    static_assert(false, "Generics are unsupported in Avro.");
+    return schema::Type{};
+  }
+};
 
 }  // namespace parsing
 }  // namespace rfl
