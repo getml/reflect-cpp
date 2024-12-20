@@ -17,7 +17,7 @@ struct Person {
 };
 ```
 
-A `Person` can be serialized to a bytes vector like this:
+A `Person` struct can be serialized to a bytes vector like this:
 
 ```cpp
 const auto person = Person{...};
@@ -39,7 +39,6 @@ above, this is abstracted away.
 But if you are repeated serializing or deserializing the same struct,
 it is more efficient to generate the schema explicitly:
 
-
 ```cpp
 const auto schema = rfl::avro::to_schema<Person>();
 
@@ -49,7 +48,20 @@ const std::vector<char> bytes = rfl::avro::write(person, schema);
 const rfl::Result<Person> result = rfl::avro::read<Person>(bytes, schema);
 ```
 
-...
+Avro schemas are created using a JSON-based schema language. You can
+retrieve the JSON representation like this:
+
+```cpp
+// Both calls are equivalent.
+schema.json_str();
+schema.str();
+```
+
+In this case, the resulting JSON schema representation looks like this:
+
+```json
+{"type":"record","name":"Person","fields":[{"name":"first_name","type":{"type":"string"}},{"name":"last_name","type":{"type":"string"}},{"name":"birthday","type":{"type":"string"}},{"name":"children","type":{"type":"array","items":{"type":"Person"},"default":[]}}]}
+```
 
 ## Loading and saving
 
