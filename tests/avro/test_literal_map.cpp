@@ -12,13 +12,11 @@ namespace test_literal_map {
 using FieldName = rfl::Literal<"firstName", "lastName">;
 
 TEST(avro, test_literal_map) {
-  // TODO
-  /*  std::map<FieldName, std::unique_ptr<std::string>> homer;
-    homer.insert(std::make_pair(FieldName::make<"firstName">(),
-                                std::make_unique<std::string>("Homer")));
-    homer.insert(std::make_pair(FieldName::make<"lastName">(),
-                                std::make_unique<std::string>("Simpson")));
-
-    write_and_read(homer);*/
+  std::map<FieldName, std::unique_ptr<std::string>> homer;
+  homer.insert(std::make_pair(FieldName::make<"firstName">(),
+                              std::make_unique<std::string>("Homer")));
+  homer.insert(std::make_pair(FieldName::make<"lastName">(),
+                              std::make_unique<std::string>("Simpson")));
+  write_and_read(homer);
 }
 }  // namespace test_literal_map
