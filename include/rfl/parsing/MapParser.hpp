@@ -86,6 +86,10 @@ struct MapParser {
   static void write_map(const W& _w, const MapType& _m,
                         const P& _parent) noexcept {
     auto m = ParentType::add_map(_w, _m.size(), _parent);
+
+    using ParentMapType =
+        typename ParentType::template Map<typename W::OutputMapType>;
+
     for (const auto& [k, v] : _m) {
       if constexpr (internal::has_reflection_type_v<KeyType>) {
         using ReflT = typename KeyType::ReflectionType;
@@ -93,14 +97,12 @@ struct MapParser {
         if constexpr (std::is_integral_v<ReflT> ||
                       std::is_floating_point_v<ReflT>) {
           const auto name = std::to_string(k.reflection());
-          const auto new_parent =
-              typename ParentType::Map<typename W::OutputMapType>{name, &m};
+          const auto new_parent = ParentMapType{name, &m};
           Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
               _w, v, new_parent);
         } else {
           const auto name = k.reflection();
-          const auto new_parent =
-              typename ParentType::Map<typename W::OutputMapType>{name, &m};
+          const auto new_parent = ParentMapType{name, &m};
           Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
               _w, v, new_parent);
         }
@@ -108,13 +110,11 @@ struct MapParser {
       } else if constexpr (std::is_integral_v<KeyType> ||
                            std::is_floating_point_v<KeyType>) {
         const auto name = std::to_string(k);
-        const auto new_parent =
-            typename ParentType::Map<typename W::OutputMapType>{name, &m};
+        const auto new_parent = ParentMapType{name, &m};
         Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
             _w, v, new_parent);
       } else {
-        const auto new_parent =
-            typename ParentType::Map<typename W::OutputMapType>{k, &m};
+        const auto new_parent = ParentMapType{k, &m};
         Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
             _w, v, new_parent);
       }
