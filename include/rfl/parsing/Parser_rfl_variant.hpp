@@ -112,7 +112,8 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
             using Type = std::remove_cvref_t<decltype(_v)>;
             auto u = ParentType::add_union(_w, _parent);
             using UnionType = typename ParentType::template Union<decltype(u)>;
-            auto p = UnionType{.index_ = _variant.index(), .union_ = &u};
+            auto p = UnionType{.index_ = static_cast<size_t>(_variant.index()),
+                               .union_ = &u};
             Parser<R, W, Type, ProcessorsType>::write(_w, _v, p);
           },
           _variant);
