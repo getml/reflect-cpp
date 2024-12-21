@@ -50,7 +50,8 @@ struct Parser<R, W, std::unique_ptr<T>, ProcessorsType> {
     if constexpr (schemaful::IsSchemafulWriter<W>) {
       auto u = ParentType::add_union(_w, _parent);
       using UnionType = typename ParentType::template Union<decltype(u)>;
-      auto p = UnionType{.index_ = _s ? 0 : 1, .union_ = &u};
+      auto p =
+          UnionType{.index_ = static_cast<size_t>(_s ? 0 : 1), .union_ = &u};
       if (_s) {
         Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, *_s, p);
       } else {

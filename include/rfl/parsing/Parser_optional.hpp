@@ -51,7 +51,8 @@ struct Parser<R, W, std::optional<T>, ProcessorsType> {
     if constexpr (schemaful::IsSchemafulWriter<W>) {
       auto u = ParentType::add_union(_w, _parent);
       using UnionType = typename ParentType::template Union<decltype(u)>;
-      auto p = UnionType{.index_ = _o ? 0 : 1, .union_ = &u};
+      auto p =
+          UnionType{.index_ = static_cast<size_t>(_o ? 0 : 1), .union_ = &u};
       if (_o) {
         Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, *_o, p);
       } else {
