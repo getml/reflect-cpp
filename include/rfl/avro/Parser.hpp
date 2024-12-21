@@ -3,6 +3,7 @@
 
 #include "../Generic.hpp"
 #include "../Tuple.hpp"
+#include "../always_false.hpp"
 #include "../parsing/Parser.hpp"
 #include "Reader.hpp"
 #include "Writer.hpp"
@@ -46,19 +47,20 @@ template <class ProcessorsType>
 struct Parser<avro::Reader, avro::Writer, Generic, ProcessorsType> {
   using InputVarType = typename avro::Reader::InputVarType;
 
-  static Result<Generic> read(const avro::Reader &,
-                              const InputVarType &) noexcept {
-    static_assert(false, "Generics are unsupported in Avro.");
+  template <class T>
+  static Result<Generic> read(const avro::Reader &, const T &) noexcept {
+    static_assert(always_false_v<T>, "Generics are unsupported in Avro.");
     return Error("Unsupported");
   }
 
   template <class P>
   static void write(const avro::Writer &, const Generic &, const P &) noexcept {
-    static_assert(false, "Generics are unsupported in Avro.");
+    static_assert(always_false_v<P>, "Generics are unsupported in Avro.");
   }
 
-  static schema::Type to_schema(std::map<std::string, schema::Type> *) {
-    static_assert(false, "Generics are unsupported in Avro.");
+  template <class T>
+  static schema::Type to_schema(T *) {
+    static_assert(always_false_v<T>, "Generics are unsupported in Avro.");
     return schema::Type{};
   }
 };
