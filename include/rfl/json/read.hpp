@@ -8,7 +8,7 @@
 #endif
 
 #include <istream>
-#include <string>
+#include <string_view>
 
 #include "../Processors.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
@@ -30,8 +30,8 @@ auto read(const InputVarType& _obj) {
 
 /// Parses an object from JSON using reflection.
 template <class T, class... Ps>
-Result<internal::wrap_in_rfl_array_t<T>> read(const std::string& _json_str) {
-  yyjson_doc* doc = yyjson_read(_json_str.c_str(), _json_str.size(), 0);
+Result<internal::wrap_in_rfl_array_t<T>> read(std::string_view const _json_str) {
+  yyjson_doc* doc = yyjson_read(_json_str.data(), _json_str.size(), 0);
   if (!doc) {
     return Error("Could not parse document");
   }
