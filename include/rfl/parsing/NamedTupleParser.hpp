@@ -168,6 +168,16 @@ struct NamedTupleParser {
   }
 
  private:
+  template <class ValueType>
+  static consteval bool skip_write() {
+    if constexpr (internal::is_skip_v<ValueType>) {
+      return std::remove_cvref_t<
+          std::remove_pointer_t<ValueType>>::skip_serialization_;
+    } else {
+      return false;
+    }
+  }
+
   template <int _i>
   static void add_field_to_object(const W& _w,
                                   const NamedTuple<FieldTypes...>& _tup,
@@ -181,6 +191,8 @@ struct NamedTupleParser {
         Parser<R, W, std::remove_cvref_t<decltype(v)>, ProcessorsType>::write(
             _w, v, new_parent);
       }
+    } else if constexpr (skip_write<ValueType>()) {
+      return;
     } else if constexpr (!_all_required && !_no_field_names &&
                          !is_required<ValueType, _ignore_empty_containers>()) {
       constexpr auto name = FieldType::name_.string_view();
