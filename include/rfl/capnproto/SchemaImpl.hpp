@@ -1,7 +1,7 @@
 #ifndef RFL_CAPNPROTO_SCHEMAIMPL_HPP_
 #define RFL_CAPNPROTO_SCHEMAIMPL_HPP_
 
-#include <capnp/schema.h>
+#include <capnp/schema-parser.h>
 
 #include <string>
 
@@ -20,17 +20,17 @@ class SchemaImpl {
   const std::string& str() const { return str_; }
 
   /// The interface used to create new values.
-  const capnp::StructSchema& value() const { return *schema_; };
+  const capnp::ParsedSchema& value() const { return *schema_; };
 
  private:
-  static capnp::StructSchema make_schema(const std::string& _str);
+  static capnp::ParsedSchema make_schema(const std::string& _str);
 
  private:
   /// The string used to create the schema.
   std::string str_;
 
   /// The actual schema
-  Box<capnp::StructSchema> schema_;
+  Box<capnp::ParsedSchema> schema_;
 };
 
 }  // namespace rfl::capnproto
