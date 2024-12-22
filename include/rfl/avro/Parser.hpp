@@ -45,22 +45,53 @@ struct Parser<avro::Reader, avro::Writer, std::tuple<Ts...>, ProcessorsType>
 template <class ProcessorsType>
   requires AreReaderAndWriter<avro::Reader, avro::Writer, Generic>
 struct Parser<avro::Reader, avro::Writer, Generic, ProcessorsType> {
-  using InputVarType = typename avro::Reader::InputVarType;
-
   template <class T>
-  static Result<Generic> read(const avro::Reader &, const T &) noexcept {
+  static Result<Generic> read(const avro::Reader&, const T&) noexcept {
     static_assert(always_false_v<T>, "Generics are unsupported in Avro.");
     return Error("Unsupported");
   }
 
   template <class P>
-  static void write(const avro::Writer &, const Generic &, const P &) noexcept {
+  static void write(const avro::Writer&, const Generic&, const P&) noexcept {
     static_assert(always_false_v<P>, "Generics are unsupported in Avro.");
   }
 
   template <class T>
-  static schema::Type to_schema(T *) {
+  static schema::Type to_schema(T*) {
     static_assert(always_false_v<T>, "Generics are unsupported in Avro.");
+    return schema::Type{};
+  }
+};
+
+template <class T, bool _skip_serialization, bool _skip_deserialization,
+          class ProcessorsType>
+  requires AreReaderAndWriter<
+      avro::Reader, avro::Writer,
+      internal::Skip<T, _skip_serialization, _skip_deserialization>>
+struct Parser<avro::Reader, avro::Writer,
+              internal::Skip<T, _skip_serialization, _skip_deserialization>,
+              ProcessorsType> {
+  using R = avro::Reader;
+  using W = avro::Writer;
+
+  template <class U>
+  static Result<internal::Skip<T, _skip_serialization, _skip_deserialization>>
+  read(const R&, const U&) noexcept {
+    static_assert(always_false_v<T>, "rfl::Skip is unsupported in Avro.");
+    return Error("Unsupported");
+  }
+
+  template <class P>
+  static void write(const W& _w,
+                    const internal::Skip<T, _skip_serialization,
+                                         _skip_deserialization>& _skip,
+                    const P& _parent) noexcept {
+    static_assert(always_false_v<P>, "rfl::Skip is unsupported in Avro.");
+  }
+
+  template <class U>
+  static schema::Type to_schema(U* _definitions) {
+    static_assert(always_false_v<U>, "rfl::Skip is unsupported in Avro.");
     return schema::Type{};
   }
 };
