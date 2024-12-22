@@ -2,6 +2,8 @@
 
 It is possible to skip the serialization and deserialization of fields using `rfl::Skip`.
 
+Note that `rfl::Skip` is unsupported by all schemaful formats, like Avro.
+
 ```cpp
 struct Person {
   rfl::Rename<"firstName", std::string> first_name;

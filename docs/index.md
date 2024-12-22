@@ -18,17 +18,7 @@ hide:
 [![Generic badge](https://img.shields.io/badge/MSVC-17+-blue.svg)](https://shields.io/)
 [![Conan Center](https://img.shields.io/conan/v/reflect-cpp)](https://conan.io/center/recipes/reflect-cpp)
 
-**📖 Documentation**: [https://rfl.getml.com](https://rfl.getml.com) — **👨‍💻 Source Code**: [https://github.com/getml/reflect-cpp](https://github.com/getml/reflect-cpp)
-
-</div>
-
-><br> **📣 From the Author (01.11.2024):** Hi everyone, Patrick ([liuzicheng1987](https://github.com/liuzicheng1987)) here. With reflect-cpp reaching the 1k-star milestone, we’re excited to roll out an overhauled documentation site at [https://rfl.getml.com](https://rfl.getml.com/), giving it a permanent place in our company. Initially developed as an internal tool for our machine learning library, [getML](https://getml.com), reflect-cpp has grown into something much larger.
-<br> A big thank you to all contributors for helping us reach this point! Your feedback, ideas, and dedication have been invaluable.
-<br> As we look to the project’s future, I would like to hear your thoughts on potential new directions, discuss ideas to expand our user base, or learn more about what you’re building with it. For the next month, I am opening a few slots in my calendar for anyone who wants to [connect (link)](https://calendar.app.google/AaeziooCNierbwAZ8).
-<br> *— Best, Patrick*
-<br>&nbsp;
-
-<br>
+ **💻 Source Code**: [https://github.com/getml/reflect-cpp](https://github.com/getml/reflect-cpp)
 
 **reflect-cpp** is a C++-20 library for **fast serialization, deserialization and validation** using reflection, similar to [pydantic](https://github.com/pydantic/pydantic) in Python, [serde](https://github.com/serde-rs) in Rust, [encoding](https://github.com/golang/go/tree/master/src/encoding) in Go or [aeson](https://github.com/haskell/aeson/tree/master) in Haskell.
 
