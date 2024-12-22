@@ -7,6 +7,7 @@
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../internal/Skip.hpp"
+#include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
@@ -15,12 +16,13 @@ namespace parsing {
 
 template <class R, class W, class T, bool _skip_serialization,
           bool _skip_deserialization, class ProcessorsType>
-requires AreReaderAndWriter<
-    R, W, internal::Skip<T, _skip_serialization, _skip_deserialization>>
+  requires AreReaderAndWriter<
+      R, W, internal::Skip<T, _skip_serialization, _skip_deserialization>>
 struct Parser<R, W,
               internal::Skip<T, _skip_serialization, _skip_deserialization>,
               ProcessorsType> {
   using InputVarType = typename R::InputVarType;
+  using ParentType = Parent<W>;
 
   static Result<internal::Skip<T, _skip_serialization, _skip_deserialization>>
   read(const R& _r, const InputVarType& _var) noexcept {
@@ -44,10 +46,7 @@ struct Parser<R, W,
                                          _skip_deserialization>& _skip,
                     const P& _parent) noexcept {
     if constexpr (_skip_serialization) {
-      using ReflectionType = std::remove_cvref_t<typename internal::Skip<
-          T, _skip_serialization, _skip_deserialization>::ReflectionType>;
-      Parser<R, W, ReflectionType, ProcessorsType>::write(_w, ReflectionType(),
-                                                          _parent);
+      ParentType::add_null(_w, _parent);
     } else {
       Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(
           _w, _skip.value(), _parent);
