@@ -2295,6 +2295,7 @@
 
 <h1 id="rflskip"><code>rfl::Skip</code><a class="headerlink" href="#rflskip" title="Permanent link">&para;</a></h1>
 <p>It is possible to skip the serialization and deserialization of fields using <code>rfl::Skip</code>.</p>
+<p>Note that <code>rfl::Skip</code> is unsupported by all schemaful formats, like Avro.</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;firstName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
 <span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;lastName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>

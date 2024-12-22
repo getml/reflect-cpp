@@ -2489,6 +2489,7 @@ If you want to link to your own version of YYJSON, then only add <code>src/refle
 <p>To use reflect-cpp in your project:</p>
 <div class="language-cmake highlight"><pre><span></span><code><span class="nb">add_subdirectory</span><span class="p">(</span><span class="s">reflect-cpp</span><span class="p">)</span><span class="w"> </span><span class="c"># Add this project as a subdirectory</span>
 
+<span class="nb">set</span><span class="p">(</span><span class="s">REFLECTCPP_AVRO</span><span class="w"> </span><span class="s">ON</span><span class="p">)</span><span class="w"> </span><span class="c"># Optional</span>
 <span class="nb">set</span><span class="p">(</span><span class="s">REFLECTCPP_BSON</span><span class="w"> </span><span class="s">ON</span><span class="p">)</span><span class="w"> </span><span class="c"># Optional</span>
 <span class="nb">set</span><span class="p">(</span><span class="s">REFLECTCPP_CBOR</span><span class="w"> </span><span class="s">ON</span><span class="p">)</span><span class="w"> </span><span class="c"># Optional</span>
 <span class="nb">set</span><span class="p">(</span><span class="s">REFLECTCPP_FLEXBUFFERS</span><span class="w"> </span><span class="s">ON</span><span class="p">)</span><span class="w"> </span><span class="c"># Optional</span>
@@ -2524,7 +2525,7 @@ repository and execute the following:</p>
 <div class="language-bash highlight"><pre><span></span><code>conan<span class="w"> </span>build<span class="w"> </span>.<span class="w"> </span>--build<span class="o">=</span>missing<span class="w"> </span>-s<span class="w"> </span>compiler.cppstd<span class="o">=</span>gnu20
 </code></pre></div>
 <p>You can call <code>conan inspect .</code> to get an overview of the supported options.</p>
-<p>If you want to include all supported formats, do the following:</p>
+<p>If you want to include all formats supported on Conan, do the following:</p>
 <div class="language-bash highlight"><pre><span></span><code>conan<span class="w"> </span>build<span class="w"> </span>.<span class="w"> </span>--build<span class="o">=</span>missing<span class="w"> </span>-s<span class="w"> </span>compiler.cppstd<span class="o">=</span>gnu20<span class="w"> </span>-o<span class="w"> </span>*:with_cbor<span class="o">=</span>True<span class="w"> </span>-o<span class="w"> </span>*:with_flatbuffers<span class="o">=</span>True<span class="w"> </span>-o<span class="w"> </span>*:with_msgpack<span class="o">=</span>True<span class="w"> </span>-o<span class="w"> </span>*:with_toml<span class="o">=</span>True<span class="w"> </span>-o<span class="w"> </span>*:with_ubjson<span class="o">=</span>True<span class="w"> </span>-o<span class="w"> </span>*:with_xml<span class="o">=</span>True<span class="w"> </span>-o<span class="w"> </span>*:with_yaml<span class="o">=</span>True
 </code></pre></div>
 

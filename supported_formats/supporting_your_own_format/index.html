@@ -835,6 +835,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#additional-requirements-for-schemaful-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional requirements for schemaful formats
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Additional requirements for schemaful formats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#additional-requirements-for-schemaful-writers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional requirements for schemaful writers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#additional-requirements-for-schemaful-readers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional requirements for schemaful readers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2234,6 +2273,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#additional-requirements-for-schemaful-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional requirements for schemaful formats
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Additional requirements for schemaful formats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#additional-requirements-for-schemaful-writers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional requirements for schemaful writers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#additional-requirements-for-schemaful-readers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional requirements for schemaful readers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2433,6 +2511,45 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-requirements-for-schemaful-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional requirements for schemaful formats
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Additional requirements for schemaful formats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#additional-requirements-for-schemaful-writers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional requirements for schemaful writers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#additional-requirements-for-schemaful-readers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional requirements for schemaful readers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2678,11 +2795,13 @@ You should probably just copy + paste this into your own code and fill in the bl
 
 <span class="w">    </span><span class="c1">/// Retrieves a particular field from an array.</span>
 <span class="w">    </span><span class="c1">/// Returns an rfl::Error if the index is out of bounds.</span>
+<span class="w">    </span><span class="c1">/// If your format is schemaful, you do not need this.</span>
 <span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">InputVarType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">get_field_from_array</span><span class="p">(</span>
 <span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_idx</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">InputArrayType</span><span class="w"> </span><span class="n">_arr</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{...}</span>
 
 <span class="w">    </span><span class="c1">/// Retrieves a particular field from an object.</span>
 <span class="w">    </span><span class="c1">/// Returns an rfl::Error if the field cannot be found.</span>
+<span class="w">    </span><span class="c1">/// If your format is schemaful, you do not need this.</span>
 <span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">InputVarType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">get_field_from_object</span><span class="p">(</span>
 <span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_name</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">InputObjectType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_obj</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{...}</span>
 
@@ -2747,6 +2866,173 @@ of these forms have a method with the following signature:</p>
 </code></pre></div>
 <p>Within your implementation of <code>read_object</code>, you must iterate through the object passed
 to the function and then insert the resulting key-value-pairs into <code>object_reader.read</code>.</p>
+<h2 id="additional-requirements-for-schemaful-formats">Additional requirements for schemaful formats<a class="headerlink" href="#additional-requirements-for-schemaful-formats" title="Permanent link">&para;</a></h2>
+<p>Schemaful formats, like Apache Avro or Cap'n Proto, 
+are somewhat more complicated than schemaless ones. There are additional factors
+to consider which do not apply schemaless formats:</p>
+<ol>
+<li>
+<p>Schemaful formats needs to differentiate between <em>objects</em>, for which 
+   the field names are known at compile time and <em>maps</em>, for which the
+   field names are not known at compile time. In schemaless formats, there
+   is no differentiation.</p>
+</li>
+<li>
+<p>Schemaful formats needs an explicit union types. This also means that
+   many of the problems we have with serializing <code>std::variant</code> which
+   requires us to develop concepts like <code>rfl::TaggedUnion</code> simply do not
+   apply to schemaful formats - the problem is already solved.</p>
+</li>
+</ol>
+<h3 id="additional-requirements-for-schemaful-writers">Additional requirements for schemaful writers<a class="headerlink" href="#additional-requirements-for-schemaful-writers" title="Permanent link">&para;</a></h3>
+<p>Any schemaful reader additionally needs to define the following:</p>
+<p>1) An <code>OutputMapType</code>, which must contain key-value pairs.
+2) An <code>OutputUnionType</code>, which represents an explicit union.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Writer</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">OutputArrayType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">OutputMapType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">OutputObjectType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">OutputUnionType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">OutputVarType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span>
+
+<span class="w">  </span><span class="c1">/// Sets an empty map as the root element of the document.</span>
+<span class="w">  </span><span class="c1">/// Some serialization formats require you to pass the expected size in</span>
+<span class="w">  </span><span class="c1">/// advance. If you are not working with such a format, you can ignore the</span>
+<span class="w">  </span><span class="c1">/// parameter `size`. Returns the new array for further modification.</span>
+<span class="w">  </span><span class="n">OutputMapType</span><span class="w"> </span><span class="nf">map_as_root</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_size</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Sets an empty union as the root element of the document.</span>
+<span class="w">  </span><span class="n">OutputUnionType</span><span class="w"> </span><span class="nf">union_as_root</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds an empty array to an existing map. Returns the new</span>
+<span class="w">  </span><span class="c1">/// array for further modification.</span>
+<span class="w">  </span><span class="n">OutputArrayType</span><span class="w"> </span><span class="nf">add_array_to_map</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_name</span><span class="p">,</span>
+<span class="w">                                   </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_size</span><span class="p">,</span>
+<span class="w">                                   </span><span class="n">OutputMapType</span><span class="o">*</span><span class="w"> </span><span class="n">_parent</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds an empty array to an existing union.</span>
+<span class="w">  </span><span class="c1">/// The index refers to the index of the element in the union.</span>
+<span class="w">  </span><span class="c1">/// Returns the new array for further modification.</span>
+<span class="w">  </span><span class="n">OutputArrayType</span><span class="w"> </span><span class="nf">add_array_to_union</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_index</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_size</span><span class="p">,</span>
+<span class="w">                                     </span><span class="n">OutputUnionType</span><span class="o">*</span><span class="w"> </span><span class="n">_parent</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds an empty map to an existing array. Returns the new</span>
+<span class="w">  </span><span class="c1">/// map for further modification.</span>
+<span class="w">  </span><span class="n">OutputMapType</span><span class="w"> </span><span class="nf">add_map_to_array</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_size</span><span class="p">,</span>
+<span class="w">                                 </span><span class="n">OutputArrayType</span><span class="o">*</span><span class="w"> </span><span class="n">_parent</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds an empty map to an existing map. The key or name of the field</span>
+<span class="w">  </span><span class="c1">/// is signified by `name`. Returns the new map for further modification.</span>
+<span class="w">  </span><span class="n">OutputMapType</span><span class="w"> </span><span class="nf">add_map_to_map</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_name</span><span class="p">,</span>
+<span class="w">                               </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_size</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">OutputMapType</span><span class="o">*</span><span class="w"> </span><span class="n">_parent</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds an empty map to an existing object. The key or name of the field</span>
+<span class="w">  </span><span class="c1">/// is signified by `name`. Returns the new map for further modification.</span>
+<span class="w">  </span><span class="n">OutputMapType</span><span class="w"> </span><span class="nf">add_map_to_object</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_name</span><span class="p">,</span>
+<span class="w">                                  </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_size</span><span class="p">,</span>
+<span class="w">                                  </span><span class="n">OutputObjectType</span><span class="o">*</span><span class="w"> </span><span class="n">_parent</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds an empty map to an existing union.</span>
+<span class="w">  </span><span class="c1">/// The index refers to the index of the element in the union.</span>
+<span class="w">  </span><span class="c1">/// Returns the new map for further modification.</span>
+<span class="w">  </span><span class="n">OutputMapType</span><span class="w"> </span><span class="nf">add_map_to_union</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_index</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_size</span><span class="p">,</span>
+<span class="w">                                 </span><span class="n">OutputUnionType</span><span class="o">*</span><span class="w"> </span><span class="n">_parent</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds an empty object to an existing map. The key or name of the field</span>
+<span class="w">  </span><span class="c1">/// is signified by `name`. Returns the new object for further modification.</span>
+<span class="w">  </span><span class="n">OutputObjectType</span><span class="w"> </span><span class="nf">add_object_to_map</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_name</span><span class="p">,</span>
+<span class="w">                                     </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_size</span><span class="p">,</span>
+<span class="w">                                     </span><span class="n">OutputMapType</span><span class="o">*</span><span class="w"> </span><span class="n">_parent</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds an empty object to an existing union.</span>
+<span class="w">  </span><span class="c1">/// The index refers to the index of the element in the union.</span>
+<span class="w">  </span><span class="c1">/// Returns the new object for further modification.</span>
+<span class="w">  </span><span class="n">OutputObjectType</span><span class="w"> </span><span class="nf">add_object_to_union</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_index</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_size</span><span class="p">,</span>
+<span class="w">                                       </span><span class="n">OutputUnionType</span><span class="o">*</span><span class="w"> </span><span class="n">_parent</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds an empty union to an existing array. Returns the new</span>
+<span class="w">  </span><span class="c1">/// union for further modification.</span>
+<span class="w">  </span><span class="n">OutputUnionType</span><span class="w"> </span><span class="nf">add_union_to_array</span><span class="p">(</span><span class="n">OutputArrayType</span><span class="o">*</span><span class="w"> </span><span class="n">_parent</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds an empty union to an existing map. The key or name of the field</span>
+<span class="w">  </span><span class="c1">/// is signified by `name`. Returns the new union for further modification.</span>
+<span class="w">  </span><span class="n">OutputUnionType</span><span class="w"> </span><span class="nf">add_union_to_map</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_name</span><span class="p">,</span>
+<span class="w">                                   </span><span class="n">OutputMapType</span><span class="o">*</span><span class="w"> </span><span class="n">_parent</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds an empty union to an existing object. The key or name of the field</span>
+<span class="w">  </span><span class="c1">/// is signified by `name`. Returns the new union for further modification.</span>
+<span class="w">  </span><span class="n">OutputUnionType</span><span class="w"> </span><span class="nf">add_union_to_object</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_name</span><span class="p">,</span>
+<span class="w">                                      </span><span class="n">OutputObjectType</span><span class="o">*</span><span class="w"> </span><span class="n">_parent</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds an empty union to an existing union.</span>
+<span class="w">  </span><span class="c1">/// The index refers to the index of the element in the union.</span>
+<span class="w">  </span><span class="c1">/// Returns the new union for further modification.</span>
+<span class="w">  </span><span class="n">OutputUnionType</span><span class="w"> </span><span class="nf">add_union_to_union</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_index</span><span class="p">,</span>
+<span class="w">                                     </span><span class="n">OutputUnionType</span><span class="o">*</span><span class="w"> </span><span class="n">_parent</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds a null value to a map. Returns an</span>
+<span class="w">  </span><span class="c1">/// OutputVarType containing the null value.</span>
+<span class="w">  </span><span class="n">OutputVarType</span><span class="w"> </span><span class="nf">add_null_to_map</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_name</span><span class="p">,</span>
+<span class="w">                                </span><span class="n">OutputMapType</span><span class="o">*</span><span class="w"> </span><span class="n">_parent</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds a null value to a union. Returns an</span>
+<span class="w">  </span><span class="c1">/// OutputVarType containing the null value.</span>
+<span class="w">  </span><span class="n">OutputVarType</span><span class="w"> </span><span class="nf">add_null_to_union</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_index</span><span class="p">,</span>
+<span class="w">                                  </span><span class="n">OutputUnionType</span><span class="o">*</span><span class="w"> </span><span class="n">_parent</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Adds a basic value (bool, numeric, string) to an existing map. The key</span>
+<span class="w">  </span><span class="c1">/// or name of the field is signified by `name`. Returns an</span>
+<span class="w">  </span><span class="c1">/// OutputVarType containing the new value.</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">OutputVarType</span><span class="w"> </span><span class="n">add_value_to_map</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_name</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_var</span><span class="p">,</span>
+<span class="w">                                 </span><span class="n">OutputMapType</span><span class="o">*</span><span class="w"> </span><span class="n">_parent</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span><span class="w"> </span>
+
+<span class="w">  </span><span class="c1">/// Adds a basic value (bool, numeric, string) to an existing union. The key</span>
+<span class="w">  </span><span class="c1">/// or name of the field is signified by `name`. Returns an</span>
+<span class="w">  </span><span class="c1">/// OutputVarType containing the new value.</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">OutputVarType</span><span class="w"> </span><span class="n">add_value_to_union</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">_index</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_var</span><span class="p">,</span>
+<span class="w">                                   </span><span class="n">OutputUnionType</span><span class="o">*</span><span class="w"> </span><span class="n">_parent</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Signifies to the writer that we do not want to add any further elements to</span>
+<span class="w">  </span><span class="c1">/// this map. Some serialization formats require this. If you are working</span>
+<span class="w">  </span><span class="c1">/// with a serialization format that doesn&#39;t, just leave the function empty.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">end_map</span><span class="p">(</span><span class="n">OutputMapType</span><span class="o">*</span><span class="w"> </span><span class="n">_obj</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span><span class="w"> </span>
+
+<span class="p">};</span>
+</code></pre></div>
+<h3 id="additional-requirements-for-schemaful-readers">Additional requirements for schemaful readers<a class="headerlink" href="#additional-requirements-for-schemaful-readers" title="Permanent link">&para;</a></h3>
+<p>Any schemaful reader additionally needs to define the following:</p>
+<p>1) An <code>InputMapType</code>, which must contain key-value pairs.
+2) An <code>InputUnionType</code>, which represents an explicit union.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Reader</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">InputArrayType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">InputObjectType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">InputMapType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">InputUnionType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">InputVarType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span>
+
+<span class="w">  </span><span class="c1">/// A schemaful reader needs to differentiate between objects, for which</span>
+<span class="w">  </span><span class="c1">/// the field names are known at compile time and maps, for which the</span>
+<span class="w">  </span><span class="c1">/// field names are not known at compile time.</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">InputMapType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">to_map</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputVarType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_var</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// read_map works exactly the same as read_object in schemaless formats.</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">MapReader</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">Error</span><span class="o">&gt;</span><span class="w"> </span><span class="n">read_map</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MapReader</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_map_reader</span><span class="p">,</span>
+<span class="w">                                </span><span class="k">const</span><span class="w"> </span><span class="n">InputMapType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_map</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// A schemaful reader needs an explicit union type.</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">InputUnionType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">to_union</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputVarType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_var</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// read_union needs to be able to take an InputUnionType and return the corresponding</span>
+<span class="w">  </span><span class="c1">/// variant (like std::variant or rfl::Variant). </span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">VariantType</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UnionReaderType</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">VariantType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">read_union</span><span class="p">(</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="n">InputUnionType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_union</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div>
 
 
 

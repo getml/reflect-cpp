@@ -2365,6 +2365,7 @@
 <p>reflect-cpp is intended to be used to directly parse into structs. Doing this is more efficient, more convenient and also safer.</p>
 <p>But in some cases, we simply cannot anticipate the complete structure of the data at compile time. For these cases, we
 have <code>rfl::Generic</code>.</p>
+<p>Note that generics are not supported for Avro.</p>
 <p><code>rfl::Generic</code> is a convenience wrapper around the following type:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="p">,</span><span class="w"> </span><span class="n">Array</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt_t</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
