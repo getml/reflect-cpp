@@ -18,6 +18,8 @@ hide:
 [![Generic badge](https://img.shields.io/badge/MSVC-17+-blue.svg)](https://shields.io/)
 [![Conan Center](https://img.shields.io/conan/v/reflect-cpp)](https://conan.io/center/recipes/reflect-cpp)
 
+</div>
+
  **💻 Source Code**: [https://github.com/getml/reflect-cpp](https://github.com/getml/reflect-cpp)
 
 **reflect-cpp** is a C++-20 library for **fast serialization, deserialization and validation** using reflection, similar to [pydantic](https://github.com/pydantic/pydantic) in Python, [serde](https://github.com/serde-rs) in Rust, [encoding](https://github.com/golang/go/tree/master/src/encoding) in Go or [aeson](https://github.com/haskell/aeson/tree/master) in Haskell.
