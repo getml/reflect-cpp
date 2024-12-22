@@ -3,7 +3,7 @@
 
 #include "../rfl.hpp"
 // #include "capnproto/Parser.hpp"
-// #include "capnproto/Reader.hpp"
+#include "capnproto/Reader.hpp"
 #include "capnproto/Schema.hpp"
 // #include "capnproto/Writer.hpp"
 // #include "capnproto/load.hpp"

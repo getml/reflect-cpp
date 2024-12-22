@@ -1,7 +1,7 @@
 #ifndef RFL_CAPNPROTO_READER_HPP_
 #define RFL_CAPNPROTO_READER_HPP_
 
-#include <capnproto.h>
+#include <capnp/dynamic.h>
 
 #include <cstddef>
 #include <exception>
@@ -18,31 +18,32 @@
 namespace rfl::capnproto {
 
 struct Reader {
-  struct CAPNPROTOInputArray {
-    const capnproto_value_t* val_;
+  struct CapNProtoInputArray {
+    capnp::DynamicList::Reader val_;
   };
 
-  struct CAPNPROTOInputObject {
-    const capnproto_value_t* val_;
+  struct CapNProtoInputObject {
+    capnp::DynamicStruct::Reader val_;
   };
 
-  struct CAPNPROTOInputMap {
-    const capnproto_value_t* val_;
+  struct CapNProtoInputMap {
+    capnp::DynamicList::Reader val_;
   };
 
-  struct CAPNPROTOInputUnion {
-    const capnproto_value_t* val_;
+  struct CapNProtoInputUnion {
+    // TODO: Is this right?
+    capnp::DynamicStruct::Reader val_;
   };
 
-  struct CAPNPROTOInputVar {
-    const capnproto_value_t* val_;
+  struct CapNProtoInputVar {
+    capnp::DynamicValue::Reader val_;
   };
 
-  using InputArrayType = CAPNPROTOInputArray;
-  using InputObjectType = CAPNPROTOInputObject;
-  using InputMapType = CAPNPROTOInputMap;
-  using InputUnionType = CAPNPROTOInputUnion;
-  using InputVarType = CAPNPROTOInputVar;
+  using InputArrayType = CapNProtoInputArray;
+  using InputObjectType = CapNProtoInputObject;
+  using InputMapType = CapNProtoInputMap;
+  using InputUnionType = CapNProtoInputUnion;
+  using InputVarType = CapNProtoInputVar;
 
   template <class T>
   static constexpr bool has_custom_constructor =
@@ -52,79 +53,52 @@ struct Reader {
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
-    const auto type = capnproto_value_get_type(_var.val_);
+    const auto type = _var.val_.getType();
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      const char* c_str = nullptr;
-      size_t size = 0;
-      const auto err = capnproto_value_get_string(_var.val_, &c_str, &size);
-      if (err) {
+      if (type != capnp::DynamicValue::TEXT) {
         return Error("Could not cast to string.");
       }
-      if (size == 0) {
-        return std::string("");
-      }
-      return std::string(c_str, size - 1);
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
-      const void* ptr = nullptr;
-      size_t size = 0;
-      const auto err = capnproto_value_get_bytes(_var.val_, &ptr, &size);
-      if (err) {
-        return Error("Could not cast to bytestring.");
-      }
-      return rfl::Bytestring(static_cast<const std::byte*>(ptr), size - 1);
+      return std::string(_var.val_.as<capnp::Text>().cStr());
+      // TODO
+      /*} else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                        rfl::Bytestring>()) {
+        const void* ptr = nullptr;
+        size_t size = 0;
+        const auto err = capnproto_value_get_bytes(_var.val_, &ptr, &size);
+        if (err) {
+          return Error("Could not cast to bytestring.");
+        }
+        return rfl::Bytestring(static_cast<const std::byte*>(ptr), size - 1);*/
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
-      if (type != CAPNPROTO_BOOLEAN) {
+      if (type != capnp::DynamicValue::BOOL) {
         return rfl::Error("Could not cast to boolean.");
       }
-      int result = 0;
-      capnproto_value_get_boolean(_var.val_, &result);
-      return (result != 0);
+      return _var.val_.as<bool>();
 
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
                          std::is_integral<std::remove_cvref_t<T>>()) {
-      if (type == CAPNPROTO_DOUBLE) {
-        double result = 0.0;
-        const auto err = capnproto_value_get_double(_var.val_, &result);
-        if (err) {
-          return Error("Could not cast to double.");
-        }
-        return static_cast<T>(result);
-      } else if (type == CAPNPROTO_INT32) {
-        int32_t result = 0;
-        const auto err = capnproto_value_get_int(_var.val_, &result);
-        if (err) {
-          return Error("Could not cast to int32.");
-        }
-        return static_cast<T>(result);
-      } else if (type == CAPNPROTO_INT64) {
-        int64_t result = 0;
-        const auto err = capnproto_value_get_long(_var.val_, &result);
-        if (err) {
-          return Error("Could not cast to int64.");
-        }
-        return static_cast<T>(result);
-      } else if (type == CAPNPROTO_FLOAT) {
-        float result = 0.0;
-        const auto err = capnproto_value_get_float(_var.val_, &result);
-        if (err) {
-          return Error("Could not cast to float.");
-        }
-        return static_cast<T>(result);
+      switch (type) {
+        case capnp::DynamicValue::INT:
+          return static_cast<T>(_var.val_.as<int64_t>());
+        case capnp::DynamicValue::UINT:
+          return static_cast<T>(_var.val_.as<uint64_t>());
+        case capnp::DynamicValue::FLOAT:
+          return static_cast<T>(_var.val_.as<double>());
       }
       return rfl::Error(
-          "Could not cast to numeric value. The type must be integral, float "
-          "or double.");
+          "Could not cast to numeric value. The type must be integral, "
+          "float or double.");
 
-    } else if constexpr (internal::is_literal_v<T>) {
-      int value = 0;
-      const auto err = capnproto_value_get_enum(_var.val_, &value);
-      if (err) {
-        return Error("Could not cast to enum.");
-      }
-      return std::remove_cvref_t<T>::from_value(
-          static_cast<typename std::remove_cvref_t<T>::ValueType>(value));
-
+      // TODO
+      /*} else if constexpr (internal::is_literal_v<T>) {
+        int value = 0;
+        const auto err = capnproto_value_get_enum(_var.val_, &value);
+        if (err) {
+          return Error("Could not cast to enum.");
+        }
+        return std::remove_cvref_t<T>::from_value(
+            static_cast<typename
+        std::remove_cvref_t<T>::ValueType>(value));*/
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
@@ -142,12 +116,8 @@ struct Reader {
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
                                   const InputArrayType& _arr) const noexcept {
-    size_t size = 0;
-    capnproto_value_get_size(_arr.val_, &size);
-    for (size_t ix = 0; ix < size; ++ix) {
-      capnproto_value_t element;
-      capnproto_value_get_by_index(_arr.val_, ix, &element, nullptr);
-      const auto err = _array_reader.read(InputVarType{&element});
+    for (auto element : _arr.val_) {
+      const auto err = _array_reader.read(InputVarType{std::move(element)});
       if (err) {
         return err;
       }
@@ -158,26 +128,27 @@ struct Reader {
   template <class MapReader>
   std::optional<Error> read_map(const MapReader& _map_reader,
                                 const InputMapType& _map) const noexcept {
-    size_t size = 0;
-    capnproto_value_get_size(_map.val_, &size);
-    for (size_t ix = 0; ix < size; ++ix) {
-      capnproto_value_t element;
-      const char* key = nullptr;
-      capnproto_value_get_by_index(_map.val_, ix, &element, &key);
-      _map_reader.read(std::string_view(key), InputVarType{&element});
-    }
+    // TODO
+    /*size_t size = 0;
+  capnproto_value_get_size(_map.val_, &size);
+  for (size_t ix = 0; ix < size; ++ix) {
+    capnproto_value_t element;
+    const char* key = nullptr;
+    capnproto_value_get_by_index(_map.val_, ix, &element, &key);
+    _map_reader.read(std::string_view(key), InputVarType{&element});
+  }*/
     return std::nullopt;
   }
 
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
-    size_t size = 0;
-    capnproto_value_get_size(_obj.val_, &size);
-    for (size_t ix = 0; ix < size; ++ix) {
-      capnproto_value_t element;
-      capnproto_value_get_by_index(_obj.val_, ix, &element, nullptr);
-      _object_reader.read(static_cast<int>(ix), InputVarType{&element});
+    for (auto field : _obj.val_.getSchema().getFields()) {
+      if (!_obj.val_.has(field)) {
+        continue;
+      }
+      _object_reader.read(field.getProto().getName().cStr(),
+                          InputVarType{_obj.val_.get(field)});
     }
     return std::nullopt;
   }
@@ -185,7 +156,8 @@ struct Reader {
   template <class VariantType, class UnionReaderType>
   rfl::Result<VariantType> read_union(
       const InputUnionType& _union) const noexcept {
-    int disc = 0;
+    // TODO
+    /*int disc = 0;
     auto err = capnproto_value_get_discriminant(_union.val_, &disc);
     if (err) {
       return Error("Could not get the discriminant.");
@@ -196,7 +168,8 @@ struct Reader {
       return Error("Could not cast the union type.");
     }
     return UnionReaderType::read(*this, static_cast<size_t>(disc),
-                                 InputVarType{&value});
+                                 InputVarType{&value});*/
+    return Error("TODO");
   }
 
   template <class T>
