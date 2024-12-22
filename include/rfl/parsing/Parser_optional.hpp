@@ -11,12 +11,15 @@
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
+#include "schemaful/IsSchemafulReader.hpp"
+#include "schemaful/IsSchemafulWriter.hpp"
+#include "schemaful/OptionalReader.hpp"
 
 namespace rfl {
 namespace parsing {
 
 template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::optional<T>>
+  requires AreReaderAndWriter<R, W, std::optional<T>>
 struct Parser<R, W, std::optional<T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
@@ -24,23 +27,45 @@ struct Parser<R, W, std::optional<T>, ProcessorsType> {
 
   static Result<std::optional<T>> read(const R& _r,
                                        const InputVarType& _var) noexcept {
-    if (_r.is_empty(_var)) {
-      return std::optional<T>();
+    if constexpr (schemaful::IsSchemafulReader<R>) {
+      using O = schemaful::OptionalReader<R, W, std::remove_cvref_t<T>,
+                                          ProcessorsType>;
+      const auto to_optional = [&](const auto& _u) -> Result<std::optional<T>> {
+        return _r.template read_union<std::optional<T>, O>(_u);
+      };
+      return _r.to_union(_var).and_then(to_optional);
+    } else {
+      if (_r.is_empty(_var)) {
+        return std::optional<T>();
+      }
+      const auto to_opt = [](auto&& _t) { return std::make_optional<T>(_t); };
+      return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r,
+                                                                        _var)
+          .transform(to_opt);
     }
-    const auto to_opt = [](auto&& _t) { return std::make_optional<T>(_t); };
-    return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r, _var)
-        .transform(to_opt);
   }
 
   template <class P>
   static void write(const W& _w, const std::optional<T>& _o,
                     const P& _parent) noexcept {
-    if (!_o) {
-      ParentType::add_null(_w, _parent);
-      return;
+    if constexpr (schemaful::IsSchemafulWriter<W>) {
+      auto u = ParentType::add_union(_w, _parent);
+      using UnionType = typename ParentType::template Union<decltype(u)>;
+      auto p =
+          UnionType{.index_ = static_cast<size_t>(_o ? 0 : 1), .union_ = &u};
+      if (_o) {
+        Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, *_o, p);
+      } else {
+        ParentType::add_null(_w, p);
+      }
+    } else {
+      if (_o) {
+        Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, *_o,
+                                                                    _parent);
+      } else {
+        ParentType::add_null(_w, _parent);
+      }
     }
-    Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, *_o,
-                                                                _parent);
   }
 
   static schema::Type to_schema(

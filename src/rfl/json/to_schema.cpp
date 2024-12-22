@@ -191,7 +191,8 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type) {
                          std::is_same<T, Type::Double>()) {
       return schema::Type{.value = schema::Type::Number{}};
 
-    } else if constexpr (std::is_same<T, Type::String>()) {
+    } else if constexpr (std::is_same<T, Type::String>() ||
+                         std::is_same<T, Type::Bytestring>()) {
       return schema::Type{.value = schema::Type::String{}};
 
     } else if constexpr (std::is_same<T, Type::AnyOf>()) {
@@ -221,7 +222,7 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type) {
                               schema::Type::StringEnum{.values = _t.values_}};
 
     } else if constexpr (std::is_same<T, Type::Object>()) {
-      auto properties = std::map<std::string, schema::Type>();
+      auto properties = rfl::Object<schema::Type>();
       auto required = std::vector<std::string>();
       for (const auto& [k, v] : _t.types_) {
         properties[k] = type_to_json_schema_type(v);

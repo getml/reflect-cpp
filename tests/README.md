@@ -32,7 +32,7 @@ To run the tests, do the following:
 To compile the tests with serialization formats other than JSON, do the following:
 
 ```bash
-cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_UBJSON=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_AVRO=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_UBJSON=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
 ```
@@ -40,6 +40,7 @@ cmake --build build --config Release -j 4 # MSVC
 To run the tests, do the following:
 
 ```
+./build/tests/avro/reflect-cpp-avro-tests
 ./build/tests/bson/reflect-cpp-bson-tests
 ./build/tests/cbor/reflect-cpp-cbor-tests
 ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
