@@ -92,6 +92,7 @@ nav:
   #    # - Validators: concepts/validators.md
   #    # - Errors handling: concepts/errors.md
   - Supported Formats:
+      - Avro: supported_formats/avro.md
       - BSON: supported_formats/bson.md
       - CBOR: supported_formats/cbor.md
       - FlexBuffers: supported_formats/flexbuffers.md
