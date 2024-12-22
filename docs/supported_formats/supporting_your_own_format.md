@@ -181,11 +181,13 @@ struct Reader {
 
     /// Retrieves a particular field from an array.
     /// Returns an rfl::Error if the index is out of bounds.
+    /// If your format is schemaful, you do not need this.
     rfl::Result<InputVarType> get_field_from_array(
         const size_t _idx, const InputArrayType _arr) const noexcept {...}
 
     /// Retrieves a particular field from an object.
     /// Returns an rfl::Error if the field cannot be found.
+    /// If your format is schemaful, you do not need this.
     rfl::Result<InputVarType> get_field_from_object(
         const std::string& _name, const InputObjectType& _obj) const noexcept {...}
 
@@ -261,3 +263,178 @@ void read(const std::string_view& _name,
 
 Within your implementation of `read_object`, you must iterate through the object passed
 to the function and then insert the resulting key-value-pairs into `object_reader.read`.
+
+## Additional requirements for schemaful formats
+
+Schemaful formats, like Apache Avro or Cap'n Proto, 
+are somewhat more complicated than schemaless ones. There are additional factors
+to consider which do not apply schemaless formats:
+
+1. Schemaful formats needs to differentiate between *objects*, for which 
+   the field names are known at compile time and *maps*, for which the
+   field names are not known at compile time. In schemaless formats, there
+   is no differentiation.
+
+2. Schemaful formats needs an explicit union types. This also means that
+   many of the problems we have with serializing `std::variant` which
+   requires us to develop concepts like `rfl::TaggedUnion` simply do not
+   apply to schemaful formats - the problem is already solved.
+
+### Additional requirements for schemaful writers
+
+Any schemaful reader additionally needs to define the following:
+
+1) An `OutputMapType`, which must contain key-value pairs.
+2) An `OutputUnionType`, which represents an explicit union.
+
+```cpp
+struct Writer {
+  using OutputArrayType = ...;
+  using OutputMapType = ...;
+  using OutputObjectType = ...;
+  using OutputUnionType = ...;
+  using OutputVarType = ...;
+  
+  /// Sets an empty map as the root element of the document.
+  /// Some serialization formats require you to pass the expected size in
+  /// advance. If you are not working with such a format, you can ignore the
+  /// parameter `size`. Returns the new array for further modification.
+  OutputMapType map_as_root(const size_t _size) const noexcept;
+
+  /// Sets an empty union as the root element of the document.
+  OutputUnionType union_as_root() const noexcept;
+
+  /// Adds an empty array to an existing map. Returns the new
+  /// array for further modification.
+  OutputArrayType add_array_to_map(const std::string_view& _name,
+                                   const size_t _size,
+                                   OutputMapType* _parent) const noexcept;
+
+  /// Adds an empty array to an existing union.
+  /// The index refers to the index of the element in the union.
+  /// Returns the new array for further modification.
+  OutputArrayType add_array_to_union(const size_t _index, const size_t _size,
+                                     OutputUnionType* _parent) const noexcept;
+
+  /// Adds an empty map to an existing array. Returns the new
+  /// map for further modification.
+  OutputMapType add_map_to_array(const size_t _size,
+                                 OutputArrayType* _parent) const noexcept;
+
+  /// Adds an empty map to an existing map. The key or name of the field
+  /// is signified by `name`. Returns the new map for further modification.
+  OutputMapType add_map_to_map(const std::string_view& _name,
+                               const size_t _size,
+                               OutputMapType* _parent) const noexcept;
+
+  /// Adds an empty map to an existing object. The key or name of the field
+  /// is signified by `name`. Returns the new map for further modification.
+  OutputMapType add_map_to_object(const std::string_view& _name,
+                                  const size_t _size,
+                                  OutputObjectType* _parent) const noexcept;
+
+  /// Adds an empty map to an existing union.
+  /// The index refers to the index of the element in the union.
+  /// Returns the new map for further modification.
+  OutputMapType add_map_to_union(const size_t _index, const size_t _size,
+                                 OutputUnionType* _parent) const noexcept;
+
+  /// Adds an empty object to an existing map. The key or name of the field
+  /// is signified by `name`. Returns the new object for further modification.
+  OutputObjectType add_object_to_map(const std::string_view& _name,
+                                     const size_t _size,
+                                     OutputMapType* _parent) const noexcept;
+
+  /// Adds an empty object to an existing union.
+  /// The index refers to the index of the element in the union.
+  /// Returns the new object for further modification.
+  OutputObjectType add_object_to_union(const size_t _index, const size_t _size,
+                                       OutputUnionType* _parent) const noexcept;
+
+  /// Adds an empty union to an existing array. Returns the new
+  /// union for further modification.
+  OutputUnionType add_union_to_array(OutputArrayType* _parent) const noexcept;
+
+  /// Adds an empty union to an existing map. The key or name of the field
+  /// is signified by `name`. Returns the new union for further modification.
+  OutputUnionType add_union_to_map(const std::string_view& _name,
+                                   OutputMapType* _parent) const noexcept;
+
+  /// Adds an empty union to an existing object. The key or name of the field
+  /// is signified by `name`. Returns the new union for further modification.
+  OutputUnionType add_union_to_object(const std::string_view& _name,
+                                      OutputObjectType* _parent) const noexcept;
+
+  /// Adds an empty union to an existing union.
+  /// The index refers to the index of the element in the union.
+  /// Returns the new union for further modification.
+  OutputUnionType add_union_to_union(const size_t _index,
+                                     OutputUnionType* _parent) const noexcept;
+
+  /// Adds a null value to a map. Returns an
+  /// OutputVarType containing the null value.
+  OutputVarType add_null_to_map(const std::string_view& _name,
+                                OutputMapType* _parent) const noexcept;
+
+  /// Adds a null value to a union. Returns an
+  /// OutputVarType containing the null value.
+  OutputVarType add_null_to_union(const size_t _index,
+                                  OutputUnionType* _parent) const noexcept;
+
+  /// Adds a basic value (bool, numeric, string) to an existing map. The key
+  /// or name of the field is signified by `name`. Returns an
+  /// OutputVarType containing the new value.
+  template <class T>
+  OutputVarType add_value_to_map(const std::string_view& _name, const T& _var,
+                                 OutputMapType* _parent) const noexcept; 
+
+  /// Adds a basic value (bool, numeric, string) to an existing union. The key
+  /// or name of the field is signified by `name`. Returns an
+  /// OutputVarType containing the new value.
+  template <class T>
+  OutputVarType add_value_to_union(const size_t _index, const T& _var,
+                                   OutputUnionType* _parent) const noexcept;
+
+  /// Signifies to the writer that we do not want to add any further elements to
+  /// this map. Some serialization formats require this. If you are working
+  /// with a serialization format that doesn't, just leave the function empty.
+  void end_map(OutputMapType* _obj) const noexcept; 
+
+};
+```
+
+### Additional requirements for schemaful readers
+
+Any schemaful reader additionally needs to define the following:
+
+1) An `InputMapType`, which must contain key-value pairs.
+2) An `InputUnionType`, which represents an explicit union.
+
+```cpp
+struct Reader {
+  using InputArrayType = ...;
+  using InputObjectType = ...;
+  using InputMapType = ...;
+  using InputUnionType = ...;
+  using InputVarType = ...;
+
+  /// A schemaful reader needs to differentiate between objects, for which
+  /// the field names are known at compile time and maps, for which the
+  /// field names are not known at compile time.
+  rfl::Result<InputMapType> to_map(const InputVarType& _var) const noexcept;
+    
+  /// read_map works exactly the same as read_object in schemaless formats.
+  template <class MapReader>
+  std::optional<Error> read_map(const MapReader& _map_reader,
+                                const InputMapType& _map) const noexcept;
+
+  /// A schemaful reader needs an explicit union type.
+  rfl::Result<InputUnionType> to_union(const InputVarType& _var) const noexcept;
+
+  /// read_union needs to be able to take an InputUnionType and return the corresponding
+  /// variant (like std::variant or rfl::Variant). 
+  template <class VariantType, class UnionReaderType>
+  rfl::Result<VariantType> read_union(
+      const InputUnionType& _union) const noexcept;
+};
+```

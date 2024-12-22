@@ -7,6 +7,7 @@
 #include <string>
 
 #include "../../Literal.hpp"
+#include "../../Object.hpp"
 #include "../../Rename.hpp"
 #include "../../Variant.hpp"
 
@@ -88,7 +89,7 @@ struct Type {
   struct Object {
     Literal<"object"> type;
     std::optional<std::string> description;
-    std::map<std::string, Type> properties;
+    rfl::Object<Type> properties;
     std::vector<std::string> required;
     std::shared_ptr<Type> additionalProperties;
   };

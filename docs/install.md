@@ -68,6 +68,7 @@ To use reflect-cpp in your project:
 ```cmake
 add_subdirectory(reflect-cpp) # Add this project as a subdirectory
 
+set(REFLECTCPP_AVRO ON) # Optional
 set(REFLECTCPP_BSON ON) # Optional
 set(REFLECTCPP_CBOR ON) # Optional
 set(REFLECTCPP_FLEXBUFFERS ON) # Optional
@@ -110,7 +111,7 @@ conan build . --build=missing -s compiler.cppstd=gnu20
 
 You can call `conan inspect .` to get an overview of the supported options.
 
-If you want to include all supported formats, do the following:
+If you want to include all formats supported on Conan, do the following:
 
 ```bash
 conan build . --build=missing -s compiler.cppstd=gnu20 -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True
