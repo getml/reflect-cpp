@@ -5,6 +5,7 @@ option(REFLECTCPP_BUILD_SHARED "Build shared library" ${BUILD_SHARED_LIBS})
 option(REFLECTCPP_JSON "Enable JSON support" ON) # enabled by default
 option(REFLECTCPP_AVRO "Enable AVRO support" OFF)
 option(REFLECTCPP_BSON "Enable BSON support" OFF)
+option(REFLECTCPP_CAPNPROTO "Enable Cap’n Proto support" OFF)
 option(REFLECTCPP_CBOR "Enable CBOR support" OFF)
 option(REFLECTCPP_FLEXBUFFERS "Enable flexbuffers support" OFF)
 option(REFLECTCPP_MSGPACK "Enable msgpack support" OFF)
@@ -24,6 +25,7 @@ if(REFLECTCPP_BUILD_BENCHMARKS)
     set(REFLECTCPP_JSON ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_AVRO ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_BSON ON CACHE BOOL "" FORCE)
+    set(REFLECTCPP_CAPNPROTO ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_CBOR ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_FLEXBUFFERS ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_MSGPACK ON CACHE BOOL "" FORCE)
@@ -35,7 +37,8 @@ endif()
 
 if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_BUILD_BENCHMARKS OR
     (REFLECTCPP_JSON AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES) OR REFLECTCPP_AVRO OR
-    REFLECTCPP_BSON OR REFLECTCPP_CBOR OR REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_MSGPACK OR REFLECTCPP_XML OR REFLECTCPP_TOML OR REFLECTCPP_UBJSON OR REFLECTCPP_YAML)
+    REFLECTCPP_BSON OR REFLECTCPP_CAPNPROTO OR REFLECTCPP_CBOR OR REFLECTCPP_FLEXBUFFERS OR 
+    REFLECTCPP_MSGPACK OR REFLECTCPP_XML OR REFLECTCPP_TOML OR REFLECTCPP_UBJSON OR REFLECTCPP_YAML)
     # enable vcpkg per default if require features other than JSON
     set(REFLECTCPP_USE_VCPKG_DEFAULT ON)
 endif()
@@ -127,6 +130,16 @@ if (REFLECTCPP_BSON)
         find_package(bson-1.0 CONFIG REQUIRED)
     endif ()
     target_link_libraries(reflectcpp PUBLIC $<IF:$<TARGET_EXISTS:mongo::bson_static>,mongo::bson_static,mongo::bson_shared>)
+endif ()
+
+if (REFLECTCPP_CAPNPROTO)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_capnproto.cpp
+    )
+    if (NOT TARGET CapnProto)
+        find_package(CapnProto CONFIG REQUIRED)
+    endif ()
+     target_link_libraries(reflectcpp PUBLIC CapnProto::kj CapnProto::capnp CapnProto::capnpc CapnProto::kj-gzip)
 endif ()
 
 if (REFLECTCPP_CBOR)
