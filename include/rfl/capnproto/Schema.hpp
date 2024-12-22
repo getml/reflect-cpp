@@ -1,6 +1,8 @@
 #ifndef RFL_CAPNPROTO_SCHEMA_HPP_
 #define RFL_CAPNPROTO_SCHEMA_HPP_
 
+#include <capnp/schema.h>
+
 #include <type_traits>
 
 #include "../Ref.hpp"
@@ -13,8 +15,7 @@ class Schema {
  public:
   using Type = std::remove_cvref_t<T>;
 
-  Schema(const std::string& _json_str)
-      : impl_(Ref<SchemaImpl>::make(_json_str)) {}
+  Schema(const std::string& _str) : impl_(Ref<SchemaImpl>::make(_str)) {}
 
   static Result<Schema<T>> from_json(const std::string& _json_str) noexcept {
     try {
@@ -25,14 +26,12 @@ class Schema {
   }
 
   /// The JSON string used to create this schema.
-  const std::string& json_str() const { return impl_->json_str(); }
+  const std::string& str() const { return impl_->str(); }
 
-  /// The JSON string used to create this schema.
-  const std::string& str() const { return impl_->json_str(); }
+  /// The interface used to generate new values.
+  const capnp::StructSchema& value() const { return impl_->value(); };
 
-  /// The interface used to create new values.
-  capnproto_value_iface_t* iface() const { return impl_->iface(); };
-
+ private:
  private:
   /// We are using the "pimpl"-pattern
   Ref<SchemaImpl> impl_;

@@ -1,7 +1,7 @@
 #ifndef RFL_CAPNPROTO_SCHEMAIMPL_HPP_
 #define RFL_CAPNPROTO_SCHEMAIMPL_HPP_
 
-#include <capnproto.h>
+#include <capnp/schema.h>
 
 #include <string>
 
@@ -12,33 +12,25 @@ namespace rfl::capnproto {
 
 class SchemaImpl {
  public:
-  SchemaImpl(const std::string& _json_str);
+  SchemaImpl(const std::string& _str);
 
-  ~SchemaImpl();
-
-  SchemaImpl(const SchemaImpl& _other) = delete;
-
-  SchemaImpl(SchemaImpl&& _other) noexcept;
-
-  SchemaImpl& operator=(const SchemaImpl& _other) = delete;
-
-  SchemaImpl& operator=(SchemaImpl&& _other) noexcept;
+  ~SchemaImpl() = default;
 
   /// The JSON string used to create this schema.
-  const std::string& json_str() const { return json_str_; }
+  const std::string& str() const { return str_; }
 
   /// The interface used to create new values.
-  capnproto_value_iface_t* iface() const { return iface_; };
+  const capnp::StructSchema& value() const { return *schema_; };
 
  private:
-  /// The JSON string used to create the schema.
-  std::string json_str_;
+  static capnp::StructSchema make_schema(const std::string& _str);
+
+ private:
+  /// The string used to create the schema.
+  std::string str_;
 
   /// The actual schema
-  Box<capnproto_schema_t> schema_;
-
-  /// The interface used to create new, generic classes.
-  capnproto_value_iface_t* iface_;
+  Box<capnp::StructSchema> schema_;
 };
 
 }  // namespace rfl::capnproto
