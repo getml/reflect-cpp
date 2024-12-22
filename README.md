@@ -8,15 +8,7 @@
 [![Generic badge](https://img.shields.io/badge/MSVC-17+-blue.svg)](https://shields.io/)
 [![Conan Center](https://img.shields.io/conan/v/reflect-cpp)](https://conan.io/center/recipes/reflect-cpp)
 
-
-**📖 Documentation**: https://rfl.getml.com — **👨‍💻 Source Code**: https://github.com/getml/reflect-cpp
-
-><br> **📣 From the Author (12.11.2024):** Hi everyone, Patrick ([liuzicheng1987](https://github.com/liuzicheng1987)) here. With reflect-cpp reaching the 1k-star milestone, we’re excited to roll out an overhauled documentation site at [https://rfl.getml.com](https://rfl.getml.com/), giving it a permanent place in our company. Initially developed as an internal tool for our machine learning library, [getML](https://getml.com), reflect-cpp has grown into something much larger.
-<br> A big thank you to all contributors for helping us reach this point! Your feedback, ideas, and dedication have been invaluable.
-<br> As we look to the project’s future, I would like to hear your thoughts on potential new directions, discuss ideas to expand our user base, or learn more about what you’re building with it. For the next month, I am opening a few slots in my calendar for anyone who wants to [connect (link)](https://calendar.app.google/AaeziooCNierbwAZ8).
-<br> *— Best, Patrick*
-<br>&nbsp;
-
+**📖 Documentation**: https://rfl.getml.com
 
 ![image](banner1.png)
 
@@ -71,6 +63,7 @@ The following table lists the serialization formats currently supported by refle
 | Format       | Library                                              | Version      | License    | Remarks                                              |
 |--------------|------------------------------------------------------|--------------|------------| -----------------------------------------------------|
 | JSON         | [yyjson](https://github.com/ibireme/yyjson)          | >= 0.8.0     | MIT        | out-of-the-box support, included in this repository  |
+| Avro         | [avro-c](https://avro.apache.org/docs/1.11.1/api/c/) | >= 1.11.3    | Apache 2.0 | Schemaful binary format                              |
 | BSON         | [libbson](https://github.com/mongodb/mongo-c-driver) | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
 | CBOR         | [tinycbor](https://github.com/intel/tinycbor)        | >= 0.6.0     | MIT        | JSON-like binary format                              |
 | flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 | Schema-less version of flatbuffers, binary format    |
@@ -153,6 +146,7 @@ This will work for just about any example in the entire documentation
 and any supported format, except where explicitly noted otherwise:
 
 ```cpp
+rfl::avro::write(homer);
 rfl::bson::write(homer);
 rfl::cbor::write(homer);
 rfl::flexbuf::write(homer);
@@ -161,6 +155,7 @@ rfl::toml::write(homer);
 rfl::ubjson::write(homer);
 rfl::xml::write(homer);
 
+rfl::avro::read<Person>(avro_bytes);
 rfl::bson::read<Person>(bson_bytes);
 rfl::cbor::read<Person>(cbor_bytes);
 rfl::flexbuf::read<Person>(flexbuf_bytes);
