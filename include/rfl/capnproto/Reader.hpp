@@ -22,12 +22,12 @@ struct Reader {
     capnp::DynamicList::Reader val_;
   };
 
-  struct CapNProtoInputObject {
-    capnp::DynamicStruct::Reader val_;
-  };
-
   struct CapNProtoInputMap {
     capnp::DynamicList::Reader val_;
+  };
+
+  struct CapNProtoInputObject {
+    capnp::DynamicStruct::Reader val_;
   };
 
   struct CapNProtoInputUnion {

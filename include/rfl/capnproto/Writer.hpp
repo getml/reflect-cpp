@@ -1,7 +1,7 @@
 #ifndef RFL_CAPNPROTO_WRITER_HPP_
 #define RFL_CAPNPROTO_WRITER_HPP_
 
-#include <capnproto.h>
+#include <capnp/dynamic.h>
 
 #include <bit>
 #include <cstdint>
@@ -26,33 +26,34 @@ namespace rfl::capnproto {
 
 class Writer {
  public:
-  struct CAPNPROTOOutputArray {
-    capnproto_value_t val_;
+  struct CapnProtoOutputArray {
+    capnp::DynamicList::Builder val_;
   };
 
-  struct CAPNPROTOOutputMap {
-    capnproto_value_t val_;
+  struct CapnProtoOutputMap {
+    capnp::DynamicList::Builder val_;
   };
 
-  struct CAPNPROTOOutputObject {
-    capnproto_value_t val_;
+  struct CapnProtoOutputObject {
+    capnp::DynamicStruct::Builder val_;
   };
 
-  struct CAPNPROTOOutputUnion {
-    capnproto_value_t val_;
+  struct CapnProtoOutputUnion {
+    // TODO: Is this right?
+    capnp::DynamicStruct::Builder val_;
   };
 
-  struct CAPNPROTOOutputVar {
-    capnproto_value_t val_;
+  struct CapnProtoOutputVar {
+    capnp::DynamicValue::Builder val_;
   };
 
-  using OutputArrayType = CAPNPROTOOutputArray;
-  using OutputMapType = CAPNPROTOOutputMap;
-  using OutputObjectType = CAPNPROTOOutputObject;
-  using OutputUnionType = CAPNPROTOOutputUnion;
-  using OutputVarType = CAPNPROTOOutputVar;
+  using OutputArrayType = CapnProtoOutputArray;
+  using OutputMapType = CapnProtoOutputMap;
+  using OutputObjectType = CapnProtoOutputObject;
+  using OutputUnionType = CapnProtoOutputUnion;
+  using OutputVarType = CapnProtoOutputVar;
 
-  Writer(capnproto_value_t* _root);
+  Writer(capnp::DynamicValue::Builder* _root);
 
   ~Writer();
 
@@ -139,38 +140,40 @@ class Writer {
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
                                    OutputArrayType* _parent) const noexcept {
-    capnproto_value_t new_value;
-    capnproto_value_append(&_parent->val_, &new_value, nullptr);
-    set_value(_var, &new_value);
-    return OutputVarType{new_value};
+    // TODO
+    /*capnproto_value_t new_value;
+  capnproto_value_append(&_parent->val_, &new_value, nullptr);
+  set_value(_var, &new_value);
+  return OutputVarType{new_value};*/
   }
 
   template <class T>
   OutputVarType add_value_to_map(const std::string_view& _name, const T& _var,
                                  OutputMapType* _parent) const noexcept {
-    capnproto_value_t new_value;
-    capnproto_value_add(&_parent->val_, _name.data(), &new_value, nullptr, nullptr);
-    set_value(_var, &new_value);
-    return OutputVarType{new_value};
+    // TODO
+    /*capnproto_value_t new_value;
+  capnproto_value_add(&_parent->val_, _name.data(), &new_value, nullptr,
+                      nullptr);
+  set_value(_var, &new_value);
+  return OutputVarType{new_value};*/
   }
 
   template <class T>
   OutputVarType add_value_to_object(const std::string_view& _name,
                                     const T& _var,
                                     OutputObjectType* _parent) const noexcept {
-    capnproto_value_t new_value;
-    capnproto_value_get_by_name(&_parent->val_, _name.data(), &new_value, nullptr);
-    set_value(_var, &new_value);
-    return OutputVarType{new_value};
+    _parent->val_.set(_name, _var);
+    return OutputVarType{};
   }
 
   template <class T>
   OutputVarType add_value_to_union(const size_t _index, const T& _var,
                                    OutputUnionType* _parent) const noexcept {
-    capnproto_value_t new_value;
-    capnproto_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_value);
+    /*capnproto_value_t new_value;
+    capnproto_value_set_branch(&_parent->val_, static_cast<int>(_index),
+                               &new_value);
     set_value(_var, &new_value);
-    return OutputVarType{new_value};
+    return OutputVarType{new_value};*/
   }
 
   void end_array(OutputArrayType* _arr) const noexcept {}
@@ -180,7 +183,7 @@ class Writer {
   void end_object(OutputObjectType* _obj) const noexcept {}
 
  private:
-  template <class T>
+  /*template <class T>
   void set_value(const T& _var, capnproto_value_t* _val) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       capnproto_value_set_string_len(_val, _var.c_str(), _var.size() + 1);
@@ -205,10 +208,10 @@ class Writer {
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
-  }
+  }*/
 
  private:
-  capnproto_value_t* root_;
+  capnp::DynamicValue::Builder* root_;
 };
 
 }  // namespace rfl::capnproto
