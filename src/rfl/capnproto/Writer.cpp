@@ -1,5 +1,7 @@
 #include "rfl/capnproto/Writer.hpp"
 
+#include <stdexcept>
+
 #include "rfl/parsing/schemaful/IsSchemafulWriter.hpp"
 
 namespace rfl::capnproto {
@@ -7,32 +9,13 @@ namespace rfl::capnproto {
 static_assert(parsing::schemaful::IsSchemafulWriter<Writer>,
               "This must be a schemaful writer.");
 
-Writer::Writer(capnp::DynamicValue::Builder* _root) : root_(_root){};
+Writer::Writer(capnp::DynamicStruct::Builder* _root) : root_(_root){};
 
 Writer::~Writer() = default;
-
-Writer::OutputArrayType Writer::array_as_root(
-    const size_t _size) const noexcept {
-  return OutputArrayType{root_->as<capnp::DynamicList>()};
-}
-
-Writer::OutputMapType Writer::map_as_root(const size_t _size) const noexcept {
-  return OutputMapType{root_->as<capnp::DynamicList>()};
-}
 
 Writer::OutputObjectType Writer::object_as_root(
     const size_t _size) const noexcept {
   return OutputObjectType{root_->as<capnp::DynamicStruct>()};
-}
-
-Writer::OutputVarType Writer::null_as_root() const noexcept {
-  // TODO
-  // avro_value_set_null(root_);
-  return OutputVarType{root_};
-}
-
-Writer::OutputUnionType Writer::union_as_root() const noexcept {
-  return OutputUnionType{root_->as<capnp::DynamicStruct>()};
 }
 
 Writer::OutputArrayType Writer::add_array_to_array(

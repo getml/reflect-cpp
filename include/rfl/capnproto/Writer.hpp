@@ -53,24 +53,45 @@ class Writer {
   using OutputUnionType = CapnProtoOutputUnion;
   using OutputVarType = CapnProtoOutputVar;
 
-  Writer(capnp::DynamicValue::Builder* _root);
+  Writer(capnp::DynamicStruct::Builder* _root);
 
   ~Writer();
 
-  OutputArrayType array_as_root(const size_t _size) const noexcept;
+  template <class T>
+  OutputArrayType array_as_root(const T _size) const noexcept {
+    static_assert(always_false_v<T>,
+                  "In Cap'n Proto, root values must always be structs.");
+    throw std::runtime_error("Unsupported.");
+  }
 
-  OutputMapType map_as_root(const size_t _size) const noexcept;
+  template <class T>
+  OutputMapType map_as_root(const T _size) const noexcept {
+    static_assert(always_false_v<T>,
+                  "In Cap'n Proto, root values must always be structs.");
+    throw std::runtime_error("Unsupported.");
+  }
 
-  OutputObjectType object_as_root(const size_t _size) const noexcept;
+  Writer::OutputObjectType object_as_root(const size_t _size) const noexcept;
 
-  OutputVarType null_as_root() const noexcept;
+  template <class T = int>
+  OutputVarType null_as_root() const noexcept {
+    static_assert(always_false_v<T>,
+                  "In Cap'n Proto, root values must always be structs.");
+    throw std::runtime_error("Unsupported.");
+  }
 
-  OutputUnionType union_as_root() const noexcept;
+  template <class T = int>
+  OutputUnionType union_as_root() const noexcept {
+    static_assert(always_false_v<T>,
+                  "In Cap'n Proto, root values must always be structs.");
+    throw std::runtime_error("Unsupported.");
+  }
 
   template <class T>
   OutputVarType value_as_root(const T& _var) const noexcept {
-    set_value(_var, root_);
-    return OutputVarType{*root_};
+    static_assert(always_false_v<T>,
+                  "In Cap'n Proto, root values must always be structs.");
+    throw std::runtime_error("Unsupported.");
   }
 
   OutputArrayType add_array_to_array(const size_t _size,
@@ -162,7 +183,7 @@ class Writer {
   OutputVarType add_value_to_object(const std::string_view& _name,
                                     const T& _var,
                                     OutputObjectType* _parent) const noexcept {
-    _parent->val_.set(_name, _var);
+    _parent->val_.set(_name.data(), _var);
     return OutputVarType{};
   }
 
@@ -211,7 +232,7 @@ class Writer {
   }*/
 
  private:
-  capnp::DynamicValue::Builder* root_;
+  capnp::DynamicStruct::Builder* root_;
 };
 
 }  // namespace rfl::capnproto
