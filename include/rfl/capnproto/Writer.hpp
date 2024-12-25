@@ -183,7 +183,20 @@ class Writer {
   OutputVarType add_value_to_object(const std::string_view& _name,
                                     const T& _var,
                                     OutputObjectType* _parent) const noexcept {
-    _parent->val_.set(_name.data(), _var);
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
+      _parent->val_.set(_name.data(), _var.c_str());
+
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
+                         std::is_same<std::remove_cvref_t<T>, bool>()) {
+      _parent->val_.set(_name.data(), _var);
+
+    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
+      _parent->val_.set(_name.data(), static_cast<std::int64_t>(_var));
+
+    } else {
+      static_assert(rfl::always_false_v<T>, "Unsupported type.");
+    }
+
     return OutputVarType{};
   }
 

@@ -5,6 +5,8 @@
 #include <capnp/message.h>
 #include <capnp/schema-parser.h>
 #include <capnp/schema.h>
+#include <capnp/serialize-packed.h>
+#include <kj/io.h>
 
 #include <bit>
 #include <cstdint>
@@ -14,6 +16,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "../internal/ptr_cast.hpp"
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
 #include "Schema.hpp"
@@ -25,37 +28,24 @@ namespace rfl::capnproto {
 /// Returns CAPNPROTO bytes.
 template <class... Ps>
 std::vector<char> write(const auto& _obj, const auto& _schema) noexcept {
-  /*  using T = std::remove_cvref_t<decltype(_obj)>;
-    using U = typename std::remove_cvref_t<decltype(_schema)>::Type;
-    using ParentType = parsing::Parent<Writer>;
-    static_assert(std::is_same<T, U>(),
-                  "The schema must be compatible with the type to write.");
-    capnproto_value_t root;
-    capnproto_generic_value_new(_schema.iface(), &root);
-    const auto writer = Writer(&root);
-    Parser<T, Processors<Ps...>>::write(writer, _obj,
-                                        typename ParentType::Root{});
-    size_t size = 0;
-    capnproto_value_sizeof(&root, &size);
-    std::vector<char> buffer(size);
-    capnproto_writer_t capnproto_writer = capnproto_writer_memory(buffer.data(),
-    buffer.size()); capnproto_value_write(capnproto_writer, &root);
-    capnproto_value_decref(&root);
-    capnproto_writer_free(capnproto_writer);
-    return buffer;*/
-
   using T = std::remove_cvref_t<decltype(_obj)>;
   using U = typename std::remove_cvref_t<decltype(_schema)>::Type;
   using ParentType = parsing::Parent<Writer>;
   static_assert(std::is_same<T, U>(),
                 "The schema must be compatible with the type to write.");
-  capnp::MallocMessageBuilder message;
+  // TODO: Person is hardcoded.
+  const auto root_schema = _schema.value().getNested("Person");
+  capnp::MallocMessageBuilder message_builder;
   auto root =
-      message.initRoot<capnp::DynamicStruct>(_schema.value().asStruct());
+      message_builder.initRoot<capnp::DynamicStruct>(root_schema.asStruct());
   const auto writer = Writer(&root);
   Parser<T, Processors<Ps...>>::write(writer, _obj,
                                       typename ParentType::Root{});
-  return std::vector<char>();  // TODO
+  kj::VectorOutputStream output_stream;
+  capnp::writePackedMessage(output_stream, message_builder);
+  auto arr_ptr = output_stream.getArray();
+  return std::vector<char>(internal::ptr_cast<char*>(arr_ptr.begin()),
+                           internal::ptr_cast<char*>(arr_ptr.end()));
 }
 
 /// Returns CAPNPROTO bytes.

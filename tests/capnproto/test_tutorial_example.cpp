@@ -65,8 +65,6 @@ struct AddressBook {
 };
 
 TEST(capnproto, test_tutorial_example) {
-  const auto schema =
-      rfl::capnproto::Schema<Person>::from_string(ADDRESS_BOOK_SCHEMA).value();
-  std::cout << schema.str() << std::endl;
+  rfl::capnproto::Schema<Person>::from_string(ADDRESS_BOOK_SCHEMA).value();
 }
 }  // namespace test_tutorial_example

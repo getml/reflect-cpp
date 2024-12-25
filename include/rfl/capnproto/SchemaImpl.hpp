@@ -3,9 +3,9 @@
 
 #include <capnp/schema-parser.h>
 
+#include <memory>
 #include <string>
 
-#include "../Box.hpp"
 #include "../Result.hpp"
 
 namespace rfl::capnproto {
@@ -23,11 +23,16 @@ class SchemaImpl {
   const capnp::ParsedSchema& value() const { return *schema_; };
 
  private:
-  static capnp::ParsedSchema make_schema(const std::string& _str);
+  static capnp::ParsedSchema make_schema(const std::string& _str,
+                                         capnp::SchemaParser* _parser);
 
  private:
   /// The string used to create the schema.
   std::string str_;
+
+  /// The schema parser - we need to hold onto this during the lifetime of the
+  /// schema.
+  Box<capnp::SchemaParser> schema_parser_;
 
   /// The actual schema
   Box<capnp::ParsedSchema> schema_;
