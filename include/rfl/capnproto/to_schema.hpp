@@ -7,6 +7,7 @@
 
 #include "../Literal.hpp"
 #include "../Processors.hpp"
+#include "../SnakeCaseToCamelCase.hpp"
 #include "../Variant.hpp"
 #include "../json.hpp"
 #include "../parsing/schema/Type.hpp"
@@ -26,7 +27,8 @@ std::string to_string_representation(
 template <class T, class... Ps>
 Schema<T> to_schema() noexcept {
   const auto internal_schema =
-      parsing::schema::make<Reader, Writer, T, Processors<Ps...>>();
+      parsing::schema::make<Reader, Writer, T,
+                            Processors<SnakeCaseToCamelCase, Ps...>>();
   const auto str = to_string_representation(internal_schema);
   return Schema<T>::from_string(str).value();
 }
