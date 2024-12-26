@@ -1,10 +1,10 @@
 #ifndef RFL_CAPNPROTO_SCHEMA_TYPE_HPP_
 #define RFL_CAPNPROTO_SCHEMA_TYPE_HPP_
 
+#include <iostream>
 #include <map>
 #include <memory>
 #include <optional>
-#include <sstream>
 #include <string>
 
 #include "../../Literal.hpp"
@@ -57,12 +57,12 @@ struct Type {
   };
 
   struct Reference {
-    std::string type;
+    std::string type_name;
   };
 
   using ReflectionType =
       rfl::Variant<Void, Bool, Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32,
-                   UInt64, Float32, Float64, Data, Text, Struct, List, Map,
+                   UInt64, Float32, Float64, Data, Text, Struct, List, /*Map,*/
                    Reference>;
 
   const auto& reflection() const { return value; }
@@ -70,6 +70,7 @@ struct Type {
   ReflectionType value;
 };
 
-}  // namespace rfl::capnproto::schema
+std::ostream& operator<<(std::ostream& os, const Type& _t);
 
+}  // namespace rfl::capnproto::schema
 #endif
