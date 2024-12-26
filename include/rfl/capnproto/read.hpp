@@ -11,7 +11,10 @@
 #include <type_traits>
 
 #include "../Processors.hpp"
+#include "../SnakeCaseToCamelCase.hpp"
+#include "../internal/strings/to_pascal_case.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
+#include "../parsing/make_type_name.hpp"
 #include "Parser.hpp"
 #include "Reader.hpp"
 #include "Schema.hpp"
@@ -26,7 +29,7 @@ using InputVarType = typename Reader::InputVarType;
 template <class T, class... Ps>
 auto read(const InputVarType& _obj) {
   const auto r = Reader();
-  return Parser<T, Processors<Ps...>>::read(r, _obj);
+  return Parser<T, Processors<SnakeCaseToCamelCase, Ps...>>::read(r, _obj);
 }
 
 /// Parses an object from CAPNPROTO using reflection.
@@ -37,8 +40,9 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
       internal::ptr_cast<const kj::byte*>(_bytes), _size);
   auto input_stream = kj::ArrayInputStream(array_ptr);
   auto message_reader = capnp::PackedMessageReader(input_stream);
-  // TODO: Person is hardcoded.
-  const auto root_schema = _schema.value().getNested("Person");
+  const auto root_name = internal::strings::to_pascal_case(
+      parsing::make_type_name<std::remove_cvref_t<T>>());
+  const auto root_schema = _schema.value().getNested(root_name.c_str());
   const auto input_var = InputVarType{
       message_reader.getRoot<capnp::DynamicStruct>(root_schema.asStruct())};
   return read<T, Ps...>(input_var);

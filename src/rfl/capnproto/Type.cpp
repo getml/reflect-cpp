@@ -26,6 +26,8 @@ SOFTWARE.
 
 #include "rfl/capnproto/schema/Type.hpp"
 
+#include "rfl/internal/strings/to_pascal_case.hpp"
+
 namespace rfl::capnproto::schema {
 
 Type Type::with_name(const std::string& _name) const {
@@ -112,7 +114,7 @@ std::ostream& operator<<(std::ostream& _os, const Type::List& _l) {
 }
 
 std::ostream& operator<<(std::ostream& _os, const Type::Reference& _r) {
-  return _os;
+  return _os << internal::strings::to_pascal_case(_r.type_name);
 }
 
 std::ostream& operator<<(std::ostream& _os, const Type& _t) {

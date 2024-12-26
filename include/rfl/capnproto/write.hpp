@@ -16,8 +16,11 @@
 #include <type_traits>
 #include <utility>
 
+#include "../SnakeCaseToCamelCase.hpp"
 #include "../internal/ptr_cast.hpp"
+#include "../internal/strings/to_pascal_case.hpp"
 #include "../parsing/Parent.hpp"
+#include "../parsing/make_type_name.hpp"
 #include "Parser.hpp"
 #include "Schema.hpp"
 #include "Writer.hpp"
@@ -33,14 +36,15 @@ std::vector<char> write(const auto& _obj, const auto& _schema) noexcept {
   using ParentType = parsing::Parent<Writer>;
   static_assert(std::is_same<T, U>(),
                 "The schema must be compatible with the type to write.");
-  // TODO: Person is hardcoded.
-  const auto root_schema = _schema.value().getNested("Person");
+  const auto root_name = internal::strings::to_pascal_case(
+      parsing::make_type_name<std::remove_cvref_t<T>>());
+  const auto root_schema = _schema.value().getNested(root_name.c_str());
   capnp::MallocMessageBuilder message_builder;
   auto root =
       message_builder.initRoot<capnp::DynamicStruct>(root_schema.asStruct());
   const auto writer = Writer(&root);
-  Parser<T, Processors<Ps...>>::write(writer, _obj,
-                                      typename ParentType::Root{});
+  Parser<T, Processors<SnakeCaseToCamelCase, Ps...>>::write(
+      writer, _obj, typename ParentType::Root{});
   kj::VectorOutputStream output_stream;
   capnp::writePackedMessage(output_stream, message_builder);
   auto arr_ptr = output_stream.getArray();

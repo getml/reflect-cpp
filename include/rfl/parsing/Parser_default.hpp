@@ -22,12 +22,12 @@
 #include "../internal/ptr_cast.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
 #include "../to_view.hpp"
-#include "../type_name_t.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "call_destructors_where_necessary.hpp"
 #include "is_tagged_union_wrapper.hpp"
+#include "make_type_name.hpp"
 #include "schema/Type.hpp"
 #include "schemaful/IsSchemafulReader.hpp"
 #include "schemaful/IsSchemafulWriter.hpp"
@@ -265,16 +265,6 @@ struct Parser {
         .validation_ = ValidationType::template to_schema<ReflectionType>()}};
   }
 
-  template <class U>
-  static std::string make_type_name() {
-    if constexpr (is_tagged_union_wrapper_v<U>) {
-      return replace_non_alphanumeric(type_name_t<typename U::Type>().str() +
-                                      "__tagged");
-    } else {
-      return replace_non_alphanumeric(type_name_t<U>().str());
-    }
-  }
-
   /// The way this works is that we allocate space on the stack in this size of
   /// the struct in which we then write the individual fields using
   /// views and placement new. This is how we deal with the fact that some
@@ -311,13 +301,6 @@ struct Parser {
       return *err;
     }
     return t;
-  }
-
-  static std::string replace_non_alphanumeric(std::string _str) {
-    for (auto& ch : _str) {
-      ch = std::isalnum(ch) ? ch : '_';
-    }
-    return _str;
   }
 };
 

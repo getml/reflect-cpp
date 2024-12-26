@@ -30,6 +30,7 @@ SOFTWARE.
 
 #include "rfl/capnproto/schema/Type.hpp"
 #include "rfl/internal/strings/split.hpp"
+#include "rfl/internal/strings/to_pascal_case.hpp"
 #include "rfl/json.hpp"
 #include "rfl/parsing/schemaful/tuple_to_object.hpp"
 
@@ -46,7 +47,7 @@ inline bool is_named_type(const parsing::schema::Type& _type) {
 schema::Type type_to_capnproto_schema_type(
     const parsing::schema::Type& _type,
     const std::map<std::string, parsing::schema::Type>& _definitions,
-    std::set<std::string>* _already_known, size_t* _num_unnamed) {
+    size_t* _num_unnamed) {
   auto handle_variant = [&](const auto& _t) -> schema::Type {
     using T = std::remove_cvref_t<decltype(_t)>;
     using Type = parsing::schema::Type;
@@ -84,13 +85,13 @@ schema::Type type_to_capnproto_schema_type(
 
     } else if constexpr (std::is_same<T, Type::Description>()) {
       return type_to_capnproto_schema_type(*_t.type_, _definitions,
-                                           _already_known, _num_unnamed);
+                                           _num_unnamed);
 
     } else if constexpr (std::is_same<T, Type::FixedSizeTypedArray>()) {
       return schema::Type{
           .value = schema::Type::List{
               .type = Ref<schema::Type>::make(type_to_capnproto_schema_type(
-                  *_t.type_, _definitions, _already_known, _num_unnamed))}};
+                  *_t.type_, _definitions, _num_unnamed))}};
 
     } else if constexpr (std::is_same<T, Type::Literal>()) {
       // TODO
@@ -105,8 +106,7 @@ schema::Type type_to_capnproto_schema_type(
           .name = std::string("Unnamed") + std::to_string(++(*_num_unnamed))};
       for (const auto& [k, v] : _t.types_) {
         struct_schema.fields.push_back(std::make_pair(
-            k, type_to_capnproto_schema_type(v, _definitions, _already_known,
-                                             _num_unnamed)));
+            k, type_to_capnproto_schema_type(v, _definitions, _num_unnamed)));
       }
       return schema::Type{.value = struct_schema};
 
@@ -116,7 +116,7 @@ schema::Type type_to_capnproto_schema_type(
       /*return schema::Type{
           .value = std::vector<schema::Type>(
               {type_to_capnproto_schema_type(*_t.type_, _definitions,
-                                             _already_known, _num_unnamed),
+                                              _num_unnamed),
                schema::Type{schema::Type::Null{}}})};*/
 
     } else if constexpr (std::is_same<T, Type::Reference>()) {
@@ -129,24 +129,24 @@ schema::Type type_to_capnproto_schema_type(
       /*return schema::Type{
           .value = schema::Type::Map{
               .values = Ref<schema::Type>::make(type_to_capnproto_schema_type(
-                  *_t.value_type_, _definitions, _already_known,
+                  *_t.value_type_, _definitions,
                   _num_unnamed))}};*/
 
     } else if constexpr (std::is_same<T, Type::Tuple>()) {
       return type_to_capnproto_schema_type(
           Type{parsing::schemaful::tuple_to_object(_t)}, _definitions,
-          _already_known, _num_unnamed);
+          _num_unnamed);
 
     } else if constexpr (std::is_same<T, Type::TypedArray>()) {
       return schema::Type{
           .value = schema::Type::List{
               .type = Ref<schema::Type>::make(type_to_capnproto_schema_type(
-                  *_t.type_, _definitions, _already_known, _num_unnamed))}};
+                  *_t.type_, _definitions, _num_unnamed))}};
 
     } else if constexpr (std::is_same<T, Type::Validated>()) {
       // Cap'n Proto knows no validation.
       return type_to_capnproto_schema_type(*_t.type_, _definitions,
-                                           _already_known, _num_unnamed);
+                                           _num_unnamed);
 
     } else {
       static_assert(rfl::always_false_v<T>, "Not all cases were covered.");
@@ -158,20 +158,14 @@ schema::Type type_to_capnproto_schema_type(
 
 std::string to_string_representation(
     const parsing::schema::Definition& _internal_schema) {
-  std::set<std::string> already_known;
   size_t num_unnamed = 0;
-  const auto capnproto_schema = type_to_capnproto_schema_type(
-      _internal_schema.root_, _internal_schema.definitions_, &already_known,
-      &num_unnamed);
   std::stringstream sstream;
   // TODO: ID is hardcoded.
-  sstream << "@0xdbb9ad1f14bf0b36;" << std::endl
-          << std::endl
-          << capnproto_schema;
+  sstream << "@0xdbb9ad1f14bf0b36;" << std::endl << std::endl;
   for (const auto& [name, def] : _internal_schema.definitions_) {
     sstream << type_to_capnproto_schema_type(def, _internal_schema.definitions_,
-                                             &already_known, &num_unnamed)
-                   .with_name(internal::strings::split(name, "__").back())
+                                             &num_unnamed)
+                   .with_name(internal::strings::to_pascal_case(name))
             << std::endl
             << std::endl;
   }
