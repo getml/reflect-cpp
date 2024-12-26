@@ -28,6 +28,20 @@ SOFTWARE.
 
 namespace rfl::capnproto::schema {
 
+Type Type::with_name(const std::string& _name) const {
+  const auto set_name = [&](const auto& _v) -> ReflectionType {
+    using T = std::remove_cvref_t<decltype(_v)>;
+    if constexpr (std::is_same<T, Struct>()) {
+      auto v_with_name = _v;
+      v_with_name.name = _name;
+      return v_with_name;
+    } else {
+      return _v;
+    }
+  };
+  return Type{.value = value.visit(set_name)};
+}
+
 std::ostream& operator<<(std::ostream& _os, const Type::Void&) {
   return _os << "Void";
 }
@@ -98,7 +112,7 @@ std::ostream& operator<<(std::ostream& _os, const Type::List& _l) {
 }
 
 std::ostream& operator<<(std::ostream& _os, const Type::Reference& _r) {
-  return _os << _r.type_name;
+  return _os;
 }
 
 std::ostream& operator<<(std::ostream& _os, const Type& _t) {

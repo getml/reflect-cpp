@@ -19,16 +19,16 @@
 
 namespace rfl::capnproto {
 
-std::string to_json_representation(
+std::string to_string_representation(
     const parsing::schema::Definition& internal_schema);
 
-/// Returns the Capnproto schema for a class.
+/// Returns the Cap'n Proto schema for a class.
 template <class T, class... Ps>
 Schema<T> to_schema() noexcept {
   const auto internal_schema =
       parsing::schema::make<Reader, Writer, T, Processors<Ps...>>();
-  const auto json_str = to_json_representation(internal_schema);
-  return std::move(Schema<T>::from_json(json_str).value());
+  const auto str = to_string_representation(internal_schema);
+  return Schema<T>::from_string(str).value();
 }
 }  // namespace rfl::capnproto
 

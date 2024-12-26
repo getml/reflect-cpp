@@ -67,6 +67,8 @@ struct Type {
 
   const auto& reflection() const { return value; }
 
+  Type with_name(const std::string& _name) const;
+
   ReflectionType value;
 };
 

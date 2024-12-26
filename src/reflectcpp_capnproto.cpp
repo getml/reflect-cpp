@@ -39,4 +39,4 @@ SOFTWARE.
 #include "rfl/capnproto/SchemaImpl.cpp"
 #include "rfl/capnproto/Type.cpp"
 #include "rfl/capnproto/Writer.cpp"
-
+#include "rfl/capnproto/to_schema.cpp"
