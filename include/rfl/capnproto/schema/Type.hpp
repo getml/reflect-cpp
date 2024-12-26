@@ -4,6 +4,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <sstream>
 #include <string>
 
 #include "../../Literal.hpp"
@@ -14,66 +15,45 @@
 namespace rfl::capnproto::schema {
 
 struct Type {
-  struct Null {
-    Literal<"null"> type;
-  };
+  struct Void {};
 
-  struct Boolean {
-    Literal<"boolean"> type;
-  };
+  struct Bool {};
 
-  struct Int {
-    Literal<"int"> type;
-  };
+  struct Int8 {};
 
-  struct Long {
-    Literal<"long"> type;
-  };
+  struct Int16 {};
 
-  struct Float {
-    Literal<"float"> type;
-  };
+  struct Int32 {};
 
-  struct Double {
-    Literal<"float"> type;
-  };
+  struct Int64 {};
 
-  struct Bytes {
-    Literal<"bytes"> type;
-  };
+  struct UInt8 {};
 
-  struct String {
-    Literal<"string"> type;
-  };
+  struct UInt16 {};
 
-  struct RecordField {
+  struct UInt32 {};
+
+  struct UInt64 {};
+
+  struct Float32 {};
+
+  struct Float64 {};
+
+  struct Data {};
+
+  struct Text {};
+
+  struct Struct {
     std::string name;
+    std::vector<std::pair<std::string, Type>> fields;
+  };
+
+  struct List {
     rfl::Ref<Type> type;
   };
 
-  struct Record {
-    Literal<"record"> type;
-    std::string name;
-    std::vector<RecordField> fields;
-    std::optional<std::string> doc;
-  };
-
-  struct Enum {
-    Literal<"enum"> type;
-    std::string name;
-    std::vector<std::string> symbols;
-  };
-
-  struct Array {
-    Literal<"array"> type;
-    rfl::Ref<Type> items;
-    Rename<"default", std::vector<std::string>> default_;
-  };
-
   struct Map {
-    Literal<"map"> type;
-    rfl::Ref<Type> values;
-    Rename<"default", std::map<std::string, std::string>> default_;
+    rfl::Ref<Type> type;
   };
 
   struct Reference {
@@ -81,12 +61,11 @@ struct Type {
   };
 
   using ReflectionType =
-      rfl::Variant<Null, Boolean, Int, Long, Float, Double, Bytes, String,
-                   Record, Enum, Array, Map, Reference, std::vector<Type>>;
+      rfl::Variant<Void, Bool, Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32,
+                   UInt64, Float32, Float64, Data, Text, Struct, List, Map,
+                   Reference>;
 
   const auto& reflection() const { return value; }
-
-  Type with_name(const std::string& _name) const;
 
   ReflectionType value;
 };
