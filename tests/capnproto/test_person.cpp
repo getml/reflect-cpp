@@ -27,7 +27,10 @@ struct Person {
 TEST(capnproto, test_person) {
   const auto schema =
       rfl::capnproto::Schema<Person>::from_string(PERSON_SCHEMA).value();
-  const auto homer = Person{.firstName = "Homer", .lastName = "Simpson"};
-  std::cout << rfl::capnproto::write(homer, schema).data() << std::endl;
+  const auto homer1 = Person{.firstName = "Homer", .lastName = "Simpson"};
+  const auto serialized1 = rfl::capnproto::write(homer1, schema);
+  const auto homer2 = rfl::capnproto::read<Person>(serialized1, schema).value();
+  const auto serialized2 = rfl::capnproto::write(homer2, schema);
+  EXPECT_EQ(serialized1, serialized2);
 }
 }  // namespace test_tutorial_example

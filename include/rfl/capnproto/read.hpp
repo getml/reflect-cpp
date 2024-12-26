@@ -1,7 +1,9 @@
 #ifndef RFL_CAPNPROTO_READ_HPP_
 #define RFL_CAPNPROTO_READ_HPP_
 
-#include <capnproto.h>
+#include <capnp/dynamic.h>
+#include <capnp/serialize-packed.h>
+#include <kj/io.h>
 
 #include <bit>
 #include <istream>
@@ -31,20 +33,15 @@ auto read(const InputVarType& _obj) {
 template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(
     const char* _bytes, const size_t _size, const Schema<T>& _schema) noexcept {
-  capnproto_reader_t capnproto_reader = capnproto_reader_memory(_bytes, _size);
-  capnproto_value_t root;
-  capnproto_generic_value_new(_schema.iface(), &root);
-  auto err = capnproto_value_read(capnproto_reader, &root);
-  if (err) {
-    capnproto_value_decref(&root);
-    capnproto_reader_free(capnproto_reader);
-    return Error(std::string("Could not read root value: ") +
-                 capnproto_strerror());
-  }
-  auto result = read<T, Ps...>(InputVarType{&root});
-  capnproto_value_decref(&root);
-  capnproto_reader_free(capnproto_reader);
-  return result;
+  const auto array_ptr = kj::ArrayPtr<const kj::byte>(
+      internal::ptr_cast<const kj::byte*>(_bytes), _size);
+  auto input_stream = kj::ArrayInputStream(array_ptr);
+  auto message_reader = capnp::PackedMessageReader(input_stream);
+  // TODO: Person is hardcoded.
+  const auto root_schema = _schema.value().getNested("Person");
+  const auto input_var = InputVarType{
+      message_reader.getRoot<capnp::DynamicStruct>(root_schema.asStruct())};
+  return read<T, Ps...>(input_var);
 }
 
 /// Parses an object from CAPNPROTO using reflection.
