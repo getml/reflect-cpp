@@ -23,9 +23,9 @@ namespace rfl::capnproto {
 std::string to_string_representation(
     const parsing::schema::Definition& internal_schema);
 
+/// This ensures that the schema is only generated once.
 template <class T, class... Ps>
 struct SchemaHolder {
-  rfl::Result<Schema<T>> schema_;
   static SchemaHolder<T, Ps...> make() noexcept {
     const auto internal_schema =
         parsing::schema::make<Reader, Writer, T,
@@ -33,6 +33,8 @@ struct SchemaHolder {
     const auto str = to_string_representation(internal_schema);
     return SchemaHolder<T, Ps...>{Schema<T>::from_string(str)};
   }
+
+  rfl::Result<Schema<T>> schema_;
 };
 
 template <class T, class... Ps>
