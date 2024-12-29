@@ -31,7 +31,6 @@ struct Reader {
   };
 
   struct CapNProtoInputUnion {
-    // TODO: Is this right?
     capnp::DynamicStruct::Reader val_;
   };
 

@@ -26,6 +26,8 @@ SOFTWARE.
 
 #include "rfl/capnproto/schema/Type.hpp"
 
+#include <type_traits>
+
 #include "rfl/internal/strings/to_pascal_case.hpp"
 
 namespace rfl::capnproto::schema {
@@ -96,15 +98,29 @@ std::ostream& operator<<(std::ostream& _os, const Type::Data&) {
   return _os << "Data";
 }
 
+std::ostream& operator<<(std::ostream& _os, const Type::Optional&) {
+  return _os << "TODO";
+}
+
 std::ostream& operator<<(std::ostream& _os, const Type::Text&) {
   return _os << "Text";
 }
 
 std::ostream& operator<<(std::ostream& _os, const Type::Struct& _s) {
   _os << "struct " << _s.name << " {" << std::endl;
-  for (size_t i = 0; i < _s.fields.size(); ++i) {
-    const auto& [name, type] = _s.fields[i];
-    _os << "  " << name << " @" << i << " :" << type << ";" << std::endl;
+  size_t ix = 0;
+  for (const auto& [name, type] : _s.fields) {
+    type.reflection().visit([&](const auto& _r) {
+      using R = std::remove_cvref_t<decltype(_r)>;
+      if constexpr (std::is_same<R, Type::Optional>()) {
+        _os << "  " << name << " :union {" << std::endl
+            << "    some @" << ix++ << " :" << *_r.type << ";" << std::endl
+            << "    none @" << ix++ << " :Void;" << std::endl
+            << "   }" << std::endl;
+      } else {
+        _os << "  " << name << " @" << ix++ << " :" << _r << ";" << std::endl;
+      }
+    });
   }
   return _os << "}" << std::endl;
 }

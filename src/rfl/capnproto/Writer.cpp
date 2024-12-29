@@ -45,9 +45,16 @@ Writer::OutputArrayType Writer::add_array_to_object(
 Writer::OutputArrayType Writer::add_array_to_union(
     const size_t _index, const size_t _size,
     OutputUnionType* _parent) const noexcept {
-  /*avro_value_t new_array;
-  avro_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_array);
-  return OutputArrayType{new_array};*/
+  const auto field_maybe = _parent->val_.getSchema().getFieldByDiscriminant(
+      static_cast<uint16_t>(_index));
+  return OutputArrayType{
+      field_maybe
+          .map([&](const auto& _field) {
+            return _parent->val_.init(_field, _size)
+                .template as<capnp::DynamicList>();
+          })
+          .orDefault(_parent->val_.init("indexOutOfRange", _size)
+                         .template as<capnp::DynamicList>())};
 }
 
 Writer::OutputMapType Writer::add_map_to_array(
@@ -135,10 +142,8 @@ return OutputUnionType{new_union};*/
 
 Writer::OutputUnionType Writer::add_union_to_object(
     const std::string_view& _name, OutputObjectType* _parent) const noexcept {
-  // TODO
-  /*avro_value_t new_union;
-avro_value_get_by_name(&_parent->val_, _name.data(), &new_union, nullptr);
-return OutputUnionType{new_union};*/
+  return OutputUnionType{
+      _parent->val_.get(_name.data()).as<capnp::DynamicStruct>()};
 }
 
 Writer::OutputUnionType Writer::add_union_to_union(
@@ -178,11 +183,13 @@ return OutputVarType{new_null};*/
 
 Writer::OutputVarType Writer::add_null_to_union(
     const size_t _index, OutputUnionType* _parent) const noexcept {
-  // TODO
-  /*avro_value_t new_null;
-avro_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_null);
-avro_value_set_null(&new_null);
-return OutputVarType{new_null};*/
+  const auto field_maybe = _parent->val_.getSchema().getFieldByDiscriminant(
+      static_cast<uint16_t>(_index));
+  field_maybe.map([&](const auto& _field) {
+    _parent->val_.set(_field, capnp::VOID);
+    return _field;
+  });
+  return OutputVarType{};
 }
 
 }  // namespace rfl::capnproto

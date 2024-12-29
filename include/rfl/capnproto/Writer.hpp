@@ -40,7 +40,6 @@ class Writer {
   };
 
   struct CapnProtoOutputUnion {
-    // TODO: Is this right?
     capnp::DynamicStruct::Builder val_;
   };
 
@@ -197,18 +196,31 @@ class Writer {
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
-
     return OutputVarType{};
   }
 
   template <class T>
   OutputVarType add_value_to_union(const size_t _index, const T& _var,
                                    OutputUnionType* _parent) const noexcept {
-    /*capnproto_value_t new_value;
-    capnproto_value_set_branch(&_parent->val_, static_cast<int>(_index),
-                               &new_value);
-    set_value(_var, &new_value);
-    return OutputVarType{new_value};*/
+    const auto field_maybe = _parent->val_.getSchema().getFieldByDiscriminant(
+        static_cast<uint16_t>(_index));
+    field_maybe.map([&](const auto& _field) {
+      if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
+        _parent->val_.set(_field, _var.c_str());
+
+      } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
+                           std::is_same<std::remove_cvref_t<T>, bool>()) {
+        _parent->val_.set(_field, _var);
+
+      } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
+        _parent->val_.set(_field, static_cast<std::int64_t>(_var));
+
+      } else {
+        static_assert(rfl::always_false_v<T>, "Unsupported type.");
+      }
+      return _field;
+    });
+    return OutputVarType{};
   }
 
   void end_array(OutputArrayType* _arr) const noexcept {}
