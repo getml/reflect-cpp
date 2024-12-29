@@ -80,14 +80,18 @@ class Reader {
       switch (type) {
         case capnp::DynamicValue::INT:
           return static_cast<T>(_var.val_.as<int64_t>());
+
         case capnp::DynamicValue::UINT:
           return static_cast<T>(_var.val_.as<uint64_t>());
+
         case capnp::DynamicValue::FLOAT:
           return static_cast<T>(_var.val_.as<double>());
+
+        default:
+          return rfl::Error(
+              "Could not cast to numeric value. The type must be integral, "
+              "float or double.");
       }
-      return rfl::Error(
-          "Could not cast to numeric value. The type must be integral, "
-          "float or double.");
 
       // TODO
       /*} else if constexpr (internal::is_literal_v<T>) {
