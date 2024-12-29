@@ -84,7 +84,7 @@ schema::Type type_to_capnproto_schema_type(
       size_t i = 1;
       for (const auto& type : _t.types_) {
         value.fields.push_back(std::make_pair(
-            std::string("option" + std::to_string(i++)),
+            std::string("Opt" + std::to_string(i++)),
             type_to_capnproto_schema_type(type, _definitions, _num_unnamed)));
       }
       return schema::Type{.value = value};
@@ -120,10 +120,10 @@ schema::Type type_to_capnproto_schema_type(
       return schema::Type{
           .value = schema::Type::Variant{
               .fields = std::vector(
-                  {std::make_pair(std::string("some"),
+                  {std::make_pair(std::string("Some"),
                                   type_to_capnproto_schema_type(
                                       *_t.type_, _definitions, _num_unnamed)),
-                   std::make_pair(std::string("none"),
+                   std::make_pair(std::string("None"),
                                   schema::Type{schema::Type::Void{}})})}};
 
     } else if constexpr (std::is_same<T, Type::Reference>()) {

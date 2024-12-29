@@ -38,6 +38,7 @@ namespace rfl::capnproto::schema {
 /// that we can also support complex, nested unions.
 void handle_fields_in_structs_or_variants(const auto& _struct_or_variant,
                                           const size_t _indent,
+                                          const std::string& _namespace,
                                           std::ostream* _os, size_t* _ix) {
   for (const auto& [name, type] : _struct_or_variant.fields) {
     // Because of the way Cap'n proto handles unions, we need a special case for
@@ -52,14 +53,19 @@ void handle_fields_in_structs_or_variants(const auto& _struct_or_variant,
           _r.fields[i].second.reflection().visit([&](const auto& _union_field) {
             using U = std::remove_cvref_t<decltype(_union_field)>;
             if constexpr (std::is_same<U, Type::Variant>()) {
-              *_os << std::string(_indent * 2 + 2, ' ') << _r.fields[i].first
+              *_os << std::string(_indent * 2 + 2, ' ')
+                   << internal::strings::to_camel_case(_namespace + name + "_" +
+                                                       _r.fields[i].first)
                    << " :union {" << std::endl;
-              handle_fields_in_structs_or_variants(_union_field, _indent + 2,
-                                                   _os, _ix);
+              handle_fields_in_structs_or_variants(
+                  _union_field, _indent + 2,
+                  _namespace + name + "_" + _r.fields[i].first + "_", _os, _ix);
               *_os << std::string(_indent * 2 + 2, ' ') << "}" << std::endl;
 
             } else {
-              *_os << std::string(_indent * 2 + 2, ' ') << _r.fields[i].first
+              *_os << std::string(_indent * 2 + 2, ' ')
+                   << internal::strings::to_camel_case(_namespace + name + "_" +
+                                                       _r.fields[i].first)
                    << " @" << (*_ix)++ << " :" << _union_field << ";"
                    << std::endl;
             }
@@ -69,8 +75,9 @@ void handle_fields_in_structs_or_variants(const auto& _struct_or_variant,
 
       } else {
         // Standard case: Non-union field.
-        *_os << std::string(_indent * 2, ' ') << name << " @" << (*_ix)++
-             << " :" << _r << ";" << std::endl;
+        *_os << std::string(_indent * 2, ' ')
+             << internal::strings::to_camel_case(_namespace + name) << " @"
+             << (*_ix)++ << " :" << _r << ";" << std::endl;
       }
     });
   }
@@ -149,7 +156,7 @@ std::ostream& operator<<(std::ostream& _os, const Type::Text&) {
 std::ostream& operator<<(std::ostream& _os, const Type::Struct& _s) {
   _os << "struct " << _s.name << " {" << std::endl;
   size_t ix = 0;
-  handle_fields_in_structs_or_variants(_s, 1, &_os, &ix);
+  handle_fields_in_structs_or_variants(_s, 1, "", &_os, &ix);
   return _os << "}" << std::endl;
 }
 
