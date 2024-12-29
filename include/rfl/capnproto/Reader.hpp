@@ -17,7 +17,8 @@
 
 namespace rfl::capnproto {
 
-struct Reader {
+class Reader {
+ public:
   struct CapNProtoInputArray {
     capnp::DynamicList::Reader val_;
   };
@@ -143,9 +144,6 @@ struct Reader {
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
     for (auto field : _obj.val_.getSchema().getFields()) {
-      if (!_obj.val_.has(field)) {
-        continue;
-      }
       _object_reader.read(field.getProto().getName().cStr(),
                           InputVarType{_obj.val_.get(field)});
     }
@@ -155,20 +153,13 @@ struct Reader {
   template <class VariantType, class UnionReaderType>
   rfl::Result<VariantType> read_union(
       const InputUnionType& _union) const noexcept {
-    // TODO
-    /*int disc = 0;
-    auto err = capnproto_value_get_discriminant(_union.val_, &disc);
-    if (err) {
+    const auto opt_pair = identify_discriminant(_union);
+    if (!opt_pair) {
       return Error("Could not get the discriminant.");
     }
-    capnproto_value_t value;
-    err = capnproto_value_get_current_branch(_union.val_, &value);
-    if (err) {
-      return Error("Could not cast the union type.");
-    }
-    return UnionReaderType::read(*this, static_cast<size_t>(disc),
-                                 InputVarType{&value});*/
-    return Error("TODO");
+    const auto& [field, disc] = *opt_pair;
+    return UnionReaderType::read(*this, disc,
+                                 InputVarType{_union.val_.get(field)});
   }
 
   template <class T>
@@ -180,6 +171,10 @@ struct Reader {
       return rfl::Error(e.what());
     }
   }
+
+ private:
+  std::optional<std::pair<capnp::StructSchema::Field, size_t>>
+  identify_discriminant(const InputUnionType& _union) const noexcept;
 };
 
 }  // namespace rfl::capnproto

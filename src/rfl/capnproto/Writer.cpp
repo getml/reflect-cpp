@@ -45,16 +45,9 @@ Writer::OutputArrayType Writer::add_array_to_object(
 Writer::OutputArrayType Writer::add_array_to_union(
     const size_t _index, const size_t _size,
     OutputUnionType* _parent) const noexcept {
-  const auto field_maybe = _parent->val_.getSchema().getFieldByDiscriminant(
-      static_cast<uint16_t>(_index));
+  const auto field = _parent->val_.getSchema().getFields()[_index];
   return OutputArrayType{
-      field_maybe
-          .map([&](const auto& _field) {
-            return _parent->val_.init(_field, _size)
-                .template as<capnp::DynamicList>();
-          })
-          .orDefault(_parent->val_.init("indexOutOfRange", _size)
-                         .template as<capnp::DynamicList>())};
+      _parent->val_.init(field, _size).template as<capnp::DynamicList>()};
 }
 
 Writer::OutputMapType Writer::add_map_to_array(
@@ -183,12 +176,8 @@ return OutputVarType{new_null};*/
 
 Writer::OutputVarType Writer::add_null_to_union(
     const size_t _index, OutputUnionType* _parent) const noexcept {
-  const auto field_maybe = _parent->val_.getSchema().getFieldByDiscriminant(
-      static_cast<uint16_t>(_index));
-  field_maybe.map([&](const auto& _field) {
-    _parent->val_.set(_field, capnp::VOID);
-    return _field;
-  });
+  const auto field = _parent->val_.getSchema().getFields()[_index];
+  _parent->val_.set(field, capnp::VOID);
   return OutputVarType{};
 }
 

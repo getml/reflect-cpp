@@ -111,18 +111,13 @@ schema::Type type_to_capnproto_schema_type(
       return schema::Type{.value = struct_schema};
 
     } else if constexpr (std::is_same<T, Type::Optional>()) {
-      // TODO
-      return schema::Type{.value = schema::Type::Void{}};
-      /*return schema::Type{
-          .value = std::vector<schema::Type>(
-              {type_to_capnproto_schema_type(*_t.type_, _definitions,
-                                              _num_unnamed),
-               schema::Type{schema::Type::Null{}}})};*/
-
+      return schema::Type{
+          .value = schema::Type::Optional{
+              .type = Ref<schema::Type>::make(type_to_capnproto_schema_type(
+                  *_t.type_, _definitions, _num_unnamed))}};
     } else if constexpr (std::is_same<T, Type::Reference>()) {
       return schema::Type{.value =
                               schema::Type::Reference{.type_name = _t.name_}};
-
     } else if constexpr (std::is_same<T, Type::StringMap>()) {
       // TODO
       return schema::Type{.value = schema::Type::Void{}};
@@ -131,23 +126,19 @@ schema::Type type_to_capnproto_schema_type(
               .values = Ref<schema::Type>::make(type_to_capnproto_schema_type(
                   *_t.value_type_, _definitions,
                   _num_unnamed))}};*/
-
     } else if constexpr (std::is_same<T, Type::Tuple>()) {
       return type_to_capnproto_schema_type(
           Type{parsing::schemaful::tuple_to_object(_t)}, _definitions,
           _num_unnamed);
-
     } else if constexpr (std::is_same<T, Type::TypedArray>()) {
       return schema::Type{
           .value = schema::Type::List{
               .type = Ref<schema::Type>::make(type_to_capnproto_schema_type(
                   *_t.type_, _definitions, _num_unnamed))}};
-
     } else if constexpr (std::is_same<T, Type::Validated>()) {
       // Cap'n Proto knows no validation.
       return type_to_capnproto_schema_type(*_t.type_, _definitions,
                                            _num_unnamed);
-
     } else {
       static_assert(rfl::always_false_v<T>, "Not all cases were covered.");
     }

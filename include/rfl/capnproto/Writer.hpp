@@ -202,24 +202,20 @@ class Writer {
   template <class T>
   OutputVarType add_value_to_union(const size_t _index, const T& _var,
                                    OutputUnionType* _parent) const noexcept {
-    const auto field_maybe = _parent->val_.getSchema().getFieldByDiscriminant(
-        static_cast<uint16_t>(_index));
-    field_maybe.map([&](const auto& _field) {
-      if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-        _parent->val_.set(_field, _var.c_str());
+    const auto field = _parent->val_.getSchema().getFields()[_index];
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
+      _parent->val_.set(field, _var.c_str());
 
-      } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
-                           std::is_same<std::remove_cvref_t<T>, bool>()) {
-        _parent->val_.set(_field, _var);
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
+                         std::is_same<std::remove_cvref_t<T>, bool>()) {
+      _parent->val_.set(field, _var);
 
-      } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-        _parent->val_.set(_field, static_cast<std::int64_t>(_var));
+    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
+      _parent->val_.set(field, static_cast<std::int64_t>(_var));
 
-      } else {
-        static_assert(rfl::always_false_v<T>, "Unsupported type.");
-      }
-      return _field;
-    });
+    } else {
+      static_assert(rfl::always_false_v<T>, "Unsupported type.");
+    }
     return OutputVarType{};
   }
 
@@ -228,34 +224,6 @@ class Writer {
   void end_map(OutputMapType* _obj) const noexcept {}
 
   void end_object(OutputObjectType* _obj) const noexcept {}
-
- private:
-  /*template <class T>
-  void set_value(const T& _var, capnproto_value_t* _val) const noexcept {
-    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      capnproto_value_set_string_len(_val, _var.c_str(), _var.size() + 1);
-
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
-      auto var = _var;
-      capnproto_value_set_bytes(_val, var.data(), var.size() + 1);
-
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
-      capnproto_value_set_boolean(_val, _var);
-
-    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-      capnproto_value_set_double(_val, static_cast<double>(_var));
-
-    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      capnproto_value_set_long(_val, static_cast<std::int64_t>(_var));
-
-    } else if constexpr (internal::is_literal_v<T>) {
-      capnproto_value_set_enum(_val, static_cast<int>(_var.value()));
-
-    } else {
-      static_assert(rfl::always_false_v<T>, "Unsupported type.");
-    }
-  }*/
 
  private:
   capnp::DynamicStruct::Builder* root_;
