@@ -117,6 +117,13 @@ std::ostream& operator<<(std::ostream& _os, const Type::Struct& _s) {
             << "    some @" << ix++ << " :" << *_r.type << ";" << std::endl
             << "    none @" << ix++ << " :Void;" << std::endl
             << "   }" << std::endl;
+      } else if constexpr (std::is_same<R, Type::Variant>()) {
+        _os << "  " << name << " :union {" << std::endl;
+        for (size_t i = 0; i < _r.types.size(); ++i) {
+          _os << "    option" << i + 1 << " @" << ix++ << " :" << _r.types[i]
+              << ";" << std::endl;
+        }
+        _os << "   }" << std::endl;
       } else {
         _os << "  " << name << " @" << ix++ << " :" << _r << ";" << std::endl;
       }
@@ -127,6 +134,10 @@ std::ostream& operator<<(std::ostream& _os, const Type::Struct& _s) {
 
 std::ostream& operator<<(std::ostream& _os, const Type::List& _l) {
   return _os << "List(" << *_l.type << ")";
+}
+
+std::ostream& operator<<(std::ostream& _os, const Type::Variant& _v) {
+  return _os << "TODO";
 }
 
 std::ostream& operator<<(std::ostream& _os, const Type::Reference& _r) {

@@ -108,7 +108,7 @@ Writer::OutputObjectType Writer::add_object_to_union(
     OutputUnionType* _parent) const noexcept {
   const auto field = _parent->val_.getSchema().getFields()[_index];
   return OutputObjectType{
-      _parent->val_.get(field).template as<capnp::DynamicStruct>()};
+      _parent->val_.init(field).template as<capnp::DynamicStruct>()};
 }
 
 Writer::OutputUnionType Writer::add_union_to_array(
@@ -135,7 +135,7 @@ Writer::OutputUnionType Writer::add_union_to_union(
     const size_t _index, OutputUnionType* _parent) const noexcept {
   const auto field = _parent->val_.getSchema().getFields()[_index];
   return OutputUnionType{
-      _parent->val_.get(field).template as<capnp::DynamicStruct>()};
+      _parent->val_.init(field).template as<capnp::DynamicStruct>()};
 }
 
 Writer::OutputVarType Writer::add_null_to_array(

@@ -41,16 +41,7 @@ struct Type {
 
   struct Data {};
 
-  struct Optional {
-    rfl::Ref<Type> type;
-  };
-
   struct Text {};
-
-  struct Struct {
-    std::string name;
-    std::vector<std::pair<std::string, Type>> fields;
-  };
 
   struct List {
     rfl::Ref<Type> type;
@@ -60,14 +51,27 @@ struct Type {
     rfl::Ref<Type> type;
   };
 
+  struct Optional {
+    rfl::Ref<Type> type;
+  };
+
   struct Reference {
     std::string type_name;
   };
 
+  struct Struct {
+    std::string name;
+    std::vector<std::pair<std::string, Type>> fields;
+  };
+
+  struct Variant {
+    std::vector<Type> types;
+  };
+
   using ReflectionType =
       rfl::Variant<Void, Bool, Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32,
-                   UInt64, Float32, Float64, Data, Text, Struct, List, /*Map,*/
-                   Optional, Reference>;
+                   UInt64, Float32, Float64, Data, Text, List,
+                   /*Map,*/ Optional, Reference, Struct, Variant>;
 
   const auto& reflection() const { return value; }
 

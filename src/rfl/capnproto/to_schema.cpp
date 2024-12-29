@@ -80,8 +80,12 @@ schema::Type type_to_capnproto_schema_type(
       return schema::Type{.value = schema::Type::Text{}};
 
     } else if constexpr (std::is_same<T, Type::AnyOf>()) {
-      // TODO
-      return schema::Type{.value = schema::Type::Void{}};
+      auto value = schema::Type::Variant{};
+      for (const auto& type : _t.types_) {
+        value.types.push_back(
+            type_to_capnproto_schema_type(type, _definitions, _num_unnamed));
+      }
+      return schema::Type{.value = value};
 
     } else if constexpr (std::is_same<T, Type::Description>()) {
       return type_to_capnproto_schema_type(*_t.type_, _definitions,
@@ -115,9 +119,11 @@ schema::Type type_to_capnproto_schema_type(
           .value = schema::Type::Optional{
               .type = Ref<schema::Type>::make(type_to_capnproto_schema_type(
                   *_t.type_, _definitions, _num_unnamed))}};
+
     } else if constexpr (std::is_same<T, Type::Reference>()) {
       return schema::Type{.value =
                               schema::Type::Reference{.type_name = _t.name_}};
+
     } else if constexpr (std::is_same<T, Type::StringMap>()) {
       // TODO
       return schema::Type{.value = schema::Type::Void{}};
@@ -126,15 +132,18 @@ schema::Type type_to_capnproto_schema_type(
               .values = Ref<schema::Type>::make(type_to_capnproto_schema_type(
                   *_t.value_type_, _definitions,
                   _num_unnamed))}};*/
+
     } else if constexpr (std::is_same<T, Type::Tuple>()) {
       return type_to_capnproto_schema_type(
           Type{parsing::schemaful::tuple_to_object(_t)}, _definitions,
           _num_unnamed);
+
     } else if constexpr (std::is_same<T, Type::TypedArray>()) {
       return schema::Type{
           .value = schema::Type::List{
               .type = Ref<schema::Type>::make(type_to_capnproto_schema_type(
                   *_t.type_, _definitions, _num_unnamed))}};
+
     } else if constexpr (std::is_same<T, Type::Validated>()) {
       // Cap'n Proto knows no validation.
       return type_to_capnproto_schema_type(*_t.type_, _definitions,
