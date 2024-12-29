@@ -81,9 +81,11 @@ schema::Type type_to_capnproto_schema_type(
 
     } else if constexpr (std::is_same<T, Type::AnyOf>()) {
       auto value = schema::Type::Variant{};
+      size_t i = 1;
       for (const auto& type : _t.types_) {
-        value.types.push_back(
-            type_to_capnproto_schema_type(type, _definitions, _num_unnamed));
+        value.fields.push_back(std::make_pair(
+            std::string("option" + std::to_string(i++)),
+            type_to_capnproto_schema_type(type, _definitions, _num_unnamed)));
       }
       return schema::Type{.value = value};
 
@@ -116,14 +118,17 @@ schema::Type type_to_capnproto_schema_type(
 
     } else if constexpr (std::is_same<T, Type::Optional>()) {
       return schema::Type{
-          .value = schema::Type::Optional{
-              .type = Ref<schema::Type>::make(type_to_capnproto_schema_type(
-                  *_t.type_, _definitions, _num_unnamed))}};
+          .value = schema::Type::Variant{
+              .fields = std::vector(
+                  {std::make_pair(std::string("some"),
+                                  type_to_capnproto_schema_type(
+                                      *_t.type_, _definitions, _num_unnamed)),
+                   std::make_pair(std::string("none"),
+                                  schema::Type{schema::Type::Void{}})})}};
 
     } else if constexpr (std::is_same<T, Type::Reference>()) {
       return schema::Type{.value =
                               schema::Type::Reference{.type_name = _t.name_}};
-
     } else if constexpr (std::is_same<T, Type::StringMap>()) {
       // TODO
       return schema::Type{.value = schema::Type::Void{}};
@@ -132,7 +137,6 @@ schema::Type type_to_capnproto_schema_type(
               .values = Ref<schema::Type>::make(type_to_capnproto_schema_type(
                   *_t.value_type_, _definitions,
                   _num_unnamed))}};*/
-
     } else if constexpr (std::is_same<T, Type::Tuple>()) {
       return type_to_capnproto_schema_type(
           Type{parsing::schemaful::tuple_to_object(_t)}, _definitions,

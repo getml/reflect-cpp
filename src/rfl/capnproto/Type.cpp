@@ -26,11 +26,54 @@ SOFTWARE.
 
 #include "rfl/capnproto/schema/Type.hpp"
 
+#include <functional>
 #include <type_traits>
 
 #include "rfl/internal/strings/to_pascal_case.hpp"
 
 namespace rfl::capnproto::schema {
+
+/// Cap'n proto has a somewhat weird way of handling union fields, please refer
+/// to the schema for further explanation. This is a workaround that ensures
+/// that we can also support complex, nested unions.
+void handle_fields_in_structs(const auto& _struct_or_variant,
+                              const size_t _indent, std::ostream* _os,
+                              size_t* _ix) {
+  for (const auto& [name, type] : _struct_or_variant.fields) {
+    // Because of the way Cap'n proto handles unions, we need a special case for
+    // them.
+    type.reflection().visit([&](const auto& _r) {
+      using R = std::remove_cvref_t<decltype(_r)>;
+      if constexpr (std::is_same<R, Type::Variant>()) {
+        // Special case: Union field.
+        *_os << std::string(_indent * 2, ' ') << name << " :union {"
+             << std::endl;
+        for (size_t i = 0; i < _r.fields.size(); ++i) {
+          _r.fields[i].second.reflection().visit([&](const auto& _union_field) {
+            using U = std::remove_cvref_t<decltype(_union_field)>;
+            if constexpr (std::is_same<U, Type::Variant>()) {
+              *_os << std::string(_indent * 2 + 2, ' ') << _r.fields[i].first
+                   << " :union {" << std::endl;
+              handle_fields_in_structs(_union_field, _indent + 2, _os, _ix);
+              *_os << std::string(_indent * 2 + 2, ' ') << "}" << std::endl;
+
+            } else {
+              *_os << std::string(_indent * 2 + 2, ' ') << _r.fields[i].first
+                   << " @" << (*_ix)++ << " :" << _union_field << ";"
+                   << std::endl;
+            }
+          });
+        }
+        *_os << std::string(_indent * 2, ' ') << "}" << std::endl;
+
+      } else {
+        // Standard case: Non-union field.
+        *_os << std::string(_indent * 2, ' ') << name << " @" << (*_ix)++
+             << " :" << _r << ";" << std::endl;
+      }
+    });
+  }
+}
 
 Type Type::with_name(const std::string& _name) const {
   const auto set_name = [&](const auto& _v) -> ReflectionType {
@@ -98,10 +141,6 @@ std::ostream& operator<<(std::ostream& _os, const Type::Data&) {
   return _os << "Data";
 }
 
-std::ostream& operator<<(std::ostream& _os, const Type::Optional&) {
-  return _os << "TODO";
-}
-
 std::ostream& operator<<(std::ostream& _os, const Type::Text&) {
   return _os << "Text";
 }
@@ -109,26 +148,7 @@ std::ostream& operator<<(std::ostream& _os, const Type::Text&) {
 std::ostream& operator<<(std::ostream& _os, const Type::Struct& _s) {
   _os << "struct " << _s.name << " {" << std::endl;
   size_t ix = 0;
-  for (const auto& [name, type] : _s.fields) {
-    type.reflection().visit([&](const auto& _r) {
-      using R = std::remove_cvref_t<decltype(_r)>;
-      if constexpr (std::is_same<R, Type::Optional>()) {
-        _os << "  " << name << " :union {" << std::endl
-            << "    some @" << ix++ << " :" << *_r.type << ";" << std::endl
-            << "    none @" << ix++ << " :Void;" << std::endl
-            << "   }" << std::endl;
-      } else if constexpr (std::is_same<R, Type::Variant>()) {
-        _os << "  " << name << " :union {" << std::endl;
-        for (size_t i = 0; i < _r.types.size(); ++i) {
-          _os << "    option" << i + 1 << " @" << ix++ << " :" << _r.types[i]
-              << ";" << std::endl;
-        }
-        _os << "   }" << std::endl;
-      } else {
-        _os << "  " << name << " @" << ix++ << " :" << _r << ";" << std::endl;
-      }
-    });
-  }
+  handle_fields_in_structs(_s, 1, &_os, &ix);
   return _os << "}" << std::endl;
 }
 
