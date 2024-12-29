@@ -161,11 +161,20 @@ class Writer {
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
                                    OutputArrayType* _parent) const noexcept {
-    // TODO
-    /*capnproto_value_t new_value;
-  capnproto_value_append(&_parent->val_, &new_value, nullptr);
-  set_value(_var, &new_value);
-  return OutputVarType{new_value};*/
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
+      _parent->val_.set(_parent->ix_++, _var.c_str());
+
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
+                         std::is_same<std::remove_cvref_t<T>, bool>()) {
+      _parent->val_.set(_parent->ix_++, _var);
+
+    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
+      _parent->val_.set(_parent->ix_++, static_cast<std::int64_t>(_var));
+
+    } else {
+      static_assert(rfl::always_false_v<T>, "Unsupported type.");
+    }
+    return OutputVarType{};
   }
 
   template <class T>

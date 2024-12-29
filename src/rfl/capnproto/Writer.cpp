@@ -20,10 +20,8 @@ Writer::OutputObjectType Writer::object_as_root(
 
 Writer::OutputArrayType Writer::add_array_to_array(
     const size_t _size, OutputArrayType* _parent) const noexcept {
-  // TODO
-  /*avro_value_t new_array;
-avro_value_append(&_parent->val_, &new_array, nullptr);
-return OutputArrayType{new_array};*/
+  return OutputArrayType{
+      _parent->val_.init(_parent->ix_++, _size).as<capnp::DynamicList>()};
 }
 
 Writer::OutputArrayType Writer::add_array_to_map(
@@ -101,28 +99,22 @@ Writer::OutputObjectType Writer::add_object_to_map(
 Writer::OutputObjectType Writer::add_object_to_object(
     const std::string_view& _name, const size_t _size,
     OutputObjectType* _parent) const noexcept {
-  // TODO
-  /*avro_value_t new_object;
-  avro_value_get_by_name(&_parent->val_, _name.data(), &new_object, nullptr);
-  return OutputObjectType{new_object};*/
+  return OutputObjectType{
+      _parent->val_.get(_name.data()).as<capnp::DynamicStruct>()};
 }
 
 Writer::OutputObjectType Writer::add_object_to_union(
     const size_t _index, const size_t _size,
     OutputUnionType* _parent) const noexcept {
-  // TODO
-  /*avro_value_t new_object;
-avro_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_object);
-return OutputObjectType{new_object};
-*/
+  const auto field = _parent->val_.getSchema().getFields()[_index];
+  return OutputObjectType{
+      _parent->val_.get(field).template as<capnp::DynamicStruct>()};
 }
 
 Writer::OutputUnionType Writer::add_union_to_array(
     OutputArrayType* _parent) const noexcept {
-  // TODO
-  /*avro_value_t new_union;
-  avro_value_append(&_parent->val_, &new_union, nullptr);
-  return OutputUnionType{new_union};*/
+  return OutputUnionType{
+      _parent->val_[_parent->ix_++].as<capnp::DynamicStruct>()};
 }
 
 Writer::OutputUnionType Writer::add_union_to_map(
@@ -141,19 +133,15 @@ Writer::OutputUnionType Writer::add_union_to_object(
 
 Writer::OutputUnionType Writer::add_union_to_union(
     const size_t _index, OutputUnionType* _parent) const noexcept {
-  // TODO
-  /*avro_value_t new_union;
-avro_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_union);
-return OutputUnionType{new_union};*/
+  const auto field = _parent->val_.getSchema().getFields()[_index];
+  return OutputUnionType{
+      _parent->val_.get(field).template as<capnp::DynamicStruct>()};
 }
 
 Writer::OutputVarType Writer::add_null_to_array(
     OutputArrayType* _parent) const noexcept {
-  // TODO
-  /*avro_value_t new_null;
-avro_value_append(&_parent->val_, &new_null, nullptr);
-avro_value_set_null(&new_null);
-return OutputVarType{new_null};*/
+  _parent->val_.set(_parent->ix_++, capnp::VOID);
+  return OutputVarType{};
 }
 
 Writer::OutputVarType Writer::add_null_to_map(
@@ -167,11 +155,8 @@ return OutputVarType{new_null};*/
 
 Writer::OutputVarType Writer::add_null_to_object(
     const std::string_view& _name, OutputObjectType* _parent) const noexcept {
-  // TODO
-  /*avro_value_t new_null;
-avro_value_get_by_name(&_parent->val_, _name.data(), &new_null, nullptr);
-avro_value_set_null(&new_null);
-return OutputVarType{new_null};*/
+  _parent->val_.set(_name.data(), capnp::VOID);
+  return OutputVarType{};
 }
 
 Writer::OutputVarType Writer::add_null_to_union(
