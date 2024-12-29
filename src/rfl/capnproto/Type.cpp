@@ -36,9 +36,9 @@ namespace rfl::capnproto::schema {
 /// Cap'n proto has a somewhat weird way of handling union fields, please refer
 /// to the schema for further explanation. This is a workaround that ensures
 /// that we can also support complex, nested unions.
-void handle_fields_in_structs(const auto& _struct_or_variant,
-                              const size_t _indent, std::ostream* _os,
-                              size_t* _ix) {
+void handle_fields_in_structs_or_variants(const auto& _struct_or_variant,
+                                          const size_t _indent,
+                                          std::ostream* _os, size_t* _ix) {
   for (const auto& [name, type] : _struct_or_variant.fields) {
     // Because of the way Cap'n proto handles unions, we need a special case for
     // them.
@@ -54,7 +54,8 @@ void handle_fields_in_structs(const auto& _struct_or_variant,
             if constexpr (std::is_same<U, Type::Variant>()) {
               *_os << std::string(_indent * 2 + 2, ' ') << _r.fields[i].first
                    << " :union {" << std::endl;
-              handle_fields_in_structs(_union_field, _indent + 2, _os, _ix);
+              handle_fields_in_structs_or_variants(_union_field, _indent + 2,
+                                                   _os, _ix);
               *_os << std::string(_indent * 2 + 2, ' ') << "}" << std::endl;
 
             } else {
@@ -148,7 +149,7 @@ std::ostream& operator<<(std::ostream& _os, const Type::Text&) {
 std::ostream& operator<<(std::ostream& _os, const Type::Struct& _s) {
   _os << "struct " << _s.name << " {" << std::endl;
   size_t ix = 0;
-  handle_fields_in_structs(_s, 1, &_os, &ix);
+  handle_fields_in_structs_or_variants(_s, 1, &_os, &ix);
   return _os << "}" << std::endl;
 }
 
