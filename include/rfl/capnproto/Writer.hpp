@@ -28,6 +28,7 @@ class Writer {
  public:
   struct CapnProtoOutputArray {
     capnp::DynamicList::Builder val_;
+    size_t ix_ = 0;
   };
 
   struct CapnProtoOutputMap {

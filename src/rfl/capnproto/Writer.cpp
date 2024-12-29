@@ -85,10 +85,8 @@ return OutputMapType{new_map};*/
 
 Writer::OutputObjectType Writer::add_object_to_array(
     const size_t _size, OutputArrayType* _parent) const noexcept {
-  // TODO
-  /*avro_value_t new_object;
-avro_value_append(&_parent->val_, &new_object, nullptr);
-return OutputObjectType{new_object};*/
+  return OutputObjectType{
+      _parent->val_[_parent->ix_++].as<capnp::DynamicStruct>()};
 }
 
 Writer::OutputObjectType Writer::add_object_to_map(
