@@ -18,7 +18,7 @@
 
 #include "../SnakeCaseToCamelCase.hpp"
 #include "../internal/ptr_cast.hpp"
-#include "../internal/strings/to_pascal_case.hpp"
+#include "../internal/strings/strings.hpp"
 #include "../parsing/Parent.hpp"
 #include "../parsing/make_type_name.hpp"
 #include "Parser.hpp"

@@ -29,7 +29,7 @@ SOFTWARE.
 #include <functional>
 #include <type_traits>
 
-#include "rfl/internal/strings/to_pascal_case.hpp"
+#include "rfl/internal/strings/strings.hpp"
 
 namespace rfl::capnproto::schema {
 

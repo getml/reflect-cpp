@@ -12,7 +12,7 @@
 
 #include "../Processors.hpp"
 #include "../SnakeCaseToCamelCase.hpp"
-#include "../internal/strings/to_pascal_case.hpp"
+#include "../internal/strings/strings.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
 #include "../parsing/make_type_name.hpp"
 #include "Parser.hpp"

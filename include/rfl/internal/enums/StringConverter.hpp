@@ -8,8 +8,7 @@
 #include <type_traits>
 
 #include "../../Result.hpp"
-#include "../../internal/strings/join.hpp"
-#include "../../internal/strings/split.hpp"
+#include "../../internal/strings/strings.hpp"
 #include "../../type_name_t.hpp"
 #include "get_enum_names.hpp"
 #include "is_flag_enum.hpp"

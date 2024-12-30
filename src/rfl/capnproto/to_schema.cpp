@@ -29,8 +29,7 @@ SOFTWARE.
 #include <sstream>
 
 #include "rfl/capnproto/schema/Type.hpp"
-#include "rfl/internal/strings/split.hpp"
-#include "rfl/internal/strings/to_pascal_case.hpp"
+#include "rfl/internal/strings/strings.hpp"
 #include "rfl/json.hpp"
 #include "rfl/parsing/schemaful/tuple_to_object.hpp"
 
