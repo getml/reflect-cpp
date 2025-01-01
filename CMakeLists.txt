@@ -49,12 +49,13 @@ if (REFLECTCPP_USE_VCPKG)
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
 endif ()
 
-project(reflectcpp LANGUAGES CXX)
+project(reflectcpp VERSION 0.16.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 
 if (REFLECTCPP_BUILD_SHARED)
     add_library(reflectcpp SHARED)
+    set_target_properties(reflectcpp PROPERTIES SOVERSION ${PROJECT_VERSION})
 else()
     add_library(reflectcpp STATIC)
 endif()
