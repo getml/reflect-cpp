@@ -1,6 +1,7 @@
 #include <iostream>
 #include <map>
 #include <rfl.hpp>
+#include <rfl/json.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
@@ -22,8 +23,6 @@ TEST(capnproto, test_map) {
   const auto homer =
       Person{.first_name = "Homer", .children = std::move(children)};
 
-  rfl::capnproto::to_schema<Person>();
-
-  // write_and_read(homer);
+  write_and_read(homer);
 }
 }  // namespace test_map

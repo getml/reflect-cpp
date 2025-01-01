@@ -24,7 +24,7 @@ class Reader {
   };
 
   struct CapNProtoInputMap {
-    capnp::DynamicList::Reader val_;
+    capnp::DynamicStruct::Reader val_;
   };
 
   struct CapNProtoInputObject {
@@ -132,16 +132,17 @@ class Reader {
   template <class MapReader>
   std::optional<Error> read_map(const MapReader& _map_reader,
                                 const InputMapType& _map) const noexcept {
-    // TODO
-    /*size_t size = 0;
-  capnproto_value_get_size(_map.val_, &size);
-  for (size_t ix = 0; ix < size; ++ix) {
-    capnproto_value_t element;
-    const char* key = nullptr;
-    capnproto_value_get_by_index(_map.val_, ix, &element, &key);
-    _map_reader.read(std::string_view(key), InputVarType{&element});
-  }*/
-    return std::nullopt;
+    try {
+      const auto entries = _map.val_.get("entries").as<capnp::DynamicList>();
+      for (auto entry : entries) {
+        auto s = entry.template as<capnp::DynamicStruct>();
+        const char* key = s.get("key").as<capnp::Text>().cStr();
+        _map_reader.read(std::string_view(key), InputVarType{s.get("value")});
+      }
+      return std::nullopt;
+    } catch (std::exception& e) {
+      return Error{e.what()};
+    }
   }
 
   template <class ObjectReader>

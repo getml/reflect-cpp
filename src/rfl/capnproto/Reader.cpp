@@ -41,10 +41,10 @@ rfl::Result<Reader::InputObjectType> Reader::to_object(
 
 rfl::Result<Reader::InputMapType> Reader::to_map(
     const InputVarType& _var) const noexcept {
-  if (_var.val_.getType() != capnp::DynamicValue::LIST) {
-    return Error("Could not cast to a list.");
+  if (_var.val_.getType() != capnp::DynamicValue::STRUCT) {
+    return Error("Could not cast to a map.");
   }
-  return InputMapType{_var.val_.as<capnp::DynamicList>()};
+  return InputMapType{_var.val_.as<capnp::DynamicStruct>()};
 }
 
 rfl::Result<Reader::InputUnionType> Reader::to_union(

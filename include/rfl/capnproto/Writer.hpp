@@ -33,6 +33,7 @@ class Writer {
 
   struct CapnProtoOutputMap {
     capnp::DynamicStruct::Builder val_;
+    size_t ix_ = 0;
   };
 
   struct CapnProtoOutputObject {
