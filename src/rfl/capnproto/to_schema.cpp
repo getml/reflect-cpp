@@ -26,7 +26,10 @@ SOFTWARE.
 
 #include "rfl/capnproto/to_schema.hpp"
 
+#include <iostream>
+#include <map>
 #include <sstream>
+#include <string>
 
 #include "rfl/capnproto/schema/Type.hpp"
 #include "rfl/internal/strings/strings.hpp"
@@ -34,6 +37,32 @@ SOFTWARE.
 #include "rfl/parsing/schemaful/tuple_to_object.hpp"
 
 namespace rfl::capnproto {
+
+constexpr bool PARENT_IS_STRUCT = true;
+constexpr bool PARENT_IS_NOT_STRUCT = false;
+
+struct CapnProtoTypes {
+  std::map<std::string, schema::Type> structs_;
+  std::map<std::string, schema::Type> maps_;
+  std::map<std::string, schema::Type> unions_;
+};
+
+std::ostream& operator<<(std::ostream& _os,
+                         const std::map<std::string, schema::Type>& _map) {
+  for (const auto& [name, type] : _map) {
+    _os << type.with_name(internal::strings::to_pascal_case(name)) << std::endl
+        << std::endl;
+  }
+  return _os;
+}
+
+std::ostream& operator<<(std::ostream& _os, const CapnProtoTypes& _cnp_types) {
+  // TODO: ID is hardcoded.
+  _os << "@0xdbb9ad1f14bf0b36;" << std::endl
+      << std::endl
+      << _cnp_types.structs_ << _cnp_types.maps_ << _cnp_types.unions_;
+  return _os;
+}
 
 inline bool is_named_type(const parsing::schema::Type& _type) {
   return _type.variant_.visit([&](const auto& _v) -> bool {
@@ -46,7 +75,56 @@ inline bool is_named_type(const parsing::schema::Type& _type) {
 schema::Type type_to_capnproto_schema_type(
     const parsing::schema::Type& _type,
     const std::map<std::string, parsing::schema::Type>& _definitions,
-    size_t* _num_unnamed) {
+    const bool _parent_is_struct, CapnProtoTypes* _cnp_types);
+
+schema::Type any_of_to_capnproto_schema_type(
+    const parsing::schema::Type::AnyOf& _any_of,
+    const std::map<std::string, parsing::schema::Type>& _definitions,
+    const bool _parent_is_struct, CapnProtoTypes* _cnp_types) {
+  auto value = schema::Type::Variant{};
+  size_t i = 1;
+  for (const auto& type : _any_of.types_) {
+    value.fields.push_back(
+        std::make_pair(std::string("Opt" + std::to_string(i++)),
+                       type_to_capnproto_schema_type(
+                           type, _definitions, _parent_is_struct, _cnp_types)));
+  }
+  if (_parent_is_struct) {
+    return schema::Type{.value = value};
+  } else {
+    const auto name =
+        std::string("Union") + std::to_string(_cnp_types->unions_.size() + 1);
+    _cnp_types->unions_[name] = schema::Type{.value = value};
+    return schema::Type{.value = schema::Type::Reference{name}};
+  }
+}
+
+schema::Type optional_to_capnproto_schema_type(
+    const parsing::schema::Type::Optional& _optional,
+    const std::map<std::string, parsing::schema::Type>& _definitions,
+    const bool _parent_is_struct, CapnProtoTypes* _cnp_types) {
+  const auto value = schema::Type::Variant{
+      .fields =
+          std::vector({std::make_pair(std::string("Some"),
+                                      type_to_capnproto_schema_type(
+                                          *_optional.type_, _definitions,
+                                          _parent_is_struct, _cnp_types)),
+                       std::make_pair(std::string("None"),
+                                      schema::Type{schema::Type::Void{}})})};
+  if (_parent_is_struct) {
+    return schema::Type{.value = value};
+  } else {
+    const auto name =
+        std::string("Union") + std::to_string(_cnp_types->unions_.size() + 1);
+    _cnp_types->unions_[name] = schema::Type{.value = value};
+    return schema::Type{.value = schema::Type::Reference{name}};
+  }
+}
+
+schema::Type type_to_capnproto_schema_type(
+    const parsing::schema::Type& _type,
+    const std::map<std::string, parsing::schema::Type>& _definitions,
+    const bool _parent_is_struct, CapnProtoTypes* _cnp_types) {
   auto handle_variant = [&](const auto& _t) -> schema::Type {
     using T = std::remove_cvref_t<decltype(_t)>;
     using Type = parsing::schema::Type;
@@ -79,51 +157,39 @@ schema::Type type_to_capnproto_schema_type(
       return schema::Type{.value = schema::Type::Text{}};
 
     } else if constexpr (std::is_same<T, Type::AnyOf>()) {
-      auto value = schema::Type::Variant{};
-      size_t i = 1;
-      for (const auto& type : _t.types_) {
-        value.fields.push_back(std::make_pair(
-            std::string("Opt" + std::to_string(i++)),
-            type_to_capnproto_schema_type(type, _definitions, _num_unnamed)));
-      }
-      return schema::Type{.value = value};
+      return any_of_to_capnproto_schema_type(_t, _definitions,
+                                             _parent_is_struct, _cnp_types);
 
     } else if constexpr (std::is_same<T, Type::Description>()) {
       return type_to_capnproto_schema_type(*_t.type_, _definitions,
-                                           _num_unnamed);
+                                           _parent_is_struct, _cnp_types);
 
     } else if constexpr (std::is_same<T, Type::FixedSizeTypedArray>()) {
       return schema::Type{
           .value = schema::Type::List{
               .type = Ref<schema::Type>::make(type_to_capnproto_schema_type(
-                  *_t.type_, _definitions, _num_unnamed))}};
+                  *_t.type_, _definitions, PARENT_IS_NOT_STRUCT, _cnp_types))}};
 
     } else if constexpr (std::is_same<T, Type::Literal>()) {
       // TODO
       return schema::Type{.value = schema::Type::Void{}};
       /*return schema::Type{
           .value = schema::Type::Enum{.name = std::string("unnamed_") +
-                                              std::to_string(++(*_num_unnamed)),
+                                              std::to_string(++(*_cnp_types)),
                                       .symbols = _t.values_}};*/
 
     } else if constexpr (std::is_same<T, Type::Object>()) {
-      auto struct_schema = schema::Type::Struct{
-          .name = std::string("Unnamed") + std::to_string(++(*_num_unnamed))};
+      schema::Type::Struct struct_schema;
       for (const auto& [k, v] : _t.types_) {
         struct_schema.fields.push_back(std::make_pair(
-            k, type_to_capnproto_schema_type(v, _definitions, _num_unnamed)));
+            k, type_to_capnproto_schema_type(v, _definitions, PARENT_IS_STRUCT,
+                                             _cnp_types)));
       }
       return schema::Type{.value = struct_schema};
 
     } else if constexpr (std::is_same<T, Type::Optional>()) {
-      return schema::Type{
-          .value = schema::Type::Variant{
-              .fields = std::vector(
-                  {std::make_pair(std::string("Some"),
-                                  type_to_capnproto_schema_type(
-                                      *_t.type_, _definitions, _num_unnamed)),
-                   std::make_pair(std::string("None"),
-                                  schema::Type{schema::Type::Void{}})})}};
+      return optional_to_capnproto_schema_type(_t, _definitions,
+                                               _parent_is_struct, _cnp_types);
 
     } else if constexpr (std::is_same<T, Type::Reference>()) {
       return schema::Type{.value =
@@ -134,23 +200,23 @@ schema::Type type_to_capnproto_schema_type(
       /*return schema::Type{
           .value = schema::Type::Map{
               .values = Ref<schema::Type>::make(type_to_capnproto_schema_type(
-                  *_t.value_type_, _definitions,
-                  _num_unnamed))}};*/
+                  *_t.value_type_, _definitions, PARENT_IS_NOT_STRUCT,
+                  _cnp_types))}};*/
     } else if constexpr (std::is_same<T, Type::Tuple>()) {
       return type_to_capnproto_schema_type(
           Type{parsing::schemaful::tuple_to_object(_t)}, _definitions,
-          _num_unnamed);
+          PARENT_IS_NOT_STRUCT, _cnp_types);
 
     } else if constexpr (std::is_same<T, Type::TypedArray>()) {
       return schema::Type{
           .value = schema::Type::List{
               .type = Ref<schema::Type>::make(type_to_capnproto_schema_type(
-                  *_t.type_, _definitions, _num_unnamed))}};
+                  *_t.type_, _definitions, PARENT_IS_NOT_STRUCT, _cnp_types))}};
 
     } else if constexpr (std::is_same<T, Type::Validated>()) {
       // Cap'n Proto knows no validation.
       return type_to_capnproto_schema_type(*_t.type_, _definitions,
-                                           _num_unnamed);
+                                           _parent_is_struct, _cnp_types);
     } else {
       static_assert(rfl::always_false_v<T>, "Not all cases were covered.");
     }
@@ -161,17 +227,14 @@ schema::Type type_to_capnproto_schema_type(
 
 std::string to_string_representation(
     const parsing::schema::Definition& _internal_schema) {
-  size_t num_unnamed = 0;
-  std::stringstream sstream;
-  // TODO: ID is hardcoded.
-  sstream << "@0xdbb9ad1f14bf0b36;" << std::endl << std::endl;
+  CapnProtoTypes cnp_types;
   for (const auto& [name, def] : _internal_schema.definitions_) {
-    sstream << type_to_capnproto_schema_type(def, _internal_schema.definitions_,
-                                             &num_unnamed)
-                   .with_name(internal::strings::to_pascal_case(name))
-            << std::endl
-            << std::endl;
+    cnp_types.structs_[name] = type_to_capnproto_schema_type(
+        def, _internal_schema.definitions_, PARENT_IS_NOT_STRUCT, &cnp_types);
   }
+
+  std::stringstream sstream;
+  sstream << cnp_types;
   return sstream.str();
 }
 

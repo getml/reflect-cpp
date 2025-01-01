@@ -86,7 +86,7 @@ void handle_fields_in_structs_or_variants(const auto& _struct_or_variant,
 Type Type::with_name(const std::string& _name) const {
   const auto set_name = [&](const auto& _v) -> ReflectionType {
     using T = std::remove_cvref_t<decltype(_v)>;
-    if constexpr (std::is_same<T, Struct>()) {
+    if constexpr (std::is_same<T, Struct>() || std::is_same<T, Variant>()) {
       auto v_with_name = _v;
       v_with_name.name = _name;
       return v_with_name;
@@ -165,7 +165,10 @@ std::ostream& operator<<(std::ostream& _os, const Type::List& _l) {
 }
 
 std::ostream& operator<<(std::ostream& _os, const Type::Variant& _v) {
-  return _os << "TODO";
+  _os << "struct " << _v.name << " {" << std::endl << "  union {" << std::endl;
+  size_t ix = 0;
+  handle_fields_in_structs_or_variants(_v, 2, "", &_os, &ix);
+  return _os << "  }" << std::endl << "}" << std::endl;
 }
 
 std::ostream& operator<<(std::ostream& _os, const Type::Reference& _r) {

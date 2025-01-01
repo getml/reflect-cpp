@@ -61,6 +61,7 @@ struct Type {
   };
 
   struct Variant {
+    std::string name;
     std::vector<std::pair<std::string, Type>> fields;
   };
 
