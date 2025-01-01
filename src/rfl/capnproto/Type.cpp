@@ -149,6 +149,14 @@ std::ostream& operator<<(std::ostream& _os, const Type::Data&) {
   return _os << "Data";
 }
 
+std::ostream& operator<<(std::ostream& _os, const Type::List& _l) {
+  return _os << "List(" << *_l.type << ")";
+}
+
+std::ostream& operator<<(std::ostream& _os, const Type::Map& _m) {
+  return _os << "Map(" << *_m.type << ")";
+}
+
 std::ostream& operator<<(std::ostream& _os, const Type::Text&) {
   return _os << "Text";
 }
@@ -158,10 +166,6 @@ std::ostream& operator<<(std::ostream& _os, const Type::Struct& _s) {
   size_t ix = 0;
   handle_fields_in_structs_or_variants(_s, 1, "", &_os, &ix);
   return _os << "}" << std::endl;
-}
-
-std::ostream& operator<<(std::ostream& _os, const Type::List& _l) {
-  return _os << "List(" << *_l.type << ")";
 }
 
 std::ostream& operator<<(std::ostream& _os, const Type::Variant& _v) {

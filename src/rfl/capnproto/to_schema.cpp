@@ -31,6 +31,7 @@ SOFTWARE.
 #include <sstream>
 #include <string>
 
+#include "rfl/capnproto/schema/CapnProtoTypes.hpp"
 #include "rfl/capnproto/schema/Type.hpp"
 #include "rfl/internal/strings/strings.hpp"
 #include "rfl/json.hpp"
@@ -40,29 +41,6 @@ namespace rfl::capnproto {
 
 constexpr bool PARENT_IS_STRUCT = true;
 constexpr bool PARENT_IS_NOT_STRUCT = false;
-
-struct CapnProtoTypes {
-  std::map<std::string, schema::Type> structs_;
-  std::map<std::string, schema::Type> maps_;
-  std::map<std::string, schema::Type> unions_;
-};
-
-std::ostream& operator<<(std::ostream& _os,
-                         const std::map<std::string, schema::Type>& _map) {
-  for (const auto& [name, type] : _map) {
-    _os << type.with_name(internal::strings::to_pascal_case(name)) << std::endl
-        << std::endl;
-  }
-  return _os;
-}
-
-std::ostream& operator<<(std::ostream& _os, const CapnProtoTypes& _cnp_types) {
-  // TODO: ID is hardcoded.
-  _os << "@0xdbb9ad1f14bf0b36;" << std::endl
-      << std::endl
-      << _cnp_types.structs_ << _cnp_types.maps_ << _cnp_types.unions_;
-  return _os;
-}
 
 inline bool is_named_type(const parsing::schema::Type& _type) {
   return _type.variant_.visit([&](const auto& _v) -> bool {
@@ -75,12 +53,12 @@ inline bool is_named_type(const parsing::schema::Type& _type) {
 schema::Type type_to_capnproto_schema_type(
     const parsing::schema::Type& _type,
     const std::map<std::string, parsing::schema::Type>& _definitions,
-    const bool _parent_is_struct, CapnProtoTypes* _cnp_types);
+    const bool _parent_is_struct, schema::CapnProtoTypes* _cnp_types);
 
 schema::Type any_of_to_capnproto_schema_type(
     const parsing::schema::Type::AnyOf& _any_of,
     const std::map<std::string, parsing::schema::Type>& _definitions,
-    const bool _parent_is_struct, CapnProtoTypes* _cnp_types) {
+    const bool _parent_is_struct, schema::CapnProtoTypes* _cnp_types) {
   auto value = schema::Type::Variant{};
   size_t i = 1;
   for (const auto& type : _any_of.types_) {
@@ -102,7 +80,7 @@ schema::Type any_of_to_capnproto_schema_type(
 schema::Type optional_to_capnproto_schema_type(
     const parsing::schema::Type::Optional& _optional,
     const std::map<std::string, parsing::schema::Type>& _definitions,
-    const bool _parent_is_struct, CapnProtoTypes* _cnp_types) {
+    const bool _parent_is_struct, schema::CapnProtoTypes* _cnp_types) {
   const auto value = schema::Type::Variant{
       .fields =
           std::vector({std::make_pair(std::string("Some"),
@@ -124,7 +102,7 @@ schema::Type optional_to_capnproto_schema_type(
 schema::Type type_to_capnproto_schema_type(
     const parsing::schema::Type& _type,
     const std::map<std::string, parsing::schema::Type>& _definitions,
-    const bool _parent_is_struct, CapnProtoTypes* _cnp_types) {
+    const bool _parent_is_struct, schema::CapnProtoTypes* _cnp_types) {
   auto handle_variant = [&](const auto& _t) -> schema::Type {
     using T = std::remove_cvref_t<decltype(_t)>;
     using Type = parsing::schema::Type;
@@ -194,14 +172,15 @@ schema::Type type_to_capnproto_schema_type(
     } else if constexpr (std::is_same<T, Type::Reference>()) {
       return schema::Type{.value =
                               schema::Type::Reference{.type_name = _t.name_}};
+
     } else if constexpr (std::is_same<T, Type::StringMap>()) {
-      // TODO
-      return schema::Type{.value = schema::Type::Void{}};
-      /*return schema::Type{
+      _cnp_types->has_maps_ = true;
+      return schema::Type{
           .value = schema::Type::Map{
-              .values = Ref<schema::Type>::make(type_to_capnproto_schema_type(
+              .type = Ref<schema::Type>::make(type_to_capnproto_schema_type(
                   *_t.value_type_, _definitions, PARENT_IS_NOT_STRUCT,
-                  _cnp_types))}};*/
+                  _cnp_types))}};
+
     } else if constexpr (std::is_same<T, Type::Tuple>()) {
       return type_to_capnproto_schema_type(
           Type{parsing::schemaful::tuple_to_object(_t)}, _definitions,
@@ -227,7 +206,7 @@ schema::Type type_to_capnproto_schema_type(
 
 std::string to_string_representation(
     const parsing::schema::Definition& _internal_schema) {
-  CapnProtoTypes cnp_types;
+  schema::CapnProtoTypes cnp_types;
   for (const auto& [name, def] : _internal_schema.definitions_) {
     cnp_types.structs_[name] = type_to_capnproto_schema_type(
         def, _internal_schema.definitions_, PARENT_IS_NOT_STRUCT, &cnp_types);
