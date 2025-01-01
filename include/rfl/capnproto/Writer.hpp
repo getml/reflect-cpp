@@ -32,7 +32,7 @@ class Writer {
   };
 
   struct CapnProtoOutputMap {
-    capnp::DynamicList::Builder val_;
+    capnp::DynamicStruct::Builder val_;
   };
 
   struct CapnProtoOutputObject {
@@ -180,12 +180,11 @@ class Writer {
   template <class T>
   OutputVarType add_value_to_map(const std::string_view& _name, const T& _var,
                                  OutputMapType* _parent) const noexcept {
-    // TODO
-    /*capnproto_value_t new_value;
-  capnproto_value_add(&_parent->val_, _name.data(), &new_value, nullptr,
-                      nullptr);
-  set_value(_var, &new_value);
-  return OutputVarType{new_value};*/
+    auto entries =
+        OutputArrayType{_parent->val_.get("entries").as<capnp::DynamicList>()};
+    auto new_entry = add_object_to_array(2, &entries);
+    add_value_to_object("key", std::string(_name), &new_entry);
+    return add_value_to_object("value", _var, &new_entry);
   }
 
   template <class T>
