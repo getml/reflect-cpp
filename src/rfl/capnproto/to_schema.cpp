@@ -42,14 +42,6 @@ namespace rfl::capnproto {
 constexpr bool PARENT_IS_STRUCT = true;
 constexpr bool PARENT_IS_NOT_STRUCT = false;
 
-inline bool is_named_type(const parsing::schema::Type& _type) {
-  return _type.variant_.visit([&](const auto& _v) -> bool {
-    using T = std::remove_cvref_t<decltype(_v)>;
-    return std::is_same<T, parsing::schema::Type::Object>() ||
-           std::is_same<T, parsing::schema::Type::Literal>();
-  });
-}
-
 schema::Type type_to_capnproto_schema_type(
     const parsing::schema::Type& _type,
     const std::map<std::string, parsing::schema::Type>& _definitions,
@@ -59,7 +51,7 @@ schema::Type any_of_to_capnproto_schema_type(
     const parsing::schema::Type::AnyOf& _any_of,
     const std::map<std::string, parsing::schema::Type>& _definitions,
     const bool _parent_is_struct, schema::CapnProtoTypes* _cnp_types) {
-  auto value = schema::Type::Variant{};
+  auto value = schema::Type::Union{};
   size_t i = 1;
   for (const auto& type : _any_of.types_) {
     value.fields.push_back(
@@ -81,7 +73,7 @@ schema::Type optional_to_capnproto_schema_type(
     const parsing::schema::Type::Optional& _optional,
     const std::map<std::string, parsing::schema::Type>& _definitions,
     const bool _parent_is_struct, schema::CapnProtoTypes* _cnp_types) {
-  const auto value = schema::Type::Variant{
+  const auto value = schema::Type::Union{
       .fields =
           std::vector({std::make_pair(std::string("Some"),
                                       type_to_capnproto_schema_type(

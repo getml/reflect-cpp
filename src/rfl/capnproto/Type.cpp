@@ -36,28 +36,28 @@ namespace rfl::capnproto::schema {
 /// Cap'n proto has a somewhat weird way of handling union fields, please refer
 /// to the schema for further explanation. This is a workaround that ensures
 /// that we can also support complex, nested unions.
-void handle_fields_in_structs_or_variants(const auto& _struct_or_variant,
-                                          const size_t _indent,
-                                          const std::string& _namespace,
-                                          std::ostream* _os, size_t* _ix) {
-  for (const auto& [name, type] : _struct_or_variant.fields) {
+void handle_fields_in_structs_or_unions(const auto& _struct_or_union,
+                                        const size_t _indent,
+                                        const std::string& _namespace,
+                                        std::ostream* _os, size_t* _ix) {
+  for (const auto& [name, type] : _struct_or_union.fields) {
     // Because of the way Cap'n proto handles unions, we need a special case for
     // them.
     type.reflection().visit([&](const auto& _r) {
       using R = std::remove_cvref_t<decltype(_r)>;
-      if constexpr (std::is_same<R, Type::Variant>()) {
+      if constexpr (std::is_same<R, Type::Union>()) {
         // Special case: Union field.
         *_os << std::string(_indent * 2, ' ') << name << " :union {"
              << std::endl;
         for (size_t i = 0; i < _r.fields.size(); ++i) {
           _r.fields[i].second.reflection().visit([&](const auto& _union_field) {
             using U = std::remove_cvref_t<decltype(_union_field)>;
-            if constexpr (std::is_same<U, Type::Variant>()) {
+            if constexpr (std::is_same<U, Type::Union>()) {
               *_os << std::string(_indent * 2 + 2, ' ')
                    << internal::strings::to_camel_case(_namespace + name + "_" +
                                                        _r.fields[i].first)
                    << " :union {" << std::endl;
-              handle_fields_in_structs_or_variants(
+              handle_fields_in_structs_or_unions(
                   _union_field, _indent + 2,
                   _namespace + name + "_" + _r.fields[i].first + "_", _os, _ix);
               *_os << std::string(_indent * 2 + 2, ' ') << "}" << std::endl;
@@ -86,7 +86,7 @@ void handle_fields_in_structs_or_variants(const auto& _struct_or_variant,
 Type Type::with_name(const std::string& _name) const {
   const auto set_name = [&](const auto& _v) -> ReflectionType {
     using T = std::remove_cvref_t<decltype(_v)>;
-    if constexpr (std::is_same<T, Struct>() || std::is_same<T, Variant>()) {
+    if constexpr (std::is_same<T, Struct>() || std::is_same<T, Union>()) {
       auto v_with_name = _v;
       v_with_name.name = _name;
       return v_with_name;
@@ -164,14 +164,14 @@ std::ostream& operator<<(std::ostream& _os, const Type::Text&) {
 std::ostream& operator<<(std::ostream& _os, const Type::Struct& _s) {
   _os << "struct " << _s.name << " {" << std::endl;
   size_t ix = 0;
-  handle_fields_in_structs_or_variants(_s, 1, "", &_os, &ix);
+  handle_fields_in_structs_or_unions(_s, 1, "", &_os, &ix);
   return _os << "}" << std::endl;
 }
 
-std::ostream& operator<<(std::ostream& _os, const Type::Variant& _v) {
-  _os << "struct " << _v.name << " {" << std::endl << "  union {" << std::endl;
+std::ostream& operator<<(std::ostream& _os, const Type::Union& _u) {
+  _os << "struct " << _u.name << " {" << std::endl << "  union {" << std::endl;
   size_t ix = 0;
-  handle_fields_in_structs_or_variants(_v, 2, "", &_os, &ix);
+  handle_fields_in_structs_or_unions(_u, 2, "", &_os, &ix);
   return _os << "  }" << std::endl << "}" << std::endl;
 }
 
