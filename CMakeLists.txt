@@ -106,13 +106,18 @@ endif ()
 
 if (REFLECTCPP_AVRO)
     list(APPEND REFLECT_CPP_SOURCES
-        src/reflectcpp_avro.cpp
+            src/reflectcpp_avro.cpp
     )
-    if (NOT TARGET avro-c)
-        find_package(PkgConfig REQUIRED)
-        pkg_check_modules(avro-c REQUIRED IMPORTED_TARGET avro-c)
-    endif ()
-    target_link_libraries(reflectcpp PUBLIC PkgConfig::avro-c)
+    find_package(jansson CONFIG REQUIRED)
+    if(REFLECTCPP_USE_VCPKG)
+        target_include_directories(reflectcpp SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
+        if (MSVC)
+            target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/avro${CMAKE_STATIC_LIBRARY_SUFFIX}")
+        else ()
+            target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libavro${CMAKE_STATIC_LIBRARY_SUFFIX}")
+        endif ()
+    endif()
+    target_link_libraries(reflectcpp PRIVATE jansson::jansson)
 endif ()
 
 if (REFLECTCPP_BSON)
