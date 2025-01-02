@@ -13,7 +13,7 @@
 namespace rfl::parsing::schemaful {
 
 template <int _i>
-consteval auto to_field_name() {
+inline consteval auto to_field_name() {
   return internal::StringLiteral<5>('f',
                                     static_cast<char>('0' + ((_i / 100) % 10)),
                                     static_cast<char>('0' + ((_i / 10) % 10)),
@@ -21,7 +21,7 @@ consteval auto to_field_name() {
 }
 
 template <int _i>
-auto to_field(const auto& _t) {
+inline auto to_field(const auto& _t) {
   using T = std::remove_cvref_t<decltype(_t)>;
   return rfl::Field<to_field_name<_i>(), const T*>(&_t);
 }

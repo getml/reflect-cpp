@@ -161,8 +161,8 @@ schema::Type type_to_capnproto_schema_type(
                   _cnp_types))}};
 
     } else if constexpr (std::is_same<T, Type::Literal>()) {
-      // TODO
-      return schema::Type{.value = schema::Type::Void{}};
+      // TODO: As enum
+      return schema::Type{.value = schema::Type::Text{}};
       /*return schema::Type{
           .value = schema::Type::Enum{.name = std::string("unnamed_") +
                                               std::to_string(++(*_cnp_types)),

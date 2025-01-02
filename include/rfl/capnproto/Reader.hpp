@@ -93,16 +93,10 @@ class Reader {
               "float or double.");
       }
 
-      // TODO
-      /*} else if constexpr (internal::is_literal_v<T>) {
-        int value = 0;
-        const auto err = capnproto_value_get_enum(_var.val_, &value);
-        if (err) {
-          return Error("Could not cast to enum.");
-        }
-        return std::remove_cvref_t<T>::from_value(
-            static_cast<typename
-        std::remove_cvref_t<T>::ValueType>(value));*/
+      // TODO: read as enum
+    } else if constexpr (internal::is_literal_v<T>) {
+      return to_basic_type<std::string>(_var).and_then(T::from_string);
+
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
@@ -148,9 +142,9 @@ class Reader {
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
+    int i = 0;
     for (auto field : _obj.val_.getSchema().getFields()) {
-      _object_reader.read(field.getProto().getName().cStr(),
-                          InputVarType{_obj.val_.get(field)});
+      _object_reader.read(i++, InputVarType{_obj.val_.get(field)});
     }
     return std::nullopt;
   }

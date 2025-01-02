@@ -34,3 +34,4 @@ SOFTWARE.
 #include "rfl/generic/Writer.cpp"
 #include "rfl/internal/strings/strings.cpp"
 #include "rfl/parsing/schema/Type.cpp"
+#include "rfl/parsing/schemaful/tuple_to_object.cpp"

@@ -46,7 +46,7 @@ struct TupleParser {
 
     } else {
       const auto parse = [&](const InputArrayType& _arr) -> Result<TupleType> {
-        alignas(TupleType) unsigned char buf[sizeof(TupleType)];
+        alignas(TupleType) unsigned char buf[sizeof(TupleType)]{};
         auto ptr = internal::ptr_cast<TupleType*>(&buf);
         const auto tuple_reader =
             TupleReader<R, W, TupleType, _ignore_empty_containers,

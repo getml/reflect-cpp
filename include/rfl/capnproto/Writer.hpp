@@ -172,6 +172,10 @@ class Writer {
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       _parent->val_.set(_parent->ix_++, static_cast<std::int64_t>(_var));
 
+    } else if constexpr (internal::is_literal_v<T>) {
+      // TODO: Transform to enum
+      return add_value_to_array(_var.str(), _parent);
+
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
@@ -202,6 +206,10 @@ class Writer {
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       _parent->val_.set(_name.data(), static_cast<std::int64_t>(_var));
 
+    } else if constexpr (internal::is_literal_v<T>) {
+      // TODO: Transform to enum
+      return add_value_to_object(_name, _var.str(), _parent);
+
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
@@ -221,6 +229,10 @@ class Writer {
 
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       _parent->val_.set(field, static_cast<std::int64_t>(_var));
+
+    } else if constexpr (internal::is_literal_v<T>) {
+      // TODO: Transform to enum
+      return add_value_to_union(_index, _var.str(), _parent);
 
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
