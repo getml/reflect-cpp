@@ -11,6 +11,7 @@ struct CapnProtoTypes {
   bool has_maps_ = false;
   std::map<std::string, schema::Type> structs_;
   std::map<std::string, schema::Type> unions_;
+  std::map<std::string, schema::Type> tuples_;
 };
 
 const char* MAP_DEFINITION = R"(
@@ -37,7 +38,7 @@ std::ostream& operator<<(std::ostream& _os, const CapnProtoTypes& _cnp_types) {
   if (_cnp_types.has_maps_) {
     _os << MAP_DEFINITION << std::endl << std::endl;
   }
-  _os << _cnp_types.structs_ << _cnp_types.unions_;
+  _os << _cnp_types.structs_ << _cnp_types.unions_ << _cnp_types.tuples_;
   return _os;
 }
 
