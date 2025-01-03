@@ -2485,7 +2485,7 @@
 - MSVC 17.8 (19.38) or higher</p>
 <p>You can include the source files into your build or compile it using cmake and vcpkg.</p>
 <h2 id="option-1-using-vcpkg">Option 1: Using vcpkg<a class="headerlink" href="#option-1-using-vcpkg" title="Permanent link">&para;</a></h2>
-<p>Refer to <a href="https://vcpkg.io/en/package/reflectcpp">this port</a>:</p>
+<p>Refer to <a href="https://vcpkg.link/ports/reflectcpp">this port</a>:</p>
 <div class="language-bash highlight"><pre><span></span><code>vcpkg<span class="w"> </span>install<span class="w"> </span>reflectcpp
 </code></pre></div>
 <p>or, if you are in manifest mode:</p>
@@ -2493,6 +2493,8 @@
 </code></pre></div>
 <p>If the library cannot be found, please update vcpkg itself to make sure the newest ports are installed. You
 might also want to update the <code>builtin-baseline</code> tag in the <em>vcpkg.json</em> of your project.</p>
+<p>If you want to support formats other than JSON, please install the appropriate vcpkg features. Refer to the
+link above to find out which features are supported in the vcpkg port.</p>
 <h2 id="option-2-using-conan">Option 2: Using Conan<a class="headerlink" href="#option-2-using-conan" title="Permanent link">&para;</a></h2>
 <p>Simply use <a href="https://conan.io/center/recipes/reflect-cpp">this recipe</a>.</p>
 <h2 id="option-3-compilation-using-cmake">Option 3: Compilation using cmake<a class="headerlink" href="#option-3-compilation-using-cmake" title="Permanent link">&para;</a></h2>
