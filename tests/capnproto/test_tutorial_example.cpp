@@ -8,7 +8,7 @@
 
 // #include "write_and_read.hpp"
 
-/// The basic example from the Avro C tutorial.
+/// The basic example from the capnproto C tutorial.
 namespace test_tutorial_example {
 
 const std::string ADDRESS_BOOK_SCHEMA = R"(
