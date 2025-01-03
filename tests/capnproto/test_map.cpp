@@ -11,7 +11,7 @@ namespace test_map {
 struct Person {
   rfl::Rename<"firstName", std::string> first_name;
   rfl::Rename<"lastName", std::string> last_name = "Simpson";
-  std::shared_ptr<std::map<std::string, Person>> children;
+  std::unique_ptr<std::map<std::string, Person>> children;
 };
 
 TEST(capnproto, test_map) {
