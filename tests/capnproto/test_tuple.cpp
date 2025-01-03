@@ -12,7 +12,7 @@ namespace test_tuple {
 struct Person {
   rfl::Rename<"firstName", std::string> first_name;
   rfl::Rename<"lastName", std::string> last_name = "Simpson";
-  std::shared_ptr<std::tuple<Person, Person, Person>> children = nullptr;
+  std::unique_ptr<std::tuple<Person, Person, Person>> children = nullptr;
 };
 
 TEST(capnproto, test_tuple) {

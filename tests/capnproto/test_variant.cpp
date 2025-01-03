@@ -22,7 +22,7 @@ struct Square {
 };
 
 struct Shapes {
-  std::variant<Circle, Rectangle, std::shared_ptr<Square>> root;
+  std::variant<Circle, Rectangle, std::unique_ptr<Square>> root;
 };
 
 TEST(capnproto, test_variant) {
