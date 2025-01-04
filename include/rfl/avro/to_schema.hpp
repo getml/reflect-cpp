@@ -24,7 +24,7 @@ std::string to_json_representation(
 
 /// Returns the Avro schema for a class.
 template <class T, class... Ps>
-Schema<T> to_schema() noexcept {
+Schema<T> to_schema() {
   const auto internal_schema =
       parsing::schema::make<Reader, Writer, T, Processors<Ps...>>();
   const auto json_str = to_json_representation(internal_schema);
