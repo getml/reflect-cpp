@@ -14,7 +14,7 @@ You can include the source files into your build or compile it using cmake and v
 
 ## Option 1: Using vcpkg
 
-Refer to [this port](https://vcpkg.io/en/package/reflectcpp):
+Refer to [this port](https://vcpkg.link/ports/reflectcpp):
 
 ```bash
 vcpkg install reflectcpp
@@ -28,6 +28,9 @@ vcpkg add port reflectcpp
 
 If the library cannot be found, please update vcpkg itself to make sure the newest ports are installed. You
 might also want to update the `builtin-baseline` tag in the *vcpkg.json* of your project.
+
+If you want to support formats other than JSON, please install the appropriate vcpkg features. Refer to the
+link above to find out which features are supported in the vcpkg port.
 
 ## Option 2: Using Conan
 
