@@ -41,7 +41,7 @@ Result<internal::wrap_in_rfl_array_t<T>> read(const char* _bytes,
       internal::ptr_cast<const kj::byte*>(_bytes), _size);
   auto input_stream = kj::ArrayInputStream(array_ptr);
   auto message_reader = capnp::PackedMessageReader(input_stream);
-  const auto root_name = get_root_name<std::remove_cv_t<T>>();
+  const auto root_name = get_root_name<std::remove_cv_t<T>, Ps...>();
   const auto root_schema = _schema.value().getNested(root_name.c_str());
   const auto input_var = InputVarType{
       message_reader.getRoot<capnp::DynamicStruct>(root_schema.asStruct())};

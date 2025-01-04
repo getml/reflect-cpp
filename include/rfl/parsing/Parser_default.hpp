@@ -32,7 +32,7 @@
 #include "schemaful/IsSchemafulReader.hpp"
 #include "schemaful/IsSchemafulWriter.hpp"
 
-namespace rfl ::parsing {
+namespace rfl::parsing {
 
 /// Default case - anything that cannot be explicitly matched.
 template <class R, class W, class T, class ProcessorsType>

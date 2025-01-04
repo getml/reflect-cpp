@@ -36,7 +36,7 @@ std::vector<char> write(const auto& _obj, const auto& _schema) {
   using ParentType = parsing::Parent<Writer>;
   static_assert(std::is_same<T, U>(),
                 "The schema must be compatible with the type to write.");
-  const auto root_name = get_root_name<T>();
+  const auto root_name = get_root_name<T, Ps...>();
   const auto root_schema = _schema.value().getNested(root_name.c_str());
   capnp::MallocMessageBuilder message_builder;
   auto root =
