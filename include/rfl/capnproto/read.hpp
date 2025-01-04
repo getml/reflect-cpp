@@ -14,10 +14,10 @@
 #include "../SnakeCaseToCamelCase.hpp"
 #include "../internal/strings/strings.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
-#include "../parsing/make_type_name.hpp"
 #include "Parser.hpp"
 #include "Reader.hpp"
 #include "Schema.hpp"
+#include "get_root_name.hpp"
 #include "to_schema.hpp"
 
 namespace rfl::capnproto {
@@ -34,14 +34,14 @@ auto read(const InputVarType& _obj) {
 
 /// Parses an object from CAPNPROTO using reflection.
 template <class T, class... Ps>
-Result<internal::wrap_in_rfl_array_t<T>> read(
-    const char* _bytes, const size_t _size, const Schema<T>& _schema) noexcept {
+Result<internal::wrap_in_rfl_array_t<T>> read(const char* _bytes,
+                                              const size_t _size,
+                                              const Schema<T>& _schema) {
   const auto array_ptr = kj::ArrayPtr<const kj::byte>(
       internal::ptr_cast<const kj::byte*>(_bytes), _size);
   auto input_stream = kj::ArrayInputStream(array_ptr);
   auto message_reader = capnp::PackedMessageReader(input_stream);
-  const auto root_name = internal::strings::to_pascal_case(
-      parsing::make_type_name<std::remove_cvref_t<T>>());
+  const auto root_name = get_root_name<std::remove_cv_t<T>>();
   const auto root_schema = _schema.value().getNested(root_name.c_str());
   const auto input_var = InputVarType{
       message_reader.getRoot<capnp::DynamicStruct>(root_schema.asStruct())};
@@ -50,14 +50,14 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
 
 /// Parses an object from CAPNPROTO using reflection.
 template <class T, class... Ps>
-auto read(const char* _bytes, const size_t _size) noexcept {
+auto read(const char* _bytes, const size_t _size) {
   const auto schema = to_schema<std::remove_cvref_t<T>, Ps...>();
   return read<T, Ps...>(_bytes, _size, schema);
 }
 
 /// Parses an object from CAPNPROTO using reflection.
 template <class T, class... Ps>
-auto read(const std::vector<char>& _bytes, const Schema<T>& _schema) {
+auto read(const std::vector<char>& _bytes, const Schema<T>& _schema) noexcept {
   return read<T, Ps...>(_bytes.data(), _bytes.size(), _schema);
 }
 

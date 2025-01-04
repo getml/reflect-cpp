@@ -29,9 +29,8 @@ struct Person {
 };
 
 TEST(capnproto, test_custom_class1) {
-  // TODO
-  /*  const auto bart = Person("Bart");
+  const auto bart = Person("Bart");
 
-    write_and_read(bart);*/
+  write_and_read(bart);
 }
 }  // namespace test_custom_class1

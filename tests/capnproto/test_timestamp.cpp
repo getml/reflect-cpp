@@ -17,16 +17,15 @@ struct Person {
 };
 
 TEST(capnproto, test_timestamp) {
-  // TODO
-  /*  const auto result = TS::from_string("nonsense");
+  const auto result = TS::from_string("nonsense");
 
-    if (result) {
-      std::cout << "Failed: Expected an error, but got none." << std::endl;
-      return;
-    }
+  if (result) {
+    std::cout << "Failed: Expected an error, but got none." << std::endl;
+    return;
+  }
 
-    const auto bart = Person{.first_name = "Bart", .birthday = "1987-04-19"};
+  const auto bart = Person{.first_name = "Bart", .birthday = "1987-04-19"};
 
-    write_and_read(bart);*/
+  write_and_read(bart);
 }
 }  // namespace test_timestamp

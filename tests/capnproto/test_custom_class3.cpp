@@ -56,10 +56,9 @@ struct Parser<ReaderType, WriterType, test_custom_class3::Person,
 namespace test_custom_class3 {
 
 TEST(capnproto, test_custom_class3) {
-  // TODO
-  /*  const auto bart = Person("Bart", "Simpson", 10);
+  const auto bart = Person("Bart", "Simpson", 10);
 
-    write_and_read(bart);*/
+  write_and_read(bart);
 }
 
 }  // namespace test_custom_class3

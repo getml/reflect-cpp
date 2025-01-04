@@ -31,6 +31,7 @@ SOFTWARE.
 #include <sstream>
 #include <string>
 
+#include "rfl/capnproto/is_named_type.hpp"
 #include "rfl/capnproto/schema/CapnProtoTypes.hpp"
 #include "rfl/capnproto/schema/Type.hpp"
 #include "rfl/internal/strings/strings.hpp"
@@ -110,6 +111,20 @@ schema::Type optional_to_capnproto_schema_type(
   }
 }
 
+schema::Type reference_to_capnproto_schema_type(
+    const parsing::schema::Type::Reference& _reference,
+    const std::map<std::string, parsing::schema::Type>& _definitions,
+    const Parent _parent, schema::CapnProtoTypes* _cnp_types) {
+  const auto it = _definitions.find(_reference.name_);
+  if (it == _definitions.end() || is_named_type(it->second)) {
+    return schema::Type{
+        .value = schema::Type::Reference{.type_name = _reference.name_}};
+  } else {
+    return type_to_capnproto_schema_type(it->second, _definitions, _parent,
+                                         _cnp_types);
+  }
+}
+
 schema::Type type_to_capnproto_schema_type(
     const parsing::schema::Type& _type,
     const std::map<std::string, parsing::schema::Type>& _definitions,
@@ -177,8 +192,8 @@ schema::Type type_to_capnproto_schema_type(
                                                _cnp_types);
 
     } else if constexpr (std::is_same<T, Type::Reference>()) {
-      return schema::Type{.value =
-                              schema::Type::Reference{.type_name = _t.name_}};
+      return reference_to_capnproto_schema_type(_t, _definitions, _parent,
+                                                _cnp_types);
 
     } else if constexpr (std::is_same<T, Type::StringMap>()) {
       _cnp_types->has_maps_ = true;
@@ -216,6 +231,9 @@ std::string to_string_representation(
     const parsing::schema::Definition& _internal_schema) {
   schema::CapnProtoTypes cnp_types;
   for (const auto& [name, def] : _internal_schema.definitions_) {
+    if (!is_named_type(def)) {
+      continue;
+    }
     cnp_types.structs_[name] = type_to_capnproto_schema_type(
         def, _internal_schema.definitions_, Parent::is_top_level, &cnp_types);
   }

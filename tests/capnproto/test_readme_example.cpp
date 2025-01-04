@@ -41,7 +41,6 @@ TEST(capnproto, test_readme_example) {
                             .email = "homer@simpson.com",
                             .child = std::vector<Person>({bart, lisa, maggie})};
 
-  // TODO
-  //  write_and_read(homer);
+  write_and_read(homer);
 }
 }  // namespace test_readme_example
