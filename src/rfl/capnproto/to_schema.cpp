@@ -69,6 +69,21 @@ schema::Type any_of_to_capnproto_schema_type(
   }
 }
 
+schema::Type literal_to_capnproto_schema_type(
+    const parsing::schema::Type::Literal& _literal,
+    const std::map<std::string, parsing::schema::Type>& _definitions,
+    const Parent _parent, schema::CapnProtoTypes* _cnp_types) {
+  const auto enum_schema = schema::Type::Enum{.fields = _literal.values_};
+  if (_parent == Parent::is_top_level) {
+    return schema::Type{.value = enum_schema};
+  } else {
+    const auto name =
+        std::string("Enum") + std::to_string(_cnp_types->enums_.size() + 1);
+    _cnp_types->enums_[name] = schema::Type{.value = enum_schema};
+    return schema::Type{.value = schema::Type::Reference{name}};
+  }
+}
+
 schema::Type object_to_capnproto_schema_type(
     const parsing::schema::Type::Object& _obj,
     const std::map<std::string, parsing::schema::Type>& _definitions,
@@ -176,12 +191,8 @@ schema::Type type_to_capnproto_schema_type(
                   _cnp_types))}};
 
     } else if constexpr (std::is_same<T, Type::Literal>()) {
-      // TODO: As enum
-      return schema::Type{.value = schema::Type::Text{}};
-      /*return schema::Type{
-          .value = schema::Type::Enum{.name = std::string("unnamed_") +
-                                              std::to_string(++(*_cnp_types)),
-                                      .symbols = _t.values_}};*/
+      return literal_to_capnproto_schema_type(_t, _definitions, _parent,
+                                              _cnp_types);
 
     } else if constexpr (std::is_same<T, Type::Object>()) {
       return object_to_capnproto_schema_type(_t, _definitions, _parent,

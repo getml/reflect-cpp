@@ -8,7 +8,8 @@ inline bool is_named_type(const parsing::schema::Type& _type) {
     using T = std::remove_cvref_t<decltype(_v)>;
     return std::is_same<T, parsing::schema::Type::Object>() ||
            std::is_same<T, parsing::schema::Type::AnyOf>() ||
-           std::is_same<T, parsing::schema::Type::StringMap>();
+           std::is_same<T, parsing::schema::Type::StringMap>() ||
+           std::is_same<T, parsing::schema::Type::Literal>();
   });
 }
 

@@ -86,7 +86,8 @@ void handle_fields_in_structs_or_unions(const auto& _struct_or_union,
 Type Type::with_name(const std::string& _name) const {
   const auto set_name = [&](const auto& _v) -> ReflectionType {
     using T = std::remove_cvref_t<decltype(_v)>;
-    if constexpr (std::is_same<T, Struct>() || std::is_same<T, Union>()) {
+    if constexpr (std::is_same<T, Struct>() || std::is_same<T, Union>() ||
+                  std::is_same<T, Enum>()) {
       auto v_with_name = _v;
       v_with_name.name = _name;
       return v_with_name;
@@ -147,6 +148,15 @@ std::ostream& operator<<(std::ostream& _os, const Type::Float64&) {
 
 std::ostream& operator<<(std::ostream& _os, const Type::Data&) {
   return _os << "Data";
+}
+
+std::ostream& operator<<(std::ostream& _os, const Type::Enum& _e) {
+  _os << "enum " << _e.name << " {" << std::endl;
+  for (size_t i = 0; i < _e.fields.size(); ++i) {
+    _os << "  " << internal::strings::to_camel_case(_e.fields[i]) << " @" << i
+        << ";" << std::endl;
+  }
+  return _os << "}" << std::endl;
 }
 
 std::ostream& operator<<(std::ostream& _os, const Type::List& _l) {

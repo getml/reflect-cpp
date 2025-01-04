@@ -43,6 +43,11 @@ struct Type {
 
   struct Text {};
 
+  struct Enum {
+    std::string name;
+    std::vector<std::string> fields;
+  };
+
   struct List {
     rfl::Ref<Type> type;
   };
@@ -67,8 +72,8 @@ struct Type {
 
   using ReflectionType =
       rfl::Variant<Void, Bool, Int8, Int16, Int32, Int64, UInt8, UInt16, UInt32,
-                   UInt64, Float32, Float64, Data, Text, List, Map, Reference,
-                   Struct, Union>;
+                   UInt64, Float32, Float64, Data, Enum, List, Map, Reference,
+                   Struct, Text, Union>;
 
   const auto& reflection() const { return value; }
 
