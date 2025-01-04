@@ -37,6 +37,11 @@ struct PersonImpl {
                       .last_name = rfl::make_box<std::string>(*_p.last_name()),
                       .age = _p.age()};
   }
+
+  Person to_class() const {
+    return Person(first_name.value(), std::move(last_name.value()),
+                  age.value());
+  }
 };
 
 }  // namespace test_custom_class4
