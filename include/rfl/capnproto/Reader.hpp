@@ -93,9 +93,11 @@ class Reader {
               "float or double.");
       }
 
-      // TODO: read as enum
     } else if constexpr (internal::is_literal_v<T>) {
-      return to_basic_type<std::string>(_var).and_then(T::from_string);
+      if (type != capnp::DynamicValue::ENUM) {
+        return rfl::Error("Could not cast to an enum.");
+      }
+      return T::from_value(_var.val_.as<capnp::DynamicEnum>().getRaw());
 
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
