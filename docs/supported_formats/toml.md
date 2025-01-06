@@ -1,6 +1,9 @@
 # TOML 
 
-For TOML support, you must also include the header `<rfl/toml.hpp>` and include the toml++ library (https://github.com/marzer/tomlplusplus) in your project.
+For TOML support, you must also include the header `<rfl/toml.hpp>` and include the [toml++](https://github.com/marzer/tomlplusplus) library.
+Furthermore, when compiling reflect-cpp, you need to pass `-DREFLECTCPP_TOML=ON` to cmake. If you are using vcpkg or Conan, there
+should be an appropriate feature (vcpkg) or option (Conan) that will abstract this away for you.
+
 
 ## Reading and writing
 

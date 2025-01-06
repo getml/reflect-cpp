@@ -1,6 +1,8 @@
 # BSON 
 
-For BSON support, you must also include the header `<rfl/bson.hpp>` and link to the libbson library (https://github.com/mongodb/libbson).
+For BSON support, you must also include the header `<rfl/bson.hpp>` and link to the [libbson](https://github.com/mongodb/mongo-c-driver) library.
+Furthermore, when compiling reflect-cpp, you need to pass `-DREFLECTCPP_BSON=ON` to cmake. If you are using vcpkg, there
+should be an appropriate feature that will abstract this away for you.
 
 Like the name implies, BSON is a JSON-like binary format. It is most notably used by MongoDB.
 

@@ -1,6 +1,8 @@
 # Flexbuffers
 
-For flexbuffers support, you must also include the header `<rfl/flexbuf.hpp>` and link to the flatbuffers library (https://github.com/google/flatbuffers).
+For flexbuffers support, you must also include the header `<rfl/flexbuf.hpp>` and link to the [flatbuffers](https://github.com/google/flatbuffers) library.
+Furthermore, when compiling reflect-cpp, you need to pass `-DREFLECTCPP_FLEXBUFFERS=ON` to cmake. If you are using vcpkg or Conan, there
+should be an appropriate feature (vcpkg) or option (Conan) that will abstract this away for you.
 
 Flexbuffers is part of the flatbuffers library, which is a binary format developed by Google.
 

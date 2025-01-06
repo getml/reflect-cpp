@@ -98,7 +98,6 @@ nav:
       - CBOR: supported_formats/cbor.md
       - FlexBuffers: supported_formats/flexbuffers.md
       - JSON: supported_formats/json.md
-      - JSON Schema: supported_formats/json_schema.md
       - MessagePack: supported_formats/msgpack.md
       - TOML: supported_formats/toml.md
       - UBJSON: supported_formats/ubjson.md
@@ -131,7 +130,7 @@ nav:
       - Validating numbers: validating_numbers.md
       - Composing validators: composing_validators.md
       - Size validation: size_validation.md
-      - JSON schema: supported_formats/json_schema.md
+      - JSON schema: json_schema.md
     - Generic elements:
       - rfl::Object: object.md
       - rfl::Generic: generic.md

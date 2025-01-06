@@ -149,6 +149,7 @@ and any supported format, except where explicitly noted otherwise:
 ```cpp
 rfl::avro::write(homer);
 rfl::bson::write(homer);
+rfl::capnproto::write(homer);
 rfl::cbor::write(homer);
 rfl::flexbuf::write(homer);
 rfl::msgpack::write(homer);
@@ -158,6 +159,7 @@ rfl::xml::write(homer);
 
 rfl::avro::read<Person>(avro_bytes);
 rfl::bson::read<Person>(bson_bytes);
+rfl::capnproto::read<Person>(capnproto_bytes);
 rfl::cbor::read<Person>(cbor_bytes);
 rfl::flexbuf::read<Person>(flexbuf_bytes);
 rfl::msgpack::read<Person>(msgpack_bytes);

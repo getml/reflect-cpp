@@ -1,6 +1,9 @@
 # XML 
 
-For XML support, you must also include the header `<rfl/xml.hpp>` and include the pugixml library (https://github.com/zeux/pugixml) in your project.
+For XML support, you must also include the header `<rfl/xml.hpp>` and include the [pugixml](https://github.com/zeux/pugixml) library.
+Furthermore, when compiling reflect-cpp, you need to pass `-DREFLECTCPP_XML=ON` to cmake. If you are using vcpkg or Conan, there
+should be an appropriate feature (vcpkg) or option (Conan) that will abstract this away for you.
+
 
 ## Simple example
 

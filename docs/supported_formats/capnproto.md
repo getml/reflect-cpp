@@ -1,8 +1,8 @@
 # Cap'n Proto 
 
-For Cap'n Proto support, you must also include the header `<rfl/capnproto.hpp>` and link to the capnproto library (https://capnproto.org).
+For Cap'n Proto support, you must also include the header `<rfl/capnproto.hpp>` and link to the [capnproto](https://capnproto.org) library.
 Furthermore, when compiling reflect-cpp, you need to pass `-DREFLECTCPP_CAPNPROTO=ON` to cmake. If you are using vcpkg or Conan, there
-should be an appropriate feature (vcpkg)  or options that will abstract this away for you.
+should be an appropriate feature (vcpkg) or option (Conan) that will abstract this away for you.
 
 Cap'n Proto is a schemaful binary format. This sets it apart from most other formats supported by reflect-cpp, which are schemaless.
 
