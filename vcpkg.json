@@ -44,10 +44,6 @@
       "version>=": "3.9.3"
     },
     {
-      "name": "tinycbor",
-      "version>=": "0.6.0"
-    },
-    {
       "name": "tomlplusplus",
       "version>=": "3.4.0"
     },

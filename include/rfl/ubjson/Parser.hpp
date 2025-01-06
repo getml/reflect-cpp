@@ -12,8 +12,8 @@ namespace rfl::parsing {
 /// Because of that, we require all of the fields and then set them to nullptr,
 /// if necessary.
 template <class ProcessorsType, class... FieldTypes>
-requires AreReaderAndWriter<ubjson::Reader, ubjson::Writer,
-                            NamedTuple<FieldTypes...>>
+  requires AreReaderAndWriter<ubjson::Reader, ubjson::Writer,
+                              NamedTuple<FieldTypes...>>
 struct Parser<ubjson::Reader, ubjson::Writer, NamedTuple<FieldTypes...>,
               ProcessorsType>
     : public NamedTupleParser<
@@ -21,26 +21,23 @@ struct Parser<ubjson::Reader, ubjson::Writer, NamedTuple<FieldTypes...>,
           /*_ignore_empty_containers=*/false,
           /*_all_required=*/true,
           /*_no_field_names=*/ProcessorsType::no_field_names_, ProcessorsType,
-          FieldTypes...> {
-};
+          FieldTypes...> {};
 
 template <class ProcessorsType, class... Ts>
-requires AreReaderAndWriter<ubjson::Reader, ubjson::Writer, rfl::Tuple<Ts...>>
+  requires AreReaderAndWriter<ubjson::Reader, ubjson::Writer, rfl::Tuple<Ts...>>
 struct Parser<ubjson::Reader, ubjson::Writer, rfl::Tuple<Ts...>, ProcessorsType>
     : public TupleParser<ubjson::Reader, ubjson::Writer,
                          /*_ignore_empty_containers=*/false,
                          /*_all_required=*/true, ProcessorsType,
-                         rfl::Tuple<Ts...>> {
-};
+                         rfl::Tuple<Ts...>> {};
 
 template <class ProcessorsType, class... Ts>
-requires AreReaderAndWriter<ubjson::Reader, ubjson::Writer, std::tuple<Ts...>>
+  requires AreReaderAndWriter<ubjson::Reader, ubjson::Writer, std::tuple<Ts...>>
 struct Parser<ubjson::Reader, ubjson::Writer, std::tuple<Ts...>, ProcessorsType>
     : public TupleParser<ubjson::Reader, ubjson::Writer,
                          /*_ignore_empty_containers=*/false,
                          /*_all_required=*/true, ProcessorsType,
-                         std::tuple<Ts...>> {
-};
+                         std::tuple<Ts...>> {};
 
 }  // namespace rfl::parsing
 

@@ -9,8 +9,7 @@
 #include "../io/save_bytes.hpp"
 #include "write.hpp"
 
-namespace rfl {
-namespace cbor {
+namespace rfl::cbor {
 
 template <class... Ps>
 Result<Nothing> save(const std::string& _fname, const auto& _obj) {
@@ -20,7 +19,6 @@ Result<Nothing> save(const std::string& _fname, const auto& _obj) {
   return rfl::io::save_bytes(_fname, _obj, write_func);
 }
 
-}  // namespace cbor
-}  // namespace rfl
+}  // namespace rfl::cbor
 
 #endif
