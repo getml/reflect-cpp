@@ -31,7 +31,6 @@ struct SchemaHolder {
         parsing::schema::make<Reader, Writer, T,
                               Processors<SnakeCaseToCamelCase, Ps...>>();
     const auto str = to_string_representation(internal_schema);
-    std::cout << str << std::endl;
     return SchemaHolder<T, Ps...>{Schema<T>::from_string(str)};
   }
 
