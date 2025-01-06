@@ -20,6 +20,10 @@ if (REFLECTCPP_BSON)
     add_subdirectory(bson)
 endif()
 
+if (REFLECTCPP_CAPNPROTO)
+    add_subdirectory(capnproto)
+endif()
+
 if (REFLECTCPP_CBOR)
     add_subdirectory(cbor)
 endif()

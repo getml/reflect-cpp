@@ -4,7 +4,8 @@
 #include <type_traits>
 
 #include "../Processors.hpp"
-#include "../named_tuple_t.hpp"
+#include "ptr_named_tuple_t.hpp"
+#include "remove_ptrs_nt.hpp"
 
 namespace rfl::internal {
 
@@ -13,10 +14,11 @@ struct Processed;
 
 template <class StructType, class... Ps>
 struct Processed<StructType, Processors<Ps...>> {
-  using NamedTupleType = named_tuple_t<StructType>;
-  using type = typename std::invoke_result<
-      decltype(Processors<Ps...>::template process<StructType, NamedTupleType>),
-      NamedTupleType>::type;
+  using PtrNamedTupleType = ptr_named_tuple_t<StructType>;
+  using type = typename remove_ptrs_nt<
+      std::invoke_result_t<decltype(Processors<Ps...>::template process<
+                                    StructType, PtrNamedTupleType>),
+                           PtrNamedTupleType>>::NamedTupleType;
 };
 
 template <class StructType, class ProcessorsType>

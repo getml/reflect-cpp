@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_CUSTOMPARSER_HPP_
 #define RFL_PARSING_CUSTOMPARSER_HPP_
 
+#include <concepts>
 #include <exception>
 #include <tuple>
 
@@ -16,6 +17,8 @@ namespace parsing {
 template <class R, class W, class ProcessorsType, class OriginalClass,
           class HelperStruct>
 struct CustomParser {
+  using CustomParserHelperStruct = std::remove_cvref_t<HelperStruct>;
+
   static Result<OriginalClass> read(const R& _r, const auto& _var) noexcept {
     const auto to_class = [](auto&& _h) -> Result<OriginalClass> {
       try {
@@ -32,21 +35,22 @@ struct CustomParser {
         return Error(e.what());
       }
     };
-    return Parser<R, W, HelperStruct, ProcessorsType>::read(_r, _var).and_then(
-        to_class);
+    return Parser<R, W, CustomParserHelperStruct, ProcessorsType>::read(_r,
+                                                                        _var)
+        .and_then(to_class);
   }
 
   template <class P>
   static auto write(const W& _w, const OriginalClass& _p,
                     const P& _parent) noexcept {
-    Parser<R, W, HelperStruct, ProcessorsType>::write(
+    Parser<R, W, CustomParserHelperStruct, ProcessorsType>::write(
         _w, HelperStruct::from_class(_p), _parent);
   }
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
-    return Parser<R, W, std::remove_cvref_t<HelperStruct>,
-                  ProcessorsType>::to_schema(_definitions);
+    return Parser<R, W, CustomParserHelperStruct, ProcessorsType>::to_schema(
+        _definitions);
   }
 };
 

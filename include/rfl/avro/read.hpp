@@ -48,14 +48,14 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
 
 /// Parses an object from AVRO using reflection.
 template <class T, class... Ps>
-auto read(const char* _bytes, const size_t _size) noexcept {
+auto read(const char* _bytes, const size_t _size) {
   const auto schema = to_schema<std::remove_cvref_t<T>, Ps...>();
   return read<T, Ps...>(_bytes, _size, schema);
 }
 
 /// Parses an object from AVRO using reflection.
 template <class T, class... Ps>
-auto read(const std::vector<char>& _bytes, const Schema<T>& _schema) {
+auto read(const std::vector<char>& _bytes, const Schema<T>& _schema) noexcept {
   return read<T, Ps...>(_bytes.data(), _bytes.size(), _schema);
 }
 

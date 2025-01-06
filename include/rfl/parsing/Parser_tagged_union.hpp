@@ -8,7 +8,7 @@
 #include "../Result.hpp"
 #include "../TaggedUnion.hpp"
 #include "../always_false.hpp"
-#include "../internal/strings/join.hpp"
+#include "../internal/strings/strings.hpp"
 #include "../named_tuple_t.hpp"
 #include "Parser_base.hpp"
 #include "TaggedUnionWrapper.hpp"
