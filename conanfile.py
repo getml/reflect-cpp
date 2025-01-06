@@ -23,6 +23,7 @@ class ReflectCppConan(ConanFile):
         "reflection",
         "serialization",
         "memory",
+        "Cap'n Proto",
         "cbor",
         "flatbuffers",
         "json",
@@ -37,6 +38,7 @@ class ReflectCppConan(ConanFile):
     options = {
         "shared": [True, False],
         "fPIC": [True, False],
+        "with_capnproto": [True, False],
         "with_cbor": [True, False],
         "with_flatbuffers": [True, False],
         "with_msgpack": [True, False],
@@ -48,6 +50,7 @@ class ReflectCppConan(ConanFile):
     default_options = {
         "shared": False,
         "fPIC": True,
+        "with_capnproto": False,
         "with_cbor": False,
         "with_flatbuffers": False,
         "with_msgpack": False,
@@ -68,6 +71,8 @@ class ReflectCppConan(ConanFile):
     def requirements(self):
         self.requires("ctre/3.9.0", transitive_headers=True)
         self.requires("yyjson/0.10.0", transitive_headers=True)
+        if self.options.with_capnproto:
+            self.requires("capnproto/1.1.0", transitive_headers=True)
         if self.options.with_cbor:
             self.requires("tinycbor/0.6.0", transitive_headers=True)
         if self.options.with_flatbuffers:
@@ -105,6 +110,7 @@ class ReflectCppConan(ConanFile):
         tc.cache_variables["REFLECTCPP_BUILD_SHARED"] = self.options.shared
         tc.cache_variables["REFLECTCPP_USE_BUNDLED_DEPENDENCIES"] = False
         tc.cache_variables["REFLECTCPP_USE_VCPKG"] = False
+        tc.cache_variables["REFLECTCPP_CAPNPROTO"] = self.options.with_capnproto
         tc.cache_variables["REFLECTCPP_CBOR"] = self.options.with_cbor
         tc.cache_variables["REFLECTCPP_FLEXBUFFERS"] = self.options.with_flatbuffers
         tc.cache_variables["REFLECTCPP_MSGPACK"] = self.options.with_msgpack
