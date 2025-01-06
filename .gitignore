@@ -43,6 +43,7 @@
 # Output files
 *.avro
 *.bson
+*.capnproto
 *.cbor
 *.json
 *.fb
