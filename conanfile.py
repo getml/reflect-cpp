@@ -73,16 +73,14 @@ class ReflectCppConan(ConanFile):
         self.requires("yyjson/0.10.0", transitive_headers=True)
         if self.options.with_capnproto:
             self.requires("capnproto/1.1.0", transitive_headers=True)
-        if self.options.with_cbor:
-            self.requires("tinycbor/0.6.0", transitive_headers=True)
+        if self.options.with_cbor or self.options.with_ubjson:
+            self.requires("jsoncons/0.176.0", transitive_headers=True)
         if self.options.with_flatbuffers:
             self.requires("flatbuffers/24.3.25", transitive_headers=True)
         if self.options.with_msgpack:
             self.requires("msgpack-c/6.0.0", transitive_headers=True)
         if self.options.with_toml:
             self.requires("tomlplusplus/3.4.0", transitive_headers=True)
-        if self.options.with_ubjson:
-            self.requires("jsoncons/0.176.0", transitive_headers=True)
         if self.options.with_xml:
             self.requires("pugixml/1.14", transitive_headers=True)
         if self.options.with_yaml:

@@ -39,7 +39,7 @@ if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_BUILD_BENCHMARKS OR
     (REFLECTCPP_JSON AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES) OR REFLECTCPP_AVRO OR
     REFLECTCPP_BSON OR REFLECTCPP_CAPNPROTO OR REFLECTCPP_CBOR OR REFLECTCPP_FLEXBUFFERS OR 
     REFLECTCPP_MSGPACK OR REFLECTCPP_XML OR REFLECTCPP_TOML OR REFLECTCPP_UBJSON OR REFLECTCPP_YAML)
-    # enable vcpkg per default if require features other than JSON
+    # enable vcpkg per default if features other than JSON are required
     set(REFLECTCPP_USE_VCPKG_DEFAULT ON)
 endif()
 
@@ -147,20 +147,10 @@ if (REFLECTCPP_CBOR)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_cbor.cpp
     )
-    if(REFLECTCPP_USE_VCPKG)
-        target_include_directories(reflectcpp SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
-        target_include_directories(reflectcpp SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include/tinycbor")
-        if (MSVC)
-            target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/tinycbor${CMAKE_STATIC_LIBRARY_SUFFIX}")
-        else ()
-            target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libtinycbor${CMAKE_STATIC_LIBRARY_SUFFIX}")
-        endif ()
-    else()
-        if (NOT TARGET tinycbor)
-          find_package(tinycbor)
-        endif()
-        target_link_libraries(reflectcpp PUBLIC tinycbor::tinycbor)
+    if (NOT TARGET jsoncons)
+      find_package(jsoncons CONFIG REQUIRED)
     endif()
+    include_directories(PUBLIC ${jsoncons_INCLUDE_DIRS})
 endif ()
 
 if (REFLECTCPP_FLEXBUFFERS)
@@ -212,6 +202,7 @@ if (REFLECTCPP_UBJSON)
     if (NOT TARGET jsoncons)
       find_package(jsoncons CONFIG REQUIRED)
     endif()
+    include_directories(PUBLIC ${jsoncons_INCLUDE_DIRS})
 endif ()
 
 if (REFLECTCPP_XML)
