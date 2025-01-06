@@ -94,6 +94,7 @@ nav:
   - Supported Formats:
       - Avro: supported_formats/avro.md
       - BSON: supported_formats/bson.md
+      - Cap'n Proto: supported_formats/capnproto.md
       - CBOR: supported_formats/cbor.md
       - FlexBuffers: supported_formats/flexbuffers.md
       - JSON: supported_formats/json.md

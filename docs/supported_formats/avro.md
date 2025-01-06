@@ -36,7 +36,7 @@ However, Avro is a schemaful format, so before you serialize or
 deserialize, you have to declare a schema. In the two function calls
 above, this is abstracted away.
 
-But if you are repeated serializing or deserializing the same struct,
+But if you are repeatedly serializing or deserializing the same struct,
 it is more efficient to generate the schema explicitly:
 
 ```cpp
