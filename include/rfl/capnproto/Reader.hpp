@@ -14,6 +14,7 @@
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../internal/is_literal.hpp"
+#include "../internal/ptr_cast.hpp"
 
 namespace rfl::capnproto {
 
@@ -59,16 +60,16 @@ class Reader {
         return Error("Could not cast to string.");
       }
       return std::string(_var.val_.as<capnp::Text>().cStr());
-      // TODO
-      /*} else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                        rfl::Bytestring>()) {
-        const void* ptr = nullptr;
-        size_t size = 0;
-        const auto err = capnproto_value_get_bytes(_var.val_, &ptr, &size);
-        if (err) {
-          return Error("Could not cast to bytestring.");
-        }
-        return rfl::Bytestring(static_cast<const std::byte*>(ptr), size - 1);*/
+
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      if (type != capnp::DynamicValue::DATA) {
+        return Error("Could not cast to bytestring.");
+      }
+      const auto data = _var.val_.as<capnp::Data>();
+      return rfl::Bytestring(internal::ptr_cast<const std::byte*>(data.begin()),
+                             data.size());
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != capnp::DynamicValue::BOOL) {
         return rfl::Error("Could not cast to boolean.");

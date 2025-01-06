@@ -2,6 +2,7 @@
 #define RFL_CAPNPROTO_WRITER_HPP_
 
 #include <capnp/dynamic.h>
+#include <kj/array.h>
 
 #include <bit>
 #include <cstdint>
@@ -21,6 +22,7 @@
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../internal/is_literal.hpp"
+#include "../internal/ptr_cast.hpp"
 
 namespace rfl::capnproto {
 
@@ -165,6 +167,12 @@ class Writer {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       _parent->val_.set(_parent->ix_++, _var.c_str());
 
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      const auto array_ptr = kj::ArrayPtr<const kj::byte>(
+          internal::ptr_cast<const unsigned char*>(_var.data()), _var.size());
+      _parent->val_.set(_parent->ix_++, capnp::Data::Reader(array_ptr));
+
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
                          std::is_same<std::remove_cvref_t<T>, bool>()) {
       _parent->val_.set(_parent->ix_++, _var);
@@ -198,6 +206,12 @@ class Writer {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       _parent->val_.set(_name.data(), _var.c_str());
 
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      const auto array_ptr = kj::ArrayPtr<const kj::byte>(
+          internal::ptr_cast<const unsigned char*>(_var.data()), _var.size());
+      _parent->val_.set(_name.data(), capnp::Data::Reader(array_ptr));
+
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
                          std::is_same<std::remove_cvref_t<T>, bool>()) {
       _parent->val_.set(_name.data(), _var);
@@ -218,8 +232,15 @@ class Writer {
   OutputVarType add_value_to_union(const size_t _index, const T& _var,
                                    OutputUnionType* _parent) const noexcept {
     const auto field = _parent->val_.getSchema().getFields()[_index];
+
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       _parent->val_.set(field, _var.c_str());
+
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+      const auto array_ptr = kj::ArrayPtr<const kj::byte>(
+          internal::ptr_cast<const unsigned char*>(_var.data()), _var.size());
+      _parent->val_.set(field, capnp::Data::Reader(array_ptr));
 
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
                          std::is_same<std::remove_cvref_t<T>, bool>()) {

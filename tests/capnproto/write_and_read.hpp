@@ -5,7 +5,6 @@
 
 #include <iostream>
 #include <rfl/capnproto.hpp>
-#include <rfl/json.hpp>
 #include <string>
 
 template <class... Ps>
@@ -17,8 +16,5 @@ void write_and_read(const auto& _struct) {
                            << res.error().value().what();
   const auto serialized2 = rfl::capnproto::write<Ps...>(res.value());
   EXPECT_EQ(serialized1, serialized2);
-
-  // For temporary testing only, remove later.
-  std::cout << rfl::json::write(res.value()) << std::endl;
 }
 #endif
