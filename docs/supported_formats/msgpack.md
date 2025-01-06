@@ -1,6 +1,8 @@
 # msgpack 
 
-For msgpack support, you must also include the header `<rfl/msgpack.hpp>` and link to the msgpack-c library (https://github.com/msgpack/msgpack-c).
+For msgpack support, you must also include the header `<rfl/msgpack.hpp>` and link to the [msgpack-c](https://github.com/msgpack/msgpack-c) library.
+Furthermore, when compiling reflect-cpp, you need to pass `-DREFLECTCPP_MSGPACK=ON` to cmake. If you are using vcpkg or Conan, there
+should be an appropriate feature (vcpkg) or option (Conan) that will abstract this away for you.
 
 msgpack is a JSON-like binary format with an emphasis on small binary sizes.
 

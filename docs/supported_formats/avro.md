@@ -1,6 +1,7 @@
 # Avro 
 
-For Avro support, you must also include the header `<rfl/avro.hpp>` and link to the `avro-c` library (https://avro.apache.org/docs/1.6.3/api/c/index.html).
+For Avro support, you must also include the header `<rfl/avro.hpp>` and link to the [avro-c](https://avro.apache.org/docs/1.11.1/api/c/) library.
+Furthermore, when compiling reflect-cpp, you need to pass `-DREFLECTCPP_AVRO=ON` to cmake.
 
 Avro is a schemaful binary format. This sets it apart from most other formats supported by reflect-cpp, which are schemaless.
 

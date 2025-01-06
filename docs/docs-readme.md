@@ -44,7 +44,7 @@
 
 [Size validation](size_validation.md) - For imposing size constraints on containers such as `std::vector` or `std::string`.
 
-[JSON schema](supported_formats/json_schema.md) - For validating your schema before you even send it to your C++ backend.
+[JSON schema](json_schema.md) - For validating your schema before you even send it to your C++ backend.
 
 ## Generic elements
 

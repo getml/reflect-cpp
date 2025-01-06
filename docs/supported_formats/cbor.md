@@ -1,6 +1,8 @@
 # CBOR 
 
-For CBOR support, you must also include the header `<rfl/cbor.hpp>` and include the jsoncons library (https://github.com/danielaparker/jsoncons). Note that it is header-only.
+For CBOR support, you must also include the header `<rfl/cbor.hpp>` and include the [jsoncons](https://github.com/danielaparker/jsoncons) library. 
+Note that it is header-only. Furthermore, when compiling reflect-cpp, you need to pass `-DREFLECTCPP_CBOR=ON` to cmake. If you are using vcpkg or Conan, there
+should be an appropriate feature (vcpkg) or option (Conan) that will abstract this away for you.
 
 CBOR or Concise Binary Object Representation, is a JSON-like binary format with an emphasis on small binary sizes.
 

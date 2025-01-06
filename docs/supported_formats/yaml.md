@@ -1,6 +1,9 @@
 # YAML 
 
-For YAML support, you must also include the header `<rfl/yaml.hpp>` and include the yaml-cpp library (https://github.com/jbeder/yaml-cpp) in your project.
+For YAML support, you must also include the header `<rfl/yaml.hpp>` and include the [yaml-cpp](https://github.com/jbeder/yaml-cpp) library.
+Furthermore, when compiling reflect-cpp, you need to pass `-DREFLECTCPP_YAML=ON` to cmake. If you are using vcpkg or Conan, there
+should be an appropriate feature (vcpkg) or option (Conan) that will abstract this away for you.
+
 
 ## Reading and writing
 
