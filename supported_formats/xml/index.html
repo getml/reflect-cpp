@@ -629,33 +629,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../json_schema/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    JSON Schema
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../msgpack/" class="md-nav__link">
         
   
@@ -1701,13 +1674,13 @@
   
   
     <li class="md-nav__item">
-      <a href="../json_schema/" class="md-nav__link">
+      <a href="../../json_schema/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     
   
-    JSON Schema
+    JSON schema
   
 
     
@@ -2541,7 +2514,9 @@
 
 
 <h1 id="xml">XML<a class="headerlink" href="#xml" title="Permanent link">&para;</a></h1>
-<p>For XML support, you must also include the header <code>&lt;rfl/xml.hpp&gt;</code> and include the pugixml library (https://github.com/zeux/pugixml) in your project.</p>
+<p>For XML support, you must also include the header <code>&lt;rfl/xml.hpp&gt;</code> and include the <a href="https://github.com/zeux/pugixml">pugixml</a> library.
+Furthermore, when compiling reflect-cpp, you need to pass <code>-DREFLECTCPP_XML=ON</code> to cmake. If you are using vcpkg or Conan, there
+should be an appropriate feature (vcpkg) or option (Conan) that will abstract this away for you.</p>
 <h2 id="simple-example">Simple example<a class="headerlink" href="#simple-example" title="Permanent link">&para;</a></h2>
 <p>Consider the following example:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">using</span><span class="w"> </span><span class="n">Age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Validator</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Minimum</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Maximum</span><span class="o">&lt;</span><span class="mi">130</span><span class="o">&gt;&gt;</span><span class="p">;</span>

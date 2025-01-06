@@ -629,33 +629,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../json_schema/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    JSON Schema
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../msgpack/" class="md-nav__link">
         
   
@@ -1662,13 +1635,13 @@
   
   
     <li class="md-nav__item">
-      <a href="../json_schema/" class="md-nav__link">
+      <a href="../../json_schema/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     
   
-    JSON Schema
+    JSON schema
   
 
     
@@ -2463,7 +2436,9 @@
 
 
 <h1 id="toml">TOML<a class="headerlink" href="#toml" title="Permanent link">&para;</a></h1>
-<p>For TOML support, you must also include the header <code>&lt;rfl/toml.hpp&gt;</code> and include the toml++ library (https://github.com/marzer/tomlplusplus) in your project.</p>
+<p>For TOML support, you must also include the header <code>&lt;rfl/toml.hpp&gt;</code> and include the <a href="https://github.com/marzer/tomlplusplus">toml++</a> library.
+Furthermore, when compiling reflect-cpp, you need to pass <code>-DREFLECTCPP_TOML=ON</code> to cmake. If you are using vcpkg or Conan, there
+should be an appropriate feature (vcpkg) or option (Conan) that will abstract this away for you.</p>
 <h2 id="reading-and-writing">Reading and writing<a class="headerlink" href="#reading-and-writing" title="Permanent link">&para;</a></h2>
 <p>Suppose you have a struct like this:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>

@@ -732,33 +732,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../json_schema/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    JSON Schema
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../msgpack/" class="md-nav__link">
         
   
@@ -1673,13 +1646,13 @@
   
   
     <li class="md-nav__item">
-      <a href="../json_schema/" class="md-nav__link">
+      <a href="../../json_schema/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     
   
-    JSON Schema
+    JSON schema
   
 
     
@@ -2485,7 +2458,8 @@
 
 
 <h1 id="avro">Avro<a class="headerlink" href="#avro" title="Permanent link">&para;</a></h1>
-<p>For Avro support, you must also include the header <code>&lt;rfl/avro.hpp&gt;</code> and link to the <code>avro-c</code> library (https://avro.apache.org/docs/1.6.3/api/c/index.html).</p>
+<p>For Avro support, you must also include the header <code>&lt;rfl/avro.hpp&gt;</code> and link to the <a href="https://avro.apache.org/docs/1.11.1/api/c/">avro-c</a> library.
+Furthermore, when compiling reflect-cpp, you need to pass <code>-DREFLECTCPP_AVRO=ON</code> to cmake.</p>
 <p>Avro is a schemaful binary format. This sets it apart from most other formats supported by reflect-cpp, which are schemaless.</p>
 <h2 id="reading-and-writing">Reading and writing<a class="headerlink" href="#reading-and-writing" title="Permanent link">&para;</a></h2>
 <p>Suppose you have a struct like this:</p>

@@ -743,33 +743,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../json_schema/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    JSON Schema
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../msgpack/" class="md-nav__link">
         
   
@@ -1684,13 +1657,13 @@
   
   
     <li class="md-nav__item">
-      <a href="../json_schema/" class="md-nav__link">
+      <a href="../../json_schema/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     
   
-    JSON Schema
+    JSON schema
   
 
     
@@ -2507,7 +2480,9 @@
 
 
 <h1 id="flexbuffers">Flexbuffers<a class="headerlink" href="#flexbuffers" title="Permanent link">&para;</a></h1>
-<p>For flexbuffers support, you must also include the header <code>&lt;rfl/flexbuf.hpp&gt;</code> and link to the flatbuffers library (https://github.com/google/flatbuffers).</p>
+<p>For flexbuffers support, you must also include the header <code>&lt;rfl/flexbuf.hpp&gt;</code> and link to the <a href="https://github.com/google/flatbuffers">flatbuffers</a> library.
+Furthermore, when compiling reflect-cpp, you need to pass <code>-DREFLECTCPP_FLEXBUFFERS=ON</code> to cmake. If you are using vcpkg or Conan, there
+should be an appropriate feature (vcpkg) or option (Conan) that will abstract this away for you.</p>
 <p>Flexbuffers is part of the flatbuffers library, which is a binary format developed by Google.</p>
 <p>reflect-cpp can be used on top of flexbuffers. To see how this is advantageous, consider the following example:</p>
 <h2 id="simple-example">Simple example<a class="headerlink" href="#simple-example" title="Permanent link">&para;</a></h2>

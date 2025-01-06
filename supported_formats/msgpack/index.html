@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://rfl.getml.com/supported_formats/msgpack/">
       
       
-        <link rel="prev" href="../json_schema/">
+        <link rel="prev" href="../json/">
       
       
         <link rel="next" href="../toml/">
@@ -609,33 +609,6 @@
     
   
     JSON
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../json_schema/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    JSON Schema
   
 
     
@@ -1662,13 +1635,13 @@
   
   
     <li class="md-nav__item">
-      <a href="../json_schema/" class="md-nav__link">
+      <a href="../../json_schema/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     
   
-    JSON Schema
+    JSON schema
   
 
     
@@ -2463,7 +2436,9 @@
 
 
 <h1 id="msgpack">msgpack<a class="headerlink" href="#msgpack" title="Permanent link">&para;</a></h1>
-<p>For msgpack support, you must also include the header <code>&lt;rfl/msgpack.hpp&gt;</code> and link to the msgpack-c library (https://github.com/msgpack/msgpack-c).</p>
+<p>For msgpack support, you must also include the header <code>&lt;rfl/msgpack.hpp&gt;</code> and link to the <a href="https://github.com/msgpack/msgpack-c">msgpack-c</a> library.
+Furthermore, when compiling reflect-cpp, you need to pass <code>-DREFLECTCPP_MSGPACK=ON</code> to cmake. If you are using vcpkg or Conan, there
+should be an appropriate feature (vcpkg) or option (Conan) that will abstract this away for you.</p>
 <p>msgpack is a JSON-like binary format with an emphasis on small binary sizes.</p>
 <h2 id="reading-and-writing">Reading and writing<a class="headerlink" href="#reading-and-writing" title="Permanent link">&para;</a></h2>
 <p>Suppose you have a struct like this:</p>

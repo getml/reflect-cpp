@@ -721,33 +721,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../json_schema/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    JSON Schema
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../msgpack/" class="md-nav__link">
         
   
@@ -1662,13 +1635,13 @@
   
   
     <li class="md-nav__item">
-      <a href="../json_schema/" class="md-nav__link">
+      <a href="../../json_schema/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     
   
-    JSON Schema
+    JSON schema
   
 
     
@@ -2463,7 +2436,9 @@
 
 
 <h1 id="bson">BSON<a class="headerlink" href="#bson" title="Permanent link">&para;</a></h1>
-<p>For BSON support, you must also include the header <code>&lt;rfl/bson.hpp&gt;</code> and link to the libbson library (https://github.com/mongodb/libbson).</p>
+<p>For BSON support, you must also include the header <code>&lt;rfl/bson.hpp&gt;</code> and link to the <a href="https://github.com/mongodb/mongo-c-driver">libbson</a> library.
+Furthermore, when compiling reflect-cpp, you need to pass <code>-DREFLECTCPP_BSON=ON</code> to cmake. If you are using vcpkg, there
+should be an appropriate feature that will abstract this away for you.</p>
 <p>Like the name implies, BSON is a JSON-like binary format. It is most notably used by MongoDB.</p>
 <h2 id="reading-and-writing">Reading and writing<a class="headerlink" href="#reading-and-writing" title="Permanent link">&para;</a></h2>
 <p>Suppose you have a struct like this:</p>
