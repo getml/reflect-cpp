@@ -1,6 +1,6 @@
 # CBOR 
 
-For CBOR support, you must also include the header `<rfl/cbor.hpp>` and link to the tinycbor library (https://github.com/intel/tinycbor).
+For CBOR support, you must also include the header `<rfl/cbor.hpp>` and include the jsoncons library (https://github.com/danielaparker/jsoncons). Note that it is header-only.
 
 CBOR or Concise Binary Object Representation, is a JSON-like binary format with an emphasis on small binary sizes.
 
