@@ -40,7 +40,7 @@ void handle_fields_in_structs_or_unions(const auto& _struct_or_union,
                                         const size_t _indent,
                                         const std::string& _namespace,
                                         std::ostream* _os, size_t* _ix) {
-  for (const auto& [name, type] : _struct_or_union.fields) {
+  for (const auto [name, type] : _struct_or_union.fields) {
     // Because of the way Cap'n proto handles unions, we need a special case for
     // them.
     type.reflection().visit([&](const auto& _r) {
