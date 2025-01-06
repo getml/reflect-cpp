@@ -624,6 +624,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../capnproto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Cap'n Proto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../cbor/" class="md-nav__link">
         
   
@@ -2480,7 +2507,7 @@
 <p>However, Avro is a schemaful format, so before you serialize or
 deserialize, you have to declare a schema. In the two function calls
 above, this is abstracted away.</p>
-<p>But if you are repeated serializing or deserializing the same struct,
+<p>But if you are repeatedly serializing or deserializing the same struct,
 it is more efficient to generate the schema explicitly:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">schema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">avro</span><span class="o">::</span><span class="n">to_schema</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">();</span>
 

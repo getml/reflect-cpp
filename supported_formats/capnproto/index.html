@@ -12,31 +12,31 @@
         <meta name="author" content="Code17 GmbH">
       
       
-        <link rel="canonical" href="https://rfl.getml.com/rfl_skip/">
+        <link rel="canonical" href="https://rfl.getml.com/supported_formats/capnproto/">
       
       
-        <link rel="prev" href="../timestamps/">
+        <link rel="prev" href="../bson/">
       
       
-        <link rel="next" href="../result/">
+        <link rel="next" href="../cbor/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.39+insiders-4.53.14">
     
     
       
-        <title>rfl::Skip - reflect-cpp</title>
+        <title>Cap'n Proto - reflect-cpp</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.fd1ad6e4.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.fd1ad6e4.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +55,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/tweaks.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/tweaks.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#rflskip" class="md-skip">
+        <a href="#capn-proto" class="md-skip">
           Skip to content
         </a>
       
@@ -96,7 +96,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="reflect-cpp" class="md-header__button md-logo" aria-label="reflect-cpp" data-md-component="logo">
+    <a href="../.." title="reflect-cpp" class="md-header__button md-logo" aria-label="reflect-cpp" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              rfl::Skip
+              Cap'n Proto
             
           </span>
         </div>
@@ -235,47 +235,12 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
     
   
   Welcome
-
-      </a>
-    </li>
-  
-
-      
-        
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="../supported_formats/avro/" class="md-tabs__link">
-          
-  
-  Supported Formats
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../install/" class="md-tabs__link">
-        
-  
-    
-  
-  Installation
 
       </a>
     </li>
@@ -291,7 +256,42 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../docs-readme/" class="md-tabs__link">
+        <a href="../avro/" class="md-tabs__link">
+          
+  
+  Supported Formats
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../install/" class="md-tabs__link">
+        
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../docs-readme/" class="md-tabs__link">
           
   
   Documentation
@@ -307,7 +307,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../contributing/" class="md-tabs__link">
+      <a href="../../contributing/" class="md-tabs__link">
         
   
     
@@ -324,7 +324,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../people/" class="md-tabs__link">
+      <a href="../../people/" class="md-tabs__link">
         
   
     
@@ -358,7 +358,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="reflect-cpp" class="md-nav__button md-logo" aria-label="reflect-cpp" data-md-component="logo">
+    <a href="../.." title="reflect-cpp" class="md-nav__button md-logo" aria-label="reflect-cpp" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -388,445 +388,13 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   <span class="md-ellipsis">
     
   
     Welcome
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
-        
-          
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    
-  
-    Supported Formats
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Supported Formats
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/avro/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Avro
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/bson/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    BSON
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/capnproto/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Cap'n Proto
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/cbor/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    CBOR
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/flexbuffers/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    FlexBuffers
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/json/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    JSON
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/json_schema/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    JSON Schema
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/msgpack/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    MessagePack
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/toml/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    TOML
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/ubjson/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    UBJSON
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/xml/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    XML
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/yaml/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    YAML
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/supporting_your_own_format/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Custom Format
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../install/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Installation
   
 
     
@@ -861,16 +429,16 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   <span class="md-ellipsis">
     
   
-    Documentation
+    Supported Formats
   
 
     
@@ -881,12 +449,12 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
   
-    Documentation
+    Supported Formats
   
 
           </label>
@@ -899,90 +467,13 @@
   
   
     <li class="md-nav__item">
-      <a href="../docs-readme/" class="md-nav__link">
+      <a href="../avro/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     
   
-    Documentation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    
-    
-    
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    
-  
-    The basics
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4_2">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    The basics
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../concepts/structs/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Structs
+    Avro
   
 
     
@@ -1003,229 +494,13 @@
   
   
     <li class="md-nav__item">
-      <a href="../optional_fields/" class="md-nav__link">
+      <a href="../bson/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     
   
-    Optional fields
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../flatten_structs/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Struct flattening
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../concepts/processors/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Processors
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../concepts/field_syntax/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    The rfl::Field-syntax
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../literals/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    String literals
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../enums/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Enums
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../variants_and_tagged_unions/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    std::variant and rfl::TaggedUnion
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../rfl_ref/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    rfl::Box and rfl::Ref
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../timestamps/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    rfl::Timestamp
+    BSON
   
 
     
@@ -1255,7 +530,824 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    
+  
+    Cap'n Proto
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Cap'n Proto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reading-and-writing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading and writing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The schema
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-and-saving" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loading and saving
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-from-and-writing-into-streams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading from and writing into streams
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-constructors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom constructors
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cbor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    CBOR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../flexbuffers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    FlexBuffers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../json/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    JSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../json_schema/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    JSON Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../msgpack/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    MessagePack
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../toml/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    TOML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ubjson/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    UBJSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xml/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    XML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../yaml/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    YAML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supporting_your_own_format/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Format
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Documentation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs-readme/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    
+  
+    The basics
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    The basics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/structs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Structs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../optional_fields/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Optional fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../flatten_structs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Struct flattening
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/processors/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Processors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/field_syntax/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    The rfl::Field-syntax
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../literals/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    String literals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enums/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Enums
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../variants_and_tagged_unions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    std::variant and rfl::TaggedUnion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rfl_ref/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    rfl::Box and rfl::Ref
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../timestamps/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    rfl::Timestamp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rfl_skip/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1270,7 +1362,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -1283,7 +1374,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../result/" class="md-nav__link">
+      <a href="../../result/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1310,7 +1401,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../standard_containers/" class="md-nav__link">
+      <a href="../../standard_containers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1337,7 +1428,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../c_arrays_and_inheritance/" class="md-nav__link">
+      <a href="../../c_arrays_and_inheritance/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1364,7 +1455,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../bytestring/" class="md-nav__link">
+      <a href="../../bytestring/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1391,7 +1482,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../number_systems/" class="md-nav__link">
+      <a href="../../number_systems/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1474,7 +1565,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../patterns/" class="md-nav__link">
+      <a href="../../patterns/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1501,7 +1592,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../validating_numbers/" class="md-nav__link">
+      <a href="../../validating_numbers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1528,7 +1619,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../composing_validators/" class="md-nav__link">
+      <a href="../../composing_validators/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1555,7 +1646,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../size_validation/" class="md-nav__link">
+      <a href="../../size_validation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1582,7 +1673,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../supported_formats/json_schema/" class="md-nav__link">
+      <a href="../json_schema/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1665,7 +1756,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../object/" class="md-nav__link">
+      <a href="../../object/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1692,7 +1783,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../generic/" class="md-nav__link">
+      <a href="../../generic/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1719,7 +1810,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../extra_fields/" class="md-nav__link">
+      <a href="../../extra_fields/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1802,7 +1893,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/custom_classes/" class="md-nav__link">
+      <a href="../../concepts/custom_classes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1829,7 +1920,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../custom_parser/" class="md-nav__link">
+      <a href="../../custom_parser/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1912,7 +2003,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../replace/" class="md-nav__link">
+      <a href="../../replace/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1939,7 +2030,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../as/" class="md-nav__link">
+      <a href="../../as/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1966,7 +2057,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../named_tuple/" class="md-nav__link">
+      <a href="../../named_tuple/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1993,7 +2084,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../rfl_tuple/" class="md-nav__link">
+      <a href="../../rfl_tuple/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2020,7 +2111,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../to_view/" class="md-nav__link">
+      <a href="../../to_view/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2103,7 +2194,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../supported_formats/supporting_your_own_format/" class="md-nav__link">
+      <a href="../supporting_your_own_format/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2130,7 +2221,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../backwards_compatability/" class="md-nav__link">
+      <a href="../../backwards_compatability/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2157,7 +2248,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../benchmarks/" class="md-nav__link">
+      <a href="../../benchmarks/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2199,7 +2290,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../contributing/" class="md-nav__link">
+      <a href="../../contributing/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2225,7 +2316,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../people/" class="md-nav__link">
+      <a href="../../people/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2266,6 +2357,69 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reading-and-writing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading and writing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The schema
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-and-saving" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loading and saving
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-from-and-writing-into-streams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading from and writing into streams
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custom-constructors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom constructors
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2288,7 +2442,7 @@
         
   
     <li class="md-path__item">
-      <a href=".." class="md-path__link">
+      <a href="../.." class="md-path__link">
         
   <span class="md-ellipsis">
     Welcome
@@ -2305,27 +2459,10 @@
     
     
       <li class="md-path__item">
-        <a href="../docs-readme/" class="md-path__link">
+        <a href="../avro/" class="md-path__link">
           
   <span class="md-ellipsis">
-    Documentation
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-    
-    
-      <li class="md-path__item">
-        <a href="../concepts/structs/" class="md-path__link">
-          
-  <span class="md-ellipsis">
-    The basics
+    Supported Formats
   </span>
 
         </a>
@@ -2347,45 +2484,101 @@
   
 
 
-<h1 id="rflskip"><code>rfl::Skip</code><a class="headerlink" href="#rflskip" title="Permanent link">&para;</a></h1>
-<p>It is possible to skip the serialization and deserialization of fields using <code>rfl::Skip</code>.</p>
-<p>Note that <code>rfl::Skip</code> is unsupported by all schemaful formats, like Avro.</p>
+<h1 id="capn-proto">Cap'n Proto<a class="headerlink" href="#capn-proto" title="Permanent link">&para;</a></h1>
+<p>For Cap'n Proto support, you must also include the header <code>&lt;rfl/capnproto.hpp&gt;</code> and link to the capnproto library (https://capnproto.org).
+Furthermore, when compiling reflect-cpp, you need to pass <code>-DREFLECTCPP_CAPNPROTO=ON</code> to cmake. If you are using vcpkg or Conan, there
+should be an appropriate feature (vcpkg)  or options that will abstract this away for you.</p>
+<p>Cap'n Proto is a schemaful binary format. This sets it apart from most other formats supported by reflect-cpp, which are schemaless.</p>
+<h2 id="reading-and-writing">Reading and writing<a class="headerlink" href="#reading-and-writing" title="Permanent link">&para;</a></h2>
+<p>Suppose you have a struct like this:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;firstName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;lastName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Skip</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">town</span><span class="p">;</span>
-<span class="w">  </span><span class="n">Age</span><span class="w"> </span><span class="n">age</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Timestamp</span><span class="o">&lt;</span><span class="s">&quot;%Y-%m-%d&quot;</span><span class="o">&gt;</span><span class="w"> </span><span class="n">birthday</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">children</span><span class="p">;</span>
 <span class="p">};</span>
 </code></pre></div>
-<p>This means that the field <code>town</code> will be ignored:</p>
-<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;firstName&quot;</span><span class="p">:</span><span class="s2">&quot;Homer&quot;</span><span class="p">,</span><span class="nt">&quot;lastName&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">,</span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="mi">45</span><span class="p">}</span>
+<p>A <code>Person</code> struct can be serialized to a bytes vector like this:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{...};</span>
+<span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">capnproto</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">person</span><span class="p">);</span>
 </code></pre></div>
-<p>If you only want to skip the deserialization, but not the serialization, you can use <code>rfl::SkipDeserialization</code>:</p>
+<p>You can parse bytes like this:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">capnproto</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="the-schema">The schema<a class="headerlink" href="#the-schema" title="Permanent link">&para;</a></h2>
+<p>However, Cap'n Proto is a schemaful format, so before you serialize or
+deserialize, you have to declare a schema. In the two function calls
+above, this is abstracted away.</p>
+<p>If you want to, you can pass the schema explicitly, but it will not
+yield any performance gains, because the schemata are always created
+upfront:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">schema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">capnproto</span><span class="o">::</span><span class="n">to_schema</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">();</span>
+
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{...};</span>
+<span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">capnproto</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">person</span><span class="p">,</span><span class="w"> </span><span class="n">schema</span><span class="p">);</span>
+
+<span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">capnproto</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">(</span><span class="n">bytes</span><span class="p">,</span><span class="w"> </span><span class="n">schema</span><span class="p">);</span>
+</code></pre></div>
+<p>Cap'n Proto schemas are created using a schema language. You can
+retrieve the schema like this:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="n">schema</span><span class="p">.</span><span class="n">str</span><span class="p">();</span>
+</code></pre></div>
+<p>In this case, the resulting schema representation looks like this:</p>
+<div class="language-text highlight"><pre><span></span><code>@0xdbb9ad1f14bf0b36;
+
+struct Person {
+  firstName @0 :Text;
+  lastName @1 :Text;
+  birthday @2 :Text;
+  children @3 :List(Person);
+}
+</code></pre></div>
+<h2 id="loading-and-saving">Loading and saving<a class="headerlink" href="#loading-and-saving" title="Permanent link">&para;</a></h2>
+<p>You can also load and save to disc using a very similar syntax:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">capnproto</span><span class="o">::</span><span class="n">load</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;/path/to/file.capnproto&quot;</span><span class="p">);</span>
+
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{...};</span>
+<span class="n">rfl</span><span class="o">::</span><span class="n">capnproto</span><span class="o">::</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;/path/to/file.capnproto&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">person</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="reading-from-and-writing-into-streams">Reading from and writing into streams<a class="headerlink" href="#reading-from-and-writing-into-streams" title="Permanent link">&para;</a></h2>
+<p>You can also read from and write into any <code>std::istream</code> and <code>std::ostream</code> respectively.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">capnproto</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">(</span><span class="n">my_istream</span><span class="p">);</span>
+
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{...};</span>
+<span class="n">rfl</span><span class="o">::</span><span class="n">capnproto</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">person</span><span class="p">,</span><span class="w"> </span><span class="n">my_ostream</span><span class="p">);</span>
+</code></pre></div>
+<p>Note that <code>std::cout</code> is also an ostream, so this works as well:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="n">rfl</span><span class="o">::</span><span class="n">capnproto</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">person</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</code></pre></div>
+<p>(Since Cap'n Proto is a binary format, the readability of this will be limited, but it might be useful for debugging).</p>
+<h2 id="custom-constructors">Custom constructors<a class="headerlink" href="#custom-constructors" title="Permanent link">&para;</a></h2>
+<p>One of the great things about C++ is that it gives you control over
+when and how you code is compiled.</p>
+<p>For large and complex systems of structs, it is often a good idea to split up
+your code into smaller compilation units. You can do so using custom constructors.</p>
+<p>For the Cap'n Proto format, these must be a static function on your struct or class called
+<code>from_capnproto</code> that take a <code>rfl::capnproto::Reader::InputVarType</code> as input and return
+the class or the class wrapped in <code>rfl::Result</code>.</p>
+<p>In your header file you can write something like this:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;firstName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;lastName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">SkipDeserialization</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">town</span><span class="p">;</span>
-<span class="w">  </span><span class="n">Age</span><span class="w"> </span><span class="n">age</span><span class="p">;</span>
+<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;firstName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;lastName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Timestamp</span><span class="o">&lt;</span><span class="s">&quot;%Y-%m-%d&quot;</span><span class="o">&gt;</span><span class="w"> </span><span class="n">birthday</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">InputVarType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">rfl</span><span class="o">::</span><span class="n">capnproto</span><span class="o">::</span><span class="n">Reader</span><span class="o">::</span><span class="n">InputVarType</span><span class="p">;</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">from_capnproto</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputVarType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_obj</span><span class="p">);</span>
 <span class="p">};</span>
 </code></pre></div>
-<p>If you only want to skip the serialization, but not the deserialization, you can use <code>rfl::SkipSerialization</code>. 
-Note that this implies that the serializied data cannot be deserialized, because the field <code>town</code>
-is expected during deserialization, but not serialized.</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;firstName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;lastName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">SkipSerialization</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">town</span><span class="p">;</span>
-<span class="w">  </span><span class="n">Age</span><span class="w"> </span><span class="n">age</span><span class="p">;</span>
-<span class="p">};</span>
+<p>And in your source file, you implement <code>from_capnproto</code> as follows:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Person</span><span class="o">::</span><span class="n">from_capnproto</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputVarType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_obj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">from_nt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">auto</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">_nt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">from_named_tuple</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">_nt</span><span class="p">));</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">capnproto</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">named_tuple_t</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">_obj</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">transform</span><span class="p">(</span><span class="n">from_nt</span><span class="p">);</span>
+<span class="p">}</span>
 </code></pre></div>
-<p>You can access the underlying value in the field <code>town</code> using any of the following operators:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="n">person</span><span class="p">.</span><span class="n">town</span><span class="p">();</span>
-<span class="n">person</span><span class="p">.</span><span class="n">town</span><span class="p">.</span><span class="n">get</span><span class="p">();</span>
-<span class="n">person</span><span class="p">.</span><span class="n">town</span><span class="p">.</span><span class="n">value</span><span class="p">();</span>
-</code></pre></div>
-<p>You can assign the underlying field just like any other field:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="n">person</span><span class="p">.</span><span class="n">town</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Springfield&quot;</span><span class="p">;</span>
-</code></pre></div>
+<p>This will force the compiler to only compile the Cap'n Proto parsing when the source file is compiled.</p>
 
 
 
@@ -2479,10 +2672,10 @@ is expected during deserialization, but not serialized.</p>
       <div class="md-progress" data-md-component="progress" role="progressbar"></div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "announce.dismiss", "navigation.tabs", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.preview", "navigation.instant.progress", "navigation.path", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow"], "search": "../assets/javascripts/workers/search.c7c1ca2c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "announce.dismiss", "navigation.tabs", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.preview", "navigation.instant.progress", "navigation.path", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.c7c1ca2c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.9c5b6415.min.js"></script>
+      <script src="../../assets/javascripts/bundle.9c5b6415.min.js"></script>
       
     
   </body>
