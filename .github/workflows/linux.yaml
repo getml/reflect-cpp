@@ -53,7 +53,7 @@ jobs:
           pipx install conan
           conan profile detect
       - name: Make sure the library compiles with Conan
-        run: conan build . --build=missing -s compiler.cppstd=gnu20 -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True      
+        run: conan build . --build=missing -s compiler.cppstd=gnu20 -o *:with_capnproto=True -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True      
       - name: Compile
         run: |
           if [[ "${{ matrix.compiler }}" == "llvm" ]]; then
