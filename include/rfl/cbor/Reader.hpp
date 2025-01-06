@@ -59,7 +59,7 @@ class Reader {
       return _var.val_->as<std::string>();
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
-      if (!_var.val_->is<std::vector<uint8_t>>()) {
+      if (!_var.val_->is_byte_string()) {
         return Error("Could not cast to bytestring.");
       }
       const auto vec = _var.val_->as<std::vector<uint8_t>>();
