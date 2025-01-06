@@ -40,17 +40,17 @@ void handle_fields_in_structs_or_unions(const auto& _struct_or_union,
                                         const size_t _indent,
                                         const std::string& _namespace,
                                         std::ostream* _os, size_t* _ix) {
-  for (const auto [name, type] : _struct_or_union.fields) {
+  for (const auto& [name, type] : _struct_or_union.fields) {
     // Because of the way Cap'n proto handles unions, we need a special case for
     // them.
-    type.reflection().visit([&](const auto& _r) {
+    type.reflection().visit([=](const auto& _r) {
       using R = std::remove_cvref_t<decltype(_r)>;
       if constexpr (std::is_same<R, Type::Union>()) {
         // Special case: Union field.
         *_os << std::string(_indent * 2, ' ') << name << " :union {"
              << std::endl;
         for (size_t i = 0; i < _r.fields.size(); ++i) {
-          _r.fields[i].second.reflection().visit([&](const auto& _union_field) {
+          _r.fields[i].second.reflection().visit([=](const auto& _union_field) {
             using U = std::remove_cvref_t<decltype(_union_field)>;
             if constexpr (std::is_same<U, Type::Union>()) {
               *_os << std::string(_indent * 2 + 2, ' ')
