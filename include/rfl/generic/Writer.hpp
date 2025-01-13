@@ -101,7 +101,7 @@ struct Writer {
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       return OutputVarType(static_cast<double>(_var));
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      if constexpr sizeof(T) > sizeof(int) {
+      if constexpr (sizeof(T) > sizeof(int)) {
         return OutputVarType(static_cast<long>(_var));
       } else {
         return OutputVarType(static_cast<int>(_var));
