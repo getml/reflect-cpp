@@ -25,7 +25,7 @@ struct Validator {
     try {
       return Validator<T, V, Vs...>(_value);
     } catch (std::exception& e) {
-      return Error(e.what());
+      return Error::make_for_result(e.what());
     }
   }
 

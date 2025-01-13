@@ -9,47 +9,80 @@
 #include <string>
 #include <type_traits>
 
-#include "internal/is_array.hpp"
-#include "internal/to_std_array.hpp"
-
 /*
-  This define the parts common to both implementation (probably)
+  This implementation are for C++ parts with std::expected defined
 */
+#ifdef __cpp_lib_expected
+#include <expected>
 namespace rfl {
 class Error {
  public:
   Error(const std::string& _what) : what_(_what) {}
-
+  Error(const Error& e) = default;
+  Error(Error&& e) = default;
+  Error& operator=(const Error&) = default;
+  Error& operator=(Error&&) = default;
   ~Error() = default;
 
   /// Returns the error message, equivalent to .what() in std::exception.
   const std::string& what() const { return what_; }
 
+  /*
+    Use the following constructor to return a rfl::Result, otherwise, use the
+    constructor.
+  */
+  static std::unexpected<Error> make_for_result(const std::string& what) {
+    return std::unexpected<Error>{Error{what}};
+  }
+  static std::unexpected<Error> make_for_result(Error&& e) {
+    return std::unexpected<Error>{std::move(e)};
+  }
+  static std::unexpected<Error> make_for_result(const Error& e) {
+    return std::unexpected<Error>{Error{e}};
+  }
+
  private:
   /// Documents what went wrong
   std::string what_;
 };
-}  // namespace rfl
+struct Nothing {};
 
-#ifdef __cpp_lib_expected
-#include <expected>
-/*
-  Use std::expected for rfl::Result
-*/
-namespace rfl {
-template <typename T>
+template <class T>
 using Result = std::expected<T, rfl::Error>;
-}
+}  // namespace rfl
 #else
-/*
-  An implementation of rfl::Result
-*/
-namespace rfl {
 
+/**
+  The following are implementation specific to the usage of C++ without
+  std::expected defined.
+ */
+namespace rfl {
+class Error {
+ public:
+  Error(const std::string& _what) : what_(_what) {}
+  ~Error() = default;
+  Error(const Error& e) = default;
+  Error(Error&& e) = default;
+  Error& operator=(const Error&) = default;
+  Error& operator=(Error&&) = default;
+
+  /// Returns the error message, equivalent to .what() in std::exception.
+  const std::string& what() const { return what_; }
+  /*
+    Use the following constructor to return a rfl::Result, otherwise, use the
+    constructor.
+  */
+  static Error make_for_result(const std::string& what) { return Error{what}; }
+  static Error make_for_result(Error&& e) { return Error{std::move(e)}; }
+  static Error make_for_result(const Error& e) { return Error{e}; }
+
+ private:
+  /// Documents what went wrong
+  std::string what_;
+};
 /// Can be used when we are simply interested in whether an operation was
 /// successful.
 struct Nothing {};
-
 /// The Result class is used for monadic error handling.
 template <class T>
 class Result {
@@ -363,6 +396,29 @@ class Result {
   */
   T* operator->() noexcept { return &get_t(); }
   const T* operator->() const noexcept { return &get_t(); }
+  /*
+    transform_error
+  */
+  template <class F>
+  rfl::Result<T> transform_error(F&& f) && {
+    static_assert(
+        std::same_as<std::invoke_result_t<F, rfl::Error>, rfl::Error>);
+    if (!has_value()) {
+      return rfl::Result<T>{std::invoke(f, std::move(get_err()))};
+    } else {
+      return rfl::Result<T>{std::move(value())};
+    }
+  }
+  template <class F>
+  rfl::Result<T> transform_error(F&& f) const& {
+    static_assert(
+        std::same_as<std::invoke_result_t<F, rfl::Error>, rfl::Error>);
+    if (!has_value()) {
+      return rfl::Result<T>{std::invoke(f, get_err())};
+    } else {
+      return rfl::Result<T>{value()};
+    }
+  }
 
  private:
   void copy_from_other(const Result<T>& _other) {
@@ -406,8 +462,6 @@ class Result {
       new (&get_err()) Error(std::move(_other.get_err()));
     }
   }
-
- private:
   /// Signifies whether this was a success.
   bool success_;
 

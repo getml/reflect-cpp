@@ -26,7 +26,7 @@ struct Parser<R, W, std::reference_wrapper<T>, ProcessorsType> {
                   "Please consider using std::unique_ptr, rfl::Box, "
                   "std::shared_ptr, or"
                   "rfl::Ref instead.");
-    return Error("Unsupported.");
+    return Error::make_for_result("Unsupported.");
   }
 
   template <class P>

@@ -40,21 +40,21 @@ struct Reader {
     const auto type = _var.type;
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       if (type != MSGPACK_OBJECT_STR) {
-        return Error("Could not cast to string.");
+        return Error::make_for_result("Could not cast to string.");
       }
       const auto str = _var.via.str;
       return std::string(str.ptr, str.size);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
       if (type != MSGPACK_OBJECT_BIN) {
-        return Error("Could not cast to a bytestring.");
+        return Error::make_for_result("Could not cast to a bytestring.");
       }
       const auto bin = _var.via.bin;
       return rfl::Bytestring(std::bit_cast<const std::byte*>(bin.ptr),
                              bin.size);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != MSGPACK_OBJECT_BOOLEAN) {
-        return Error("Could not cast to boolean.");
+        return Error::make_for_result("Could not cast to boolean.");
       }
       return _var.via.boolean;
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
@@ -67,7 +67,7 @@ struct Reader {
       } else if (type == MSGPACK_OBJECT_NEGATIVE_INTEGER) {
         return static_cast<T>(_var.via.i64);
       }
-      return rfl::Error(
+      return rfl::Error::make_for_result(
           "Could not cast to numeric value. The type must be integral, float "
           "or double.");
     } else {
@@ -99,7 +99,7 @@ struct Reader {
       const auto& key = _obj.ptr[i].key;
       const auto& val = _obj.ptr[i].val;
       if (key.type != MSGPACK_OBJECT_STR) {
-        return Error("Key in element " + std::to_string(i) +
+        return Error::make_for_result("Key in element " + std::to_string(i) +
                      " was not a string.");
       }
       const auto name = std::string_view(key.via.str.ptr, key.via.str.size);
@@ -114,7 +114,7 @@ struct Reader {
     try {
       return T::from_msgpack_obj(_var);
     } catch (std::exception& e) {
-      return rfl::Error(e.what());
+      return rfl::Error::make_for_result(e.what());
     }
   }
 };

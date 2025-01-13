@@ -27,7 +27,7 @@ namespace parsing {
 /// but also includes map-like types, when the key is not of type
 /// std::string.
 template <class R, class W, class VecType, class ProcessorsType>
-requires AreReaderAndWriter<R, W, VecType>
+  requires AreReaderAndWriter<R, W, VecType>
 struct VectorParser {
  public:
   using InputArrayType = typename R::InputArrayType;
@@ -57,7 +57,7 @@ struct VectorParser {
             VectorReader<R, W, VecType, ProcessorsType>(&_r, &vec);
         const auto err = _r.read_array(vector_reader, _arr);
         if (err) {
-          return *err;
+          return Error::make_for_result(*err);
         }
         return vec;
       };

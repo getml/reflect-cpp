@@ -39,12 +39,12 @@ struct Parser<R, W, std::array<T, _size>, ProcessorsType> {
       auto err = _r.read_array(array_reader, _arr);
       if (err) {
         call_destructors_on_array_where_necessary(array_reader.num_set(), ptr);
-        return *err;
+        return Error::make_for_result(*err);
       }
       err = array_reader.check_size();
       if (err) {
         call_destructors_on_array_where_necessary(array_reader.num_set(), ptr);
-        return *err;
+        return Error::make_for_result(*err);
       }
       auto result = Result<std::array<T, _size>>(std::move(*ptr));
       call_destructors_on_array_where_necessary(array_reader.num_set(), ptr);

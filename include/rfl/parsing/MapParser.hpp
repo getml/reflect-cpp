@@ -19,7 +19,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class MapType, class ProcessorsType>
-requires AreReaderAndWriter<R, W, MapType>
+  requires AreReaderAndWriter<R, W, MapType>
 struct MapParser {
  public:
   using InputObjectType = typename R::InputObjectType;
@@ -87,10 +87,10 @@ struct MapParser {
         MapReader<R, W, MapType, ProcessorsType>(&_r, &map, &errors);
     const auto err = _r.read_object(map_reader, _obj);
     if (err) {
-      return *err;
+      return Error::make_for_result(*err);
     }
     if (errors.size() != 0) {
-      return to_single_error_message(errors);
+      return Error::make_for_result(to_single_error_message(errors));
     }
     return map;
   }

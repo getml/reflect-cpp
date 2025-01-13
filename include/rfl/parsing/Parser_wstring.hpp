@@ -14,7 +14,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::wstring>
+  requires AreReaderAndWriter<R, W, std::wstring>
 struct Parser<R, W, std::wstring, ProcessorsType> {
  public:
   using InputVarType = typename R::InputVarType;
@@ -29,7 +29,7 @@ struct Parser<R, W, std::wstring, ProcessorsType> {
 
     auto inStr = Parser<R, W, std::string, ProcessorsType>::read(_r, _var);
     if (!inStr) {
-      return Result<std::wstring>(inStr.error());
+      return Result<std::wstring>(Error::make_for_result(inStr.error()));
     }
     // if (auto err = inStr.error(); err.has_value()) {
     //   return Result<std::wstring>(err.value());

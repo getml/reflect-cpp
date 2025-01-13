@@ -92,27 +92,27 @@ struct Reader {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       const auto r = yyjson_get_str(_var.val_);
       if (r == NULL) {
-        return rfl::Error("Could not cast to string.");
+        return rfl::Error::make_for_result("Could not cast to string.");
       }
       return std::string(r);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!yyjson_is_bool(_var.val_)) {
-        return rfl::Error("Could not cast to boolean.");
+        return rfl::Error::make_for_result("Could not cast to boolean.");
       }
       return yyjson_get_bool(_var.val_);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       if (!yyjson_is_num(_var.val_)) {
-        return rfl::Error("Could not cast to double.");
+        return rfl::Error::make_for_result("Could not cast to double.");
       }
       return static_cast<T>(yyjson_get_num(_var.val_));
     } else if constexpr (std::is_unsigned<std::remove_cvref_t<T>>()) {
       if (!yyjson_is_int(_var.val_)) {
-        return rfl::Error("Could not cast to int.");
+        return rfl::Error::make_for_result("Could not cast to int.");
       }
       return static_cast<T>(yyjson_get_uint(_var.val_));
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       if (!yyjson_is_int(_var.val_)) {
-        return rfl::Error("Could not cast to int.");
+        return rfl::Error::make_for_result("Could not cast to int.");
       }
       return static_cast<T>(yyjson_get_sint(_var.val_));
     } else {
@@ -131,7 +131,7 @@ struct Reader {
     try {
       return T::from_json_obj(_var);
     } catch (std::exception& e) {
-      return rfl::Error(e.what());
+      return rfl::Error::make_for_result(e.what());
     }
   }
 };

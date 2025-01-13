@@ -5,7 +5,7 @@ namespace rfl::flexbuf {
 rfl::Result<Reader::InputVarType> Reader::get_field_from_array(
     const size_t _idx, const InputArrayType& _arr) const noexcept {
   if (_idx >= _arr.size()) {
-    return rfl::Error("Index " + std::to_string(_idx) + " of of bounds.");
+    return rfl::Error::make_for_result("Index " + std::to_string(_idx) + " of of bounds.");
   }
   return _arr[_idx];
 }
@@ -18,7 +18,7 @@ rfl::Result<Reader::InputVarType> Reader::get_field_from_object(
       return _obj.Values()[i];
     }
   }
-  return rfl::Error("Map does not contain any element called '" + _name + "'.");
+  return rfl::Error::make_for_result("Map does not contain any element called '" + _name + "'.");
 }
 
 bool Reader::is_empty(const InputVarType& _var) const noexcept {
@@ -28,7 +28,7 @@ bool Reader::is_empty(const InputVarType& _var) const noexcept {
 rfl::Result<Reader::InputArrayType> Reader::to_array(
     const InputVarType& _var) const noexcept {
   if (!_var.IsVector()) {
-    return rfl::Error("Could not cast to Vector.");
+    return rfl::Error::make_for_result("Could not cast to Vector.");
   }
   return _var.AsVector();
 }
@@ -36,7 +36,7 @@ rfl::Result<Reader::InputArrayType> Reader::to_array(
 rfl::Result<Reader::InputObjectType> Reader::to_object(
     const InputVarType& _var) const noexcept {
   if (!_var.IsMap()) {
-    return rfl::Error("Could not cast to Map!");
+    return rfl::Error::make_for_result("Could not cast to Map!");
   }
   return _var.AsMap();
 }

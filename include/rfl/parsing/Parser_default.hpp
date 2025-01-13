@@ -34,7 +34,7 @@ namespace parsing {
 
 /// Default case - anything that cannot be explicitly matched.
 template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, T>
+  requires AreReaderAndWriter<R, W, T>
 struct Parser {
  public:
   using InputVarType = typename R::InputVarType;
@@ -48,7 +48,7 @@ struct Parser {
         try {
           return Reflector<T>::to(_named_tuple);
         } catch (std::exception& e) {
-          return Error(e.what());
+          return Error::make_for_result(e.what());
         }
       };
       return Parser<R, W, typename Reflector<T>::ReflType,
@@ -63,7 +63,7 @@ struct Parser {
           try {
             return T{_named_tuple};
           } catch (std::exception& e) {
-            return Error(e.what());
+            return Error::make_for_result(e.what());
           }
         };
         return Parser<R, W, ReflectionType, ProcessorsType>::read(_r, _var)
@@ -263,7 +263,7 @@ struct Parser {
         Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
     if (err) [[unlikely]] {
       call_destructors_where_necessary(set, &view);
-      return *err;
+      return Error::make_for_result(*err);
     }
     auto res = Result<T>(std::move(*ptr));
     call_destructors_where_necessary(set, &view);
@@ -283,7 +283,7 @@ struct Parser {
         Parser<R, W, ViewType, ProcessorsType>::read_view_with_default(_r, _var,
                                                                        &view);
     if (err) [[unlikely]] {
-      return *err;
+      return Error::make_for_result(*err);
     }
     return t;
   }

@@ -35,16 +35,16 @@ struct AnyOf {
     for (size_t i = 0; i < _errors.size(); ++i) {
       stream << "\n" << i + 1 << ") " << _errors.at(i).what();
     }
-    return Error(stream.str());
+    return Error{stream.str()};
   }
 
   template <class T, class Head, class... Tail>
   static rfl::Result<T> validate_impl(const T& _value,
                                       std::vector<Error> _errors) {
-    const auto handle_err = [&](Error&& _err) {
+    const auto handle_err = [&](Error&& _err) -> rfl::Result<T> {
       _errors.push_back(std::forward<Error>(_err));
       if constexpr (sizeof...(Tail) == 0) {
-        return make_error_message(_errors);
+        return rfl::Error::make_for_result(make_error_message(_errors));
       } else {
         return validate_impl<T, Tail...>(
             _value, std::forward<std::vector<Error>>(_errors));

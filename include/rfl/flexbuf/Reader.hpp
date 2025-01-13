@@ -56,30 +56,30 @@ struct Reader {
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       if (!_var.IsString()) {
-        return rfl::Error("Could not cast to a string.");
+        return rfl::Error::make_for_result("Could not cast to a string.");
       }
       return std::string(_var.AsString().c_str());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
       if (!_var.IsBlob()) {
-        return rfl::Error("Could not cast to a bytestring.");
+        return rfl::Error::make_for_result("Could not cast to a bytestring.");
       }
       const auto blob = _var.AsBlob();
       return rfl::Bytestring(std::bit_cast<const std::byte*>(blob.data()),
                              blob.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var.IsBool()) {
-        return rfl::Error("Could not cast to boolean.");
+        return rfl::Error::make_for_result("Could not cast to boolean.");
       }
       return _var.AsBool();
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       if (!_var.IsNumeric()) {
-        return rfl::Error("Could not cast to double.");
+        return rfl::Error::make_for_result("Could not cast to double.");
       }
       return static_cast<T>(_var.AsDouble());
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       if (!_var.IsNumeric()) {
-        return rfl::Error("Could not cast to int.");
+        return rfl::Error::make_for_result("Could not cast to int.");
       }
       return static_cast<T>(_var.AsInt64());
     } else {
@@ -126,7 +126,7 @@ struct Reader {
     try {
       return T::from_flexbuf(_var);
     } catch (std::exception& e) {
-      return rfl::Error(e.what());
+      return rfl::Error::make_for_result(e.what());
     }
   }
 };

@@ -21,7 +21,7 @@ namespace parsing {
 /// To be used when all options of the variants are rfl::Field. Essentially,
 /// this is an externally tagged union.
 template <class R, class W, class ProcessorsType, class... FieldTypes>
-requires AreReaderAndWriter<R, W, rfl::Variant<FieldTypes...>>
+  requires AreReaderAndWriter<R, W, rfl::Variant<FieldTypes...>>
 struct FieldVariantParser {
   using FieldVariantType = rfl::Variant<FieldTypes...>;
   using ResultType = Result<FieldVariantType>;
@@ -43,10 +43,10 @@ struct FieldVariantParser {
               &_r, &field_variant);
       auto err = _r.read_object(reader, _obj);
       if (err) {
-        return *err;
+        return Error::make_for_result(*err);
       }
       if (!field_variant) {
-        return Error(
+        return Error::make_for_result(
             "Could not parse: Expected the object to have "
             "exactly one field, but found more than one.");
       }

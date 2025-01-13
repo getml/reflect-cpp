@@ -150,7 +150,7 @@ This is often used to produce better error messages:
 
 ```cpp
 const auto embellish_error = [&](const Error& _e) -> rfl::Result<T> {
-    return Error("Failed to parse field '" + key + "': " + _e.what());
+    return Error::make_for_result("Failed to parse field '" + key + "': " + _e.what());
 };
 return Parser<T>::read(_r, &_var).or_else(embellish_error);
 ```

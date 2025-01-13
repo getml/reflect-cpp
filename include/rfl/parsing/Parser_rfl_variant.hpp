@@ -49,7 +49,7 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
       if (result) {
         return std::move(*result);
       } else {
-        return Error(
+        return Error::make_for_result(
             to_single_error_message(errors,
                                     "Could not parse the variant. Each of the "
                                     "possible alternatives failed "

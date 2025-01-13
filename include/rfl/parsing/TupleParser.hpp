@@ -20,7 +20,7 @@ namespace rfl::parsing {
 
 template <class R, class W, bool _ignore_empty_containers, bool _all_required,
           class ProcessorsType, class TupleType>
-requires AreReaderAndWriter<R, W, TupleType>
+  requires AreReaderAndWriter<R, W, TupleType>
 struct TupleParser {
  public:
   using InputArrayType = typename R::InputArrayType;
@@ -39,12 +39,12 @@ struct TupleParser {
       auto err = _r.read_array(tuple_reader, _arr);
       if (err) {
         call_destructors_on_tuple_where_necessary(tuple_reader.num_set(), ptr);
-        return *err;
+        return Error::make_for_result(*err);
       }
       err = tuple_reader.handle_missing_fields();
       if (err) {
         call_destructors_on_tuple_where_necessary(tuple_reader.num_set(), ptr);
-        return *err;
+        return Error::make_for_result(*err);
       }
       auto res = Result<TupleType>(std::move(*ptr));
       call_destructors_on_tuple_where_necessary(tuple_reader.num_set(), ptr);

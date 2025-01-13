@@ -54,20 +54,20 @@ class Reader {
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       if (!_var.val_->is_string()) {
-        return Error("Could not cast to string.");
+        return Error::make_for_result("Could not cast to string.");
       }
       return _var.val_->as<std::string>();
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
       if (!_var.val_->is<std::vector<uint8_t>>()) {
-        return Error("Could not cast to bytestring.");
+        return Error::make_for_result("Could not cast to bytestring.");
       }
       const auto vec = _var.val_->as<std::vector<uint8_t>>();
       return rfl::Bytestring(std::bit_cast<const std::byte*>(vec.data()),
                              vec.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var.val_->is_bool()) {
-        return rfl::Error("Could not cast to boolean.");
+        return rfl::Error::make_for_result("Could not cast to boolean.");
       }
       return _var.val_->as<bool>();
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
@@ -81,7 +81,7 @@ class Reader {
       if (_var.val_->is_uint64()) {
         return static_cast<T>(_var.val_->as<uint64_t>());
       }
-      return rfl::Error(
+      return rfl::Error::make_for_result(
           "Could not cast to numeric value. The type must be integral, "
           "float or double.");
     } else {
@@ -121,7 +121,7 @@ class Reader {
     try {
       return T::from_ubjson_obj(_var);
     } catch (std::exception& e) {
-      return rfl::Error(e.what());
+      return rfl::Error::make_for_result(e.what());
     }
   }
 };

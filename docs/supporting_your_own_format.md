@@ -229,7 +229,7 @@ struct Reader {
         const InputVarType& _var) const noexcept {
         // If you do not want to support this functionality,
         // just return this.
-        return rfl::Error("Not supported.");
+        return rfl::Error::make_for_result("Not supported.");
     }
 };
 ```
