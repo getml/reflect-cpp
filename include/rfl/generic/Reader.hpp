@@ -44,8 +44,13 @@ struct Reader {
       return _var.to_double().transform(
           [](const auto& _v) { return static_cast<T>(_v); });
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      return _var.to_int().transform(
-          [](const auto& _v) { return static_cast<T>(_v); });
+      if constexpr (std::is_same<std::remove_cvref_t<T>, long>()) {
+        return _var.to_long().transform(
+            [](const auto& _v) { return static_cast<T>(_v); });
+      } else {
+        return _var.to_int().transform(
+            [](const auto& _v) { return static_cast<T>(_v); });
+      }
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }

@@ -111,6 +111,15 @@ Result<int> Generic::to_int() const noexcept {
   }
 }
 
+Result<long> Generic::to_long() const noexcept {
+  if (const long* ptr = std::get_if<long>(&value_)) {
+    return *ptr;
+  } else {
+    return Error(
+        "rfl::Generic: Could not cast the underlying value to a long.");
+  }
+}
+
 Result<Generic::Object> Generic::to_object() const noexcept {
   if (const auto* ptr = std::get_if<Object>(&value_)) {
     return *ptr;

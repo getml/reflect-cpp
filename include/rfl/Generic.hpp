@@ -19,10 +19,10 @@ class Generic {
 
   using Array = std::vector<Generic>;
   using Object = rfl::Object<Generic>;
-  using VariantType = std::variant<bool, int, double, std::string, Object,
+  using VariantType = std::variant<bool, int, long, double, std::string, Object,
                                    Array, std::nullopt_t>;
   using ReflectionType = std::optional<
-      std::variant<bool, int, double, std::string, Object, Array>>;
+      std::variant<bool, int, long, double, std::string, Object, Array>>;
 
   Generic();
 
@@ -94,6 +94,10 @@ class Generic {
   /// underlying value is not an integer.
   Result<int> to_int() const noexcept;
 
+  /// Casts the underlying value to a long or returns an rfl::Error, if the
+  /// underlying value is not a long.
+  Result<long> to_long() const noexcept;
+
   /// Casts the underlying value to an rfl::Generic::Object or returns an
   /// rfl::Error, if the underlying value is not an rfl::Generic::Object.
   Result<Object> to_object() const noexcept;
@@ -138,6 +142,10 @@ inline Result<double> to_double(const Generic& _g) noexcept {
 /// Casts the underlying value to an integer or returns an rfl::Error, if the
 /// underlying value is not an integer.
 inline Result<int> to_int(const Generic& _g) noexcept { return _g.to_int(); }
+
+/// Casts the underlying value to a long or returns an rfl::Error, if the
+/// underlying value is not a long.
+inline Result<long> to_long(const Generic& _g) noexcept { return _g.to_long(); }
 
 /// Casts the underlying value to an rfl::Generic::Object or returns an
 /// rfl::Error, if the underlying value is not an rfl::Generic::Object.
