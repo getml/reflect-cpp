@@ -44,7 +44,7 @@ struct Reader {
       return _var.to_double().transform(
           [](const auto& _v) { return static_cast<T>(_v); });
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      if constexpr (std::is_same<std::remove_cvref_t<T>, long>()) {
+      if constexpr (sizeof(T) > sizeof(int)) {
         return _var.to_long().transform(
             [](const auto& _v) { return static_cast<T>(_v); });
       } else {
