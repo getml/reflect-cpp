@@ -105,9 +105,22 @@ Result<double> Generic::to_double() const noexcept {
 Result<int> Generic::to_int() const noexcept {
   if (const int* ptr = std::get_if<int>(&value_)) {
     return *ptr;
+  } else if (const long* ptr = std::get_if<long>(&value_)) {
+    return static_cast<int>(*ptr);
   } else {
     return Error(
         "rfl::Generic: Could not cast the underlying value to an integer.");
+  }
+}
+
+Result<long> Generic::to_long() const noexcept {
+  if (const long* ptr = std::get_if<long>(&value_)) {
+    return *ptr;
+  } else if (const int* ptr = std::get_if<int>(&value_)) {
+    return static_cast<long>(*ptr);
+  } else {
+    return Error(
+        "rfl::Generic: Could not cast the underlying value to a long.");
   }
 }
 
