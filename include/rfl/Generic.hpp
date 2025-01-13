@@ -19,10 +19,10 @@ class Generic {
 
   using Array = std::vector<Generic>;
   using Object = rfl::Object<Generic>;
-  using VariantType = std::variant<bool, long, int, double, std::string, Object,
+  using VariantType = std::variant<bool, long, double, std::string, Object,
                                    Array, std::nullopt_t>;
   using ReflectionType = std::optional<
-      std::variant<bool, long, int, double, std::string, Object, Array>>;
+      std::variant<bool, long, double, std::string, Object, Array>>;
 
   Generic();
 
