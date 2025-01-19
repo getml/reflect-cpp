@@ -26,7 +26,7 @@ struct Parser<R, W, Result<T>, ProcessorsType> {
     const auto handle = [](auto&& _t) -> Result<T> {
       using Type = std::remove_cvref_t<decltype(_t)>;
       if constexpr (std::is_same<Type, ErrorType>()) {
-        return Error::make_for_result(_t.template get<"error">());
+        return rfl::Unexpected(rfl::Error(_t.template get<"error">()));
       } else {
         return std::forward<std::remove_cvref_t<T>>(_t);
       }

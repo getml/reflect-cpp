@@ -87,10 +87,10 @@ struct MapParser {
         MapReader<R, W, MapType, ProcessorsType>(&_r, &map, &errors);
     const auto err = _r.read_object(map_reader, _obj);
     if (err) {
-      return Error::make_for_result(*err);
+      return rfl::Unexpected(*err);
     }
     if (errors.size() != 0) {
-      return Error::make_for_result(to_single_error_message(errors));
+      return rfl::Unexpected(to_single_error_message(errors));
     }
     return map;
   }

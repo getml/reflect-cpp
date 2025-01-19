@@ -38,7 +38,7 @@ static rfl::Result<pugi::xml_node> cast_as_node(
     if constexpr (std::is_same<Type, pugi::xml_node>()) {
       return _n;
     } else {
-      return Error::make_for_result("Field '" + std::string(_n.name()) + "' is an attribute.");
+      return rfl::Unexpected(rfl::Error("Field '" + std::string(_n.name()) + "' is an attribute."));
     }
   };
   return std::visit(cast, _node_or_attribute);
@@ -53,14 +53,14 @@ rfl::Result<Reader::InputVarType> Reader::get_field_from_array(
       return InputVarType(node);
     }
   }
-  return rfl::Error::make_for_result("Index " + std::to_string(_idx) + " of of bounds.");
+  return rfl::Unexpected(rfl::Error("Index " + std::to_string(_idx) + " of of bounds."));
 }
 
 rfl::Result<Reader::InputVarType> Reader::get_field_from_object(
     const std::string& _name, const InputObjectType _obj) const noexcept {
   const auto node = _obj.node_.child(_name.c_str());
   if (!node) {
-    return rfl::Error::make_for_result("Object contains no field named '" + _name + "'.");
+    return rfl::Unexpected(rfl::Error("Object contains no field named '" + _name + "'."));
   }
   return InputVarType(node);
 }

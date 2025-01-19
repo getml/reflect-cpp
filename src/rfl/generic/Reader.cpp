@@ -31,7 +31,7 @@ namespace rfl::generic {
 rfl::Result<Reader::InputVarType> Reader::get_field_from_array(
     const size_t _idx, const InputArrayType& _arr) const noexcept {
   if (_idx >= _arr.size()) {
-    return rfl::Error::make_for_result("Index " + std::to_string(_idx) + " of of bounds.");
+    return rfl::Unexpected(rfl::Error("Index " + std::to_string(_idx) + " of of bounds."));
   }
   return _arr[_idx];
 }

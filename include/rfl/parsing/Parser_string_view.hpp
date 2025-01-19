@@ -25,7 +25,7 @@ struct Parser<R, W, std::string_view, ProcessorsType> {
                   "Reading into std::string_view is dangerous and "
                   "therefore unsupported. "
                   "Please consider using std::string instead.");
-    return Error::make_for_result("Unsupported.");
+    return rfl::Unexpected(rfl::Error("Unsupported."));
   }
 
   template <class P>

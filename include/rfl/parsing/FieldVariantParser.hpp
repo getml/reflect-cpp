@@ -43,12 +43,12 @@ struct FieldVariantParser {
               &_r, &field_variant);
       auto err = _r.read_object(reader, _obj);
       if (err) {
-        return Error::make_for_result(*err);
+        return rfl::Unexpected(*err);
       }
       if (!field_variant) {
-        return Error::make_for_result(
+        return rfl::Unexpected(rfl::Error(
             "Could not parse: Expected the object to have "
-            "exactly one field, but found more than one.");
+            "exactly one field, but found more than one."));
       }
       return std::move(*field_variant);
     };

@@ -32,7 +32,7 @@ rfl::Result<Reader::InputVarType> Reader::get_field_from_array(
     const size_t _idx, const InputArrayType _arr) const noexcept {
   const auto var = InputVarType(yyjson_arr_get(_arr.val_, _idx));
   if (!var.val_) {
-    return rfl::Error::make_for_result("Index " + std::to_string(_idx) + " of of bounds.");
+    return rfl::Unexpected(rfl::Error("Index " + std::to_string(_idx) + " of of bounds."));
   }
   return var;
 }
@@ -41,7 +41,7 @@ rfl::Result<Reader::InputVarType> Reader::get_field_from_object(
     const std::string& _name, const InputObjectType _obj) const noexcept {
   const auto var = InputVarType(yyjson_obj_get(_obj.val_, _name.c_str()));
   if (!var.val_) {
-    return rfl::Error::make_for_result("Object contains no field named '" + _name + "'.");
+    return rfl::Unexpected(rfl::Error("Object contains no field named '" + _name + "'."));
   }
   return var;
 }
@@ -53,7 +53,7 @@ bool Reader::is_empty(const InputVarType _var) const noexcept {
 rfl::Result<Reader::InputArrayType> Reader::to_array(
     const InputVarType _var) const noexcept {
   if (!yyjson_is_arr(_var.val_)) {
-    return rfl::Error::make_for_result("Could not cast to array!");
+    return rfl::Unexpected(rfl::Error("Could not cast to array!"));
   }
   return InputArrayType(_var.val_);
 }
@@ -61,7 +61,7 @@ rfl::Result<Reader::InputArrayType> Reader::to_array(
 rfl::Result<Reader::InputObjectType> Reader::to_object(
     const InputVarType _var) const noexcept {
   if (!yyjson_is_obj(_var.val_)) {
-    return rfl::Error::make_for_result("Could not cast to object!");
+    return rfl::Unexpected(rfl::Error("Could not cast to object!"));
   }
   return InputObjectType(_var.val_);
 }

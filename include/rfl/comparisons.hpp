@@ -14,9 +14,9 @@ struct EqualTo {
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
     if (_value != threshold) {
-      return Error::make_for_result("Value expected to be equal to " +
+      return rfl::Unexpected(rfl::Error("Value expected to be equal to " +
                    std::to_string(threshold) + ", but got " +
-                   std::to_string(_value) + ".");
+                   std::to_string(_value) + "."));
     }
     return _value;
   }
@@ -38,9 +38,9 @@ struct Minimum {
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
     if (_value < threshold) {
-      return Error::make_for_result("Value expected to be greater than or equal to " +
+      return rfl::Unexpected(rfl::Error("Value expected to be greater than or equal to " +
                    std::to_string(threshold) + ", but got " +
-                   std::to_string(_value) + ".");
+                   std::to_string(_value) + "."));
     }
     return _value;
   }
@@ -62,9 +62,9 @@ struct ExclusiveMinimum {
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
     if (_value <= threshold) {
-      return Error::make_for_result("Value expected to be greater than " +
+      return rfl::Unexpected(rfl::Error("Value expected to be greater than " +
                    std::to_string(threshold) + ", but got " +
-                   std::to_string(_value) + ".");
+                   std::to_string(_value) + "."));
     }
     return _value;
   }
@@ -86,9 +86,9 @@ struct Maximum {
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
     if (_value > threshold) {
-      return Error::make_for_result("Value expected to be less than or equal to " +
+      return rfl::Unexpected(rfl::Error("Value expected to be less than or equal to " +
                    std::to_string(threshold) + ", but got " +
-                   std::to_string(_value) + ".");
+                   std::to_string(_value) + "."));
     }
     return _value;
   }
@@ -110,9 +110,9 @@ struct ExclusiveMaximum {
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
     if (_value >= threshold) {
-      return Error::make_for_result("Value expected to be less than " +
+      return rfl::Unexpected(rfl::Error("Value expected to be less than " +
                    std::to_string(threshold) + ", but got " +
-                   std::to_string(_value) + ".");
+                   std::to_string(_value) + "."));
     }
     return _value;
   }
@@ -134,9 +134,9 @@ struct NotEqualTo {
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
     if (_value == threshold) {
-      return Error::make_for_result("Value expected to not be equal to " +
+      return rfl::Unexpected(rfl::Error("Value expected to not be equal to " +
                    std::to_string(threshold) + ", but got " +
-                   std::to_string(_value) + ".");
+                   std::to_string(_value) + "."));
     }
     return _value;
   }

@@ -51,7 +51,7 @@ class MapReader {
         static_assert(always_false_v<T>, "Unsupported type");
       }
     } catch (std::exception& e) {
-      return Error::make_for_result(e.what());
+      return rfl::Unexpected(rfl::Error(e.what()));
     }
   }
 
@@ -62,7 +62,7 @@ class MapReader {
         return std::make_pair(KeyType(std::move(_key)),
                               std::move(_pair.second));
       } catch (std::exception& e) {
-        return Error::make_for_result(e.what());
+        return rfl::Unexpected(rfl::Error(e.what()));
       }
     };
 

@@ -71,25 +71,25 @@ struct Reader {
           return std::string(value.v_symbol.symbol, value.v_symbol.len);
 
         default:
-          return rfl::Error::make_for_result(
-              "Could not cast to string. The type must be UTF8 or symbol.");
+          return rfl::Unexpected(rfl::Error(
+              "Could not cast to string. The type must be UTF8 or symbol."));
       }
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
       if (btype != BSON_TYPE_BINARY) {
-        return rfl::Error::make_for_result("Could not cast to bytestring.");
+        return rfl::Unexpected(rfl::Error("Could not cast to bytestring."));
       }
       if (value.v_binary.subtype != BSON_SUBTYPE_BINARY) {
-        return rfl::Error::make_for_result(
+        return rfl::Unexpected(rfl::Error(
             "The BSON subtype must be a binary in order to read into a "
-            "bytestring.");
+            "bytestring."));
       }
       return rfl::Bytestring(
           std::bit_cast<const std::byte*>(value.v_binary.data),
           value.v_binary.data_len);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (btype != BSON_TYPE_BOOL) {
-        return rfl::Error::make_for_result("Could not cast to boolean.");
+        return rfl::Unexpected(rfl::Error("Could not cast to boolean."));
       }
       return value.v_bool;
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
@@ -108,13 +108,13 @@ struct Reader {
           return static_cast<T>(value.v_datetime);
 
         default:
-          return rfl::Error::make_for_result(
+          return rfl::Unexpected(rfl::Error(
               "Could not cast to numeric value. The type must be double, "
-              "int32, int64 or date_time.");
+              "int32, int64 or date_time."));
       }
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bson_oid_t>()) {
       if (btype != BSON_TYPE_OID) {
-        return rfl::Error::make_for_result("Could not cast to OID.");
+        return rfl::Unexpected(rfl::Error("Could not cast to OID."));
       }
       return value.v_oid;
     } else {
@@ -139,10 +139,10 @@ struct Reader {
           }
         }
       } else {
-        return Error::make_for_result("Could not init the array iteration.");
+        return rfl::Unexpected(rfl::Error("Could not init the array iteration."));
       }
     } else {
-      return Error::make_for_result("Could not init array.");
+      return rfl::Unexpected(rfl::Error("Could not init array."));
     }
     return std::nullopt;
   }
@@ -160,10 +160,10 @@ struct Reader {
           _object_reader.read(std::string_view(k), to_input_var(&iter));
         }
       } else {
-        return Error::make_for_result("Could not init the object iteration.");
+        return rfl::Unexpected(rfl::Error("Could not init the object iteration."));
       }
     } else {
-      return Error::make_for_result("Could not init object.");
+      return rfl::Unexpected(rfl::Error("Could not init object."));
     }
     return std::nullopt;
   }
@@ -177,7 +177,7 @@ struct Reader {
     try {
       return T::from_bson_obj(_var);
     } catch (std::exception& e) {
-      return rfl::Error::make_for_result(e.what());
+      return rfl::Unexpected(rfl::Error(e.what()));
     }
   }
 

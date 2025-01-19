@@ -7,20 +7,20 @@ rfl::Result<Reader::InputVarType> Reader::get_field_from_array(
   InputVarType var;
   auto err = cbor_value_enter_container(&_arr.val_, &var.val_);
   if (err != CborNoError && err != CborErrorOutOfMemory) {
-    return Error::make_for_result(cbor_error_string(err));
+    return rfl::Unexpected(rfl::Error(cbor_error_string(err)));
   }
   size_t length = 0;
   err = cbor_value_get_array_length(&_arr.val_, &length);
   if (err != CborNoError && err != CborErrorOutOfMemory) {
-    return Error::make_for_result(cbor_error_string(err));
+    return rfl::Unexpected(rfl::Error(cbor_error_string(err)));
   }
   if (_idx >= length) {
-    return Error::make_for_result("Index " + std::to_string(_idx) + " of of bounds.");
+    return rfl::Unexpected(rfl::Error("Index " + std::to_string(_idx) + " of of bounds."));
   }
   for (size_t i = 0; i < _idx; ++i) {
     err = cbor_value_advance(&var.val_);
     if (err != CborNoError && err != CborErrorOutOfMemory) {
-      return Error::make_for_result(cbor_error_string(err));
+      return rfl::Unexpected(rfl::Error(cbor_error_string(err)));
     }
   }
   return var;
@@ -32,34 +32,34 @@ rfl::Result<Reader::InputVarType> Reader::get_field_from_object(
   auto buffer = std::string();
   auto err = cbor_value_enter_container(&_obj.val_, &var.val_);
   if (err != CborNoError) {
-    return Error::make_for_result(cbor_error_string(err));
+    return rfl::Unexpected(rfl::Error(cbor_error_string(err)));
   }
   size_t length = 0;
   err = cbor_value_get_map_length(&_obj.val_, &length);
   if (err != CborNoError) {
-    return Error::make_for_result(cbor_error_string(err));
+    return rfl::Unexpected(rfl::Error(cbor_error_string(err)));
   }
   for (size_t i = 0; i < length; ++i) {
     if (!cbor_value_is_text_string(&var.val_)) {
-      return Error::make_for_result("Expected the key to be a string value.");
+      return rfl::Unexpected(rfl::Error("Expected the key to be a string value."));
     }
     err = get_string(&var.val_, &buffer);
     if (err != CborNoError) {
-      return Error::make_for_result(cbor_error_string(err));
+      return rfl::Unexpected(rfl::Error(cbor_error_string(err)));
     }
     err = cbor_value_advance(&var.val_);
     if (err != CborNoError) {
-      return Error::make_for_result(cbor_error_string(err));
+      return rfl::Unexpected(rfl::Error(cbor_error_string(err)));
     }
     if (_name == buffer) {
       return var;
     }
     err = cbor_value_advance(&var.val_);
     if (err != CborNoError) {
-      return Error::make_for_result(cbor_error_string(err));
+      return rfl::Unexpected(rfl::Error(cbor_error_string(err)));
     }
   }
-  return Error::make_for_result("No field named '" + _name + "' was found.");
+  return rfl::Unexpected(rfl::Error("No field named '" + _name + "' was found."));
 }
 
 bool Reader::is_empty(const InputVarType& _var) const noexcept {
@@ -69,7 +69,7 @@ bool Reader::is_empty(const InputVarType& _var) const noexcept {
 rfl::Result<Reader::InputArrayType> Reader::to_array(
     const InputVarType& _var) const noexcept {
   if (!cbor_value_is_array(&_var.val_)) {
-    return Error::make_for_result("Could not cast to an array.");
+    return rfl::Unexpected(rfl::Error("Could not cast to an array."));
   }
   return InputArrayType{_var.val_};
 }
@@ -77,7 +77,7 @@ rfl::Result<Reader::InputArrayType> Reader::to_array(
 rfl::Result<Reader::InputObjectType> Reader::to_object(
     const InputVarType& _var) const noexcept {
   if (!cbor_value_is_map(&_var.val_)) {
-    return Error::make_for_result("Could not cast to an object.");
+    return rfl::Unexpected(rfl::Error("Could not cast to an object."));
   }
   return InputObjectType{_var.val_};
 }

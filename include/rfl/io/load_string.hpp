@@ -18,8 +18,8 @@ inline Result<std::string> load_string(const std::string& _fname) {
     infile.close();
     return r;
   } else {
-    return Error::make_for_result("Unable to open file '" + _fname +
-                 "' or file could not be found.");
+    return rfl::Unexpected(rfl::Error("Unable to open file '" + _fname +
+                 "' or file could not be found."));
   }
 }
 

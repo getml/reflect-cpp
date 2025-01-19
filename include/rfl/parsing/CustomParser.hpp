@@ -29,7 +29,7 @@ struct CustomParser {
           return rfl::apply(class_from_ptrs, ptr_field_tuple);
         }
       } catch (std::exception& e) {
-        return Error::make_for_result(e.what());
+        return rfl::Unexpected(rfl::Error(e.what()));
       }
     };
     return Parser<R, W, HelperStruct, ProcessorsType>::read(_r, _var).and_then(

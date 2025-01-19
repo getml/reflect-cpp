@@ -141,7 +141,7 @@ static rfl::Result<Licenses> read_using_nlohmann(
     auto val = nlohmann::json::parse(_json_string);
     return nlohmann_to_licenses(val);
   } catch (std::exception &e) {
-    return rfl::Error::make_for_result(e.what());
+    return rfl::Unexpected(rfl::Error(e.what()));
   }
 }
 
@@ -237,7 +237,7 @@ static rfl::Result<Licenses> read_using_rapidjson(
     d.Parse(_json_string.c_str());
     return rapidjson_to_licenses(d.GetObject());
   } catch (std::exception &e) {
-    return rfl::Error::make_for_result(e.what());
+    return rfl::Unexpected(rfl::Error(e.what()));
   }
 }
 
@@ -328,7 +328,7 @@ static rfl::Result<Licenses> read_using_simdjson(
     auto doc = parser.iterate(padded_str).value();
     return simdjson_to_licenses(doc.get_object());
   } catch (std::exception &e) {
-    return rfl::Error::make_for_result(e.what());
+    return rfl::Unexpected(rfl::Error(e.what()));
   }
 }
 
@@ -430,7 +430,7 @@ static rfl::Result<Licenses> read_using_yyjson(
   yyjson_doc *doc = yyjson_read(_json_string.c_str(), _json_string.size(), 0);
   if (!doc) {
     std::cout << "Could not parse document!" << std::endl;
-    return rfl::Error::make_for_result("Could not parse document");
+    return rfl::Unexpected(rfl::Error("Could not parse document"));
   }
   yyjson_val *root = yyjson_doc_get_root(doc);
   auto licenses = yyjson_to_licenses(root);
@@ -498,4 +498,3 @@ BENCHMARK(BM_licenses_reflect_cpp);
 // ----------------------------------------------------------------------------
 
 }  // namespace licenses
-

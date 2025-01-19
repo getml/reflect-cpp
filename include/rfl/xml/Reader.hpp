@@ -70,15 +70,15 @@ struct Reader {
       try {
         return static_cast<T>(std::stod(str));
       } catch (std::exception& e) {
-        return Error::make_for_result("Could not cast '" + std::string(str) +
-                     "' to floating point value.");
+        return rfl::Unexpected(rfl::Error("Could not cast '" + std::string(str) +
+                     "' to floating point value."));
       }
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       const auto str = std::visit(get_value, _var.node_or_attribute_);
       try {
         return static_cast<T>(std::stoi(str));
       } catch (std::exception& e) {
-        return Error::make_for_result("Could not cast '" + std::string(str) + "' to integer.");
+        return rfl::Unexpected(rfl::Error("Could not cast '" + std::string(str) + "' to integer."));
       }
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
@@ -127,7 +127,7 @@ struct Reader {
   template <class T>
   rfl::Result<T> use_custom_constructor(
       const InputVarType _var) const noexcept {
-    return rfl::Error::make_for_result("TODO");
+    return rfl::Unexpected(rfl::Error("TODO"));
   }
 };
 

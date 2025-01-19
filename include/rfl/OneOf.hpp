@@ -42,32 +42,13 @@ struct OneOf {
   template <class T, class Head, class... Tail>
   static rfl::Result<T> validate_impl(const T& _value,
                                       std::vector<Error> _errors) {
-    // const auto next_validation = [&](auto&& _r) -> rfl::Result<T> {
-    //   if (!_r) {
-    //     _errors.emplace_back(std::move(_r.error()));
-    //   }
-
-    //   if constexpr (sizeof...(Tail) == 0) {
-    //     if (_errors.size() == sizeof...(Cs)) {
-    //       return _value;
-    //     }
-    //     return Error::make_for_result(make_error_message(_errors));
-    //   } else {
-    //     return validate_impl<T, Tail...>(
-    //         _value, std::forward<std::vector<Error>>(_errors));
-    //   }
-    // };
-
-    // return Head::validate(_value)
-    //     .and_then(next_validation)
-    //     .or_else(next_validation);
     return Head::validate(_value)
         .and_then([&](auto&& _res) -> rfl::Result<T> {
           if constexpr (sizeof...(Tail) == 0) {
             if (_errors.size() == sizeof...(Cs)) {
               return _value;
             }
-            return Error::make_for_result(make_error_message(_errors));
+            return rfl::Unexpected(rfl::Error(make_error_message(_errors)));
           } else {
             return validate_impl<T, Tail...>(_value, std::move(_errors));
           }
@@ -75,7 +56,7 @@ struct OneOf {
         .or_else([&](auto&& _err) -> rfl::Result<T> {
           _errors.emplace_back(std::move(_err));
           if constexpr (sizeof...(Tail) == 0) {
-            return Error::make_for_result(make_error_message(_errors));
+            return rfl::Unexpected(rfl::Error(make_error_message(_errors)));
           } else {
             return validate_impl<T, Tail...>(_value, std::move(_errors));
           }

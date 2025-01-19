@@ -24,7 +24,7 @@ struct Parser<R, W, std::filesystem::path, ProcessorsType> {
       try {
         return std::filesystem::path(_str);
       } catch (std::exception& e) {
-        return Error::make_for_result(e.what());
+        return rfl::Unexpected(rfl::Error(e.what()));
       }
     };
     return Parser<R, W, std::string, ProcessorsType>::read(_r, _var).and_then(

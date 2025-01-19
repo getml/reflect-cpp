@@ -47,6 +47,7 @@ class Error {
 };
 struct Nothing {};
 
+using Unexpected = std::unexpected<Error>;
 template <class T>
 using Result = std::expected<T, rfl::Error>;
 }  // namespace rfl
@@ -80,6 +81,22 @@ class Error {
   /// Documents what went wrong
   std::string what_;
 };
+
+template <class E>
+struct Unexpected {
+  Unexpected(E&& _err) : err_{std::forward<E>(_err)} {}
+  Unexpected(const E& _err) : err_{_err} {}
+  Unexpected(Unexpected&&) = default;
+  Unexpected(const Unexpected&) = default;
+  Unexpected& operator=(Unexpected&&) = default;
+  Unexpected& operator=(const Unexpected&) = default;
+  const E& error() const& { return err_; }
+  E&& error() && { return std::move(err_); }
+  E& error() & { return err_; }
+
+ private:
+  E err_;
+};
 /// Can be used when we are simply interested in whether an operation was
 /// successful.
 struct Nothing {};
@@ -101,11 +118,16 @@ class Result {
     new (&get_t()) T(std::move(_val));
   }
 
-  Result(const Error& _err) : success_(false) { new (&get_err()) Error(_err); }
-
-  Result(Error&& _err) noexcept : success_(false) {
-    new (&get_err()) Error(std::move(_err));
+  Result(const Unexpected<Error>& _err) : success_(false) {
+    new (&get_err()) Error(_err.error());
   }
+  Result(Unexpected<Error>&& _err) : success_(false) {
+    new (&get_err()) Error(std::move(_err.error()));
+  }
+
+  // Result(Error&& _err) noexcept : success_(false) {
+  //   new (&get_err()) Error(std::move(_err));
+  // }
 
   Result(Result<T>&& _other) noexcept : success_(_other.success_) {
     move_from_other(_other);
@@ -246,6 +268,19 @@ class Result {
     return *this;
   }
 
+  Result<T>& operator=(Unexpected<Error>&& _err) noexcept {
+    destroy();
+    success_ = false;
+    new (&get_err()) Error(_err.error());
+    return *this;
+  }
+  Result<T>& operator=(const Unexpected<Error>& _err) noexcept {
+    destroy();
+    success_ = false;
+    new (&get_err()) Error(_err.error());
+    return *this;
+  }
+
   /// Assigns the underlying object.
   template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
                                              bool>::type = true>
@@ -296,7 +331,7 @@ class Result {
     if (success_) {
       return rfl::Result<U>(_f(std::forward<T>(get_t())));
     } else {
-      return rfl::Result<U>(std::forward<Error>(get_err()));
+      return rfl::Result<U>(rfl::Unexpected(std::forward<Error>(get_err())));
     }
   }
 

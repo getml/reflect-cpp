@@ -19,7 +19,8 @@ TEST(json, test_result) {
 
   const rfl::Result<Person> lisa = Person{.first_name = "Lisa"};
 
-  const rfl::Result<Person> maggie = rfl::Error::make_for_result("Some error occurred.");
+  const rfl::Result<Person> maggie =
+      rfl::Unexpected(rfl::Error("Some error occurred."));
 
   const auto homer = Person{
       .first_name = "Homer",

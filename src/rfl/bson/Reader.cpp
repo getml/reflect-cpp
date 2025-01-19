@@ -17,12 +17,12 @@ rfl::Result<Reader::InputVarType> Reader::get_field_from_array(
         ++i;
       }
     } else {
-      return Error::make_for_result("Could not init the array iteration.");
+      return rfl::Unexpected(rfl::Error("Could not init the array iteration."));
     }
   } else {
-    return Error::make_for_result("Could not init array.");
+    return rfl::Unexpected(rfl::Error("Could not init array."));
   }
-  return Error::make_for_result("Index " + std::to_string(_idx) + " of of bounds.");
+  return rfl::Unexpected(rfl::Error("Index " + std::to_string(_idx) + " of of bounds."));
 }
 
 rfl::Result<Reader::InputVarType> Reader::get_field_from_object(
@@ -40,7 +40,7 @@ rfl::Result<Reader::InputVarType> Reader::get_field_from_object(
       }
     }
   }
-  return Error::make_for_result("No field named '" + _name + "' was found.");
+  return rfl::Unexpected(rfl::Error("No field named '" + _name + "' was found."));
 }
 
 bool Reader::is_empty(const InputVarType& _var) const noexcept {
@@ -51,7 +51,7 @@ rfl::Result<Reader::InputArrayType> Reader::to_array(
     const InputVarType& _var) const noexcept {
   const auto btype = _var.val_->value_type;
   if (btype != BSON_TYPE_ARRAY && btype != BSON_TYPE_DOCUMENT) {
-    return Error::make_for_result("Could not cast to an array.");
+    return rfl::Unexpected(rfl::Error("Could not cast to an array."));
   }
   return InputArrayType{_var.val_};
 }
@@ -60,7 +60,7 @@ rfl::Result<Reader::InputObjectType> Reader::to_object(
     const InputVarType& _var) const noexcept {
   const auto btype = _var.val_->value_type;
   if (btype != BSON_TYPE_DOCUMENT) {
-    return Error::make_for_result("Could not cast to a document.");
+    return rfl::Unexpected(rfl::Error("Could not cast to a document."));
   }
   return InputObjectType{_var.val_};
 }

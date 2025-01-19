@@ -48,7 +48,7 @@ struct Parser {
         try {
           return Reflector<T>::to(_named_tuple);
         } catch (std::exception& e) {
-          return Error::make_for_result(e.what());
+          return rfl::Unexpected(rfl::Error(e.what()));
         }
       };
       return Parser<R, W, typename Reflector<T>::ReflType,
@@ -63,7 +63,7 @@ struct Parser {
           try {
             return T{_named_tuple};
           } catch (std::exception& e) {
-            return Error::make_for_result(e.what());
+            return rfl::Unexpected(rfl::Error(e.what()));
           }
         };
         return Parser<R, W, ReflectionType, ProcessorsType>::read(_r, _var)
@@ -263,7 +263,7 @@ struct Parser {
         Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
     if (err) [[unlikely]] {
       call_destructors_where_necessary(set, &view);
-      return Error::make_for_result(*err);
+      return rfl::Unexpected(rfl::Error(*err));
     }
     auto res = Result<T>(std::move(*ptr));
     call_destructors_where_necessary(set, &view);
@@ -283,7 +283,7 @@ struct Parser {
         Parser<R, W, ViewType, ProcessorsType>::read_view_with_default(_r, _var,
                                                                        &view);
     if (err) [[unlikely]] {
-      return Error::make_for_result(*err);
+      return rfl::Unexpected(*err);
     }
     return t;
   }

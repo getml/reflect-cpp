@@ -72,7 +72,7 @@ static rfl::Result<Person> read_using_nlohmann() {
     auto val = nlohmann::json::parse(json_string);
     return nlohmann_to_person(val);
   } catch (std::exception &e) {
-    return rfl::Error::make_for_result(e.what());
+    return rfl::Unexpected(rfl::Error(e.what()));
   }
 }
 
@@ -105,7 +105,7 @@ static rfl::Result<Person> read_using_rapidjson() {
     d.Parse(json_string.c_str());
     return rapidjson_to_person(d.GetObject());
   } catch (std::exception &e) {
-    return rfl::Error::make_for_result(e.what());
+    return rfl::Unexpected(rfl::Error(e.what()));
   }
 }
 
@@ -139,7 +139,7 @@ static rfl::Result<Person> read_using_simdjson() {
     auto doc = parser.iterate(padded_str).value();
     return simdjson_to_person(doc.get_object());
   } catch (std::exception &e) {
-    return rfl::Error::make_for_result(e.what());
+    return rfl::Unexpected(rfl::Error(e.what()));
   }
 }
 
@@ -181,7 +181,7 @@ rfl::Result<Person> yyjson_to_person(yyjson_val *_val) {
     if (!std::get<0>(found) && name == "first_name") {
       auto first_name = yyjson_get_str(v);
       if (first_name == NULL) {
-        errors.push_back(rfl::Error::make_for_result(
+        errors.push_back(rfl::Error(
             "Error reading 'first_name': Could not cast to string."));
         continue;
       }
@@ -190,8 +190,8 @@ rfl::Result<Person> yyjson_to_person(yyjson_val *_val) {
     } else if (!std::get<1>(found) && name == "last_name") {
       auto last_name = yyjson_get_str(v);
       if (last_name == NULL) {
-        errors.push_back(
-            rfl::Error::make_for_result("Error reading 'last_name': Could not cast to string."));
+        errors.push_back(rfl::Error(
+            "Error reading 'last_name': Could not cast to string."));
         continue;
       }
       person.last_name = last_name;
@@ -199,8 +199,8 @@ rfl::Result<Person> yyjson_to_person(yyjson_val *_val) {
     } else if (!std::get<2>(found) && name == "children") {
       auto children = yyjson_to_children(v);
       if (!children) {
-        errors.push_back(rfl::Error::make_for_result("Error reading 'children': " +
-                                    children.error().what()));
+        errors.push_back(rfl::Error(
+            "Error reading 'children': " + children.error().what()));
         continue;
       }
       person.children = std::move(*children);
@@ -208,13 +208,13 @@ rfl::Result<Person> yyjson_to_person(yyjson_val *_val) {
     }
   }
   if (!std::get<0>(found)) {
-    errors.push_back(rfl::Error::make_for_result("'first_name' not found"));
+    errors.push_back(rfl::Error("'first_name' not found"));
   }
   if (!std::get<1>(found)) {
-    errors.push_back(rfl::Error::make_for_result("'last_name' not found"));
+    errors.push_back(rfl::Error("'last_name' not found"));
   }
   if (!std::get<2>(found)) {
-    errors.push_back(rfl::Error::make_for_result("'children' not found"));
+    errors.push_back(rfl::Error("'children' not found"));
   }
   if (errors.size() != 0) {
     std::cout << "Some errors occurred:" << std::endl;
@@ -230,7 +230,7 @@ static rfl::Result<Person> read_using_yyjson() {
   yyjson_doc *doc = yyjson_read(json_string.c_str(), json_string.size(), 0);
   if (!doc) {
     std::cout << "Could not parse document!" << std::endl;
-    return rfl::Error::make_for_result("Could not parse document");
+    return rfl::Unexpected(rfl::Error("Could not parse document"));
   }
   yyjson_val *root = yyjson_doc_get_root(doc);
   auto person = yyjson_to_person(root);
@@ -293,4 +293,3 @@ BENCHMARK(BM_person_read_reflect_cpp);
 // ----------------------------------------------------------------------------
 
 }  // namespace person_read
-

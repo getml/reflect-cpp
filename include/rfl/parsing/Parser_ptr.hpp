@@ -36,7 +36,7 @@ struct Parser<R, W, T*, ProcessorsType> {
           "Please note that it is then YOUR responsibility "
           "to delete the allocated memory. Please also refer "
           "to the related documentation (in the section on processors).");
-      return Error::make_for_result("Unsupported.");
+      return rfl::Unexpected(rfl::Error("Unsupported."));
     } else {
       if (_r.is_empty(_var)) {
         return nullptr;
