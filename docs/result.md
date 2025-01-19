@@ -115,7 +115,7 @@ if you are wrong.
 
 If you want the underlying value of type T or some kind of default value, you can call `.value_or(your_default_value)`.
 
-If you want to retrieve the error, you can call `.error()`, which will return a value of type `std::optional<rfl::Error>`.
+If you want to retrieve the error, you can call `.error()`, which will return a value of type `rfl::Error`.
 
 If you want to check whether the result contains an error, you can just use the bool operator:
 
@@ -150,7 +150,7 @@ This is often used to produce better error messages:
 
 ```cpp
 const auto embellish_error = [&](const Error& _e) -> rfl::Result<T> {
-    return Error::make_for_result("Failed to parse field '" + key + "': " + _e.what());
+    return rfl::Unexpected(rfl::Error("Failed to parse field '" + key + "': " + _e.what()));
 };
 return Parser<T>::read(_r, &_var).or_else(embellish_error);
 ```
