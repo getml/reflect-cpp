@@ -10,78 +10,36 @@
 #include <type_traits>
 
 /*
-  This implementation are for C++ parts with std::expected defined
+  Implementation Common to both
 */
-#ifdef __cpp_lib_expected
-#include <expected>
 namespace rfl {
 class Error {
  public:
   Error(const std::string& _what) : what_(_what) {}
   Error(const Error& e) = default;
-  Error(Error&& e) = default;
   Error& operator=(const Error&) = default;
-  Error& operator=(Error&&) = default;
-  ~Error() = default;
 
   /// Returns the error message, equivalent to .what() in std::exception.
   const std::string& what() const { return what_; }
-
-  /*
-    Use the following constructor to return a rfl::Result, otherwise, use the
-    constructor.
-  */
-  static std::unexpected<Error> make_for_result(const std::string& what) {
-    return std::unexpected<Error>{Error{what}};
-  }
-  static std::unexpected<Error> make_for_result(Error&& e) {
-    return std::unexpected<Error>{std::move(e)};
-  }
-  static std::unexpected<Error> make_for_result(const Error& e) {
-    return std::unexpected<Error>{Error{e}};
-  }
 
  private:
   /// Documents what went wrong
   std::string what_;
 };
 struct Nothing {};
-
+}  // namespace rfl
+/*
+  This implementation are for C++ parts with std::expected defined
+*/
+#ifdef __cpp_lib_expected
+#include <expected>
+namespace rfl {
 using Unexpected = std::unexpected<Error>;
 template <class T>
 using Result = std::expected<T, rfl::Error>;
 }  // namespace rfl
 #else
-
-/**
-  The following are implementation specific to the usage of C++ without
-  std::expected defined.
- */
 namespace rfl {
-class Error {
- public:
-  Error(const std::string& _what) : what_(_what) {}
-  ~Error() = default;
-  Error(const Error& e) = default;
-  Error(Error&& e) = default;
-  Error& operator=(const Error&) = default;
-  Error& operator=(Error&&) = default;
-
-  /// Returns the error message, equivalent to .what() in std::exception.
-  const std::string& what() const { return what_; }
-  /*
-    Use the following constructor to return a rfl::Result, otherwise, use the
-    constructor.
-  */
-  static Error make_for_result(const std::string& what) { return Error{what}; }
-  static Error make_for_result(Error&& e) { return Error{std::move(e)}; }
-  static Error make_for_result(const Error& e) { return Error{e}; }
-
- private:
-  /// Documents what went wrong
-  std::string what_;
-};
-
 template <class E>
 struct Unexpected {
   Unexpected(E&& _err) : err_{std::forward<E>(_err)} {}
@@ -97,9 +55,6 @@ struct Unexpected {
  private:
   E err_;
 };
-/// Can be used when we are simply interested in whether an operation was
-/// successful.
-struct Nothing {};
 /// The Result class is used for monadic error handling.
 template <class T>
 class Result {
