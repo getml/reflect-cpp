@@ -1,10 +1,10 @@
 #ifndef RFL_CBOR_READ_HPP_
 #define RFL_CBOR_READ_HPP_
 
-#include <cbor.h>
-
 #include <bit>
 #include <istream>
+#include <jsoncons/json.hpp>
+#include <jsoncons_ext/cbor/decode_cbor.hpp>
 #include <string>
 
 #include "../Processors.hpp"
@@ -12,46 +12,27 @@
 #include "Parser.hpp"
 #include "Reader.hpp"
 
-namespace rfl {
-namespace cbor {
+namespace rfl::cbor {
 
 using InputObjectType = typename Reader::InputObjectType;
 using InputVarType = typename Reader::InputVarType;
 
-/// Parses an object from a CBOR var.
-template <class T, class... Ps>
-auto read(const InputVarType& _obj) {
-  const auto r = Reader();
-  return Parser<T, Processors<Ps...>>::read(r, _obj);
-}
-
 /// Parses an object from CBOR using reflection.
 template <class T, class... Ps>
-Result<internal::wrap_in_rfl_array_t<T>> read(const char* _bytes,
-                                              const size_t _size) {
-  CborParser parser;
-  InputVarType doc;
-  cbor_parser_init(std::bit_cast<const uint8_t*>(_bytes), _size, 0, &parser,
-                   &doc.val_);
-  auto result = read<T, Ps...>(doc);
-  return result;
-}
-
-/// Parses an object from CBOR using reflection.
-template <class T, class... Ps>
-auto read(const std::vector<char>& _bytes) {
-  return read<T, Ps...>(_bytes.data(), _bytes.size());
+Result<internal::wrap_in_rfl_array_t<T>> read(const std::vector<char>& _bytes) {
+  auto val = jsoncons::cbor::decode_cbor<jsoncons::json>(_bytes);
+  auto r = Reader();
+  return Parser<T, Processors<Ps...>>::read(r, InputVarType{&val});
 }
 
 /// Parses an object from a stream.
 template <class T, class... Ps>
-auto read(std::istream& _stream) {
-  std::istreambuf_iterator<char> begin(_stream), end;
-  auto bytes = std::vector<char>(begin, end);
-  return read<T, Ps...>(bytes.data(), bytes.size());
+Result<internal::wrap_in_rfl_array_t<T>> read(std::istream& _stream) {
+  auto val = jsoncons::cbor::decode_cbor<jsoncons::json>(_stream);
+  auto r = Reader();
+  return Parser<T, Processors<Ps...>>::read(r, InputVarType{&val});
 }
 
-}  // namespace cbor
-}  // namespace rfl
+}  // namespace rfl::cbor
 
 #endif

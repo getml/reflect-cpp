@@ -8,15 +8,12 @@
 #include <type_traits>
 
 #include "../../Result.hpp"
-#include "../../internal/strings/join.hpp"
-#include "../../internal/strings/split.hpp"
+#include "../../internal/strings/strings.hpp"
 #include "../../type_name_t.hpp"
 #include "get_enum_names.hpp"
 #include "is_flag_enum.hpp"
 
-namespace rfl {
-namespace internal {
-namespace enums {
+namespace rfl ::internal ::enums {
 
 template <class EnumType>
 class StringConverter {
@@ -125,8 +122,6 @@ class StringConverter {
   }
 };
 
-}  // namespace enums
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal::enums
 
 #endif

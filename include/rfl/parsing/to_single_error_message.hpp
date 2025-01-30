@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-#include "../internal/strings/replace_all.hpp"
+#include "../internal/strings/strings.hpp"
 
 namespace rfl::parsing {
 

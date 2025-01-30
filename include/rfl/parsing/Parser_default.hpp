@@ -1,11 +1,11 @@
 #ifndef RFL_PARSING_PARSER_DEFAULT_HPP_
 #define RFL_PARSING_PARSER_DEFAULT_HPP_
 
-#include <bit>
 #include <map>
 #include <stdexcept>
 #include <type_traits>
 
+#include "../Bytestring.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../from_named_tuple.hpp"
@@ -19,18 +19,20 @@
 #include "../internal/is_underlying_enums_v.hpp"
 #include "../internal/is_validator.hpp"
 #include "../internal/processed_t.hpp"
+#include "../internal/ptr_cast.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
 #include "../to_view.hpp"
-#include "../type_name_t.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "call_destructors_where_necessary.hpp"
 #include "is_tagged_union_wrapper.hpp"
+#include "make_type_name.hpp"
 #include "schema/Type.hpp"
+#include "schemaful/IsSchemafulReader.hpp"
+#include "schemaful/IsSchemafulWriter.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
 /// Default case - anything that cannot be explicitly matched.
 template <class R, class W, class T, class ProcessorsType>
@@ -54,8 +56,14 @@ struct Parser {
       return Parser<R, W, typename Reflector<T>::ReflType,
                     ProcessorsType>::read(_r, _var)
           .and_then(wrap_in_t);
+
+    } else if constexpr (schemaful::IsSchemafulReader<R> &&
+                         internal::is_literal_v<T>) {
+      return _r.template to_basic_type<T>(_var);
+
     } else if constexpr (R::template has_custom_constructor<T>) {
       return _r.template use_custom_constructor<T>(_var);
+
     } else {
       if constexpr (internal::has_reflection_type_v<T>) {
         using ReflectionType = std::remove_cvref_t<typename T::ReflectionType>;
@@ -68,14 +76,17 @@ struct Parser {
         };
         return Parser<R, W, ReflectionType, ProcessorsType>::read(_r, _var)
             .and_then(wrap_in_t);
+
       } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
         if constexpr (ProcessorsType::default_if_missing_) {
           return read_struct_with_default(_r, _var);
         } else {
           return read_struct(_r, _var);
         }
+
       } else if constexpr (std::is_enum_v<T>) {
-        if constexpr (ProcessorsType::underlying_enums_) {
+        if constexpr (ProcessorsType::underlying_enums_ ||
+                      schemaful::IsSchemafulReader<R>) {
           return static_cast<T>(
               *_r.template to_basic_type<std::underlying_type_t<T>>(_var));
         } else {
@@ -83,6 +94,7 @@ struct Parser {
           return _r.template to_basic_type<std::string>(_var).and_then(
               StringConverter::string_to_enum);
         }
+
       } else {
         return _r.template to_basic_type<std::remove_cvref_t<T>>(_var);
       }
@@ -94,6 +106,11 @@ struct Parser {
     if constexpr (internal::has_write_reflector<T>) {
       Parser<R, W, typename Reflector<T>::ReflType, ProcessorsType>::write(
           _w, Reflector<T>::from(_var), _parent);
+
+    } else if constexpr (schemaful::IsSchemafulWriter<W> &&
+                         internal::is_literal_v<T>) {
+      ParentType::add_value(_w, _var, _parent);
+
     } else if constexpr (internal::has_reflection_type_v<T>) {
       using ReflectionType = std::remove_cvref_t<typename T::ReflectionType>;
       if constexpr (internal::has_reflection_method_v<T>) {
@@ -103,14 +120,17 @@ struct Parser {
         const auto& [r] = _var;
         Parser<R, W, ReflectionType, ProcessorsType>::write(_w, r, _parent);
       }
+
     } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
       const auto ptr_named_tuple = ProcessorsType::template process<T>(
           internal::to_ptr_named_tuple(_var));
       using PtrNamedTupleType = std::remove_cvref_t<decltype(ptr_named_tuple)>;
       Parser<R, W, PtrNamedTupleType, ProcessorsType>::write(
           _w, ptr_named_tuple, _parent);
+
     } else if constexpr (std::is_enum_v<T>) {
-      if constexpr (ProcessorsType::underlying_enums_) {
+      if constexpr (ProcessorsType::underlying_enums_ ||
+                    schemaful::IsSchemafulWriter<W>) {
         const auto val = static_cast<std::underlying_type_t<T>>(_var);
         ParentType::add_value(_w, val, _parent);
       } else {
@@ -118,6 +138,7 @@ struct Parser {
         const auto str = StringConverter::enum_to_string(_var);
         ParentType::add_value(_w, str, _parent);
       }
+
     } else {
       ParentType::add_value(_w, _var, _parent);
     }
@@ -130,6 +151,9 @@ struct Parser {
     using Type = schema::Type;
     if constexpr (std::is_same<U, bool>()) {
       return Type{Type::Boolean{}};
+
+    } else if constexpr (std::is_same<U, rfl::Bytestring>()) {
+      return Type{Type::Bytestring{}};
 
     } else if constexpr (std::is_same<U, std::int32_t>()) {
       return Type{Type::Int32{}};
@@ -195,7 +219,8 @@ struct Parser {
       std::map<std::string, schema::Type>* _definitions) {
     using Type = schema::Type;
     using S = internal::enums::StringConverter<U>;
-    if constexpr (ProcessorsType::underlying_enums_) {
+    if constexpr (ProcessorsType::underlying_enums_ ||
+                  schemaful::IsSchemafulReader<R>) {
       return Type{Type::Integer{}};
     } else if constexpr (S::is_flag_enum_) {
       return Type{Type::String{}};
@@ -240,23 +265,13 @@ struct Parser {
         .validation_ = ValidationType::template to_schema<ReflectionType>()}};
   }
 
-  template <class U>
-  static std::string make_type_name() {
-    if constexpr (is_tagged_union_wrapper_v<U>) {
-      return replace_non_alphanumeric(type_name_t<typename U::Type>().str() +
-                                      "__tagged");
-    } else {
-      return replace_non_alphanumeric(type_name_t<U>().str());
-    }
-  }
-
   /// The way this works is that we allocate space on the stack in this size of
   /// the struct in which we then write the individual fields using
   /// views and placement new. This is how we deal with the fact that some
   /// fields might not be default-constructible.
   static Result<T> read_struct(const R& _r, const InputVarType& _var) {
     alignas(T) unsigned char buf[sizeof(T)]{};
-    auto ptr = std::bit_cast<T*>(&buf);
+    auto ptr = internal::ptr_cast<T*>(&buf);
     auto view = ProcessorsType::template process<T>(to_view(*ptr));
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto [set, err] =
@@ -287,16 +302,8 @@ struct Parser {
     }
     return t;
   }
-
-  static std::string replace_non_alphanumeric(std::string _str) {
-    for (auto& ch : _str) {
-      ch = std::isalnum(ch) ? ch : '_';
-    }
-    return _str;
-  }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif

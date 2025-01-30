@@ -86,26 +86,16 @@ struct TaggedUnion {
 
   /// Applies function _f to all underlying alternatives.
   template <class F>
-  auto visit(F& _f) {
-    return variant_.visit(_f);
+  auto visit(F&& _f)
+      -> decltype(std::declval<VariantType>().visit(std::declval<F&&>())) {
+    return variant_.visit(std::forward<F>(_f));
   }
 
   /// Applies function _f to all underlying alternatives.
   template <class F>
-  auto visit(F& _f) const {
-    return variant_.visit(_f);
-  }
-
-  /// Applies function _f to all underlying alternatives.
-  template <class F>
-  auto visit(const F& _f) {
-    return variant_.visit(_f);
-  }
-
-  /// Applies function _f to all underlying alternatives.
-  template <class F>
-  auto visit(const F& _f) const {
-    return variant_.visit(_f);
+  auto visit(F&& _f) const
+      -> decltype(std::declval<VariantType>().visit(std::declval<F&&>())) {
+    return variant_.visit(std::forward<F>(_f));
   }
 
   /// The underlying variant - a TaggedUnion is a thin wrapper
@@ -129,6 +119,27 @@ struct PossibleTags<TaggedUnion<_discriminator, Ts...>> {
 
 template <class T>
 using possible_tags_t = typename PossibleTags<T>::Type;
+
+template <internal::StringLiteral _discriminator, class... Ts>
+bool operator==(
+  const TaggedUnion<_discriminator, Ts...>& lhs,
+  const TaggedUnion<_discriminator, Ts...>& rhs
+  ) {
+
+  return (lhs.variant().index() == rhs.variant().index()) &&
+         lhs.variant().visit(
+           [&rhs](const auto& l) {
+               return rhs.variant().visit(
+                 [&l](const auto& r) -> bool {
+                   if constexpr (std::is_same_v<std::decay_t<decltype(l)>, std::decay_t<decltype(r)>>)
+                     return l == r;
+                   else
+                     return false;
+               }
+             );
+           }
+         );
+}
 
 }  // namespace rfl
 

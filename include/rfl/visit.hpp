@@ -27,10 +27,8 @@ inline auto visit(F&& _f, V&& _v)
   return std::forward<V>(_v).visit(std::forward<F>(_f));
 }
 
-template <class F, TaggedUnionBased T, internal::StringLiteral _discriminator,
-          class... AlternativeTypes>
-inline auto visit(
-    F&& _f, TaggedUnion<_discriminator, AlternativeTypes...>&& _tagged_union)
+template <class F, TaggedUnionBased T>
+inline auto visit(F&& _f, T&& _tagged_union)
     -> decltype(std::declval<T&&>().variant().visit(std::declval<F&&>())) {
   return std::forward<T>(_tagged_union).variant().visit(std::forward<F>(_f));
 }

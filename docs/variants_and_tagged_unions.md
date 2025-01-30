@@ -230,7 +230,7 @@ const Shapes my_shape =
     rfl::make_field<"rectangle">(Rectangle{.height = 10, .width = 5});
 
 const auto handle_shapes = [](const auto& field) {
-  using Name = typename std::decay_t(decltype(field))::Name;
+  using Name = typename std::decay_t<decltype(field)>::Name;
   if constexpr (std::is_same<Name, rfl::Literal<"circle">>()) {
      std::cout << is circle, radius: << field.value().radius() << std::endl;
   } else if constexpr (std::is_same<Name, rfl::Literal<"rectangle">>()) {
@@ -259,7 +259,7 @@ using Shapes = rfl::TaggedUnion<"shape", Circle, Square, Rectangle>;
 const Shapes my_shape = Rectangle{.height = 10, .width = 5};
 
 const auto handle_shapes = [](const auto& s) {
-  using Type = std::decay_t(decltype(s));
+  using Type = std::decay_t<decltype(s)>;
   if constexpr (std::is_same<Type, Circle>()) {
      std::cout << is circle, radius: << s.radius() << std::endl;
   } else if constexpr (std::is_same<Type, Rectangle>()) {

@@ -5,6 +5,8 @@ reflect-cpp is intended to be used to directly parse into structs. Doing this is
 But in some cases, we simply cannot anticipate the complete structure of the data at compile time. For these cases, we
 have `rfl::Generic`.
 
+Note that generics are not supported for Avro.
+
 `rfl::Generic` is a convenience wrapper around the following type:
 
 ```cpp

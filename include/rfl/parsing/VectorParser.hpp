@@ -85,10 +85,14 @@ struct VectorParser {
   /// Generates a schema for the underlying type.
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
-    using Type = schema::Type;
-    return Type{Type::TypedArray{
-        .type_ = Ref<Type>::make(
-            Parser<R, W, T, ProcessorsType>::to_schema(_definitions))}};
+    if constexpr (treat_as_map()) {
+      return MapParser<R, W, VecType, ProcessorsType>::to_schema(_definitions);
+    } else {
+      using Type = schema::Type;
+      return Type{Type::TypedArray{
+          .type_ = Ref<Type>::make(
+              Parser<R, W, T, ProcessorsType>::to_schema(_definitions))}};
+    }
   }
 
  private:

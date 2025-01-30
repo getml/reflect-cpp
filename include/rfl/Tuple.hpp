@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "internal/nth_element_t.hpp"
+#include "internal/ptr_cast.hpp"
 #include "internal/tuple/calculate_positions.hpp"
 
 namespace rfl {
@@ -59,14 +60,14 @@ class Tuple {
   template <int _index>
   constexpr auto& get() {
     using Type = internal::nth_element_t<_index, Types...>;
-    return *std::bit_cast<Type*>(data_.data() + pos<_index>());
+    return *internal::ptr_cast<Type*>(data_.data() + pos<_index>());
   }
 
   /// Gets an element by index.
   template <int _index>
   constexpr const auto& get() const {
     using Type = internal::nth_element_t<_index, Types...>;
-    return *std::bit_cast<const Type*>(data_.data() + pos<_index>());
+    return *internal::ptr_cast<const Type*>(data_.data() + pos<_index>());
   }
 
   /// Assigns the underlying object.
@@ -100,8 +101,7 @@ class Tuple {
     };
     return [&]<int... _is>(std::integer_sequence<int, _is...>) {
       return (true && ... && is_same(std::integral_constant<int, _is>{}));
-    }
-    (std::make_integer_sequence<int, sizeof...(Types)>());
+    }(std::make_integer_sequence<int, sizeof...(Types)>());
   }
 
   /// Three-way comparison operator.
@@ -122,8 +122,7 @@ class Tuple {
       auto ordering = std::strong_ordering::equivalent;
       (compare(&ordering, std::integral_constant<int, _is>{}), ...);
       return ordering;
-    }
-    (std::make_integer_sequence<int, sizeof...(Types)>());
+    }(std::make_integer_sequence<int, sizeof...(Types)>());
   }
 
  private:

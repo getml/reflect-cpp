@@ -13,20 +13,45 @@
 #include "Parser_base.hpp"
 #include "VariantAlternativeWrapper.hpp"
 #include "schema/Type.hpp"
+#include "schemaful/IsSchemafulReader.hpp"
+#include "schemaful/IsSchemafulWriter.hpp"
+#include "schemaful/VariantReader.hpp"
 
 namespace rfl::parsing {
 
 template <class R, class W, class... AlternativeTypes, class ProcessorsType>
-requires AreReaderAndWriter<R, W, rfl::Variant<AlternativeTypes...>>
+  requires AreReaderAndWriter<R, W, rfl::Variant<AlternativeTypes...>>
 class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
+  using ParentType = Parent<W>;
+
  public:
   using InputVarType = typename R::InputVarType;
 
   static Result<rfl::Variant<AlternativeTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
     if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
-      return FieldVariantParser<R, W, ProcessorsType,
-                                AlternativeTypes...>::read(_r, _var);
+      if constexpr (schemaful::IsSchemafulReader<R>) {
+        using WrappedType = rfl::Variant<NamedTuple<AlternativeTypes>...>;
+        return Parser<R, W, WrappedType, ProcessorsType>::read(_r, _var)
+            .transform(
+                [](auto&& _variant) -> rfl::Variant<AlternativeTypes...> {
+                  return std::move(_variant).visit([](auto&& _named_tuple) {
+                    return rfl::Variant<AlternativeTypes...>(std::move(
+                        std::move(_named_tuple).fields().template get<0>()));
+                  });
+                });
+
+      } else {
+        return FieldVariantParser<R, W, ProcessorsType,
+                                  AlternativeTypes...>::read(_r, _var);
+      }
+
+    } else if constexpr (schemaful::IsSchemafulReader<R>) {
+      using V = schemaful::VariantReader<R, W, Variant<AlternativeTypes...>,
+                                         ProcessorsType, AlternativeTypes...>;
+      return _r.to_union(_var).and_then([&](const auto& _u) {
+        return _r.template read_union<Variant<AlternativeTypes...>, V>(_u);
+      });
 
     } else if constexpr (ProcessorsType::add_tags_to_variants_) {
       using FieldVariantType =
@@ -64,8 +89,34 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
                     const rfl::Variant<AlternativeTypes...>& _variant,
                     const P& _parent) noexcept {
     if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
-      FieldVariantParser<R, W, ProcessorsType, AlternativeTypes...>::write(
-          _w, _variant, _parent);
+      if constexpr (schemaful::IsSchemafulWriter<W>) {
+        using WrappedType = rfl::Variant<
+            NamedTuple<Field<AlternativeTypes::name_,
+                             const typename AlternativeTypes::Type*>>...>;
+        const auto to_wrapped = [](const auto& _variant) -> WrappedType {
+          return _variant.visit([](const auto& _field) -> WrappedType {
+            return make_named_tuple(internal::to_ptr_field(_field));
+          });
+        };
+        Parser<R, W, WrappedType, ProcessorsType>::write(
+            _w, to_wrapped(_variant), _parent);
+
+      } else {
+        FieldVariantParser<R, W, ProcessorsType, AlternativeTypes...>::write(
+            _w, _variant, _parent);
+      }
+
+    } else if constexpr (schemaful::IsSchemafulWriter<W>) {
+      return rfl::visit(
+          [&](const auto& _v) {
+            using Type = std::remove_cvref_t<decltype(_v)>;
+            auto u = ParentType::add_union(_w, _parent);
+            using UnionType = typename ParentType::template Union<decltype(u)>;
+            auto p = UnionType{.index_ = static_cast<size_t>(_variant.index()),
+                               .union_ = &u};
+            Parser<R, W, Type, ProcessorsType>::write(_w, _v, p);
+          },
+          _variant);
 
     } else if constexpr (ProcessorsType::add_tags_to_variants_) {
       using FieldVariantType =

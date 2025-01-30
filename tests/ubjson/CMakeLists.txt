@@ -8,8 +8,6 @@ add_executable(
 )
 target_precompile_headers(reflect-cpp-ubjson-tests PRIVATE [["rfl.hpp"]] <iostream> <string> <functional> <gtest/gtest.h>)
 
-target_include_directories(reflect-cpp-ubjson-tests SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
-
 target_link_libraries(
     reflect-cpp-ubjson-tests 
     PRIVATE 

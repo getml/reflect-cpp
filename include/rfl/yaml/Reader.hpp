@@ -61,9 +61,10 @@ struct Reader {
     try {
       if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>() ||
                     std::is_same<std::remove_cvref_t<T>, bool>() ||
-                    std::is_floating_point<std::remove_cvref_t<T>>() ||
-                    std::is_integral<std::remove_cvref_t<T>>()) {
+                    std::is_floating_point<std::remove_cvref_t<T>>()) {
         return _var.node_.as<std::remove_cvref_t<T>>();
+      } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
+        return static_cast<T>(_var.node_.as<std::remove_cvref_t<int64_t>>());
       } else {
         static_assert(rfl::always_false_v<T>, "Unsupported type.");
       }

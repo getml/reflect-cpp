@@ -3,7 +3,9 @@
 #include <array>
 #include <iostream>
 #include <optional>
+#include <rfl/avro.hpp>
 #include <rfl/bson.hpp>
+#include <rfl/capnproto.hpp>
 #include <rfl/cbor.hpp>
 #include <rfl/flexbuf.hpp>
 #include <rfl/json.hpp>
@@ -47,6 +49,18 @@ static FeatureCollection load_data() {
 
 // ----------------------------------------------------------------------------
 
+static void BM_canada_read_reflect_cpp_avro(benchmark::State &state) {
+  const auto schema = rfl::avro::to_schema<FeatureCollection>();
+  const auto data = rfl::avro::write(load_data(), schema);
+  for (auto _ : state) {
+    const auto res = rfl::avro::read<FeatureCollection>(data, schema);
+    if (!res) {
+      std::cout << res.error()->what() << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_canada_read_reflect_cpp_avro);
+
 static void BM_canada_read_reflect_cpp_bson(benchmark::State &state) {
   const auto data = rfl::bson::write(load_data());
   for (auto _ : state) {
@@ -57,6 +71,18 @@ static void BM_canada_read_reflect_cpp_bson(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_canada_read_reflect_cpp_bson);
+
+static void BM_canada_read_reflect_cpp_capnproto(benchmark::State &state) {
+  const auto schema = rfl::capnproto::to_schema<FeatureCollection>();
+  const auto data = rfl::capnproto::write(load_data(), schema);
+  for (auto _ : state) {
+    const auto res = rfl::capnproto::read<FeatureCollection>(data, schema);
+    if (!res) {
+      std::cout << res.error()->what() << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_canada_read_reflect_cpp_capnproto);
 
 static void BM_canada_read_reflect_cpp_cbor(benchmark::State &state) {
   const auto data = rfl::cbor::write(load_data());

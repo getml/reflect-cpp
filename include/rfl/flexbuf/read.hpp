@@ -3,12 +3,12 @@
 
 #include <flatbuffers/flexbuffers.h>
 
-#include <bit>
 #include <istream>
 #include <vector>
 
 #include "../Processors.hpp"
 #include "../Result.hpp"
+#include "../internal/ptr_cast.hpp"
 #include "Parser.hpp"
 
 namespace rfl {
@@ -27,7 +27,7 @@ auto read(const InputVarType& _obj) {
 template <class T, class... Ps>
 auto read(const char* _bytes, const size_t _size) {
   const InputVarType root =
-      flexbuffers::GetRoot(std::bit_cast<const uint8_t*>(_bytes), _size);
+      flexbuffers::GetRoot(internal::ptr_cast<const uint8_t*>(_bytes), _size);
   return read<T, Ps...>(root);
 }
 

@@ -13,7 +13,7 @@ struct Person {
   std::vector<Person> children;
 };
 
-TEST(bson, test_snake_case_to_pascal_case) {
+TEST(yaml, test_snake_case_to_pascal_case) {
   const auto bart = Person{
       .first_name = "Bart", .last_name = "Simpson", .birthday = "1987-04-19"};
 

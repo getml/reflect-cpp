@@ -10,7 +10,7 @@
 # Precompiled Headers
 *.gch
 *.pch
-
+.cache
 # Compiled Dynamic libraries
 *.so
 *.dylib
@@ -41,7 +41,9 @@
 **/build_clang/**
 
 # Output files
+*.avro
 *.bson
+*.capnproto
 *.cbor
 *.json
 *.fb
@@ -61,3 +63,30 @@
 # clangd
 compile_flags.txt
 compile_commands.json
+
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+vcpkg_installed/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST

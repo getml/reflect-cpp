@@ -1,11 +1,14 @@
 # ![C++](https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white) reflect-cpp
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/getml/reflect-cpp/graphs/commit-activity)
 [![Generic badge](https://img.shields.io/badge/C++-20-blue.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/gcc-11+-blue.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/clang-14+-blue.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/MSVC-17+-blue.svg)](https://shields.io/)
+[![Conan Center](https://img.shields.io/conan/v/reflect-cpp)](https://conan.io/center/recipes/reflect-cpp)
+
+**📖 Documentation**: https://rfl.getml.com
 
 ![image](banner1.png)
 
@@ -13,26 +16,57 @@
 
 As the aforementioned libraries are among the most widely used in the respective languages, reflect-cpp fills an important gap in C++ development. It reduces boilerplate code and increases code safety.
 
-Design principles for reflect-cpp include:
 
-- Close integration with containers from the C++ standard library
+### Design principles for reflect-cpp include:
+
+- Close integration with [containers](https://github.com/getml/reflect-cpp?tab=readme-ov-file#support-for-containers) from the C++ standard library
 - Close adherence to C++ idioms
-- Out-of-the-box support for JSON
-- Simple installation
-- Simple extendability to other serialization formats
-- Simple extendability to custom classes
+- Out-of-the-box support for [JSON](https://rfl.getml.com/supported_formats/json)
+- Simple [installation](https://rfl.getml.com/install)
+- Simple extendability to [other serialization formats](https://rfl.getml.com/supported_formats/supporting_your_own_format)
+- Simple extendability to [custom classes](https://rfl.getml.com/concepts/custom_classes)
+- Being one of the fastest serialization libraries in existence, as demonstrated by our [benchmarks](https://rfl.getml.com/benchmarks)
+
+<br>
+
+
+## Table of Contents
+
+### On this page
+  - [Serialization formats](#serialization-formats)
+  - [Feature Overview](#feature-overview)
+    - [Simple Example](#simple-example)
+    - [More Comprehensive Example](#more-comprehensive-example)
+    - [Error messages](#error-messages)
+    - [JSON schema](#json-schema)
+    - [Enums](#enums)
+    - [Algebraic data types](#algebraic-data-types)
+    - [Extra fields](#extra-fields)
+    - [Reflective programming](#reflective-programming)
+    - [Standard Library Integration](#support-for-containers) 
+  - [The team behind reflect-cpp](#the-team-behind-reflect-cpp)
+  - [License](#license)
+
+### More in our [documentation](https://rfl.getml.com):
+  - [Installation ↗](https://rfl.getml.com/install/#option-2-compilation-using-cmake)
+  - [Benchmarks ↗](https://rfl.getml.com/benchmarks)
+  - [How to contribute ↗](https://rfl.getml.com/contributing) 
+  - [Compiling and running the tests ↗](https://rfl.getml.com/contributing/#compiling-and-running-the-tests)
+
 
 ## Serialization formats
 
-reflect-cpp provides a unified reflection-based interface across different serialization formats. It is deliberately designed in a very modular way, using [concepts](https://en.cppreference.com/w/cpp/language/constraints), to make it as easy as possible to interface various C or C++ libraries related to serialization. Refer to the [documentation](https://github.com/getml/reflect-cpp/tree/main/docs) for details.
+reflect-cpp provides a unified reflection-based interface across different serialization formats. It is deliberately designed in a very modular way, using [concepts](https://en.cppreference.com/w/cpp/language/constraints), to make it as easy as possible to interface various C or C++ libraries related to serialization. Refer to the [documentation](https://rfl.getml.com/supported_formats/bson/) for details.
 
 The following table lists the serialization formats currently supported by reflect-cpp and the underlying libraries used:
 
 | Format       | Library                                              | Version      | License    | Remarks                                              |
 |--------------|------------------------------------------------------|--------------|------------| -----------------------------------------------------|
-| JSON         | [yyjson](https://github.com/ibireme/yyjson)          |    0.8.0     | MIT        | out-of-the-box support, included in this repository  |
+| JSON         | [yyjson](https://github.com/ibireme/yyjson)          | >= 0.8.0     | MIT        | out-of-the-box support, included in this repository  |
+| Avro         | [avro-c](https://avro.apache.org/docs/1.11.1/api/c/) | >= 1.11.3    | Apache 2.0 | Schemaful binary format                              |
 | BSON         | [libbson](https://github.com/mongodb/mongo-c-driver) | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
-| CBOR         | [tinycbor](https://github.com/intel/tinycbor)        | >= 0.6.0     | MIT        | JSON-like binary format                              |
+| Cap'n Proto  | [capnproto](https://capnproto.org)                   | >= 1.0.2     | MIT        | Schemaful binary format                              |
+| CBOR         | [jsoncons](https://github.com/danielaparker/jsoncons)| >= 0.176.0   | BSL 1.0    | JSON-like binary format                              |
 | flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 | Schema-less version of flatbuffers, binary format    |
 | msgpack      | [msgpack-c](https://github.com/msgpack/msgpack-c)    | >= 6.0.0     | BSL 1.0    | JSON-like binary format                              |
 | TOML         | [toml++](https://github.com/marzer/tomlplusplus)     | >= 3.4.0     | MIT        | Textual format with an emphasis on readability       |
@@ -42,9 +76,12 @@ The following table lists the serialization formats currently supported by refle
 
 Support for more serialization formats is in development. Refer to the [issues](https://github.com/getml/reflect-cpp/issues) for details.
 
-Please also refer to the *vcpkg.json* in this repository.
+Please also refer to the *conanfile.py* or *vcpkg.json* in this repository.
 
-## Simple Example
+
+## Feature Overview
+
+### Simple Example
 
 ```cpp
 #include <rfl/json.hpp>
@@ -110,7 +147,9 @@ This will work for just about any example in the entire documentation
 and any supported format, except where explicitly noted otherwise:
 
 ```cpp
+rfl::avro::write(homer);
 rfl::bson::write(homer);
+rfl::capnproto::write(homer);
 rfl::cbor::write(homer);
 rfl::flexbuf::write(homer);
 rfl::msgpack::write(homer);
@@ -118,7 +157,9 @@ rfl::toml::write(homer);
 rfl::ubjson::write(homer);
 rfl::xml::write(homer);
 
+rfl::avro::read<Person>(avro_bytes);
 rfl::bson::read<Person>(bson_bytes);
+rfl::capnproto::read<Person>(capnproto_bytes);
 rfl::cbor::read<Person>(cbor_bytes);
 rfl::flexbuf::read<Person>(flexbuf_bytes);
 rfl::msgpack::read<Person>(msgpack_bytes);
@@ -127,7 +168,7 @@ rfl::ubjson::read<Person>(ubjson_bytes);
 rfl::xml::read<Person>(xml_string);
 ```
 
-## More Comprehensive Example
+### More Comprehensive Example
 
 ```cpp
 #include <iostream>
@@ -200,7 +241,7 @@ std::cout << "Hello, my name is " << homer2.first_name() << " "
           << homer2.last_name() << "." << std::endl;
 ```
 
-## Error messages
+### Error messages
 
 reflect-cpp returns clear and comprehensive error messages:
 
@@ -221,7 +262,7 @@ Found 5 errors:
 5) Field named 'children' not found.
 ```
 
-## JSON schema
+### JSON schema
 
 reflect-cpp also supports generating JSON schemata:
 
@@ -250,7 +291,7 @@ The resulting JSON schema looks like this:
 
 Note that this is currently supported for JSON only, since most other formats do not support schemata in the first place.
 
-## Enums
+### Enums
 
 reflect-cpp supports scoped enumerations:
 
@@ -283,7 +324,7 @@ This results in the following JSON string:
 You can also directly convert between enumerator values and strings with `rfl::enum_to_string()` and `rfl::string_to_enum()`, or
 obtain list of enumerator name and value pairs with `rfl::get_enumerators<EnumType>()` or `rfl::get_enumerator_array<EnumType>()`.
 
-## Algebraic data types
+### Algebraic data types
 
 reflect-cpp supports Pydantic-style tagged unions, which allow you to form algebraic data types:
 
@@ -314,9 +355,9 @@ This results in the following JSON string:
 {"shape":"Rectangle","height":10.0,"width":5.0}
 ```
 
-Other forms of tagging are supported as well. Refer to the [documentation](https://github.com/getml/reflect-cpp/tree/main/docs) for details.
+Other forms of tagging are supported as well. Refer to the [documentation](https://rfl.getml.com/docs-readme) for details.
 
-## Extra fields
+### Extra fields
 
 If you don't know all of your fields at compile time, no problem. Just use `rfl::ExtraFields`:
 
@@ -340,7 +381,7 @@ This results in the following JSON string:
 {"firstName":"Homer","lastName":"Simpson","age":45,"email":"homer@simpson.com","town":"Springfield"}
 ```
 
-## Reflective programming
+### Reflective programming
 
 Beyond serialization and deserialization, reflect-cpp also supports reflective programming in general.
 
@@ -439,9 +480,9 @@ const auto c2 = rfl::replace(c, a);
 ```
 
 
-## Support for containers
+### Support for containers
 
-### C++ standard library
+#### C++ standard library
 
 reflect-cpp supports the following containers from the C++ standard library:
 
@@ -468,13 +509,13 @@ reflect-cpp supports the following containers from the C++ standard library:
 - `std::vector`
 - `std::wstring`
 
-### Additional containers
+#### Additional containers
 
 In addition, it supports the following custom containers:
 
 - `rfl::Binary`: Used to express numbers in binary format.
 - `rfl::Box`: Similar to `std::unique_ptr`, but (almost) guaranteed to never be null.
-- `rfl::Bytestring`: An alias for `std::basic_string<std::byte>`. Supported by BSON, CBOR, flexbuffers, msgpack and UBJSON. 
+- `rfl::Bytestring`: An alias for `std::basic_string<std::byte>`. Supported by Avro, BSON, Cap'n Proto, CBOR, flexbuffers, msgpack and UBJSON. 
 - `rfl::Generic`: A catch-all type that can represent (almost) anything.
 - `rfl::Hex`: Used to express numbers in hex format.
 - `rfl::Literal`: An explicitly enumerated string.
@@ -488,38 +529,10 @@ In addition, it supports the following custom containers:
 - `rfl::Validator`: Allows for automatic input validation.
 - `rfl::Variant`: An alternative to `std::variant` that compiles considerably faster.
 
-### Custom classes
+#### Custom classes
 
-Finally, it is very easy to extend full support to your own classes, refer to the [documentation](https://github.com/getml/reflect-cpp/tree/main/docs) for details.
+Finally, it is very easy to extend full support to your own classes, refer to the [documentation](https://rfl.getml.com/docs-readme) for details.
 
-## Why do we need this?
-
-Suppose your C++ program has complex data structures it needs to save and load. Or maybe it needs to interact with some kind of external API. If you do this the traditional way, you will have a lot of boilerplate code. This is annoying and error-prone.
-
-reflect-cpp is not just a reflection library, it is for **serialization, deserialization and validation** through reflection.
-
-That means that you can encode your requirements about the input data in the type system and have them validated upfront. This is why the library also includes algebraic data types like tagged unions and numerous validation routines. Having your requirements encoded in the type system is the most reliable way of ensuring they are met. If your requirements are not met, the user of your software gets a very clear error message. Encoding your requirements in the type system also makes it a lot easier for anyone reading your code.
-
-This increases user experience and developer experience, it makes your code safer (fewer bugs) and more secure (less prone to malicious attacks).
-
-For a more in-depth theoretical discussions of these topics, the following books are warmly recommended:
-
-- *Category Theory for Programmers* by Bartosz Milewski (https://github.com/hmemcpy/milewski-ctfp-pdf/releases)
-- *Domain Modeling Made Functional* by Scott Wlaschin
-
-## Documentation
-
-Click [here](https://github.com/getml/reflect-cpp/tree/main/docs).
-
-## Benchmarks
-
-reflect-cpp conducts continuuous benchmarking across different operating systems, compilers and architectures
-and publishes the results on its [Actions tab](https://github.com/getml/reflect-cpp/actions).
-Refer to the [benchmarks folder](https://github.com/getml/reflect-cpp/tree/main/benchmarks) for details.
-
-The benchmarks show that reflect-cpp is not only very convenient, but also one the fastest JSON libraries for C++.
-It is faster than RapidJSON and about 10 times faster than nlohmann/json. It can be even faster than that, 
-if you choose to use a different format supported by reflect-cpp, such as msgpack.
 
 ## Installation
 
@@ -528,20 +541,17 @@ The following compilers are supported:
 - Clang 14.0 or higher
 - MSVC 17.8 (19.38) or higher
 
-### Option 1: Include source files into your own build
+### Using vcpkg
 
-Simply copy the contents of the folders `include` and `src` into your source repository or add it to your include path
-and also add `src/reflectcpp.cpp` and `src/reflectcpp_json.cpp` and `src/yyjson.c` to your source files for compilation.
-If you want to link to your own version of YYJSON, then only add `src/reflectcpp.cpp` and `src/reflectcpp_json.cpp`.
-If you don't need JSON support, then only add `src/reflectcpp.cpp`.
+https://vcpkg.io/en/package/reflectcpp
 
-If you need support for other serialization formats like flexbuffers or XML, you should also add `src/reflectcpp_<format>.cpp`
-and include and link the respective libraries, as listed in the section on serialization formats.
+### Using Conan
 
-### Option 2: Compilation using cmake
+https://conan.io/center/recipes/reflect-cpp
 
-This will simply compile YYJSON, which is the JSON library underlying reflect-cpp. You can then include reflect-cpp in your project and link to the binary
-to get reflect-cpp with JSON support.
+### Compilation using cmake
+
+This will compile reflect-cpp with JSON support only. You can then include reflect-cpp in your project and link to the binary.
 
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -549,122 +559,22 @@ cmake --build build -j 4  # gcc, clang
 cmake --build build --config Release -j 4  # MSVC
 ```
 
-### Option 3: Compilation using cmake and vcpkg
+If you need support for any other supported [serialization formats](#serialization-formats), refer to the [documentation](https://rfl.getml.com/docs-readme) for installation instructions.
 
-If you want serialization formats other than JSON, you can either install them manually or use vcpkg.
+You can also [include the source files](https://rfl.getml.com/install/#option-1-include-source-files-into-your-own-build) into your build or compile it using [cmake and vcpkg.](https://rfl.getml.com/install/#option-3-compilation-using-cmake-and-vcpkg) For detailed installation instructions, please refer to the [install guide](https://rfl.getml.com/install).
 
-To install vcpkg:
+## The team behind reflect-cpp
 
-```bash
-git submodule update --init
-./vcpkg/bootstrap-vcpkg.sh # Linux, macOS
-./vcpkg/bootstrap-vcpkg.bat # Windows
-# You may be prompted to install additional dependencies.
-```
+reflect-cpp has been developed by [getML (Code17 GmbH)](https://getml.com), a company specializing in software engineering and machine learning for enterprise applications. reflect-cpp is currently maintained by Patrick Urbanke and Manuel Bellersen, with major contributions coming from the community.
 
-To use reflect-cpp in your project:
-
-```cmake
-add_subdirectory(reflect-cpp) # Add this project as a subdirectory
-
-set(REFLECTCPP_BSON ON) # Optional
-set(REFLECTCPP_CBOR ON) # Optional
-set(REFLECTCPP_FLEXBUFFERS ON) # Optional
-set(REFLECTCPP_MSGPACK ON) # Optional
-set(REFLECTCPP_TOML ON) # Optional
-set(REFLECTCPP_UBJSON ON) # Optional
-set(REFLECTCPP_XML ON) # Optional
-set(REFLECTCPP_YAML ON) # Optional
-
-target_link_libraries(your_project PRIVATE reflectcpp) # Link against the library
-```
-
-## Troubleshooting vcpkg
-
-vcpkg is a great, but very ambitious and complex project (just like C++ is a great, but very ambitious and complex language). Here are some of the you might run into and how to resolve them:
-
-1. A lot of problems can simply be resolved by deleting the build directory using `rm -rf build`.
-
-2. *Environment variable VCPKG_FORCE_SYSTEM_BINARIES must be set on arm, s390x, ppc64le and riscv platforms.* - This usually happens on arm platforms like the Apple Silicon chips and can be resolved by simply preceding your build with `export VCPKG_FORCE_SYSTEM_BINARIES=arm` or `export VCPKG_FORCE_SYSTEM_BINARIES=1`.
-
-3. On some occasions you might be asked to specify a compiler. You can do so by simply adding it to the cmake command as follows: `cmake -S . -B build ... -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++` or `cmake -S . -B build ... -DCMAKE_C_COMPILER=clang-17 -DCMAKE_CXX_COMPILER=clang++-17` (or whatever supported compiler you would like to use).
-
-## Compiling and running the tests
-
-reflect-cpp uses vcpkg for dependency management, including
-gtest, which is required for the tests.
-
-```bash
-# bootstrap vcpkg if you haven't done so already 
-git submodule update --init
-./vcpkg/bootstrap-vcpkg.sh # Linux, macOS
-./vcpkg/bootstrap-vcpkg.bat # Windows
-# You may be prompted to install additional dependencies.
-```
-
-### JSON only
-
-To compile the tests, do the following:
-
-```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_BUILD_TESTS=ON
-cmake --build build -j 4 # gcc, clang
-cmake --build build --config Release -j 4 # MSVC
-```
-
-To run the tests, do the following:
-
-```
-./build/tests/json/reflect-cpp-json-tests
-```
-
-### All serialization formats
-
-To compile the tests with serialization formats other than JSON, do the following:
-
-```bash
-cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_UBJSON=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j 4 # gcc, clang
-cmake --build build --config Release -j 4 # MSVC
-```
-
-To run the tests, do the following:
-
-```
-./build/tests/bson/reflect-cpp-bson-tests
-./build/tests/cbor/reflect-cpp-cbor-tests
-./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
-./build/tests/msgpack/reflect-cpp-msgpack-tests
-./build/tests/json/reflect-cpp-json-tests
-./build/tests/toml/reflect-cpp-toml-tests
-./build/tests/ubjson/reflect-cpp-ubjson-tests
-./build/tests/xml/reflect-cpp-xml-tests
-./build/tests/yaml/reflect-cpp-yaml-tests
-```
-
-## How to contribute
-
-### Make sure includes are relative
-
-We need internal includes to be relative and not depend on any externally set include directory.
-
-That is, for example, if you are within any file in `rfl/internal`, prefer
-```cpp
-#include "to_ptr_named_tuple.hpp"
-```
-over
-```cpp
-#include "rfl/internal/to_ptr_named_tuple.hpp"
-```
-For further details and reasoning, please refer to [#30](https://github.com/getml/reflect-cpp/issues/30).
-
-## Related projects
+### Related projects
 
 reflect-cpp was originally developed for [getml-community](https://github.com/getml/getml-community), the fastest open-source tool for feature engineering on relational data and time series. If you are interested in Data Science and/or Machine Learning, please check it out.
 
-## Authors
+### Professional C++ Support
 
-reflect-cpp has been developed by [scaleML](https://www.scaleml.de), a company specializing in software engineering and machine learning for enterprise applications. It is extensively used for [getML](https://getml.com), a software for automated feature engineering using relational learning.
+For comprehensive C++ support beyond the scope of GitHub discussions, we’re here to help! Reach out at [support@getml.com](mailto:support%40getml.com?subject=C++%20support%20request) to discuss any technical challenges or project requirements. We’re excited to support your work as independent software consultants.
+
 
 ## License
 

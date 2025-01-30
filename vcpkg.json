@@ -1,8 +1,16 @@
 {
   "name": "reflectcpp",
-  "version-string": "0.8.0",
-  "builtin-baseline": "50bffcc62d7f6571eb32bc1a0b1807e77af1166c",
+  "version-string": "0.17.0",
+  "builtin-baseline": "cd124b84feb0c02a24a2d90981e8358fdee0e077",
   "dependencies": [
+    {
+      "name": "avro-c",
+      "version>=": "1.11.3"
+    },
+    {
+      "name": "capnproto",
+      "version>=": "1.0.2#1"
+    },
     {
       "name": "ctre",
       "version>=": "3.8"
@@ -40,10 +48,6 @@
       "version>=": "3.9.3"
     },
     {
-      "name": "tinycbor",
-      "version>=": "0.6.0"
-    },
-    {
       "name": "tomlplusplus",
       "version>=": "3.4.0"
     },
@@ -52,7 +56,8 @@
       "version>=": "0.8.0#1"
     },
     {
-      "name": "yyjson"
+      "name": "yyjson",
+      "version>=": "0.10.0"
     },
     {
       "name": "benchmark",
@@ -69,12 +74,10 @@
     {
       "name": "vcpkg-cmake-config",
       "version>=": "2022-02-06#1"
-    }
-  ],
-  "overrides": [
+    },
     {
-      "name": "yyjson",
-      "version": "0.8.0"
+      "name":"vcpkg-pkgconfig-get-modules",
+      "version>=": "2024-04-03"
     }
   ]
 }

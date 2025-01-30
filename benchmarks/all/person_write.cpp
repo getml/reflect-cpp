@@ -3,7 +3,9 @@
 #include <array>
 #include <iostream>
 #include <optional>
+#include <rfl/avro.hpp>
 #include <rfl/bson.hpp>
+#include <rfl/capnproto.hpp>
 #include <rfl/cbor.hpp>
 #include <rfl/flexbuf.hpp>
 #include <rfl/json.hpp>
@@ -43,6 +45,18 @@ static Person load_data() {
 
 // ----------------------------------------------------------------------------
 
+static void BM_person_write_reflect_cpp_avro(benchmark::State &state) {
+  const auto schema = rfl::avro::to_schema<Person>();
+  const auto data = load_data();
+  for (auto _ : state) {
+    const auto output = rfl::avro::write(data, schema);
+    if (output.size() == 0) {
+      std::cout << "No output" << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_person_write_reflect_cpp_avro);
+
 static void BM_person_write_reflect_cpp_bson(benchmark::State &state) {
   const auto data = load_data();
   for (auto _ : state) {
@@ -53,6 +67,18 @@ static void BM_person_write_reflect_cpp_bson(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_person_write_reflect_cpp_bson);
+
+static void BM_person_write_reflect_cpp_capnproto(benchmark::State &state) {
+  const auto schema = rfl::capnproto::to_schema<Person>();
+  const auto data = load_data();
+  for (auto _ : state) {
+    const auto output = rfl::capnproto::write(data, schema);
+    if (output.size() == 0) {
+      std::cout << "No output" << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_person_write_reflect_cpp_capnproto);
 
 static void BM_person_write_reflect_cpp_cbor(benchmark::State &state) {
   const auto data = load_data();
