@@ -14,10 +14,9 @@
 #include <string>
 #include <type_traits>
 
-/*
-  Implementation Common to both
-*/
 namespace rfl {
+
+/// Defines the error class to be returned when something went wrong
 class Error {
  public:
   Error(const std::string& _what) : what_(_what) {}
@@ -35,9 +34,7 @@ class Error {
 /// To be returned when there is nothing to return, but there might be an error.
 struct Nothing {};
 
-/*
-  This implementation is for C++ cases where std::expected defined
-*/
+/// This implementation is for cases where std::expected is defined
 #ifdef __cpp_lib_expected
 
 template <class E>
@@ -46,6 +43,7 @@ using Unexpected = std::unexpected<E>;
 template <class T>
 using Result = std::expected<T, rfl::Error>;
 
+/// This implementation is for cases where std::expected is not defined
 #else  // __cpp_lib_expected
 
 template <class E>
