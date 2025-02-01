@@ -50,7 +50,7 @@ static void BM_person_read_reflect_cpp_avro(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::avro::read<Person>(data, schema);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -73,7 +73,7 @@ static void BM_person_read_reflect_cpp_capnproto(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::capnproto::read<Person>(data, schema);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }

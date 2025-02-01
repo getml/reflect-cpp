@@ -71,7 +71,7 @@ static void BM_licenses_read_reflect_cpp_avro(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::avro::read<Licenses>(data, schema);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -94,7 +94,7 @@ static void BM_licenses_read_reflect_cpp_capnproto(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::capnproto::read<Licenses>(data, schema);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
