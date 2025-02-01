@@ -44,7 +44,7 @@ jobs:
         env:
           CC: clang
           CXX: clang++
-        run: conan build . --build=missing -s compiler.cppstd=gnu23 -o *:with_capnproto=True -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True            
+        run: conan build . --build=missing -s compiler.cppstd=gnu23 -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True            
       - name: Compile
         env:
           CC: clang
