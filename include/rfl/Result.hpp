@@ -399,7 +399,7 @@ class Result {
   template <class F>
   rfl::Result<T> transform_error(F&& f) && {
     static_assert(
-        std::same_as_v<std::invoke_result_t<F, rfl::Error>, rfl::Error>,
+        std::is_same<std::invoke_result_t<F, rfl::Error>, rfl::Error>(),
         "A function passed to transform_error must return an error.");
     if (!has_value()) {
       return rfl::Result<T>{std::invoke(f, std::move(get_err()))};
@@ -410,7 +410,7 @@ class Result {
   template <class F>
   rfl::Result<T> transform_error(F&& f) const& {
     static_assert(
-        std::same_as_v<std::invoke_result_t<F, rfl::Error>, rfl::Error>,
+        std::is_same<std::invoke_result_t<F, rfl::Error>, rfl::Error>(),
         "A function passed to transform_error must return an error.");
     if (!has_value()) {
       return rfl::Result<T>{std::invoke(f, get_err())};
