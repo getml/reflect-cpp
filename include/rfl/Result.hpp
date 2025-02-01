@@ -1,8 +1,13 @@
 #ifndef RFL_RESULT_HPP_
 #define RFL_RESULT_HPP_
 
+#ifdef __cpp_lib_expected
+#include <expected>
+#endif
+
 #include <algorithm>
 #include <array>
+#include <functional>
 #include <iostream>
 #include <optional>
 #include <stdexcept>
@@ -26,20 +31,23 @@ class Error {
   /// Documents what went wrong
   std::string what_;
 };
+
+/// To be returned when there is nothing to return, but there might be an error.
 struct Nothing {};
-}  // namespace rfl
+
 /*
-  This implementation are for C++ parts with std::expected defined
+  This implementation is for C++ cases where std::expected defined
 */
 #ifdef __cpp_lib_expected
-#include <expected>
-namespace rfl {
-using Unexpected = std::unexpected<Error>;
+
+template <class E>
+using Unexpected = std::unexpected<E>;
+
 template <class T>
 using Result = std::expected<T, rfl::Error>;
-}  // namespace rfl
-#else
-namespace rfl {
+
+#else  // __cpp_lib_expected
+
 template <class E>
 struct Unexpected {
   Unexpected(E&& _err) : err_{std::forward<E>(_err)} {}
@@ -55,6 +63,7 @@ struct Unexpected {
  private:
   E err_;
 };
+
 /// The Result class is used for monadic error handling.
 template <class T>
 class Result {
@@ -459,6 +468,13 @@ class Result {
   alignas(std::max(alignof(T), alignof(Error))) TOrErr t_or_err_;
 };
 
-}  // namespace rfl
 #endif
+
+/// Shorthand for unexpected error.
+inline Unexpected<Error> error(const std::string& _what) {
+  return Unexpected<Error>(Error(_what));
+}
+
+}  // namespace rfl
+
 #endif
