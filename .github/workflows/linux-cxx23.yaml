@@ -11,10 +11,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - compiler: llvm
-            compiler-version: 16
-          - compiler: llvm
-            compiler-version: 18
           - compiler: gcc
             compiler-version: 13
           - compiler: gcc
