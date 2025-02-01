@@ -29,5 +29,4 @@ SOFTWARE.
 // Also, this speeds up compile time, compared to multiple separate .cpp files
 // compilation.
 
-#include "rfl/bson/Reader.cpp"
 #include "rfl/bson/Writer.cpp"

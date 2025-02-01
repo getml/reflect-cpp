@@ -50,7 +50,9 @@ class Reader {
   static constexpr bool has_custom_constructor =
       (requires(InputVarType var) { T::from_capnproto_obj(var); });
 
-  bool is_empty(const InputVarType& _var) const noexcept;
+  bool is_empty(const InputVarType& _var) const noexcept {
+    return _var.val_.getType() == capnp::DynamicValue::VOID;
+  }
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
@@ -105,14 +107,36 @@ class Reader {
     }
   }
 
-  rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept;
+  rfl::Result<InputArrayType> to_array(
+      const InputVarType& _var) const noexcept {
+    if (_var.val_.getType() != capnp::DynamicValue::LIST) {
+      return error("Could not cast to a list.");
+    }
+    return InputArrayType{_var.val_.as<capnp::DynamicList>()};
+  }
 
   rfl::Result<InputObjectType> to_object(
-      const InputVarType& _var) const noexcept;
+      const InputVarType& _var) const noexcept {
+    if (_var.val_.getType() != capnp::DynamicValue::STRUCT) {
+      return error("Could not cast to a struct.");
+    }
+    return InputObjectType{_var.val_.as<capnp::DynamicStruct>()};
+  }
 
-  rfl::Result<InputMapType> to_map(const InputVarType& _var) const noexcept;
+  rfl::Result<InputMapType> to_map(const InputVarType& _var) const noexcept {
+    if (_var.val_.getType() != capnp::DynamicValue::STRUCT) {
+      return error("Could not cast to a map.");
+    }
+    return InputMapType{_var.val_.as<capnp::DynamicStruct>()};
+  }
 
-  rfl::Result<InputUnionType> to_union(const InputVarType& _var) const noexcept;
+  rfl::Result<InputUnionType> to_union(
+      const InputVarType& _var) const noexcept {
+    if (_var.val_.getType() != capnp::DynamicValue::STRUCT) {
+      return error("Could not cast to a struct.");
+    }
+    return InputUnionType{_var.val_.as<capnp::DynamicStruct>()};
+  }
 
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,

@@ -29,5 +29,4 @@ SOFTWARE.
 // Also, this speeds up compile time, compared to multiple separate .cpp files
 // compilation.
 
-#include "rfl/flexbuf/Reader.cpp"
 #include "rfl/flexbuf/Writer.cpp"

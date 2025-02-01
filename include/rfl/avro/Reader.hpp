@@ -14,6 +14,7 @@
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../internal/is_literal.hpp"
+#include "../parsing/schemaful/IsSchemafulReader.hpp"
 
 namespace rfl::avro {
 
@@ -48,7 +49,9 @@ struct Reader {
   static constexpr bool has_custom_constructor =
       (requires(InputVarType var) { T::from_avro_obj(var); });
 
-  bool is_empty(const InputVarType& _var) const noexcept;
+  bool is_empty(const InputVarType& _var) const noexcept {
+    return avro_value_get_type(_var.val_) == AVRO_NULL;
+  }
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
@@ -130,14 +133,39 @@ struct Reader {
     }
   }
 
-  rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept;
+  rfl::Result<InputArrayType> to_array(
+      const InputVarType& _var) const noexcept {
+    if (avro_value_get_type(_var.val_) != AVRO_ARRAY) {
+      return error("Could not cast to an array.");
+    }
+    return InputArrayType{_var.val_};
+  }
 
   rfl::Result<InputObjectType> to_object(
-      const InputVarType& _var) const noexcept;
+      const InputVarType& _var) const noexcept {
+    const auto type = avro_value_get_type(_var.val_);
+    if (type != AVRO_RECORD) {
+      return error("Could not cast to an object.");
+    }
+    return InputObjectType{_var.val_};
+  }
 
-  rfl::Result<InputMapType> to_map(const InputVarType& _var) const noexcept;
+  rfl::Result<InputMapType> to_map(const InputVarType& _var) const noexcept {
+    const auto type = avro_value_get_type(_var.val_);
+    if (type != AVRO_MAP) {
+      return error("Could not cast to a map.");
+    }
+    return InputMapType{_var.val_};
+  }
 
-  rfl::Result<InputUnionType> to_union(const InputVarType& _var) const noexcept;
+  rfl::Result<InputUnionType> to_union(
+      const InputVarType& _var) const noexcept {
+    const auto type = avro_value_get_type(_var.val_);
+    if (type != AVRO_UNION) {
+      return error("Could not cast to a union.");
+    }
+    return InputUnionType{_var.val_};
+  }
 
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
@@ -209,6 +237,9 @@ struct Reader {
     }
   }
 };
+
+static_assert(parsing::schemaful::IsSchemafulReader<Reader>,
+              "This must be a schemaful reader.");
 
 }  // namespace rfl::avro
 

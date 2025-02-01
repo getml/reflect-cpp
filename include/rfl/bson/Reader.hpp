@@ -50,12 +50,49 @@ struct Reader {
       (requires(InputVarType var) { T::from_bson_obj(var); });
 
   rfl::Result<InputVarType> get_field_from_array(
-      const size_t _idx, const InputArrayType& _arr) const noexcept;
+      const size_t _idx, const InputArrayType& _arr) const noexcept {
+    bson_t b;
+    bson_iter_t iter;
+    const auto doc = _arr.val_->value.v_doc;
+    if (bson_init_static(&b, doc.data, doc.data_len)) {
+      if (bson_iter_init(&iter, &b)) {
+        size_t i = 0;
+        while (bson_iter_next(&iter)) {
+          if (i == _idx) {
+            return to_input_var(&iter);
+          }
+          ++i;
+        }
+      } else {
+        return error("Could not init the array iteration.");
+      }
+    } else {
+      return error("Could not init array.");
+    }
+    return error("Index " + std::to_string(_idx) + " of of bounds.");
+  }
 
   rfl::Result<InputVarType> get_field_from_object(
-      const std::string& _name, const InputObjectType& _obj) const noexcept;
+      const std::string& _name, const InputObjectType& _obj) const noexcept {
+    bson_t b;
+    bson_iter_t iter;
+    const auto doc = _obj.val_->value.v_doc;
+    if (bson_init_static(&b, doc.data, doc.data_len)) {
+      if (bson_iter_init(&iter, &b)) {
+        while (bson_iter_next(&iter)) {
+          auto key = std::string(bson_iter_key(&iter));
+          if (key == _name) {
+            return to_input_var(&iter);
+          }
+        }
+      }
+    }
+    return error("No field named '" + _name + "' was found.");
+  }
 
-  bool is_empty(const InputVarType& _var) const noexcept;
+  bool is_empty(const InputVarType& _var) const noexcept {
+    return _var.val_->value_type == BSON_TYPE_NULL;
+  }
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
@@ -121,7 +158,14 @@ struct Reader {
     }
   }
 
-  rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept;
+  rfl::Result<InputArrayType> to_array(
+      const InputVarType& _var) const noexcept {
+    const auto btype = _var.val_->value_type;
+    if (btype != BSON_TYPE_ARRAY && btype != BSON_TYPE_DOCUMENT) {
+      return error("Could not cast to an array.");
+    }
+    return InputArrayType{_var.val_};
+  }
 
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
@@ -168,7 +212,13 @@ struct Reader {
   }
 
   rfl::Result<InputObjectType> to_object(
-      const InputVarType& _var) const noexcept;
+      const InputVarType& _var) const noexcept {
+    const auto btype = _var.val_->value_type;
+    if (btype != BSON_TYPE_DOCUMENT) {
+      return error("Could not cast to a document.");
+    }
+    return InputObjectType{_var.val_};
+  }
 
   template <class T>
   rfl::Result<T> use_custom_constructor(
@@ -181,7 +231,9 @@ struct Reader {
   }
 
  private:
-  InputVarType to_input_var(bson_iter_t* _iter) const noexcept;
+  InputVarType to_input_var(bson_iter_t* _iter) const noexcept {
+    return InputVarType{bson_iter_value(_iter)};
+  }
 };
 
 }  // namespace bson

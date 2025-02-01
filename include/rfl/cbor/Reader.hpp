@@ -43,12 +43,26 @@ class Reader {
       (requires(InputVarType var) { T::from_cbor_obj(var); });
 
   rfl::Result<InputVarType> get_field_from_array(
-      const size_t _idx, const InputArrayType& _arr) const noexcept;
+      const size_t _idx, const InputArrayType& _arr) const noexcept {
+    if (_idx >= _arr.val_->size()) {
+      return error("Index out of range.");
+    }
+    return InputVarType{&_arr.val_->at(_idx)};
+  }
 
   rfl::Result<InputVarType> get_field_from_object(
-      const std::string& _name, const InputObjectType& _obj) const noexcept;
+      const std::string& _name, const InputObjectType& _obj) const noexcept {
+    for (auto& kv : _obj.val_->object_range()) {
+      if (kv.key() == _name) {
+        return InputVarType{&kv.value()};
+      };
+    }
+    return error("Field name '" + _name + "' not found.");
+  }
 
-  bool is_empty(const InputVarType& _var) const noexcept;
+  bool is_empty(const InputVarType& _var) const noexcept {
+    return _var.val_->is_null();
+  }
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
@@ -89,10 +103,21 @@ class Reader {
     }
   }
 
-  rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept;
+  rfl::Result<InputArrayType> to_array(
+      const InputVarType& _var) const noexcept {
+    if (!_var.val_->is_array()) {
+      return Unexpected(Error("Could not cast to an array."));
+    }
+    return InputArrayType{_var.val_};
+  }
 
   rfl::Result<InputObjectType> to_object(
-      const InputVarType& _var) const noexcept;
+      const InputVarType& _var) const noexcept {
+    if (!_var.val_->is_object()) {
+      return Unexpected(Error("Could not cast to an object."));
+    }
+    return InputObjectType{_var.val_};
+  }
 
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,

@@ -209,13 +209,13 @@ class Object {
 
  private:
   size_t find(const std::string& _key) const {
-    for (auto i = i_; i < size(); ++i) {
+    for (size_t i = i_; i < size(); ++i) {
       if (data_[i].first == _key) {
         i_ = i + 1;
         return i;
       }
     }
-    for (auto i = 0; i < i_; ++i) {
+    for (size_t i = 0; i < i_; ++i) {
       if (data_[i].first == _key) {
         i_ = i + 1;
         return i;
