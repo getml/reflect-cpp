@@ -18,7 +18,7 @@ class VariantReader {
       const typename R::InputVarType& _var) noexcept {
     return [&]<size_t... _is>(std::integer_sequence<size_t, _is...>) {
       Result<VariantType> result =
-          Error("Could not parse union: Index out of bounds.");
+          error("Could not parse union: Index out of bounds.");
       (try_one_type<_is>(_r, _index, _var, &result), ...);
       return result;
     }(std::make_integer_sequence<size_t, sizeof...(AlternativeTypes)>());

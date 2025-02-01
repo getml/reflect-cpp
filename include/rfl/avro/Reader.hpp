@@ -58,7 +58,7 @@ struct Reader {
       size_t size = 0;
       const auto err = avro_value_get_string(_var.val_, &c_str, &size);
       if (err) {
-        return Error("Could not cast to string.");
+        return error("Could not cast to string.");
       }
       if (size == 0) {
         return std::string("");
@@ -70,12 +70,12 @@ struct Reader {
       size_t size = 0;
       const auto err = avro_value_get_bytes(_var.val_, &ptr, &size);
       if (err) {
-        return Error("Could not cast to bytestring.");
+        return error("Could not cast to bytestring.");
       }
       return rfl::Bytestring(static_cast<const std::byte*>(ptr), size - 1);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != AVRO_BOOLEAN) {
-        return rfl::Error("Could not cast to boolean.");
+        return rfl::error("Could not cast to boolean.");
       }
       int result = 0;
       avro_value_get_boolean(_var.val_, &result);
@@ -87,32 +87,32 @@ struct Reader {
         double result = 0.0;
         const auto err = avro_value_get_double(_var.val_, &result);
         if (err) {
-          return Error("Could not cast to double.");
+          return error("Could not cast to double.");
         }
         return static_cast<T>(result);
       } else if (type == AVRO_INT32) {
         int32_t result = 0;
         const auto err = avro_value_get_int(_var.val_, &result);
         if (err) {
-          return Error("Could not cast to int32.");
+          return error("Could not cast to int32.");
         }
         return static_cast<T>(result);
       } else if (type == AVRO_INT64) {
         int64_t result = 0;
         const auto err = avro_value_get_long(_var.val_, &result);
         if (err) {
-          return Error("Could not cast to int64.");
+          return error("Could not cast to int64.");
         }
         return static_cast<T>(result);
       } else if (type == AVRO_FLOAT) {
         float result = 0.0;
         const auto err = avro_value_get_float(_var.val_, &result);
         if (err) {
-          return Error("Could not cast to float.");
+          return error("Could not cast to float.");
         }
         return static_cast<T>(result);
       }
-      return rfl::Error(
+      return rfl::error(
           "Could not cast to numeric value. The type must be integral, float "
           "or double.");
 
@@ -120,7 +120,7 @@ struct Reader {
       int value = 0;
       const auto err = avro_value_get_enum(_var.val_, &value);
       if (err) {
-        return Error("Could not cast to enum.");
+        return error("Could not cast to enum.");
       }
       return std::remove_cvref_t<T>::from_value(
           static_cast<typename std::remove_cvref_t<T>::ValueType>(value));
@@ -188,12 +188,12 @@ struct Reader {
     int disc = 0;
     auto err = avro_value_get_discriminant(_union.val_, &disc);
     if (err) {
-      return Error("Could not get the discriminant.");
+      return error("Could not get the discriminant.");
     }
     avro_value_t value;
     err = avro_value_get_current_branch(_union.val_, &value);
     if (err) {
-      return Error("Could not cast the union type.");
+      return error("Could not cast the union type.");
     }
     return UnionReaderType::read(*this, static_cast<size_t>(disc),
                                  InputVarType{&value});
@@ -205,7 +205,7 @@ struct Reader {
     try {
       return T::from_avro_obj(_var);
     } catch (std::exception& e) {
-      return rfl::Error(e.what());
+      return rfl::error(e.what());
     }
   }
 };

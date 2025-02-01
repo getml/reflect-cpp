@@ -15,7 +15,7 @@ struct Size {
   static rfl::Result<T> validate(const T& _t) {
     const auto to_t = [&](const auto&) { return _t; };
     const auto embellish_error = [](const auto& _err) {
-      return Error("Size validation failed: " + _err.what());
+      return error("Size validation failed: " + _err.what());
     };
     return V::validate(_t.size()).transform(to_t).transform_error(
         embellish_error);

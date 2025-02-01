@@ -19,7 +19,7 @@ option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
 
 option(REFLECTCPP_USE_BUNDLED_DEPENDENCIES "Use the bundled dependencies" ON)
 
-option(REFLECTCPP_CXX23 "Use C++-23" OFF)
+option(REFLECTCPP_CXX23 "Use C++-23 features, like std::expected" OFF)
 
 set(REFLECTCPP_USE_VCPKG_DEFAULT OFF)
 

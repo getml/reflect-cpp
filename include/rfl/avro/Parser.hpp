@@ -48,7 +48,7 @@ struct Parser<avro::Reader, avro::Writer, Generic, ProcessorsType> {
   template <class T>
   static Result<Generic> read(const avro::Reader&, const T&) noexcept {
     static_assert(always_false_v<T>, "Generics are unsupported in Avro.");
-    return Error("Unsupported");
+    return error("Unsupported");
   }
 
   template <class P>

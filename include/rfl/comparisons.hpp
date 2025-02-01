@@ -86,10 +86,9 @@ struct Maximum {
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
     if (_value > threshold) {
-      return rfl::Unexpected(
-          rfl::Error("Value expected to be less than or equal to " +
-                     std::to_string(threshold) + ", but got " +
-                     std::to_string(_value) + "."));
+      return error("Value expected to be less than or equal to " +
+                   std::to_string(threshold) + ", but got " +
+                   std::to_string(_value) + ".");
     }
     return _value;
   }

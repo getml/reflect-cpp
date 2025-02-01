@@ -54,13 +54,13 @@ class Reader {
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       if (!_var.val_->is_string()) {
-        return rfl::Unexpected(Error("Could not cast to string."));
+        return error("Could not cast to string.");
       }
       return _var.val_->as<std::string>();
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
       if (!_var.val_->is_byte_string()) {
-        return rfl::Unexpected(Error("Could not cast to bytestring."));
+        return error("Could not cast to bytestring.");
       }
       const auto vec = _var.val_->as<std::vector<uint8_t>>();
       return rfl::Bytestring(internal::ptr_cast<const std::byte*>(vec.data()),
