@@ -1,4 +1,4 @@
-name: linux
+name: linux-cxx20
 
 on: [ pull_request, workflow_dispatch ]
 
