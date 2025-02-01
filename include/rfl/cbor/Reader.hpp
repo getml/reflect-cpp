@@ -106,7 +106,7 @@ class Reader {
   rfl::Result<InputArrayType> to_array(
       const InputVarType& _var) const noexcept {
     if (!_var.val_->is_array()) {
-      return Unexpected(Error("Could not cast to an array."));
+      return error("Could not cast to an array.");
     }
     return InputArrayType{_var.val_};
   }
@@ -114,7 +114,7 @@ class Reader {
   rfl::Result<InputObjectType> to_object(
       const InputVarType& _var) const noexcept {
     if (!_var.val_->is_object()) {
-      return Unexpected(Error("Could not cast to an object."));
+      return error("Could not cast to an object.");
     }
     return InputObjectType{_var.val_};
   }

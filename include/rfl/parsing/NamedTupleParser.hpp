@@ -92,7 +92,7 @@ struct NamedTupleParser {
         Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
     if (err) [[unlikely]] {
       call_destructors_where_necessary(set, &view);
-      return rfl::Unexpected(*err);
+      return error(*err);
     }
     auto res = Result<NamedTuple<FieldTypes...>>(std::move(*ptr));
     call_destructors_where_necessary(set, &view);

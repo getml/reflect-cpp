@@ -43,7 +43,7 @@ struct FieldVariantParser {
               &_r, &field_variant);
       auto err = _r.read_object(reader, _obj);
       if (err) {
-        return rfl::Unexpected(*err);
+        return error(*err);
       }
       if (!field_variant) {
         return error(

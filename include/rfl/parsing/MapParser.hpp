@@ -68,12 +68,12 @@ struct MapParser {
     if constexpr (schemaful::IsSchemafulReader<R>) {
       const auto err = _r.read_map(map_reader, _obj_or_map);
       if (err) {
-        return Unexpected(*err);
+        return error(*err);
       }
     } else {
       const auto err = _r.read_object(map_reader, _obj_or_map);
       if (err) {
-        return Unexpected(*err);
+        return error(*err);
       }
     }
     if (errors.size() != 0) {

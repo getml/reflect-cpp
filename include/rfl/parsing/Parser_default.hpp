@@ -298,7 +298,7 @@ struct Parser {
         Parser<R, W, ViewType, ProcessorsType>::read_view_with_default(_r, _var,
                                                                        &view);
     if (err) [[unlikely]] {
-      return rfl::Unexpected(*err);
+      return error(*err);
     }
     return t;
   }
