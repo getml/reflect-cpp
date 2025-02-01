@@ -19,7 +19,11 @@ option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
 
 option(REFLECTCPP_USE_BUNDLED_DEPENDENCIES "Use the bundled dependencies" ON)
 
-option(REFLECTCPP_CXX23 "Enable C++-23 features, like std::expected" OFF)
+option(REFLECTCPP_USE_STD_EXPECTED "Use std::expected instead of the built-in Result type (requires C++-23)" OFF)
+
+if(REFLECTCPP_USE_STD_EXPECTED)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DREFLECTCPP_USE_STD_EXPECTED")
+endif()
 
 set(REFLECTCPP_USE_VCPKG_DEFAULT OFF)
 
@@ -52,12 +56,6 @@ if (REFLECTCPP_USE_VCPKG)
 endif ()
 
 project(reflectcpp VERSION 0.17.0 LANGUAGES CXX)
-
-if (REFLECTCPP_CXX23)
-    set(CMAKE_CXX_STANDARD 23)
-else()
-    set(CMAKE_CXX_STANDARD 20)
-endif()
 
 if (REFLECTCPP_BUILD_SHARED)
     add_library(reflectcpp SHARED)

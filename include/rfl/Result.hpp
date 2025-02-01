@@ -1,7 +1,7 @@
 #ifndef RFL_RESULT_HPP_
 #define RFL_RESULT_HPP_
 
-#ifdef __cpp_lib_expected
+#ifdef REFLECTCPP_USE_STD_EXPECTED
 #include <expected>
 #endif
 
@@ -35,7 +35,7 @@ class Error {
 struct Nothing {};
 
 /// This implementation is for cases where std::expected is defined
-#ifdef __cpp_lib_expected
+#ifdef REFLECTCPP_USE_STD_EXPECTED
 
 template <class E>
 using Unexpected = std::unexpected<E>;
@@ -44,7 +44,7 @@ template <class T>
 using Result = std::expected<T, rfl::Error>;
 
 /// This implementation is for cases where std::expected is not defined
-#else  // __cpp_lib_expected
+#else  // REFLECTCPP_USE_STD_EXPECTED
 
 template <class E>
 struct Unexpected {
@@ -116,17 +116,6 @@ class Result {
 
   ~Result() { destroy(); }
 
-  /*
-    Not specified in the standard.
-  */
-  // /// Returns Result<U>, if successful and error otherwise.
-  // /// Inspired by .and(...) in the Rust std::result type.
-  // template <class U>
-  // Result<U> and_other(const Result<U>& _r) const noexcept {
-  //   const auto f = [&](const auto& _) { return _r; };
-  //   return and_then(f);
-  // }
-
   /// Monadic operation - F must be a function of type T -> Result<U>.
   template <class F>
   auto and_then(const F& _f) {
@@ -150,52 +139,6 @@ class Result {
       return Result_U(get_err());
     }
   }
-
-  /*
-    Not specified in the standard
-  */
-  // /// Results types can be iterated over, which even make it possible to use
-  // /// them within a std::range.
-  // T* begin() noexcept {
-  //   if (success_) {
-  //     return &get_t();
-  //   } else {
-  //     return nullptr;
-  //   }
-  // }
-
-  // /// Results types can be iterated over, which even make it possible to use
-  // /// them within a std::range.
-  // const T* begin() const noexcept {
-  //   if (success_) {
-  //     return &get_t();
-  //   } else {
-  //     return nullptr;
-  //   }
-  // }
-
-  // /// Results types can be iterated over, which even make it possible to use
-  // /// them within a std::range.
-  // T* end() noexcept {
-  //   if (success_) {
-  //     return &get_t() + 1;
-  //   } else {
-  //     return nullptr;
-  //   }
-  // }
-
-  // /// Results types can be iterated over, which even make it possible to use
-  // /// them within a std::range.
-  // const T* end() const noexcept {
-  //   if (success_) {
-  //     return &get_t() + 1;
-  //   } else {
-  //     return nullptr;
-  //   }
-  // }
-
-  /// Returns an std::optional<error> if this does in fact contain an error
-  /// or std::nullopt otherwise.
 
   /// Returns true if the result contains a value, false otherwise.
   operator bool() const noexcept { return success_; }
@@ -274,17 +217,6 @@ class Result {
     }
   }
 
-  /*
-    Not specified in the standard.
-    https://en.cppreference.com/w/cpp/utility/expected
-  */
-  /// Returns the value contained if successful or the provided result r if
-  /// not.
-  // Result<T> or_other(const Result<T>& _r) const noexcept {
-  //   const auto f = [&](const auto& _) { return _r; };
-  //   return or_else(f);
-  // }
-
   /// Functor operation - F must be a function of type T -> U.
   template <class F>
   auto transform(const F& _f) {
@@ -347,11 +279,9 @@ class Result {
     }
   }
 
-  /*
-    As specified by the standard :
-    https://en.cppreference.com/w/cpp/utility/expected
-    Observers
-  */
+  //  As specified by the standard :
+  //  https://en.cppreference.com/w/cpp/utility/expected
+  //  Observers
   template <class G = rfl::Error>
   rfl::Error error_or(G&& _default) const& {
     if (success_) {
@@ -369,15 +299,6 @@ class Result {
     }
   }
   bool has_value() const noexcept { return success_; }
-  /*
-    This 2 function definitions are as written by the documentation specified in
-    https://en.cppreference.com/w/cpp/utility/expected/error
-    and will have undefined behaviour if the Result does not contain an error.
-
-    Not sure if the move overload should be included
-    This exception based behaviour shall be retained to avoid weird bugs from
-    happening without being able to trace source.
-  */
   const Error& error() const& {
     if (success_) throw std::runtime_error("Expected does not contain value");
     return get_err();
@@ -386,16 +307,8 @@ class Result {
     if (success_) throw std::runtime_error("Expected does not contain value");
     return get_err();
   }
-  /*
-    Read access to the value inside. As specified by :
-    https://en.cppreference.com/w/cpp/utility/expected
-    - Observers
-  */
   T* operator->() noexcept { return &get_t(); }
   const T* operator->() const noexcept { return &get_t(); }
-  /*
-    transform_error
-  */
   template <class F>
   rfl::Result<T> transform_error(F&& f) && {
     static_assert(
