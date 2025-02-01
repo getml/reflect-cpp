@@ -473,6 +473,11 @@ inline Unexpected<Error> error(const std::string& _what) {
   return Unexpected<Error>(Error(_what));
 }
 
+/// Shorthand for unexpected error.
+inline Unexpected<Error> error(const Error& _err) {
+  return Unexpected<Error>(_err);
+}
+
 }  // namespace rfl
 
 #endif

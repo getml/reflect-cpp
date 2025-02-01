@@ -67,7 +67,7 @@ class Reader {
                              vec.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var.val_->is_bool()) {
-        return rfl::Unexpected(rfl::Error("Could not cast to boolean."));
+        return error("Could not cast to boolean.");
       }
       return _var.val_->as<bool>();
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
@@ -81,9 +81,9 @@ class Reader {
       if (_var.val_->is_uint64()) {
         return static_cast<T>(_var.val_->as<uint64_t>());
       }
-      return rfl::Unexpected(rfl::Error(
+      return error(
           "Could not cast to numeric value. The type must be integral, "
-          "float or double."));
+          "float or double.");
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
@@ -121,7 +121,7 @@ class Reader {
     try {
       return T::from_cbor_obj(_var);
     } catch (std::exception& e) {
-      return rfl::Unexpected(rfl::Error(e.what()));
+      return error(e.what());
     }
   }
 };

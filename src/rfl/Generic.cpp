@@ -78,9 +78,9 @@ Result<Generic::Array> Generic::to_array() const noexcept {
   if (const auto* ptr = std::get_if<Array>(&value_)) {
     return *ptr;
   } else {
-    return rfl::Unexpected(rfl::Error(
+    return error(
         "rfl::Generic: Could not cast the underlying value to an "
-        "rfl::Generic::Array."));
+        "rfl::Generic::Array.");
   }
 }
 
@@ -88,8 +88,8 @@ Result<bool> Generic::to_bool() const noexcept {
   if (const bool* ptr = std::get_if<bool>(&value_)) {
     return *ptr;
   } else {
-    return rfl::Unexpected(rfl::Error(
-        "rfl::Generic: Could not cast the underlying value to a boolean."));
+    return error(
+        "rfl::Generic: Could not cast the underlying value to a boolean.");
   }
 }
 
@@ -97,8 +97,8 @@ Result<double> Generic::to_double() const noexcept {
   if (const double* ptr = std::get_if<double>(&value_)) {
     return *ptr;
   } else {
-    return rfl::Unexpected(rfl::Error(
-        "rfl::Generic: Could not cast the underlying value to a double."));
+    return error(
+        "rfl::Generic: Could not cast the underlying value to a double.");
   }
 }
 
@@ -106,8 +106,8 @@ Result<int> Generic::to_int() const noexcept {
   if (const int* ptr = std::get_if<int>(&value_)) {
     return *ptr;
   } else {
-    return rfl::Unexpected(rfl::Error(
-        "rfl::Generic: Could not cast the underlying value to an integer."));
+    return error(
+        "rfl::Generic: Could not cast the underlying value to an integer.");
   }
 }
 
@@ -115,9 +115,9 @@ Result<Generic::Object> Generic::to_object() const noexcept {
   if (const auto* ptr = std::get_if<Object>(&value_)) {
     return *ptr;
   } else {
-    return rfl::Unexpected(rfl::Error(
+    return error(
         "rfl::Generic: Could not cast the underlying value to an "
-        "rfl::Generic::Object."));
+        "rfl::Generic::Object.");
   }
 }
 
@@ -125,9 +125,9 @@ Result<std::nullopt_t> Generic::to_null() const noexcept {
   if (const auto* ptr = std::get_if<std::nullopt_t>(&value_)) {
     return *ptr;
   } else {
-    return rfl::Unexpected(rfl::Error(
+    return error(
         "rfl::Generic: Could not cast the underlying value to "
-        "rfl::Generic::Null."));
+        "rfl::Generic::Null.");
   }
 }
 
@@ -135,8 +135,8 @@ Result<std::string> Generic::to_string() const noexcept {
   if (const auto* ptr = std::get_if<std::string>(&value_)) {
     return *ptr;
   } else {
-    return rfl::Unexpected(rfl::Error(
-        "rfl::Generic: Could not cast the underlying value to a string."));
+    return error(
+        "rfl::Generic: Could not cast the underlying value to a string.");
   }
 }
 

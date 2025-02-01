@@ -28,14 +28,14 @@ struct AnyOf {
   }
 
  private:
-  static Error make_error_message(const std::vector<Error>& _errors) {
+  static std::string make_error_message(const std::vector<Error>& _errors) {
     std::stringstream stream;
     stream << "Expected at least one of the following validations to pass, but "
               "none of them did:";
     for (size_t i = 0; i < _errors.size(); ++i) {
       stream << "\n" << i + 1 << ") " << _errors.at(i).what();
     }
-    return Error{stream.str()};
+    return stream.str();
   }
 
   template <class T, class Head, class... Tail>
@@ -44,7 +44,7 @@ struct AnyOf {
     const auto handle_err = [&](Error&& _err) -> rfl::Result<T> {
       _errors.push_back(std::forward<Error>(_err));
       if constexpr (sizeof...(Tail) == 0) {
-        return rfl::Unexpected(rfl::Error(make_error_message(_errors)));
+        return error(make_error_message(_errors));
       } else {
         return validate_impl<T, Tail...>(
             _value, std::forward<std::vector<Error>>(_errors));

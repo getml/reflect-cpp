@@ -69,7 +69,7 @@ struct Reader {
         static_assert(rfl::always_false_v<T>, "Unsupported type.");
       }
     } catch (std::exception& e) {
-      return rfl::Unexpected(rfl::Error(e.what()));
+      return error(e.what());
     }
   }
 
@@ -110,7 +110,7 @@ struct Reader {
     try {
       return T::from_yaml_obj(_var);
     } catch (std::exception& e) {
-      return rfl::Unexpected(rfl::Error(e.what()));
+      return error(e.what());
     }
   }
 };

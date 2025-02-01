@@ -72,7 +72,7 @@ static rfl::Result<Person> read_using_nlohmann() {
     auto val = nlohmann::json::parse(json_string);
     return nlohmann_to_person(val);
   } catch (std::exception &e) {
-    return rfl::Unexpected(rfl::Error(e.what()));
+    return rfl::error(e.what());
   }
 }
 
@@ -105,7 +105,7 @@ static rfl::Result<Person> read_using_rapidjson() {
     d.Parse(json_string.c_str());
     return rapidjson_to_person(d.GetObject());
   } catch (std::exception &e) {
-    return rfl::Unexpected(rfl::Error(e.what()));
+    return rfl::error(e.what());
   }
 }
 
@@ -139,7 +139,7 @@ static rfl::Result<Person> read_using_simdjson() {
     auto doc = parser.iterate(padded_str).value();
     return simdjson_to_person(doc.get_object());
   } catch (std::exception &e) {
-    return rfl::Unexpected(rfl::Error(e.what()));
+    return rfl::error(e.what());
   }
 }
 
@@ -190,8 +190,8 @@ rfl::Result<Person> yyjson_to_person(yyjson_val *_val) {
     } else if (!std::get<1>(found) && name == "last_name") {
       auto last_name = yyjson_get_str(v);
       if (last_name == NULL) {
-        errors.push_back(rfl::Error(
-            "Error reading 'last_name': Could not cast to string."));
+        errors.push_back(
+            rfl::Error("Error reading 'last_name': Could not cast to string."));
         continue;
       }
       person.last_name = last_name;
@@ -199,8 +199,8 @@ rfl::Result<Person> yyjson_to_person(yyjson_val *_val) {
     } else if (!std::get<2>(found) && name == "children") {
       auto children = yyjson_to_children(v);
       if (!children) {
-        errors.push_back(rfl::Error(
-            "Error reading 'children': " + children.error().what()));
+        errors.push_back(
+            rfl::Error("Error reading 'children': " + children.error().what()));
         continue;
       }
       person.children = std::move(*children);
@@ -230,7 +230,7 @@ static rfl::Result<Person> read_using_yyjson() {
   yyjson_doc *doc = yyjson_read(json_string.c_str(), json_string.size(), 0);
   if (!doc) {
     std::cout << "Could not parse document!" << std::endl;
-    return rfl::Unexpected(rfl::Error("Could not parse document"));
+    return rfl::error("Could not parse document");
   }
   yyjson_val *root = yyjson_doc_get_root(doc);
   auto person = yyjson_to_person(root);

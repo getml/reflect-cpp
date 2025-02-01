@@ -40,7 +40,7 @@ class FieldVariantReader {
       stream << "Could not parse rfl::Variant, could not match field named "
                 "'"
              << _disc_value << "'.";
-      *field_variant_ = rfl::Unexpected(rfl::Error(stream.str()));
+      *field_variant_ = error(stream.str());
     }
   }
 

@@ -106,7 +106,7 @@ static rfl::Result<FeatureCollection> read_using_nlohmann(
     auto val = nlohmann::json::parse(_json_string);
     return nlohmann_to_feature_collection(val);
   } catch (std::exception &e) {
-    return rfl::Unexpected(rfl::Error(e.what()));
+    return rfl::error(e.what());
   }
 }
 
@@ -183,7 +183,7 @@ static rfl::Result<FeatureCollection> read_using_rapidjson(
     d.Parse(_json_string.c_str());
     return rapidjson_to_feature_collection(d.GetObject());
   } catch (std::exception &e) {
-    return rfl::Unexpected(rfl::Error(e.what()));
+    return rfl::error(e.what());
   }
 }
 
@@ -264,7 +264,7 @@ static rfl::Result<FeatureCollection> read_using_simdjson(
     auto doc = parser.iterate(padded_str);
     return simdjson_to_feature_collection(doc);
   } catch (std::exception &e) {
-    return rfl::Unexpected(rfl::Error(e.what()));
+    return rfl::error(e.what());
   }
 }
 
@@ -347,7 +347,7 @@ static rfl::Result<FeatureCollection> read_using_yyjson(
   yyjson_doc *doc = yyjson_read(_json_string.c_str(), _json_string.size(), 0);
   if (!doc) {
     std::cout << "Could not parse document!" << std::endl;
-    return rfl::Unexpected(rfl::Error("Could not parse document"));
+    return rfl::error("Could not parse document");
   }
   yyjson_val *root = yyjson_doc_get_root(doc);
   auto person = yyjson_to_feature_collection(root);
@@ -358,7 +358,7 @@ static rfl::Result<FeatureCollection> read_using_yyjson(
     auto val = nlohmann::json::parse(_json_string);
     return nlohmann_to_feature_collection(val);
   } catch (std::exception &e) {
-    return rfl::Unexpected(rfl::Error(e.what()));
+    return rfl::error(e.what());
   }
 }
 

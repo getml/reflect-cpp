@@ -39,21 +39,21 @@ struct Reader {
     const auto type = _var.type;
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       if (type != MSGPACK_OBJECT_STR) {
-        return rfl::Unexpected(rfl::Error("Could not cast to string."));
+        return error("Could not cast to string.");
       }
       const auto str = _var.via.str;
       return std::string(str.ptr, str.size);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
       if (type != MSGPACK_OBJECT_BIN) {
-        return rfl::Unexpected(rfl::Error("Could not cast to a bytestring."));
+        return error("Could not cast to a bytestring.");
       }
       const auto bin = _var.via.bin;
       return rfl::Bytestring(internal::ptr_cast<const std::byte*>(bin.ptr),
                              bin.size);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != MSGPACK_OBJECT_BOOLEAN) {
-        return rfl::Unexpected(rfl::Error("Could not cast to boolean."));
+        return error("Could not cast to boolean.");
       }
       return _var.via.boolean;
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
@@ -66,9 +66,9 @@ struct Reader {
       } else if (type == MSGPACK_OBJECT_NEGATIVE_INTEGER) {
         return static_cast<T>(_var.via.i64);
       }
-      return rfl::Unexpected(rfl::Error(
+      return error(
           "Could not cast to numeric value. The type must be integral, float "
-          "or double."));
+          "or double.");
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
@@ -99,7 +99,7 @@ struct Reader {
       const auto& val = _obj.ptr[i].val;
       if (key.type != MSGPACK_OBJECT_STR) {
         return rfl::Error("Key in element " + std::to_string(i) +
-                     " was not a string.");
+                          " was not a string.");
       }
       const auto name = std::string_view(key.via.str.ptr, key.via.str.size);
       _object_reader.read(name, val);
@@ -113,7 +113,7 @@ struct Reader {
     try {
       return T::from_msgpack_obj(_var);
     } catch (std::exception& e) {
-      return rfl::Unexpected(rfl::Error(e.what()));
+      return error(e.what());
     }
   }
 };

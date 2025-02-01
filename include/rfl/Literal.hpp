@@ -75,7 +75,7 @@ class Literal {
   /// Constructs a new Literal.
   static Result<Literal<fields_...>> from_value(ValueType _value) {
     if (_value >= num_fields_) {
-      return rfl::Unexpected(rfl::Error("Value cannot exceed number of fields."));
+      return error("Value cannot exceed number of fields.");
     }
     return Literal<fields_...>(_value);
   }
@@ -306,9 +306,9 @@ class Literal {
     const auto idx = find_value_set_idx(
         _str, &found, std::make_integer_sequence<int, num_fields_>());
     if (!found) {
-      return rfl::Unexpected(rfl::Error(
+      return error(
           "Literal does not support string '" + _str +
-          "'. The following strings are supported: " + allowed_strings() + "."));
+          "'. The following strings are supported: " + allowed_strings() + ".");
     }
     return idx;
   }

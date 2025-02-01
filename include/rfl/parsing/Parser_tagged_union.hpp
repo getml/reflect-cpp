@@ -104,7 +104,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
         possible_tags_t<TaggedUnion<_discriminator, AlternativeTypes...>>;
     static_assert(!PossibleTags::has_duplicates(),
                   "Duplicate tags are not allowed inside tagged unions.");
-    ResultType res = rfl::Unexpected(rfl::Error(""));
+    ResultType res = error("");
     bool match_found = false;
     (set_if_disc_value_matches<_is>(_r, _disc_value, _var, &res, &match_found),
      ...);
@@ -117,7 +117,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
              << _discriminator.str() << " '" << _disc_value
              << "'. The following tags are allowed: "
              << internal::strings::join(", ", names);
-      return rfl::Unexpected(rfl::Error(stream.str()));
+      return error(stream.str());
     }
   }
 

@@ -19,7 +19,7 @@ Result<Nothing> save_string(const std::string& _fname, const T& _obj,
     _write(_obj, outfile);
     outfile.close();
   } catch (std::exception& e) {
-    return rfl::Unexpected(rfl::Error(e.what()));
+    return error(e.what());
   }
   return Nothing{};
 }

@@ -202,7 +202,7 @@ class Object {
   Result<T> get(const std::string& _key) const noexcept {
     const auto i = find(_key);
     if (i == size()) {
-      return rfl::Unexpected(rfl::Error("Key named '" + _key + "' not found."));
+      return error("Key named '" + _key + "' not found.");
     }
     return data_[i].second;
   }

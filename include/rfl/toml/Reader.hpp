@@ -41,25 +41,25 @@ struct Reader {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       const auto ptr = _var->as<std::string>();
       if (!ptr) {
-        return rfl::Unexpected(rfl::Error("Could not cast the node to std::string!"));
+        return error("Could not cast the node to std::string!");
       }
       return **ptr;
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       const auto ptr = _var->as<bool>();
       if (!ptr) {
-        return rfl::Unexpected(rfl::Error("Could not cast the node to bool!"));
+        return error("Could not cast the node to bool!");
       }
       return **ptr;
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       const auto ptr = _var->as<double>();
       if (!ptr) {
-        return rfl::Unexpected(rfl::Error("Could not cast the node to double!"));
+        return error("Could not cast the node to double!");
       }
       return static_cast<std::remove_cvref_t<T>>(**ptr);
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       const auto ptr = _var->as<int64_t>();
       if (!ptr) {
-        return rfl::Unexpected(rfl::Error("Could not cast the node to int64_t!"));
+        return error("Could not cast the node to int64_t!");
       }
       return static_cast<std::remove_cvref_t<T>>(**ptr);
     } else {
@@ -99,7 +99,7 @@ struct Reader {
     try {
       return T::from_toml_obj(_var);
     } catch (std::exception& e) {
-      return rfl::Unexpected(rfl::Error(e.what()));
+      return error(e.what());
     }
   }
 };

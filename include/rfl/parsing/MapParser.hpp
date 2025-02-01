@@ -77,7 +77,7 @@ struct MapParser {
       }
     }
     if (errors.size() != 0) {
-      return Unexpected(to_single_error_message(errors));
+      return error(to_single_error_message(errors));
     }
     return map;
   }

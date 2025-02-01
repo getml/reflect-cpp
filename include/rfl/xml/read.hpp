@@ -33,8 +33,8 @@ Result<T> read(const std::string& _xml_str) {
   pugi::xml_document doc;
   const auto result = doc.load_string(_xml_str.c_str());
   if (!result) {
-    return rfl::Unexpected(rfl::Error("XML string could not be parsed: " +
-                 std::string(result.description())));
+    return error("XML string could not be parsed: " +
+                 std::string(result.description()));
   }
   const auto var = InputVarType(doc.first_child());
   return read<T, Ps...>(var);

@@ -45,7 +45,7 @@ class Timestamp {
     try {
       return Timestamp(_str);
     } catch (std::exception& e) {
-      return rfl::Unexpected(rfl::Error(e.what()));
+      return error(e.what());
     }
   }
 

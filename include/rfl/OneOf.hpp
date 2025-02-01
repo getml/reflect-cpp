@@ -28,7 +28,7 @@ struct OneOf {
   }
 
  private:
-  static Error make_error_message(const std::vector<Error>& _errors) {
+  static std::string make_error_message(const std::vector<Error>& _errors) {
     std::stringstream stream;
     stream << "Expected exactly 1 out of " << sizeof...(Cs) + 1
            << " validations to pass, but " << sizeof...(Cs) + 1 - _errors.size()
@@ -36,7 +36,7 @@ struct OneOf {
     for (size_t i = 0; i < _errors.size(); ++i) {
       stream << "\n" << i + 1 << ") " << _errors.at(i).what();
     }
-    return Error(stream.str());
+    return stream.str();
   }
 
   template <class T, class Head, class... Tail>
@@ -48,7 +48,7 @@ struct OneOf {
             if (_errors.size() == sizeof...(Cs)) {
               return _value;
             }
-            return rfl::Unexpected(rfl::Error(make_error_message(_errors)));
+            return error(make_error_message(_errors));
           } else {
             return validate_impl<T, Tail...>(_value, std::move(_errors));
           }
@@ -56,7 +56,7 @@ struct OneOf {
         .or_else([&](auto&& _err) -> rfl::Result<T> {
           _errors.emplace_back(std::move(_err));
           if constexpr (sizeof...(Tail) == 0) {
-            return rfl::Unexpected(rfl::Error(make_error_message(_errors)));
+            return error(make_error_message(_errors));
           } else {
             return validate_impl<T, Tail...>(_value, std::move(_errors));
           }

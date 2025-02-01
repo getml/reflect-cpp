@@ -46,9 +46,9 @@ struct FieldVariantParser {
         return rfl::Unexpected(*err);
       }
       if (!field_variant) {
-        return rfl::Unexpected(rfl::Error(
+        return error(
             "Could not parse: Expected the object to have "
-            "exactly one field, but found more than one."));
+            "exactly one field, but found more than one.");
       }
       return std::move(*field_variant);
     };

@@ -29,7 +29,7 @@ struct Parser<R, W, std::wstring, ProcessorsType> {
 
     auto inStr = Parser<R, W, std::string, ProcessorsType>::read(_r, _var);
     if (!inStr) {
-      return Result<std::wstring>(rfl::Unexpected(rfl::Error(inStr.error())));
+      return Result<std::wstring>(error(inStr.error()));
     }
     // if (auto err = inStr.error(); err.has_value()) {
     //   return Result<std::wstring>(err.value());

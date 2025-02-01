@@ -80,7 +80,7 @@ struct Reader {
   template <class T>
   rfl::Result<T> use_custom_constructor(
       const InputVarType _var) const noexcept {
-    return rfl::Unexpected(rfl::Error("Not supported for generic types"));
+    return error("Not supported for generic types");
   }
 };
 

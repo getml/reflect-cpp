@@ -126,19 +126,13 @@ if (my_result) {
   auto v = *my_result;
 } else {
   // my_result must contain an error.
-  auto err = my_result.error().value();
+  auto err = my_result.error();
 }
 ```
 
-## Iterating over `rfl::Result`
+## `rfl::error`
 
-`rfl::Result` can be iterated over, as it contains either zero or one values of type `T`:
-
-```cpp
-for (const auto& v: my_result) {
-  // If you are inside this loop, then my_result did not contain an error.
-} 
-```
+`rfl::error("error message")` is a simple utility function for `rfl::Unexpected<Error>(Error("error message"))`.
 
 ## `.and_other(...)`, `.or_else(...)`, `.or_other(...)`
 
@@ -150,7 +144,7 @@ This is often used to produce better error messages:
 
 ```cpp
 const auto embellish_error = [&](const Error& _e) -> rfl::Result<T> {
-    return rfl::Unexpected(rfl::Error("Failed to parse field '" + key + "': " + _e.what()));
+    return rfl::error("Failed to parse field '" + key + "': " + _e.what());
 };
 return Parser<T>::read(_r, &_var).or_else(embellish_error);
 ```
