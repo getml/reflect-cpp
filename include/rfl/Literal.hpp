@@ -161,7 +161,7 @@ class Literal {
 
   /// Assigns the literal from a string
   Literal<fields_...>& operator=(const std::string& _str) {
-    value_ = find_value(_str);
+    value_ = find_value(_str).value();
     return *this;
   }
 
