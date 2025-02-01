@@ -81,7 +81,10 @@ struct Reader {
     return std::nullopt;
   }
 
-  rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept;
+  rfl::Result<InputArrayType> to_array(
+      const InputVarType& _var) const noexcept {
+    return _var.to_array();
+  }
 
   rfl::Result<InputObjectType> to_object(
       const InputVarType& _var) const noexcept {
