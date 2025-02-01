@@ -16,7 +16,7 @@ Reader::identify_discriminant(const InputUnionType& _union) const noexcept {
     }
     ++ix;
   }
-  return std::nullopt;
+  return std::optional<std::pair<capnp::StructSchema::Field, size_t>>();
 }
 
 bool Reader::is_empty(const InputVarType& _var) const noexcept {
