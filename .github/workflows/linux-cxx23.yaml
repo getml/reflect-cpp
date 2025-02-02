@@ -17,6 +17,7 @@ jobs:
             compiler-version: 14
           - compiler: llvm
             compiler-version: 19
+            additional-dep: "clang-19"
     name: "${{ github.job }} (${{ matrix.compiler }}-${{ matrix.compiler-version }})"
     runs-on: ubuntu-24.04
     steps:
@@ -52,9 +53,6 @@ jobs:
       - name: Compile
         run: |
           if [[ "${{ matrix.compiler }}" == "llvm" ]]; then
-            if [[ "${{ matrix.compiler-version }}" == "19" ]]; then
-              sudo apt install -y clang-19
-            fi
             export CC=clang-${{ matrix.compiler-version }}
             export CXX=clang++-${{ matrix.compiler-version }}
           elif [[ "${{ matrix.compiler }}" == "gcc" ]]; then
