@@ -5,6 +5,7 @@ on:
     branches: 
       - main
       - f/mkdocs
+      - f/remove_people_page
   workflow_dispatch:
 
 jobs:
