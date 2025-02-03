@@ -319,23 +319,6 @@
   
 
       
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../people/" class="md-tabs__link">
-        
-  
-    
-  
-  People
-
-      </a>
-    </li>
-  
-
-      
     </ul>
   </div>
 </nav>
@@ -2307,32 +2290,6 @@
   
 
     
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../people/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    People
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
   </ul>
 </nav>
                   </div>
@@ -2499,7 +2456,7 @@ link above to find out which features are supported in the vcpkg port.</p>
 <p>Simply use <a href="https://conan.io/center/recipes/reflect-cpp">this recipe</a>.</p>
 <h2 id="option-3-compilation-using-cmake">Option 3: Compilation using cmake<a class="headerlink" href="#option-3-compilation-using-cmake" title="Permanent link">&para;</a></h2>
 <p>This will compile reflect-cpp with JSON support only. You can then include reflect-cpp in your project and link to the binary.</p>
-<div class="language-bash highlight"><pre><span></span><code>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release
+<div class="language-bash highlight"><pre><span></span><code>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DCMAKE_CXX_STANDARD<span class="o">=</span><span class="m">20</span><span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release
 cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>-j<span class="w"> </span><span class="m">4</span><span class="w">  </span><span class="c1"># gcc, clang</span>
 cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>--config<span class="w"> </span>Release<span class="w"> </span>-j<span class="w"> </span><span class="m">4</span><span class="w">  </span><span class="c1"># MSVC</span>
 </code></pre></div>
@@ -2514,6 +2471,11 @@ If you want to link to your own version of YYJSON, then only add <code>src/refle
 ./vcpkg/bootstrap-vcpkg.sh<span class="w"> </span><span class="c1"># Linux, macOS</span>
 ./vcpkg/bootstrap-vcpkg.bat<span class="w"> </span><span class="c1"># Windows</span>
 <span class="c1"># You may be prompted to install additional dependencies.</span>
+</code></pre></div>
+<p>To compile the library:</p>
+<div class="language-bash highlight"><pre><span></span><code>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DCMAKE_CXX_STANDARD<span class="o">=</span><span class="m">20</span><span class="w"> </span>-DREFLECTCPP_AVRO<span class="o">=</span>ON<span class="w"> </span>-DREFLECTCPP_BSON<span class="o">=</span>ON<span class="w"> </span>-DREFLECTCPP_CAPNPROTO<span class="o">=</span>ON<span class="w"> </span>-DREFLECTCPP_CBOR<span class="o">=</span>ON<span class="w"> </span>-DREFLECTCPP_FLEXBUFFERS<span class="o">=</span>ON<span class="w"> </span>-DREFLECTCPP_MSGPACK<span class="o">=</span>ON<span class="w"> </span>-DREFLECTCPP_XML<span class="o">=</span>ON<span class="w"> </span>-DREFLECTCPP_TOML<span class="o">=</span>ON<span class="w"> </span>-DREFLECTCPP_UBJSON<span class="o">=</span>ON<span class="w"> </span>-DREFLECTCPP_YAML<span class="o">=</span>ON<span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release
+cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>-j<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="c1"># gcc, clang</span>
+cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>--config<span class="w"> </span>Release<span class="w"> </span>-j<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="c1"># MSVC</span>
 </code></pre></div>
 <p>To use reflect-cpp in your project:</p>
 <div class="language-cmake highlight"><pre><span></span><code><span class="nb">add_subdirectory</span><span class="p">(</span><span class="s">reflect-cpp</span><span class="p">)</span><span class="w"> </span><span class="c"># Add this project as a subdirectory</span>

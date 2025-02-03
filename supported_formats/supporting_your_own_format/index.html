@@ -319,23 +319,6 @@
   
 
       
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../../people/" class="md-tabs__link">
-        
-  
-    
-  
-  People
-
-      </a>
-    </li>
-  
-
-      
     </ul>
   </div>
 </nav>
@@ -2443,32 +2426,6 @@
   
 
     
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../people/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    People
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
   </ul>
 </nav>
                   </div>
@@ -2872,7 +2829,7 @@ You should probably just copy + paste this into your own code and fill in the bl
 <span class="w">        </span><span class="k">const</span><span class="w"> </span><span class="n">InputVarType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_var</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="c1">// If you do not want to support this functionality,</span>
 <span class="w">        </span><span class="c1">// just return this.</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Error</span><span class="p">(</span><span class="s">&quot;Not supported.&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Not supported.&quot;</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">};</span>
 </code></pre></div>

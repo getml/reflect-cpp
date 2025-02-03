@@ -319,23 +319,6 @@
   
 
       
-        
-  
-  
-  
-    <li class="md-tabs__item">
-      <a href="../people/" class="md-tabs__link">
-        
-  
-    
-  
-  People
-
-      </a>
-    </li>
-  
-
-      
     </ul>
   </div>
 </nav>
@@ -1350,10 +1333,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#iterating-over-rflresult" class="md-nav__link">
+  <a href="#rflerror" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Iterating over rfl::Result
+        rfl::error
       
     </span>
   </a>
@@ -1361,10 +1344,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#and_other-or_else-or_other" class="md-nav__link">
+  <a href="#or_else-transform_error" class="md-nav__link">
     <span class="md-ellipsis">
       
-        .and_other(...), .or_else(...), .or_other(...)
+        .or_else(...), .transform_error(...)
       
     </span>
   </a>
@@ -2295,32 +2278,6 @@
   
 
     
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../people/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    People
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
   </ul>
 </nav>
                   </div>
@@ -2394,10 +2351,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#iterating-over-rflresult" class="md-nav__link">
+  <a href="#rflerror" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Iterating over rfl::Result
+        rfl::error
       
     </span>
   </a>
@@ -2405,10 +2362,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#and_other-or_else-or_other" class="md-nav__link">
+  <a href="#or_else-transform_error" class="md-nav__link">
     <span class="md-ellipsis">
       
-        .and_other(...), .or_else(...), .or_other(...)
+        .or_else(...), .transform_error(...)
       
     </span>
   </a>
@@ -2520,6 +2477,8 @@ in C++-23. However, reflect-cpp is a library for C++-20 and until that changes, 
 <p>2) In some cases, you want to signal to the parser that is fine if some things go wrong. <code>rfl::Result</code> is the way to do that.</p>
 <p>If you do not care about these objections to exceptions, you can just call <code>rfl::json::read&lt;...&gt;(json_string).value()</code>,
 which throws an exception, if the result type contains an error and be done with it.</p>
+<p><strong>Note</strong>: If you want to use <code>std::expected</code> instead of our own Result type, you can pass <code>-DREFLECTCPP_USE_STD_EXPECTED</code> during compilation.
+This requires C++-23 support and may not be supported on all C++ compilers.</p>
 <h2 id="what-is-rflresult">What is <code>rfl::Result</code>?<a class="headerlink" href="#what-is-rflresult" title="Permanent link">&para;</a></h2>
 <p><code>rfl::Result</code> is similar to <code>std::optional</code> it that it contains an object that may or may not be there. However,
 unlike <code>std::optional</code>, it does not simply contain <code>std::nullopt</code> if the operation has not been successful. Instead,
@@ -2573,7 +2532,7 @@ an error.</p>
 <p>If you are 100% sure that the result does not contain error, you can also call the operator <code>*</code>. This will lead to undefined behavior,
 if you are wrong.</p>
 <p>If you want the underlying value of type T or some kind of default value, you can call <code>.value_or(your_default_value)</code>.</p>
-<p>If you want to retrieve the error, you can call <code>.error()</code>, which will return a value of type <code>std::optional&lt;rfl::Error&gt;</code>.</p>
+<p>If you want to retrieve the error, you can call <code>.error()</code>, which will return a value of type <code>rfl::Error</code>.</p>
 <p>If you want to check whether the result contains an error, you can just use the bool operator:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">my_result</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="c1">// my_result cannot contain an error,</span>
@@ -2581,25 +2540,20 @@ if you are wrong.</p>
 <span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">my_result</span><span class="p">;</span>
 <span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="c1">// my_result must contain an error.</span>
-<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_result</span><span class="p">.</span><span class="n">error</span><span class="p">().</span><span class="n">value</span><span class="p">();</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">my_result</span><span class="p">.</span><span class="n">error</span><span class="p">();</span>
 <span class="p">}</span>
 </code></pre></div>
-<h2 id="iterating-over-rflresult">Iterating over <code>rfl::Result</code><a class="headerlink" href="#iterating-over-rflresult" title="Permanent link">&para;</a></h2>
-<p><code>rfl::Result</code> can be iterated over, as it contains either zero or one values of type <code>T</code>:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">v</span><span class="o">:</span><span class="w"> </span><span class="n">my_result</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="c1">// If you are inside this loop, then my_result did not contain an error.</span>
-<span class="p">}</span><span class="w"> </span>
-</code></pre></div>
-<h2 id="and_other-or_else-or_other"><code>.and_other(...)</code>, <code>.or_else(...)</code>, <code>.or_other(...)</code><a class="headerlink" href="#and_other-or_else-or_other" title="Permanent link">&para;</a></h2>
-<p><code>r1.and_other(r2)</code> expects an <code>r2</code> or type <code>rfl::Result&lt;U&gt;</code>. It returns an error, if <code>r1</code> contains an error and <code>r2</code> otherwise.</p>
+<h2 id="rflerror"><code>rfl::error</code><a class="headerlink" href="#rflerror" title="Permanent link">&para;</a></h2>
+<p><code>rfl::error("error message")</code> is a simple utility function for <code>rfl::Unexpected&lt;Error&gt;(Error("error message"))</code>.</p>
+<h2 id="or_else-transform_error"><code>.or_else(...)</code>, <code>.transform_error(...)</code><a class="headerlink" href="#or_else-transform_error" title="Permanent link">&para;</a></h2>
 <p><code>r.or_else(f)</code> expects a function <code>f</code> for type <code>Error -&gt; rfl::Result&lt;T&gt;</code>. It returns <code>r</code> if <code>r</code> did not contain an error and the results of <code>f</code> otherwise.</p>
+<p><code>r.transform_error(f)</code> expects a function <code>f</code> for type <code>Error -&gt; Error</code>. </p>
 <p>This is often used to produce better error messages:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">embellish_error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="n">Error</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_e</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">Error</span><span class="p">(</span><span class="s">&quot;Failed to parse field &#39;&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;&#39;: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">_e</span><span class="p">.</span><span class="n">what</span><span class="p">());</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Failed to parse field &#39;&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;&#39;: &quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">_e</span><span class="p">.</span><span class="n">what</span><span class="p">());</span>
 <span class="p">};</span>
-<span class="k">return</span><span class="w"> </span><span class="n">Parser</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">read</span><span class="p">(</span><span class="n">_r</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">_var</span><span class="p">).</span><span class="n">or_else</span><span class="p">(</span><span class="n">embellish_error</span><span class="p">);</span>
+<span class="k">return</span><span class="w"> </span><span class="n">Parser</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;::</span><span class="n">read</span><span class="p">(</span><span class="n">_r</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">_var</span><span class="p">).</span><span class="n">transform_error</span><span class="p">(</span><span class="n">embellish_error</span><span class="p">);</span>
 </code></pre></div>
-<p><code>r1.or_other(r2)</code> expects an <code>r2</code> or type <code>rfl::Result&lt;T&gt;</code>. It returns an <code>r1</code>, if <code>r1</code> does not contain an error and <code>r2</code> otherwise.</p>
 
 
 
