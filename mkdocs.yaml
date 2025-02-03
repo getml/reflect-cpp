@@ -188,7 +188,3 @@ plugins:
         - mailto:*
         - 'data:image/*'
         - '#*'
-
-
-hooks:
-  - docs/plugins/main.py
