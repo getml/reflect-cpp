@@ -14,6 +14,7 @@
 #include "internal/variant/find_max_size.hpp"
 #include "internal/variant/is_alternative_type.hpp"
 #include "internal/variant/result_t.hpp"
+#include "internal/ptr_cast.hpp"
 
 namespace rfl {
 

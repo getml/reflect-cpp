@@ -33,7 +33,7 @@ Result<internal::wrap_in_rfl_array_t<T>> read(const std::string& _yaml_str) {
     const auto var = InputVarType(YAML::Load(_yaml_str));
     return read<T, Ps...>(var);
   } catch (std::exception& e) {
-    return Error(e.what());
+    return error(e.what());
   }
 }
 

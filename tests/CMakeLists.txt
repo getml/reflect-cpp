@@ -3,7 +3,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -O2")
 if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std:c++20")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -ggdb -ftemplate-backtrace-limit=0")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -Werror -ggdb -ftemplate-backtrace-limit=0")
 endif()
 
 if (REFLECTCPP_JSON)
@@ -12,16 +12,8 @@ if (REFLECTCPP_JSON)
     add_subdirectory(json_c_arrays_and_inheritance)
 endif ()
 
-if (REFLECTCPP_AVRO)
-    add_subdirectory(avro)
-endif()
-
 if (REFLECTCPP_BSON)
     add_subdirectory(bson)
-endif()
-
-if (REFLECTCPP_CAPNPROTO)
-    add_subdirectory(capnproto)
 endif()
 
 if (REFLECTCPP_CBOR)

@@ -13,7 +13,7 @@ void write_and_read(const auto& _struct) {
   const auto serialized1 = rfl::cbor::write<Ps...>(_struct);
   const auto res = rfl::cbor::read<T, Ps...>(serialized1);
   EXPECT_TRUE(res && true) << "Test failed on read. Error: "
-                           << res.error().value().what();
+                           << res.error().what();
   const auto serialized2 = rfl::cbor::write<Ps...>(res.value());
   EXPECT_EQ(serialized1, serialized2);
 }

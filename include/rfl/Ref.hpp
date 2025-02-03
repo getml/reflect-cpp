@@ -26,7 +26,7 @@ class Ref {
   /// return an Error, if the shared_ptr is not set.
   static Result<Ref<T>> make(std::shared_ptr<T>&& _ptr) {
     if (!_ptr) {
-      return Error("std::shared_ptr was a nullptr.");
+      return error("std::shared_ptr was a nullptr.");
     }
     return Ref<T>(std::move(_ptr));
   }
@@ -35,7 +35,7 @@ class Ref {
   /// return an Error, if the shared_ptr is not set.
   static Result<Ref<T>> make(const std::shared_ptr<T>& _ptr) {
     if (!_ptr) {
-      return Error("std::shared_ptr was a nullptr.");
+      return error("std::shared_ptr was a nullptr.");
     }
     return Ref<T>(_ptr);
   }
@@ -145,4 +145,3 @@ inline void swap(rfl::Ref<T>& _r1, rfl::Ref<T>& _r2) {
 }  // namespace std
 
 #endif  // RFL_REF_HPP_
-

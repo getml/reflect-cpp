@@ -20,7 +20,7 @@ class Schema {
     try {
       return Schema<T>(_json_str);
     } catch (std::exception& e) {
-      return Error(e.what());
+      return error(e.what());
     }
   }
 

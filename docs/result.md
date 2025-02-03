@@ -32,6 +32,9 @@ in C++-23. However, reflect-cpp is a library for C++-20 and until that changes, 
 If you do not care about these objections to exceptions, you can just call `rfl::json::read<...>(json_string).value()`,
 which throws an exception, if the result type contains an error and be done with it.
 
+**Note**: If you want to use `std::expected` instead of our own Result type, you can pass `-DREFLECTCPP_USE_STD_EXPECTED` during compilation.
+This requires C++-23 support and may not be supported on all C++ compilers.
+
 ## What is `rfl::Result`?
 
 `rfl::Result` is similar to `std::optional` it that it contains an object that may or may not be there. However,
@@ -115,7 +118,7 @@ if you are wrong.
 
 If you want the underlying value of type T or some kind of default value, you can call `.value_or(your_default_value)`.
 
-If you want to retrieve the error, you can call `.error()`, which will return a value of type `std::optional<rfl::Error>`.
+If you want to retrieve the error, you can call `.error()`, which will return a value of type `rfl::Error`.
 
 If you want to check whether the result contains an error, you can just use the bool operator:
 
@@ -126,34 +129,26 @@ if (my_result) {
   auto v = *my_result;
 } else {
   // my_result must contain an error.
-  auto err = my_result.error().value();
+  auto err = my_result.error();
 }
 ```
 
-## Iterating over `rfl::Result`
+## `rfl::error`
 
-`rfl::Result` can be iterated over, as it contains either zero or one values of type `T`:
+`rfl::error("error message")` is a simple utility function for `rfl::Unexpected<Error>(Error("error message"))`.
 
-```cpp
-for (const auto& v: my_result) {
-  // If you are inside this loop, then my_result did not contain an error.
-} 
-```
-
-## `.and_other(...)`, `.or_else(...)`, `.or_other(...)`
-
-`r1.and_other(r2)` expects an `r2` or type `rfl::Result<U>`. It returns an error, if `r1` contains an error and `r2` otherwise.
+## `.or_else(...)`, `.transform_error(...)`
 
 `r.or_else(f)` expects a function `f` for type `Error -> rfl::Result<T>`. It returns `r` if `r` did not contain an error and the results of `f` otherwise.
+
+`r.transform_error(f)` expects a function `f` for type `Error -> Error`. 
 
 This is often used to produce better error messages:
 
 ```cpp
 const auto embellish_error = [&](const Error& _e) -> rfl::Result<T> {
-    return Error("Failed to parse field '" + key + "': " + _e.what());
+    return rfl::error("Failed to parse field '" + key + "': " + _e.what());
 };
-return Parser<T>::read(_r, &_var).or_else(embellish_error);
+return Parser<T>::read(_r, &_var).transform_error(embellish_error);
 ```
-
-`r1.or_other(r2)` expects an `r2` or type `rfl::Result<T>`. It returns an `r1`, if `r1` does not contain an error and `r2` otherwise.
 

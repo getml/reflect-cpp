@@ -43,12 +43,32 @@ struct Reader {
   static constexpr bool has_custom_constructor = false;
 
   rfl::Result<InputVarType> get_field_from_array(
-      const size_t _idx, const InputArrayType& _arr) const noexcept;
+      const size_t _idx, const InputArrayType& _arr) const noexcept {
+    const auto name = _arr.node_.name();
+    size_t i = 0;
+    for (auto node = _arr.node_; node; node = node.next_sibling(name)) {
+      if (i == _idx) {
+        return InputVarType(node);
+      }
+    }
+    return error("Index " + std::to_string(_idx) + " of of bounds.");
+  }
 
   rfl::Result<InputVarType> get_field_from_object(
-      const std::string& _name, const InputObjectType _obj) const noexcept;
+      const std::string& _name, const InputObjectType _obj) const noexcept {
+    const auto node = _obj.node_.child(_name.c_str());
+    if (!node) {
+      return error("Object contains no field named '" + _name + "'.");
+    }
+    return InputVarType(node);
+  }
 
-  bool is_empty(const InputVarType _var) const noexcept;
+  bool is_empty(const InputVarType _var) const noexcept {
+    const auto wrap = [](const auto& _node) { return !_node; };
+    return std::visit(cast_as_node, _var.node_or_attribute_)
+        .transform(wrap)
+        .value_or(false);
+  }
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType _var) const noexcept {
@@ -70,7 +90,7 @@ struct Reader {
       try {
         return static_cast<T>(std::stod(str));
       } catch (std::exception& e) {
-        return Error("Could not cast '" + std::string(str) +
+        return error("Could not cast '" + std::string(str) +
                      "' to floating point value.");
       }
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
@@ -78,14 +98,17 @@ struct Reader {
       try {
         return static_cast<T>(std::stoi(str));
       } catch (std::exception& e) {
-        return Error("Could not cast '" + std::string(str) + "' to integer.");
+        return error("Could not cast '" + std::string(str) + "' to integer.");
       }
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
   }
 
-  rfl::Result<InputArrayType> to_array(const InputVarType _var) const noexcept;
+  rfl::Result<InputArrayType> to_array(const InputVarType _var) const noexcept {
+    const auto wrap = [](const auto& _node) { return InputArrayType(_node); };
+    return std::visit(cast_as_node, _var.node_or_attribute_).transform(wrap);
+  }
 
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
@@ -122,12 +145,32 @@ struct Reader {
   }
 
   rfl::Result<InputObjectType> to_object(
-      const InputVarType _var) const noexcept;
+      const InputVarType _var) const noexcept {
+    const auto wrap = [](const auto& _node) { return InputObjectType(_node); };
+    return std::visit(cast_as_node, _var.node_or_attribute_).transform(wrap);
+  }
 
   template <class T>
   rfl::Result<T> use_custom_constructor(
       const InputVarType _var) const noexcept {
-    return rfl::Error("TODO");
+    return error("TODO");
+  }
+
+ private:
+  /// XML-only helper function. This is needed because XML distinguishes between
+  /// nodes and attributes.
+  static rfl::Result<pugi::xml_node> cast_as_node(
+      const std::variant<pugi::xml_node, pugi::xml_attribute>&
+          _node_or_attribute) {
+    const auto cast = [](const auto& _n) -> Result<pugi::xml_node> {
+      using Type = std::remove_cvref_t<decltype(_n)>;
+      if constexpr (std::is_same<Type, pugi::xml_node>()) {
+        return _n;
+      } else {
+        return error("Field '" + std::string(_n.name()) + "' is an attribute.");
+      }
+    };
+    return std::visit(cast, _node_or_attribute);
   }
 };
 

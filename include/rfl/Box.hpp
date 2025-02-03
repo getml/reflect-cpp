@@ -26,7 +26,7 @@ class Box {
   /// return an Error, if the unique_ptr is not set.
   static Result<Box<T>> make(std::unique_ptr<T>&& _ptr) {
     if (!_ptr) {
-      return Error("std::unique_ptr was a nullptr.");
+      return error("std::unique_ptr was a nullptr.");
     }
     return Box<T>(std::move(_ptr));
   }

@@ -79,7 +79,7 @@ class TupleReader {
         } else {
           std::stringstream stream;
           stream << "Failed to parse field " << _i << ": "
-                 << res.error()->what();
+                 << res.error().what();
           *_err = Error(stream.str());
         }
         return;

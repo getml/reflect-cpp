@@ -33,7 +33,7 @@ class MapReader {
       map_->emplace(std::move(*res));
     } else {
       errors_->push_back(Error("Failed to parse field '" + std::string(_name) +
-                               "': " + res.error()->what()));
+                               "': " + res.error().what()));
     }
   }
 
@@ -51,7 +51,7 @@ class MapReader {
         static_assert(always_false_v<T>, "Unsupported type");
       }
     } catch (std::exception& e) {
-      return Error(e.what());
+      return error(e.what());
     }
   }
 
@@ -62,7 +62,7 @@ class MapReader {
         return std::make_pair(KeyType(std::move(_key)),
                               std::move(_pair.second));
       } catch (std::exception& e) {
-        return Error(e.what());
+        return error(e.what());
       }
     };
 

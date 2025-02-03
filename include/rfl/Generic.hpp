@@ -80,31 +80,83 @@ class Generic {
 
   /// Casts the underlying value to an rfl::Generic::Array or returns an
   /// rfl::Error, if the underlying value is not an rfl::Generic::Array.
-  Result<Array> to_array() const noexcept;
+  Result<Array> to_array() const noexcept {
+    if (const auto* ptr = std::get_if<Array>(&value_)) {
+      return *ptr;
+    } else {
+      return error(
+          "rfl::Generic: Could not cast the underlying value to an "
+          "rfl::Generic::Array.");
+    }
+  }
 
   /// Casts the underlying value to a boolean or returns an rfl::Error, if the
   /// underlying value is not a boolean.
-  Result<bool> to_bool() const noexcept;
+  Result<bool> to_bool() const noexcept {
+    if (const bool* ptr = std::get_if<bool>(&value_)) {
+      return *ptr;
+    } else {
+      return error(
+          "rfl::Generic: Could not cast the underlying value to a boolean.");
+    }
+  }
 
   /// Casts the underlying value to a double or returns an rfl::Error, if the
   /// underlying value is not a double.
-  Result<double> to_double() const noexcept;
+  Result<double> to_double() const noexcept {
+    if (const double* ptr = std::get_if<double>(&value_)) {
+      return *ptr;
+    } else {
+      return error(
+          "rfl::Generic: Could not cast the underlying value to a double.");
+    }
+  }
 
   /// Casts the underlying value to an integer or returns an rfl::Error, if the
   /// underlying value is not an integer.
-  Result<int> to_int() const noexcept;
+  Result<int> to_int() const noexcept {
+    if (const int* ptr = std::get_if<int>(&value_)) {
+      return *ptr;
+    } else {
+      return error(
+          "rfl::Generic: Could not cast the underlying value to an integer.");
+    }
+  }
 
   /// Casts the underlying value to an rfl::Generic::Object or returns an
   /// rfl::Error, if the underlying value is not an rfl::Generic::Object.
-  Result<Object> to_object() const noexcept;
+  Result<Object> to_object() const noexcept {
+    if (const auto* ptr = std::get_if<Object>(&value_)) {
+      return *ptr;
+    } else {
+      return error(
+          "rfl::Generic: Could not cast the underlying value to an "
+          "rfl::Generic::Object.");
+    }
+  }
 
   /// Casts the underlying value to rfl::Generic::Null or returns an
   /// rfl::Error, if the underlying value is not rfl::Generic::Null.
-  Result<std::nullopt_t> to_null() const noexcept;
+  Result<std::nullopt_t> to_null() const noexcept {
+    if (const auto* ptr = std::get_if<std::nullopt_t>(&value_)) {
+      return *ptr;
+    } else {
+      return error(
+          "rfl::Generic: Could not cast the underlying value to "
+          "rfl::Generic::Null.");
+    }
+  }
 
   /// Casts the underlying value to a string or returns an rfl::Error, if the
   /// underlying value is not a string.
-  Result<std::string> to_string() const noexcept;
+  Result<std::string> to_string() const noexcept {
+    if (const auto* ptr = std::get_if<std::string>(&value_)) {
+      return *ptr;
+    } else {
+      return error(
+          "rfl::Generic: Could not cast the underlying value to a string.");
+    }
+  }
 
   /// Returns the underlying variant.
   VariantType& variant() noexcept { return value_; };

@@ -19,7 +19,7 @@ this repository to learn how to install vcpkg.
 To compile the benchmarks, do the following:
 
 ```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_BUILD_BENCHMARKS=ON
+cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_BUILD_BENCHMARKS=ON
 cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
 ```

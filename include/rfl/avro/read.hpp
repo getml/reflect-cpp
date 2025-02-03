@@ -38,7 +38,7 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
   if (err) {
     avro_value_decref(&root);
     avro_reader_free(avro_reader);
-    return Error(std::string("Could not read root value: ") + avro_strerror());
+    return error(std::string("Could not read root value: ") + avro_strerror());
   }
   auto result = read<T, Ps...>(InputVarType{&root});
   avro_value_decref(&root);

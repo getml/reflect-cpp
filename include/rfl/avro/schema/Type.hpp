@@ -8,6 +8,7 @@
 
 #include "../../Literal.hpp"
 #include "../../Object.hpp"
+#include "../../Ref.hpp"
 #include "../../Rename.hpp"
 #include "../../Variant.hpp"
 

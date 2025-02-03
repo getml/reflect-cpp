@@ -14,7 +14,7 @@ void write_and_read(const auto& _struct) {
   EXPECT_EQ(rfl::json::write(serialized1), rfl::json::write<Ps...>(_struct));
   const auto res = rfl::from_generic<T, Ps...>(serialized1);
   EXPECT_TRUE(res && true) << "Test failed on read. Error: "
-                           << res.error().value().what();
+                           << res.error().what();
   EXPECT_EQ(rfl::json::write(serialized1),
             rfl::json::write<Ps...>(res.value()));
 }

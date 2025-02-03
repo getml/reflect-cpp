@@ -47,7 +47,7 @@ consteval auto get_type_name_str_view() {
 }
 
 template <class T>
-consteval auto get_type_name() {
+consteval auto   get_type_name() {
   static_assert(get_type_name_str_view<int>() == "int",
                 "Expected 'int', got something else.");
   constexpr auto name = get_type_name_str_view<T>();

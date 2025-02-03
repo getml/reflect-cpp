@@ -38,8 +38,13 @@ class VectorReader {
       }
       return std::nullopt;
     };
-
-    return parse(_var).transform(insert).error();
+    auto res = parse(_var).transform(insert);
+    if (res) {
+      return std::nullopt;
+    } else {
+      return res.error();
+    }
+    // return parse(_var).transform(insert).error();
   }
 
  private:

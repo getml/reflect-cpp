@@ -50,7 +50,7 @@ struct Parser {
         try {
           return Reflector<T>::to(_named_tuple);
         } catch (std::exception& e) {
-          return Error(e.what());
+          return error(e.what());
         }
       };
       return Parser<R, W, typename Reflector<T>::ReflType,
@@ -71,7 +71,7 @@ struct Parser {
           try {
             return T{_named_tuple};
           } catch (std::exception& e) {
-            return Error(e.what());
+            return error(e.what());
           }
         };
         return Parser<R, W, ReflectionType, ProcessorsType>::read(_r, _var)
@@ -278,7 +278,7 @@ struct Parser {
         Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
     if (err) [[unlikely]] {
       call_destructors_where_necessary(set, &view);
-      return *err;
+      return error(err->what());
     }
     auto res = Result<T>(std::move(*ptr));
     call_destructors_where_necessary(set, &view);
@@ -298,7 +298,7 @@ struct Parser {
         Parser<R, W, ViewType, ProcessorsType>::read_view_with_default(_r, _var,
                                                                        &view);
     if (err) [[unlikely]] {
-      return *err;
+      return error(*err);
     }
     return t;
   }

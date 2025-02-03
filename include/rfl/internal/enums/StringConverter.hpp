@@ -98,7 +98,7 @@ class StringConverter {
       try {
         return static_cast<EnumType>(std::stoi(_str));
       } catch (std::exception& exp) {
-        return Error(exp.what());
+        return error(exp.what());
       }
     }
   }

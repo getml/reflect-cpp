@@ -15,7 +15,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, T*>
+  requires AreReaderAndWriter<R, W, T*>
 struct Parser<R, W, T*, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
@@ -36,7 +36,7 @@ struct Parser<R, W, T*, ProcessorsType> {
           "Please note that it is then YOUR responsibility "
           "to delete the allocated memory. Please also refer "
           "to the related documentation (in the section on processors).");
-      return Error("Unsupported.");
+      return error("Unsupported.");
     } else {
       if (_r.is_empty(_var)) {
         return nullptr;

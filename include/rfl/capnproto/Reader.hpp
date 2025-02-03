@@ -50,21 +50,23 @@ class Reader {
   static constexpr bool has_custom_constructor =
       (requires(InputVarType var) { T::from_capnproto_obj(var); });
 
-  bool is_empty(const InputVarType& _var) const noexcept;
+  bool is_empty(const InputVarType& _var) const noexcept {
+    return _var.val_.getType() == capnp::DynamicValue::VOID;
+  }
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
     const auto type = _var.val_.getType();
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       if (type != capnp::DynamicValue::TEXT) {
-        return Error("Could not cast to string.");
+        return error("Could not cast to string.");
       }
       return std::string(_var.val_.as<capnp::Text>().cStr());
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
       if (type != capnp::DynamicValue::DATA) {
-        return Error("Could not cast to bytestring.");
+        return error("Could not cast to bytestring.");
       }
       const auto data = _var.val_.as<capnp::Data>();
       return rfl::Bytestring(internal::ptr_cast<const std::byte*>(data.begin()),
@@ -72,7 +74,7 @@ class Reader {
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != capnp::DynamicValue::BOOL) {
-        return rfl::Error("Could not cast to boolean.");
+        return error("Could not cast to boolean.");
       }
       return _var.val_.as<bool>();
 
@@ -89,14 +91,14 @@ class Reader {
           return static_cast<T>(_var.val_.as<double>());
 
         default:
-          return rfl::Error(
+          return error(
               "Could not cast to numeric value. The type must be integral, "
               "float or double.");
       }
 
     } else if constexpr (internal::is_literal_v<T>) {
       if (type != capnp::DynamicValue::ENUM) {
-        return rfl::Error("Could not cast to an enum.");
+        return error("Could not cast to an enum.");
       }
       return T::from_value(_var.val_.as<capnp::DynamicEnum>().getRaw());
 
@@ -105,14 +107,36 @@ class Reader {
     }
   }
 
-  rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept;
+  rfl::Result<InputArrayType> to_array(
+      const InputVarType& _var) const noexcept {
+    if (_var.val_.getType() != capnp::DynamicValue::LIST) {
+      return error("Could not cast to a list.");
+    }
+    return InputArrayType{_var.val_.as<capnp::DynamicList>()};
+  }
 
   rfl::Result<InputObjectType> to_object(
-      const InputVarType& _var) const noexcept;
+      const InputVarType& _var) const noexcept {
+    if (_var.val_.getType() != capnp::DynamicValue::STRUCT) {
+      return error("Could not cast to a struct.");
+    }
+    return InputObjectType{_var.val_.as<capnp::DynamicStruct>()};
+  }
 
-  rfl::Result<InputMapType> to_map(const InputVarType& _var) const noexcept;
+  rfl::Result<InputMapType> to_map(const InputVarType& _var) const noexcept {
+    if (_var.val_.getType() != capnp::DynamicValue::STRUCT) {
+      return error("Could not cast to a map.");
+    }
+    return InputMapType{_var.val_.as<capnp::DynamicStruct>()};
+  }
 
-  rfl::Result<InputUnionType> to_union(const InputVarType& _var) const noexcept;
+  rfl::Result<InputUnionType> to_union(
+      const InputVarType& _var) const noexcept {
+    if (_var.val_.getType() != capnp::DynamicValue::STRUCT) {
+      return error("Could not cast to a struct.");
+    }
+    return InputUnionType{_var.val_.as<capnp::DynamicStruct>()};
+  }
 
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
@@ -157,7 +181,7 @@ class Reader {
       const InputUnionType& _union) const noexcept {
     const auto opt_pair = identify_discriminant(_union);
     if (!opt_pair) {
-      return Error("Could not get the discriminant.");
+      return error("Could not get the discriminant.");
     }
     const auto& [field, disc] = *opt_pair;
     return UnionReaderType::read(*this, disc,
@@ -170,7 +194,7 @@ class Reader {
     try {
       return T::from_capnproto_obj(_var);
     } catch (std::exception& e) {
-      return rfl::Error(e.what());
+      return error(e.what());
     }
   }
 

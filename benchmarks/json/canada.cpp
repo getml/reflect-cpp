@@ -106,7 +106,7 @@ static rfl::Result<FeatureCollection> read_using_nlohmann(
     auto val = nlohmann::json::parse(_json_string);
     return nlohmann_to_feature_collection(val);
   } catch (std::exception &e) {
-    return rfl::Error(e.what());
+    return rfl::error(e.what());
   }
 }
 
@@ -183,15 +183,15 @@ static rfl::Result<FeatureCollection> read_using_rapidjson(
     d.Parse(_json_string.c_str());
     return rapidjson_to_feature_collection(d.GetObject());
   } catch (std::exception &e) {
-    return rfl::Error(e.what());
+    return rfl::error(e.what());
   }
 }
 
 // ----------------------------------------------------------------------------
 // simdjson
 
-simdjson_inline std::vector<std::vector<std::tuple<double, double>>> simdjson_to_coordinates(
-    simdjson::ondemand::array _val);
+simdjson_inline std::vector<std::vector<std::tuple<double, double>>>
+simdjson_to_coordinates(simdjson::ondemand::array _val);
 
 simdjson_inline Property simdjson_to_property(simdjson::ondemand::object _val);
 
@@ -199,16 +199,17 @@ simdjson_inline Geometry simdjson_to_geometry(simdjson::ondemand::object _val);
 
 simdjson_inline Feature simdjson_to_feature(simdjson::ondemand::object _val);
 
-simdjson_inline FeatureCollection simdjson_to_feature_collection(
-    simdjson::ondemand::object _val);
+simdjson_inline FeatureCollection
+simdjson_to_feature_collection(simdjson::ondemand::object _val);
 
-simdjson_inline std::vector<std::vector<std::tuple<double, double>>> simdjson_to_coordinates(
-    simdjson::ondemand::array _val) {
+simdjson_inline std::vector<std::vector<std::tuple<double, double>>>
+simdjson_to_coordinates(simdjson::ondemand::array _val) {
   std::vector<std::vector<std::tuple<double, double>>> coordinates;
   for (auto arr1 : _val) {
     std::vector<std::tuple<double, double>> vec;
     for (auto val2 : arr1) {
-      // Instead of indexing x = val2[0] and y = val2[1], we iterate through the two values.
+      // Instead of indexing x = val2[0] and y = val2[1], we iterate through the
+      // two values.
       auto coord = val2.begin();
       double x = *coord;
       ++coord;
@@ -245,8 +246,8 @@ simdjson_inline Feature simdjson_to_feature(simdjson::ondemand::object _val) {
   return feature;
 }
 
-simdjson_inline FeatureCollection simdjson_to_feature_collection(
-    simdjson::ondemand::object _val) {
+simdjson_inline FeatureCollection
+simdjson_to_feature_collection(simdjson::ondemand::object _val) {
   FeatureCollection feature_collection;
   feature_collection.type = simdjson_to_string(_val["type"]);
   for (auto val : _val["features"].get_array()) {
@@ -263,7 +264,7 @@ static rfl::Result<FeatureCollection> read_using_simdjson(
     auto doc = parser.iterate(padded_str);
     return simdjson_to_feature_collection(doc);
   } catch (std::exception &e) {
-    return rfl::Error(e.what());
+    return rfl::error(e.what());
   }
 }
 
@@ -346,7 +347,7 @@ static rfl::Result<FeatureCollection> read_using_yyjson(
   yyjson_doc *doc = yyjson_read(_json_string.c_str(), _json_string.size(), 0);
   if (!doc) {
     std::cout << "Could not parse document!" << std::endl;
-    return rfl::Error("Could not parse document");
+    return rfl::error("Could not parse document");
   }
   yyjson_val *root = yyjson_doc_get_root(doc);
   auto person = yyjson_to_feature_collection(root);
@@ -357,7 +358,7 @@ static rfl::Result<FeatureCollection> read_using_yyjson(
     auto val = nlohmann::json::parse(_json_string);
     return nlohmann_to_feature_collection(val);
   } catch (std::exception &e) {
-    return rfl::Error(e.what());
+    return rfl::error(e.what());
   }
 }
 
@@ -368,7 +369,7 @@ static void BM_canada_nlohmann(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_nlohmann(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -379,7 +380,7 @@ static void BM_canada_rapidjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_rapidjson(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -393,7 +394,7 @@ static void BM_canada_simdjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_simdjson(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -406,7 +407,7 @@ static void BM_canada_yyjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_yyjson(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -417,7 +418,7 @@ static void BM_canada_reflect_cpp(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::json::read<FeatureCollection>(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -426,4 +427,3 @@ BENCHMARK(BM_canada_reflect_cpp);
 // ----------------------------------------------------------------------------
 
 }  // namespace canada
-

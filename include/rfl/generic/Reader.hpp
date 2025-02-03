@@ -27,12 +27,21 @@ struct Reader {
   static constexpr bool has_custom_constructor = false;
 
   rfl::Result<InputVarType> get_field_from_array(
-      const size_t _idx, const InputArrayType& _arr) const noexcept;
+      const size_t _idx, const InputArrayType& _arr) const noexcept {
+    if (_idx >= _arr.size()) {
+      return error("Index " + std::to_string(_idx) + " of of bounds.");
+    }
+    return _arr[_idx];
+  }
 
   rfl::Result<InputVarType> get_field_from_object(
-      const std::string& _name, const InputObjectType& _obj) const noexcept;
+      const std::string& _name, const InputObjectType& _obj) const noexcept {
+    return _obj.get(_name);
+  }
 
-  bool is_empty(const InputVarType& _var) const noexcept;
+  bool is_empty(const InputVarType& _var) const noexcept {
+    return _var.is_null();
+  }
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
@@ -72,15 +81,20 @@ struct Reader {
     return std::nullopt;
   }
 
-  rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept;
+  rfl::Result<InputArrayType> to_array(
+      const InputVarType& _var) const noexcept {
+    return _var.to_array();
+  }
 
   rfl::Result<InputObjectType> to_object(
-      const InputVarType& _var) const noexcept;
+      const InputVarType& _var) const noexcept {
+    return _var.to_object();
+  }
 
   template <class T>
   rfl::Result<T> use_custom_constructor(
       const InputVarType _var) const noexcept {
-    return rfl::Error("Not supported for generic types");
+    return error("Not supported for generic types");
   }
 };
 
