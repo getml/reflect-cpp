@@ -11,13 +11,13 @@ struct SnakeCaseToPascalCase {
  public:
   /// Replaces all instances of snake_case field names with PascalCase.
   template <class StructType>
-  static auto process(auto&& _named_tuple) {
-    const auto handle_one = []<class FieldType>(FieldType&& _f) {
+  static auto process(const auto& _named_tuple) {
+    const auto handle_one = []<class FieldType>(const FieldType& _f) {
       if constexpr (FieldType::name() != "xml_content" &&
                     !internal::is_rename_v<typename FieldType::Type>) {
-        return handle_one_field(std::move(_f));
+        return handle_one_field(_f);
       } else {
-        return std::move(_f);
+        return _f;
       }
     };
     return _named_tuple.transform(handle_one);
@@ -26,7 +26,7 @@ struct SnakeCaseToPascalCase {
  private:
   /// Applies the logic to a single field.
   template <class FieldType>
-  static auto handle_one_field(FieldType&& _f) {
+  static auto handle_one_field(const FieldType& _f) {
     using NewFieldType =
         Field<internal::transform_snake_case<FieldType::name_,
                                              /*capitalize=*/true>(),

@@ -50,7 +50,7 @@ static void BM_person_read_reflect_cpp_avro(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::avro::read<Person>(data, schema);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -61,7 +61,7 @@ static void BM_person_read_reflect_cpp_bson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::bson::read<Person>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -73,7 +73,7 @@ static void BM_person_read_reflect_cpp_capnproto(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::capnproto::read<Person>(data, schema);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -84,7 +84,7 @@ static void BM_person_read_reflect_cpp_cbor(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::cbor::read<Person>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -96,7 +96,7 @@ static void BM_person_read_reflect_cpp_cbor_without_field_names(
   for (auto _ : state) {
     const auto res = rfl::cbor::read<Person, rfl::NoFieldNames>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -107,7 +107,7 @@ static void BM_person_read_reflect_cpp_flexbuf(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::flexbuf::read<Person>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -119,7 +119,7 @@ static void BM_person_read_reflect_cpp_flexbuf_without_field_names(
   for (auto _ : state) {
     const auto res = rfl::flexbuf::read<Person, rfl::NoFieldNames>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -130,7 +130,7 @@ static void BM_person_read_reflect_cpp_json(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::json::read<Person>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -142,7 +142,7 @@ static void BM_person_read_reflect_cpp_json_without_field_names(
   for (auto _ : state) {
     const auto res = rfl::json::read<Person, rfl::NoFieldNames>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -153,7 +153,7 @@ static void BM_person_read_reflect_cpp_msgpack(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::msgpack::read<Person>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -165,7 +165,7 @@ static void BM_person_read_reflect_cpp_msgpack_without_field_names(
   for (auto _ : state) {
     const auto res = rfl::msgpack::read<Person, rfl::NoFieldNames>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -176,7 +176,7 @@ static void BM_person_read_reflect_cpp_toml(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::toml::read<Person>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -187,7 +187,7 @@ static void BM_person_read_reflect_cpp_ubjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::ubjson::read<Person>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -199,7 +199,7 @@ static void BM_person_read_reflect_cpp_ubjson_without_field_names(
   for (auto _ : state) {
     const auto res = rfl::ubjson::read<Person, rfl::NoFieldNames>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -210,7 +210,7 @@ static void BM_person_read_reflect_cpp_xml(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::xml::read<Person>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -221,7 +221,7 @@ static void BM_person_read_reflect_cpp_yaml(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::yaml::read<Person>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }

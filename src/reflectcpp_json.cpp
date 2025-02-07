@@ -29,6 +29,5 @@ SOFTWARE.
 // Also, this speeds up compile time, compared to multiple separate .cpp files
 // compilation.
 
-#include "rfl/json/Reader.cpp"
 #include "rfl/json/Writer.cpp"
 #include "rfl/json/to_schema.cpp"

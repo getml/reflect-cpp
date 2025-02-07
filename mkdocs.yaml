@@ -149,7 +149,6 @@ nav:
       - Maintaining backwards compatability: backwards_compatability.md
       - Benchmarks: benchmarks.md
   - Contributing: contributing.md
-  - People: people.md
 
 markdown_extensions:
   - tables
@@ -189,8 +188,3 @@ plugins:
         - mailto:*
         - 'data:image/*'
         - '#*'
-        - https://github.com/getml/reflect-cpp/tree/main/.github/actions/people/people.py
-
-
-hooks:
-  - docs/plugins/main.py

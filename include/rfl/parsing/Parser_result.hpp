@@ -14,7 +14,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, Result<T>>
+  requires AreReaderAndWriter<R, W, Result<T>>
 struct Parser<R, W, Result<T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
@@ -26,7 +26,7 @@ struct Parser<R, W, Result<T>, ProcessorsType> {
     const auto handle = [](auto&& _t) -> Result<T> {
       using Type = std::remove_cvref_t<decltype(_t)>;
       if constexpr (std::is_same<Type, ErrorType>()) {
-        return Error(_t.template get<"error">());
+        return error(_t.template get<"error">());
       } else {
         return std::forward<std::remove_cvref_t<T>>(_t);
       }
@@ -44,19 +44,26 @@ struct Parser<R, W, Result<T>, ProcessorsType> {
   template <class P>
   static void write(const W& _w, const Result<T>& _r,
                     const P& _parent) noexcept {
-    const auto write_t = [&](const auto& _t) -> Nothing {
-      Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, _t,
-                                                                  _parent);
-      return Nothing{};
-    };
+    // const auto write_t = [&](const auto& _t) -> Nothing {
+    //   Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, _t,
+    //                                                               _parent);
+    //   return Nothing{};
+    // };
 
-    const auto write_err = [&](const auto& _err) -> Nothing {
+    // const auto write_err = [&](const auto& _err) -> Nothing {
+    //   Parser<R, W, ErrorType, ProcessorsType>::write(
+    //       _w, ErrorType(make_field<"error">(_err.what())), _parent);
+    //   return Nothing{};
+    // };
+    if (_r) {
+      Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(
+          _w, _r.value(), _parent);
+    } else {
       Parser<R, W, ErrorType, ProcessorsType>::write(
-          _w, ErrorType(make_field<"error">(_err.what())), _parent);
-      return Nothing{};
-    };
+          _w, ErrorType(make_field<"error">(_r.error().what())), _parent);
+    }
 
-    _r.transform(write_t).or_else(write_err);
+    // _r.transform(write_t).transform_error(write_err);
   }
 
   static schema::Type to_schema(

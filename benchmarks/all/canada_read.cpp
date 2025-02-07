@@ -55,7 +55,7 @@ static void BM_canada_read_reflect_cpp_avro(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::avro::read<FeatureCollection>(data, schema);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -66,7 +66,7 @@ static void BM_canada_read_reflect_cpp_bson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::bson::read<FeatureCollection>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -78,7 +78,7 @@ static void BM_canada_read_reflect_cpp_capnproto(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::capnproto::read<FeatureCollection>(data, schema);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -89,7 +89,7 @@ static void BM_canada_read_reflect_cpp_cbor(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::cbor::read<FeatureCollection>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -102,7 +102,7 @@ static void BM_canada_read_reflect_cpp_cbor_without_field_names(
     const auto res =
         rfl::cbor::read<FeatureCollection, rfl::NoFieldNames>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -113,7 +113,7 @@ static void BM_canada_read_reflect_cpp_flexbuf(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::flexbuf::read<FeatureCollection>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -126,7 +126,7 @@ static void BM_canada_read_reflect_cpp_flexbuf_without_field_names(
     const auto res =
         rfl::flexbuf::read<FeatureCollection, rfl::NoFieldNames>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -137,7 +137,7 @@ static void BM_canada_read_reflect_cpp_json(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::json::read<FeatureCollection>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -150,7 +150,7 @@ static void BM_canada_read_reflect_cpp_json_without_field_names(
     const auto res =
         rfl::json::read<FeatureCollection, rfl::NoFieldNames>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -161,7 +161,7 @@ static void BM_canada_read_reflect_cpp_msgpack(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::msgpack::read<FeatureCollection>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -174,7 +174,7 @@ static void BM_canada_read_reflect_cpp_msgpack_without_field_names(
     const auto res =
         rfl::msgpack::read<FeatureCollection, rfl::NoFieldNames>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -185,7 +185,7 @@ static void BM_canada_read_reflect_cpp_toml(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::toml::read<FeatureCollection>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -196,7 +196,7 @@ static void BM_canada_read_reflect_cpp_ubjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::ubjson::read<FeatureCollection>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -209,7 +209,7 @@ static void BM_canada_read_reflect_cpp_ubjson_without_field_names(
     const auto res =
         rfl::ubjson::read<FeatureCollection, rfl::NoFieldNames>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -220,7 +220,7 @@ static void BM_canada_read_reflect_cpp_yaml(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::yaml::read<FeatureCollection>(data);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }

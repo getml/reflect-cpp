@@ -19,7 +19,7 @@ inline Result<std::vector<char>> load_bytes(const std::string& _fname) {
     input.close();
     return bytes;
   } else {
-    return rfl::Error("File '" + _fname + "' not found!");
+    return error("File '" + _fname + "' not found!");
   }
 }
 

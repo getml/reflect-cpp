@@ -21,7 +21,7 @@ class Schema {
     try {
       return Schema<T>(_str);
     } catch (std::exception& e) {
-      return Error(e.what());
+      return error(e.what());
     }
   }
 

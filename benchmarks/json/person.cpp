@@ -72,7 +72,7 @@ static rfl::Result<Person> read_using_nlohmann() {
     auto val = nlohmann::json::parse(json_string);
     return nlohmann_to_person(val);
   } catch (std::exception &e) {
-    return rfl::Error(e.what());
+    return rfl::error(e.what());
   }
 }
 
@@ -105,7 +105,7 @@ static rfl::Result<Person> read_using_rapidjson() {
     d.Parse(json_string.c_str());
     return rapidjson_to_person(d.GetObject());
   } catch (std::exception &e) {
-    return rfl::Error(e.what());
+    return rfl::error(e.what());
   }
 }
 
@@ -139,7 +139,7 @@ static rfl::Result<Person> read_using_simdjson() {
     auto doc = parser.iterate(padded_str).value();
     return simdjson_to_person(doc.get_object());
   } catch (std::exception &e) {
-    return rfl::Error(e.what());
+    return rfl::error(e.what());
   }
 }
 
@@ -158,7 +158,7 @@ rfl::Result<std::vector<Person>> yyjson_to_children(yyjson_val *_val) {
   while ((val = yyjson_arr_iter_next(&iter))) {
     auto r = yyjson_to_person(val);
     if (!r) {
-      return *r.error();
+      return error(r.error());
     }
     children.emplace_back(std::move(*r));
   }
@@ -199,8 +199,8 @@ rfl::Result<Person> yyjson_to_person(yyjson_val *_val) {
     } else if (!std::get<2>(found) && name == "children") {
       auto children = yyjson_to_children(v);
       if (!children) {
-        errors.push_back(rfl::Error("Error reading 'children': " +
-                                    children.error()->what()));
+        errors.push_back(
+            rfl::Error("Error reading 'children': " + children.error().what()));
         continue;
       }
       person.children = std::move(*children);
@@ -221,7 +221,7 @@ rfl::Result<Person> yyjson_to_person(yyjson_val *_val) {
     for (const auto &err : errors) {
       std::cout << err.what() << std::endl;
     }
-    return errors[0];
+    return error(errors[0]);
   }
   return person;
 }
@@ -230,7 +230,7 @@ static rfl::Result<Person> read_using_yyjson() {
   yyjson_doc *doc = yyjson_read(json_string.c_str(), json_string.size(), 0);
   if (!doc) {
     std::cout << "Could not parse document!" << std::endl;
-    return rfl::Error("Could not parse document");
+    return rfl::error("Could not parse document");
   }
   yyjson_val *root = yyjson_doc_get_root(doc);
   auto person = yyjson_to_person(root);
@@ -244,7 +244,7 @@ static void BM_person_read_nlohmann(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_nlohmann();
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -254,7 +254,7 @@ static void BM_person_read_rapidjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_rapidjson();
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -264,7 +264,7 @@ static void BM_person_read_simdjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_simdjson();
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -274,7 +274,7 @@ static void BM_person_read_yyjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_yyjson();
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -284,7 +284,7 @@ static void BM_person_read_reflect_cpp(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::json::read<Person>(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -293,4 +293,3 @@ BENCHMARK(BM_person_read_reflect_cpp);
 // ----------------------------------------------------------------------------
 
 }  // namespace person_read
-

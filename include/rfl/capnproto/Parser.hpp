@@ -53,7 +53,7 @@ struct Parser<capnproto::Reader, capnproto::Writer, Generic, ProcessorsType> {
   static Result<Generic> read(const capnproto::Reader&, const T&) noexcept {
     static_assert(always_false_v<T>,
                   "Generics are unsupported in Cap'n Proto.");
-    return Error("Unsupported");
+    return error("Unsupported");
   }
 
   template <class P>
@@ -87,7 +87,7 @@ struct Parser<capnproto::Reader, capnproto::Writer,
   read(const R&, const U&) noexcept {
     static_assert(always_false_v<T>,
                   "rfl::Skip is unsupported in Cap'n Proto.");
-    return Error("Unsupported");
+    return error("Unsupported");
   }
 
   template <class P>

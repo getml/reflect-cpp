@@ -1,6 +1,7 @@
 #ifndef RFL_XML_WRITER_HPP_
 #define RFL_XML_WRITER_HPP_
 
+#include <pugixml.hpp>
 #include <string>
 #include <string_view>
 #include <type_traits>

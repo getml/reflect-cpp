@@ -92,7 +92,7 @@ struct NamedTupleParser {
         Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
     if (err) [[unlikely]] {
       call_destructors_where_necessary(set, &view);
-      return *err;
+      return error(*err);
     }
     auto res = Result<NamedTuple<FieldTypes...>>(std::move(*ptr));
     call_destructors_where_necessary(set, &view);
@@ -110,6 +110,7 @@ struct NamedTupleParser {
       auto arr = _r.to_array(_var);
       if (!arr) [[unlikely]] {
         auto set = std::array<bool, NamedTupleType::size()>{};
+        // return std::make_pair(set, arr.error());
         return std::make_pair(set, arr.error());
       }
       return read_object_or_array(_r, *arr, _view);

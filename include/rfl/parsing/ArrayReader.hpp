@@ -47,7 +47,7 @@ class ArrayReader {
       move_to(&((*array_)[num_set_]), &(*res));
     } else {
       return Error("Failed to parse element " + std::to_string(num_set_) +
-                   ": " + res.error()->what());
+                   ": " + res.error().what());
     }
     ++num_set_;
     return std::optional<Error>();

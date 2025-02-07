@@ -30,10 +30,11 @@ auto read(const InputVarType& _obj) {
 
 /// Parses an object from JSON using reflection.
 template <class T, class... Ps>
-Result<internal::wrap_in_rfl_array_t<T>> read(std::string_view const _json_str) {
+Result<internal::wrap_in_rfl_array_t<T>> read(
+    std::string_view const _json_str) {
   yyjson_doc* doc = yyjson_read(_json_str.data(), _json_str.size(), 0);
   if (!doc) {
-    return Error("Could not parse document");
+    return error("Could not parse document");
   }
   yyjson_val* root = yyjson_doc_get_root(doc);
   const auto r = Reader();

@@ -41,7 +41,7 @@ Simply use [this recipe](https://conan.io/center/recipes/reflect-cpp).
 This will compile reflect-cpp with JSON support only. You can then include reflect-cpp in your project and link to the binary.
 
 ```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j 4  # gcc, clang
 cmake --build build --config Release -j 4  # MSVC
 ```
@@ -66,6 +66,14 @@ git submodule update --init
 # You may be prompted to install additional dependencies.
 ```
 
+To compile the library:
+
+```bash
+cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_AVRO=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CAPNPROTO=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_UBJSON=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j 4 # gcc, clang
+cmake --build build --config Release -j 4 # MSVC
+```
+
 To use reflect-cpp in your project:
 
 ```cmake
@@ -83,6 +91,7 @@ set(REFLECTCPP_YAML ON) # Optional
 
 target_link_libraries(your_project PRIVATE reflectcpp) # Link against the library
 ```
+
 
 ### Troubleshooting vcpkg
 

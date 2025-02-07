@@ -57,7 +57,7 @@ struct VectorParser {
             VectorReader<R, W, VecType, ProcessorsType>(&_r, &vec);
         const auto err = _r.read_array(vector_reader, _arr);
         if (err) {
-          return *err;
+          return error(*err);
         }
         return vec;
       };

@@ -29,5 +29,4 @@ SOFTWARE.
 // Also, this speeds up compile time, compared to multiple separate .cpp files
 // compilation.
 
-#include "rfl/yaml/Reader.cpp"
 #include "rfl/yaml/Writer.cpp"

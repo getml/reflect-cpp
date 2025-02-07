@@ -1,10 +1,10 @@
+#include <gtest/gtest.h>
+
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
 #include <string>
 #include <vector>
-
-#include <gtest/gtest.h>
 
 namespace test_error_messages {
 
@@ -26,8 +26,8 @@ TEST(json, test_error_messages) {
 2) Failed to parse field 'birthday': String '04/19/1987' did not match format '%Y-%m-%d'.
 3) Field named 'children' not found.)";
 
-  EXPECT_TRUE(result.error() && true);
+  EXPECT_TRUE(!result.has_value() && true);
 
-  EXPECT_EQ(result.error().value().what(), expected);
+  EXPECT_EQ(result.error().what(), expected);
 }
 }  // namespace test_error_messages

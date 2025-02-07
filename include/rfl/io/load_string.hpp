@@ -18,7 +18,7 @@ inline Result<std::string> load_string(const std::string& _fname) {
     infile.close();
     return r;
   } else {
-    return Error("Unable to open file '" + _fname +
+    return error("Unable to open file '" + _fname +
                  "' or file could not be found.");
   }
 }

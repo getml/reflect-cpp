@@ -1,0 +1,80 @@
+name: macos-cxx20
+
+on: [ pull_request, workflow_dispatch ]
+
+env: 
+    VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+
+jobs:
+  macos-clang:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["macos-latest", "macos-13"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Export GitHub Actions cache environment variables
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1
+        with:
+          key: "${{ github.job }}-${{ matrix.os }}"
+          max-size: "2G"
+          create-symlink: true
+      - name: Run vcpkg
+        uses: lukka/run-vcpkg@v11
+      - name: Install Conan
+        run: |
+          brew install pipx
+          pipx install conan
+          conan profile detect
+      - name: Install ninja 
+        run: brew install ninja
+        if: matrix.os == 'macos-latest'
+      - name: Make sure the library compiles with Conan
+        env:
+          CC: clang
+          CXX: clang++
+        run: conan build . --build=missing -s compiler.cppstd=gnu20 -o *:with_capnproto=True -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True            
+      - name: Compile
+        env:
+          CC: clang
+          CXX: clang++
+        run: |
+          if [[ "${{ matrix.os == 'macos-latest' }}" == "true" ]]; then
+            export VCPKG_FORCE_SYSTEM_BINARIES=arm
+            export CMAKE_GENERATOR=Ninja
+          fi
+          $CXX --version
+          cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CAPNPROTO=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          cmake --build build -j 4
+      - name: Run tests
+        run: |
+          ctest --test-dir build --output-on-failure
+      - name: Run benchmarks
+        run: |
+          echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY 
+          echo '## Benchmarks across different formats' >> $GITHUB_STEP_SUMMARY 
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_write >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo '## Benchmarks for JSON' >> $GITHUB_STEP_SUMMARY 
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=licenses >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

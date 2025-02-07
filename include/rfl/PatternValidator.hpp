@@ -29,7 +29,7 @@ struct PatternValidator {
       std::stringstream stream;
       stream << "String '" << _str << "' did not match format '" << _name.str()
              << "': '" << _regex.str() << "'.";
-      return rfl::Error(stream.str());
+      return error(stream.str());
     }
   }
 

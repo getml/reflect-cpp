@@ -40,7 +40,7 @@ class FieldVariantReader {
       stream << "Could not parse rfl::Variant, could not match field named "
                 "'"
              << _disc_value << "'.";
-      *field_variant_ = Error(stream.str());
+      *field_variant_ = error(stream.str());
     }
   }
 
@@ -71,7 +71,7 @@ class FieldVariantReader {
       };
       *field_variant_ = Parser<R, W, ValueType, ProcessorsType>::read(*r_, _var)
                             .transform(to_variant)
-                            .or_else(embellish_error);
+                            .transform_error(embellish_error);
     }
   }
 

@@ -45,41 +45,56 @@ struct Reader {
   static constexpr bool has_custom_constructor = has_from_flexbuf<T>::value;
 
   rfl::Result<InputVarType> get_field_from_array(
-      const size_t _idx, const InputArrayType& _arr) const noexcept;
+      const size_t _idx, const InputArrayType& _arr) const noexcept {
+    if (_idx >= _arr.size()) {
+      return error("Index " + std::to_string(_idx) + " of of bounds.");
+    }
+    return _arr[_idx];
+  }
 
   rfl::Result<InputVarType> get_field_from_object(
-      const std::string& _name, const InputObjectType& _obj) const noexcept;
+      const std::string& _name, const InputObjectType& _obj) const noexcept {
+    const auto keys = _obj.Keys();
+    for (size_t i = 0; i < keys.size(); ++i) {
+      if (_name == keys[i].AsString().c_str()) {
+        return _obj.Values()[i];
+      }
+    }
+    return error("Map does not contain any element called '" + _name + "'.");
+  }
 
-  bool is_empty(const InputVarType& _var) const noexcept;
+  bool is_empty(const InputVarType& _var) const noexcept {
+    return _var.IsNull();
+  }
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       if (!_var.IsString()) {
-        return rfl::Error("Could not cast to a string.");
+        return error("Could not cast to a string.");
       }
       return std::string(_var.AsString().c_str());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
       if (!_var.IsBlob()) {
-        return rfl::Error("Could not cast to a bytestring.");
+        return error("Could not cast to a bytestring.");
       }
       const auto blob = _var.AsBlob();
       return rfl::Bytestring(internal::ptr_cast<const std::byte*>(blob.data()),
                              blob.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var.IsBool()) {
-        return rfl::Error("Could not cast to boolean.");
+        return error("Could not cast to boolean.");
       }
       return _var.AsBool();
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       if (!_var.IsNumeric()) {
-        return rfl::Error("Could not cast to double.");
+        return error("Could not cast to double.");
       }
       return static_cast<T>(_var.AsDouble());
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       if (!_var.IsNumeric()) {
-        return rfl::Error("Could not cast to int.");
+        return error("Could not cast to int.");
       }
       return static_cast<T>(_var.AsInt64());
     } else {
@@ -115,10 +130,21 @@ struct Reader {
     return std::nullopt;
   }
 
-  rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept;
+  rfl::Result<InputArrayType> to_array(
+      const InputVarType& _var) const noexcept {
+    if (!_var.IsVector()) {
+      return error("Could not cast to Vector.");
+    }
+    return _var.AsVector();
+  }
 
   rfl::Result<InputObjectType> to_object(
-      const InputVarType& _var) const noexcept;
+      const InputVarType& _var) const noexcept {
+    if (!_var.IsMap()) {
+      return error("Could not cast to Map!");
+    }
+    return _var.AsMap();
+  }
 
   template <class T>
   rfl::Result<T> use_custom_constructor(
@@ -126,7 +152,7 @@ struct Reader {
     try {
       return T::from_flexbuf(_var);
     } catch (std::exception& e) {
-      return rfl::Error(e.what());
+      return error(e.what());
     }
   }
 };

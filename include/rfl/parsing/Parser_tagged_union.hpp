@@ -104,7 +104,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
         possible_tags_t<TaggedUnion<_discriminator, AlternativeTypes...>>;
     static_assert(!PossibleTags::has_duplicates(),
                   "Duplicate tags are not allowed inside tagged unions.");
-    ResultType res = Error("");
+    ResultType res = error("");
     bool match_found = false;
     (set_if_disc_value_matches<_is>(_r, _disc_value, _var, &res, &match_found),
      ...);
@@ -117,7 +117,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
              << _discriminator.str() << " '" << _disc_value
              << "'. The following tags are allowed: "
              << internal::strings::join(", ", names);
-      return Error(stream.str());
+      return error(stream.str());
     }
   }
 
@@ -144,7 +144,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
             std::move(_val));
       };
 
-      const auto embellish_error = [&](Error&& _e) {
+      const auto embellish_error = [&](auto&& _e) {
         std::stringstream stream;
         stream << "Could not parse tagged union with "
                   "discrimininator "
@@ -159,11 +159,11 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
         *_res = Parser<R, W, T, ProcessorsType>::read(_r, _var)
                     .transform(get_fields)
                     .transform(to_tagged_union)
-                    .or_else(embellish_error);
+                    .transform_error(embellish_error);
       } else {
         *_res = Parser<R, W, AlternativeType, ProcessorsType>::read(_r, _var)
                     .transform(to_tagged_union)
-                    .or_else(embellish_error);
+                    .transform_error(embellish_error);
       }
 
       *_match_found = true;
@@ -187,11 +187,11 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
     if constexpr (no_field_names_) {
       return _r.get_field_from_array(0, _obj_or_arr)
           .and_then(to_type)
-          .or_else(embellish_error);
+          .transform_error(embellish_error);
     } else {
       return _r.get_field_from_object(_discriminator.str(), _obj_or_arr)
           .and_then(to_type)
-          .or_else(embellish_error);
+          .transform_error(embellish_error);
     }
   }
 

@@ -141,7 +141,7 @@ static rfl::Result<Licenses> read_using_nlohmann(
     auto val = nlohmann::json::parse(_json_string);
     return nlohmann_to_licenses(val);
   } catch (std::exception &e) {
-    return rfl::Error(e.what());
+    return rfl::error(e.what());
   }
 }
 
@@ -237,7 +237,7 @@ static rfl::Result<Licenses> read_using_rapidjson(
     d.Parse(_json_string.c_str());
     return rapidjson_to_licenses(d.GetObject());
   } catch (std::exception &e) {
-    return rfl::Error(e.what());
+    return rfl::error(e.what());
   }
 }
 
@@ -328,7 +328,7 @@ static rfl::Result<Licenses> read_using_simdjson(
     auto doc = parser.iterate(padded_str).value();
     return simdjson_to_licenses(doc.get_object());
   } catch (std::exception &e) {
-    return rfl::Error(e.what());
+    return rfl::error(e.what());
   }
 }
 
@@ -430,7 +430,7 @@ static rfl::Result<Licenses> read_using_yyjson(
   yyjson_doc *doc = yyjson_read(_json_string.c_str(), _json_string.size(), 0);
   if (!doc) {
     std::cout << "Could not parse document!" << std::endl;
-    return rfl::Error("Could not parse document");
+    return rfl::error("Could not parse document");
   }
   yyjson_val *root = yyjson_doc_get_root(doc);
   auto licenses = yyjson_to_licenses(root);
@@ -445,7 +445,7 @@ static void BM_licenses_nlohmann(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_nlohmann(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -456,7 +456,7 @@ static void BM_licenses_rapidjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_rapidjson(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -467,7 +467,7 @@ static void BM_licenses_simdjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_simdjson(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -478,7 +478,7 @@ static void BM_licenses_yyjson(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = read_using_yyjson(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -489,7 +489,7 @@ static void BM_licenses_reflect_cpp(benchmark::State &state) {
   for (auto _ : state) {
     const auto res = rfl::json::read<Licenses>(json_string);
     if (!res) {
-      std::cout << res.error()->what() << std::endl;
+      std::cout << res.error().what() << std::endl;
     }
   }
 }
@@ -498,4 +498,3 @@ BENCHMARK(BM_licenses_reflect_cpp);
 // ----------------------------------------------------------------------------
 
 }  // namespace licenses
-

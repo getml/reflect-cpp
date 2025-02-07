@@ -10,7 +10,7 @@
 # Precompiled Headers
 *.gch
 *.pch
-
+.cache
 # Compiled Dynamic libraries
 *.so
 *.dylib

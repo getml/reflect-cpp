@@ -23,7 +23,7 @@ template <class R>
 struct MockUnionReader {
   static rfl::Result<MockVariantType> read(const R&, const size_t,
                                            typename R::InputVarType&) {
-    return Error("This is a mock type.");
+    return error("This is a mock type.");
   }
 };
 

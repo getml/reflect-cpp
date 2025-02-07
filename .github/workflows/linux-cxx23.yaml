@@ -1,4 +1,4 @@
-name: linux
+name: linux-cxx23
 
 on: [ pull_request, workflow_dispatch ]
 
@@ -11,15 +11,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - compiler: llvm
-            compiler-version: 16
-          - compiler: llvm
-            compiler-version: 18
           - compiler: gcc
-            compiler-version: 11
-            additional-dep: "g++-11"
-          - compiler: gcc
-            compiler-version: 12
+            compiler-version: 13
           - compiler: gcc
             compiler-version: 14
     name: "${{ github.job }} (${{ matrix.compiler }}-${{ matrix.compiler-version }})"
@@ -53,7 +46,7 @@ jobs:
           pipx install conan
           conan profile detect
       - name: Make sure the library compiles with Conan
-        run: conan build . --build=missing -s compiler.cppstd=gnu20 -o *:with_capnproto=True -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True      
+        run: conan build . --build=missing -s compiler.cppstd=gnu23 -o *:with_capnproto=True -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True      
       - name: Compile
         run: |
           if [[ "${{ matrix.compiler }}" == "llvm" ]]; then
@@ -66,7 +59,7 @@ jobs:
           sudo ln -s $(which ccache) /usr/local/bin/$CC
           sudo ln -s $(which ccache) /usr/local/bin/$CXX
           $CXX --version
-          cmake -S . -B build -G Ninja -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CAPNPROTO=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=23 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CAPNPROTO=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_USE_STD_EXPECTED=ON
           cmake --build build
       - name: Run tests
         run: |
