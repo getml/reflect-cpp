@@ -19,10 +19,10 @@ class Generic {
 
   using Array = std::vector<Generic>;
   using Object = rfl::Object<Generic>;
-  using VariantType = std::variant<bool, int, double, std::string, Object,
+  using VariantType = std::variant<bool, int64_t, double, std::string, Object,
                                    Array, std::nullopt_t>;
   using ReflectionType = std::optional<
-      std::variant<bool, int, double, std::string, Object, Array>>;
+      std::variant<bool, int64_t, double, std::string, Object, Array>>;
 
   Generic();
 
@@ -115,11 +115,22 @@ class Generic {
   /// Casts the underlying value to an integer or returns an rfl::Error, if the
   /// underlying value is not an integer.
   Result<int> to_int() const noexcept {
-    if (const int* ptr = std::get_if<int>(&value_)) {
-      return *ptr;
+    if (const int64_t* ptr = std::get_if<int64_t>(&value_)) {
+      return static_cast<int>(*ptr);
     } else {
       return error(
           "rfl::Generic: Could not cast the underlying value to an integer.");
+    }
+  }
+
+  /// Casts the underlying value to an int64 or returns an rfl::Error, if the
+  /// underlying value is not an integer.
+  Result<int64_t> to_int64() const noexcept {
+    if (const int64_t* ptr = std::get_if<int64_t>(&value_)) {
+      return *ptr;
+    } else {
+      return error(
+          "rfl::Generic: Could not cast the underlying value to an int64.");
     }
   }
 
@@ -190,6 +201,10 @@ inline Result<double> to_double(const Generic& _g) noexcept {
 /// Casts the underlying value to an integer or returns an rfl::Error, if the
 /// underlying value is not an integer.
 inline Result<int> to_int(const Generic& _g) noexcept { return _g.to_int(); }
+
+/// Casts the underlying value to an int64 or returns an rfl::Error, if the
+/// underlying value is not an integer.
+inline Result<long> to_int64(const Generic& _g) noexcept { return _g.to_int64(); }
 
 /// Casts the underlying value to an rfl::Generic::Object or returns an
 /// rfl::Error, if the underlying value is not an rfl::Generic::Object.

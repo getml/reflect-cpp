@@ -101,7 +101,7 @@ struct Writer {
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       return OutputVarType(static_cast<double>(_var));
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      return OutputVarType(static_cast<int>(_var));
+      return OutputVarType(static_cast<int64_t>(_var));
     } else {
       static_assert(always_false_v<T>, "Unsupported type");
     }
