@@ -77,12 +77,16 @@ struct Reader {
         return error("Could not cast to boolean.");
       }
       return _var.via.boolean;
-    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
-                         std::is_integral<std::remove_cvref_t<T>>()) {
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       if (type == MSGPACK_OBJECT_FLOAT32 || type == MSGPACK_OBJECT_FLOAT64 ||
           type == MSGPACK_OBJECT_FLOAT) {
         return static_cast<T>(_var.via.f64);
-      } else if (type == MSGPACK_OBJECT_POSITIVE_INTEGER) {
+      }
+      return error(
+          "Could not cast to numeric value. The type must be float "
+          "or double.");
+    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
+      if (type == MSGPACK_OBJECT_POSITIVE_INTEGER) {
         return static_cast<T>(_var.via.u64);
       } else if (type == MSGPACK_OBJECT_NEGATIVE_INTEGER) {
         return static_cast<T>(_var.via.i64);
