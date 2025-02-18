@@ -4,6 +4,7 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <type_traits>
 #include <variant>
 #include <vector>
 
@@ -39,7 +40,9 @@ class Generic {
   template <class T,
             typename std::enable_if<std::is_convertible_v<T, VariantType>,
                                     bool>::type = true>
-  Generic(const T& _value) : value_(_value) {}
+  Generic(const T& _value) {
+    value_ = _value;
+  }
 
   template <class T,
             typename std::enable_if<std::is_convertible_v<T, VariantType>,
@@ -65,7 +68,16 @@ class Generic {
             typename std::enable_if<std::is_convertible_v<T, VariantType>,
                                     bool>::type = true>
   auto& operator=(const T& _value) {
-    value_ = _value;
+    using Type = std::remove_cvref_t<T>;
+    if constexpr (std::is_same_v<Type, bool>) {
+      value_.emplace<0>(_value);
+    } else if constexpr (std::is_integral_v<Type>) {
+      value_.emplace<1>(static_cast<int64_t>(_value));
+    } else if constexpr (std::is_floating_point_v<Type>) {
+      value_.emplace<2>(static_cast<double>(_value));
+    } else {
+      value_ = _value;
+    }
     return *this;
   }
 
@@ -81,92 +93,137 @@ class Generic {
   /// Casts the underlying value to an rfl::Generic::Array or returns an
   /// rfl::Error, if the underlying value is not an rfl::Generic::Array.
   Result<Array> to_array() const noexcept {
-    if (const auto* ptr = std::get_if<Array>(&value_)) {
-      return *ptr;
-    } else {
-      return error(
-          "rfl::Generic: Could not cast the underlying value to an "
-          "rfl::Generic::Array.");
-    }
+    return std::visit(
+        [](auto _v) -> Result<Array> {
+          using V = std::remove_cvref_t<decltype(_v)>;
+          if constexpr (std::is_same_v<V, Array>) {
+            return _v;
+          } else {
+            return error(
+                "rfl::Generic: Could not cast the underlying value to an "
+                "rfl::Generic::Array.");
+          }
+        },
+        value_);
   }
 
   /// Casts the underlying value to a boolean or returns an rfl::Error, if the
   /// underlying value is not a boolean.
   Result<bool> to_bool() const noexcept {
-    if (const bool* ptr = std::get_if<bool>(&value_)) {
-      return *ptr;
-    } else {
-      return error(
-          "rfl::Generic: Could not cast the underlying value to a boolean.");
-    }
+    return std::visit(
+        [](auto _v) -> Result<bool> {
+          using V = std::remove_cvref_t<decltype(_v)>;
+          if constexpr (std::is_same_v<V, bool>) {
+            return _v;
+          } else {
+            return error(
+                "rfl::Generic: Could not cast the underlying value to a "
+                "boolean.");
+          }
+        },
+        value_);
   }
 
   /// Casts the underlying value to a double or returns an rfl::Error, if the
   /// underlying value is not a double.
   Result<double> to_double() const noexcept {
-    if (const double* ptr = std::get_if<double>(&value_)) {
-      return *ptr;
-    } else {
-      return error(
-          "rfl::Generic: Could not cast the underlying value to a double.");
-    }
+    return std::visit(
+        [](auto _v) -> Result<double> {
+          using V = std::remove_cvref_t<decltype(_v)>;
+          if constexpr (std::is_same_v<V, double>) {
+            return _v;
+          } else {
+            return error(
+                "rfl::Generic: Could not cast the underlying value to a "
+                "double.");
+          }
+        },
+        value_);
   }
 
   /// Casts the underlying value to an integer or returns an rfl::Error, if the
   /// underlying value is not an integer.
   Result<int> to_int() const noexcept {
-    if (const int64_t* ptr = std::get_if<int64_t>(&value_)) {
-      return static_cast<int>(*ptr);
-    } else {
-      return error(
-          "rfl::Generic: Could not cast the underlying value to an integer.");
-    }
+    return std::visit(
+        [](auto _v) -> Result<int> {
+          using V = std::remove_cvref_t<decltype(_v)>;
+          if constexpr (std::is_same_v<V, int64_t>) {
+            return static_cast<int>(_v);
+          } else {
+            return error(
+                "rfl::Generic: Could not cast the underlying value to an "
+                "integer.");
+          }
+        },
+        value_);
   }
 
   /// Casts the underlying value to an int64 or returns an rfl::Error, if the
   /// underlying value is not an integer.
   Result<int64_t> to_int64() const noexcept {
-    if (const int64_t* ptr = std::get_if<int64_t>(&value_)) {
-      return *ptr;
-    } else {
-      return error(
-          "rfl::Generic: Could not cast the underlying value to an int64.");
-    }
+    return std::visit(
+        [](auto _v) -> Result<int64_t> {
+          using V = std::remove_cvref_t<decltype(_v)>;
+          if constexpr (std::is_same_v<V, int64_t>) {
+            return _v;
+          } else {
+            return error(
+                "rfl::Generic: Could not cast the underlying value to an "
+                "int64.");
+          }
+        },
+        value_);
   }
 
   /// Casts the underlying value to an rfl::Generic::Object or returns an
   /// rfl::Error, if the underlying value is not an rfl::Generic::Object.
   Result<Object> to_object() const noexcept {
-    if (const auto* ptr = std::get_if<Object>(&value_)) {
-      return *ptr;
-    } else {
-      return error(
-          "rfl::Generic: Could not cast the underlying value to an "
-          "rfl::Generic::Object.");
-    }
+    return std::visit(
+        [](auto _v) -> Result<Object> {
+          using V = std::remove_cvref_t<decltype(_v)>;
+          if constexpr (std::is_same_v<V, Object>) {
+            return _v;
+          } else {
+            return error(
+                "rfl::Generic: Could not cast the underlying value to an "
+                "rfl::Generic::Object.");
+          }
+        },
+        value_);
   }
 
   /// Casts the underlying value to rfl::Generic::Null or returns an
   /// rfl::Error, if the underlying value is not rfl::Generic::Null.
   Result<std::nullopt_t> to_null() const noexcept {
-    if (const auto* ptr = std::get_if<std::nullopt_t>(&value_)) {
-      return *ptr;
-    } else {
-      return error(
-          "rfl::Generic: Could not cast the underlying value to "
-          "rfl::Generic::Null.");
-    }
+    return std::visit(
+        [](auto _v) -> Result<std::nullopt_t> {
+          using V = std::remove_cvref_t<decltype(_v)>;
+          if constexpr (std::is_same_v<V, std::nullopt_t>) {
+            return _v;
+          } else {
+            return error(
+                "rfl::Generic: Could not cast the underlying value to "
+                "rfl::Generic::Null.");
+          }
+        },
+        value_);
   }
 
   /// Casts the underlying value to a string or returns an rfl::Error, if the
   /// underlying value is not a string.
   Result<std::string> to_string() const noexcept {
-    if (const auto* ptr = std::get_if<std::string>(&value_)) {
-      return *ptr;
-    } else {
-      return error(
-          "rfl::Generic: Could not cast the underlying value to a string.");
-    }
+    return std::visit(
+        [](auto _v) -> Result<std::string> {
+          using V = std::remove_cvref_t<decltype(_v)>;
+          if constexpr (std::is_same_v<V, std::string>) {
+            return _v;
+          } else {
+            return error(
+                "rfl::Generic: Could not cast the underlying value to a "
+                "string.");
+          }
+        },
+        value_);
   }
 
   /// Returns the underlying variant.
@@ -204,7 +261,9 @@ inline Result<int> to_int(const Generic& _g) noexcept { return _g.to_int(); }
 
 /// Casts the underlying value to an int64 or returns an rfl::Error, if the
 /// underlying value is not an integer.
-inline Result<long> to_int64(const Generic& _g) noexcept { return _g.to_int64(); }
+inline Result<long> to_int64(const Generic& _g) noexcept {
+  return _g.to_int64();
+}
 
 /// Casts the underlying value to an rfl::Generic::Object or returns an
 /// rfl::Error, if the underlying value is not an rfl::Generic::Object.
