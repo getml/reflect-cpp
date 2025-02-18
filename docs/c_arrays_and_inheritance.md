@@ -12,7 +12,7 @@ inheritance altogether.
 Note that C arrays are not the same thing as `std::array`. `std::array` is always
 supported and is the recommended alternative.
 
-If you want support for these, you will have to pass the flag `-D REFLECTCPP_C_ARRAYS_OR_INHERITANCE`
+If you want support for these, you will have to pass the flag `-D REFLECT_CPP_C_ARRAYS_OR_INHERITANCE`
 during compilation.
 
 ## C arrays
