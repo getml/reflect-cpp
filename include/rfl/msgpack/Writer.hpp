@@ -17,6 +17,7 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../Bytestring.hpp"
 
 namespace rfl::msgpack {
 
