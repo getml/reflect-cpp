@@ -28,7 +28,7 @@ SOFTWARE.
 
 namespace rfl {
 
-Generic::Generic() : value_(false) {}
+Generic::Generic() : value_(std::nullopt) {}
 
 Generic::Generic(Generic&& _other) noexcept = default;
 
