@@ -7,9 +7,9 @@
 
 #include "../Attribute.hpp"
 #include "../Field.hpp"
+#include "remove_rename.hpp"
 
 namespace rfl {
-
 namespace internal {
 
 template <class T>
@@ -22,8 +22,7 @@ template <class Type>
 class is_attribute<Attribute<Type>> : public std::true_type {};
 
 template <class T>
-constexpr bool is_attribute_v =
-    is_attribute<std::remove_cvref_t<std::remove_pointer_t<T>>>::value;
+constexpr bool is_attribute_v = is_attribute<remove_rename_t<T>>::value;
 
 }  // namespace internal
 }  // namespace rfl
