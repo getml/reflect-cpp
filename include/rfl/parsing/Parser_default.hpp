@@ -69,7 +69,7 @@ struct Parser {
         using ReflectionType = std::remove_cvref_t<typename T::ReflectionType>;
         const auto wrap_in_t = [](auto _named_tuple) -> Result<T> {
           try {
-            return T{_named_tuple};
+            return T{std::move(_named_tuple)};
           } catch (std::exception& e) {
             return error(e.what());
           }
