@@ -88,7 +88,7 @@ auto employee = Employee{
 auto employee2 =
     rfl::replace(std::move(employee), rfl::make_field<"salary">(70000.0),
                  rfl::make_field<"age">(46));
-````
+```
 
 In this case `age` is part of `Person` and `salary` part ot `Employee`, but
 because you have flattened them, you can treat them as if they were on
