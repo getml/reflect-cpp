@@ -77,8 +77,8 @@ class Reader {
         return error("Could not cast to bytestring.");
       }
       const auto vec = _var.val_->as<std::vector<uint8_t>>();
-      return rfl::Bytestring(internal::ptr_cast<const std::byte*>(vec.data()),
-                             vec.size());
+      const auto data = internal::ptr_cast<const std::byte*>(vec.data());
+      return rfl::Bytestring(data, data + vec.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var.val_->is_bool()) {
         return error("Could not cast to boolean.");

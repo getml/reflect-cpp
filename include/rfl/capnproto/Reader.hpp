@@ -69,8 +69,8 @@ class Reader {
         return error("Could not cast to bytestring.");
       }
       const auto data = _var.val_.as<capnp::Data>();
-      return rfl::Bytestring(internal::ptr_cast<const std::byte*>(data.begin()),
-                             data.size());
+      const auto begin = internal::ptr_cast<const std::byte*>(data.begin());
+      return rfl::Bytestring(begin, begin + data.size());
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != capnp::DynamicValue::BOOL) {

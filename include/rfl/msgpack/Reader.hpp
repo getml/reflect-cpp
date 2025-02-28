@@ -70,8 +70,8 @@ struct Reader {
         return error("Could not cast to a bytestring.");
       }
       const auto bin = _var.via.bin;
-      return rfl::Bytestring(internal::ptr_cast<const std::byte*>(bin.ptr),
-                             bin.size);
+      const auto data = internal::ptr_cast<const std::byte*>(bin.ptr);
+      return rfl::Bytestring(data, data + bin.size);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != MSGPACK_OBJECT_BOOLEAN) {
         return error("Could not cast to boolean.");

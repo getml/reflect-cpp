@@ -120,9 +120,9 @@ struct Reader {
             "The BSON subtype must be a binary in order to read into a "
             "bytestring.");
       }
-      return rfl::Bytestring(
-          internal::ptr_cast<const std::byte*>(value.v_binary.data),
-          value.v_binary.data_len);
+      const auto data =
+          internal::ptr_cast<const std::byte*>(value.v_binary.data);
+      return rfl::Bytestring(data, data + value.v_binary.data_len);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (btype != BSON_TYPE_BOOL) {
         return error("Could not cast to boolean.");
