@@ -36,9 +36,6 @@ class StringConverter {
 
   /// Transforms a string to the matching enum.
   static Result<EnumType> string_to_enum(const std::string& _str) {
-    static_assert(names_.size != 0,
-                  "No enum could be identified. Please choose enum values "
-                  "between 0 to 127 or for flag enums choose 1,2,4,8,16,...");
     if constexpr (is_flag_enum_) {
       return string_to_flag_enum(_str);
     } else {
