@@ -2281,13 +2281,10 @@
 <p><code>rfl::Bytestring</code> is a simple alias:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">namespace</span><span class="w"> </span><span class="nn">rfl</span><span class="w"> </span><span class="p">{</span>
 
-<span class="k">using</span><span class="w"> </span><span class="n">Bytestring</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">basic_string</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">byte</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="k">using</span><span class="w"> </span><span class="n">Bytestring</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">byte</span><span class="o">&gt;</span><span class="p">;</span>
 
 <span class="p">}</span>
 </code></pre></div>
-<p>For more information on how to handle <code>std::basic_string</code> please refer to the
-relevant documentation:</p>
-<p>https://en.cppreference.com/w/cpp/string/basic_string</p>
 <p>Bytestrings are supported by BSON, CBOR, flexbuffers and msgpack. Textual formats
 do not support them.</p>
 
