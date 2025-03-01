@@ -5,15 +5,10 @@
 ```cpp
 namespace rfl {
 
-using Bytestring = std::basic_string<std::byte>;
+using Bytestring = std::vector<std::byte>;
 
 }
 ```
-
-For more information on how to handle `std::basic_string` please refer to the
-relevant documentation:
-
-https://en.cppreference.com/w/cpp/string/basic_string
 
 Bytestrings are supported by BSON, CBOR, flexbuffers and msgpack. Textual formats
 do not support them.

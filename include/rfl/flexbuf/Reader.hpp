@@ -80,8 +80,8 @@ struct Reader {
         return error("Could not cast to a bytestring.");
       }
       const auto blob = _var.AsBlob();
-      return rfl::Bytestring(internal::ptr_cast<const std::byte*>(blob.data()),
-                             blob.size());
+      const auto data = internal::ptr_cast<const std::byte*>(blob.data());
+      return rfl::Bytestring(data, data + blob.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var.IsBool()) {
         return error("Could not cast to boolean.");

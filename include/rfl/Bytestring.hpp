@@ -2,11 +2,11 @@
 #define RFL_BYTESTRING_HPP_
 
 #include <cstddef>
-#include <string>
+#include <vector>
 
 namespace rfl {
 
-using Bytestring = std::basic_string<std::byte>;
+using Bytestring = std::vector<std::byte>;
 
 }  // namespace rfl
 

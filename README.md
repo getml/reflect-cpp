@@ -515,7 +515,7 @@ In addition, it supports the following custom containers:
 
 - `rfl::Binary`: Used to express numbers in binary format.
 - `rfl::Box`: Similar to `std::unique_ptr`, but (almost) guaranteed to never be null.
-- `rfl::Bytestring`: An alias for `std::basic_string<std::byte>`. Supported by Avro, BSON, Cap'n Proto, CBOR, flexbuffers, msgpack and UBJSON. 
+- `rfl::Bytestring`: An alias for `std::vector<std::byte>`. Supported by Avro, BSON, Cap'n Proto, CBOR, flexbuffers, msgpack and UBJSON. 
 - `rfl::Generic`: A catch-all type that can represent (almost) anything.
 - `rfl::Hex`: Used to express numbers in hex format.
 - `rfl::Literal`: An explicitly enumerated string.
