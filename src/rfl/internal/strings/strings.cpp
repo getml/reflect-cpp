@@ -1,3 +1,5 @@
+#include <string>
+#include <vector>
 
 namespace rfl ::internal ::strings {
 
