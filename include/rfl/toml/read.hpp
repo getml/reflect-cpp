@@ -3,7 +3,7 @@
 
 #include <istream>
 #include <string>
-#include <toml++/toml.hpp>
+#include <toml.hpp>
 
 #include "../Processors.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
@@ -28,8 +28,12 @@ auto read(InputVarType _var) {
 /// Parses an object from TOML using reflection.
 template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(const std::string& _toml_str) {
-  auto table = ::toml::parse(_toml_str);
-  return read<T, Ps...>(&table);
+  auto res = ::toml::try_parse_str(_toml_str);
+  if (res.is_ok()) {
+    return read<T, Ps...>(&res.unwrap());
+  } else {
+    return error(res.unwrap_err().at(0));
+  }
 }
 
 /// Parses an object from a stringstream.
