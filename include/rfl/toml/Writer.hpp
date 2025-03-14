@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
-#include <toml++/toml.hpp>
+#include <toml.hpp>
 #include <type_traits>
 #include <vector>
 
@@ -76,7 +76,7 @@ class Writer {
   OutputVarType add_value_to_object(const std::string_view& _name,
                                     const T& _var,
                                     OutputObjectType* _parent) const noexcept {
-    _parent->val_->emplace(_name, ::toml::value(_var));
+    (*_parent->val_)[_name] = ::toml::value(_var);
     return OutputVarType{};
   }
 

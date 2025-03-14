@@ -17,23 +17,21 @@ Writer::OutputVarType Writer::null_as_root() const noexcept {
 
 Writer::OutputArrayType Writer::add_array_to_array(
     const size_t _size, OutputArrayType* _parent) const noexcept {
-  const auto i = _parent->val_->size();
   _parent->val_->push_back(::toml::array());
-  return OutputArrayType{_parent->val_->at(i).as_array()};
+  return OutputArrayType{&_parent->val_->back().as_array()};
 }
 
 Writer::OutputArrayType Writer::add_array_to_object(
     const std::string_view& _name, const size_t _size,
     OutputObjectType* _parent) const noexcept {
   _parent->val_->emplace(_name, ::toml::array());
-  return OutputArrayType{_parent->val_->at_path(_name).as_array()};
+  return OutputArrayType{&(*_parent->val_)[_name].as_array()};
 }
 
 Writer::OutputObjectType Writer::add_object_to_array(
     const size_t _size, OutputArrayType* _parent) const noexcept {
-  const auto i = _parent->val_->size();
   _parent->val_->push_back(::toml::table());
-  return OutputObjectType{_parent->val_->at(i).as_table()};
+  return OutputObjectType{&_parent->val_->back().as_table()};
 }
 
 Writer::OutputObjectType Writer::add_object_to_object(
