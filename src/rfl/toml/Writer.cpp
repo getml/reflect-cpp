@@ -25,7 +25,7 @@ Writer::OutputArrayType Writer::add_array_to_object(
     const std::string_view& _name, const size_t _size,
     OutputObjectType* _parent) const noexcept {
   _parent->val_->emplace(_name, ::toml::array());
-  return OutputArrayType{&(*_parent->val_)[_name].as_array()};
+  return OutputArrayType{&(*_parent->val_)[std::string(_name)].as_array()};
 }
 
 Writer::OutputObjectType Writer::add_object_to_array(
@@ -38,7 +38,7 @@ Writer::OutputObjectType Writer::add_object_to_object(
     const std::string_view& _name, const size_t _size,
     OutputObjectType* _parent) const noexcept {
   _parent->val_->emplace(_name, ::toml::table());
-  return OutputObjectType{_parent->val_->at_path(_name).as_table()};
+  return OutputObjectType{&(*_parent->val_)[std::string(_name)].as_table()};
 }
 
 Writer::OutputVarType Writer::add_null_to_array(

@@ -20,9 +20,9 @@
 namespace rfl::toml {
 
 struct Reader {
-  using InputArrayType = *::toml::array;
-  using InputObjectType = *::toml::table;
-  using InputVarType = *::toml::value;
+  using InputArrayType = const ::toml::array*;
+  using InputObjectType = const ::toml::table*;
+  using InputVarType = const ::toml::value*;
 
   template <class T>
   static constexpr bool has_custom_constructor =
@@ -33,7 +33,7 @@ struct Reader {
     if (_idx >= _arr->size()) {
       return error("Index " + std::to_string(_idx) + " of of bounds.");
     }
-    return (*_arr)[_idx];
+    return &(*_arr)[_idx];
   }
 
   rfl::Result<InputVarType> get_field_from_object(
@@ -42,7 +42,7 @@ struct Reader {
     if (it == _obj->end()) {
       return error("Object contains no field named '" + _name + "'.");
     }
-    return it->second;
+    return &it->second;
   }
 
   bool is_empty(const InputVarType _var) const noexcept {
@@ -87,7 +87,7 @@ struct Reader {
   std::optional<Error> read_array(const ArrayReader& _array_reader,
                                   const InputArrayType _arr) const noexcept {
     for (const auto& node : *_arr) {
-      const auto err = _array_reader.read(node);
+      const auto err = _array_reader.read(&node);
       if (err) {
         return err;
       }
@@ -99,7 +99,7 @@ struct Reader {
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    InputObjectType _obj) const noexcept {
     for (const auto& [k, v] : *_obj) {
-      _object_reader.read(std::string_view(k), v);
+      _object_reader.read(std::string_view(k), &v);
     }
     return std::nullopt;
   }

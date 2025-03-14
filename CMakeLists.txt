@@ -194,15 +194,8 @@ if (REFLECTCPP_TOML)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_toml.cpp
     )
-    if(REFLECTCPP_USE_VCPKG)
-        find_package(PkgConfig REQUIRED)
-        pkg_check_modules(tomlplusplus REQUIRED IMPORTED_TARGET tomlplusplus)
-        target_link_libraries(reflectcpp PUBLIC PkgConfig::tomlplusplus)
-    else()
-        if (NOT TARGET tomlplusplus)
-          find_package(tomlplusplus)
-        endif()
-        target_link_libraries(reflectcpp PUBLIC tomlplusplus::tomlplusplus)
+    if (NOT TARGET toml11)
+      find_package(toml11 CONFIG REQUIRED)
     endif()
 endif()
 

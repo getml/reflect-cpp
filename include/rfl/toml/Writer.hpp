@@ -76,7 +76,7 @@ class Writer {
   OutputVarType add_value_to_object(const std::string_view& _name,
                                     const T& _var,
                                     OutputObjectType* _parent) const noexcept {
-    (*_parent->val_)[_name] = ::toml::value(_var);
+    (*_parent->val_)[std::string(_name)] = ::toml::value(_var);
     return OutputVarType{};
   }
 

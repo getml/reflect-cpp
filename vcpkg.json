@@ -49,7 +49,7 @@
     },
     {
       "name": "toml11",
-      "version>=": "v4.3.0#0"
+      "version>=": "4.2.0"
     },
     {
       "name": "yaml-cpp",

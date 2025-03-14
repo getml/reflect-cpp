@@ -32,7 +32,7 @@ Result<internal::wrap_in_rfl_array_t<T>> read(const std::string& _toml_str) {
   if (res.is_ok()) {
     return read<T, Ps...>(&res.unwrap());
   } else {
-    return error(res.unwrap_err().at(0));
+    return error(::toml::format_error(res.unwrap_err().at(0)));
   }
 }
 
