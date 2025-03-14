@@ -48,8 +48,8 @@
       "version>=": "3.9.3"
     },
     {
-      "name": "tomlplusplus",
-      "version>=": "3.4.0"
+      "name": "toml11",
+      "version>=": "v4.3.0#0"
     },
     {
       "name": "yaml-cpp",
