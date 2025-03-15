@@ -34,15 +34,16 @@ struct TypeHelper<rfl::Variant<Ts...>> {
 };
 
 std::string to_schema_internal_schema(
-    const parsing::schema::Definition& internal_schema,
-    const yyjson_write_flag);
+    const parsing::schema::Definition& internal_schema, const yyjson_write_flag,
+    const bool _no_required);
 
 /// Returns the JSON schema for a class.
 template <class T, class... Ps>
 std::string to_schema(const yyjson_write_flag _flag = 0) {
-  const auto internal_schema =
-      parsing::schema::make<Reader, Writer, T, Processors<Ps...>>();
-  return to_schema_internal_schema(internal_schema, _flag);
+  using P = Processors<Ps...>;
+  const auto internal_schema = parsing::schema::make<Reader, Writer, T, P>();
+  return to_schema_internal_schema(internal_schema, _flag,
+                                   P::default_if_missing_);
 }
 }  // namespace rfl::json
 
