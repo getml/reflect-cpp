@@ -3,7 +3,11 @@
 
 #include <istream>
 #include <string>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
 #include <toml.hpp>
+#pragma GCC diagnostic pop
 
 #include "../Processors.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"

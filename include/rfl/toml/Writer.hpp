@@ -7,9 +7,13 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
-#include <toml.hpp>
 #include <type_traits>
 #include <vector>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#include <toml.hpp>
+#pragma GCC diagnostic pop
 
 #include "../Ref.hpp"
 #include "../Result.hpp"

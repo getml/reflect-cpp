@@ -9,10 +9,14 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
-#include <toml.hpp>
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#include <toml.hpp>
+#pragma GCC diagnostic pop
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
