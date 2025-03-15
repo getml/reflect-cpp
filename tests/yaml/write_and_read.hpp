@@ -11,7 +11,8 @@ template <class... Ps>
 void write_and_read(const auto& _struct) {
   using T = std::remove_cvref_t<decltype(_struct)>;
   const auto serialized1 = rfl::yaml::write<Ps...>(_struct);
-  const auto res = rfl::yaml::read<T, Ps...>(serialized1);
+  const auto res = rfl::yaml::read<T, Ps...>(
+      std::string_view(serialized1.c_str(), serialized1.size()));
   EXPECT_TRUE(res && true) << "Test failed on read. Error: "
                            << res.error().what();
   const auto serialized2 = rfl::yaml::write<Ps...>(res.value());
