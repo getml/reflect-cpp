@@ -197,7 +197,7 @@ if (REFLECTCPP_TOML)
     if (NOT TARGET toml11)
       find_package(toml11 CONFIG REQUIRED)
     endif()
-    include_directories(PUBLIC ${TOML11_INCLUDE_DIR})
+    target_link_libraries(reflectcpp PUBLIC toml11::toml11)
 endif()
 
 if (REFLECTCPP_UBJSON)
