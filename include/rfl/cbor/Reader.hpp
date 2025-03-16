@@ -71,6 +71,7 @@ class Reader {
         return error("Could not cast to string.");
       }
       return _var.val_->as<std::string>();
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
       if (!_var.val_->is_byte_string()) {
@@ -79,25 +80,28 @@ class Reader {
       const auto vec = _var.val_->as<std::vector<uint8_t>>();
       const auto data = internal::ptr_cast<const std::byte*>(vec.data());
       return rfl::Bytestring(data, data + vec.size());
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var.val_->is_bool()) {
         return error("Could not cast to boolean.");
       }
       return _var.val_->as<bool>();
-    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
-                         std::is_integral<std::remove_cvref_t<T>>()) {
+
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       if (_var.val_->is_double()) {
         return static_cast<T>(_var.val_->as<double>());
       }
+      return error("Could not cast to double.");
+
+    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       if (_var.val_->is_int64()) {
         return static_cast<T>(_var.val_->as<int64_t>());
       }
       if (_var.val_->is_uint64()) {
         return static_cast<T>(_var.val_->as<uint64_t>());
       }
-      return error(
-          "Could not cast to numeric value. The type must be integral, "
-          "float or double.");
+      return error("Could not cast to integer.");
+
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }

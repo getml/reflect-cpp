@@ -83,8 +83,10 @@ struct Reader {
 
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       return std::visit(get_value, _var.node_or_attribute_);
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       return std::visit(get_value, _var.node_or_attribute_) == "true";
+
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       const auto str = std::visit(get_value, _var.node_or_attribute_);
       try {
@@ -93,6 +95,7 @@ struct Reader {
         return error("Could not cast '" + std::string(str) +
                      "' to floating point value.");
       }
+
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       const auto str = std::visit(get_value, _var.node_or_attribute_);
       try {
@@ -100,6 +103,7 @@ struct Reader {
       } catch (std::exception& e) {
         return error("Could not cast '" + std::string(str) + "' to integer.");
       }
+
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }

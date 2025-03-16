@@ -110,6 +110,7 @@ struct Reader {
           return error(
               "Could not cast to string. The type must be UTF8 or symbol.");
       }
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
       if (btype != BSON_TYPE_BINARY) {
@@ -123,17 +124,23 @@ struct Reader {
       const auto data =
           internal::ptr_cast<const std::byte*>(value.v_binary.data);
       return rfl::Bytestring(data, data + value.v_binary.data_len);
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (btype != BSON_TYPE_BOOL) {
         return error("Could not cast to boolean.");
       }
       return value.v_bool;
-    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
-                         std::is_integral<std::remove_cvref_t<T>>()) {
-      switch (btype) {
-        case BSON_TYPE_DOUBLE:
-          return static_cast<T>(value.v_double);
 
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
+      if (btype != BSON_TYPE_DOUBLE) {
+        return error(
+            "Could not cast to numeric value. The type must be double, "
+            "int32, int64 or date_time.");
+      }
+      return static_cast<T>(value.v_double);
+
+    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
+      switch (btype) {
         case BSON_TYPE_INT32:
           return static_cast<T>(value.v_int32);
 
@@ -145,9 +152,10 @@ struct Reader {
 
         default:
           return error(
-              "Could not cast to numeric value. The type must be double, "
+              "Could not cast to numeric value. The type must be "
               "int32, int64 or date_time.");
       }
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bson_oid_t>()) {
       if (btype != BSON_TYPE_OID) {
         return error("Could not cast to OID.");

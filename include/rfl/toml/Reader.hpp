@@ -60,21 +60,25 @@ struct Reader {
         return error("Could not cast to std::string!");
       }
       return _var->as_string();
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var->is_boolean()) {
         return error("Could not cast to bool!");
       }
       return _var->as_boolean();
+
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       if (!_var->is_floating()) {
         return error("Could not cast to double!");
       }
       return static_cast<std::remove_cvref_t<T>>(_var->as_floating());
+
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       if (!_var->is_integer()) {
         return error("Could not cast to int64_t!");
       }
       return static_cast<std::remove_cvref_t<T>>(_var->as_integer());
+
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
