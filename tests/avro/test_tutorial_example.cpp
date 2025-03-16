@@ -39,7 +39,7 @@ TEST(avro, test_tutorial_example) {
   const auto serialized1 = rfl::avro::write(person, schema.value());
   const auto res = rfl::avro::read<Person>(serialized1, schema.value());
   EXPECT_TRUE(res && true) << "Test failed on read. Error: "
-                           << res.error().value().what();
+                           << res.error().what();
   const auto serialized2 = rfl::avro::write(res.value(), schema.value());
   EXPECT_EQ(serialized1, serialized2);
 }

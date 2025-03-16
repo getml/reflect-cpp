@@ -85,8 +85,7 @@ struct Reader {
       avro_value_get_boolean(_var.val_, &result);
       return (result != 0);
 
-    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
-                         std::is_integral<std::remove_cvref_t<T>>()) {
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       if (type == AVRO_DOUBLE) {
         double result = 0.0;
         const auto err = avro_value_get_double(_var.val_, &result);
@@ -94,7 +93,21 @@ struct Reader {
           return error("Could not cast to double.");
         }
         return static_cast<T>(result);
-      } else if (type == AVRO_INT32) {
+      } else if (type == AVRO_FLOAT) {
+        float result = 0.0;
+        const auto err = avro_value_get_float(_var.val_, &result);
+        if (err) {
+          return error("Could not cast to float.");
+        }
+        return static_cast<T>(result);
+      } else {
+        return rfl::error(
+            "Could not cast to numeric value. The type must be float "
+            "or double.");
+      }
+
+    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
+      if (type == AVRO_INT32) {
         int32_t result = 0;
         const auto err = avro_value_get_int(_var.val_, &result);
         if (err) {
@@ -108,17 +121,10 @@ struct Reader {
           return error("Could not cast to int64.");
         }
         return static_cast<T>(result);
-      } else if (type == AVRO_FLOAT) {
-        float result = 0.0;
-        const auto err = avro_value_get_float(_var.val_, &result);
-        if (err) {
-          return error("Could not cast to float.");
-        }
-        return static_cast<T>(result);
+      } else {
+        return rfl::error(
+            "Could not cast to numeric value. The type must be integral.");
       }
-      return rfl::error(
-          "Could not cast to numeric value. The type must be integral, float "
-          "or double.");
 
     } else if constexpr (internal::is_literal_v<T>) {
       int value = 0;

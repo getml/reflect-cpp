@@ -78,8 +78,13 @@ class Reader {
       }
       return _var.val_.as<bool>();
 
-    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
-                         std::is_integral<std::remove_cvref_t<T>>()) {
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
+      if (type != capnp::DynamicValue::FLOAT) {
+        return error("Could not cast to float.");
+      }
+      return static_cast<T>(_var.val_.as<double>());
+
+    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       switch (type) {
         case capnp::DynamicValue::INT:
           return static_cast<T>(_var.val_.as<int64_t>());
@@ -87,13 +92,8 @@ class Reader {
         case capnp::DynamicValue::UINT:
           return static_cast<T>(_var.val_.as<uint64_t>());
 
-        case capnp::DynamicValue::FLOAT:
-          return static_cast<T>(_var.val_.as<double>());
-
         default:
-          return error(
-              "Could not cast to numeric value. The type must be integral, "
-              "float or double.");
+          return error("Could not cast to an integer.");
       }
 
     } else if constexpr (internal::is_literal_v<T>) {

@@ -74,6 +74,7 @@ struct Reader {
         return error("Could not cast to a string.");
       }
       return std::string(_var.AsString().c_str());
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
       if (!_var.IsBlob()) {
@@ -82,21 +83,25 @@ struct Reader {
       const auto blob = _var.AsBlob();
       const auto data = internal::ptr_cast<const std::byte*>(blob.data());
       return rfl::Bytestring(data, data + blob.size());
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var.IsBool()) {
         return error("Could not cast to boolean.");
       }
       return _var.AsBool();
+
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-      if (!_var.IsNumeric()) {
+      if (!_var.IsFloat()) {
         return error("Could not cast to double.");
       }
       return static_cast<T>(_var.AsDouble());
+
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      if (!_var.IsNumeric()) {
+      if (!_var.IsIntOrUint()) {
         return error("Could not cast to int.");
       }
       return static_cast<T>(_var.AsInt64());
+
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }

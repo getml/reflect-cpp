@@ -64,6 +64,7 @@ struct Reader {
       }
       const auto str = _var.via.str;
       return std::string(str.ptr, str.size);
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
       if (type != MSGPACK_OBJECT_BIN) {
@@ -72,11 +73,13 @@ struct Reader {
       const auto bin = _var.via.bin;
       const auto data = internal::ptr_cast<const std::byte*>(bin.ptr);
       return rfl::Bytestring(data, data + bin.size);
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != MSGPACK_OBJECT_BOOLEAN) {
         return error("Could not cast to boolean.");
       }
       return _var.via.boolean;
+
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       if (type == MSGPACK_OBJECT_FLOAT32 || type == MSGPACK_OBJECT_FLOAT64 ||
           type == MSGPACK_OBJECT_FLOAT) {
@@ -85,6 +88,7 @@ struct Reader {
       return error(
           "Could not cast to numeric value. The type must be float "
           "or double.");
+
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       if (type == MSGPACK_OBJECT_POSITIVE_INTEGER) {
         return static_cast<T>(_var.via.u64);
