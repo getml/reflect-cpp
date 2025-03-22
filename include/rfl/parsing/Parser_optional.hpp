@@ -38,7 +38,7 @@ struct Parser<R, W, std::optional<T>, ProcessorsType> {
       if (_r.is_empty(_var)) {
         return std::optional<T>();
       }
-      const auto to_opt = [](auto&& _t) { return std::make_optional<T>(_t); };
+      const auto to_opt = [](auto&& _t) { return std::make_optional<T>(std::forward<decltype(_t)>(_t)); };
       return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r,
                                                                         _var)
           .transform(to_opt);
