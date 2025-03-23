@@ -59,6 +59,16 @@ constexpr auto get_underlying_enumerator_array() {
   return internal::enums::names_to_underlying_enumerator_array(names);
 }
 
+// Returns the range of the given enum type as a pair of the minimum and maximum
+template <internal::enums::is_scoped_enum EnumType>
+constexpr auto get_enum_range() {
+  return std::make_pair(
+      internal::enums::get_range_min<EnumType,
+                                     internal::enums::is_flag_enum<EnumType>>(),
+      internal::enums::get_range_max<
+          EnumType, internal::enums::is_flag_enum<EnumType>>());
+}
+
 }  // namespace rfl
 
 #endif  // RFL_ENUMS_HPP_
