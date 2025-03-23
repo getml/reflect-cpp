@@ -16,7 +16,7 @@ namespace rfl::internal {
 template <internal::StringLiteral _discriminator, class T>
 static inline auto make_tag(const T& _t) noexcept {
   if constexpr (internal::has_reflection_type_v<T>) {
-    return make_tag<typename T::ReflectionType>();
+    return make_tag<_discriminator>(_t.reflection());
   } else if constexpr (named_tuple_t<T>::Names::template contains<
                            _discriminator>()) {
     return *to_view(_t).template get<_discriminator>();
