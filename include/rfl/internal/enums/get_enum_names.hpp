@@ -3,6 +3,7 @@
 
 #include <limits>
 #include <type_traits>
+#include <utility>
 
 #if __has_include(<source_location>)
 #include <source_location>
@@ -38,9 +39,7 @@
 // use a scoped integer, static_cast<MyEnum>(some_integer_value) will always be
 // defined.
 
-namespace rfl {
-namespace internal {
-namespace enums {
+namespace rfl::internal::enums {
 
 template <auto e>
 consteval auto get_enum_name_str_view() {
@@ -79,19 +78,14 @@ consteval auto get_enum_name() {
   return to_str_lit(std::make_index_sequence<name.size()>{});
 }
 
-template <class T>
-consteval T calc_greatest_power_of_two() {
-  if constexpr (std::is_signed_v<T>) {
-    return static_cast<T>(1) << (sizeof(T) * 8 - 2);
-  } else {
-    return static_cast<T>(1) << (sizeof(T) * 8 - 1);
-  }
-}
-
 template <class T, bool _is_flag>
 consteval T get_max() {
   if constexpr (_is_flag) {
-    return calc_greatest_power_of_two<T>();
+    if constexpr (std::is_signed_v<T>) {
+      return (sizeof(T) * 8 - 2);
+    } else {
+      return (sizeof(T) * 8 - 1);
+    }
   } else {
     return std::numeric_limits<T>::max() > 127 ? static_cast<T>(127)
                                                : std::numeric_limits<T>::max();
@@ -107,29 +101,19 @@ consteval T calc_j() {
   }
 }
 
-template <class EnumType, class NamesType, auto _max, bool _is_flag, int _i>
-consteval auto get_enum_names_impl() {
+template <class EnumType, class LiteralType, size_t N, bool _is_flag, int _i,
+          auto... _enums>
+consteval auto operator|(Names<EnumType, LiteralType, N, _is_flag, _enums...>,
+                         std::integral_constant<int, _i>) {
+  using NamesType = Names<EnumType, LiteralType, N, _is_flag, _enums...>;
   using T = std::underlying_type_t<EnumType>;
-
   constexpr T j = calc_j<T, _is_flag, _i>();
-
   constexpr auto name = get_enum_name<static_cast<EnumType>(j)>();
-
   if constexpr (std::get<0>(name.arr_) == '(') {
-    if constexpr (j == _max) {
-      return NamesType{};
-    } else {
-      return get_enum_names_impl<EnumType, NamesType, _max, _is_flag, _i + 1>();
-    }
+    return NamesType{};
   } else {
-    using NewNames = typename NamesType::template AddOneType<
-        Literal<remove_namespaces<name>()>, static_cast<EnumType>(j)>;
-
-    if constexpr (j == _max) {
-      return NewNames{};
-    } else {
-      return get_enum_names_impl<EnumType, NewNames, _max, _is_flag, _i + 1>();
-    }
+    return typename NamesType::template AddOneType<
+        Literal<remove_namespaces<name>()>, static_cast<EnumType>(j)>{};
   }
 }
 
@@ -142,15 +126,15 @@ consteval auto get_enum_names() {
   static_assert(std::is_integral_v<std::underlying_type_t<EnumType>>,
                 "The underlying type of any Enum must be integral!");
 
+  using EmptyNames = Names<EnumType, rfl::Literal<"">, 0, _is_flag>;
+
   constexpr auto max = get_max<std::underlying_type_t<EnumType>, _is_flag>();
 
-  using EmptyNames = Names<EnumType, rfl::Literal<"">, 0>;
-
-  return get_enum_names_impl<EnumType, EmptyNames, max, _is_flag, 0>();
+  return []<int... _is>(std::integer_sequence<int, _is...>) {
+    return (EmptyNames{} | ... | std::integral_constant<int, _is>());
+  }(std::make_integer_sequence<int, max>());
 }
 
-}  // namespace enums
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal::enums
 
 #endif
