@@ -86,6 +86,17 @@ template <class EnumType, class LiteralType, size_t N, bool _is_flag,
             _is_flag, _enums..., _new_enum>>;
 };
 
+
+template <class EnumType, class LiteralType1, size_t N1, bool _is_flag1,
+          auto... _enums1, class LiteralType2, size_t N2, auto... _enums2>
+consteval auto operator|(
+    Names<EnumType, LiteralType1, N1, _is_flag1, _enums1...>,
+    Names<EnumType, LiteralType2, N2, _is_flag1, _enums2...>) {
+  using CombinedLiteral = define_literal_t<LiteralType1, LiteralType2>;
+  return Names<EnumType, CombinedLiteral, N1 + N2, _is_flag1,
+              _enums1..., _enums2...>{};
+}
+
 template <class EnumType, size_t N, bool _is_flag, StringLiteral... _names,
           auto... _enums>
 auto names_to_enumerator_named_tuple(
