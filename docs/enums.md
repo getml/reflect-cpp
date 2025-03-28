@@ -27,34 +27,42 @@ This results in the following JSON string:
 
 However, some limitations apply:
 
-1. They must be be scoped enumerations.
+1. They must be scoped enumerations.
 
-```cpp
-/// OK - scoped enumeration
-enum class Color1 { red, green, blue, yellow };
+    ```cpp
+    /// OK - scoped enumeration
+    enum class Color1 { red, green, blue, yellow };
+    
+    /// OK - scoped enumeration
+    enum struct Color2 { red, green, blue, yellow };
+    
+    /// unsupported - unscoped enumerations
+    enum Color3 { red, green, blue, yellow };
+    ```
 
-/// OK - scoped enumeration
-enum struct Color2 { red, green, blue, yellow };
+2. Enum values must be in the range `[RFL_ENUM_RANGE_MIN, RFL_ENUM_RANGE_MAX]`. If the range is not specified, the
+   default range is `[0, 127]`.
 
-/// unsupported - unscoped enumerations
-enum Color3 { red, green, blue, yellow };
-```
+    - You can specify a custom range for the all enum values by defining `RFL_ENUM_RANGE_MIN` and `RFL_ENUM_RANGE_MAX`
+      before including the reflect-cpp header:
 
-2. You cannot have more than 128 values and if you explicitly assign values, they must be between 0 and 127.
-
-```cpp
-/// OK
-enum class Color1 { red, green, blue, yellow };
-
-/// OK
-enum struct Color2 { red, green, blue = 50, yellow };
-
-/// unsupported - red is a negative value
-enum Color3 { red = -10, green, blue, yellow };
-
-/// unsupported - red is greater than 127
-enum Color3 { red = 200, green, blue, yellow };
-```
+        ```cpp
+        #define RFL_ENUM_RANGE_MIN -128
+        #define RFL_ENUM_RANGE_MAX 128
+        #include <rfl.hpp>
+        ```
+    - You can specify a custom range for a specific enum by defining the specialization `rfl::config::enum_range` for
+      the enum type :
+        ```cpp
+     
+        enum class Color { yellow = 200, purple = 300, orange = 400 };
+     
+        template <>
+        struct rfl::config::enum_range<Color> {
+          static constexpr int min = 200;
+          static constexpr int max = 400;
+        };
+        ```
 
 ## Flag enums
 
