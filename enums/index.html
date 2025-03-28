@@ -2431,8 +2431,8 @@
 </code></pre></div>
 <p>However, some limitations apply:</p>
 <ol>
-<li>They must be be scoped enumerations.</li>
-</ol>
+<li>
+<p>They must be scoped enumerations.</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="c1">/// OK - scoped enumeration</span>
 <span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Color1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">red</span><span class="p">,</span><span class="w"> </span><span class="n">green</span><span class="p">,</span><span class="w"> </span><span class="n">blue</span><span class="p">,</span><span class="w"> </span><span class="n">yellow</span><span class="w"> </span><span class="p">};</span>
 
@@ -2442,21 +2442,32 @@
 <span class="c1">/// unsupported - unscoped enumerations</span>
 <span class="k">enum</span><span class="w"> </span><span class="nc">Color3</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">red</span><span class="p">,</span><span class="w"> </span><span class="n">green</span><span class="p">,</span><span class="w"> </span><span class="n">blue</span><span class="p">,</span><span class="w"> </span><span class="n">yellow</span><span class="w"> </span><span class="p">};</span>
 </code></pre></div>
-<ol>
-<li>You cannot have more than 128 values and if you explicitly assign values, they must be between 0 and 127.</li>
-</ol>
-<div class="language-cpp highlight"><pre><span></span><code><span class="c1">/// OK</span>
-<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Color1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">red</span><span class="p">,</span><span class="w"> </span><span class="n">green</span><span class="p">,</span><span class="w"> </span><span class="n">blue</span><span class="p">,</span><span class="w"> </span><span class="n">yellow</span><span class="w"> </span><span class="p">};</span>
-
-<span class="c1">/// OK</span>
-<span class="k">enum</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">Color2</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">red</span><span class="p">,</span><span class="w"> </span><span class="n">green</span><span class="p">,</span><span class="w"> </span><span class="n">blue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="n">yellow</span><span class="w"> </span><span class="p">};</span>
-
-<span class="c1">/// unsupported - red is a negative value</span>
-<span class="k">enum</span><span class="w"> </span><span class="nc">Color3</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">red</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-10</span><span class="p">,</span><span class="w"> </span><span class="n">green</span><span class="p">,</span><span class="w"> </span><span class="n">blue</span><span class="p">,</span><span class="w"> </span><span class="n">yellow</span><span class="w"> </span><span class="p">};</span>
-
-<span class="c1">/// unsupported - red is greater than 127</span>
-<span class="k">enum</span><span class="w"> </span><span class="nc">Color3</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">red</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="n">green</span><span class="p">,</span><span class="w"> </span><span class="n">blue</span><span class="p">,</span><span class="w"> </span><span class="n">yellow</span><span class="w"> </span><span class="p">};</span>
+</li>
+<li>
+<p>Enum values must be in the range <code>[RFL_ENUM_RANGE_MIN, RFL_ENUM_RANGE_MAX]</code>. If the range is not specified, the
+   default range is <code>[0, 127]</code>.</p>
+<ul>
+<li>
+<p>You can specify a custom range for the all enum values by defining <code>RFL_ENUM_RANGE_MIN</code> and <code>RFL_ENUM_RANGE_MAX</code>
+  before including the reflect-cpp header:</p>
+<p><div class="language-cpp highlight"><pre><span></span><code><span class="cp">#define RFL_ENUM_RANGE_MIN -128</span>
+<span class="cp">#define RFL_ENUM_RANGE_MAX 128</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;rfl.hpp&gt;</span>
 </code></pre></div>
+    - You can specify a custom range for a specific enum by defining the specialization <code>rfl::config::enum_range</code> for
+      the enum type :
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Color</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">yellow</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="n">purple</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">300</span><span class="p">,</span><span class="w"> </span><span class="n">orange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">400</span><span class="w"> </span><span class="p">};</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">rfl</span><span class="o">::</span><span class="n">config</span><span class="o">::</span><span class="n">enum_range</span><span class="o">&lt;</span><span class="n">Color</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">200</span><span class="p">;</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">400</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></p>
+</li>
+</ul>
+</li>
+</ol>
 <h2 id="flag-enums">Flag enums<a class="headerlink" href="#flag-enums" title="Permanent link">&para;</a></h2>
 <p>Sometimes the enumerations are not mutually exclusive - sticking with the metaphor of colors, it is perfectly
 possible for things to have more than one color. C++ programmers sometimes like to model this using a flag enum.</p>
