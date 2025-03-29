@@ -8,37 +8,55 @@
 
 namespace rfl {
 
+
+enum class Copyability {
+    COPYABLE,
+    NON_COPYABLE
+};
+
 /// The Box class behaves very similarly to the unique_ptr, but unlike the
 /// unique_ptr, it is 100% guaranteed to be filled at all times (unless the user
 /// tries to access it after calling std::move does something else that is
 /// clearly bad practice).
-template <class T>
+///
+/// By default Box behaves like a unique_ptr in relation to copying, but it can be
+/// configured to add copy constructor and assignment operators that call the
+/// same function of the contained type T.
+
+template <class T, Copyability C = Copyability::NON_COPYABLE>
 class Box {
  public:
   /// The only way of creating new boxes is
   /// Box<T>::make(...).
   template <class... Args>
-  static Box<T> make(Args&&... _args) {
-    return Box<T>(std::make_unique<T>(std::forward<Args>(_args)...));
+  static Box<T, C> make(Args&&... _args) {
+    return Box<T, C>(std::make_unique<T>(std::forward<Args>(_args)...));
   }
 
   /// You can generate them from unique_ptrs as well, in which case it will
   /// return an Error, if the unique_ptr is not set.
-  static Result<Box<T>> make(std::unique_ptr<T>&& _ptr) {
+  static Result<Box<T, C>> make(std::unique_ptr<T>&& _ptr) {
     if (!_ptr) {
       return error("std::unique_ptr was a nullptr.");
     }
-    return Box<T>(std::move(_ptr));
+    return Box<T, C>(std::move(_ptr));
   }
 
   Box() : ptr_(std::make_unique<T>()) {}
 
-  Box(const Box<T>& _other) = delete;
+  /// Copy constructor if copyable
+  Box(const Box<T, C>& _other) requires (C == Copyability::COPYABLE)
+  {
+    ptr_ = std::make_unique<T>(*_other);
+  }
 
-  Box(Box<T>&& _other) = default;
+  /// Copy constructor if not copyable
+  Box(const Box<T, C>& _other) requires (C == Copyability::NON_COPYABLE) = delete;
 
-  template <class U>
-  Box(Box<U>&& _other) noexcept
+  Box(Box<T, C>&& _other) = default;
+
+  template <class U, Copyability C2>
+  Box(Box<U, C2>&& _other) noexcept
       : ptr_(std::forward<std::unique_ptr<U>>(_other.ptr())) {}
 
   ~Box() = default;
@@ -46,15 +64,23 @@ class Box {
   /// Returns a pointer to the underlying object
   T* get() const { return ptr_.get(); }
 
-  /// Copy assignment operator
-  Box<T>& operator=(const Box<T>& _other) = delete;
+  /// Copy assignment operator if copyable
+  Box<T, C>& operator=(const Box<T>& other) requires (C == Copyability::COPYABLE) {
+    if(this != &other) {
+      ptr_ = std::make_unique<T>(*other);
+    }
+    return *this;
+  }
+
+  /// Copy assignment operator if not copyable
+  Box<T, C>& operator=(const Box<T>& _other) requires (C == Copyability::NON_COPYABLE)  = delete;
 
   /// Move assignment operator
-  Box<T>& operator=(Box<T>&& _other) noexcept = default;
+  Box<T, C>& operator=(Box<T, C>&& _other) noexcept = default;
 
   /// Move assignment operator
   template <class U>
-  Box<T>& operator=(Box<U>&& _other) noexcept {
+  Box<T, C>& operator=(Box<U>&& _other) noexcept {
     ptr_ = std::forward<std::unique_ptr<U>>(_other.ptr());
     return *this;
   }
@@ -90,6 +116,15 @@ class Box {
 template <class T, class... Args>
 auto make_box(Args&&... _args) {
   return Box<T>::make(std::forward<Args>(_args)...);
+}
+
+/// Template specialization for a box that is copyable.
+template<typename T>
+using CopyableBox = Box<T, Copyability::COPYABLE>;
+
+template <class T, class... Args>
+auto make_copyable_box(Args&&... _args) {
+    return CopyableBox<T>::make(std::forward<Args>(_args)...);
 }
 
 template <class T1, class T2>
