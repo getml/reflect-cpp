@@ -1157,6 +1157,23 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    
+  
+    rfl::Box and rfl::Ref
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1172,6 +1189,38 @@
   
 
       </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#deep-copying" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deep Copying
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2196,6 +2245,25 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#deep-copying" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deep Copying
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2339,10 +2407,10 @@ two subtrees.</p>
 <span class="p">};</span>
 </code></pre></div>
 <p>This will compile, but the design is less than ideal. We know for a fact that a <code>Node</code> must have
-exactly two subtrees. But this is not reflected in the type system. In this encoding, the fields 
+exactly two subtrees. But this is not reflected in the type system. In this encoding, the fields
 "lesser" and "greater" are marked optional and you will have to check at runtime that they are indeed set.</p>
 <p>But this violates the principles of reflection. Reflection is all about validating as much of our assumptions
-upfront as we possibly can. For a great theoretical discussion of this topic, check out 
+upfront as we possibly can. For a great theoretical discussion of this topic, check out
 <a href="https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/">Parse, don't validate</a>
 by Alexis King.</p>
 <p>So how would we encode our assumptions that the fields "lesser" and "greater" must exist in the type system and
@@ -2366,7 +2434,7 @@ still have code that compiles? By using <code>rfl::Box</code> instead of <code>s
 <span class="p">};</span>
 </code></pre></div>
 <p><code>rfl::Box</code> is a thin wrapper around <code>std::unique_ptr</code>, but it is guaranteed to <strong>never be null</strong> (unless you do something egregious such as trying to access it after calling <code>std::move</code>). It is a <code>std::unique_ptr</code> without the <code>nullptr</code>.</p>
-<p>If you want to learn more about the evils of null references, check out the 
+<p>If you want to learn more about the evils of null references, check out the
 <a href="https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare/">Null References: The Billion Dollar Mistake</a>
 by Tony Hoare, who invented the concept in the first place.</p>
 <p>You <strong>must</strong> initialize <code>rfl::Box</code> the moment you create it and it cannot be dereferenced until it is destroyed.</p>
@@ -2391,9 +2459,9 @@ by Tony Hoare, who invented the concept in the first place.</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">auto</span><span class="w"> </span><span class="n">ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;Hello World!&quot;</span><span class="p">);</span>
 <span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">Box</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">box</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">make_box</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">ptr</span><span class="p">));</span>
 </code></pre></div>
-<p>Note that <code>box</code> is wrapped in a <code>Result</code>. That is, because we cannot guarantee at compile time 
+<p>Note that <code>box</code> is wrapped in a <code>Result</code>. That is, because we cannot guarantee at compile time
 that <code>ptr</code> is not <code>nullptr</code>, therefore we need to account for that.</p>
-<p>If you want to use reference-counted pointers, instead of unique pointers, you can use <code>rfl::Ref</code>. 
+<p>If you want to use reference-counted pointers, instead of unique pointers, you can use <code>rfl::Ref</code>.
 <code>rfl::Ref</code> is the same concept as <code>rfl::Box</code>, but using <code>std::shared_ptr</code> under-the-hood.</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">DecisionTree</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">Leaf</span><span class="w"> </span><span class="p">{</span>
@@ -2428,6 +2496,48 @@ that <code>ptr</code> is not <code>nullptr</code>, therefore we need to account 
 </code></pre></div>
 <p>The resulting JSON string is identical:</p>
 <div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;leafOrNode&quot;</span><span class="p">:{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Node&quot;</span><span class="p">,</span><span class="nt">&quot;criticalValue&quot;</span><span class="p">:</span><span class="mf">10.0</span><span class="p">,</span><span class="nt">&quot;lesser&quot;</span><span class="p">:{</span><span class="nt">&quot;leafOrNode&quot;</span><span class="p">:{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Leaf&quot;</span><span class="p">,</span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="mf">3.0</span><span class="p">}},</span><span class="nt">&quot;greater&quot;</span><span class="p">:{</span><span class="nt">&quot;leafOrNode&quot;</span><span class="p">:{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;Leaf&quot;</span><span class="p">,</span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="mf">5.0</span><span class="p">}}}}</span>
+</code></pre></div>
+<h2 id="deep-copying">Deep Copying<a class="headerlink" href="#deep-copying" title="Permanent link">&para;</a></h2>
+<p>The default <code>rfl::Box</code> implementation behaves the same as <code>std::unique_ptr</code> in relation to copying, disabling the copy assignment operator and the copy constructor.</p>
+<p>An opt-in box implementation, <code>rfl::CopyableBox</code>, bypasses the <code>std::unique_ptr</code> operators and allows copying by calling
+the contained type's copy constructor and copy assignment operator directly, but otherwise
+behaves the same as <code>rfl::Box</code>.</p>
+<p>When using <code>rfl::CopyableBox</code>, <code>rfl::make_box&lt;...&gt;(...)</code> must be replaced with <code>rfl::make_copyable_box&lt;...&gt;(...)</code>.</p>
+<p>This allows for deep-copying of arbitrary-complexity types that contain nested recursive elements:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">DecisionTree</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">Leaf</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="n">Tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Literal</span><span class="o">&lt;</span><span class="s">&quot;Leaf&quot;</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">        </span><span class="kt">double</span><span class="w"> </span><span class="n">prediction</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">Node</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">using</span><span class="w"> </span><span class="n">Tag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Literal</span><span class="o">&lt;</span><span class="s">&quot;Node&quot;</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">        </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;criticalValue&quot;</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">critical_value</span><span class="p">;</span>
+<span class="w">        </span><span class="n">rfl</span><span class="o">::</span><span class="n">CopyableBox</span><span class="o">&lt;</span><span class="n">DecisionTree</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lesser</span><span class="p">;</span>
+<span class="w">        </span><span class="n">rfl</span><span class="o">::</span><span class="n">CopyableBox</span><span class="o">&lt;</span><span class="n">DecisionTree</span><span class="o">&gt;</span><span class="w"> </span><span class="n">greater</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">LeafOrNode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">TaggedUnion</span><span class="o">&lt;</span><span class="s">&quot;type&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Leaf</span><span class="p">,</span><span class="w"> </span><span class="n">Node</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="s">&quot;leafOrNode&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">LeafOrNode</span><span class="o">&gt;</span><span class="w"> </span><span class="n">leaf_or_node</span><span class="p">;</span>
+<span class="p">};</span>
+
+
+<span class="k">auto</span><span class="w"> </span><span class="n">leaf1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DecisionTree</span><span class="o">::</span><span class="n">Leaf</span><span class="p">{.</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3.0</span><span class="p">};</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">leaf2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DecisionTree</span><span class="o">::</span><span class="n">Leaf</span><span class="p">{.</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">5.0</span><span class="p">};</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">DecisionTree</span><span class="o">::</span><span class="n">Node</span><span class="p">{.</span><span class="n">critical_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span>
+<span class="w">                       </span><span class="p">.</span><span class="n">lesser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">make_copyable_box</span><span class="o">&lt;</span><span class="n">DecisionTree</span><span class="o">&gt;</span><span class="p">(</span><span class="n">leaf1</span><span class="p">),</span>
+<span class="w">                       </span><span class="p">.</span><span class="n">greater</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">make_copyable_box</span><span class="o">&lt;</span><span class="n">DecisionTree</span><span class="o">&gt;</span><span class="p">(</span><span class="n">leaf2</span><span class="p">)};</span>
+
+<span class="k">const</span><span class="w"> </span><span class="n">DecisionTree</span><span class="w"> </span><span class="n">tree</span><span class="p">{.</span><span class="n">leaf_or_node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">node</span><span class="p">)};</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">different_leaf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DecisionTree</span><span class="o">::</span><span class="n">Leaf</span><span class="p">{.</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">};</span>
+<span class="n">DecisionTree</span><span class="w"> </span><span class="n">copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tree</span><span class="p">;</span>
+
+<span class="n">rfl</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="n">DecisionTree</span><span class="o">::</span><span class="n">Node</span><span class="o">&gt;</span><span class="p">(</span><span class="n">copy</span><span class="p">.</span><span class="n">leaf_or_node</span><span class="p">.</span><span class="n">get</span><span class="p">().</span><span class="n">variant</span><span class="p">()).</span><span class="n">lesser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">make_copyable_box</span><span class="o">&lt;</span><span class="n">DecisionTree</span><span class="o">&gt;</span><span class="p">(</span><span class="n">different_leaf</span><span class="p">);</span>
 </code></pre></div>
 
 
