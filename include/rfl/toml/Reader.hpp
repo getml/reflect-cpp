@@ -9,14 +9,10 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <toml++/toml.hpp>
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
-#include <toml.hpp>
-#pragma GCC diagnostic pop
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
@@ -24,9 +20,9 @@
 namespace rfl::toml {
 
 struct Reader {
-  using InputArrayType = const ::toml::array*;
-  using InputObjectType = const ::toml::table*;
-  using InputVarType = const ::toml::value*;
+  using InputArrayType = ::toml::array*;
+  using InputObjectType = ::toml::table*;
+  using InputVarType = ::toml::node*;
 
   template <class T>
   static constexpr bool has_custom_constructor =
@@ -37,64 +33,66 @@ struct Reader {
     if (_idx >= _arr->size()) {
       return error("Index " + std::to_string(_idx) + " of of bounds.");
     }
-    return &(*_arr)[_idx];
+    return _arr->get(_idx);
   }
 
   rfl::Result<InputVarType> get_field_from_object(
-      const std::string& _name, const InputObjectType _obj) const noexcept {
-    const auto it = _obj->find(_name);
-    if (it == _obj->end()) {
+      const std::string& _name, const InputObjectType& _obj) const noexcept {
+    auto var = (*_obj)[_name];
+    if (!var) {
       return error("Object contains no field named '" + _name + "'.");
     }
-    return &it->second;
+    return var.node();
   }
 
-  bool is_empty(const InputVarType _var) const noexcept {
-    return _var->is_empty();
+  bool is_empty(const InputVarType& _var) const noexcept {
+    return !_var && true;
   }
 
   template <class T>
-  rfl::Result<T> to_basic_type(const InputVarType _var) const noexcept {
+  rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      if (!_var->is_string()) {
-        return error("Could not cast to std::string!");
+      const auto ptr = _var->as<std::string>();
+      if (!ptr) {
+        return error("Could not cast the node to std::string!");
       }
-      return _var->as_string();
-
+      return **ptr;
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
-      if (!_var->is_boolean()) {
-        return error("Could not cast to bool!");
+      const auto ptr = _var->as<bool>();
+      if (!ptr) {
+        return error("Could not cast the node to bool!");
       }
-      return _var->as_boolean();
-
+      return **ptr;
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-      if (!_var->is_floating()) {
-        return error("Could not cast to double!");
+      const auto ptr = _var->as<double>();
+      if (!ptr) {
+        return error("Could not cast the node to double!");
       }
-      return static_cast<std::remove_cvref_t<T>>(_var->as_floating());
-
+      return static_cast<std::remove_cvref_t<T>>(**ptr);
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      if (!_var->is_integer()) {
-        return error("Could not cast to int64_t!");
+      const auto ptr = _var->as<int64_t>();
+      if (!ptr) {
+        return error("Could not cast the node to int64_t!");
       }
-      return static_cast<std::remove_cvref_t<T>>(_var->as_integer());
-
+      return static_cast<std::remove_cvref_t<T>>(**ptr);
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
   }
 
-  rfl::Result<InputArrayType> to_array(const InputVarType _var) const noexcept {
-    if (!_var->is_array()) {
+  rfl::Result<InputArrayType> to_array(
+      const InputVarType& _var) const noexcept {
+    const auto ptr = _var->as_array();
+    if (!ptr) {
       return error("Could not cast to an array!");
     }
-    return &_var->as_array();
+    return ptr;
   }
 
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
-                                  const InputArrayType _arr) const noexcept {
-    for (const auto& node : *_arr) {
+                                  const InputArrayType& _arr) const noexcept {
+    for (auto& node : *_arr) {
       const auto err = _array_reader.read(&node);
       if (err) {
         return err;
@@ -106,18 +104,19 @@ struct Reader {
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    InputObjectType _obj) const noexcept {
-    for (const auto& [k, v] : *_obj) {
+    for (auto& [k, v] : *_obj) {
       _object_reader.read(std::string_view(k), &v);
     }
     return std::nullopt;
   }
 
   rfl::Result<InputObjectType> to_object(
-      const InputVarType _var) const noexcept {
-    if (!_var->is_table()) {
+      const InputVarType& _var) const noexcept {
+    const auto ptr = _var->as_table();
+    if (!ptr) {
       return error("Could not cast to a table!");
     }
-    return &_var->as_table();
+    return ptr;
   }
 
   template <class T>
