@@ -194,10 +194,10 @@ if (REFLECTCPP_TOML)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_toml.cpp
     )
-    if (NOT TARGET toml11)
-      find_package(toml11 CONFIG REQUIRED)
+    if (NOT TARGET tomlplusplus)
+      find_package(tomlplusplus)
     endif()
-    target_link_libraries(reflectcpp PUBLIC toml11::toml11)
+    target_link_libraries(reflectcpp PUBLIC tomlplusplus::tomlplusplus)
 endif()
 
 if (REFLECTCPP_UBJSON)
