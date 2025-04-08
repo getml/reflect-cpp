@@ -8,7 +8,7 @@
 
 #include "write_and_read.hpp"
 
-namespace test_json_schema {
+namespace test_json_schema4 {
 
 enum class Color { red, green, blue };
 
@@ -70,4 +70,4 @@ TEST(json, test_json_schema4) {
 
   EXPECT_EQ(json_schema, expected);
 }
-}  // namespace test_json_schema
+}  // namespace test_json_schema4
