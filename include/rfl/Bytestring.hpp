@@ -5,8 +5,13 @@
 #include <vector>
 
 namespace rfl {
-
-using Bytestring = std::vector<std::byte>;
+// custom type to avoid serializing this as a vector of enums
+// in other means this is the same as
+// using Bytestring = std::vector<std::byte>;
+class Bytestring : public std::vector<std::byte> {
+public:
+  using std::vector<std::byte>::vector;
+};
 
 }  // namespace rfl
 

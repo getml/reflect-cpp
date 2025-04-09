@@ -97,7 +97,7 @@ struct Writer {
       fbb_->String(_name.data(), _var);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
-      fbb_->Blob(_name.data(), _var.c_str(), _var.size());
+      fbb_->Blob(_name.data(), _var.data(), _var.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       fbb_->Bool(_name.data(), _var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
@@ -116,7 +116,7 @@ struct Writer {
       fbb_->String(_var);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
-      fbb_->Blob(_var.c_str(), _var.size());
+      fbb_->Blob(_var.data(), _var.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       fbb_->Bool(_var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {

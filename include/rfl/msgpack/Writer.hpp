@@ -99,7 +99,7 @@ class Writer {
       msgpack_pack_str_body(pk_, _var.c_str(), _var.size());
     } else if constexpr (std::is_same<Type, rfl::Bytestring>()) {
       msgpack_pack_bin(pk_, _var.size());
-      msgpack_pack_bin_body(pk_, _var.c_str(), _var.size());
+      msgpack_pack_bin_body(pk_, _var.data(), _var.size());
     } else if constexpr (std::is_same<Type, bool>()) {
       if (_var) {
         msgpack_pack_true(pk_);
