@@ -188,7 +188,7 @@ class Writer {
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
       auto var = _var;
-      avro_value_set_bytes(_val, var.data(), var.size() + 1);
+      avro_value_set_bytes(_val, var.data(), var.size());
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       avro_value_set_boolean(_val, _var);

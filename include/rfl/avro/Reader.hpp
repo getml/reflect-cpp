@@ -76,7 +76,7 @@ struct Reader {
         return error("Could not cast to bytestring.");
       }
       const auto data = internal::ptr_cast<const std::byte*>(ptr);
-      return rfl::Bytestring(data, data + size - 1);
+      return rfl::Bytestring(data, data + size);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != AVRO_BOOLEAN) {
         return rfl::error("Could not cast to boolean.");
