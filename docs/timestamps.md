@@ -1,4 +1,6 @@
-# `rfl::Timestamp`
+# `rfl::Timestamp` and `std::chrono::duration`
+
+## `rfl::Timestamp`
 
 `rfl::Timestamp` is a simple wrapper around `std::tm` (https://en.cppreference.com/w/cpp/chrono/c/tm).
 
@@ -43,3 +45,40 @@ return an `rfl::Result<Timestamp<...>>` or `rfl::Error`.
 const rfl::Result<rfl::Timestamp<"%Y-%m-%d">> result = rfl::Timestamp<"%Y-%m-%d">::from_string("1970-01-01");
 const rfl::Result<rfl::Timestamp<"%Y-%m-%d">> error = rfl::Timestamp<"%Y-%m-%d">::from_string("not a proper time format");
 ```
+
+## `std::chrono::duration`
+
+`std::chrono::duration` types are serialized as an object with the count and unit as fields:
+
+```cpp
+struct MyStruct {
+  std::chrono::seconds duration;
+};
+rfl::json::write(MyStruct{.duration = std::chrono::seconds(10)});
+```
+
+This results in the following JSON:
+
+```json
+{"duration":{"count":10,"unit":"seconds"}}
+```
+
+Units are automatically transformed upon reading. For instance,
+both of the JSON snippets below can be read into `MyStruct`, and both
+yield equivalent results:
+
+```json
+{"duration":{"count":600,"unit":"seconds"}}
+```
+
+```json
+{"duration":{"count":10,"unit":"minutes"}}
+```
+
+The second JSON snippet, encoded in minutes, will be transformed to
+seconds.
+
+The following units are supported: `std::chrono::nanoseconds`, `std::chrono::microseconds`,
+`std::chrono::milliseconds`, `std::chrono::seconds`, 
+`std::chrono::minutes`, `std::chrono::hours`, `std::chrono::days`,
+`std::chrono::weeks`, `std::chrono::months`, and `std::chrono::years`.
