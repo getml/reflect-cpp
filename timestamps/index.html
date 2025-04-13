@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#rfltimestamp" class="md-skip">
+        <a href="#rfltimestamp-and-stdchronoduration" class="md-skip">
           Skip to content
         </a>
       
@@ -1184,6 +1184,23 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    
+  
+    rfl::Timestamp
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -1199,6 +1216,49 @@
   
 
       </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#rfltimestamp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rfl::Timestamp
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stdchronoduration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        std::chrono::duration
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2196,6 +2256,36 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#rfltimestamp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rfl::Timestamp
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stdchronoduration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        std::chrono::duration
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2277,7 +2367,8 @@
   
 
 
-<h1 id="rfltimestamp"><code>rfl::Timestamp</code><a class="headerlink" href="#rfltimestamp" title="Permanent link">&para;</a></h1>
+<h1 id="rfltimestamp-and-stdchronoduration"><code>rfl::Timestamp</code> and <code>std::chrono::duration</code><a class="headerlink" href="#rfltimestamp-and-stdchronoduration" title="Permanent link">&para;</a></h1>
+<h2 id="rfltimestamp"><code>rfl::Timestamp</code><a class="headerlink" href="#rfltimestamp" title="Permanent link">&para;</a></h2>
 <p><code>rfl::Timestamp</code> is a simple wrapper around <code>std::tm</code> (https://en.cppreference.com/w/cpp/chrono/c/tm).</p>
 <p>As its template parameter it includes the time stamp format for serialization and deserialization.</p>
 <p>Here is a reference for for how you can specify the format:</p>
@@ -2285,7 +2376,7 @@
 <p>In fact, <code>rfl::Timestamp</code> calls <code>strftime</code> and <code>strptime</code> under-the-hood.</p>
 <p>They can be used in your struct like this:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="s">&quot;birthday&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Timestamp</span><span class="o">&lt;</span><span class="s">&quot;%Y-%m-%d&quot;</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">birthday</span><span class="p">;</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Timestamp</span><span class="o">&lt;</span><span class="s">&quot;%Y-%m-%d&quot;</span><span class="o">&gt;</span><span class="w"> </span><span class="n">birthday</span><span class="p">;</span>
 <span class="p">};</span>
 </code></pre></div>
 <p>An <code>rfl::Timestamp</code> can be constructed from either a string or a <code>std::tm</code> struct.</p>
@@ -2294,8 +2385,8 @@
 </code></pre></div>
 <p>You can access the underlying <code>std::tm</code> struct using the <code>.tm()</code> method and you can generate 
 the string representation using the <code>.str()</code> method.</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">tm</span><span class="w"> </span><span class="n">birthday</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">person1</span><span class="p">.</span><span class="n">birthday</span><span class="p">().</span><span class="n">tm</span><span class="p">();</span>
-<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">person1</span><span class="p">.</span><span class="n">birthday</span><span class="p">().</span><span class="n">str</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">tm</span><span class="w"> </span><span class="n">birthday</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">person1</span><span class="p">.</span><span class="n">birthday</span><span class="p">.</span><span class="n">tm</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">person1</span><span class="p">.</span><span class="n">birthday</span><span class="p">.</span><span class="n">str</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
 </code></pre></div>
 <p>Note that constructing <code>rfl::Timestamp</code> from a string is convenient, but it might result in
 an exception.</p>
@@ -2304,6 +2395,29 @@ return an <code>rfl::Result&lt;Timestamp&lt;...&gt;&gt;</code> or <code>rfl::Err
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">Timestamp</span><span class="o">&lt;</span><span class="s">&quot;%Y-%m-%d&quot;</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Timestamp</span><span class="o">&lt;</span><span class="s">&quot;%Y-%m-%d&quot;</span><span class="o">&gt;::</span><span class="n">from_string</span><span class="p">(</span><span class="s">&quot;1970-01-01&quot;</span><span class="p">);</span>
 <span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">Timestamp</span><span class="o">&lt;</span><span class="s">&quot;%Y-%m-%d&quot;</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Timestamp</span><span class="o">&lt;</span><span class="s">&quot;%Y-%m-%d&quot;</span><span class="o">&gt;::</span><span class="n">from_string</span><span class="p">(</span><span class="s">&quot;not a proper time format&quot;</span><span class="p">);</span>
 </code></pre></div>
+<h2 id="stdchronoduration"><code>std::chrono::duration</code><a class="headerlink" href="#stdchronoduration" title="Permanent link">&para;</a></h2>
+<p><code>std::chrono::duration</code> types are serialized as an object with the count and unit as fields:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">MyStruct</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">seconds</span><span class="w"> </span><span class="n">duration</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">MyStruct</span><span class="p">{.</span><span class="n">duration</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">seconds</span><span class="p">(</span><span class="mi">10</span><span class="p">)});</span>
+</code></pre></div>
+<p>This results in the following JSON:</p>
+<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;duration&quot;</span><span class="p">:{</span><span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="s2">&quot;seconds&quot;</span><span class="p">}}</span>
+</code></pre></div>
+<p>Units are automatically transformed upon reading. For instance,
+both of the JSON snippets below can be read into <code>MyStruct</code>, and both
+yield equivalent results:</p>
+<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;duration&quot;</span><span class="p">:{</span><span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="mi">600</span><span class="p">,</span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="s2">&quot;seconds&quot;</span><span class="p">}}</span>
+</code></pre></div>
+<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;duration&quot;</span><span class="p">:{</span><span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="s2">&quot;minutes&quot;</span><span class="p">}}</span>
+</code></pre></div>
+<p>The second JSON snippet, encoded in minutes, will be transformed to
+seconds.</p>
+<p>The following units are supported: <code>std::chrono::nanoseconds</code>, <code>std::chrono::microseconds</code>,
+<code>std::chrono::milliseconds</code>, <code>std::chrono::seconds</code>, 
+<code>std::chrono::minutes</code>, <code>std::chrono::hours</code>, <code>std::chrono::days</code>,
+<code>std::chrono::weeks</code>, <code>std::chrono::months</code>, and <code>std::chrono::years</code>.</p>
 
 
 
