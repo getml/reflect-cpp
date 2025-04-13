@@ -16,7 +16,7 @@ They can be used in your struct like this:
 
 ```cpp
 struct Person {
-  rfl::Field<"birthday", rfl::Timestamp<"%Y-%m-%d">> birthday;
+  rfl::Timestamp<"%Y-%m-%d"> birthday;
 };
 ```
 
@@ -31,8 +31,8 @@ You can access the underlying `std::tm` struct using the `.tm()` method and you 
 the string representation using the `.str()` method.
 
 ```cpp
-const std::tm birthday = person1.birthday().tm();
-std::cout << person1.birthday().str() << std::endl;
+const std::tm birthday = person1.birthday.tm();
+std::cout << person1.birthday.str() << std::endl;
 ```
 
 Note that constructing `rfl::Timestamp` from a string is convenient, but it might result in
