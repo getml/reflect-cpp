@@ -488,6 +488,7 @@ reflect-cpp supports the following containers from the C++ standard library:
 
 - `std::array`
 - `std::deque`
+- `std::chrono::duration`
 - `std::filesystem::path`
 - `std::forward_list`
 - `std::map`

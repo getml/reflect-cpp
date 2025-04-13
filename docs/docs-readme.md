@@ -20,7 +20,7 @@
 
 [rfl::Box and rfl::Ref](rfl_ref.md) - For defining recursive structures.
 
-[rfl::Timestamp](timestamps.md) - For serializing and deserializing timestamps.
+[rfl::Timestamp and std::chrono::duration](timestamps.md) - For serializing and deserializing timestamps and durations.
 
 [rfl::Skip](rfl_skip.md) - For skipping fields during serialization and/or deserialization.
 
