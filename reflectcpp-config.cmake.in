@@ -44,7 +44,7 @@ if (REFLECTCPP_MSGPACK)
 endif()
 
 if (REFLECTCPP_TOML)
-  find_dependency(toml11)
+  find_dependency(tomlplusplus)
 endif()
 
 if (REFLECTCPP_XML)
