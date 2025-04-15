@@ -5,7 +5,6 @@
 #include <stdexcept>
 #include <type_traits>
 
-#include "../Bytestring.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../from_named_tuple.hpp"
@@ -151,9 +150,6 @@ struct Parser {
     using Type = schema::Type;
     if constexpr (std::is_same<U, bool>()) {
       return Type{Type::Boolean{}};
-
-    } else if constexpr (std::is_same<U, rfl::Bytestring>()) {
-      return Type{Type::Bytestring{}};
 
     } else if constexpr (std::is_same<U, std::int32_t>()) {
       return Type{Type::Int32{}};
