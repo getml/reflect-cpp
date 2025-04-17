@@ -4,70 +4,6 @@
   "builtin-baseline": "cd124b84feb0c02a24a2d90981e8358fdee0e077",
   "dependencies": [
     {
-      "name": "avro-c",
-      "version>=": "1.11.3"
-    },
-    {
-      "name": "capnproto",
-      "version>=": "1.0.2#1"
-    },
-    {
-      "name": "ctre",
-      "version>=": "3.8"
-    },
-    {
-      "name": "flatbuffers",
-      "version>=": "23.5.26#1"
-    },
-    {
-      "name": "libbson",
-      "version>=": "1.25.1"
-    },
-    {
-      "name": "jsoncons",
-      "version>=": "0.176.0"
-    },
-    {
-      "name": "msgpack-c",
-      "version>=": "6.0.0"
-    },
-    {
-      "name": "nlohmann-json",
-      "version>=": "3.11.3"
-    },
-    {
-      "name": "pugixml",
-      "version>=": "1.14"
-    },
-    {
-      "name": "rapidjson",
-      "version>=": "2023-07-17"
-    },
-    {
-      "name": "simdjson",
-      "version>=": "3.9.3"
-    },
-    {
-      "name": "tomlplusplus",
-      "version>=": "3.4.0#1"
-    },
-    {
-      "name": "yaml-cpp",
-      "version>=": "0.8.0#1"
-    },
-    {
-      "name": "yyjson",
-      "version>=": "0.10.0"
-    },
-    {
-      "name": "benchmark",
-      "version>=": "1.8.3"
-    },
-    {
-      "name": "gtest",
-      "version>=": "1.14.0"
-    },
-    {
       "name": "vcpkg-cmake",
       "version>=": "2023-05-04"
     },
@@ -79,5 +15,145 @@
       "name": "vcpkg-pkgconfig-get-modules",
       "version>=": "2024-04-03"
     }
-  ]
+  ],
+  "features": {
+    "avro": {
+      "description": "Enable Avro support",
+      "dependencies": [
+        {
+          "name": "avro-c",
+          "version>=": "1.11.3"
+        }
+      ]
+    },
+    "benchmarks": {
+      "description": "Compile the benchmarks",
+      "dependencies": [
+        {
+          "name": "benchmark",
+          "version>=": "1.8.3"
+        },
+        {
+          "name": "nlohmann-json",
+          "version>=": "3.11.3"
+        },
+        {
+          "name": "rapidjson",
+          "version>=": "2023-07-17"
+        },
+        {
+          "name": "simdjson",
+          "version>=": "3.9.3"
+        }
+      ]
+    },
+    "bson": {
+      "description": "Enable BSON support",
+      "dependencies": [
+        {
+          "name": "libbson",
+          "version>=": "1.25.1"
+        }
+      ]
+    },
+    "capnproto": {
+      "description": "Enable Cap'n Proto support",
+      "dependencies": [
+        {
+          "name": "capnproto",
+          "version>=": "1.0.2#1"
+        }
+      ]
+    },
+    "cbor": {
+      "description": "Enable CBOR support",
+      "dependencies": [
+        {
+          "name": "jsoncons",
+          "version>=": "0.176.0"
+        }
+      ]
+    },
+    "ctre": {
+      "description": "Install CTRE using vcpkg instead of using the bundled version",
+      "dependencies": [
+        {
+          "name": "ctre",
+          "version>=": "3.8"
+        }
+      ]
+    },
+    "flexbuffers": {
+      "description": "Enable flexbuffers support",
+      "dependencies": [
+        {
+          "name": "flatbuffers",
+          "version>=": "23.5.26#1"
+        }
+      ]
+    },
+    "json": {
+      "description": "Enable JSON support",
+      "dependencies": [
+        {
+          "name": "yyjson",
+          "version>=": "0.10.0"
+        }
+      ]
+    },
+    "msgpack": {
+      "description": "Enable msgpack support",
+      "dependencies": [
+        {
+          "name": "msgpack-c",
+          "version>=": "6.0.0"
+        }
+      ]
+    },
+    "tests": {
+      "description": "Compile the tests",
+      "dependencies": [
+        {
+          "name": "gtest",
+          "version>=": "1.14.0"
+        }
+      ]
+    },
+    "toml": {
+      "description": "Enable TOML support",
+      "dependencies": [
+        {
+          "name": "tomlplusplus",
+          "version>=": "3.4.0#1"
+        }
+      ]
+    },
+    "ubjson": {
+      "description": "Enable UBJSON support",
+      "dependencies": [
+        {
+          "name": "jsoncons",
+          "version>=": "0.176.0"
+        }
+      ]
+    },
+    "xml": {
+      "description": "Enable XML support",
+      "dependencies": [
+        {
+          "name": "pugixml",
+          "version>=": "1.14"
+        }
+      ]
+    },
+    "yaml": {
+      "description": "Enable YAML support",
+      "dependencies": [
+        {
+          "name": "yaml-cpp",
+          "version>=": "0.8.0#1"
+        }
+      ]
+    }
+  }
 }
