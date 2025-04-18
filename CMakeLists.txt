@@ -61,6 +61,62 @@ endif()
 option(REFLECTCPP_USE_VCPKG "Use VCPKG to download and build dependencies" ${REFLECTCPP_USE_VCPKG_DEFAULT})
 
 if (REFLECTCPP_USE_VCPKG)
+    if (REFLECTCPP_AVRO)
+        list(APPEND VCPKG_MANIFEST_FEATURES "avro")
+    endif()
+    
+    if (REFLECTCPP_BSON)
+        list(APPEND VCPKG_MANIFEST_FEATURES "bson")
+    endif()
+    
+    if (REFLECTCPP_BUILD_BENCHMARKS)
+        list(APPEND VCPKG_MANIFEST_FEATURES "benchmarks")
+    endif()
+
+    if (REFLECTCPP_BUILD_TESTS)
+        list(APPEND VCPKG_MANIFEST_FEATURES "tests")
+    endif()
+    
+    if (REFLECTCPP_CAPNPROTO)
+        list(APPEND VCPKG_MANIFEST_FEATURES "capnproto")
+    endif()
+    
+    if (REFLECTCPP_CBOR)
+        list(APPEND VCPKG_MANIFEST_FEATURES "cbor")
+    endif()
+    
+    if (NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
+        list(APPEND VCPKG_MANIFEST_FEATURES "ctre")
+    endif()
+    
+    if (REFLECTCPP_FLEXBUFFERS)
+        list(APPEND VCPKG_MANIFEST_FEATURES "flexbuffers")
+    endif()
+    
+    if (REFLECTCPP_JSON AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
+        list(APPEND VCPKG_MANIFEST_FEATURES "json")
+    endif()
+    
+    if (REFLECTCPP_MSGPACK)
+        list(APPEND VCPKG_MANIFEST_FEATURES "msgpack")
+    endif()
+     
+    if (REFLECTCPP_TOML)
+        list(APPEND VCPKG_MANIFEST_FEATURES "toml")
+    endif()
+    
+    if (REFLECTCPP_UBJSON)
+        list(APPEND VCPKG_MANIFEST_FEATURES "ubjson")
+    endif()
+
+    if (REFLECTCPP_XML)
+        list(APPEND VCPKG_MANIFEST_FEATURES "xml")
+    endif()
+    
+    if (REFLECTCPP_YAML)
+        list(APPEND VCPKG_MANIFEST_FEATURES "yaml")
+    endif()
+    
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
 endif ()
 
