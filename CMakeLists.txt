@@ -343,3 +343,35 @@ if (PROJECT_IS_TOP_LEVEL)
         NAMESPACE reflectcpp::
     )
 endif ()
+
+
+# CPack configuration
+
+# Set general package information
+set(CPACK_PACKAGE_NAME "reflectcpp")
+set(CPACK_PACKAGE_VENDOR "Reflect C++ Team")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Reflect C++ library")
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_PACKAGE_CONTACT "maintainer@reflectcpp.org")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+
+# Configure generators
+set(CPACK_GENERATOR "TGZ;RPM;DEB")
+
+# DEB specific configuration
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+# Fix maintainer information - ensure both are set consistently
+set(CPACK_PACKAGE_CONTACT "maintainer@reflectcpp.org")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "maintainer@reflectcpp.org")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
+
+# RPM specific configuration
+set(CPACK_RPM_PACKAGE_REQUIRES "")
+
+include(CPack)
+
