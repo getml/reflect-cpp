@@ -1,6 +1,7 @@
 #ifndef RFL_JSON_WRITE_HPP_
 #define RFL_JSON_WRITE_HPP_
 
+#include <stdexcept>
 #if __has_include(<yyjson.h>)
 #include <yyjson.h>
 #else
@@ -28,7 +29,13 @@ std::string write(const auto& _obj, const yyjson_write_flag _flag = 0) {
   using ParentType = parsing::Parent<Writer>;
   auto w = Writer(yyjson_mut_doc_new(NULL));
   Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
-  const char* json_c_str = yyjson_mut_write(w.doc_, _flag, NULL);
+  yyjson_write_err err;
+  const char* json_c_str =
+      yyjson_mut_write_opts(w.doc_, _flag, NULL, NULL, &err);
+  if (!json_c_str) {
+    throw std::runtime_error("An error occured while writing to JSON: " +
+                             std::string(err.msg));
+  }
   const auto json_str = std::string(json_c_str);
   free((void*)json_c_str);
   yyjson_mut_doc_free(w.doc_);
@@ -43,7 +50,13 @@ std::ostream& write(const auto& _obj, std::ostream& _stream,
   using ParentType = parsing::Parent<Writer>;
   auto w = Writer(yyjson_mut_doc_new(NULL));
   Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
-  const char* json_c_str = yyjson_mut_write(w.doc_, _flag, NULL);
+  yyjson_write_err err;
+  const char* json_c_str =
+      yyjson_mut_write_opts(w.doc_, _flag, NULL, NULL, &err);
+  if (!json_c_str) {
+    throw std::runtime_error("An error occured while writing to JSON: " +
+                             std::string(err.msg));
+  }
   _stream << json_c_str;
   free((void*)json_c_str);
   yyjson_mut_doc_free(w.doc_);
