@@ -17,8 +17,9 @@ class is_map_like_not_multimap : public std::false_type {};
 template <class K, class V>
 class is_map_like_not_multimap<std::map<K, V>> : public std::true_type {};
 
-template <class K, class V>
-class is_map_like_not_multimap<std::unordered_map<K, V>>
+template <class K, class V, class Hash, class KeyEqual, class Allocator>
+class is_map_like_not_multimap<
+    std::unordered_map<K, V, Hash, KeyEqual, Allocator>>
     : public std::true_type {};
 
 }  // namespace parsing

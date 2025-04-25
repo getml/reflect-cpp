@@ -22,76 +22,83 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::deque<T>>
+  requires AreReaderAndWriter<R, W, std::deque<T>>
 struct Parser<R, W, std::deque<T>, ProcessorsType>
-    : public VectorParser<R, W, std::deque<T>, ProcessorsType> {
-};
+    : public VectorParser<R, W, std::deque<T>, ProcessorsType> {};
 
 template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::forward_list<T>>
+  requires AreReaderAndWriter<R, W, std::forward_list<T>>
 struct Parser<R, W, std::forward_list<T>, ProcessorsType>
-    : public VectorParser<R, W, std::forward_list<T>, ProcessorsType> {
-};
+    : public VectorParser<R, W, std::forward_list<T>, ProcessorsType> {};
 
 template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::list<T>>
+  requires AreReaderAndWriter<R, W, std::list<T>>
 struct Parser<R, W, std::list<T>, ProcessorsType>
-    : public VectorParser<R, W, std::list<T>, ProcessorsType> {
-};
+    : public VectorParser<R, W, std::list<T>, ProcessorsType> {};
 
 template <class R, class W, class K, class V, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::map<K, V>>
+  requires AreReaderAndWriter<R, W, std::map<K, V>>
 struct Parser<R, W, std::map<K, V>, ProcessorsType>
-    : public VectorParser<R, W, std::map<K, V>, ProcessorsType> {
-};
+    : public VectorParser<R, W, std::map<K, V>, ProcessorsType> {};
 
 template <class R, class W, class K, class V, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::multimap<K, V>>
+  requires AreReaderAndWriter<R, W, std::multimap<K, V>>
 struct Parser<R, W, std::multimap<K, V>, ProcessorsType>
-    : public VectorParser<R, W, std::multimap<K, V>, ProcessorsType> {
-};
+    : public VectorParser<R, W, std::multimap<K, V>, ProcessorsType> {};
 
 template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::multiset<T>>
+  requires AreReaderAndWriter<R, W, std::multiset<T>>
 struct Parser<R, W, std::multiset<T>, ProcessorsType>
-    : public VectorParser<R, W, std::multiset<T>, ProcessorsType> {
-};
+    : public VectorParser<R, W, std::multiset<T>, ProcessorsType> {};
 
 template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::set<T>>
+  requires AreReaderAndWriter<R, W, std::set<T>>
 struct Parser<R, W, std::set<T>, ProcessorsType>
-    : public VectorParser<R, W, std::set<T>, ProcessorsType> {
-};
+    : public VectorParser<R, W, std::set<T>, ProcessorsType> {};
 
-template <class R, class W, class K, class V, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::unordered_map<K, V>>
-struct Parser<R, W, std::unordered_map<K, V>, ProcessorsType>
-    : public VectorParser<R, W, std::unordered_map<K, V>, ProcessorsType> {
-};
+template <class R, class W, class K, class V, class Hash, class KeyEqual,
+          class Allocator, class ProcessorsType>
+  requires AreReaderAndWriter<
+      R, W, std::unordered_map<K, V, Hash, KeyEqual, Allocator>>
+struct Parser<R, W, std::unordered_map<K, V, Hash, KeyEqual, Allocator>,
+              ProcessorsType>
+    : public VectorParser<R, W,
+                          std::unordered_map<K, V, Hash, KeyEqual, Allocator>,
+                          ProcessorsType> {};
 
-template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::unordered_multiset<T>>
-struct Parser<R, W, std::unordered_multiset<T>, ProcessorsType>
-    : public VectorParser<R, W, std::unordered_multiset<T>, ProcessorsType> {
-};
+template <class R, class W, class T, class Hash, class KeyEqual,
+          class Allocator, class ProcessorsType>
+  requires AreReaderAndWriter<
+      R, W, std::unordered_multiset<T, Hash, KeyEqual, Allocator>>
+struct Parser<R, W, std::unordered_multiset<T, Hash, KeyEqual, Allocator>,
+              ProcessorsType>
+    : public VectorParser<R, W,
+                          std::unordered_multiset<T, Hash, KeyEqual, Allocator>,
+                          ProcessorsType> {};
 
-template <class R, class W, class K, class V, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::unordered_multimap<K, V>>
-struct Parser<R, W, std::unordered_multimap<K, V>, ProcessorsType>
+template <class R, class W, class K, class V, class Hash, class KeyEqual,
+          class Allocator, class ProcessorsType>
+  requires AreReaderAndWriter<
+      R, W, std::unordered_multimap<K, V, Hash, KeyEqual, Allocator>>
+struct Parser<R, W, std::unordered_multimap<K, V, Hash, KeyEqual, Allocator>,
+              ProcessorsType>
     : public VectorParser<R, W, std::unordered_multimap<K, V>, ProcessorsType> {
 };
 
-template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::unordered_set<T>>
-struct Parser<R, W, std::unordered_set<T>, ProcessorsType>
-    : public VectorParser<R, W, std::unordered_set<T>, ProcessorsType> {
-};
+template <class R, class W, class T, class Hash, class KeyEqual,
+          class Allocator, class ProcessorsType>
+  requires AreReaderAndWriter<R, W,
+                              std::unordered_set<T, Hash, KeyEqual, Allocator>>
+struct Parser<R, W, std::unordered_set<T, Hash, KeyEqual, Allocator>,
+              ProcessorsType>
+    : public VectorParser<R, W,
+                          std::unordered_set<T, Hash, KeyEqual, Allocator>,
+                          ProcessorsType> {};
 
 template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::vector<T>>
+  requires AreReaderAndWriter<R, W, std::vector<T>>
 struct Parser<R, W, std::vector<T>, ProcessorsType>
-    : public VectorParser<R, W, std::vector<T>, ProcessorsType> {
-};
+    : public VectorParser<R, W, std::vector<T>, ProcessorsType> {};
 
 }  // namespace parsing
 }  // namespace rfl
