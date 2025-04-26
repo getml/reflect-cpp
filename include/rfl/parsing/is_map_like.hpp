@@ -20,11 +20,13 @@ class is_map_like<std::map<K, V>> : public std::true_type {};
 template <class K, class V>
 class is_map_like<std::multimap<K, V>> : public std::true_type {};
 
-template <class K, class V>
-class is_map_like<std::unordered_map<K, V>> : public std::true_type {};
+template <class K, class V, class Hash, class KeyEqual, class Allocator>
+class is_map_like<std::unordered_map<K, V, Hash, KeyEqual, Allocator>>
+    : public std::true_type {};
 
-template <class K, class V>
-class is_map_like<std::unordered_multimap<K, V>> : public std::true_type {};
+template <class K, class V, class Hash, class KeyEqual, class Allocator>
+class is_map_like<std::unordered_multimap<K, V, Hash, KeyEqual, Allocator>>
+    : public std::true_type {};
 
 template <class T>
 constexpr bool is_map_like_v =
