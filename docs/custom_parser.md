@@ -174,3 +174,33 @@ struct PersonImpl {
     }
 };
 ```
+
+## Implement the `Parser` template
+
+You can also directly implement the Parser template for your type.
+This might be beneficial when you have a third-party container type
+that behaves like standard containers.
+
+In our example, we are implementing the template for `gtl::flat_hash_map`,
+but the approach should also work for similar boost containers.
+
+```cpp
+namespace rfl {
+namespace parsing {
+
+template <class K, class V, class Hash, class KeyEqual, class Allocator>
+class is_map_like<gtl::flat_hash_map<K, V, Hash, KeyEqual, Allocator>> : public std::true_type {};
+
+template <class R, class W, class T, class Hash, class KeyEqual, class ProcessorsType>
+  requires AreReaderAndWriter<R, W, gtl::flat_hash_map<std::string, T, Hash>>
+struct Parser<R, W, gtl::flat_hash_map<std::string, T, Hash, KeyEqual>, ProcessorsType>
+    : public MapParser<R, W, gtl::flat_hash_map<std::string, T, Hash, KeyEqual>, ProcessorsType> {};
+
+template <class R, class W, typename K, typename V, class Hash, class KeyEqual, class Allocator, class ProcessorsType>
+  requires AreReaderAndWriter<R, W, gtl::flat_hash_map<K, V, Hash, KeyEqual, Allocator>>
+struct Parser<R, W, gtl::flat_hash_map<K, V, Hash, KeyEqual, Allocator>, ProcessorsType>
+    : public VectorParser<R, W, gtl::flat_hash_map<K, V, Hash, KeyEqual, Allocator>, ProcessorsType> {};
+
+}
+}
+```
