@@ -1867,6 +1867,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#implement-the-parser-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implement the Parser template
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2306,6 +2317,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#implement-the-parser-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implement the Parser template
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2530,6 +2552,31 @@ inside a vector:</p>
 <span class="w">                          </span><span class="p">.</span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">_p</span><span class="p">.</span><span class="n">age</span><span class="p">()};</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">};</span>
+</code></pre></div>
+<h2 id="implement-the-parser-template">Implement the <code>Parser</code> template<a class="headerlink" href="#implement-the-parser-template" title="Permanent link">&para;</a></h2>
+<p>You can also directly implement the Parser template for your type.
+This might be beneficial when you have a third-party container type
+that behaves like standard containers.</p>
+<p>In our example, we are implementing the template for <code>gtl::flat_hash_map</code>,
+but the approach should also work for similar boost containers.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">namespace</span><span class="w"> </span><span class="nn">rfl</span><span class="w"> </span><span class="p">{</span>
+<span class="k">namespace</span><span class="w"> </span><span class="nn">parsing</span><span class="w"> </span><span class="p">{</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">K</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">V</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Hash</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">KeyEqual</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Allocator</span><span class="o">&gt;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">is_map_like</span><span class="o">&lt;</span><span class="n">gtl</span><span class="o">::</span><span class="n">flat_hash_map</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">Hash</span><span class="p">,</span><span class="w"> </span><span class="n">KeyEqual</span><span class="p">,</span><span class="w"> </span><span class="n">Allocator</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">true_type</span><span class="w"> </span><span class="p">{};</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">W</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">T</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Hash</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">KeyEqual</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">ProcessorsType</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">requires</span><span class="w"> </span><span class="n">AreReaderAndWriter</span><span class="o">&lt;</span><span class="n">R</span><span class="p">,</span><span class="w"> </span><span class="n">W</span><span class="p">,</span><span class="w"> </span><span class="n">gtl</span><span class="o">::</span><span class="n">flat_hash_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Hash</span><span class="o">&gt;&gt;</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Parser</span><span class="o">&lt;</span><span class="n">R</span><span class="p">,</span><span class="w"> </span><span class="n">W</span><span class="p">,</span><span class="w"> </span><span class="n">gtl</span><span class="o">::</span><span class="n">flat_hash_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Hash</span><span class="p">,</span><span class="w"> </span><span class="n">KeyEqual</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">ProcessorsType</span><span class="o">&gt;</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">MapParser</span><span class="o">&lt;</span><span class="n">R</span><span class="p">,</span><span class="w"> </span><span class="n">W</span><span class="p">,</span><span class="w"> </span><span class="n">gtl</span><span class="o">::</span><span class="n">flat_hash_map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Hash</span><span class="p">,</span><span class="w"> </span><span class="n">KeyEqual</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">ProcessorsType</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{};</span>
+
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">class</span><span class="w"> </span><span class="nc">R</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">W</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">K</span><span class="p">,</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">V</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Hash</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">KeyEqual</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Allocator</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">ProcessorsType</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">requires</span><span class="w"> </span><span class="n">AreReaderAndWriter</span><span class="o">&lt;</span><span class="n">R</span><span class="p">,</span><span class="w"> </span><span class="n">W</span><span class="p">,</span><span class="w"> </span><span class="n">gtl</span><span class="o">::</span><span class="n">flat_hash_map</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">Hash</span><span class="p">,</span><span class="w"> </span><span class="n">KeyEqual</span><span class="p">,</span><span class="w"> </span><span class="n">Allocator</span><span class="o">&gt;&gt;</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Parser</span><span class="o">&lt;</span><span class="n">R</span><span class="p">,</span><span class="w"> </span><span class="n">W</span><span class="p">,</span><span class="w"> </span><span class="n">gtl</span><span class="o">::</span><span class="n">flat_hash_map</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">Hash</span><span class="p">,</span><span class="w"> </span><span class="n">KeyEqual</span><span class="p">,</span><span class="w"> </span><span class="n">Allocator</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">ProcessorsType</span><span class="o">&gt;</span>
+<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">VectorParser</span><span class="o">&lt;</span><span class="n">R</span><span class="p">,</span><span class="w"> </span><span class="n">W</span><span class="p">,</span><span class="w"> </span><span class="n">gtl</span><span class="o">::</span><span class="n">flat_hash_map</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">Hash</span><span class="p">,</span><span class="w"> </span><span class="n">KeyEqual</span><span class="p">,</span><span class="w"> </span><span class="n">Allocator</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">ProcessorsType</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{};</span>
+
+<span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div>
 
 
