@@ -45,10 +45,10 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
 
 /// Parses an object from a stringstream.
 template <class T, class... Ps>
-auto read(std::istream& _stream) {
+auto read(std::istream& _stream, const yyjson_read_flag _flag = 0) {
   const auto json_str = std::string(std::istreambuf_iterator<char>(_stream),
                                     std::istreambuf_iterator<char>());
-  return read<T, Ps...>(json_str);
+  return read<T, Ps...>(json_str, _flag);
 }
 
 }  // namespace json
