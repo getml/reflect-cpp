@@ -7,7 +7,7 @@
 namespace test_enum_range_min_max {
 
 enum class InnerColor { none = -128, red = -50, green = 0, blue = 128 };
-enum class LineColor { yellow = 200, purple = 300, orange = 400 };
+enum class LineColor : uint16_t { yellow = 200, purple = 300, orange = 400 };
 
 }  // namespace test_enum_range_min_max
 

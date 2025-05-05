@@ -84,7 +84,9 @@ consteval auto get_range_min() {
   if constexpr (_is_flag) {
     return 0;
   } else {
-    return std::max(std::numeric_limits<U>::min(), range_min<T>::value);
+    return std::max(static_cast<decltype(range_min<T>::value)>(
+                        std::numeric_limits<U>::min()),
+                    range_min<T>::value);
   }
 }
 template <class T, bool _is_flag>
@@ -97,7 +99,9 @@ consteval auto get_range_max() {
       return (sizeof(U) * 8 - 1);
     }
   } else {
-    return std::min(std::numeric_limits<U>::max(), range_max<T>::value);
+    return std::min(static_cast<decltype(range_max<T>::value)>(
+                        std::numeric_limits<U>::max()),
+                    range_max<T>::value);
   }
 }
 
@@ -126,7 +130,8 @@ consteval auto operator|(Names<EnumType, LiteralType, N, _is_flag, _enums...>,
   }
 }
 
-template <class EnumType, class LiteralType, size_t N, bool _is_flag, auto... _enums>
+template <class EnumType, class LiteralType, size_t N, bool _is_flag,
+          auto... _enums>
 struct NamesCombiner {
   template <int... Is>
   static consteval auto combine(std::integer_sequence<int, Is...>) {
@@ -145,8 +150,10 @@ struct CombineNames {
       }(std::make_integer_sequence<int, End - Start + 1>{});
     } else {
       constexpr int Mid = Start + (End - Start) / 2;
-      constexpr auto left = CombineNames<ChunkSize>::template apply<NamesType, Start, Mid>();
-      constexpr auto right = CombineNames<ChunkSize>::template apply<NamesType, Mid + 1, End>();
+      constexpr auto left =
+          CombineNames<ChunkSize>::template apply<NamesType, Start, Mid>();
+      constexpr auto right =
+          CombineNames<ChunkSize>::template apply<NamesType, Mid + 1, End>();
       return left | right;
     }
   }
@@ -155,16 +162,18 @@ struct CombineNames {
 template <class EnumType, bool _is_flag>
 consteval auto get_enum_names() {
   static_assert(is_scoped_enum<EnumType>,
-              "You must use scoped enums (using class or struct) for the parsing to work!");
+                "You must use scoped enums (using class or struct) for the "
+                "parsing to work!");
   static_assert(std::is_integral_v<std::underlying_type_t<EnumType>>,
-              "The underlying type of any Enum must be integral!");
+                "The underlying type of any Enum must be integral!");
 
   constexpr auto max = get_range_max<EnumType, _is_flag>();
   constexpr auto min = get_range_min<EnumType, _is_flag>();
   constexpr auto range_size = max - min + 1;
 
   static_assert(range_size > 0,
-              "enum_range requires a valid range size. Ensure that max is greater than min.");
+                "enum_range requires a valid range size. Ensure that max is "
+                "greater than min.");
 
   using EmptyNames = Names<EnumType, rfl::Literal<"">, 0, _is_flag>;
 
