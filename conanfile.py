@@ -70,7 +70,7 @@ class ReflectCppConan(ConanFile):
 
     def requirements(self):
         self.requires("ctre/3.9.0", transitive_headers=True)
-        self.requires("yyjson/0.10.0", transitive_headers=True)
+        self.requires("yyjson/0.11.0", transitive_headers=True)
         if self.options.with_capnproto:
             self.requires("capnproto/1.1.0", transitive_headers=True)
         if self.options.with_cbor or self.options.with_ubjson:
