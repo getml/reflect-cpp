@@ -34,40 +34,7 @@ TEST(ubjson, test_field_error_messages) {
   EXPECT_EQ(result.error().what(), expected);
 }
 
-TEST(ubjson, test_decode_error_causes_exception) {
-  const std::string good_string =
-      R"({"firstName":"Homer","lastName":"Simpson","birthday":"1987-04-19"})";
-  const auto good_generic = rfl::json::read<rfl::Generic>(good_string);
-  auto faulty_ubjson = rfl::ubjson::write(good_generic);
-  faulty_ubjson[0] = '\xff';  // Corrupt structure of ubjson encoding
-
-  rfl::Result<Person> result = rfl::error("result didn't get set");
-  EXPECT_THROW({
-    try
-    {
-      result = rfl::ubjson::read<Person>(faulty_ubjson);
-    }
-    catch( const jsoncons::ser_error& e )
-    {
-      // and this tests that it has the correct message
-      const std::string expected = R"(Unknown type at position 1)";
-      EXPECT_EQ( e.what(), expected );
-      throw;
-    }
-  }, jsoncons::ser_error );
-
-  const std::string expected = R"(result didn't get set)";
-  EXPECT_EQ(result.error().what(), expected);
-
-  EXPECT_TRUE(!result.has_value() && true);
-}
-
 TEST(ubjson, test_decode_error_without_exception) {
-  GTEST_SKIP() << "Expected failing test represents future ideal behavior";
-  // This test is expected to fail because the error handling in the UBJSON library
-  // doesn't return an error result, but rather throw exceptions. The test is
-  // written to demonstrate the desired behavior, but the actual implementation
-  // may not support this yet.
   const std::string good_string =
       R"({"firstName":"Homer","lastName":"Simpson","birthday":"1987-04-19"})";
   const auto good_generic = rfl::json::read<rfl::Generic>(good_string);
@@ -80,7 +47,7 @@ TEST(ubjson, test_decode_error_without_exception) {
   });
 
   // A proposal: A generic prefix, followed by the underlying library's error output
-  const std::string expected = R"(Could not parse ubjson: Unknown type at position 1)";
+  const std::string expected = R"(Could not parse UBJSON: Unknown type at position 1)";
   EXPECT_EQ(result.error().what(), expected);
 
   EXPECT_TRUE(!result.has_value() && true);

@@ -34,40 +34,7 @@ TEST(cbor, test_field_error_messages) {
   EXPECT_EQ(result.error().what(), expected);
 }
 
-TEST(cbor, test_decode_error_causes_exception) {
-  const std::string good_string =
-      R"({"firstName":"Homer","lastName":"Simpson","birthday":"1987-04-19"})";
-  const auto good_generic = rfl::json::read<rfl::Generic>(good_string);
-  auto faulty_cbor = rfl::cbor::write(good_generic);
-  faulty_cbor[1] = '\xff';  // Corrupt structure of CBOR encoding
-
-  rfl::Result<Person> result = rfl::error("result didn't get set");
-  EXPECT_THROW({
-    try
-    {
-      result = rfl::cbor::read<Person>(faulty_cbor);
-    }
-    catch( const jsoncons::ser_error& e )
-    {
-      // and this tests that it has the correct message
-      const std::string expected = R"(An unknown type was found in the stream at position 1)";
-      EXPECT_EQ( e.what(), expected );
-      throw;
-    }
-  }, jsoncons::ser_error );
-
-  const std::string expected = R"(result didn't get set)";
-  EXPECT_EQ(result.error().what(), expected);
-
-  EXPECT_TRUE(!result.has_value() && true);
-}
-
 TEST(cbor, test_decode_error_without_exception) {
-  GTEST_SKIP() << "Expected failing test represents future ideal behavior";
-  // This test is expected to fail because the error handling in the CBOR library
-  // doesn't return an error result, but rather throw exceptions. The test is
-  // written to demonstrate the desired behavior, but the actual implementation
-  // may not support this yet.
   const std::string good_string =
       R"({"firstName":"Homer","lastName":"Simpson","birthday":"1987-04-19"})";
   const auto good_generic = rfl::json::read<rfl::Generic>(good_string);
