@@ -13,6 +13,7 @@
 #include "Result.hpp"
 #include "Tuple.hpp"
 #include "internal/StringLiteral.hpp"
+#include "internal/find_index.hpp"
 #include "internal/no_duplicate_field_names.hpp"
 
 namespace rfl {
@@ -95,31 +96,24 @@ class Literal {
 
   /// Determines whether the literal contains any of the strings in the other
   /// literal at compile time.
-  template <class OtherLiteralType, int _i = 0>
+  template <class OtherLiteralType>
   static constexpr bool contains_any() {
-    if constexpr (_i == num_fields_) {
-      return false;
-    } else {
-      constexpr auto name = find_name_within_own_fields<_i>();
-      return OtherLiteralType::template contains<name>() ||
-             contains_any<OtherLiteralType, _i + 1>();
-    }
+    return []<int... _is>(const std::integer_sequence<int, _is...>&) {
+      return (false || ... ||
+              OtherLiteralType::template contains<
+                  find_name_within_own_fields<_is>()>());
+    }(std::make_integer_sequence<int, num_fields_>());
   }
 
   /// Determines whether the literal contains all of the strings in the other
   /// literal at compile time.
-  template <class OtherLiteralType, int _i = 0, int _n_found = 0>
+  template <class OtherLiteralType>
   static constexpr bool contains_all() {
-    if constexpr (_i == num_fields_) {
-      return _n_found == OtherLiteralType::num_fields_;
-    } else {
-      constexpr auto name = find_name_within_own_fields<_i>();
-      if constexpr (OtherLiteralType::template contains<name>()) {
-        return contains_all<OtherLiteralType, _i + 1, _n_found + 1>();
-      } else {
-        return contains_all<OtherLiteralType, _i + 1, _n_found>();
-      }
-    }
+    return []<int... _is>(const std::integer_sequence<int, _is...>&) {
+      return (true && ... &&
+              OtherLiteralType::template contains<
+                  find_name_within_own_fields<_is>()>());
+    }(std::make_integer_sequence<int, num_fields_>());
   }
 
   /// Determines whether the literal has duplicate strings at compile time.
@@ -332,18 +326,9 @@ class Literal {
   }
 
   /// Finds the value of a string literal at compile time.
-  template <internal::StringLiteral _name, int _i = 0>
+  template <internal::StringLiteral _name>
   static constexpr int find_value_of() {
-    if constexpr (_i == num_fields_) {
-      return -1;
-    } else {
-      using FieldType = tuple_element_t<_i, FieldsType>;
-      if constexpr (FieldType::name_ == _name) {
-        return _i;
-      } else {
-        return find_value_of<_name, _i + 1>();
-      }
-    }
+    return internal::find_index_or_minus_one<_name, FieldsType>();
   }
 
   /// Whether the literal contains this string.
