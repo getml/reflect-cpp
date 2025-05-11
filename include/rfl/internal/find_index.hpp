@@ -45,6 +45,22 @@ constexpr static int find_index() {
   return ix;
 }
 
+/// Finds the index of the field signified by _field_name or -1.
+template <StringLiteral _field_name, class Fields>
+constexpr static int find_index_or_minus_one() {
+  if constexpr (rfl::tuple_size_v<Fields> == 0) {
+    return -1;
+  } else {
+    constexpr int ix = wrap_fields<_field_name, Fields>(
+        std::make_integer_sequence<int, rfl::tuple_size_v<Fields>>());
+    if constexpr (rfl::tuple_element_t<ix, Fields>::name_ == _field_name) {
+      return ix;
+    } else {
+      return -1;
+    }
+  }
+}
+
 }  // namespace internal
 }  // namespace rfl
 
