@@ -3,14 +3,14 @@
 
 #include <concepts>
 #include <type_traits>
+#include "../../thirdparty/enchantum.hpp"
 
 namespace rfl {
 namespace internal {
 namespace enums {
 
 template <class EnumType>
-concept is_scoped_enum = std::is_enum_v<EnumType> &&
-    !std::is_convertible_v<EnumType, std::underlying_type_t<EnumType>>;
+concept is_scoped_enum = enchantum::ScopedEnum<EnumType>;
 
 }  // namespace enums
 }  // namespace internal

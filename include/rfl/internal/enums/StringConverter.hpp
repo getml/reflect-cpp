@@ -10,6 +10,7 @@
 #include "../../Result.hpp"
 #include "../../internal/strings/strings.hpp"
 #include "../../type_name_t.hpp"
+#include "../../thirdparty/enchantum.hpp"
 #include "get_enum_names.hpp"
 #include "is_flag_enum.hpp"
 
@@ -69,18 +70,10 @@ class StringConverter {
   /// This assumes that _enum can be exactly matched to one of the names and
   /// does not have to be combined using |.
   static std::string enum_to_single_string(const EnumType _enum) {
-    const auto to_str = [](const auto _l) { return _l.str(); };
-
-    for (size_t i = 0; i < names_.size; ++i) {
-      if (names_.enums_[i] == _enum) {
-        return NamesLiteral::from_value(
-                   static_cast<typename NamesLiteral::ValueType>(i))
-            .transform(to_str)
-            .value();
-      }
-    }
-
-    return std::to_string(static_cast<std::underlying_type_t<EnumType>>(_enum));
+    const auto s = enchantum::to_string(_enum);
+    return s.empty() ? std::to_string(
+                           static_cast<std::underlying_type_t<EnumType>>(_enum))
+                     : std::string(s);
   }
 
   /// Finds the enum matching the literal.
@@ -91,15 +84,14 @@ class StringConverter {
   /// This assumes that _enum can be exactly matched to one of the names and
   /// does not have to be combined using |.
   static Result<EnumType> single_string_to_enum(const std::string& _str) {
-    const auto r = NamesLiteral::from_string(_str).transform(literal_to_enum);
-    if (r) {
-      return r;
-    } else {
-      try {
-        return static_cast<EnumType>(std::stoi(_str));
-      } catch (std::exception& exp) {
-        return error(exp.what());
-      }
+    const auto r = enchantum::cast<EnumType>(_str);
+    if (r)
+      return *r;
+
+    try {
+      return static_cast<EnumType>(std::stoi(_str));
+    } catch (std::exception& exp) {
+      return error(exp.what());
     }
   }
 

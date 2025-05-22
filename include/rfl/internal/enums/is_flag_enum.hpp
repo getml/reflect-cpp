@@ -4,16 +4,21 @@
 #include <concepts>
 
 #include "is_scoped_enum.hpp"
+#include "../../thirdparty/enchantum.hpp"
+template<enchantum::Enum E>
+requires requires(E e) {
+  { e | e } -> std::same_as<E>;
+}
+constexpr inline bool enchantum::is_bitflag<E> = true;
 
 namespace rfl {
 namespace internal {
 namespace enums {
 
 template <class EnumType>
-concept is_flag_enum = is_scoped_enum<EnumType> &&
-    requires(EnumType e1, EnumType e2) {
-  { e1 | e2 } -> std::same_as<EnumType>;
-};
+concept is_flag_enum =
+    is_scoped_enum<EnumType> && enchantum::BitFlagEnum<EnumType>;
+
 
 }  // namespace enums
 }  // namespace internal
