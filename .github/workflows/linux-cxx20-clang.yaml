@@ -4,11 +4,12 @@ on: [ push ]
 
 env: 
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
-    CC=clang
-    CXX=clang++
 
 jobs:
-  linux:
+  linux-clang:
+    env: 
+        CC: clang
+        CXX: clang++
     strategy:
       fail-fast: false
       matrix:
