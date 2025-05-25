@@ -4,6 +4,8 @@ on: [ push ]
 
 env: 
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+    CC=clang
+    CXX=clang++
 
 jobs:
   linux:
@@ -12,9 +14,9 @@ jobs:
       matrix:
         include:
           - compiler: llvm
-            compiler-version: 16
-          - compiler: llvm
             compiler-version: 18
+          - compiler: llvm
+            compiler-version: 19
           - compiler: llvm
             compiler-version: 20
     name: "${{ github.job }} (${{ matrix.compiler }}-${{ matrix.compiler-version }})"
@@ -30,12 +32,7 @@ jobs:
         with:
           version: ${{ matrix.compiler-version }}
           platform: x64
-      - name: Export GitHub Actions cache environment variables
-        uses: actions/github-script@v7
-        with:
           script: |
-            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1
         with:
