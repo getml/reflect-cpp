@@ -7,9 +7,6 @@ env:
 
 jobs:
   linux-clang:
-    env: 
-        CC: clang
-        CXX: clang++
     strategy:
       fail-fast: false
       matrix:
@@ -20,6 +17,16 @@ jobs:
             compiler-version: 19
           - compiler: llvm
             compiler-version: 20
+          - compiler: gcc
+            compiler-version: 11
+          - compiler: gcc
+            compiler-version: 12
+          - compiler: gcc
+            compiler-version: 14
+    env: 
+        if: matrix.compiler == 'llvm'
+        CC: clang
+        CXX: clang++
     name: "${{ github.job }} (${{ matrix.compiler }}-${{ matrix.compiler-version }})"
     runs-on: ubuntu-latest
     steps:
@@ -29,11 +36,17 @@ jobs:
           submodules: recursive
           fetch-depth: 0
       - name: Set up Clang
+        if: matrix.compiler == 'llvm'
         uses: egor-tensin/setup-clang@v1
         with:
           version: ${{ matrix.compiler-version }}
           platform: x64
-          script: |
+      - name: Set up GCC
+        if: matrix.compiler == 'gcc'
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: ${{ matrix.compiler-version }}
+          platform: x64
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1
         with:
@@ -54,8 +67,6 @@ jobs:
         run: conan build . --build=missing -s compiler.cppstd=gnu20 -o *:with_capnproto=True -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True      
       - name: Compile
         run: |
-          sudo ln -s $(which ccache) /usr/local/bin/$CC
-          sudo ln -s $(which ccache) /usr/local/bin/$CXX
           $CXX --version
           cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CAPNPROTO=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
           cmake --build build
