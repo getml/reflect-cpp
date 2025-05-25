@@ -17,8 +17,6 @@ jobs:
             compiler-version: 12
           - compiler: gcc
             compiler-version: 14
-          - compiler: gcc
-            compiler-version: 15
     name: "${{ github.job }} (${{ matrix.compiler }}-${{ matrix.compiler-version }})"
     runs-on: ubuntu-latest
     steps:
