@@ -1,6 +1,6 @@
 name: code-checks
 
-on: [ push, pull_request ]
+on: [ push ]
 
 jobs:
   check-includes-are-relative:

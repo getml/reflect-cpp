@@ -1,6 +1,6 @@
 name: linux-cxx23
 
-on: [ pull_request, workflow_dispatch ]
+on: [ push ]
 
 env: 
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"

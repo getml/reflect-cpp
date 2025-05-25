@@ -1,6 +1,6 @@
 name: linux-cxx20
 
-on: [ pull_request, workflow_dispatch ]
+on: [ push ]
 
 env: 
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
@@ -15,6 +15,8 @@ jobs:
             compiler-version: 16
           - compiler: llvm
             compiler-version: 18
+          - compiler: llvm
+            compiler-version: 20
           - compiler: gcc
             compiler-version: 11
             additional-dep: "g++-11"
@@ -22,8 +24,10 @@ jobs:
             compiler-version: 12
           - compiler: gcc
             compiler-version: 14
+          - compiler: gcc
+            compiler-version: 15
     name: "${{ github.job }} (${{ matrix.compiler }}-${{ matrix.compiler-version }})"
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
