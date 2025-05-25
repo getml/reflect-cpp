@@ -11,15 +11,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - compiler: llvm
-            compiler-version: 16
-          - compiler: llvm
-            compiler-version: 18
-          - compiler: llvm
-            compiler-version: 20
           - compiler: gcc
             compiler-version: 11
-            additional-dep: "g++-11"
           - compiler: gcc
             compiler-version: 12
           - compiler: gcc
@@ -34,6 +27,11 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
+      - name: Set up GCC
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: ${{ matrix.compiler-version }}
+          platform: x64
       - name: Export GitHub Actions cache environment variables
         uses: actions/github-script@v7
         with:
