@@ -39,7 +39,7 @@ jobs:
           - compiler: gcc
             compiler-version: 14
             cxx: 23  
-    name: "${{ github.job }} ($C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }})"
+    name: "${{ github.job }} (C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }})"
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
