@@ -1,6 +1,6 @@
-name: macos-cxx20
+name: macos
 
-on: [ pull_request, workflow_dispatch ]
+on: [ push ] 
 
 env: 
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
