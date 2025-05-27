@@ -185,17 +185,7 @@ class NamedTuple {
 
   /// Invokes a callable object once for each field in order.
   template <typename F>
-  void apply(F&& _f) {
-    const auto apply_to_field =
-        [&_f]<typename... AFields>(AFields&&... fields) {
-          ((_f(std::forward<AFields>(fields))), ...);
-        };
-    rfl::apply(apply_to_field, fields());
-  }
-
-  /// Invokes a callable object once for each field in order.
-  template <typename F>
-  void apply(F&& _f) const {
+  void apply(F&& _f) const& {
     const auto apply_to_field = [&_f](const auto&... fields) {
       ((_f(fields)), ...);
     };
