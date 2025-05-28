@@ -103,15 +103,9 @@ auto person = rfl::Field<"first_name", std::string>("Bart") *
               rfl::Field<"last_name", std::string>("Simpson");
 
 person.apply([](const auto& f) {
-  auto field_name = f.name();
-  const auto& value = *f.value();
-});
-
-person.apply([]<typename Field>(Field& f) {
   // The field name can also be obtained as a compile-time constant.
-  constexpr auto field_name = Field::name();
-  using field_pointer_type = typename Field::Type;
-  field_pointer_type* value = f.value();
+  auto field_name = f.name();
+  const auto& value = f.value();
 });
 ```
 
