@@ -4,10 +4,7 @@
 #include <limits>
 #include <type_traits>
 #include <utility>
-
-#if __has_include(<source_location>)
-#include <source_location>
-#endif
+#include <concepts>
 
 #include "../../Literal.hpp"
 #include "../../thirdparty/enchantum.hpp"
@@ -37,9 +34,16 @@
 // use a scoped integer, static_cast<MyEnum>(some_integer_value) will always be
 // defined.
 
+template <enchantum::Enum E>
+  requires requires(E e) {
+    { e | e } -> std::same_as<E>;
+  }
+constexpr inline bool enchantum::is_bitflag<E> = true;
+
+
 namespace rfl::internal::enums {
 
-template <class T, bool _is_flag>
+template <class T, bool _is_flag = enchantum::is_bitflag<T>>
 consteval auto get_range_min() {
   using U = std::underlying_type_t<T>;
   if constexpr (_is_flag) {
@@ -50,7 +54,7 @@ consteval auto get_range_min() {
                     range_min<T>::value);
   }
 }
-template <class T, bool _is_flag>
+template <class T, bool _is_flag = enchantum::is_bitflag<T>>
 consteval auto get_range_max() {
   using U = std::underlying_type_t<T>;
   if constexpr (_is_flag) {
@@ -66,7 +70,7 @@ consteval auto get_range_max() {
   }
 }
 
-template <enchantum::Enum EnumType, bool _is_flag>
+template <enchantum::Enum EnumType>
 consteval auto get_enum_names() {
   return []<std::size_t... Is>(std::index_sequence<Is...>) {
     constexpr auto& entries = enchantum::entries<EnumType>;
@@ -78,7 +82,7 @@ consteval auto get_enum_names() {
                  Literal<to_str_lit(
                      entries[Is].second.data(),
                      std::make_index_sequence<entries[Is].second.size()>{})...>,
-                 entries.size(), _is_flag, entries[Is].first...>{};
+                 entries.size(), enchantum::is_bitflag<EnumType>, entries[Is].first...>{};
   }(std::make_index_sequence<enchantum::count<EnumType>>{});
 }
 }  // namespace rfl::internal::enums

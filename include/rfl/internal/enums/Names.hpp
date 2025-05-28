@@ -2,7 +2,7 @@
 #define RFL_INTERNAL_ENUMS_NAMES_HPP_
 
 // Enum values must be greater than or equal to RFL_ENUM_RANGE_MIN.
-// By default, RFL_ENUM_RANGE_MIN is set to -256.
+// By default, RFL_ENUM_RANGE_MIN is set to 0.
 // To change the default minimum range for all enum types, redefine the macro
 // RFL_ENUM_RANGE_MIN.
 #if !defined(RFL_ENUM_RANGE_MIN)
@@ -10,7 +10,7 @@
 #endif
 
 // Enum values must be less than or equal to RFL_ENUM_RANGE_MAX.
-// By default, RFL_ENUM_RANGE_MAX is set to 256.
+// By default, RFL_ENUM_RANGE_MAX is set to 127.
 // To change the default maximum range for all enum types, redefine the macro
 // RFL_ENUM_RANGE_MAX.
 #if !defined(RFL_ENUM_RANGE_MAX)
