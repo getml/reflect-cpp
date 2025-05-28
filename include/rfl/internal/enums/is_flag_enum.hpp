@@ -3,7 +3,6 @@
 
 #include <concepts>
 
-#include "is_scoped_enum.hpp"
 #include "../../thirdparty/enchantum.hpp"
 template<enchantum::Enum E>
 requires requires(E e) {
@@ -17,7 +16,7 @@ namespace enums {
 
 template <class EnumType>
 concept is_flag_enum =
-    is_scoped_enum<EnumType> && enchantum::BitFlagEnum<EnumType>;
+    enchantum::ScopedEnum<EnumType> && enchantum::BitFlagEnum<EnumType>;
 
 
 }  // namespace enums
