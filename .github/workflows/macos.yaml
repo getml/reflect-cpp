@@ -2,9 +2,6 @@ name: macos
 
 on: [ push, pull_request ]
 
-env: 
-    VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
-
 jobs:
   macos-clang:
     strategy:
@@ -18,18 +15,6 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
-      - name: Export GitHub Actions cache environment variables
-        uses: actions/github-script@v7
-        with:
-          script: |
-            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
-      - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1
-        with:
-          key: "${{ github.job }}-${{ matrix.os }}"
-          max-size: "2G"
-          create-symlink: true
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
       - name: Install Conan
