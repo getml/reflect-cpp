@@ -33,7 +33,7 @@
 #include <utility>
 
 #include "../../Literal.hpp"
-#include "../../thirdparty/enchantum.hpp"
+#include "../../thirdparty/enchantum/enchantum.hpp"
 #include "Names.hpp"
 #include "range_defined.hpp"
 

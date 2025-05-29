@@ -12,7 +12,7 @@
 #include "../../config.hpp"
 #include "../../define_literal.hpp"
 #include "../../make_named_tuple.hpp"
-#include "../../thirdparty/enchantum.hpp"
+#include "../../thirdparty/enchantum/enchantum.hpp"
 #include "../StringLiteral.hpp"
 
 namespace rfl::internal::enums {
