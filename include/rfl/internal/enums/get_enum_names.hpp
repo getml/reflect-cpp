@@ -1,12 +1,39 @@
 #ifndef RFL_INTERNAL_ENUMS_GET_ENUM_NAMES_HPP_
 #define RFL_INTERNAL_ENUMS_GET_ENUM_NAMES_HPP_
 
+// Enum values must be greater than or equal to RFL_ENUM_RANGE_MIN.
+// By default, RFL_ENUM_RANGE_MIN is set to -256.
+// To change the default minimum range for all enum types, redefine the macro
+// RFL_ENUM_RANGE_MIN.
+#if !defined(RFL_ENUM_RANGE_MIN)
+#define RFL_ENUM_RANGE_MIN -256
+#endif
+
+// Enum values must be less than or equal to RFL_ENUM_RANGE_MAX.
+// By default, RFL_ENUM_RANGE_MAX is set to 256.
+// To change the default maximum range for all enum types, redefine the macro
+// RFL_ENUM_RANGE_MAX.
+#if !defined(RFL_ENUM_RANGE_MAX)
+#define RFL_ENUM_RANGE_MAX 256
+#endif
+
+#ifdef ENCHANTUM_MIN_RANGE
+#undef ENCHANTUM_MIN_RANGE
+#endif
+#define ENCHANTUM_MIN_RANGE RFL_ENUM_RANGE_MIN
+
+#ifdef ENCHANTUM_MAX_RANGE
+#undef ENCHANTUM_MAX_RANGE
+#endif
+#define ENCHANTUM_MAX_RANGE RFL_ENUM_RANGE_MAX
+
 #include <concepts>
 #include <limits>
 #include <type_traits>
 #include <utility>
 
 #include "../../Literal.hpp"
+#include "../../thirdparty/enchantum.hpp"
 #include "Names.hpp"
 #include "range_defined.hpp"
 
@@ -81,33 +108,6 @@ struct enum_traits<E> {
 }  // namespace enchantum
 
 namespace rfl::internal::enums {
-
-template <class T, bool _is_flag = enchantum::is_bitflag<T>>
-consteval auto get_range_min() {
-  using U = std::underlying_type_t<T>;
-  if constexpr (_is_flag) {
-    return 0;
-  } else {
-    return std::max(static_cast<decltype(range_min<T>::value)>(
-                        std::numeric_limits<U>::min()),
-                    range_min<T>::value);
-  }
-}
-template <class T, bool _is_flag = enchantum::is_bitflag<T>>
-consteval auto get_range_max() {
-  using U = std::underlying_type_t<T>;
-  if constexpr (_is_flag) {
-    if constexpr (std::is_signed_v<T>) {
-      return (sizeof(U) * 8 - 2);
-    } else {
-      return (sizeof(U) * 8 - 1);
-    }
-  } else {
-    return std::min(static_cast<decltype(range_max<T>::value)>(
-                        std::numeric_limits<U>::max()),
-                    range_max<T>::value);
-  }
-}
 
 template <enchantum::Enum EnumType>
 consteval auto get_enum_names() {

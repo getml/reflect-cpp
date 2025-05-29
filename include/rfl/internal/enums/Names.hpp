@@ -1,32 +1,6 @@
 #ifndef RFL_INTERNAL_ENUMS_NAMES_HPP_
 #define RFL_INTERNAL_ENUMS_NAMES_HPP_
 
-// Enum values must be greater than or equal to RFL_ENUM_RANGE_MIN.
-// By default, RFL_ENUM_RANGE_MIN is set to -256.
-// To change the default minimum range for all enum types, redefine the macro
-// RFL_ENUM_RANGE_MIN.
-#if !defined(RFL_ENUM_RANGE_MIN)
-#define RFL_ENUM_RANGE_MIN -256
-#endif
-
-// Enum values must be less than or equal to RFL_ENUM_RANGE_MAX.
-// By default, RFL_ENUM_RANGE_MAX is set to 256.
-// To change the default maximum range for all enum types, redefine the macro
-// RFL_ENUM_RANGE_MAX.
-#if !defined(RFL_ENUM_RANGE_MAX)
-#define RFL_ENUM_RANGE_MAX 256
-#endif
-
-#ifdef ENCHANTUM_MIN_RANGE
-#undef ENCHANTUM_MIN_RANGE
-#endif
-#define ENCHANTUM_MIN_RANGE RFL_ENUM_RANGE_MIN
-
-#ifdef ENCHANTUM_MAX_RANGE
-#undef ENCHANTUM_MAX_RANGE
-#endif
-#define ENCHANTUM_MAX_RANGE RFL_ENUM_RANGE_MAX
-
 #include <algorithm>
 #include <array>
 #include <string>
@@ -43,24 +17,6 @@
 
 namespace rfl::internal::enums {
 
-static_assert(RFL_ENUM_RANGE_MAX > RFL_ENUM_RANGE_MIN,
-              "RFL_ENUM_RANGE_MAX must be greater than RFL_ENUM_RANGE_MIN.");
-
-template <typename T, typename = void>
-struct range_min : std::integral_constant<int, RFL_ENUM_RANGE_MIN> {};
-
-template <typename T>
-struct range_min<T, std::void_t<decltype(config::enum_range<T>::min)>>
-    : std::integral_constant<decltype(config::enum_range<T>::min),
-                             config::enum_range<T>::min> {};
-
-template <typename T, typename = void>
-struct range_max : std::integral_constant<int, RFL_ENUM_RANGE_MAX> {};
-
-template <typename T>
-struct range_max<T, std::void_t<decltype(config::enum_range<T>::max)>>
-    : std::integral_constant<decltype(config::enum_range<T>::max),
-                             config::enum_range<T>::max> {};
 template <class EnumType, class LiteralType, size_t N, bool _is_flag,
           auto... _enums>
 struct Names {
@@ -73,16 +29,6 @@ struct Names {
   /// A list of all the possible enums
   constexpr static auto enums_ = std::array<EnumType, N>{_enums...};
 };
-
-template <class EnumType, class LiteralType1, size_t N1, bool _is_flag1,
-          auto... _enums1, class LiteralType2, size_t N2, auto... _enums2>
-consteval auto operator|(
-    Names<EnumType, LiteralType1, N1, _is_flag1, _enums1...>,
-    Names<EnumType, LiteralType2, N2, _is_flag1, _enums2...>) {
-  using CombinedLiteral = define_literal_t<LiteralType1, LiteralType2>;
-  return Names<EnumType, CombinedLiteral, N1 + N2, _is_flag1, _enums1...,
-               _enums2...>{};
-}
 
 template <class EnumType, size_t N, bool _is_flag, StringLiteral... _names,
           auto... _enums>
