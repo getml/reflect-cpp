@@ -2412,7 +2412,7 @@
 
 
 <h1 id="enums">Enums<a class="headerlink" href="#enums" title="Permanent link">&para;</a></h1>
-<p>reflect-cpp supports scoped enumerations. They can either come in the form of normal enumerations or flag enums.</p>
+<p>reflect-cpp supports both scoped and unscoped enumerations as long as they are named. They can either come in the form of normal enumerations or flag enums.</p>
 <h2 id="normal-enumerations">Normal enumerations<a class="headerlink" href="#normal-enumerations" title="Permanent link">&para;</a></h2>
 <p>Example:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Color</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">red</span><span class="p">,</span><span class="w"> </span><span class="n">green</span><span class="p">,</span><span class="w"> </span><span class="n">blue</span><span class="p">,</span><span class="w"> </span><span class="n">yellow</span><span class="w"> </span><span class="p">};</span>
@@ -2432,20 +2432,23 @@
 <p>However, some limitations apply:</p>
 <ol>
 <li>
-<p>They must be scoped enumerations.</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="c1">/// OK - scoped enumeration</span>
+<p>They cannot be unnamed enumerations.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="c1">// OK - scoped enumeration</span>
 <span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Color1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">red</span><span class="p">,</span><span class="w"> </span><span class="n">green</span><span class="p">,</span><span class="w"> </span><span class="n">blue</span><span class="p">,</span><span class="w"> </span><span class="n">yellow</span><span class="w"> </span><span class="p">};</span>
 
-<span class="c1">/// OK - scoped enumeration</span>
+<span class="c1">// OK - scoped enumeration</span>
 <span class="k">enum</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">Color2</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">red</span><span class="p">,</span><span class="w"> </span><span class="n">green</span><span class="p">,</span><span class="w"> </span><span class="n">blue</span><span class="p">,</span><span class="w"> </span><span class="n">yellow</span><span class="w"> </span><span class="p">};</span>
 
-<span class="c1">/// unsupported - unscoped enumerations</span>
+<span class="c1">// OK - unscoped enumeration</span>
 <span class="k">enum</span><span class="w"> </span><span class="nc">Color3</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">red</span><span class="p">,</span><span class="w"> </span><span class="n">green</span><span class="p">,</span><span class="w"> </span><span class="n">blue</span><span class="p">,</span><span class="w"> </span><span class="n">yellow</span><span class="w"> </span><span class="p">};</span>
+
+<span class="c1">/// Unsupported: Anonymous enumeration</span>
+<span class="k">enum</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">red</span><span class="p">,</span><span class="w"> </span><span class="n">green</span><span class="p">,</span><span class="w"> </span><span class="n">blue</span><span class="p">,</span><span class="w"> </span><span class="n">yellow</span><span class="w"> </span><span class="p">};</span>
 </code></pre></div>
 </li>
 <li>
 <p>Enum values must be in the range <code>[RFL_ENUM_RANGE_MIN, RFL_ENUM_RANGE_MAX]</code>. If the range is not specified, the
-   default range is <code>[0, 127]</code>.</p>
+   default range is <code>[-256, 256]</code>.</p>
 <ul>
 <li>
 <p>You can specify a custom range for the all enum values by defining <code>RFL_ENUM_RANGE_MIN</code> and <code>RFL_ENUM_RANGE_MAX</code>
