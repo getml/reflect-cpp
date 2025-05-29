@@ -1,6 +1,6 @@
 # Enums
 
-reflect-cpp supports scoped enumerations. They can either come in the form of normal enumerations or flag enums.
+reflect-cpp supports both scoped and unscoped enumerations as long as they are named. They can either come in the form of normal enumerations or flag enums.
 
 ## Normal enumerations
 
@@ -27,21 +27,24 @@ This results in the following JSON string:
 
 However, some limitations apply:
 
-1. They must be scoped enumerations.
+1. They cannot be unnamed enumerations.
 
     ```cpp
-    /// OK - scoped enumeration
+    // OK - scoped enumeration
     enum class Color1 { red, green, blue, yellow };
     
-    /// OK - scoped enumeration
+    // OK - scoped enumeration
     enum struct Color2 { red, green, blue, yellow };
     
-    /// unsupported - unscoped enumerations
+    // OK - unscoped enumeration
     enum Color3 { red, green, blue, yellow };
+
+    /// Unsupported: Anonymous enumeration
+    enum { red, green, blue, yellow };
     ```
 
 2. Enum values must be in the range `[RFL_ENUM_RANGE_MIN, RFL_ENUM_RANGE_MAX]`. If the range is not specified, the
-   default range is `[0, 127]`.
+   default range is `[-256, 256]`.
 
     - You can specify a custom range for the all enum values by defining `RFL_ENUM_RANGE_MIN` and `RFL_ENUM_RANGE_MAX`
       before including the reflect-cpp header:
