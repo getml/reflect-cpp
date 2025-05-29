@@ -2,7 +2,7 @@
 #define RFL_INTERNAL_ENUMS_NAMES_HPP_
 
 // Enum values must be greater than or equal to RFL_ENUM_RANGE_MIN.
-// By default, RFL_ENUM_RANGE_MIN is set to 0.
+// By default, RFL_ENUM_RANGE_MIN is set to -256.
 // To change the default minimum range for all enum types, redefine the macro
 // RFL_ENUM_RANGE_MIN.
 #if !defined(RFL_ENUM_RANGE_MIN)
@@ -10,7 +10,7 @@
 #endif
 
 // Enum values must be less than or equal to RFL_ENUM_RANGE_MAX.
-// By default, RFL_ENUM_RANGE_MAX is set to 127.
+// By default, RFL_ENUM_RANGE_MAX is set to 256.
 // To change the default maximum range for all enum types, redefine the macro
 // RFL_ENUM_RANGE_MAX.
 #if !defined(RFL_ENUM_RANGE_MAX)
@@ -35,26 +35,13 @@
 #include <utility>
 
 #include "../../Literal.hpp"
+#include "../../config.hpp"
 #include "../../define_literal.hpp"
 #include "../../make_named_tuple.hpp"
+#include "../../thirdparty/enchantum.hpp"
 #include "../StringLiteral.hpp"
 
-namespace rfl {
-
-
-namespace config {
-
-// To specify a different range for a particular enum type, specialize the
-// enum_range template for that enum type.
-template <typename T>
-struct enum_range {
-  static constexpr int min = RFL_ENUM_RANGE_MIN;
-  static constexpr int max = RFL_ENUM_RANGE_MAX;
-};
-}  // namespace config
-
-namespace internal {
-namespace enums {
+namespace rfl::internal::enums {
 
 static_assert(RFL_ENUM_RANGE_MAX > RFL_ENUM_RANGE_MIN,
               "RFL_ENUM_RANGE_MAX must be greater than RFL_ENUM_RANGE_MIN.");
@@ -74,9 +61,9 @@ template <typename T>
 struct range_max<T, std::void_t<decltype(config::enum_range<T>::max)>>
     : std::integral_constant<decltype(config::enum_range<T>::max),
                              config::enum_range<T>::max> {};
-
 template <class EnumType, class LiteralType, size_t N, bool _is_flag,
-          auto... _enums>struct Names {
+          auto... _enums>
+struct Names {
   /// Contains a collection of enums as compile-time strings.
   using Literal = LiteralType;
 
@@ -84,19 +71,8 @@ template <class EnumType, class LiteralType, size_t N, bool _is_flag,
   constexpr static size_t size = N;
 
   /// A list of all the possible enums
-  constexpr static auto enums_ =
-      std::array<EnumType, N>{_enums...};
-
-  static_assert(N == 0 || LiteralType::size() == N,
-                "Size of literal and enum do not match.");
-
-  template <class NewLiteral, auto _new_enum>
-  using AddOneType = std::conditional_t<
-      N == 0, Names<EnumType, NewLiteral, 1, _is_flag, _new_enum>,
-      Names<EnumType, define_literal_t<LiteralType, NewLiteral>, N + 1,
-            _is_flag, _enums..., _new_enum>>;
+  constexpr static auto enums_ = std::array<EnumType, N>{_enums...};
 };
-
 
 template <class EnumType, class LiteralType1, size_t N1, bool _is_flag1,
           auto... _enums1, class LiteralType2, size_t N2, auto... _enums2>
@@ -104,8 +80,8 @@ consteval auto operator|(
     Names<EnumType, LiteralType1, N1, _is_flag1, _enums1...>,
     Names<EnumType, LiteralType2, N2, _is_flag1, _enums2...>) {
   using CombinedLiteral = define_literal_t<LiteralType1, LiteralType2>;
-  return Names<EnumType, CombinedLiteral, N1 + N2, _is_flag1,
-              _enums1..., _enums2...>{};
+  return Names<EnumType, CombinedLiteral, N1 + N2, _is_flag1, _enums1...,
+               _enums2...>{};
 }
 
 template <class EnumType, size_t N, bool _is_flag, StringLiteral... _names,
@@ -143,10 +119,7 @@ names_to_underlying_enumerator_array(
                      static_cast<std::underlying_type_t<EnumType>>(_enums))...};
 }
 
-}  // namespace enums
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal::enums
 
 #endif
-
 

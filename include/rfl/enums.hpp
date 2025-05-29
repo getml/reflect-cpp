@@ -5,8 +5,8 @@
 
 #include "Result.hpp"
 #include "internal/enums/get_enum_names.hpp"
-#include "thirdparty/enchantum.hpp"
 #include "internal/strings/strings.hpp"
+#include "thirdparty/enchantum.hpp"
 
 namespace rfl {
 
@@ -44,7 +44,8 @@ std::string enum_to_string(const EnumType _enum) {
 // Converts a string to a value of the given enum type.
 template <enchantum::Enum EnumType>
 Result<EnumType> string_to_enum(const std::string& _str) {
-  const auto cast_numbers_or_names = [](const std::string& name) -> Result<EnumType> {
+  const auto cast_numbers_or_names =
+      [](const std::string& name) -> Result<EnumType> {
     const auto r = enchantum::cast<EnumType>(name);
     if (r) return *r;
     try {
@@ -107,8 +108,8 @@ constexpr auto get_underlying_enumerator_array() {
 // Returns the range of the given enum type as a pair of the minimum and maximum
 template <enchantum::Enum EnumType>
 constexpr auto get_enum_range() {
-  return std::make_pair(internal::enums::get_range_min<EnumType>(),
-                        internal::enums::get_range_max<EnumType>());
+  return std::make_pair(enchantum::enum_traits<EnumType>::min,
+                        enchantum::enum_traits<EnumType>::max);
 }
 
 }  // namespace rfl

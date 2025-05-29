@@ -1,14 +1,14 @@
 #ifndef RFL_INTERNAL_ENUMS_GET_ENUM_NAMES_HPP_
 #define RFL_INTERNAL_ENUMS_GET_ENUM_NAMES_HPP_
 
+#include <concepts>
 #include <limits>
 #include <type_traits>
 #include <utility>
-#include <concepts>
 
 #include "../../Literal.hpp"
-#include "../../thirdparty/enchantum.hpp"
 #include "Names.hpp"
+#include "range_defined.hpp"
 
 // https://en.cppreference.com/w/cpp/language/static_cast:
 
@@ -40,6 +40,45 @@ template <enchantum::Enum E>
   }
 constexpr inline bool enchantum::is_bitflag<E> = true;
 
+// Specialize the enchantum EnumTraits further, so rfl::config::enum_range
+// works.
+namespace enchantum {
+
+template <SignedEnum E>
+  requires rfl::internal::enums::range_defined<E>
+struct enum_traits<E> {
+  static constexpr std::size_t prefix_length = 0;
+
+  static constexpr auto min = rfl::config::enum_range<E>::min;
+  static constexpr auto max = rfl::config::enum_range<E>::max;
+};
+
+template <UnsignedEnum E>
+  requires rfl::internal::enums::range_defined<E>
+struct enum_traits<E> {
+  static constexpr std::size_t prefix_length = 0;
+
+  static constexpr auto min = rfl::config::enum_range<E>::min;
+  static constexpr auto max = rfl::config::enum_range<E>::max;
+};
+
+template <UnscopedEnum E>
+  requires SignedEnum<E> &&
+           (!EnumFixedUnderlying<E>) && rfl::internal::enums::range_defined<E>
+struct enum_traits<E> {
+  static constexpr auto min = rfl::config::enum_range<E>::min;
+  static constexpr auto max = rfl::config::enum_range<E>::max;
+};
+
+template <UnscopedEnum E>
+  requires UnsignedEnum<E> &&
+           (!EnumFixedUnderlying<E>) && rfl::internal::enums::range_defined<E>
+struct enum_traits<E> {
+  static constexpr auto min = rfl::config::enum_range<E>::min;
+  static constexpr auto max = rfl::config::enum_range<E>::max;
+};
+
+}  // namespace enchantum
 
 namespace rfl::internal::enums {
 
@@ -82,7 +121,8 @@ consteval auto get_enum_names() {
                  Literal<to_str_lit(
                      entries[Is].second.data(),
                      std::make_index_sequence<entries[Is].second.size()>{})...>,
-                 entries.size(), enchantum::is_bitflag<EnumType>, entries[Is].first...>{};
+                 entries.size(), enchantum::is_bitflag<EnumType>,
+                 entries[Is].first...>{};
   }(std::make_index_sequence<enchantum::count<EnumType>>{});
 }
 }  // namespace rfl::internal::enums
