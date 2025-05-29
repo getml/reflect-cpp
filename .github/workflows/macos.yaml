@@ -1,6 +1,6 @@
 name: macos
 
-on: [ push ] 
+on: [ push, pull_request ]
 
 env: 
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
