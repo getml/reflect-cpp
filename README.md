@@ -584,3 +584,5 @@ reflect-cpp is released under the MIT License. Refer to the LICENSE file for det
 reflect-cpp includes [YYJSON](https://github.com/ibireme/yyjson), the fastest JSON library currently in existence. YYJSON is written by YaoYuan and also released under the MIT License.
 
 reflect-cpp includes [compile-time-regular-expressions](https://github.com/hanickadot/compile-time-regular-expressions). CTRE is written by Hana Dusíková and released under the Apache-2.0 License with LLVM exceptions.
+
+reflect-cpp includes [enchantum](https://github.com/ZXShady/enchantum/tree/main). enchantum is written by ZXShady and also released under the MIT License.
