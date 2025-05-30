@@ -103,6 +103,8 @@ class Writer {
       encoder_->bool_value(_var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       encoder_->double_value(static_cast<double>(_var));
+    } else if constexpr (std::is_unsigned<std::remove_cvref_t<T>>()) {
+      encoder_->uint64_value(static_cast<std::uint64_t>(_var));
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       encoder_->int64_value(static_cast<std::int64_t>(_var));
     } else {
