@@ -14,8 +14,9 @@
 
 **reflect-cpp** is a C++-20 library for **fast serialization, deserialization and validation** using reflection, similar to [pydantic](https://github.com/pydantic/pydantic) in Python, [serde](https://github.com/serde-rs) in Rust, [encoding](https://github.com/golang/go/tree/master/src/encoding) in Go or [aeson](https://github.com/haskell/aeson/tree/master) in Haskell.
 
-As the aforementioned libraries are among the most widely used in the respective languages, reflect-cpp fills an important gap in C++ development. It reduces boilerplate code and increases code safety.
+Moreover, reflect-cpp is the basis for [sqlgen](https://github.com/getml/sqlgen), a **modern, type-safe ORM and SQL query generator** for C++20, inspired by Python's SQLAlchemy/SQLModel and Rust's Diesel. It provides a fluent, composable interface for database operations with compile-time type checking and SQL injection protection. 
 
+reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boilerplate code and increase code safety. Together, they enable reliable and efficient ETL pipelines.
 
 ### Design principles for reflect-cpp include:
 
