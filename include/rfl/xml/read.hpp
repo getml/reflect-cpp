@@ -12,8 +12,7 @@
 #include "Parser.hpp"
 #include "Reader.hpp"
 
-namespace rfl {
-namespace xml {
+namespace rfl ::xml {
 
 using InputVarType = typename Reader::InputVarType;
 
@@ -32,7 +31,7 @@ auto read(const InputVarType& _var) {
 template <class T, class... Ps>
 Result<T> read(const std::string_view _xml_str) {
   pugi::xml_document doc;
-  const auto result = doc.load_string(_xml_str.data());
+  const auto result = doc.load_buffer(_xml_str.data(), _xml_str.size());
   if (!result) {
     return error("XML string could not be parsed: " +
                  std::string(result.description()));
@@ -49,7 +48,6 @@ auto read(std::istream& _stream) {
   return read<T, Ps...>(xml_str);
 }
 
-}  // namespace xml
-}  // namespace rfl
+}  // namespace rfl::xml
 
 #endif
