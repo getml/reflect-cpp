@@ -21,7 +21,9 @@ namespace rfl {
 class Error {
  public:
   Error(const std::string& _what) : what_(_what) {}
+
   Error(const Error& e) = default;
+
   Error& operator=(const Error&) = default;
 
   /// Returns the error message, equivalent to .what() in std::exception.
@@ -50,13 +52,21 @@ using Result = std::expected<T, rfl::Error>;
 template <class E>
 struct Unexpected {
   Unexpected(E&& _err) : err_{std::forward<E>(_err)} {}
+
   Unexpected(const E& _err) : err_{_err} {}
+
   Unexpected(Unexpected&&) = default;
+
   Unexpected(const Unexpected&) = default;
+
   Unexpected& operator=(Unexpected&&) = default;
+
   Unexpected& operator=(const Unexpected&) = default;
+
   const E& error() const& { return err_; }
+
   E&& error() && { return std::move(err_); }
+
   E& error() & { return err_; }
 
  private:
@@ -88,10 +98,6 @@ class Result {
     new (&get_err()) Error(std::move(_err.error()));
   }
 
-  // Result(Error&& _err) noexcept : success_(false) {
-  //   new (&get_err()) Error(std::move(_err));
-  // }
-
   Result(Result<T>&& _other) noexcept : success_(_other.success_) {
     move_from_other(_other);
   }
@@ -119,7 +125,7 @@ class Result {
 
   /// Monadic operation - F must be a function of type T -> Result<U>.
   template <class F>
-  auto and_then(F&& _f) && {
+  auto and_then(const F& _f) && {
     /// Result_U is expected to be of type Result<U>.
     using Result_U = typename std::invoke_result<F, T>::type;
     if (success_) {
@@ -259,6 +265,16 @@ class Result {
 
   /// Returns the value if the result does not contain an error, throws an
   /// exceptions if not. Similar to .unwrap() in Rust.
+  T& value() & {
+    if (success_) {
+      return get_t();
+    } else {
+      throw std::runtime_error(get_err().what());
+    }
+  }
+
+  /// Returns the value if the result does not contain an error, throws an
+  /// exceptions if not. Similar to .unwrap() in Rust.
   const T& value() const& {
     if (success_) {
       return get_t();
@@ -308,14 +324,19 @@ class Result {
 
   bool has_value() const noexcept { return success_; }
 
-  const Error& error() const& {
+  Error& error() && {
+    if (success_) throw std::runtime_error("Expected does not contain value");
+    return std::move(*this).get_err();
+  }
+
+  Error& error() & {
     if (success_) throw std::runtime_error("Expected does not contain value");
     return get_err();
   }
 
-  Error& error() && {
+  const Error& error() const& {
     if (success_) throw std::runtime_error("Expected does not contain value");
-    return std::move(*this).get_err();
+    return get_err();
   }
 
   T* operator->() noexcept { return &get_t(); }
