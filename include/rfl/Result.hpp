@@ -119,19 +119,19 @@ class Result {
 
   /// Monadic operation - F must be a function of type T -> Result<U>.
   template <class F>
-  auto and_then(const F& _f) {
+  auto and_then(F&& _f) && {
     /// Result_U is expected to be of type Result<U>.
     using Result_U = typename std::invoke_result<F, T>::type;
     if (success_) {
-      return Result_U(_f(std::forward<T>(get_t())));
+      return Result_U(_f(std::move(*this).get_t()));
     } else {
-      return Result_U(std::forward<Error>(get_err()));
+      return Result_U(std::move(*this).get_err());
     }
   }
 
   /// Monadic operation - F must be a function of type T -> Result<U>.
   template <class F>
-  auto and_then(const F& _f) const {
+  auto and_then(const F& _f) const& {
     /// Result_U is expected to be of type Result<U>.
     using Result_U = typename std::invoke_result<F, T>::type;
     if (success_) {
@@ -146,11 +146,15 @@ class Result {
 
   /// Allows access to the underlying value. Careful: Will result in undefined
   /// behavior, if the result contains an error.
-  T& operator*() noexcept { return get_t(); }
+  T&& operator*() && noexcept { return std::move(*this).get_t(); }
+
+  /// Allows access to the underlying value. Careful: Will result in undefined
+  /// behavior, if the result contains an error.
+  T& operator*() & noexcept { return get_t(); }
 
   /// Allows read access to the underlying value. Careful: Will result in
   /// undefined behavior, if the result contains an error.
-  const T& operator*() const noexcept { return get_t(); }
+  const T& operator*() const& noexcept { return get_t(); }
 
   /// Assigns the underlying object.
   Result<T>& operator=(const Result<T>& _other) {
@@ -180,6 +184,7 @@ class Result {
     new (&get_err()) Error(_err.error());
     return *this;
   }
+
   Result<T>& operator=(const Unexpected<Error>& _err) noexcept {
     destroy();
     success_ = false;
@@ -199,18 +204,18 @@ class Result {
   /// Expects a function that takes of type Error -> Result<T> and returns
   /// Result<T>.
   template <class F>
-  Result<T> or_else(const F& _f) {
+  Result<T> or_else(const F& _f) && {
     if (success_) {
-      return std::forward<T>(get_t());
+      return std::move(*this).get_t();
     } else {
-      return _f(std::forward<Error>(get_err()));
+      return _f(std::move(*this).get_err());
     }
   }
 
   /// Expects a function that takes of type Error -> Result<T> and returns
   /// Result<T>.
   template <class F>
-  Result<T> or_else(const F& _f) const {
+  Result<T> or_else(const F& _f) const& {
     if (success_) {
       return get_t();
     } else {
@@ -220,19 +225,19 @@ class Result {
 
   /// Functor operation - F must be a function of type T -> U.
   template <class F>
-  auto transform(const F& _f) {
+  auto transform(const F& _f) && {
     /// Result_U is expected to be of type Result<U>.
-    using U = typename std::invoke_result<F, T>::type;
+    using U = std::invoke_result_t<F, T>;
     if (success_) {
-      return rfl::Result<U>(_f(std::forward<T>(get_t())));
+      return rfl::Result<U>(_f(std::move(*this).get_t()));
     } else {
-      return rfl::Result<U>(rfl::Unexpected(std::forward<Error>(get_err())));
+      return rfl::Result<U>(rfl::Unexpected(std::move(*this).get_err()));
     }
   }
 
   /// Functor operation - F must be a function of type T -> U.
   template <class F>
-  auto transform(const F& _f) const {
+  auto transform(const F& _f) const& {
     /// Result_U is expected to be of type Result<U>.
     using U = typename std::invoke_result<F, T>::type;
     if (success_) {
@@ -244,9 +249,9 @@ class Result {
 
   /// Returns the value if the result does not contain an error, throws an
   /// exceptions if not. Similar to .unwrap() in Rust.
-  T& value() {
+  T&& value() && {
     if (success_) {
-      return get_t();
+      return std::move(*this).get_t();
     } else {
       throw std::runtime_error(get_err().what());
     }
@@ -254,7 +259,7 @@ class Result {
 
   /// Returns the value if the result does not contain an error, throws an
   /// exceptions if not. Similar to .unwrap() in Rust.
-  const T& value() const {
+  const T& value() const& {
     if (success_) {
       return get_t();
     } else {
@@ -263,20 +268,29 @@ class Result {
   }
 
   /// Returns the value or a default.
-  T value_or(T&& _default) noexcept {
+  T&& value_or(T&& _default) && noexcept {
     if (success_) {
-      return std::forward<T>(get_t());
+      return std::move(*this).get_t();
     } else {
       return std::forward<T>(_default);
     }
   }
 
   /// Returns the value or a default.
-  T value_or(const T& _default) const noexcept {
+  T value_or(const T& _default) const& noexcept {
     if (success_) {
       return get_t();
     } else {
       return _default;
+    }
+  }
+
+  template <class G = rfl::Error>
+  rfl::Error error_or(G&& _default) && {
+    if (success_) {
+      return std::forward<G>(_default);
+    } else {
+      return std::move(*this).get_err();
     }
   }
 
@@ -286,41 +300,40 @@ class Result {
   template <class G = rfl::Error>
   rfl::Error error_or(G&& _default) const& {
     if (success_) {
-      return _default;
+      return std::forward<G>(_default);
     } else {
       return get_err();
     }
   }
-  template <class G = rfl::Error>
-  rfl::Error error_or(G&& _default) && {
-    if (success_) {
-      return _default;
-    } else {
-      return get_err();
-    }
-  }
+
   bool has_value() const noexcept { return success_; }
+
   const Error& error() const& {
     if (success_) throw std::runtime_error("Expected does not contain value");
     return get_err();
   }
-  Error& error() & {
+
+  Error& error() && {
     if (success_) throw std::runtime_error("Expected does not contain value");
-    return get_err();
+    return std::move(*this).get_err();
   }
+
   T* operator->() noexcept { return &get_t(); }
+
   const T* operator->() const noexcept { return &get_t(); }
+
   template <class F>
   rfl::Result<T> transform_error(F&& f) && {
     static_assert(
         std::is_same<std::invoke_result_t<F, rfl::Error>, rfl::Error>(),
         "A function passed to transform_error must return an error.");
     if (!has_value()) {
-      return rfl::Result<T>{std::invoke(f, std::move(get_err()))};
+      return rfl::Result<T>{std::invoke(f, std::move(*this).get_err())};
     } else {
-      return rfl::Result<T>{std::move(value())};
+      return rfl::Result<T>{std::move(*this).value()};
     }
   }
+
   template <class F>
   rfl::Result<T> transform_error(F&& f) const& {
     static_assert(
@@ -352,19 +365,27 @@ class Result {
     }
   }
 
-  T& get_t() noexcept {
+  T&& get_t() && noexcept {
+    return std::move(*std::launder(reinterpret_cast<T*>(t_or_err_.data())));
+  }
+
+  T& get_t() & noexcept {
     return *std::launder(reinterpret_cast<T*>(t_or_err_.data()));
   }
 
-  const T& get_t() const noexcept {
+  const T& get_t() const& noexcept {
     return *std::launder(reinterpret_cast<const T*>(t_or_err_.data()));
   }
 
-  Error& get_err() noexcept {
+  Error&& get_err() && noexcept {
+    return std::move(*std::launder(reinterpret_cast<Error*>(t_or_err_.data())));
+  }
+
+  Error& get_err() & noexcept {
     return *std::launder(reinterpret_cast<Error*>(t_or_err_.data()));
   }
 
-  const Error& get_err() const noexcept {
+  const Error& get_err() const& noexcept {
     return *std::launder(reinterpret_cast<const Error*>(t_or_err_.data()));
   }
 
