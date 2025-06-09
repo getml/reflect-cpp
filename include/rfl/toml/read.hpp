@@ -34,7 +34,7 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
   try {
     auto table = ::toml::parse(_toml_str);
     return read<T, Ps...>(&table);
-  } catch (std::runtime_error& e) {
+  } catch (const std::exception& e) {
     return error(e.what());
   }
 #else
