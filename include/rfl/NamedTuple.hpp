@@ -85,27 +85,29 @@ class NamedTuple {
   /// Move constructor.
   template <class... OtherFieldTypes>
   NamedTuple(NamedTuple<OtherFieldTypes...>&& _other)
-      : NamedTuple(retrieve_fields(_other.fields(), seq_)) {}
+      : NamedTuple(retrieve_fields(
+            std::forward<NamedTuple<OtherFieldTypes...>>(_other).fields(),
+            seq_)) {}
 
   ~NamedTuple() = default;
 
   /// Returns a new named tuple with additional fields.
   template <internal::StringLiteral _name, class FType, class... Tail>
-  auto add(Field<_name, FType>&& _head, Tail&&... _tail) {
+  auto add(Field<_name, FType>&& _head, Tail&&... _tail) && {
     using Head = Field<_name, FType>;
     if constexpr (sizeof...(Tail) > 0) {
       return NamedTuple<FieldTypes..., std::remove_cvref_t<Head>>(
-                 make_fields(seq_, std::forward<Head>(_head)))
+                 std::move(*this).make_fields(seq_, std::forward<Head>(_head)))
           .add(std::forward<Tail>(_tail)...);
     } else {
       return NamedTuple<FieldTypes..., std::remove_cvref_t<Head>>(
-          make_fields(seq_, std::forward<Head>(_head)));
+          std::move(*this).make_fields(seq_, std::forward<Head>(_head)));
     }
   }
 
   /// Returns a new named tuple with additional fields.
   template <internal::StringLiteral _name, class FType, class... Tail>
-  auto add(Field<_name, FType> _head, const Tail&... _tail) const {
+  auto add(Field<_name, FType> _head, const Tail&... _tail) const& {
     using Head = Field<_name, FType>;
     if constexpr (sizeof...(Tail) > 0) {
       return NamedTuple<FieldTypes..., std::remove_cvref_t<Head>>(
@@ -120,19 +122,21 @@ class NamedTuple {
   /// Template specialization for rfl::Tuple, so we can pass fields from other
   /// named tuples.
   template <class... TupContent, class... Tail>
-  auto add(rfl::Tuple<TupContent...>&& _tuple, Tail&&... _tail) {
+  auto add(rfl::Tuple<TupContent...>&& _tuple, Tail&&... _tail) && {
     if constexpr (sizeof...(Tail) > 0) {
-      return add_tuple(std::forward<rfl::Tuple<TupContent...>>(_tuple))
+      return std::move(*this)
+          .add_tuple(std::forward<rfl::Tuple<TupContent...>>(_tuple))
           .add(std::forward<Tail>(_tail)...);
     } else {
-      return add_tuple(std::forward<rfl::Tuple<TupContent...>>(_tuple));
+      return std::move(*this).add_tuple(
+          std::forward<rfl::Tuple<TupContent...>>(_tuple));
     }
   }
 
   /// Template specialization for rfl::Tuple, so we can pass fields from other
   /// named tuples.
   template <class... TupContent, class... Tail>
-  auto add(rfl::Tuple<TupContent...> _tuple, const Tail&... _tail) const {
+  auto add(rfl::Tuple<TupContent...> _tuple, const Tail&... _tail) const& {
     if constexpr (sizeof...(Tail) > 0) {
       return add_tuple(std::move(_tuple)).add(_tail...);
     } else {
@@ -143,36 +147,39 @@ class NamedTuple {
   /// Template specialization for NamedTuple, so we can pass fields from other
   /// named tuples.
   template <class... TupContent, class... Tail>
-  auto add(NamedTuple<TupContent...>&& _named_tuple, Tail&&... _tail) {
-    return add(std::forward<rfl::Tuple<TupContent...>>(_named_tuple.fields()),
-               std::forward<Tail>(_tail)...);
+  auto add(NamedTuple<TupContent...>&& _named_tuple, Tail&&... _tail) && {
+    return std::move(*this).add(
+        std::forward<rfl::Tuple<TupContent...>>(
+            std::forward<NamedTuple<TupContent...>>(_named_tuple).fields()),
+        std::forward<Tail>(_tail)...);
   }
 
   /// Template specialization for NamedTuple, so we can pass fields from other
   /// named tuples.
   template <class... TupContent, class... Tail>
-  auto add(NamedTuple<TupContent...> _named_tuple, const Tail&... _tail) const {
+  auto add(NamedTuple<TupContent...> _named_tuple,
+           const Tail&... _tail) const& {
     return add(_named_tuple.fields(), _tail...);
   }
 
   /// Creates a new named tuple by applying the supplied function to
   /// field. The function is expected to return a named tuple itself.
   template <typename F>
-  auto and_then(const F& _f) {
+  auto and_then(const F& _f) && {
     const auto transform_field = [&_f](auto... _fields) {
       return rfl::tuple_cat(_f(std::move(_fields)).fields()...);
     };
     const auto to_nt = []<class... NewFields>(rfl::Tuple<NewFields...>&& _tup) {
       return NamedTuple<NewFields...>(_tup);
     };
-    auto new_fields = rfl::apply(transform_field, std::move(fields()));
+    auto new_fields = rfl::apply(transform_field, std::move(*this).fields());
     return to_nt(std::move(new_fields));
   }
 
   /// Creates a new named tuple by applying the supplied function to
   /// field. The function is expected to return a named tuple itself.
   template <typename F>
-  auto and_then(const F& _f) const {
+  auto and_then(const F& _f) const& {
     const auto transform_field = [&_f](auto... _fields) {
       return rfl::tuple_cat(_f(std::move(_fields)).fields()...);
     };
@@ -193,10 +200,10 @@ class NamedTuple {
   }
 
   /// Returns a tuple containing the fields.
-  Fields fields() { return make_fields(seq_); }
+  Fields fields() && { return std::move(*this).make_fields(seq_); }
 
   /// Returns a tuple containing the fields.
-  Fields fields() const { return make_fields(seq_); }
+  Fields fields() const& { return make_fields(seq_); }
 
   /// Gets a field by index.
   template <int _index>
@@ -276,13 +283,15 @@ class NamedTuple {
   /// Replaces one or several fields, returning a new version
   /// with the non-replaced fields left unchanged.
   template <internal::StringLiteral _name, class FType, class... OtherRFields>
-  auto replace(Field<_name, FType>&& _field, OtherRFields&&... _other_fields) {
+  auto replace(Field<_name, FType>&& _field,
+               OtherRFields&&... _other_fields) && {
     using RField = Field<_name, FType>;
     constexpr auto num_other_fields = sizeof...(OtherRFields);
     if constexpr (num_other_fields == 0) {
-      return replace_value<RField>(_field.value_);
+      return std::move(*this).template replace_value<RField>(_field.value_);
     } else {
-      return replace_value<RField>(_field.value_)
+      return std::move(*this)
+          .template replace_value<RField>(_field.value_)
           .replace(std::forward<OtherRFields>(_other_fields)...);
     }
   }
@@ -291,7 +300,7 @@ class NamedTuple {
   /// with the non-replaced fields left unchanged.
   template <internal::StringLiteral _name, class FType, class... OtherRFields>
   auto replace(Field<_name, FType> _field,
-               const OtherRFields&... _other_fields) const {
+               const OtherRFields&... _other_fields) const& {
     using RField = Field<_name, FType>;
     constexpr auto num_other_fields = sizeof...(OtherRFields);
     if constexpr (num_other_fields == 0) {
@@ -305,19 +314,21 @@ class NamedTuple {
   /// Template specialization for rfl::Tuple, so we can pass fields from other
   /// named tuples.
   template <class... TupContent, class... Tail>
-  auto replace(rfl::Tuple<TupContent...>&& _tuple, Tail&&... _tail) {
+  auto replace(rfl::Tuple<TupContent...>&& _tuple, Tail&&... _tail) && {
     if constexpr (sizeof...(Tail) > 0) {
-      return replace_tuple(std::forward<rfl::Tuple<TupContent...>>(_tuple))
+      return std::move(*this)
+          .replace_tuple(std::forward<rfl::Tuple<TupContent...>>(_tuple))
           .replace(std::forward<Tail>(_tail)...);
     } else {
-      return replace_tuple(std::forward<rfl::Tuple<TupContent...>>(_tuple));
+      return std::move(*this).replace_tuple(
+          std::forward<rfl::Tuple<TupContent...>>(_tuple));
     }
   }
 
   /// Template specialization for rfl::Tuple, so we can pass fields from other
   /// named tuples.
   template <class... TupContent, class... Tail>
-  auto replace(rfl::Tuple<TupContent...> _tuple, const Tail&... _tail) const {
+  auto replace(rfl::Tuple<TupContent...> _tuple, const Tail&... _tail) const& {
     if constexpr (sizeof...(Tail) > 0) {
       return replace_tuple(std::move(_tuple)).replace(_tail...);
     } else {
@@ -328,8 +339,8 @@ class NamedTuple {
   /// Template specialization for NamedTuple, so we can pass fields from other
   /// named tuples.
   template <class... TupContent, class... Tail>
-  auto replace(NamedTuple<TupContent...>&& _named_tuple, Tail&&... _tail) {
-    return replace(
+  auto replace(NamedTuple<TupContent...>&& _named_tuple, Tail&&... _tail) && {
+    return std::move(*this).replace(
         std::forward<NamedTuple<TupContent...>>(_named_tuple).fields(),
         std::forward<Tail>(_tail)...);
   }
@@ -338,7 +349,7 @@ class NamedTuple {
   /// named tuples.
   template <class... TupContent, class... Tail>
   auto replace(NamedTuple<TupContent...> _named_tuple,
-               const Tail&... _tail) const {
+               const Tail&... _tail) const& {
     return replace(_named_tuple.fields(), _tail...);
   }
 
@@ -348,21 +359,21 @@ class NamedTuple {
   /// Creates a new named tuple by applying the supplied function to every
   /// field.
   template <typename F>
-  auto transform(const F& _f) {
+  auto transform(const F& _f) && {
     const auto transform_field = [&_f](auto... fields) {
       return rfl::make_tuple(_f(std::move(fields))...);
     };
     const auto to_nt = []<class... NewFields>(rfl::Tuple<NewFields...>&& _tup) {
       return NamedTuple<NewFields...>(_tup);
     };
-    auto new_fields = rfl::apply(transform_field, std::move(fields()));
+    auto new_fields = rfl::apply(transform_field, std::move(*this).fields());
     return to_nt(std::move(new_fields));
   }
 
   /// Creates a new named tuple by applying the supplied function to every
   /// field.
   template <typename F>
-  auto transform(const F& _f) const {
+  auto transform(const F& _f) const& {
     const auto transform_field = [&_f](auto... fields) {
       return rfl::make_tuple(_f(std::move(fields))...);
     };
@@ -383,9 +394,9 @@ class NamedTuple {
   /// Adds the elements of a tuple to a newly created named tuple,
   /// and other elements to a newly created named tuple.
   template <class... TupContent>
-  constexpr auto add_tuple(rfl::Tuple<TupContent...>&& _tuple) {
+  constexpr auto add_tuple(rfl::Tuple<TupContent...>&& _tuple) && {
     const auto a = [this](auto&&... _fields) {
-      return this->add(std::forward<TupContent>(_fields)...);
+      return std::move(*this).add(std::forward<TupContent>(_fields)...);
     };
     return rfl::apply(a, std::forward<rfl::Tuple<TupContent...>>(_tuple));
   }
@@ -393,7 +404,7 @@ class NamedTuple {
   /// Adds the elements of a tuple to a newly created named tuple,
   /// and other elements to a newly created named tuple.
   template <class... TupContent>
-  constexpr auto add_tuple(rfl::Tuple<TupContent...>&& _tuple) const {
+  constexpr auto add_tuple(rfl::Tuple<TupContent...>&& _tuple) const& {
     const auto a = [this](auto&&... _fields) {
       return this->add(std::forward<TupContent>(_fields)...);
     };
@@ -435,11 +446,10 @@ class NamedTuple {
   /// Generates the fields.
   template <int... _is, class... AdditionalArgs>
   auto make_fields(std::integer_sequence<int, _is...>,
-                   AdditionalArgs&&... _args) {
+                   AdditionalArgs&&... _args) && {
     const auto wrap = [this]<int _i>(Index<_i>) {
       using FieldType = internal::nth_element_t<_i, FieldTypes...>;
-      using T = std::remove_cvref_t<typename FieldType::Type>;
-      return FieldType(std::forward<T>(rfl::get<_i>(values_)));
+      return FieldType(std::move(rfl::get<_i>(values_)));
     };
     return rfl::make_tuple(wrap(Index<_is>{})...,
                            std::forward<AdditionalArgs>(_args)...);
@@ -448,7 +458,7 @@ class NamedTuple {
   /// Generates the fields.
   template <int... _is, class... AdditionalArgs>
   auto make_fields(std::integer_sequence<int, _is...>,
-                   AdditionalArgs... _args) const {
+                   AdditionalArgs... _args) const& {
     const auto wrap = [this]<int _i>(Index<_i>) {
       using FieldType = internal::nth_element_t<_i, FieldTypes...>;
       return FieldType(rfl::get<_i>(values_));
@@ -474,16 +484,16 @@ class NamedTuple {
 
   /// Replaced the field signified by the field type.
   template <class Field, class T>
-  NamedTuple<FieldTypes...> replace_value(T&& _val) {
+  NamedTuple<FieldTypes...> replace_value(T&& _val) && {
     using FieldType = std::remove_cvref_t<Field>;
     constexpr auto index = internal::find_index<FieldType::name_, Fields>();
-    return make_replaced<index>(std::forward<Values>(values_),
-                                std::forward<T>(_val), seq_);
+    return make_replaced<index>(std::move(values_), std::forward<T>(_val),
+                                seq_);
   }
 
   /// Replaced the field signified by the field type.
   template <class Field, class T>
-  NamedTuple<FieldTypes...> replace_value(T&& _val) const {
+  NamedTuple<FieldTypes...> replace_value(T&& _val) const& {
     using FieldType = std::remove_cvref_t<Field>;
     constexpr auto index = internal::find_index<FieldType::name_, Fields>();
     auto values = values_;
@@ -493,9 +503,9 @@ class NamedTuple {
   /// Adds the elements of a tuple to a newly created named tuple,
   /// and other elements to a newly created named tuple.
   template <class... TupContent>
-  auto replace_tuple(rfl::Tuple<TupContent...>&& _tuple) {
+  auto replace_tuple(rfl::Tuple<TupContent...>&& _tuple) && {
     const auto r = [this](auto&&... _fields) {
-      return this->replace(std::forward<TupContent>(_fields)...);
+      return std::move(*this).replace(std::forward<TupContent>(_fields)...);
     };
     return rfl::apply(r, std::forward<rfl::Tuple<TupContent...>>(_tuple));
   }
@@ -503,7 +513,7 @@ class NamedTuple {
   /// Adds the elements of a tuple to a newly created named tuple,
   /// and other elements to a newly created named tuple.
   template <class... TupContent>
-  auto replace_tuple(rfl::Tuple<TupContent...>&& _tuple) const {
+  auto replace_tuple(rfl::Tuple<TupContent...>&& _tuple) const& {
     const auto r = [this](auto&&... _fields) {
       return this->replace(std::forward<TupContent>(_fields)...);
     };
