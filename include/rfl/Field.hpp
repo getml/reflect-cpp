@@ -29,9 +29,9 @@ struct Field {
 
   Field(Type&& _value) noexcept : value_(std::move(_value)) {}
 
-  Field(Field<_name, T>&& _field) noexcept = default;
+  Field(Field&& _field) noexcept = default;
 
-  Field(const Field<_name, T>& _field) = default;
+  Field(const Field& _field) = default;
 
   template <class U>
   Field(const Field<_name, U>& _field) : value_(_field.get()) {}
@@ -104,10 +104,10 @@ struct Field {
   }
 
   /// Assigns the underlying object.
-  Field<_name, T>& operator=(const Field<_name, T>& _field) = default;
+  Field& operator=(const Field& _field) = default;
 
   /// Assigns the underlying object.
-  Field<_name, T>& operator=(Field<_name, T>&& _field) = default;
+  Field& operator=(Field&& _field) = default;
 
   /// Assigns the underlying object.
   template <class U>

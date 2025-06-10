@@ -48,9 +48,9 @@ class Tuple {
 
   Tuple() : Tuple(Types()...) {}
 
-  Tuple(const Tuple<Types...>& _other) { copy_from_other(_other, seq_); }
+  Tuple(const Tuple& _other) { copy_from_other(_other, seq_); }
 
-  Tuple(Tuple<Types...>&& _other) noexcept {
+  Tuple(Tuple&& _other) noexcept {
     move_from_other(std::move(_other), seq_);
   }
 
@@ -71,18 +71,18 @@ class Tuple {
   }
 
   /// Assigns the underlying object.
-  Tuple<Types...>& operator=(const Tuple<Types...>& _other) {
+  Tuple& operator=(const Tuple& _other) {
     if (this == &_other) {
       return *this;
     }
-    auto temp = Tuple<Types...>(_other);
+    auto temp = Tuple(_other);
     destroy_if_necessary(seq_);
     move_from_other(std::move(temp), seq_);
     return *this;
   }
 
   /// Assigns the underlying object.
-  Tuple<Types...>& operator=(Tuple<Types...>&& _other) noexcept {
+  Tuple& operator=(Tuple&& _other) noexcept {
     if (this == &_other) {
       return *this;
     }
@@ -127,7 +127,7 @@ class Tuple {
 
  private:
   template <int... _is>
-  void copy_from_other(const Tuple<Types...>& _other,
+  void copy_from_other(const Tuple& _other,
                        std::integer_sequence<int, _is...>) {
     const auto copy_one = [this]<int _i>(const auto& _other,
                                          std::integral_constant<int, _i>) {
@@ -161,7 +161,7 @@ class Tuple {
   }
 
   template <int... _is>
-  void move_from_other(Tuple<Types...>&& _other,
+  void move_from_other(Tuple&& _other,
                        std::integer_sequence<int, _is...>) {
     const auto move_one = [this]<int _i>(auto&& _other,
                                          std::integral_constant<int, _i>) {

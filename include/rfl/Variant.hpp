@@ -11,10 +11,10 @@
 
 #include "internal/element_index.hpp"
 #include "internal/nth_element_t.hpp"
+#include "internal/ptr_cast.hpp"
 #include "internal/variant/find_max_size.hpp"
 #include "internal/variant/is_alternative_type.hpp"
 #include "internal/variant/result_t.hpp"
-#include "internal/ptr_cast.hpp"
 
 namespace rfl {
 
@@ -49,12 +49,12 @@ class Variant {
     move_from_type(FirstAlternative());
   }
 
-  Variant(const Variant<AlternativeTypes...>& _other)
+  Variant(const Variant& _other)
       : index_(IndexType()), data_(DataType()) {
     copy_from_other(_other);
   }
 
-  Variant(Variant<AlternativeTypes...>&& _other) noexcept
+  Variant(Variant&& _other) noexcept
       : index_(IndexType()), data_(DataType()) {
     move_from_other(std::move(_other));
   }
@@ -101,8 +101,8 @@ class Variant {
             typename std::enable_if<internal::variant::is_alternative_type<
                                         T, AlternativeTypes...>(),
                                     bool>::type = true>
-  Variant<AlternativeTypes...>& operator=(const T& _t) {
-    auto temp = Variant<AlternativeTypes...>(_t);
+  Variant& operator=(const T& _t) {
+    auto temp = Variant(_t);
     destroy_if_necessary();
     move_from_other(std::move(temp));
     return *this;
@@ -113,27 +113,25 @@ class Variant {
             typename std::enable_if<internal::variant::is_alternative_type<
                                         T, AlternativeTypes...>(),
                                     bool>::type = true>
-  Variant<AlternativeTypes...>& operator=(T&& _t) noexcept {
+  Variant& operator=(T&& _t) noexcept {
     destroy_if_necessary();
     move_from_type(std::forward<T>(_t));
     return *this;
   }
 
   /// Assigns the underlying object.
-  Variant<AlternativeTypes...>& operator=(
-      const Variant<AlternativeTypes...>& _other) {
+  Variant& operator=(const Variant& _other) {
     if (this == &_other) {
       return *this;
     }
-    auto temp = Variant<AlternativeTypes...>(_other);
+    auto temp = Variant(_other);
     destroy_if_necessary();
     move_from_other(std::move(temp));
     return *this;
   }
 
   /// Assigns the underlying object.
-  Variant<AlternativeTypes...>& operator=(
-      Variant<AlternativeTypes...>&& _other) noexcept {
+  Variant& operator=(Variant&& _other) noexcept {
     if (this == &_other) {
       return *this;
     }
@@ -143,11 +141,11 @@ class Variant {
   }
 
   /// Swaps the content with the other variant.
-  void swap(Variant<AlternativeTypes...>& _other) noexcept {
+  void swap(Variant& _other) noexcept {
     if (this == &_other) {
       return;
     }
-    auto temp = Variant<AlternativeTypes...>(std::move(*this));
+    auto temp = Variant(std::move(*this));
     move_from_other(std::move(_other));
     _other = std::move(temp);
   }
@@ -193,7 +191,7 @@ class Variant {
   }
 
  private:
-  void copy_from_other(const Variant<AlternativeTypes...>& _other) {
+  void copy_from_other(const Variant& _other) {
     const auto copy_one = [this](const auto& _t) { this->copy_from_type(_t); };
     _other.visit(copy_one);
   }
@@ -396,11 +394,11 @@ class Variant {
     return *internal::ptr_cast<const CurrentType*>(data_.data());
   }
 
-  void move_from_other(Variant<AlternativeTypes...>&& _other) noexcept {
+  void move_from_other(Variant&& _other) noexcept {
     const auto move_one = [this](auto&& _t) {
       this->move_from_type(std::forward<std::remove_cvref_t<decltype(_t)>>(_t));
     };
-    std::forward<Variant<AlternativeTypes...>>(_other).visit(move_one);
+    std::move(_other).visit(move_one);
   }
 
   template <class T>
