@@ -21,9 +21,9 @@ struct Validator {
       std::conditional_t<sizeof...(Vs) == 0, V, AllOf<V, Vs...>>;
 
   /// Exception-free validation.
-  static Result<Validator<T, V, Vs...>> from_value(const T& _value) noexcept {
+  static Result<Validator> from_value(const T& _value) noexcept {
     try {
-      return Validator<T, V, Vs...>(_value);
+      return Validator(_value);
     } catch (std::exception& e) {
       return error(e.what());
     }
@@ -31,9 +31,9 @@ struct Validator {
 
   Validator() : value_(ValidationType::validate(T()).value()) {}
 
-  Validator(Validator<T, V, Vs...>&& _other) noexcept = default;
+  Validator(Validator&& _other) noexcept = default;
 
-  Validator(const Validator<T, V, Vs...>& _other) = default;
+  Validator(const Validator& _other) = default;
 
   Validator(T&& _value) : value_(ValidationType::validate(_value).value()) {}
 
@@ -65,11 +65,11 @@ struct Validator {
   }
 
   /// Assigns the underlying object.
-  Validator<T, V, Vs...>& operator=(const Validator<T, V, Vs...>& _other) =
+  Validator& operator=(const Validator& _other) =
       default;
 
   /// Assigns the underlying object.
-  Validator<T, V, Vs...>& operator=(Validator<T, V, Vs...>&& _other) noexcept =
+  Validator& operator=(Validator&& _other) noexcept =
       default;
 
   /// Assigns the underlying object.
@@ -89,7 +89,7 @@ struct Validator {
   }
 
   /// Equality operator other Validators.
-  bool operator==(const Validator<T, V, Vs...>& _other) const {
+  bool operator==(const Validator& _other) const {
     return value() == _other.value();
   }
 
