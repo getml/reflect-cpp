@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.23)
 
+project(reflectcpp VERSION 0.19.0 LANGUAGES CXX)
+
 option(REFLECTCPP_BUILD_SHARED "Build shared library" ${BUILD_SHARED_LIBS})
+option(REFLECTCPP_INSTALL "Install reflect cpp" ${PROJECT_IS_TOP_LEVEL})
 
 option(REFLECTCPP_JSON "Enable JSON support" ON) # enabled by default
 option(REFLECTCPP_AVRO "Enable AVRO support" OFF)
@@ -119,8 +122,6 @@ if (REFLECTCPP_USE_VCPKG)
     
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
 endif ()
-
-project(reflectcpp VERSION 0.19.0 LANGUAGES CXX)
 
 if (REFLECTCPP_BUILD_SHARED)
     add_library(reflectcpp SHARED)
@@ -308,7 +309,7 @@ if (REFLECTCPP_BUILD_BENCHMARKS)
     add_subdirectory(benchmarks)
 endif ()
 
-if (PROJECT_IS_TOP_LEVEL)
+if (REFLECTCPP_INSTALL)
     include(GNUInstallDirs)
     include(CMakePackageConfigHelpers)
 
