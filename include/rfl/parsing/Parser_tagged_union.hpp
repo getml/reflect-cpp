@@ -125,7 +125,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
   static void set_if_disc_value_matches(const R& _r,
                                         const std::string& _disc_value,
                                         const InputVarType& _var,
-                                        ResultType* _res,
+                                        ResultType* _result,
                                         bool* _match_found) noexcept {
     using AlternativeType = std::remove_cvref_t<
         std::variant_alternative_t<_i, std::variant<AlternativeTypes...>>>;
@@ -156,12 +156,12 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
       if constexpr (no_field_names_) {
         using T = tagged_union_wrapper_no_ptr_t<std::invoke_result_t<
             decltype(wrap_if_necessary<AlternativeType>), AlternativeType>>;
-        *_res = Parser<R, W, T, ProcessorsType>::read(_r, _var)
+        *_result = Parser<R, W, T, ProcessorsType>::read(_r, _var)
                     .transform(get_fields)
                     .transform(to_tagged_union)
                     .transform_error(embellish_error);
       } else {
-        *_res = Parser<R, W, AlternativeType, ProcessorsType>::read(_r, _var)
+        *_result = Parser<R, W, AlternativeType, ProcessorsType>::read(_r, _var)
                     .transform(to_tagged_union)
                     .transform_error(embellish_error);
       }

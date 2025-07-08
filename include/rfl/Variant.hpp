@@ -283,103 +283,103 @@ class Variant {
   }
 
   template <class F, class ResultType, IndexType... _is>
-  void do_visit_with_result(F& _f, std::optional<ResultType>* _res,
+  void do_visit_with_result(F& _f, std::optional<ResultType>* _result,
                             std::integer_sequence<IndexType, _is...>) {
     auto visit_one = [this]<IndexType _i>(const F& _f,
-                                          std::optional<ResultType>* _res,
+                                          std::optional<ResultType>* _result,
                                           Index<_i>) {
-      if (!*_res && index_ == _i) {
-        _res->emplace(_f(get_alternative<_i>()));
+      if (!*_result && index_ == _i) {
+        _result->emplace(_f(get_alternative<_i>()));
       }
     };
-    (visit_one(_f, _res, Index<_is>{}), ...);
+    (visit_one(_f, _result, Index<_is>{}), ...);
   }
 
   template <class F, class ResultType, IndexType... _is>
-  void do_visit_with_result(F& _f, std::optional<ResultType>* _res,
+  void do_visit_with_result(F& _f, std::optional<ResultType>* _result,
                             std::integer_sequence<IndexType, _is...>) const {
     auto visit_one = [this]<IndexType _i>(const F& _f,
-                                          std::optional<ResultType>* _res,
+                                          std::optional<ResultType>* _result,
                                           Index<_i>) {
-      if (!*_res && index_ == _i) {
-        _res->emplace(_f(get_alternative<_i>()));
+      if (!*_result && index_ == _i) {
+        _result->emplace(_f(get_alternative<_i>()));
       }
     };
-    (visit_one(_f, _res, Index<_is>{}), ...);
+    (visit_one(_f, _result, Index<_is>{}), ...);
   }
 
   template <class F, class ResultType, IndexType... _is>
-  void do_visit_with_result(const F& _f, std::optional<ResultType>* _res,
+  void do_visit_with_result(const F& _f, std::optional<ResultType>* _result,
                             std::integer_sequence<IndexType, _is...>) {
     const auto visit_one = [this]<IndexType _i>(const F& _f,
-                                                std::optional<ResultType>* _res,
+                                                std::optional<ResultType>* _result,
                                                 Index<_i>) {
-      if (!*_res && index_ == _i) {
-        _res->emplace(_f(get_alternative<_i>()));
+      if (!*_result && index_ == _i) {
+        _result->emplace(_f(get_alternative<_i>()));
       }
     };
-    (visit_one(_f, _res, Index<_is>{}), ...);
+    (visit_one(_f, _result, Index<_is>{}), ...);
   }
 
   template <class F, class ResultType, IndexType... _is>
-  void do_visit_with_result(const F& _f, std::optional<ResultType>* _res,
+  void do_visit_with_result(const F& _f, std::optional<ResultType>* _result,
                             std::integer_sequence<IndexType, _is...>) const {
     const auto visit_one = [this]<IndexType _i>(const F& _f,
-                                                std::optional<ResultType>* _res,
+                                                std::optional<ResultType>* _result,
                                                 Index<_i>) {
-      if (!*_res && index_ == _i) {
-        _res->emplace(_f(get_alternative<_i>()));
+      if (!*_result && index_ == _i) {
+        _result->emplace(_f(get_alternative<_i>()));
       }
     };
-    (visit_one(_f, _res, Index<_is>{}), ...);
+    (visit_one(_f, _result, Index<_is>{}), ...);
   }
 
   template <class F, class ResultType, IndexType... _is>
-  void do_visit_with_reference(F& _f, ResultType** _res,
+  void do_visit_with_reference(F& _f, ResultType** _result,
                                std::integer_sequence<IndexType, _is...>) {
-    const auto visit_one = [this]<IndexType _i>(const F& _f, ResultType** _res,
+    const auto visit_one = [this]<IndexType _i>(const F& _f, ResultType** _result,
                                                 Index<_i>) {
-      if (!*_res && index_ == _i) {
-        *_res = &_f(get_alternative<_i>());
+      if (!*_result && index_ == _i) {
+        *_result = &_f(get_alternative<_i>());
       }
     };
-    (visit_one(_f, _res, Index<_is>{}), ...);
+    (visit_one(_f, _result, Index<_is>{}), ...);
   }
 
   template <class F, class ResultType, IndexType... _is>
-  void do_visit_with_reference(F& _f, ResultType** _res,
+  void do_visit_with_reference(F& _f, ResultType** _result,
                                std::integer_sequence<IndexType, _is...>) const {
-    const auto visit_one = [this]<IndexType _i>(const F& _f, ResultType** _res,
+    const auto visit_one = [this]<IndexType _i>(const F& _f, ResultType** _result,
                                                 Index<_i>) {
-      if (!*_res && index_ == _i) {
-        *_res = &_f(get_alternative<_i>());
+      if (!*_result && index_ == _i) {
+        *_result = &_f(get_alternative<_i>());
       }
     };
-    (visit_one(_f, _res, Index<_is>{}), ...);
+    (visit_one(_f, _result, Index<_is>{}), ...);
   }
 
   template <class F, class ResultType, IndexType... _is>
-  void do_visit_with_reference(const F& _f, ResultType** _res,
+  void do_visit_with_reference(const F& _f, ResultType** _result,
                                std::integer_sequence<IndexType, _is...>) {
-    const auto visit_one = [this]<IndexType _i>(const F& _f, ResultType** _res,
+    const auto visit_one = [this]<IndexType _i>(const F& _f, ResultType** _result,
                                                 Index<_i>) {
-      if (!*_res && index_ == _i) {
-        *_res = &_f(get_alternative<_i>());
+      if (!*_result && index_ == _i) {
+        *_result = &_f(get_alternative<_i>());
       }
     };
-    (visit_one(_f, _res, Index<_is>{}), ...);
+    (visit_one(_f, _result, Index<_is>{}), ...);
   }
 
   template <class F, class ResultType, IndexType... _is>
-  void do_visit_with_reference(const F& _f, ResultType** _res,
+  void do_visit_with_reference(const F& _f, ResultType** _result,
                                std::integer_sequence<IndexType, _is...>) const {
-    const auto visit_one = [this]<IndexType _i>(const F& _f, ResultType** _res,
+    const auto visit_one = [this]<IndexType _i>(const F& _f, ResultType** _result,
                                                 Index<_i>) {
-      if (!*_res && index_ == _i) {
-        *_res = &_f(get_alternative<_i>());
+      if (!*_result && index_ == _i) {
+        *_result = &_f(get_alternative<_i>());
       }
     };
-    (visit_one(_f, _res, Index<_is>{}), ...);
+    (visit_one(_f, _result, Index<_is>{}), ...);
   }
 
   template <IndexType _i>
