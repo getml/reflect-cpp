@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_PARSER_STRING_VIEW_HPP_
 #define RFL_PARSING_PARSER_STRING_VIEW_HPP_
 
+#include <cstring>
 #include <map>
 #include <string>
 #include <string_view>
@@ -19,12 +20,24 @@ template <class R, class W, class ProcessorsType>
 struct Parser<R, W, std::string_view, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
-  static Result<std::string_view> read(const R&, const InputVarType&) noexcept {
-    static_assert(always_false_v<R>,
-                  "Reading into std::string_view is dangerous and "
-                  "therefore unsupported. "
-                  "Please consider using std::string instead.");
-    return error("Unsupported.");
+  static Result<std::string_view> read(const R& _r,
+                                       const InputVarType& _var) noexcept {
+    if constexpr (!ProcessorsType::allow_raw_ptrs_) {
+      static_assert(always_false_v<R>,
+                    "Reading into std::string_view is dangerous and "
+                    "therefore unsupported. "
+                    "Please consider using std::string instead, or use the "
+                    "rfl::AllowRawPtrs processor.");
+      return error("Unsupported.");
+    } else {
+      return Parser<R, W, std::string, ProcessorsType>::read(_r, _var)
+          .transform([](std::string&& str) {
+            char* data =
+                new char[str.size() + 1];  // +1 for the null terminator
+            std::memcpy(data, str.data(), str.size() + 1);
+            return std::string_view(data, str.size());
+          });
+    }
   }
 
   template <class P>
