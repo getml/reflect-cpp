@@ -134,6 +134,8 @@ else()
     add_library(reflectcpp STATIC)
 endif()
 
+add_library(reflectcpp::reflectcpp ALIAS reflectcpp)
+
 if (MSVC)
     target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall>)
 else()
