@@ -4,7 +4,7 @@
 #include <iostream>
 #include <rfl.hpp>
 
-#include "rfl/internal/num_fields.hpp"
+#include "rfl/num_fields.hpp"
 
 namespace test_inheritance2 {
 
@@ -31,23 +31,28 @@ struct EmptyDerived2 : EmptyBase1, EmptyBase2, BaseX {};
 TEST(json, test_inheritance2) {
   Derived1 derived1;
   const auto derived1_view = rfl::to_view(derived1);
+  static_assert(rfl::num_fields<Derived1> == 2);
   static_assert(derived1_view.size() == 2);
 
   Derived2 derived2;
   const auto derived2_view = rfl::to_view(derived2);
+  static_assert(rfl::num_fields<Derived2> == 3);
   static_assert(derived2_view.size() == 3);
 
-  EmptyDerived1 empty_derived0;
+  EmptyDerived0 empty_derived0;
   auto empty_derived0_view = rfl::to_view(empty_derived0);
+  static_assert(rfl::num_fields<EmptyDerived0> == 2);
   static_assert(empty_derived0_view.size() == 2);
 
   EmptyDerived1 empty_derived1;
   auto empty_derived1_view = rfl::to_view(empty_derived1);
+  static_assert(rfl::num_fields<EmptyDerived1> == 2);
   static_assert(empty_derived1_view.size() == 2);
 
-  EmptyDerived1 empty_derived2;
+  EmptyDerived2 empty_derived2;
   auto empty_derived2_view = rfl::to_view(empty_derived2);
-  static_assert(empty_derived0_view.size() == 2);
+  static_assert(rfl::num_fields<EmptyDerived1> == 2);
+  static_assert(empty_derived2_view.size() == 2);
 
   EXPECT_TRUE(true);
 }
