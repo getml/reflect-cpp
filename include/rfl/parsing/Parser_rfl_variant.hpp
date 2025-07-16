@@ -57,7 +57,7 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
       using FieldVariantType =
           rfl::Variant<VariantAlternativeWrapper<AlternativeTypes>...>;
       const auto from_field_variant =
-          [](const auto& _field) -> rfl::Variant<AlternativeTypes...> {
+          [](auto&& _field) -> rfl::Variant<AlternativeTypes...> {
         return std::move(_field.value());
       };
       return Parser<R, W, FieldVariantType, ProcessorsType>::read(_r, _var)
