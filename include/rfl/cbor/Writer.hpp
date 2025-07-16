@@ -41,7 +41,7 @@ class Writer {
 
   OutputArrayType array_as_root(const size_t _size) const noexcept;
 
-  OutputObjectType object_as_root(const size_t _size) const noexcept;
+  OutputObjectType object_as_root(const size_t) const noexcept;
 
   OutputVarType null_as_root() const noexcept;
 
@@ -57,11 +57,11 @@ class Writer {
                                       const size_t _size,
                                       OutputObjectType* _parent) const noexcept;
 
-  OutputObjectType add_object_to_array(const size_t _size,
+  OutputObjectType add_object_to_array(const size_t,
                                        OutputArrayType* _parent) const noexcept;
 
   OutputObjectType add_object_to_object(
-      const std::string_view& _name, const size_t _size,
+      const std::string_view& _name, const size_t,
       OutputObjectType* _parent) const noexcept;
 
   template <class T>
@@ -90,7 +90,7 @@ class Writer {
  private:
   OutputArrayType new_array(const size_t _size) const noexcept;
 
-  OutputObjectType new_object(const size_t _size) const noexcept;
+  OutputObjectType new_object() const noexcept;
 
   template <class T>
   OutputVarType new_value(const T& _var) const noexcept {

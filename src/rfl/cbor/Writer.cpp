@@ -12,8 +12,8 @@ Writer::OutputArrayType Writer::array_as_root(
 }
 
 Writer::OutputObjectType Writer::object_as_root(
-    const size_t _size) const noexcept {
-  return new_object(_size);
+    const size_t) const noexcept {
+  return new_object();
 }
 
 Writer::OutputVarType Writer::null_as_root() const noexcept {
@@ -34,15 +34,15 @@ Writer::OutputArrayType Writer::add_array_to_object(
 }
 
 Writer::OutputObjectType Writer::add_object_to_array(
-    const size_t _size, OutputArrayType* _parent) const noexcept {
-  return new_object(_size);
+    const size_t, OutputArrayType* _parent) const noexcept {
+  return new_object();
 }
 
 Writer::OutputObjectType Writer::add_object_to_object(
-    const std::string_view& _name, const size_t _size,
+    const std::string_view& _name, const size_t,
     OutputObjectType* _parent) const noexcept {
   encoder_->key(_name);
-  return new_object(_size);
+  return new_object();
 }
 
 Writer::OutputVarType Writer::add_null_to_array(
@@ -71,8 +71,8 @@ Writer::OutputArrayType Writer::new_array(const size_t _size) const noexcept {
   return OutputArrayType{};
 }
 
-Writer::OutputObjectType Writer::new_object(const size_t _size) const noexcept {
-  encoder_->begin_object(_size);
+Writer::OutputObjectType Writer::new_object() const noexcept {
+  encoder_->begin_object();
   return OutputObjectType{};
 }
 

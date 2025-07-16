@@ -47,7 +47,11 @@ TEST(cbor, test_decode_error_without_exception) {
   });
 
   // A proposal: A generic prefix, followed by the underlying library's error output
-  const std::string expected = R"(Could not parse CBOR: An unknown type was found in the stream at position 1)";
+    const std::string expected = R"(Found 4 errors:
+1) Field named 'firstName' not found.
+2) Field named 'lastName' not found.
+3) Field named 'birthday' not found.
+4) Field named 'children' not found.)";
   EXPECT_EQ(result.error().what(), expected);
 
   EXPECT_TRUE(!result.has_value() && true);
