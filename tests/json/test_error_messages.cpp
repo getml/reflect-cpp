@@ -37,13 +37,13 @@ TEST(json, test_decode_error_without_exception) {
       R"({"firstName":"Homer";"lastName":"Simpson";"birthday":"1987-04-19"})";
 
   rfl::Result<Person> result = rfl::error("result didn't get set");
-  EXPECT_NO_THROW({
-    result = rfl::json::read<Person>(faulty_string);
-  });
+  EXPECT_NO_THROW({ result = rfl::json::read<Person>(faulty_string); });
 
   EXPECT_TRUE(!result.has_value() && true);
 
-  EXPECT_EQ(result.error().what(), "Could not parse document");
+  EXPECT_EQ(result.error().what(),
+            "Could not parse document: unexpected character, expected a comma "
+            "or a closing brace");
 }
 
 }  // namespace test_error_messages
