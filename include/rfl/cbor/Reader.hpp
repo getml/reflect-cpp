@@ -82,7 +82,7 @@ class Reader {
       return rfl::Bytestring(data, data + vec.size());
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Vectorstring()) {
+                                      rfl::Vectorstring>()) {
       if (!_var.val_->is_byte_string()) {
         return error("Could not cast to vectorstring.");
       }
