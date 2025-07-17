@@ -74,6 +74,15 @@ struct Reader {
       const auto data = internal::ptr_cast<const std::byte*>(bin.ptr);
       return rfl::Bytestring(data, data + bin.size);
 
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Vectorstring>()) {
+      if (type != MSGPACK_OBJECT_BIN) {
+        return error("Could not cast to a vectorstring.");
+      }
+      const auto bin = _var.via.bin;
+      const auto data = internal::ptr_cast<const char*>(bin.ptr);
+      return rfl::Vectorstring(data, data + bin.size);
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != MSGPACK_OBJECT_BOOLEAN) {
         return error("Could not cast to boolean.");

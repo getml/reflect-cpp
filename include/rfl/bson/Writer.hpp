@@ -101,7 +101,9 @@ class Writer {
       bson_array_builder_append_utf8(_parent->val_, _var.c_str(),
                                      static_cast<int>(_var.size()));
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
+                                      rfl::Bytestring>() ||
+                         std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Vectorstring>()) {
       bson_array_builder_append_binary(
           _parent->val_, BSON_SUBTYPE_BINARY,
           internal::ptr_cast<const uint8_t*>(_var.data()),
