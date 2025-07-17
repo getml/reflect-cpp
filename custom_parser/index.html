@@ -2413,8 +2413,9 @@
 
 <h1 id="custom-parsers">Custom parsers<a class="headerlink" href="#custom-parsers" title="Permanent link">&para;</a></h1>
 <h2 id="rflreflector"><code>rfl::Reflector</code><a class="headerlink" href="#rflreflector" title="Permanent link">&para;</a></h2>
-<p>If you absolutely do not want to make any changes to your original classes whatsoever,
-You can create a Reflector template specialization for your type:</p>
+<p>If you absolutely do not want to (or are unable to) make any changes to your
+original classes whatsoever, you can create a Reflector template specialization
+for your type:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">namespace</span><span class="w"> </span><span class="nn">rfl</span><span class="w"> </span><span class="p">{</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">Reflector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
@@ -2433,7 +2434,24 @@ You can create a Reflector template specialization for your type:</p>
 <span class="p">};</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>It's also fine to define just the <code>from</code> method when the original class is 
+<p>One way to help make sure that your <code>ReflType</code> is kept up to date with your
+original class is to use the <code>rfl::num_fields&lt;T&gt;</code> utility to implement a compile-
+time assertion to verify that they have the same number of fields. The
+<code>rfl::num_fields&lt;T&gt;</code> utility can be used even in cases where the original
+class is too complex for <code>reflect-cpp</code>'s default reflection logic or
+<code>rfl::to_view()</code> to be able to handle.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">namespace</span><span class="w"> </span><span class="nn">rfl</span><span class="w"> </span><span class="p">{</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Reflector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">ReflType</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="k">static_assert</span><span class="p">(</span><span class="n">rfl</span><span class="o">::</span><span class="n">num_fields</span><span class="o">&lt;</span><span class="n">ReflType</span><span class="o">&gt;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">num_fields</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="s">&quot;ReflType and actual type must have the same number of fields&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// ...</span>
+</code></pre></div>
+<p>It's also fine to define just the <code>from</code> method when the original class is
 only written, or <code>to</code> when the original class is only read:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="c1">// This can only be used for writing.</span>
 <span class="k">namespace</span><span class="w"> </span><span class="nn">rfl</span><span class="w"> </span><span class="p">{</span>
@@ -2451,7 +2469,7 @@ only written, or <code>to</code> when the original class is only read:</p>
 <span class="p">}</span>
 </code></pre></div>
 <p>Note that the <code>ReflType</code> does not have to be a struct. For instance, if you have
-a custom type called <code>MyCustomType</code> that you want to be serialized as a string, 
+a custom type called <code>MyCustomType</code> that you want to be serialized as a string,
 you can do the following:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">namespace</span><span class="w"> </span><span class="nn">rfl</span><span class="w"> </span><span class="p">{</span>
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span>
@@ -2504,7 +2522,7 @@ conditions:</p>
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">age_</span><span class="p">;</span>
 <span class="p">};</span>
 </code></pre></div>
-<p>You can then write a helper struct: </p>
+<p>You can then write a helper struct:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">PersonImpl</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;firstName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
 <span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;lastName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
