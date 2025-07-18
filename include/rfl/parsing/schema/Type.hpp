@@ -18,6 +18,8 @@ struct Type {
 
   struct Bytestring {};
 
+  struct Vectorstring {};
+
   struct Int32 {};
 
   struct Int64 {};

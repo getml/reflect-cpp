@@ -7,7 +7,6 @@
 namespace rfl {
 
 using Bytestring = std::vector<std::byte>;
-using Vectorstring = std::vector<char>;
 
 }  // namespace rfl
 
