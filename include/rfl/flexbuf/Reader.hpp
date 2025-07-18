@@ -81,6 +81,7 @@ struct Reader {
                          std::is_same<std::remove_cvref_t<T>,
                                       rfl::Vectorstring>()) {
       using VectorType = std::remove_cvref_t<T>;
+      using ValueType = typename VectorType::value_type;
       if (!_var.IsBlob()) {
         if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
@@ -90,7 +91,7 @@ struct Reader {
         }
       }
       const auto blob = _var.AsBlob();
-      const auto data = internal::ptr_cast<const VectorType::value_type*>(blob.data());
+      const auto data = internal::ptr_cast<const ValueType*>(blob.data());
       return VectorType(data, data + blob.size());
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {

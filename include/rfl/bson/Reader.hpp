@@ -117,6 +117,7 @@ struct Reader {
                          std::is_same<std::remove_cvref_t<T>,
                                       rfl::Vectorstring>()) {
       using VectorType = std::remove_cvref_t<T>;
+      using ValueType = typename VectorType::value_type;
       if (btype != BSON_TYPE_BINARY) {
         if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
@@ -138,7 +139,7 @@ struct Reader {
         }
       }
       const auto data =
-          internal::ptr_cast<const VectorType::value_type*>(value.v_binary.data);
+          internal::ptr_cast<const ValueType*>(value.v_binary.data);
       return VectorType(data, data + value.v_binary.data_len);
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {

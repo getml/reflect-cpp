@@ -78,6 +78,7 @@ class Reader {
                          std::is_same<std::remove_cvref_t<T>,
                                       rfl::Vectorstring>()) {
       using VectorType = std::remove_cvref_t<T>;
+      using ValueType = typename VectorType::value_type;
       if (!_var.val_->is<std::vector<uint8_t>>()) {
         if constexpr (std::is_same<std::remove_cvref_t<T>, rfl::Bytestring>()) {
           return error("Could not cast to bytestring.");
@@ -86,7 +87,7 @@ class Reader {
         }
       }
       const auto vec = _var.val_->as<std::vector<uint8_t>>();
-      const auto data = internal::ptr_cast<const VectorType::value_type*>(vec.data());
+      const auto data = internal::ptr_cast<const ValueType*>(vec.data());
       return VectorType(data, data + vec.size());
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {

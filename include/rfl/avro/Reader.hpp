@@ -73,6 +73,7 @@ struct Reader {
                          std::is_same<std::remove_cvref_t<T>,
                                       rfl::Vectorstring>()) {
       using VectorType = std::remove_cvref_t<T>;
+      using ValueType = typename VectorType::value_type;
       const void* ptr = nullptr;
       size_t size = 0;
       const auto err = avro_value_get_bytes(_var.val_, &ptr, &size);
@@ -84,7 +85,7 @@ struct Reader {
           return error("Could not cast to vectorstring.");
         }
       }
-      const auto data = internal::ptr_cast<const VectorType::value_type*>(ptr);
+      const auto data = internal::ptr_cast<const ValueType*>(ptr);
       return VectorType(data, data + size);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != AVRO_BOOLEAN) {

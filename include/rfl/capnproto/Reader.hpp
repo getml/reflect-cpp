@@ -69,6 +69,7 @@ class Reader {
                          std::is_same<std::remove_cvref_t<T>,
                                       rfl::Vectorstring>()) {
       using VectorType = std::remove_cvref_t<T>;
+      using ValueType = typename VectorType::value_type;
       if (type != capnp::DynamicValue::DATA) {
         if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
@@ -78,7 +79,7 @@ class Reader {
         }
       }
       const auto data = _var.val_.as<capnp::Data>();
-      const auto begin = internal::ptr_cast<const VectorType::value_type*>(data.begin());
+      const auto begin = internal::ptr_cast<const ValueType*>(data.begin());
       return VectorType(begin, begin + data.size());
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
