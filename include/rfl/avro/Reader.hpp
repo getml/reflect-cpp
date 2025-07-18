@@ -12,6 +12,7 @@
 
 #include "../Bytestring.hpp"
 #include "../Result.hpp"
+#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../internal/is_literal.hpp"
 #include "../parsing/schemaful/IsSchemafulReader.hpp"
@@ -68,15 +69,23 @@ struct Reader {
       }
       return std::string(c_str, size - 1);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
+                                      rfl::Bytestring>() ||
+                         std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Vectorstring>()) {
+      using VectorType = std::remove_cvref_t<T>;
       const void* ptr = nullptr;
       size_t size = 0;
       const auto err = avro_value_get_bytes(_var.val_, &ptr, &size);
       if (err) {
-        return error("Could not cast to bytestring.");
+        if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+          return error("Could not cast to bytestring.");
+        } else {
+          return error("Could not cast to vectorstring.");
+        }
       }
-      const auto data = internal::ptr_cast<const std::byte*>(ptr);
-      return rfl::Bytestring(data, data + size);
+      const auto data = internal::ptr_cast<const VectorType::value_type*>(ptr);
+      return VectorType(data, data + size);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != AVRO_BOOLEAN) {
         return rfl::error("Could not cast to boolean.");

@@ -196,7 +196,8 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type,
       return schema::Type{.value = schema::Type::Number{}};
 
     } else if constexpr (std::is_same<T, Type::String>() ||
-                         std::is_same<T, Type::Bytestring>()) {
+                         std::is_same<T, Type::Bytestring>() ||
+                         std::is_same<T, Type::Vectorstring>()) {
       return schema::Type{.value = schema::Type::String{}};
 
     } else if constexpr (std::is_same<T, Type::AnyOf>()) {

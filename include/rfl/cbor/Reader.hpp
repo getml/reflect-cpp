@@ -11,6 +11,7 @@
 
 #include "../Bytestring.hpp"
 #include "../Result.hpp"
+#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../internal/ptr_cast.hpp"
 
@@ -73,22 +74,21 @@ class Reader {
       return _var.val_->as<std::string>();
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
-      if (!_var.val_->is_byte_string()) {
-        return error("Could not cast to bytestring.");
-      }
-      const auto vec = _var.val_->as<std::vector<uint8_t>>();
-      const auto data = internal::ptr_cast<const std::byte*>(vec.data());
-      return rfl::Bytestring(data, data + vec.size());
-
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>() ||
+                         std::is_same<std::remove_cvref_t<T>,
                                       rfl::Vectorstring>()) {
+      using VectorType = std::remove_cvref_t<T>;
       if (!_var.val_->is_byte_string()) {
-        return error("Could not cast to vectorstring.");
+        if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+          return error("Could not cast to bytestring.");
+        } else {
+          return error("Could not cast to vectorstring.");
+        }
       }
       const auto vec = _var.val_->as<std::vector<uint8_t>>();
-      const auto data = internal::ptr_cast<const char*>(vec.data());
-      return rfl::Vectorstring(data, data + vec.size());
+      const auto data = internal::ptr_cast<const VectorType::value_type*>(vec.data());
+      return VectorType(data, data + vec.size());
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var.val_->is_bool()) {

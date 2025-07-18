@@ -21,6 +21,7 @@
 #include "../Box.hpp"
 #include "../Bytestring.hpp"
 #include "../Result.hpp"
+#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../internal/ptr_cast.hpp"
 
@@ -112,32 +113,33 @@ struct Reader {
       }
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
-      if (btype != BSON_TYPE_BINARY) {
-        return error("Could not cast to bytestring.");
-      }
-      if (value.v_binary.subtype != BSON_SUBTYPE_BINARY) {
-        return error(
-            "The BSON subtype must be a binary in order to read into a "
-            "bytestring.");
-      }
-      const auto data =
-          internal::ptr_cast<const std::byte*>(value.v_binary.data);
-      return rfl::Bytestring(data, data + value.v_binary.data_len);
-
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>() ||
+                         std::is_same<std::remove_cvref_t<T>,
                                       rfl::Vectorstring>()) {
+      using VectorType = std::remove_cvref_t<T>;
       if (btype != BSON_TYPE_BINARY) {
-        return error("Could not cast to vectorstring.");
+        if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+          return error("Could not cast to bytestring.");
+        } else {
+          return error("Could not cast to vectorstring.");
+        }
       }
       if (value.v_binary.subtype != BSON_SUBTYPE_BINARY) {
-        return error(
-            "The BSON subtype must be a binary in order to read into a "
-            "vectorstring.");
+        if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+          return error(
+              "The BSON subtype must be a binary in order to read into a "
+              "bytestring.");
+        } else {
+          return error(
+              "The BSON subtype must be a binary in order to read into a "
+              "vectorstring.");
+        }
       }
       const auto data =
-          internal::ptr_cast<const char*>(value.v_binary.data);
-      return rfl::Vectorstring(data, data + value.v_binary.data_len);
+          internal::ptr_cast<const VectorType::value_type*>(value.v_binary.data);
+      return VectorType(data, data + value.v_binary.data_len);
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (btype != BSON_TYPE_BOOL) {

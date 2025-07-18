@@ -12,6 +12,7 @@
 
 #include "../Bytestring.hpp"
 #include "../Result.hpp"
+#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../internal/is_literal.hpp"
 #include "../internal/ptr_cast.hpp"
@@ -64,13 +65,21 @@ class Reader {
       return std::string(_var.val_.as<capnp::Text>().cStr());
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
+                                      rfl::Bytestring>() ||
+                         std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Vectorstring>()) {
+      using VectorType = std::remove_cvref_t<T>;
       if (type != capnp::DynamicValue::DATA) {
-        return error("Could not cast to bytestring.");
+        if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+          return error("Could not cast to bytestring.");
+        } else {
+          return error("Could not cast to vectorstring.");
+        }
       }
       const auto data = _var.val_.as<capnp::Data>();
-      const auto begin = internal::ptr_cast<const std::byte*>(data.begin());
-      return rfl::Bytestring(begin, begin + data.size());
+      const auto begin = internal::ptr_cast<const VectorType::value_type*>(data.begin());
+      return VectorType(begin, begin + data.size());
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != capnp::DynamicValue::BOOL) {
