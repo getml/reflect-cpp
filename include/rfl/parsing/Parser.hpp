@@ -28,6 +28,7 @@
 #include "Parser_tuple.hpp"
 #include "Parser_unique_ptr.hpp"
 #include "Parser_variant.hpp"
+#include "Parser_vectorstring.hpp"
 #include "Parser_vector_like.hpp"
 #include "Parser_wstring.hpp"
 
