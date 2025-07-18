@@ -90,7 +90,7 @@ struct Type {
   };
 
   using VariantType =
-      rfl::Variant<Boolean, Bytestring, Int32, Int64, UInt32, UInt64, Integer,
+      rfl::Variant<Boolean, Bytestring, Vectorstring, Int32, Int64, UInt32, UInt64, Integer,
                    Float, Double, String, AnyOf, Description,
                    FixedSizeTypedArray, Literal, Object, Optional, Reference,
                    StringMap, Tuple, TypedArray, Validated>;
