@@ -19,6 +19,7 @@
 #include "../Bytestring.hpp"
 #include "../Ref.hpp"
 #include "../Result.hpp"
+#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../internal/is_literal.hpp"
 
@@ -186,7 +187,9 @@ class Writer {
       avro_value_set_string_len(_val, _var.c_str(), _var.size() + 1);
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
+                                      rfl::Bytestring>() ||
+                         std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Vectorstring>()) {
       auto var = _var;
       avro_value_set_bytes(_val, var.data(), var.size());
 

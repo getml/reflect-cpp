@@ -9,6 +9,7 @@
 
 #include "../Bytestring.hpp"
 #include "../Result.hpp"
+#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "MapParser.hpp"
 #include "Parent.hpp"
@@ -40,6 +41,8 @@ struct VectorParser {
 
   static_assert(!std::is_same_v<std::remove_cvref_t<VecType>, Bytestring>,
                 "Cannot be a bytestring.");
+  static_assert(!std::is_same_v<std::remove_cvref_t<VecType>, Vectorstring>,
+                "Cannot be a vectorstring.");
 
   static Result<VecType> read(const R& _r, const InputVarType& _var) noexcept {
     if constexpr (treat_as_map()) {

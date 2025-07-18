@@ -20,6 +20,7 @@
 #include "../Bytestring.hpp"
 #include "../Ref.hpp"
 #include "../Result.hpp"
+#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../internal/is_literal.hpp"
 #include "../internal/ptr_cast.hpp"
@@ -168,7 +169,9 @@ class Writer {
       _parent->val_.set(_parent->ix_++, _var.c_str());
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
+                                      rfl::Bytestring>() ||
+                         std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Vectorstring>()) {
       const auto array_ptr = kj::ArrayPtr<const kj::byte>(
           internal::ptr_cast<const unsigned char*>(_var.data()), _var.size());
       _parent->val_.set(_parent->ix_++, capnp::Data::Reader(array_ptr));

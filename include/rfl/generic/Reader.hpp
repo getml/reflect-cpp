@@ -11,7 +11,6 @@
 #include <type_traits>
 #include <vector>
 
-#include "../Bytestring.hpp"
 #include "../Generic.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"

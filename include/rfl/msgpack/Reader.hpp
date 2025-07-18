@@ -11,6 +11,7 @@
 
 #include "../Bytestring.hpp"
 #include "../Result.hpp"
+#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../internal/ptr_cast.hpp"
 
@@ -66,13 +67,21 @@ struct Reader {
       return std::string(str.ptr, str.size);
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
+                                      rfl::Bytestring>() ||
+                         std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Vectorstring>()) {
+      using VectorType = std::remove_cvref_t<T>;
+      using ValueType = typename VectorType::value_type;
       if (type != MSGPACK_OBJECT_BIN) {
-        return error("Could not cast to a bytestring.");
+        if constexpr (std::is_same<std::remove_cvref_t<T>, rfl::Bytestring>()) {
+          return error("Could not cast to bytestring.");
+        } else {
+          return error("Could not cast to vectorstring.");
+        }
       }
       const auto bin = _var.via.bin;
-      const auto data = internal::ptr_cast<const std::byte*>(bin.ptr);
-      return rfl::Bytestring(data, data + bin.size);
+      const auto data = internal::ptr_cast<const ValueType*>(bin.ptr);
+      return VectorType(data, data + bin.size);
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (type != MSGPACK_OBJECT_BOOLEAN) {

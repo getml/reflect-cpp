@@ -17,6 +17,7 @@
 #include "../Bytestring.hpp"
 #include "../Ref.hpp"
 #include "../Result.hpp"
+#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 
 namespace rfl::ubjson {
@@ -97,7 +98,9 @@ class Writer {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       encoder_->string_value(_var);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
+                                      rfl::Bytestring>() ||
+                         std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Vectorstring>()) {
       encoder_->byte_string_value(_var);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       encoder_->bool_value(_var);
