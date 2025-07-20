@@ -158,7 +158,11 @@ delete_raw_pointers(person);
 `std::string_view` and `std::span` must be cleaned up using `delete[]`, like this:
 
 ```cpp
-delete[] person.string_view_or_span.data();
+delete[] person.string_view.data();
+
+if(!person.span.empty()) {
+    delete[] person.span.data();
+}
 ```
 
 ### `rfl::DefaultIfMissing`
