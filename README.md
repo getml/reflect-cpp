@@ -500,7 +500,9 @@ reflect-cpp supports the following containers from the C++ standard library:
 - `std::pair`
 - `std::set`
 - `std::shared_ptr`
+- `std::span`
 - `std::string`
+- `std::string_view`
 - `std::tuple`
 - `std::unique_ptr`
 - `std::unordered_map`

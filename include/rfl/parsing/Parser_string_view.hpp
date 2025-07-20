@@ -23,11 +23,17 @@ struct Parser<R, W, std::string_view, ProcessorsType> {
   static Result<std::string_view> read(const R& _r,
                                        const InputVarType& _var) noexcept {
     if constexpr (!ProcessorsType::allow_raw_ptrs_) {
-      static_assert(always_false_v<R>,
-                    "Reading into std::string_view is dangerous and "
-                    "therefore unsupported. "
-                    "Please consider using std::string instead, or use the "
-                    "rfl::AllowRawPtrs processor.");
+      static_assert(
+          always_false_v<R>,
+          "Reading into std::string_view is dangerous and "
+          "therefore unsupported. "
+          "Please consider using std::string instead or wrapping "
+          "std::string in rfl::Box or rfl::Ref."
+          "If you absolutely must use std::string_view, "
+          "you can pass the rfl::AllowRawPtrs processor. "
+          "Please note that it is then YOUR responsibility "
+          "to delete the allocated memory. Please also refer "
+          "to the related documentation (in the section on processors).");
       return error("Unsupported.");
     } else {
       return Parser<R, W, std::string, ProcessorsType>::read(_r, _var)
