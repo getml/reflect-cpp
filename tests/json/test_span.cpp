@@ -13,7 +13,16 @@ namespace test_span {
 struct Person {
   rfl::Rename<"firstName", std::string> first_name;
   rfl::Rename<"lastName", std::string> last_name = "Simpson";
-  std::span<Person> children;
+  rfl::Ref<std::span<Person>> children;
+};
+
+void delete_children(const Person& _p) {
+  for (const auto& child : *_p.children) {
+    delete_children(child);
+  }
+  if (!_p.children->empty()) {
+    delete[] _p.children->data();
+  }
 };
 
 TEST(json, test_span) {
@@ -23,8 +32,8 @@ TEST(json, test_span) {
 
   const auto homer =
       Person{.first_name = "Homer",
-             .children = std::span<Person>(children.data() + 1,
-                                           children.data() + children.size())};
+             .children = rfl::Ref<std::span<Person>>::make(
+                 children.data() + 1, children.data() + children.size())};
 
   const auto json_string = rfl::json::write(homer);
 
@@ -50,7 +59,7 @@ TEST(json, test_span) {
       << std::endl;
 
   if (res) {
-    delete[] res->children.data();
+    delete_children(*res);
   }
 }
 }  // namespace test_span
