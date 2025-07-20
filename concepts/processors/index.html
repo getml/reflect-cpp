@@ -2707,9 +2707,12 @@ indistinguishable when they are serialized. The will both be serialized to <code
 <p>Note that there are other ways to address problems like this, for instance <code>rfl::TaggedUnion</code>.
 Please refer to the relevant sections of the documentation.</p>
 <h3 id="rflallowrawptrs"><code>rfl::AllowRawPtrs</code><a class="headerlink" href="#rflallowrawptrs" title="Permanent link">&para;</a></h3>
-<p>By default, reflect-cpp does not allow <em>reading into</em> raw pointers. (<em>Writing from</em> raw pointers is never a problem.) This is because reading into raw pointers means that the library will allocate memory that the user then has to manually delete. This can lead to misunderstandings and memory leaks.</p>
+<p>By default, reflect-cpp does not allow <em>reading into</em> raw pointers, <code>std::string_view</code> or <code>std::span</code>. 
+(<em>Writing from</em> raw pointers is never a problem.) This is because reading into raw pointers 
+means that the library will allocate memory that the user then has to manually delete. This can lead to misunderstandings and memory leaks.</p>
 <p>You might want to consider using some alternatives, such as <code>std::unique_ptr</code>, <code>rfl::Box</code>, 
-<code>std::shared_ptr</code>, <code>rfl::Ref</code> or <code>std::optional</code>. But if you absolutely have to use raw pointers, you can pass <code>rfl::AllowRawPtrs</code> to <code>read</code>:</p>
+<code>std::shared_ptr</code>, <code>rfl::Ref</code> or <code>std::optional</code>. 
+But if you absolutely have to use raw pointers, you can pass <code>rfl::AllowRawPtrs</code> to <code>read</code>:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;firstName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
 <span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;lastName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">;</span>
@@ -2732,6 +2735,13 @@ to clean up. Otherwise, there <strong>WILL</strong> be a memory leak.</p>
 <span class="p">}</span>
 
 <span class="n">delete_raw_pointers</span><span class="p">(</span><span class="n">person</span><span class="p">);</span>
+</code></pre></div>
+<p><code>std::string_view</code> and <code>std::span</code> must be cleaned up using <code>delete[]</code>, like this:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">person</span><span class="p">.</span><span class="n">string_view</span><span class="p">.</span><span class="n">data</span><span class="p">();</span>
+
+<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">person</span><span class="p">.</span><span class="n">span</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">delete</span><span class="p">[]</span><span class="w"> </span><span class="n">person</span><span class="p">.</span><span class="n">span</span><span class="p">.</span><span class="n">data</span><span class="p">();</span>
+<span class="p">}</span>
 </code></pre></div>
 <h3 id="rfldefaultifmissing"><code>rfl::DefaultIfMissing</code><a class="headerlink" href="#rfldefaultifmissing" title="Permanent link">&para;</a></h3>
 <p>The <code>rfl::DefaultIfMissing</code> processor is only relevant for reading data. For writing data, it will make no difference.</p>
