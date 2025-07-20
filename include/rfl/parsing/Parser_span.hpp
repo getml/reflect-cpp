@@ -42,7 +42,10 @@ struct Parser<R, W, std::span<T>, ProcessorsType> {
                     ProcessorsType>::read(_r, _var)
           .transform([](std::vector<T>&& _vec) {
             using Type = std::remove_cvref_t<T>;
-            Type* data = new Type[_vec.size()];
+            Type* data = new (std::nothrow) Type[_vec.size()];
+            if (!data) {
+              return error("Failed to allocate memory for std::span.");
+            }
             for (size_t i = 0; i < _vec.size(); ++i) {
               data[i] = std::move(_vec[i]);
             }
@@ -54,8 +57,7 @@ struct Parser<R, W, std::span<T>, ProcessorsType> {
   template <class P>
   static void write(const W& _w, const std::span<T>& _span,
                     const P& _parent) noexcept {
-    auto arr = ParentType::add_array(
-        _w, _span.size(), _parent);
+    auto arr = ParentType::add_array(_w, _span.size(), _parent);
     const auto new_parent = typename ParentType::Array{&arr};
     for (const auto& v : _span) {
       Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, v,
