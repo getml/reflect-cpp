@@ -40,7 +40,7 @@ struct Parser<R, W, std::span<T>, ProcessorsType> {
     } else {
       return Parser<R, W, std::vector<std::remove_cvref_t<T>>,
                     ProcessorsType>::read(_r, _var)
-          .transform([](std::vector<T>&& _vec) {
+          .and_then([](std::vector<T>&& _vec) -> Result<std::span<T>> {
             using Type = std::remove_cvref_t<T>;
             Type* data = new (std::nothrow) Type[_vec.size()];
             if (!data) {
