@@ -119,10 +119,13 @@ Please refer to the relevant sections of the documentation.
 
 ### `rfl::AllowRawPtrs`
 
-By default, reflect-cpp does not allow *reading into* raw pointers. (*Writing from* raw pointers is never a problem.) This is because reading into raw pointers means that the library will allocate memory that the user then has to manually delete. This can lead to misunderstandings and memory leaks.
+By default, reflect-cpp does not allow *reading into* raw pointers, `std::string_view` or `std::span`. 
+(*Writing from* raw pointers is never a problem.) This is because reading into raw pointers 
+means that the library will allocate memory that the user then has to manually delete. This can lead to misunderstandings and memory leaks.
 
 You might want to consider using some alternatives, such as `std::unique_ptr`, `rfl::Box`, 
-`std::shared_ptr`, `rfl::Ref` or `std::optional`. But if you absolutely have to use raw pointers, you can pass `rfl::AllowRawPtrs` to `read`:
+`std::shared_ptr`, `rfl::Ref` or `std::optional`. 
+But if you absolutely have to use raw pointers, you can pass `rfl::AllowRawPtrs` to `read`:
 
 ```cpp
 struct Person {
@@ -150,6 +153,12 @@ void delete_raw_pointers(const Person& _person) {
 }
 
 delete_raw_pointers(person);
+```
+
+`std::string_view` and `std::span` must be cleaned up using `delete[]`, like this:
+
+```cpp
+delete[] person.string_view_or_span.data();
 ```
 
 ### `rfl::DefaultIfMissing`
