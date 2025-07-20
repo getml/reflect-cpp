@@ -55,7 +55,7 @@ struct Parser<R, W, std::span<T>, ProcessorsType> {
   static void write(const W& _w, const std::span<T>& _span,
                     const P& _parent) noexcept {
     auto arr = ParentType::add_array(
-        _w, std::distance(_span.begin(), _span.end()), _parent);
+        _w, _span.size(), _parent);
     const auto new_parent = typename ParentType::Array{&arr};
     for (const auto& v : _span) {
       Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, v,
