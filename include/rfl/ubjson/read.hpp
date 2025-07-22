@@ -7,6 +7,7 @@
 #include <jsoncons_ext/ubjson/decode_ubjson.hpp>
 #include <string>
 
+#include "../concepts.hpp"
 #include "../Processors.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
 #include "Parser.hpp"
@@ -19,7 +20,7 @@ using InputVarType = typename Reader::InputVarType;
 
 /// Parses an object from UBJSON using reflection.
 template <class T, class... Ps>
-Result<internal::wrap_in_rfl_array_t<T>> read(const std::vector<char>& _bytes) {
+Result<internal::wrap_in_rfl_array_t<T>> read(const ContiguousByteContainer auto& _bytes) {
   // TODO: Use a non-throwing decode_ubjson(), pending https://github.com/danielaparker/jsoncons/issues/615
   try {
     auto val = jsoncons::ubjson::decode_ubjson<jsoncons::json>(_bytes);
