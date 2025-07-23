@@ -7,6 +7,7 @@
 #include <jsoncons_ext/cbor/decode_cbor.hpp>
 #include <string>
 
+#include "../concepts.hpp"
 #include "../Processors.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
 #include "Parser.hpp"
@@ -19,8 +20,7 @@ using InputVarType = typename Reader::InputVarType;
 
 /// Parses an object from CBOR using reflection.
 template <class T, class... Ps>
-Result<internal::wrap_in_rfl_array_t<T>> read(const std::vector<char>& _bytes) {
-  // TODO: Use a non-throwing decode_cbor(), pending https://github.com/danielaparker/jsoncons/issues/615
+Result<internal::wrap_in_rfl_array_t<T>> read(const ContiguousByteContainer auto& _bytes) {
   try {
     auto val = jsoncons::cbor::decode_cbor<jsoncons::json>(_bytes);
     auto r = Reader();

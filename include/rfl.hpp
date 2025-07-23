@@ -50,6 +50,7 @@
 #include "rfl/apply.hpp"
 #include "rfl/as.hpp"
 #include "rfl/comparisons.hpp"
+#include "rfl/concepts.hpp"
 #include "rfl/default.hpp"
 #include "rfl/define_literal.hpp"
 #include "rfl/define_named_tuple.hpp"
