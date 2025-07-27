@@ -59,6 +59,7 @@ jobs:
           key: "${{ github.job }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}"
           max-size: "2G"
       - name: Run vcpkg
+        if: matrix.package-manager != 'conan'
         uses: lukka/run-vcpkg@v11
       - name: Install dependencies
         run: |
@@ -71,6 +72,7 @@ jobs:
           pipx install conan
           conan profile detect
       - name: Make sure the library compiles with Conan
+        if: matrix.package-manager == 'conan'
         run: conan build . --build=missing -s compiler.cppstd=gnu20 -o *:with_capnproto=True -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True      
       - name: Compile
         if: matrix.package-manager != 'conan'
