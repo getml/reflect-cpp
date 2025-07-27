@@ -8,8 +8,8 @@ env:
 jobs:
   linux:
     strategy:
-      package-manager: ["vcpkg", "conan"]
       matrix:
+        package-manager: ["vcpkg", "conan"]
         include:
           - compiler: llvm
             compiler-version: 16
