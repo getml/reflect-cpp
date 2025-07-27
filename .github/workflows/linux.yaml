@@ -9,36 +9,52 @@ jobs:
   linux:
     strategy:
       matrix:
-        package-manager: ["vcpkg", "conan"]
         include:
           - compiler: llvm
             compiler-version: 16
-            cxx: 20 
+            cxx: 20
+            package-manager: vcpkg
           - compiler: llvm
             compiler-version: 17
             cxx: 20 
+            package-manager: vcpkg
           - compiler: llvm
             compiler-version: 18
             cxx: 20  
+            package-manager: vcpkg
           - compiler: gcc
             compiler-version: 11
             additional-dep: "g++-11"
             cxx: 20  
+            package-manager: vcpkg
           - compiler: gcc
             compiler-version: 12
             cxx: 20  
+            package-manager: vcpkg
           - compiler: gcc
             compiler-version: 13
             cxx: 20  
+            package-manager: vcpkg
           - compiler: gcc
             compiler-version: 14
             cxx: 20  
+            package-manager: vcpkg
           - compiler: gcc
             compiler-version: 13
             cxx: 23 
+            package-manager: vcpkg
           - compiler: gcc
             compiler-version: 14
             cxx: 23  
+            package-manager: vcpkg
+          - compiler: gcc
+            compiler-version: 14
+            cxx: 20  
+            package-manager: conan 
+          - compiler: gcc
+            compiler-version: 14
+            cxx: 23  
+            package-manager: conan 
     name: "${{ github.job }} (C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}-${{ matrix.package-manager }})"
     runs-on: ubuntu-24.04
     steps:
@@ -53,11 +69,6 @@ jobs:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
-      - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1
-        with:
-          key: "${{ github.job }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}"
-          max-size: "2G"
       - name: Run vcpkg
         if: matrix.package-manager != 'conan'
         uses: lukka/run-vcpkg@v11
@@ -84,8 +95,6 @@ jobs:
             export CC=gcc-${{ matrix.compiler-version }}
             export CXX=g++-${{ matrix.compiler-version }}
           fi
-          sudo ln -s $(which ccache) /usr/local/bin/$CC
-          sudo ln -s $(which ccache) /usr/local/bin/$CXX
           $CXX --version
           cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CAPNPROTO=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build
