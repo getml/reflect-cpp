@@ -47,6 +47,10 @@ jobs:
             compiler-version: 14
             cxx: 23  
             package-manager: vcpkg
+          - compiler: llvm
+            compiler-version: 18
+            cxx: 20  
+            package-manager: conan 
           - compiler: gcc
             compiler-version: 14
             cxx: 20  
