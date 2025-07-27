@@ -9,24 +9,36 @@ jobs:
   linux:
     strategy:
       matrix:
+        format: ["JSON", "AVRO", "BSON", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML"] 
         include:
-          - compiler: [llvm]
-            compiler-version: [16, 17, 18]
-            cxx: [20]
-            format: ["JSON", "AVRO", "BSON", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML"] 
-          - compiler: [gcc]
-            compiler-version: [11]
-            additional-dep: ["g++-11"]
-            cxx: [20]  
-            format: ["JSON", "AVRO", "BSON", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML"]
-          - compiler: [gcc]
-            compiler-version: [12, 13, 14]
-            cxx: [20]  
-            format: ["JSON", "AVRO", "BSON", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML"] 
-          - compiler: [gcc]
-            compiler-version: [13, 14]
-            cxx: [23] 
-            format: ["JSON", "AVRO", "BSON", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML"] 
+          - compiler: llvm
+            compiler-version: 16
+            cxx: 20 
+          - compiler: llvm
+            compiler-version: 17
+            cxx: 20 
+          - compiler: llvm
+            compiler-version: 18
+            cxx: 20  
+          - compiler: gcc
+            compiler-version: 11
+            additional-dep: "g++-11"
+            cxx: 20  
+          - compiler: gcc
+            compiler-version: 12
+            cxx: 20  
+          - compiler: gcc
+            compiler-version: 13
+            cxx: 20  
+          - compiler: gcc
+            compiler-version: 14
+            cxx: 20  
+          - compiler: gcc
+            compiler-version: 13
+            cxx: 23 
+          - compiler: gcc
+            compiler-version: 14
+            cxx: 23  
     name: "${{ github.job }} (C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}-${{ matrix.format }})"
     runs-on: ubuntu-24.04
     steps:
