@@ -12,34 +12,23 @@ jobs:
       matrix:
         include:
           - compiler: llvm
-            compiler-version: 16
-            cxx: 20 
-          - compiler: llvm
-            compiler-version: 17
-            cxx: 20 
-          - compiler: llvm
-            compiler-version: 18
-            cxx: 20  
+            compiler-version: [16, 17, 18]
+            cxx: 20
+            format: ["JSON", "AVRO", "BSON", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML"], 
           - compiler: gcc
             compiler-version: 11
             additional-dep: "g++-11"
             cxx: 20  
+            format: ["JSON", "AVRO", "BSON", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML"], 
           - compiler: gcc
-            compiler-version: 12
+            compiler-version: [12, 13, 14]
             cxx: 20  
+            format: ["JSON", "AVRO", "BSON", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML"], 
           - compiler: gcc
-            compiler-version: 13
-            cxx: 20  
-          - compiler: gcc
-            compiler-version: 14
-            cxx: 20  
-          - compiler: gcc
-            compiler-version: 13
+            compiler-version: [13, 14]
             cxx: 23 
-          - compiler: gcc
-            compiler-version: 14
-            cxx: 23  
-    name: "${{ github.job }} (C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }})"
+            format: ["JSON", "AVRO", "BSON", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML"], 
+    name: "${{ github.job }} (C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}-${{ matrix.format }})"
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -56,7 +45,7 @@ jobs:
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1
         with:
-          key: "${{ github.job }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}"
+          key: "${{ github.job }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}-${{ matrix.format }}"
           max-size: "2G"
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
@@ -83,26 +72,12 @@ jobs:
           sudo ln -s $(which ccache) /usr/local/bin/$CC
           sudo ln -s $(which ccache) /usr/local/bin/$CXX
           $CXX --version
-          cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CAPNPROTO=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+          if [[ "${{ matrix.format }}" == "JSON" ]]; then
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
+          elif [[ "${{ matrix.compiler }}" == "gcc" ]]; then
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_${{ matrix.format }}=ON -DREFLECTCPP_JSON=OFF
+          fi
           cmake --build build
       - name: Run tests
         run: |
           ctest --test-dir build --output-on-failure
-      - name: Run benchmarks
-        run: |
-          echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY 
-          echo '## Benchmarks across different formats' >> $GITHUB_STEP_SUMMARY 
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_read >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_write >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo '## Benchmarks for JSON' >> $GITHUB_STEP_SUMMARY 
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=licenses >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY

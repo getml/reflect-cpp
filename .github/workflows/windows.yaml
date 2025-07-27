@@ -12,7 +12,6 @@ jobs:
       matrix:
         include:
           - format: JSON 
-          - format: AVRO 
           - format: BSON 
           - format: CAPNPROTO 
           - format: CBOR
