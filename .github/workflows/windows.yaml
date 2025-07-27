@@ -40,7 +40,7 @@ jobs:
       - uses: lukka/run-vcpkg@v11
       - name: Compile
         run: |
-          if [[ "${{ matrix.compiler }}" == "JSON" ]]; then
+          if [[ "${{ matrix.format }}" == "JSON" ]]; then
             cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
           else
             cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release
