@@ -9,7 +9,7 @@ jobs:
   linux:
     strategy:
       matrix:
-        format: ["JSON", "AVRO", "BSON", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML"] 
+        format: ["JSON", "AVRO", "BSON", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML", "conan"]
         include:
           - compiler: llvm
             compiler-version: 16
@@ -65,6 +65,7 @@ jobs:
           sudo apt update
           sudo apt install -y ninja-build ${{ matrix.additional-dep }}
       - name: Install Conan
+        if: matrix.format == "conan"
         run: |
           sudo apt install -y pipx
           pipx install conan
@@ -72,6 +73,7 @@ jobs:
       - name: Make sure the library compiles with Conan
         run: conan build . --build=missing -s compiler.cppstd=gnu20 -o *:with_capnproto=True -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True      
       - name: Compile
+        if: matrix.format != "conan"
         run: |
           if [[ "${{ matrix.compiler }}" == "llvm" ]]; then
             export CC=clang-${{ matrix.compiler-version }}
