@@ -38,13 +38,15 @@ jobs:
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
       - uses: ilammy/msvc-dev-cmd@v1
       - uses: lukka/run-vcpkg@v11
-      - name: Compile
+      - name: Compile tests (JSON)
+        if: matrix.format == 'JSON'
         run: |
-          if [[ "${{ matrix.format }}" == "JSON" ]]; then
-            cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
-          else
-            cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release
-          fi
+          cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release -j4 
+      - name: Compile tests (Other formats)
+        if: matrix.format != 'JSON'
+        run: |
+          cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release -j4 
       - name: Run tests
         run: |
