@@ -11,58 +11,41 @@ jobs:
       fail-fast: false
       matrix:
         format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML"]
-        include:
-          - compiler: llvm
+        compiler: [llvm, gcc]
+        compiler-version: [11, 12, 13, 14, 16, 17, 18]
+        cxx: [20, 23]
+        package-manager: [vcpkg]
+        exclude:
+          - compiler: gcc 
             compiler-version: 16
-            cxx: 20
-            package-manager: vcpkg
-          - compiler: llvm
+          - compiler: gcc 
             compiler-version: 17
-            cxx: 20 
-            package-manager: vcpkg
-          - compiler: llvm
+          - compiler: gcc 
             compiler-version: 18
-            cxx: 20  
+          - compiler: llvm
+            compiler-version: 11
+          - compiler: llvm 
+            compiler-version: 12
             package-manager: vcpkg
+          - compiler: llvm 
+            compiler-version: 13
+          - compiler: llvm 
+            compiler-version: 14
           - compiler: gcc
             compiler-version: 11
-            cxx: 20  
-            package-manager: vcpkg
+            cxx: 23 
           - compiler: gcc
             compiler-version: 12
-            cxx: 20  
-            package-manager: vcpkg
+            cxx: 23  
           - compiler: gcc
             compiler-version: 13
-            cxx: 20  
-            package-manager: vcpkg
-          - compiler: gcc
-            compiler-version: 14
-            cxx: 20  
-            package-manager: vcpkg
-          - compiler: gcc
-            compiler-version: 13
+            cxx: 23  
+          - compiler: llvm 
+            compiler-version: 16
             cxx: 23 
-            package-manager: vcpkg
-          - compiler: gcc
-            compiler-version: 14
-            cxx: 23  
-            package-manager: vcpkg
           - compiler: llvm
-            compiler-version: 18
-            cxx: 20  
-            package-manager: conan 
-            format: "JSON"
-          - compiler: gcc
-            compiler-version: 14
-            cxx: 20  
-            package-manager: conan 
-            format: "JSON"
-          - compiler: gcc
-            compiler-version: 14
+            compiler-version: 17
             cxx: 23  
-            package-manager: conan 
-            format: "JSON"
     name: "${{ github.job }} (${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}-${{ matrix.package-manager }})"
     runs-on: ubuntu-24.04
     steps:
