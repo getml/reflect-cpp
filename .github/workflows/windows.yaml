@@ -10,17 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - format: JSON 
-          - format: BSON 
-          - format: CAPNPROTO 
-          - format: CBOR
-          - format: FLEXBUFFERS 
-          - format: MSGPACK
-          - format: XML 
-          - format: TOML 
-          - format: UBJSON 
-          - format: YAML
+        format: ["JSON", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML"]
     name: "windows-msvc (${{ matrix.format }})"
     runs-on: windows-latest
     steps:
