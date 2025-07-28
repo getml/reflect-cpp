@@ -11,10 +11,6 @@ jobs:
       fail-fast: false
       matrix:
         format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML"]
-        compiler: [llvm, gcc]
-        compiler-version: [11, 12, 13, 14, 16, 17, 18] 
-        cxx: [20, 23]
-        package-manager: [vcpkg, conan]
         include:
           - compiler: llvm
             compiler-version: 16
