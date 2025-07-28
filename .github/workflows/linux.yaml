@@ -8,7 +8,13 @@ env:
 jobs:
   linux:
     strategy:
+      fail-fast: false
       matrix:
+        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML"]
+        compiler: [llvm, gcc]
+        compiler-version: [11, 12, 13, 14, 16, 17, 18] 
+        cxx: [20, 23]
+        package-manager: [vcpkg, conan]
         include:
           - compiler: llvm
             compiler-version: 16
@@ -24,7 +30,6 @@ jobs:
             package-manager: vcpkg
           - compiler: gcc
             compiler-version: 11
-            additional-dep: "g++-11"
             cxx: 20  
             package-manager: vcpkg
           - compiler: gcc
@@ -51,15 +56,18 @@ jobs:
             compiler-version: 18
             cxx: 20  
             package-manager: conan 
+            format: "JSON"
           - compiler: gcc
             compiler-version: 14
             cxx: 20  
             package-manager: conan 
+            format: "JSON"
           - compiler: gcc
             compiler-version: 14
             cxx: 23  
             package-manager: conan 
-    name: "${{ github.job }} (C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}-${{ matrix.package-manager }})"
+            format: "JSON"
+    name: "${{ github.job }} (${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}-${{ matrix.package-manager }})"
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -79,7 +87,11 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y ninja-build ${{ matrix.additional-dep }}
+          if [[ "${{ matrix.compiler-version }}" == 11 ]]; then
+            sudo apt install -y ninja-build g++-11 
+          else
+            sudo apt install -y ninja-build
+          fi
       - name: Install Conan
         if: matrix.package-manager == 'conan'
         run: |
@@ -100,28 +112,13 @@ jobs:
             export CXX=g++-${{ matrix.compiler-version }}
           fi
           $CXX --version
-          cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CAPNPROTO=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
-          cmake --build build
+          if [[ "${{ matrix.format == 'JSON' }}" == "true" ]]; then
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
+          else
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release
+          fi
+          cmake --build build -j4
       - name: Run tests
         if: matrix.package-manager != 'conan'
         run: |
           ctest --test-dir build --output-on-failure
-      - name: Run benchmarks
-        if: matrix.package-manager != 'conan'
-        run: |
-          echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY 
-          echo '## Benchmarks across different formats' >> $GITHUB_STEP_SUMMARY 
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_read >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_write >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo '## Benchmarks for JSON' >> $GITHUB_STEP_SUMMARY 
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=licenses >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
