@@ -87,11 +87,11 @@ jobs:
           fi
           cmake --build build -j4
       - name: Run tests
-        if: matrix.compiler != 'benchmarks'  
+        if: matrix.format != 'benchmarks'  
         run: |
           ctest --test-dir build --output-on-failure
       - name: Run benchmarks 
-        if: matrix.compiler == 'benchmarks' 
+        if: matrix.format == 'benchmarks' 
         run: |
           echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY 
           echo '## Benchmarks across different formats' >> $GITHUB_STEP_SUMMARY 
