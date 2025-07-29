@@ -10,11 +10,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML"]
+        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML", "benchmarks"]
         compiler: [llvm, gcc]
         compiler-version: [11, 12, 13, 14, 16, 17, 18]
         cxx: [20, 23]
-        package-manager: [vcpkg]
         exclude:
           - compiler: gcc 
             compiler-version: 16
@@ -46,7 +45,7 @@ jobs:
           - compiler: llvm
             compiler-version: 17
             cxx: 23  
-    name: "${{ github.job }} (${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}-${{ matrix.package-manager }})"
+    name: "${{ github.job }} (${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }})"
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
@@ -61,7 +60,6 @@ jobs:
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
       - name: Run vcpkg
-        if: matrix.package-manager != 'conan'
         uses: lukka/run-vcpkg@v11
       - name: Install dependencies
         run: |
@@ -71,17 +69,7 @@ jobs:
           else
             sudo apt install -y ninja-build
           fi
-      - name: Install Conan
-        if: matrix.package-manager == 'conan'
-        run: |
-          sudo apt install -y pipx
-          pipx install conan
-          conan profile detect
-      - name: Make sure the library compiles with Conan
-        if: matrix.package-manager == 'conan'
-        run: conan build . --build=missing -s compiler.cppstd=gnu20 -o *:with_capnproto=True -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True      
       - name: Compile
-        if: matrix.package-manager != 'conan'
         run: |
           if [[ "${{ matrix.compiler }}" == "llvm" ]]; then
             export CC=clang-${{ matrix.compiler-version }}
@@ -91,13 +79,34 @@ jobs:
             export CXX=g++-${{ matrix.compiler-version }}
           fi
           $CXX --version
-          if [[ "${{ matrix.format == 'JSON' }}" == "true" ]]; then
+          if [[ "${{ matrix.format }}" == "JSON" ]]; then
             cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
+          elif [[ "${{ matrix.format }}" == "benchmarks" ]]; then
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release
           else
             cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release
           fi
           cmake --build build -j4
       - name: Run tests
-        if: matrix.package-manager != 'conan'
+        if: matrix.compiler != 'benchmarks'  
         run: |
           ctest --test-dir build --output-on-failure
+      - name: Run benchmarks 
+        if: matrix.compiler == 'benchmarks' 
+        run: |
+          echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY 
+          echo '## Benchmarks across different formats' >> $GITHUB_STEP_SUMMARY 
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_write >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo '## Benchmarks for JSON' >> $GITHUB_STEP_SUMMARY 
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=licenses >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
