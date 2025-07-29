@@ -25,7 +25,6 @@ jobs:
             compiler-version: 11
           - compiler: llvm 
             compiler-version: 12
-            package-manager: vcpkg
           - compiler: llvm 
             compiler-version: 13
           - compiler: llvm 
