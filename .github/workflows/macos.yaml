@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["macos-latest", "macos-13"]
-        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML"]
+        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML", "benchmarks"]
     name: "${{ matrix.os }} (${{ matrix.format }})"
     runs-on: ${{ matrix.os }}
     steps:
@@ -41,12 +41,34 @@ jobs:
             export CMAKE_GENERATOR=Ninja
           fi
           $CXX --version
-          if [[ "${{ matrix.format == 'JSON' }}" == "true" ]]; then
+          if [[ "${{ matrix.format }}" == "JSON" ]]; then
             cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          elif [[ "${{ matrix.format }}" == "benchmarks" ]]; then
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
           else
             cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
           fi
           cmake --build build -j 4
       - name: Run tests
+        if: matrix.format != 'benchmarks'  
         run: |
           ctest --test-dir build --output-on-failure
+      - name: Run benchmarks 
+        if: matrix.format == 'benchmarks' 
+        run: |
+          echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY 
+          echo '## Benchmarks across different formats' >> $GITHUB_STEP_SUMMARY 
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_write >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo '## Benchmarks for JSON' >> $GITHUB_STEP_SUMMARY 
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=licenses >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
