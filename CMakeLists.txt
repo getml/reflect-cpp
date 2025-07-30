@@ -3,17 +3,18 @@ cmake_minimum_required(VERSION 3.23)
 option(REFLECTCPP_BUILD_SHARED "Build shared library" ${BUILD_SHARED_LIBS})
 option(REFLECTCPP_INSTALL "Install reflect cpp" OFF)
 
+option(REFLECTCPP_ALL_FORMATS "Enable all supported formats" OFF)
 option(REFLECTCPP_JSON "Enable JSON support" ON) # enabled by default
-option(REFLECTCPP_AVRO "Enable AVRO support" OFF)
-option(REFLECTCPP_BSON "Enable BSON support" OFF)
-option(REFLECTCPP_CAPNPROTO "Enable Cap’n Proto support" OFF)
-option(REFLECTCPP_CBOR "Enable CBOR support" OFF)
-option(REFLECTCPP_FLEXBUFFERS "Enable flexbuffers support" OFF)
-option(REFLECTCPP_MSGPACK "Enable msgpack support" OFF)
-option(REFLECTCPP_XML "Enable XML support" OFF)
-option(REFLECTCPP_TOML "Enable TOML support" OFF)
-option(REFLECTCPP_UBJSON "Enable UBJSON support" OFF)
-option(REFLECTCPP_YAML "Enable YAML support" OFF)
+option(REFLECTCPP_AVRO "Enable AVRO support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_BSON "Enable BSON support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_CAPNPROTO "Enable Cap’n Proto support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_CBOR "Enable CBOR support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_FLEXBUFFERS "Enable flexbuffers support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_MSGPACK "Enable msgpack support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_XML "Enable XML support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_TOML "Enable TOML support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_UBJSON "Enable UBJSON support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_YAML "Enable YAML support" ${REFLECTCPP_ALL_FORMATS})
 
 option(REFLECTCPP_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
@@ -59,6 +60,12 @@ if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_BUILD_BENCHMARKS OR
     set(REFLECTCPP_USE_VCPKG_DEFAULT ON)
 endif()
 
+if(REFLECTCPP_JSON OR REFLECTCPP_AVRO OR REFLECTCPP_CBOR OR REFLECTCPP_UBJSON)
+    set(_REFLECTCPP_NEEDS_JSON_IMPL ON)
+else()
+    set(_REFLECTCPP_NEEDS_JSON_IMPL OFF)
+endif()
+
 option(REFLECTCPP_USE_VCPKG "Use VCPKG to download and build dependencies" ${REFLECTCPP_USE_VCPKG_DEFAULT})
 
 if (REFLECTCPP_USE_VCPKG)
@@ -94,7 +101,7 @@ if (REFLECTCPP_USE_VCPKG)
         list(APPEND VCPKG_MANIFEST_FEATURES "flexbuffers")
     endif()
     
-    if (REFLECTCPP_JSON AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
+    if (_REFLECTCPP_NEEDS_JSON_IMPL AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
         list(APPEND VCPKG_MANIFEST_FEATURES "json")
     endif()
     
@@ -162,7 +169,7 @@ else ()
     target_link_libraries(reflectcpp PUBLIC ctre::ctre)
 endif ()
 
-if (REFLECTCPP_JSON)
+if (_REFLECTCPP_NEEDS_JSON_IMPL)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_json.cpp
     )

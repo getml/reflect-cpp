@@ -1,0 +1,25 @@
+name: linux
+
+on: [ push, pull_request ]
+
+jobs:
+  linux:
+    name: "${{ github.job }} (Conan)"
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y ninja-build pipx
+      - name: Install Conan
+        run: |
+          pipx install conan
+          conan profile detect
+      - name: Make sure the library compiles with Conan
+        run: conan build . --build=missing -s compiler.cppstd=gnu20 -o *:with_capnproto=True -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True      
+
