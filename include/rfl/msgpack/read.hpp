@@ -7,6 +7,8 @@
 #include <string>
 
 #include "../Processors.hpp"
+#include "../concepts.hpp"
+#include "../internal/ptr_cast.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
 #include "Parser.hpp"
 #include "Reader.hpp"
@@ -26,12 +28,13 @@ auto read(const InputVarType& _obj) {
 
 /// Parses an object from MSGPACK using reflection.
 template <class T, class... Ps>
-Result<internal::wrap_in_rfl_array_t<T>> read(const char* _bytes,
-                                              const size_t _size) {
+Result<internal::wrap_in_rfl_array_t<T>> read(
+    const concepts::ByteLike auto* _bytes, const size_t _size) {
   msgpack_zone mempool;
   msgpack_zone_init(&mempool, 2048);
   msgpack_object deserialized;
-  msgpack_unpack(_bytes, _size, NULL, &mempool, &deserialized);
+  msgpack_unpack(internal::ptr_cast<const char*>(_bytes), _size, NULL, &mempool,
+                 &deserialized);
   auto r = read<T, Ps...>(deserialized);
   msgpack_zone_destroy(&mempool);
   return r;
@@ -39,7 +42,7 @@ Result<internal::wrap_in_rfl_array_t<T>> read(const char* _bytes,
 
 /// Parses an object from MSGPACK using reflection.
 template <class T, class... Ps>
-auto read(const std::vector<char>& _bytes) {
+auto read(const concepts::ContiguousByteContainer auto& _bytes) {
   return read<T, Ps...>(_bytes.data(), _bytes.size());
 }
 
