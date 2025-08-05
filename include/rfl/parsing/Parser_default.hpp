@@ -20,6 +20,7 @@
 #include "../internal/processed_t.hpp"
 #include "../internal/ptr_cast.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
+#include "../thirdparty/enchantum_single_header.hpp"
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
@@ -86,8 +87,11 @@ struct Parser {
       } else if constexpr (std::is_enum_v<T>) {
         if constexpr (ProcessorsType::underlying_enums_ ||
                       schemaful::IsSchemafulReader<R>) {
-          return static_cast<T>(
-              *_r.template to_basic_type<std::underlying_type_t<T>>(_var));
+          static_assert(enchantum::ScopedEnum<T>,
+                        "The enum must be a scoped enum in order to retrieve "
+                        "the underlying value.");
+          return _r.template to_basic_type<std::underlying_type_t<T>>(_var)
+              .transform([](const auto _val) { return static_cast<T>(_val); });
         } else {
           return _r.template to_basic_type<std::string>(_var).and_then(
               rfl::string_to_enum<T>);
