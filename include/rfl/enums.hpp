@@ -6,8 +6,7 @@
 #include "Result.hpp"
 #include "internal/enums/get_enum_names.hpp"
 #include "internal/strings/strings.hpp"
-#include "thirdparty/enchantum/enchantum.hpp"
-#include "thirdparty/enchantum/bitflags.hpp"
+#include "thirdparty/enchantum_single_header.hpp"
 
 namespace rfl {
 
