@@ -563,9 +563,24 @@ cmake --build build -j 4  # gcc, clang
 cmake --build build --config Release -j 4  # MSVC
 ```
 
-If you need support for any other supported [serialization formats](#serialization-formats), refer to the [documentation](https://rfl.getml.com/docs-readme) for installation instructions.
+To install all supported serialization formats, first install vcpkg:
 
-You can also [include the source files](https://rfl.getml.com/install/#option-1-include-source-files-into-your-own-build) into your build or compile it using [cmake and vcpkg.](https://rfl.getml.com/install/#option-3-compilation-using-cmake-and-vcpkg) For detailed installation instructions, please refer to the [install guide](https://rfl.getml.com/install).
+```bash
+git submodule update --init
+./vcpkg/bootstrap-vcpkg.sh # Linux, macOS
+./vcpkg/bootstrap-vcpkg.bat # Windows
+# You may be prompted to install additional dependencies.
+```
+
+Then, compile the library:
+
+```bash
+cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_ALL_FORMATS=ON
+cmake --build build -j 4 # gcc, clang
+cmake --build build --config Release -j 4 # MSVC
+```
+
+For other installation methods, refer to the [documentation](https://rfl.getml.com/docs-readme).
 
 ## The team behind reflect-cpp
 
