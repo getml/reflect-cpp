@@ -44,8 +44,6 @@ TEST(json, test_validation_with_fields) {
                    .DecimationFactor = 10,
                    .TimingOffset = 0};
 
-  const auto json_string = rfl::json::write(test_thread_config);
-
   write_and_read(
       test_thread_config,
       R"({"type":"BasicThread","Name":"TEST_1","ReadTags":[{"Name":"READ_TAG_1","Length":5,"WriteEnabled":false}],"WriteTags":[{"Name":"WRITE_TAG_1","Length":10,"WriteEnabled":true}],"ThreadPriority":-1,"DecimationFactor":10,"TimingOffset":0})");
