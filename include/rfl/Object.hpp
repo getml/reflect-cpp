@@ -90,6 +90,8 @@ class Object {
   /// The number of elements currently inside the object.
   auto size() const { return data_.size(); }
 
+  std::size_t count(const key_type& key) const noexcept { return find(key) == size() ? 0 : 1; }
+
   /// The maximum possible size.
   auto max_size() const { return data_.max_size(); }
 
