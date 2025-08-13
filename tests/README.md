@@ -3,8 +3,8 @@
 reflect-cpp uses vcpkg for dependency management, including
 gtest, which is required for the tests.
 
-```bash
-# bootstrap vcpkg if you haven't done so already 
+```shell
+# bootstrap vcpkg if you haven't done so already
 git submodule update --init
 ./vcpkg/bootstrap-vcpkg.sh # Linux, macOS
 ./vcpkg/bootstrap-vcpkg.bat # Windows
@@ -15,7 +15,7 @@ git submodule update --init
 
 To compile the tests, do the following:
 
-```bash
+```shell
 cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_BUILD_TESTS=ON
 cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
@@ -23,7 +23,7 @@ cmake --build build --config Release -j 4 # MSVC
 
 To run the tests, do the following:
 
-```
+```shell
 ./build/tests/json/reflect-cpp-json-tests
 ```
 
@@ -31,13 +31,19 @@ To run the tests, do the following:
 
 To compile the tests with serialization formats other than JSON, do the following:
 
-```bash
+```shell
 cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_AVRO=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CAPNPROTO=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_UBJSON=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
 ```
 
-To run the tests, do the following:
+You can run all of the tests via `ctest`, as in:
+
+```shell
+ctest --test-dir build --output-on-failure
+```
+
+Or you can run tests individually, as in:
 
 ```
 ./build/tests/avro/reflect-cpp-avro-tests

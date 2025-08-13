@@ -7,8 +7,8 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../enums.hpp"
 #include "../from_named_tuple.hpp"
-#include "../internal/enums/StringConverter.hpp"
 #include "../internal/has_reflection_method_v.hpp"
 #include "../internal/has_reflection_type_v.hpp"
 #include "../internal/has_reflector.hpp"
@@ -20,6 +20,7 @@
 #include "../internal/processed_t.hpp"
 #include "../internal/ptr_cast.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
+#include "../thirdparty/enchantum/enchantum.hpp"
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
@@ -86,12 +87,14 @@ struct Parser {
       } else if constexpr (std::is_enum_v<T>) {
         if constexpr (ProcessorsType::underlying_enums_ ||
                       schemaful::IsSchemafulReader<R>) {
-          return static_cast<T>(
-              *_r.template to_basic_type<std::underlying_type_t<T>>(_var));
+          static_assert(enchantum::ScopedEnum<T>,
+                        "The enum must be a scoped enum in order to retrieve "
+                        "the underlying value.");
+          return _r.template to_basic_type<std::underlying_type_t<T>>(_var)
+              .transform([](const auto _val) { return static_cast<T>(_val); });
         } else {
-          using StringConverter = internal::enums::StringConverter<T>;
           return _r.template to_basic_type<std::string>(_var).and_then(
-              StringConverter::string_to_enum);
+              rfl::string_to_enum<T>);
         }
 
       } else {
@@ -133,8 +136,7 @@ struct Parser {
         const auto val = static_cast<std::underlying_type_t<T>>(_var);
         ParentType::add_value(_w, val, _parent);
       } else {
-        using StringConverter = internal::enums::StringConverter<T>;
-        const auto str = StringConverter::enum_to_string(_var);
+        const auto str = rfl::enum_to_string(_var);
         ParentType::add_value(_w, str, _parent);
       }
 
@@ -214,15 +216,16 @@ struct Parser {
   static schema::Type make_enum(
       std::map<std::string, schema::Type>* _definitions) {
     using Type = schema::Type;
-    using S = internal::enums::StringConverter<U>;
     if constexpr (ProcessorsType::underlying_enums_ ||
                   schemaful::IsSchemafulReader<R>) {
       return Type{Type::Integer{}};
-    } else if constexpr (S::is_flag_enum_) {
+    } else if constexpr (enchantum::is_bitflag<U>) {
       return Type{Type::String{}};
     } else {
-      return Parser<R, W, typename S::NamesLiteral, ProcessorsType>::to_schema(
-          _definitions);
+      return Parser<
+          R, W,
+          typename decltype(internal::enums::get_enum_names<U>())::Literal,
+          ProcessorsType>::to_schema(_definitions);
     }
   }
 

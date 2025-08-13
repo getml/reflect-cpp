@@ -12,6 +12,8 @@
 
 #include "../Processors.hpp"
 #include "../SnakeCaseToCamelCase.hpp"
+#include "../concepts.hpp"
+#include "../internal/ptr_cast.hpp"
 #include "../internal/strings/strings.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
 #include "Parser.hpp"
@@ -34,9 +36,9 @@ auto read(const InputVarType& _obj) {
 
 /// Parses an object from CAPNPROTO using reflection.
 template <class T, class... Ps>
-Result<internal::wrap_in_rfl_array_t<T>> read(const char* _bytes,
-                                              const size_t _size,
-                                              const Schema<T>& _schema) {
+Result<internal::wrap_in_rfl_array_t<T>> read(
+    const concepts::ByteLike auto* _bytes, const size_t _size,
+    const Schema<T>& _schema) {
   const auto array_ptr = kj::ArrayPtr<const kj::byte>(
       internal::ptr_cast<const kj::byte*>(_bytes), _size);
   auto input_stream = kj::ArrayInputStream(array_ptr);
@@ -57,13 +59,14 @@ auto read(const char* _bytes, const size_t _size) {
 
 /// Parses an object from CAPNPROTO using reflection.
 template <class T, class... Ps>
-auto read(const std::vector<char>& _bytes, const Schema<T>& _schema) noexcept {
+auto read(const concepts::ContiguousByteContainer auto& _bytes,
+          const Schema<T>& _schema) noexcept {
   return read<T, Ps...>(_bytes.data(), _bytes.size(), _schema);
 }
 
 /// Parses an object from CAPNPROTO using reflection.
 template <class T, class... Ps>
-auto read(const std::vector<char>& _bytes) {
+auto read(const concepts::ContiguousByteContainer auto& _bytes) {
   return read<T, Ps...>(_bytes.data(), _bytes.size());
 }
 

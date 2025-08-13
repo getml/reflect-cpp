@@ -1,6 +1,6 @@
 {
   "name": "reflectcpp",
-  "version-string": "0.19.0",
+  "version-string": "0.20.0",
   "builtin-baseline": "cd124b84feb0c02a24a2d90981e8358fdee0e077",
   "dependencies": [
     {
@@ -152,7 +152,7 @@
       "dependencies": [
         {
           "name": "pugixml",
-          "version>=": "1.14"
+          "version>=": "1.15"
         }
       ]
     },

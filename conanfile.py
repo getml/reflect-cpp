@@ -82,7 +82,7 @@ class ReflectCppConan(ConanFile):
         if self.options.with_toml:
             self.requires("tomlplusplus/3.4.0", transitive_headers=True)
         if self.options.with_xml:
-            self.requires("pugixml/1.14", transitive_headers=True)
+            self.requires("pugixml/1.15", transitive_headers=True)
         if self.options.with_yaml:
             self.requires("yaml-cpp/0.8.0", transitive_headers=True)
 

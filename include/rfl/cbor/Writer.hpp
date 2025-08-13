@@ -17,6 +17,7 @@
 #include "../Bytestring.hpp"
 #include "../Ref.hpp"
 #include "../Result.hpp"
+#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 
 namespace rfl::cbor {
@@ -41,7 +42,7 @@ class Writer {
 
   OutputArrayType array_as_root(const size_t _size) const noexcept;
 
-  OutputObjectType object_as_root(const size_t _size) const noexcept;
+  OutputObjectType object_as_root(const size_t) const noexcept;
 
   OutputVarType null_as_root() const noexcept;
 
@@ -57,11 +58,11 @@ class Writer {
                                       const size_t _size,
                                       OutputObjectType* _parent) const noexcept;
 
-  OutputObjectType add_object_to_array(const size_t _size,
+  OutputObjectType add_object_to_array(const size_t,
                                        OutputArrayType* _parent) const noexcept;
 
   OutputObjectType add_object_to_object(
-      const std::string_view& _name, const size_t _size,
+      const std::string_view& _name, const size_t,
       OutputObjectType* _parent) const noexcept;
 
   template <class T>
@@ -90,19 +91,23 @@ class Writer {
  private:
   OutputArrayType new_array(const size_t _size) const noexcept;
 
-  OutputObjectType new_object(const size_t _size) const noexcept;
+  OutputObjectType new_object() const noexcept;
 
   template <class T>
   OutputVarType new_value(const T& _var) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       encoder_->string_value(_var);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
+                                      rfl::Bytestring>() ||
+                         std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Vectorstring>()) {
       encoder_->byte_string_value(_var);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       encoder_->bool_value(_var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       encoder_->double_value(static_cast<double>(_var));
+    } else if constexpr (std::is_unsigned<std::remove_cvref_t<T>>()) {
+      encoder_->uint64_value(static_cast<std::uint64_t>(_var));
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       encoder_->int64_value(static_cast<std::int64_t>(_var));
     } else {

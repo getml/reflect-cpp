@@ -14,8 +14,9 @@
 
 **reflect-cpp** is a C++-20 library for **fast serialization, deserialization and validation** using reflection, similar to [pydantic](https://github.com/pydantic/pydantic) in Python, [serde](https://github.com/serde-rs) in Rust, [encoding](https://github.com/golang/go/tree/master/src/encoding) in Go or [aeson](https://github.com/haskell/aeson/tree/master) in Haskell.
 
-As the aforementioned libraries are among the most widely used in the respective languages, reflect-cpp fills an important gap in C++ development. It reduces boilerplate code and increases code safety.
+Moreover, reflect-cpp is the basis for [sqlgen](https://github.com/getml/sqlgen), a **modern, type-safe ORM and SQL query generator** for C++20, inspired by Python's SQLAlchemy/SQLModel and Rust's Diesel. It provides a fluent, composable interface for database operations with compile-time type checking and SQL injection protection. 
 
+reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boilerplate code and increase code safety. Together, they enable reliable and efficient ETL pipelines.
 
 ### Design principles for reflect-cpp include:
 
@@ -499,7 +500,9 @@ reflect-cpp supports the following containers from the C++ standard library:
 - `std::pair`
 - `std::set`
 - `std::shared_ptr`
+- `std::span`
 - `std::string`
+- `std::string_view`
 - `std::tuple`
 - `std::unique_ptr`
 - `std::unordered_map`
@@ -560,9 +563,24 @@ cmake --build build -j 4  # gcc, clang
 cmake --build build --config Release -j 4  # MSVC
 ```
 
-If you need support for any other supported [serialization formats](#serialization-formats), refer to the [documentation](https://rfl.getml.com/docs-readme) for installation instructions.
+To install all supported serialization formats, first install vcpkg:
 
-You can also [include the source files](https://rfl.getml.com/install/#option-1-include-source-files-into-your-own-build) into your build or compile it using [cmake and vcpkg.](https://rfl.getml.com/install/#option-3-compilation-using-cmake-and-vcpkg) For detailed installation instructions, please refer to the [install guide](https://rfl.getml.com/install).
+```bash
+git submodule update --init
+./vcpkg/bootstrap-vcpkg.sh # Linux, macOS
+./vcpkg/bootstrap-vcpkg.bat # Windows
+# You may be prompted to install additional dependencies.
+```
+
+Then, compile the library:
+
+```bash
+cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_ALL_FORMATS=ON
+cmake --build build -j 4 # gcc, clang
+cmake --build build --config Release -j 4 # MSVC
+```
+
+For other installation methods, refer to the [documentation](https://rfl.getml.com/docs-readme).
 
 ## The team behind reflect-cpp
 
@@ -584,3 +602,5 @@ reflect-cpp is released under the MIT License. Refer to the LICENSE file for det
 reflect-cpp includes [YYJSON](https://github.com/ibireme/yyjson), the fastest JSON library currently in existence. YYJSON is written by YaoYuan and also released under the MIT License.
 
 reflect-cpp includes [compile-time-regular-expressions](https://github.com/hanickadot/compile-time-regular-expressions). CTRE is written by Hana Dusíková and released under the Apache-2.0 License with LLVM exceptions.
+
+reflect-cpp includes [enchantum](https://github.com/ZXShady/enchantum/tree/main). enchantum is written by ZXShady and also released under the MIT License.

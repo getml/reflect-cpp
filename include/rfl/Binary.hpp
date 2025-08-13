@@ -26,9 +26,9 @@ struct Binary {
 
   Binary(const Type& _value) : value_(_value) {}
 
-  Binary(Binary<T>&& _other) noexcept = default;
+  Binary(Binary&& _other) noexcept = default;
 
-  Binary(const Binary<T>& _other) = default;
+  Binary(const Binary& _other) = default;
 
   template <class U>
   Binary(const Binary<U>& _other) : value_(_other.get()) {}
@@ -77,10 +77,10 @@ struct Binary {
   }
 
   /// Assigns the underlying object.
-  Binary<T>& operator=(const Binary<T>& _other) = default;
+  Binary& operator=(const Binary<T>& _other) = default;
 
   /// Assigns the underlying object.
-  Binary<T>& operator=(Binary<T>&& _other) = default;
+  Binary& operator=(Binary<T>&& _other) = default;
 
   /// Assigns the underlying object.
   template <class U>

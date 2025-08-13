@@ -19,6 +19,11 @@ struct Person {
 };
 
 TEST(json, test_literal) {
+  static_assert(!FirstName::template contains_any<LastName>(),
+                "Must be false.");
+  static_assert(FirstName::template contains_any<FirstName>(), "Must be true.");
+  static_assert(FirstName::template contains_all<FirstName>(), "Must be true.");
+
   const auto bart = Person{.first_name = FirstName::make<"Bart">()};
 
   write_and_read(bart,

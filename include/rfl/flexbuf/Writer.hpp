@@ -18,6 +18,7 @@
 #include "../Bytestring.hpp"
 #include "../Ref.hpp"
 #include "../Result.hpp"
+#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 
 namespace rfl {
@@ -96,7 +97,9 @@ struct Writer {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       fbb_->String(_name.data(), _var);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
+                                      rfl::Bytestring>() ||
+                         std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Vectorstring>()) {
       fbb_->Blob(_name.data(), _var.data(), _var.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       fbb_->Bool(_name.data(), _var);

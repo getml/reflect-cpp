@@ -94,23 +94,17 @@ class Object {
   auto max_size() const { return data_.max_size(); }
 
   /// Inserts a new element at the end.
-  void insert(const value_type& _value) {
-    data_.push_back(_value);
+  template <class... Args>
+  void insert(const Args&... _values) {
+    (data_.push_back(_values), ...);
     i_ = 0;
   }
 
   /// Inserts a new element at the end.
-  void insert(value_type&& _value) {
-    data_.emplace_back(std::move(_value));
+  template <class... Args>
+  void insert(Args&&... _values) {
+    (data_.emplace_back(std::move(_values)), ...);
     i_ = 0;
-  }
-
-  /// Inserts several new elements at the end.
-  template <class InputIt>
-  void insert(InputIt _first, InputIt _last) {
-    for (auto it = _first; it != _last; ++it) {
-      insert(*it);
-    }
   }
 
   /// Inserts a new element at the end.
@@ -150,6 +144,22 @@ class Object {
   template <class... Args>
   void emplace(const Args&... _args) {
     insert(_args...);
+  }
+
+  /// Inserts several new elements at the end.
+  template <class InputIt>
+  void insert_range(InputIt _first, InputIt _last) {
+    for (auto it = _first; it != _last; ++it) {
+      insert(*it);
+    }
+  }
+
+  /// Inserts several new elements at the end.
+  template <class RangeType>
+  void insert_range(RangeType _range) {
+    for (const auto& val : _range) {
+      insert(val);
+    }
   }
 
   /// Returns the element signified by the key or creates a new one.

@@ -21,9 +21,9 @@ struct Flatten {
 
   Flatten(Type&& _value) noexcept : value_(std::forward<Type>(_value)) {}
 
-  Flatten(const Flatten<T>& _f) = default;
+  Flatten(const Flatten& _f) = default;
 
-  Flatten(Flatten<T>&& _f) noexcept = default;
+  Flatten(Flatten&& _f) noexcept = default;
 
   template <class U>
   Flatten(const Flatten<U>& _f) : value_(_f.get()) {}
@@ -54,13 +54,13 @@ struct Flatten {
   const Type& operator()() const { return value_; }
 
   /// Assigns the underlying object.
-  Flatten<T>& operator=(const T& _value) {
+  Flatten& operator=(const T& _value) {
     value_ = _value;
     return *this;
   }
 
   /// Assigns the underlying object.
-  Flatten<T>& operator=(T&& _value) {
+  Flatten& operator=(T&& _value) {
     value_ = std::forward<Type>(_value);
     return *this;
   }
@@ -68,27 +68,27 @@ struct Flatten {
   /// Assigns the underlying object.
   template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
                                              bool>::type = true>
-  Flatten<T>& operator=(const U& _value) {
+  Flatten& operator=(const U& _value) {
     value_ = _value;
     return *this;
   }
 
   /// Assigns the underlying object.
-  Flatten<T>& operator=(const Flatten<T>& _f) = default;
+  Flatten& operator=(const Flatten& _f) = default;
 
   /// Assigns the underlying object.
-  Flatten<T>& operator=(Flatten<T>&& _f) = default;
+  Flatten& operator=(Flatten&& _f) = default;
 
   /// Assigns the underlying object.
   template <class U>
-  Flatten<T>& operator=(const Flatten<U>& _f) {
+  Flatten& operator=(const Flatten<U>& _f) {
     value_ = _f.get();
     return *this;
   }
 
   /// Assigns the underlying object.
   template <class U>
-  Flatten<T>& operator=(Flatten<U>&& _f) {
+  Flatten& operator=(Flatten<U>&& _f) {
     value_ = std::forward<U>(_f);
     return *this;
   }

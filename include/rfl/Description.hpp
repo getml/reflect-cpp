@@ -31,9 +31,9 @@ struct Description {
 
   Description(Type&& _value) noexcept : value_(std::move(_value)) {}
 
-  Description(Description<_description, T>&& _field) noexcept = default;
+  Description(Description&& _field) noexcept = default;
 
-  Description(const Description<_description, Type>& _field) = default;
+  Description(const Description& _field) = default;
 
   template <class U>
   Description(const Description<_description, U>& _field)
@@ -105,12 +105,12 @@ struct Description {
   }
 
   /// Assigns the underlying object.
-  Description<_description, T>& operator=(
-      const Description<_description, T>& _field) = default;
+  Description& operator=(
+      const Description& _field) = default;
 
   /// Assigns the underlying object.
-  Description<_description, T>& operator=(
-      Description<_description, T>&& _field) = default;
+  Description& operator=(
+      Description&& _field) = default;
 
   /// Assigns the underlying object.
   template <class U>

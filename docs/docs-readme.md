@@ -28,11 +28,11 @@
 
 [Standard containers](standard_containers.md) - Describes how reflect-cpp treats containers in the standard library.
 
-[C arrays and inheritance](c_arrays_and_inheritance.md) - Describes how reflect-cpp handles C arrays and inheritance. 
+[C arrays and inheritance](c_arrays_and_inheritance.md) - Describes how reflect-cpp handles C arrays and inheritance.
 
-[rfl::Bytestring](bytestring.md) - Describes how reflect-cpp handles binary strings for formats that support them. 
+[rfl::Bytestring](bytestring.md) - Describes how reflect-cpp handles binary strings for formats that support them.
 
-[rfl::Binary, rfl::Hex and rfl::Oct](number_systems.md)- For expressing numbers in different formats. 
+[rfl::Binary, rfl::Hex and rfl::Oct](number_systems.md)- For expressing numbers in different formats.
 
 ## Validation
 
@@ -58,7 +58,7 @@
 
 [Custom classes](concepts/custom_classes.md) - For custom classes with private fields.
 
-[Custom parsers for your classes](custom_parser.md) - For custom classes with private fields that you want to leave absolutely untouched.
+[Custom parsers for your classes](custom_parser.md) - For custom classes with private fields that you want (or need) to leave absolutely untouched.
 
 ## Useful helper functions and classes
 

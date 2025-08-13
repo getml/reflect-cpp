@@ -1,6 +1,6 @@
-name: macos-cxx20
+name: macos
 
-on: [ pull_request, workflow_dispatch ]
+on: [ push, pull_request ]
 
 env: 
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
@@ -11,6 +11,8 @@ jobs:
       fail-fast: false
       matrix:
         os: ["macos-latest", "macos-13"]
+        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML", "benchmarks"]
+    name: "${{ matrix.os }} (${{ matrix.format }})"
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -24,19 +26,8 @@ jobs:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
-      - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1
-        with:
-          key: "${{ github.job }}-${{ matrix.os }}"
-          max-size: "2G"
-          create-symlink: true
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
-      - name: Install Conan
-        run: |
-          brew install pipx
-          pipx install conan
-          conan profile detect
       - name: Install ninja 
         run: brew install ninja
         if: matrix.os == 'macos-latest'
@@ -50,12 +41,20 @@ jobs:
             export CMAKE_GENERATOR=Ninja
           fi
           $CXX --version
-          cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CAPNPROTO=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          if [[ "${{ matrix.format }}" == "JSON" ]]; then
+            cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          elif [[ "${{ matrix.format }}" == "benchmarks" ]]; then
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          else
+            cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          fi
           cmake --build build -j 4
       - name: Run tests
+        if: matrix.format != 'benchmarks'  
         run: |
           ctest --test-dir build --output-on-failure
-      - name: Run benchmarks
+      - name: Run benchmarks 
+        if: matrix.format == 'benchmarks' 
         run: |
           echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY 
           echo '## Benchmarks across different formats' >> $GITHUB_STEP_SUMMARY 

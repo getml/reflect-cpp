@@ -29,31 +29,31 @@ class Box {
   /// The only way of creating new boxes is
   /// Box<T>::make(...).
   template <class... Args>
-  static Box<T, C> make(Args&&... _args) {
-    return Box<T, C>(std::make_unique<T>(std::forward<Args>(_args)...));
+  static Box make(Args&&... _args) {
+    return Box(std::make_unique<T>(std::forward<Args>(_args)...));
   }
 
   /// You can generate them from unique_ptrs as well, in which case it will
   /// return an Error, if the unique_ptr is not set.
-  static Result<Box<T, C>> make(std::unique_ptr<T>&& _ptr) {
+  static Result<Box> make(std::unique_ptr<T>&& _ptr) {
     if (!_ptr) {
       return error("std::unique_ptr was a nullptr.");
     }
-    return Box<T, C>(std::move(_ptr));
+    return Box(std::move(_ptr));
   }
 
   Box() : ptr_(std::make_unique<T>()) {}
 
   /// Copy constructor if copyable
-  Box(const Box<T, C>& _other) requires (C == Copyability::COPYABLE)
+  Box(const Box& _other) requires (C == Copyability::COPYABLE)
   {
     ptr_ = std::make_unique<T>(*_other);
   }
 
   /// Copy constructor if not copyable
-  Box(const Box<T, C>& _other) requires (C == Copyability::NON_COPYABLE) = delete;
+  Box(const Box& _other) requires (C == Copyability::NON_COPYABLE) = delete;
 
-  Box(Box<T, C>&& _other) = default;
+  Box(Box&& _other) = default;
 
   template <class U, Copyability C2>
   Box(Box<U, C2>&& _other) noexcept
@@ -65,7 +65,7 @@ class Box {
   T* get() const { return ptr_.get(); }
 
   /// Copy assignment operator if copyable
-  Box<T, C>& operator=(const Box<T>& other) requires (C == Copyability::COPYABLE) {
+  Box& operator=(const Box<T>& other) requires (C == Copyability::COPYABLE) {
     if(this != &other) {
       ptr_ = std::make_unique<T>(*other);
     }
@@ -73,14 +73,14 @@ class Box {
   }
 
   /// Copy assignment operator if not copyable
-  Box<T, C>& operator=(const Box<T>& _other) requires (C == Copyability::NON_COPYABLE)  = delete;
+  Box& operator=(const Box& _other) requires (C == Copyability::NON_COPYABLE)  = delete;
 
   /// Move assignment operator
-  Box<T, C>& operator=(Box<T, C>&& _other) noexcept = default;
+  Box& operator=(Box&& _other) noexcept = default;
 
   /// Move assignment operator
   template <class U>
-  Box<T, C>& operator=(Box<U>&& _other) noexcept {
+  Box& operator=(Box<U>&& _other) noexcept {
     ptr_ = std::forward<std::unique_ptr<U>>(_other.ptr());
     return *this;
   }

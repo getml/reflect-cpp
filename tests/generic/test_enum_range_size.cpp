@@ -8,7 +8,7 @@ namespace test_enum_range_size {
 
 enum class InnerColor { none = -128, red = -50, green = 0, blue = 128 };
 enum class LineColor { yellow = 200, purple = 300, orange = 400 };
-enum class OneColor {black};
+enum class OneColor { black };
 
 }  // namespace test_enum_range_size
 
@@ -23,7 +23,7 @@ struct rfl::config::enum_range<test_enum_range_size::LineColor> {
 template <>
 struct rfl::config::enum_range<test_enum_range_size::OneColor> {
   static constexpr int min = 0;
-  static constexpr int max = 0;
+  static constexpr int max = 1;
 };
 
 namespace test_enum_range_size {

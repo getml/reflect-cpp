@@ -40,5 +40,14 @@ TEST(json, test_pointer_fields) {
 
   delete homer.children;
   delete homer2.children;
+
+  // test string_view
+  const std::string_view str = "wa oh what a coincidence";
+  const auto json_str_view = rfl::json::write(str);
+  const auto str_view_back =
+      rfl::json::read<std::string_view, rfl::AllowRawPtrs>(json_str_view)
+          .value();
+  EXPECT_EQ(str, str_view_back);
+  delete str_view_back.data();
 }
 }  // namespace test_pointer_fields

@@ -1,9 +1,10 @@
 # Custom parsers
 
-## `rfl::Reflector` 
+## `rfl::Reflector`
 
-If you absolutely do not want to make any changes to your original classes whatsoever,
-You can create a Reflector template specialization for your type:
+If you absolutely do not want to (or are unable to) make any changes to your
+original classes whatsoever, you can create a Reflector template specialization
+for your type:
 
 ```cpp
 namespace rfl {
@@ -13,7 +14,7 @@ struct Reflector<Person> {
     std::string first_name;
     std::string last_name;
   };
-  
+
   static Person to(const ReflType& v) noexcept {
     return {v.first_name, v.last_name};
   }
@@ -25,7 +26,27 @@ struct Reflector<Person> {
 }
 ```
 
-It's also fine to define just the `from` method when the original class is 
+One way to help make sure that your `ReflType` is kept up to date with your
+original class is to use the `rfl::num_fields<T>` utility to implement a compile-
+time assertion to verify that they have the same number of fields. The
+`rfl::num_fields<T>` utility can be used even in cases where the original
+class is too complex for `reflect-cpp`'s default reflection logic or
+`rfl::to_view()` to be able to handle.
+
+```cpp
+namespace rfl {
+template <>
+struct Reflector<Person> {
+  struct ReflType {
+    std::string first_name;
+    std::string last_name;
+  };
+  static_assert(rfl::num_fields<ReflType> == rfl::num_fields<Person>,
+    "ReflType and actual type must have the same number of fields");
+  // ...
+```
+
+It's also fine to define just the `from` method when the original class is
 only written, or `to` when the original class is only read:
 
 ```cpp
@@ -46,7 +67,7 @@ struct Reflector<Person> {
 ```
 
 Note that the `ReflType` does not have to be a struct. For instance, if you have
-a custom type called `MyCustomType` that you want to be serialized as a string, 
+a custom type called `MyCustomType` that you want to be serialized as a string,
 you can do the following:
 
 ```cpp
@@ -114,7 +135,7 @@ struct Person {
 };
 ```
 
-You can then write a helper struct: 
+You can then write a helper struct:
 
 ```cpp
 struct PersonImpl {
@@ -173,4 +194,34 @@ struct PersonImpl {
                           .age = _p.age()};
     }
 };
+```
+
+## Implement the `Parser` template
+
+You can also directly implement the Parser template for your type.
+This might be beneficial when you have a third-party container type
+that behaves like standard containers.
+
+In our example, we are implementing the template for `gtl::flat_hash_map`,
+but the approach should also work for similar boost containers.
+
+```cpp
+namespace rfl {
+namespace parsing {
+
+template <class K, class V, class Hash, class KeyEqual, class Allocator>
+class is_map_like<gtl::flat_hash_map<K, V, Hash, KeyEqual, Allocator>> : public std::true_type {};
+
+template <class R, class W, class T, class Hash, class KeyEqual, class ProcessorsType>
+  requires AreReaderAndWriter<R, W, gtl::flat_hash_map<std::string, T, Hash>>
+struct Parser<R, W, gtl::flat_hash_map<std::string, T, Hash, KeyEqual>, ProcessorsType>
+    : public MapParser<R, W, gtl::flat_hash_map<std::string, T, Hash, KeyEqual>, ProcessorsType> {};
+
+template <class R, class W, typename K, typename V, class Hash, class KeyEqual, class Allocator, class ProcessorsType>
+  requires AreReaderAndWriter<R, W, gtl::flat_hash_map<K, V, Hash, KeyEqual, Allocator>>
+struct Parser<R, W, gtl::flat_hash_map<K, V, Hash, KeyEqual, Allocator>, ProcessorsType>
+    : public VectorParser<R, W, gtl::flat_hash_map<K, V, Hash, KeyEqual, Allocator>, ProcessorsType> {};
+
+}
+}
 ```
