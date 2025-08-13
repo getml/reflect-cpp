@@ -28,7 +28,7 @@ consteval auto make_tag() {
     return typename T::Tag();
   } else {
     return Literal<
-        internal::remove_namespaces<internal::get_type_name<T>()>()>();
+        internal::get_type_name<T>()>();
   }
 }
 
