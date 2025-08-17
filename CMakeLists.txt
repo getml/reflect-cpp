@@ -266,6 +266,20 @@ if (REFLECTCPP_MSGPACK)
     target_link_libraries(reflectcpp PUBLIC msgpack-c)
 endif ()
 
+if (REFLECTCPP_PARQUET)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_parquet.cpp
+    )
+    if (NOT TARGET Arrow)
+        find_package(Arrow CONFIG REQUIRED)
+    endif()
+    if (NOT TARGET Parquet)
+        find_package(Parquet CONFIG REQUIRED)
+    endif()
+    target_link_libraries(reflectcpp PUBLIC "$<IF:$<BOOL:${ARROW_BUILD_STATIC}>,Arrow::arrow_static,Arrow::arrow_shared>")
+    target_link_libraries(reflectcpp PUBLIC "$<IF:$<BOOL:${ARROW_BUILD_STATIC}>,Parquet::parquet_static,Parquet::parquet_shared>")
+endif ()
+
 if (REFLECTCPP_TOML)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_toml.cpp
