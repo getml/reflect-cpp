@@ -49,6 +49,7 @@
 *.fb
 *.flexbuf
 *.msgpack
+*.parquet
 *.toml
 *.ubjson
 *.xml

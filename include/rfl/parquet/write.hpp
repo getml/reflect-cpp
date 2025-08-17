@@ -9,18 +9,21 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "../Processors.hpp"
+#include "../Ref.hpp"
 #include "../parsing/tabular/ArrowWriter.hpp"
 
 namespace rfl::parquet {
 
 /// Returns parquet bytes.
 template <class... Ps>
-std::vector<char> write(const auto& _arr) {
+Ref<arrow::Buffer> to_buffer(const auto& _arr) {
   /// TODO: Support processors
   using T = std::remove_cvref_t<decltype(_arr)>;
+
   const auto table =
       parsing::tabular::ArrowWriter<T>(/*chunksize=*/2000).to_table(_arr);
 
@@ -51,16 +54,22 @@ std::vector<char> write(const auto& _arr) {
     throw std::runtime_error(output_buffer.status().message());
   }
 
-  const auto view = std::string_view(*buffer.ValueOrDie());
+  return Ref<arrow::Buffer>::make(buffer.ValueOrDie()).value();
+}
 
+/// Returns parquet bytes.
+template <class... Ps>
+std::vector<char> write(const auto& _arr) {
+  const auto buffer = to_buffer(_arr);
+  const auto view = std::string_view(*buffer);
   return std::vector<char>(view.begin(), view.end());
 }
 
 /// Writes a PARQUET into an ostream.
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) noexcept {
-  auto buffer = write<Ps...>(_obj);
-  _stream.write(buffer.data(), buffer.size());
+  auto buffer = to_buffer<Ps...>(_obj);
+  _stream << std::string_view(*buffer);
   return _stream;
 }
 
