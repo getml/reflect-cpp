@@ -55,11 +55,13 @@ class MapReader {
     }
   }
 
-  Result<std::pair<KeyType, ValueType>> make_key(auto& _pair) const noexcept {
+  Result<std::pair<KeyType, ValueType>> make_key(auto&& _pair) const noexcept {
+    static_assert(std::is_rvalue_reference_v<decltype(_pair)>, "Expected an rvalue");
     const auto to_pair =
-        [&](auto _key) -> Result<std::pair<KeyType, ValueType>> {
+        [&](auto&& _key) -> Result<std::pair<KeyType, ValueType>> {
       try {
-        return std::make_pair(KeyType(std::move(_key)),
+        using K = decltype(_key);
+        return std::make_pair(KeyType(std::forward<K>(_key)),
                               std::move(_pair.second));
       } catch (std::exception& e) {
         return error(e.what());
@@ -77,7 +79,7 @@ class MapReader {
                     std::is_floating_point_v<ReflT>) {
         return key_to_numeric<ReflT>(_pair).and_then(to_pair);
       } else {
-        return to_pair(_pair.first);
+        return to_pair(std::move(_pair.first));
       }
 
     } else {
@@ -89,7 +91,7 @@ class MapReader {
       const std::string_view& _name, const InputVarType& _var) const noexcept {
     const auto to_pair = [&](ValueType&& _val) {
       auto pair = std::make_pair(std::string(_name), std::move(_val));
-      return make_key(pair);
+      return make_key(std::move(pair));
     };
     return Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::read(
                *r_, _var)
