@@ -32,20 +32,8 @@ class ChunkedArrayIterator {
     }
   };
 
-  static Result<ChunkedArrayIterator> make(
-      const std::shared_ptr<arrow::ChunkedArray>& _arr) {
-    try {
-      return ChunkedArrayIterator(_arr);
-    } catch (const std::exception& e) {
-      return error(e.what());
-    }
-  }
-
-  ChunkedArrayIterator(const std::shared_ptr<arrow::ChunkedArray>& _arr)
-      : arr_(Ref<arrow::ChunkedArray>::make(_arr).value()),
-        chunk_ix_(0),
-        current_chunk_(get_chunk(arr_, 0)),
-        ix_(0) {}
+  ChunkedArrayIterator(const Ref<arrow::ChunkedArray>& _arr)
+      : arr_(_arr), chunk_ix_(0), current_chunk_(get_chunk(arr_, 0)), ix_(0) {}
 
   ~ChunkedArrayIterator() = default;
 
