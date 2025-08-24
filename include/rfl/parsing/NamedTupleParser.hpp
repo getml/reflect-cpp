@@ -305,14 +305,16 @@ struct NamedTupleParser {
     set.fill(false);
     std::vector<Error> errors;
     const auto reader = ViewReaderType(&_r, _view, &found, &set, &errors);
-    std::optional<Error> err;
     if constexpr (_no_field_names) {
-      err = _r.read_array(reader, _obj_or_arr);
+      const auto err = _r.read_array(reader, _obj_or_arr);
+      if (err) {
+        return std::make_pair(set, err);
+      }
     } else {
-      err = _r.read_object(reader, _obj_or_arr);
-    }
-    if (err) {
-      return std::make_pair(set, err);
+      const auto err = _r.read_object(reader, _obj_or_arr);
+      if (err) {
+        return std::make_pair(set, err);
+      }
     }
     handle_missing_fields(found, *_view, &set, &errors,
                           std::make_integer_sequence<int, size_>());
@@ -327,14 +329,16 @@ struct NamedTupleParser {
       NamedTupleType* _view) noexcept {
     std::vector<Error> errors;
     const auto reader = ViewReaderWithDefaultType(&_r, _view, &errors);
-    std::optional<Error> err;
     if constexpr (_no_field_names) {
-      err = _r.read_array(reader, _obj_or_arr);
+      const auto err = _r.read_array(reader, _obj_or_arr);
+      if (err) {
+        return err;
+      }
     } else {
-      err = _r.read_object(reader, _obj_or_arr);
-    }
-    if (err) {
-      return err;
+      const auto err = _r.read_object(reader, _obj_or_arr);
+      if (err) {
+        return err;
+      }
     }
     if (errors.size() != 0) {
       return to_single_error_message(errors);
