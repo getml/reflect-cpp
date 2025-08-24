@@ -23,7 +23,7 @@ struct Person {
 };
 
 TEST(parquet, test_save_load) {
-  const auto people =
+  const auto people1 =
       std::vector<Person>({Person{.first_name = "Bart",
                                   .birthday = "1987-04-19",
                                   .age = 10,
@@ -41,13 +41,14 @@ TEST(parquet, test_save_load) {
                                   .age = 45,
                                   .email = "homer@simpson.com"}});
 
-  rfl::parquet::save("people.parquet", people);
+  rfl::parquet::save("people.parquet", people1);
 
-  /*const auto homer2 = rfl::toml::load<Person>("homer.toml").value();
+  const auto people2 =
+      rfl::parquet::load<std::vector<Person>>("people.parquet").value();
 
-  const auto string1 = rfl::toml::write(homer1);
-  const auto string2 = rfl::toml::write(homer2);
+  const auto bytes1 = rfl::parquet::write(people1);
+  const auto bytes2 = rfl::parquet::write(people2);
 
-  EXPECT_EQ(string1, string2);*/
+  EXPECT_EQ(bytes1, bytes2);
 }
 }  // namespace test_save_load

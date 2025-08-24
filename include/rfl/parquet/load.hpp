@@ -5,7 +5,7 @@
 #include "../io/load_bytes.hpp"
 #include "read.hpp"
 
-namespace rfl ::parquet {
+namespace rfl::parquet {
 
 template <class T, class... Ps>
 Result<T> load(const std::string& _fname) {
