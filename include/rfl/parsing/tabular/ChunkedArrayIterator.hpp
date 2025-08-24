@@ -22,15 +22,9 @@ class ChunkedArrayIterator {
 
   using ArrayType = array_t<T>;
 
-  struct End {
-    bool operator==(const ChunkedArrayIterator<T>& _it) const noexcept {
-      return _it == *this;
-    }
-
-    bool operator!=(const ChunkedArrayIterator<T>& _it) const noexcept {
-      return _it != *this;
-    }
-  };
+  static ChunkedArrayIterator make(const Ref<arrow::ChunkedArray>& _arr) {
+    return ChunkedArrayIterator(_arr);
+  }
 
   ChunkedArrayIterator(const Ref<arrow::ChunkedArray>& _arr)
       : arr_(_arr), chunk_ix_(0), current_chunk_(get_chunk(arr_, 0)), ix_(0) {}
@@ -38,17 +32,20 @@ class ChunkedArrayIterator {
   ~ChunkedArrayIterator() = default;
 
   Result<T> operator*() const noexcept {
-    return current_chunk_.transform(
-        [&](const auto& _c) { return _c->Value(ix_); });
+    if constexpr (std::is_same_v<ArrayType, arrow::StringArray>) {
+      return current_chunk_.transform(
+          [&](const auto& _c) { return T(std::string(_c->Value(ix_))); });
+    } else {
+      return current_chunk_.transform(
+          [&](const auto& _c) { return T(_c->Value(ix_)); });
+    }
   }
 
-  bool operator==(const End&) const noexcept {
-    return chunk_ix_ >= arr_->num_chunks();
+  bool end() const noexcept {
+    return !current_chunk_ || (chunk_ix_ >= arr_->num_chunks());
   }
 
-  bool operator!=(const End& _end) const noexcept { return !(*this == _end); }
-
-  Iterator<T>& operator++() noexcept {
+  ChunkedArrayIterator<T>& operator++() noexcept {
     if (!current_chunk_) {
       return *this;
     }
@@ -66,9 +63,12 @@ class ChunkedArrayIterator {
  private:
   static Result<Ref<ArrayType>> get_chunk(const Ref<arrow::ChunkedArray>& _arr,
                                           const int _chunk_ix) noexcept {
-    return Ref<ArrayType>::make(
-        std::dynamic_pointer_cast<std::shared_ptr<ArrayType>>(
-            arr_->chunk(chunk_ix_)));
+    if (_chunk_ix < _arr->num_chunks()) {
+      return Ref<ArrayType>::make(
+          std::static_pointer_cast<ArrayType>(_arr->chunk(_chunk_ix)));
+    } else {
+      return error("chunk_ix out of bounds.");
+    }
   }
 
  private:

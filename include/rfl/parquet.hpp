@@ -6,7 +6,7 @@
 // #include "parquet/Reader.hpp"
 // #include "parquet/Writer.hpp"
 // #include "parquet/load.hpp"
-// #include "parquet/read.hpp"
+#include "parquet/read.hpp"
 #include "parquet/save.hpp"
 #include "parquet/write.hpp"
 

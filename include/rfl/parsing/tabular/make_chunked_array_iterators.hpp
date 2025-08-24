@@ -1,5 +1,5 @@
-#ifndef RFL_PARSING_TABULAR_MAKECHUNKEDARRAYRANGES_HPP_
-#define RFL_PARSING_TABULAR_MAKECHUNKEDARRAYRANGES_HPP_
+#ifndef RFL_PARSING_TABULAR_MAKECHUNKEDARRAYITERATORS_HPP_
+#define RFL_PARSING_TABULAR_MAKECHUNKEDARRAYITERATORS_HPP_
 
 #include <arrow/api.h>
 
@@ -16,21 +16,21 @@
 #include "../../Result.hpp"
 #include "../../Tuple.hpp"
 #include "ArrowTypes.hpp"
-#include "ChunkedArrayRange.hpp"
+#include "ChunkedArrayIterator.hpp"
 
 namespace rfl::parsing::tabular {
 
 template <class NamedTupleType>
-struct MakeChunkedArrayRanges;
+struct MakeChunkedArrayIterators;
 
 template <class... FieldTypes>
-struct MakeChunkedArrayRanges<NamedTuple<FieldTypes...>> {
-  using TupleType = Tuple<ChunkedArrayRange<typename FieldTypes::Type...>>;
+struct MakeChunkedArrayIterators<NamedTuple<FieldTypes...>> {
+  using TupleType = Tuple<ChunkedArrayIterator<typename FieldTypes::Type>...>;
 
-  Result<TupleType> operator(const Ref<arrow::Table>& _table) const {
+  Result<TupleType> operator()(const Ref<arrow::Table>& _table) const {
     const auto get_column =
         [&](const std::string& _colname) -> Result<Ref<arrow::ChunkedArray>> {
-      const auto col = _table.GetColumnByName(_colname);
+      const auto col = _table->GetColumnByName(_colname);
       if (!col) {
         return error("Column named '" + _colname + "' not found.");
       }
@@ -40,7 +40,7 @@ struct MakeChunkedArrayRanges<NamedTuple<FieldTypes...>> {
     try {
       return TupleType(
           get_column(typename FieldTypes::Name().str())
-              .transform(ChunkedArrayRange<typename FieldTypes::Type>::make)
+              .transform(ChunkedArrayIterator<typename FieldTypes::Type>::make)
               .value()...);
     } catch (const std::exception& e) {
       return error(e.what());
@@ -49,7 +49,8 @@ struct MakeChunkedArrayRanges<NamedTuple<FieldTypes...>> {
 };
 
 template <class NamedTupleType>
-const auto make_chunked_array_ranges = MakeChunkedArrayRanges<NamedTupleType>{};
+const auto make_chunked_array_iterators =
+    MakeChunkedArrayIterators<NamedTupleType>{};
 
 }  // namespace rfl::parsing::tabular
 

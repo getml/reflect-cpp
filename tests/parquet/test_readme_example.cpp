@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "write_and_read.hpp"
+
 namespace test_readme_example {
 
 using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
@@ -36,6 +38,6 @@ TEST(parquet, test_readme_example) {
                                   .age = 45,
                                   .email = "homer@simpson.com"}});
 
-  rfl::parquet::write(people);
+  write_and_read(people);
 }
 }  // namespace test_readme_example
