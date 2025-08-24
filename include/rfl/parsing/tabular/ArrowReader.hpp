@@ -37,22 +37,18 @@ class ArrowReader {
   ~ArrowReader() = default;
 
   Result<VecType> read() const noexcept {
-    try {
-      auto chunked_array_iterators =
-          make_chunked_array_iterators<named_tuple_t<ValueType>>(table_)
-              .value();
-      VecType result;
-      while (!end(chunked_array_iterators)) {
-        auto value = new_value(&chunked_array_iterators);
-        if (!value) {
-          return error(value.error().what());
-        }
-        result.emplace_back(std::move(*value));
-      }
-      return result;
-    } catch (const std::exception& e) {
-      return error(e.what());
-    }
+    return make_chunked_array_iterators<named_tuple_t<ValueType>>(table_)
+        .and_then([&](auto chunked_array_iterators) -> Result<VecType> {
+          VecType result;
+          while (!end(chunked_array_iterators)) {
+            auto value = new_value(&chunked_array_iterators);
+            if (!value) {
+              return error(value.error().what());
+            }
+            result.emplace_back(std::move(*value));
+          }
+          return result;
+        });
   }
 
  private:
@@ -72,16 +68,19 @@ class ArrowReader {
     // auto view = ProcessorsType::template process<T>(to_view(*ptr));
     auto view = to_view(*ptr);
     using ViewType = std::remove_cvref_t<decltype(view)>;
-    auto set = std::array<bool, ViewType::size()>();
-    set.fill(false);
     try {
       const auto set_one = [&]<size_t _i>(std::integral_constant<size_t, _i>) {
         using FieldType = tuple_element_t<_i, typename ViewType::Fields>;
         using T = std::remove_cvref_t<
             std::remove_pointer_t<typename FieldType::Type>>;
-        ::new (view.template get<_i>()) T(
-            std::move((*_chunked_array_iterators->template get<_i>()).value()));
-        std::get<_i>(set) = true;
+        auto res = *_chunked_array_iterators->template get<_i>();
+        if (!res) {
+          destroy_value<_i>(&view);
+          throw std::runtime_error(
+              std::string("Field '") + typename FieldType::Name().str() +
+              std::string("' could not be set: ") + res.error().what());
+        }
+        ::new (view.template get<_i>()) T(std::move(*res));
         ++_chunked_array_iterators->template get<_i>();
       };
 
@@ -91,9 +90,21 @@ class ArrowReader {
 
       return std::move(*ptr);
     } catch (const std::exception& e) {
-      call_destructors_where_necessary(set, &view);
       return error(e.what());
     }
+  }
+
+  template <size_t _i, class ViewType>
+  void destroy_value(ViewType* _view) const {
+    static_assert(_i < ViewType::size(), "_i out of bounds.");
+    auto set = std::array<bool, ViewType::size()>();
+    for (size_t i = 0; i < _i; ++i) {
+      set[i] = true;
+    }
+    for (size_t i = _i; i < ViewType::size(); ++i) {
+      set[i] = false;
+    }
+    call_destructors_where_necessary(set, _view);
   }
 
  private:
