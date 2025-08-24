@@ -21,10 +21,13 @@ namespace rfl {
 class Error {
  public:
   Error(const std::string& _what) : what_(_what) {}
+  Error(std::string&& _what) : what_(std::move(_what)) {}
 
   Error(const Error& e) = default;
+  Error(Error&& e) = default;
 
   Error& operator=(const Error&) = default;
+  Error& operator=(Error&&) = default;
 
   /// Returns the error message, equivalent to .what() in std::exception.
   const std::string& what() const { return what_; }
@@ -429,6 +432,10 @@ class Result {
 /// Shorthand for unexpected error.
 inline Unexpected<Error> error(const std::string& _what) {
   return Unexpected<Error>(Error(_what));
+}
+
+inline Unexpected<Error> error(std::string&& _what) {
+  return Unexpected<Error>(Error(std::move(_what)));
 }
 
 /// Shorthand for unexpected error.

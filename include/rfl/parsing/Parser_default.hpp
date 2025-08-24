@@ -46,9 +46,10 @@ struct Parser {
   /// Expresses the variables as type T.
   static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
     if constexpr (internal::has_read_reflector<T>) {
-      const auto wrap_in_t = [](auto _named_tuple) -> Result<T> {
+      const auto wrap_in_t = [](auto&& _named_tuple) -> Result<T> {
         try {
-          return Reflector<T>::to(_named_tuple);
+          using NT = decltype(_named_tuple);
+          return Reflector<T>::to(std::forward<NT>(_named_tuple));
         } catch (std::exception& e) {
           return error(e.what());
         }
@@ -67,9 +68,10 @@ struct Parser {
     } else {
       if constexpr (internal::has_reflection_type_v<T>) {
         using ReflectionType = std::remove_cvref_t<typename T::ReflectionType>;
-        const auto wrap_in_t = [](auto _named_tuple) -> Result<T> {
+        const auto wrap_in_t = [](auto&& _named_tuple) -> Result<T> {
           try {
-            return T{std::move(_named_tuple)};
+            using NT = decltype(_named_tuple);
+            return T{std::forward<NT>(_named_tuple)};
           } catch (std::exception& e) {
             return error(e.what());
           }
