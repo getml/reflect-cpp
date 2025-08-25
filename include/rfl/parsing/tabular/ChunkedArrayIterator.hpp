@@ -35,6 +35,10 @@ class ChunkedArrayIterator {
     if constexpr (std::is_same_v<ArrayType, arrow::StringArray>) {
       return current_chunk_.transform(
           [&](const auto& _c) { return T(std::string(_c->Value(ix_))); });
+
+    } else if constexpr (std::is_same_v<ArrayType, arrow::TimestampArray>) {
+      return current_chunk_.transform(
+          [&](const auto& _c) { return T(_c->Value(ix_) / 1000); });
     } else {
       return current_chunk_.transform(
           [&](const auto& _c) { return T(_c->Value(ix_)); });

@@ -37,6 +37,11 @@ class Timestamp {
 
   Timestamp(const std::tm& _tm) : tm_(_tm) {}
 
+  Timestamp(const time_t _t) : tm_(std::tm{}) {
+    auto t = _t;
+    tm_ = *std::gmtime(&t);
+  }
+
   ~Timestamp() = default;
 
   /// Returns a result containing the timestamp when successful or an Error
@@ -70,6 +75,12 @@ class Timestamp {
 
   /// Trivial (const) accessor to the underlying time stamp.
   const std::tm& tm() const { return tm_; }
+
+  /// Returns time_t by calling std::mktime under-the-hood.
+  time_t to_time_t() const {
+    auto tm = tm_;
+    return std::mktime(&tm) - timezone;
+  }
 
  private:
 #if defined(_MSC_VER) || defined(__MINGW32__)

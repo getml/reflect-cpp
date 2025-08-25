@@ -1,5 +1,5 @@
-#ifndef RFL_PARSING_TABULAR_ARROWBUILDERST_HPP_
-#define RFL_PARSING_TABULAR_ARROWBUILDERST_HPP_
+#ifndef RFL_PARSING_TABULAR_MAKEARROWBUILDERS_HPP_
+#define RFL_PARSING_TABULAR_MAKEARROWBUILDERS_HPP_
 
 #include <arrow/api.h>
 
@@ -35,6 +35,10 @@ struct ArrowBuildersType<NamedTuple<FieldTypes...>> {
     }(std::make_integer_sequence<size_t, sizeof...(FieldTypes)>());
   }
 
+  static Type make_builders() {
+    return Type(ArrowTypes<typename FieldTypes::Type>::make_builder()...);
+  }
+
   static auto schema() {
     const auto fields = std::vector<std::shared_ptr<arrow::Field>>(
         {arrow::field(typename FieldTypes::Name().str(),
@@ -44,8 +48,9 @@ struct ArrowBuildersType<NamedTuple<FieldTypes...>> {
 };
 
 template <class T>
-using arrow_builders_t =
-    typename ArrowBuildersType<named_tuple_t<std::remove_cvref_t<T>>>::Type;
+auto make_arrow_builders() {
+  return ArrowBuildersType<std::remove_cvref_t<T>>::make_builders();
+}
 
 }  // namespace rfl::parsing::tabular
 

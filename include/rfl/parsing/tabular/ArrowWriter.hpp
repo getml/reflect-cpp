@@ -13,7 +13,7 @@
 #include "../../named_tuple_t.hpp"
 #include "../../to_view.hpp"
 #include "add_to_builder.hpp"
-#include "arrow_builders_t.hpp"
+#include "make_arrow_builders.hpp"
 #include "make_arrow_data_types.hpp"
 #include "make_arrow_schema.hpp"
 
@@ -44,10 +44,10 @@ class ArrowWriter {
 template <class VecType>
 std::vector<std::shared_ptr<arrow::ChunkedArray>>
 ArrowWriter<VecType>::to_chunked_arrays(const VecType& _data) const {
-  using BuildersType = arrow_builders_t<ValueType>;
-  BuildersType builders;
+  auto builders =
+      make_arrow_builders<named_tuple_t<typename VecType::value_type>>();
 
-  constexpr size_t size = tuple_size_v<BuildersType>;
+  constexpr size_t size = tuple_size_v<decltype(builders)>;
 
   std::vector<std::vector<std::shared_ptr<arrow::Array>>> array_chunks(size);
 

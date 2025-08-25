@@ -39,6 +39,8 @@ struct ArrowTypes<uint8_t> {
       throw std::runtime_error(status.message());
     }
   }
+
+  static auto make_builder() { return BuilderType(); }
 };
 
 template <>
@@ -54,6 +56,8 @@ struct ArrowTypes<uint16_t> {
       throw std::runtime_error(status.message());
     }
   }
+
+  static auto make_builder() { return BuilderType(); }
 };
 
 template <>
@@ -69,6 +73,8 @@ struct ArrowTypes<uint32_t> {
       throw std::runtime_error(status.message());
     }
   }
+
+  static auto make_builder() { return BuilderType(); }
 };
 
 template <>
@@ -84,6 +90,8 @@ struct ArrowTypes<uint64_t> {
       throw std::runtime_error(status.message());
     }
   }
+
+  static auto make_builder() { return BuilderType(); }
 };
 
 template <>
@@ -99,6 +107,8 @@ struct ArrowTypes<int8_t> {
       throw std::runtime_error(status.message());
     }
   }
+
+  static auto make_builder() { return BuilderType(); }
 };
 
 template <>
@@ -114,6 +124,8 @@ struct ArrowTypes<int16_t> {
       throw std::runtime_error(status.message());
     }
   }
+
+  static auto make_builder() { return BuilderType(); }
 };
 
 template <>
@@ -129,6 +141,8 @@ struct ArrowTypes<int32_t> {
       throw std::runtime_error(status.message());
     }
   }
+
+  static auto make_builder() { return BuilderType(); }
 };
 
 template <>
@@ -144,6 +158,8 @@ struct ArrowTypes<int64_t> {
       throw std::runtime_error(status.message());
     }
   }
+
+  static auto make_builder() { return BuilderType(); }
 };
 
 template <>
@@ -159,6 +175,8 @@ struct ArrowTypes<float> {
       throw std::runtime_error(status.message());
     }
   }
+
+  static auto make_builder() { return BuilderType(); }
 };
 
 template <>
@@ -174,6 +192,8 @@ struct ArrowTypes<double> {
       throw std::runtime_error(status.message());
     }
   }
+
+  static auto make_builder() { return BuilderType(); }
 };
 
 template <>
@@ -189,6 +209,8 @@ struct ArrowTypes<std::string> {
       throw std::runtime_error(status.message());
     }
   }
+
+  static auto make_builder() { return BuilderType(); }
 };
 
 template <internal::StringLiteral _format>
@@ -199,10 +221,14 @@ struct ArrowTypes<Timestamp<_format>> {
   static auto data_type() { return arrow::timestamp(arrow::TimeUnit::SECOND); }
 
   static void add_to_builder(const auto _val, BuilderType* _builder) {
-    const auto status = _builder->Append(_val);
+    const auto status = _builder->Append(_val.to_time_t());
     if (!status.ok()) {
       throw std::runtime_error(status.message());
     }
+  }
+
+  static auto make_builder() {
+    return BuilderType(data_type(), arrow::default_memory_pool());
   }
 };
 
@@ -220,6 +246,10 @@ struct ArrowTypes<T> {
   static void add_to_builder(const auto _val, BuilderType* _builder) {
     ArrowTypes<typename T::ReflectionType>::add_to_builder(_val.reflection(),
                                                            _builder);
+  }
+
+  static auto make_builder() {
+    return ArrowTypes<typename T::ReflectionType>::make_builder();
   }
 };
 
@@ -240,6 +270,8 @@ struct ArrowTypes<std::optional<T>> {
       }
     }
   }
+
+  static auto make_builder() { return ArrowTypes<T>::make_builder(); }
 };
 
 template <class T>
@@ -259,6 +291,8 @@ struct ArrowTypes<std::shared_ptr<T>> {
       }
     }
   }
+
+  static auto make_builder() { return ArrowTypes<T>::make_builder(); }
 };
 
 template <class T>
@@ -278,6 +312,8 @@ struct ArrowTypes<std::unique_ptr<T>> {
       }
     }
   }
+
+  static auto make_builder() { return ArrowTypes<T>::make_builder(); }
 };
 
 template <class T>
@@ -290,6 +326,8 @@ struct ArrowTypes<Box<T>> {
   static void add_to_builder(const auto _val, BuilderType* _builder) {
     ArrowTypes<T>::add_to_builder(*_val, _builder);
   }
+
+  static auto make_builder() { return ArrowTypes<T>::make_builder(); }
 };
 
 template <class T>
@@ -302,6 +340,8 @@ struct ArrowTypes<Ref<T>> {
   static void add_to_builder(const auto _val, BuilderType* _builder) {
     ArrowTypes<T>::add_to_builder(*_val, _builder);
   }
+
+  static auto make_builder() { return ArrowTypes<T>::make_builder(); }
 };
 
 template <internal::StringLiteral _name, class T>
@@ -314,6 +354,8 @@ struct ArrowTypes<Rename<_name, T>> {
   static void add_to_builder(const auto _val, BuilderType* _builder) {
     ArrowTypes<T>::add_to_builder(_val.value(), _builder);
   }
+
+  static auto make_builder() { return ArrowTypes<T>::make_builder(); }
 };
 
 }  // namespace rfl::parsing::tabular

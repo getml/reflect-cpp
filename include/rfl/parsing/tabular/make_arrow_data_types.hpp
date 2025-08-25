@@ -4,7 +4,7 @@
 #include <type_traits>
 
 #include "../../named_tuple_t.hpp"
-#include "arrow_builders_t.hpp"
+#include "make_arrow_builders.hpp"
 
 namespace rfl::parsing::tabular {
 
