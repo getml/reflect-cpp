@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "../../Processors.hpp"
 #include "../../Tuple.hpp"
 #include "../../get.hpp"
 #include "../../named_tuple_t.hpp"
@@ -21,6 +22,18 @@ namespace rfl::parsing::tabular {
 
 template <class VecType, class... Ps>
 class ArrowWriter {
+  static_assert(!Processors<Ps...>::add_tags_to_variants_,
+                "rfl::AddTagsToVariants cannot be used for tabular data.");
+  static_assert(!Processors<Ps...>::all_required_,
+                "rfl::NoOptionals cannot be used for tabular data.");
+  static_assert(!Processors<Ps...>::default_if_missing_,
+                "rfl::DefaultIfMissing cannot be used for tabular data.");
+  static_assert(!Processors<Ps...>::no_extra_fields_,
+                "rfl::NoExtraFields cannot be used for tabular data (neither "
+                "can rfl::ExtraFields).");
+  static_assert(!Processors<Ps...>::no_field_names_,
+                "rfl::NoFieldNames cannot be used for tabular data.");
+
  public:
   using ValueType = typename std::remove_cvref_t<typename VecType::value_type>;
 
