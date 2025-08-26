@@ -21,7 +21,7 @@
 
 namespace rfl::parsing::tabular {
 
-template <class VecType>
+template <class VecType, class ProcessorsType>
 class ArrowReader {
  public:
   using ValueType = typename std::remove_cvref_t<typename VecType::value_type>;
@@ -64,9 +64,7 @@ class ArrowReader {
   Result<ValueType> new_value(auto* _chunked_array_iterators) const noexcept {
     alignas(ValueType) unsigned char buf[sizeof(ValueType)]{};
     auto ptr = internal::ptr_cast<ValueType*>(&buf);
-    // TODO
-    // auto view = ProcessorsType::template process<T>(to_view(*ptr));
-    auto view = to_view(*ptr);
+    auto view = ProcessorsType::template process<ValueType>(to_view(*ptr));
     using ViewType = std::remove_cvref_t<decltype(view)>;
     try {
       const auto set_one = [&]<size_t _i>(std::integral_constant<size_t, _i>) {

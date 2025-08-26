@@ -19,7 +19,7 @@
 
 namespace rfl::parsing::tabular {
 
-template <class VecType>
+template <class VecType, class ProcessorsType>
 class ArrowWriter {
  public:
   using ValueType = typename std::remove_cvref_t<typename VecType::value_type>;
@@ -41,9 +41,12 @@ class ArrowWriter {
   size_t chunksize_;
 };
 
-template <class VecType>
+template <class VecType, class ProcessorsType>
 std::vector<std::shared_ptr<arrow::ChunkedArray>>
-ArrowWriter<VecType>::to_chunked_arrays(const VecType& _data) const {
+ArrowWriter<VecType, ProcessorsType>::to_chunked_arrays(
+    const VecType& _data) const {
+  using ValueType = typename VecType::value_type;
+
   auto builders =
       make_arrow_builders<named_tuple_t<typename VecType::value_type>>();
 
@@ -58,7 +61,8 @@ ArrowWriter<VecType>::to_chunked_arrays(const VecType& _data) const {
 
     for (; it != _data.end() && (i < chunksize_ || chunksize_ == 0);
          ++i, ++it) {
-      const auto view = to_view(*it);
+      const auto view =
+          ProcessorsType::template process<ValueType>(to_view(*it));
 
       [&]<int... _is>(const auto& _v, auto* _b,
                       std::integer_sequence<int, _is...>) {

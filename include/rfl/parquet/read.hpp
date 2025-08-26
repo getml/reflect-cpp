@@ -42,7 +42,7 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
     return error("Could not read table: " + status.message());
   }
 
-  using ArrowReader = parsing::tabular::ArrowReader<T>;
+  using ArrowReader = parsing::tabular::ArrowReader<T, Processors<Ps...>>;
 
   return ArrowReader::make(table).and_then(
       [](const auto& _r) { return _r.read(); });

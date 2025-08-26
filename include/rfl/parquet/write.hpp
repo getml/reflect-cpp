@@ -21,11 +21,11 @@ namespace rfl::parquet {
 /// Returns parquet bytes.
 template <class... Ps>
 Ref<arrow::Buffer> to_buffer(const auto& _arr) {
-  /// TODO: Support processors
   using T = std::remove_cvref_t<decltype(_arr)>;
 
   const auto table =
-      parsing::tabular::ArrowWriter<T>(/*chunksize=*/2000).to_table(_arr);
+      parsing::tabular::ArrowWriter<T, Processors<Ps...>>(/*chunksize=*/2000)
+          .to_table(_arr);
 
   const auto props = ::parquet::WriterProperties::Builder()
                          .compression(arrow::Compression::SNAPPY)
@@ -60,15 +60,15 @@ Ref<arrow::Buffer> to_buffer(const auto& _arr) {
 /// Returns parquet bytes.
 template <class... Ps>
 std::vector<char> write(const auto& _arr) {
-  const auto buffer = to_buffer(_arr);
+  const auto buffer = to_buffer<Ps...>(_arr);
   const auto view = std::string_view(*buffer);
   return std::vector<char>(view.begin(), view.end());
 }
 
 /// Writes a PARQUET into an ostream.
 template <class... Ps>
-std::ostream& write(const auto& _obj, std::ostream& _stream) noexcept {
-  auto buffer = to_buffer<Ps...>(_obj);
+std::ostream& write(const auto& _arr, std::ostream& _stream) noexcept {
+  auto buffer = to_buffer<Ps...>(_arr);
   _stream << std::string_view(*buffer);
   return _stream;
 }
