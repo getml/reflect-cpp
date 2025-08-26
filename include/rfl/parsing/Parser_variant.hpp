@@ -214,7 +214,7 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
           std::remove_cvref_t<internal::nth_element_t<_i, AlternativeTypes...>>;
       auto res = Parser<R, W, AltType, ProcessorsType>::read(_r, _var);
       if (res) {
-        *_result = std::move(*res);
+        _result->emplace(std::variant<AlternativeTypes...>{std::move(*res)});
       } else {
         _errors->emplace_back(std::move(res.error()));
       }
