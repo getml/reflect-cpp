@@ -17,8 +17,10 @@
 #include "../../Rename.hpp"
 #include "../../Timestamp.hpp"
 #include "../../Tuple.hpp"
+#include "../../concepts.hpp"
 #include "../../internal/StringLiteral.hpp"
 #include "../../internal/has_reflection_type_v.hpp"
+#include "../../internal/ptr_cast.hpp"
 #include "../../named_tuple_t.hpp"
 
 namespace rfl::parsing::tabular {
@@ -205,6 +207,25 @@ struct ArrowTypes<std::string> {
 
   static void add_to_builder(const auto& _val, BuilderType* _builder) {
     const auto status = _builder->Append(_val);
+    if (!status.ok()) {
+      throw std::runtime_error(status.message());
+    }
+  }
+
+  static auto make_builder() { return BuilderType(); }
+};
+
+template <class T>
+  requires concepts::ContiguousByteContainer<T>
+struct ArrowTypes<T> {
+  using ArrayType = arrow::BinaryArray;
+  using BuilderType = arrow::BinaryBuilder;
+
+  static auto data_type() { return arrow::binary(); }
+
+  static void add_to_builder(const auto& _val, BuilderType* _builder) {
+    const auto status = _builder->Append(
+        internal::ptr_cast<const uint8_t*>(_val.data()), _val.size());
     if (!status.ok()) {
       throw std::runtime_error(status.message());
     }
