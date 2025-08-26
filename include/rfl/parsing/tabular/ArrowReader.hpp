@@ -16,12 +16,13 @@
 #include "../../get.hpp"
 #include "../../named_tuple_t.hpp"
 #include "../../to_view.hpp"
+#include "../../view_t.hpp"
 #include "../call_destructors_where_necessary.hpp"
 #include "make_chunked_array_iterators.hpp"
 
 namespace rfl::parsing::tabular {
 
-template <class VecType, class ProcessorsType>
+template <class VecType, class... Ps>
 class ArrowReader {
  public:
   using ValueType = typename std::remove_cvref_t<typename VecType::value_type>;
@@ -37,7 +38,7 @@ class ArrowReader {
   ~ArrowReader() = default;
 
   Result<VecType> read() const noexcept {
-    return make_chunked_array_iterators<named_tuple_t<ValueType>>(table_)
+    return make_chunked_array_iterators<named_tuple_t<ValueType, Ps...>>(table_)
         .and_then([&](auto chunked_array_iterators) -> Result<VecType> {
           VecType result;
           while (!end(chunked_array_iterators)) {
@@ -64,7 +65,7 @@ class ArrowReader {
   Result<ValueType> new_value(auto* _chunked_array_iterators) const noexcept {
     alignas(ValueType) unsigned char buf[sizeof(ValueType)]{};
     auto ptr = internal::ptr_cast<ValueType*>(&buf);
-    auto view = ProcessorsType::template process<ValueType>(to_view(*ptr));
+    auto view = to_view(*ptr);
     using ViewType = std::remove_cvref_t<decltype(view)>;
     try {
       const auto set_one = [&]<size_t _i>(std::integral_constant<size_t, _i>) {

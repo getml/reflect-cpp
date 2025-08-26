@@ -23,9 +23,8 @@ template <class... Ps>
 Ref<arrow::Buffer> to_buffer(const auto& _arr) {
   using T = std::remove_cvref_t<decltype(_arr)>;
 
-  const auto table =
-      parsing::tabular::ArrowWriter<T, Processors<Ps...>>(/*chunksize=*/2000)
-          .to_table(_arr);
+  const auto table = parsing::tabular::ArrowWriter<T, Ps...>(/*chunksize=*/2000)
+                         .to_table(_arr);
 
   const auto props = ::parquet::WriterProperties::Builder()
                          .compression(arrow::Compression::SNAPPY)

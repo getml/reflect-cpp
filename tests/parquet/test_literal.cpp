@@ -5,20 +5,20 @@
 
 #include "write_and_read.hpp"
 
-namespace test_camel_case {
+namespace test_literal {
 
 using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
 
 struct Person {
   std::string first_name;
-  std::string last_name = "Simpson";
+  rfl::Literal<"Simpson"> last_name;
   std::string town = "Springfield";
   rfl::Timestamp<"%Y-%m-%d"> birthday;
   Age age;
   rfl::Email email;
 };
 
-TEST(parquet, test_camel_case) {
+TEST(parquet, test_literal) {
   const auto people =
       std::vector<Person>({Person{.first_name = "Bart",
                                   .birthday = "1987-04-19",
@@ -37,6 +37,6 @@ TEST(parquet, test_camel_case) {
                                   .age = 45,
                                   .email = "homer@simpson.com"}});
 
-  write_and_read<rfl::SnakeCaseToCamelCase>(people);
+  write_and_read(people);
 }
-}  // namespace test_camel_case
+}  // namespace test_literal
