@@ -10,6 +10,7 @@
 
 #include "../../Ref.hpp"
 #include "../../Result.hpp"
+#include "../is_required.hpp"
 #include "array_t.hpp"
 
 namespace rfl::parsing::tabular {
@@ -32,6 +33,19 @@ class ChunkedArrayIterator {
   ~ChunkedArrayIterator() = default;
 
   Result<T> operator*() const noexcept {
+    const bool is_null =
+        current_chunk_
+            .transform([&](const auto& _c) { return _c->IsNull(ix_); })
+            .value_or(false);
+
+    if (is_null) {
+      if constexpr (is_required<T, false>()) {
+        return error("Value cannot be null.");
+      } else {
+        return T();
+      }
+    }
+
     if constexpr (std::is_same_v<ArrayType, arrow::StringArray>) {
       return current_chunk_.transform(
           [&](const auto& _c) { return T(std::string(_c->Value(ix_))); });
@@ -39,6 +53,7 @@ class ChunkedArrayIterator {
     } else if constexpr (std::is_same_v<ArrayType, arrow::TimestampArray>) {
       return current_chunk_.transform(
           [&](const auto& _c) { return T(_c->Value(ix_) / 1000); });
+
     } else {
       return current_chunk_.transform(
           [&](const auto& _c) { return T(_c->Value(ix_)); });
