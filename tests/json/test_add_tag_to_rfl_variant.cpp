@@ -1,9 +1,7 @@
 #include <cassert>
-#include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "write_and_read.hpp"
@@ -34,6 +32,6 @@ TEST(json, test_add_tag_to_rfl_variant) {
 
   write_and_read<rfl::AddTagsToVariants>(
       vec,
-      R"([{"button_pressed_t":{}},{"button_released_t":{"button":4}},{"key_pressed":{"key":99}},{"int":3}])");
+      R"([{"test_add_tag_to_rfl_variant::button_pressed_t":{}},{"test_add_tag_to_rfl_variant::button_released_t":{"button":4}},{"key_pressed":{"key":99}},{"int":3}])");
 }
 }  // namespace test_add_tag_to_rfl_variant
