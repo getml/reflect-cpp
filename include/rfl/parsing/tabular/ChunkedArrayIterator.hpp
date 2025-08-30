@@ -47,25 +47,8 @@ class ChunkedArrayIterator {
       }
     }
 
-    if constexpr (std::is_same_v<ArrayType, arrow::BinaryArray>) {
-      return current_chunk_.transform([&](const auto& _c) {
-        const auto begin = internal::ptr_cast<const typename T::value_type*>(
-            _c->Value(ix_).data());
-        return T(begin, begin + _c->Value(ix_).size());
-      });
-
-    } else if constexpr (std::is_same_v<ArrayType, arrow::StringArray>) {
-      return current_chunk_.transform(
-          [&](const auto& _c) { return T(std::string(_c->Value(ix_))); });
-
-    } else if constexpr (std::is_same_v<ArrayType, arrow::TimestampArray>) {
-      return current_chunk_.transform(
-          [&](const auto& _c) { return T(_c->Value(ix_) / 1000); });
-
-    } else {
-      return current_chunk_.transform(
-          [&](const auto& _c) { return T(_c->Value(ix_)); });
-    }
+    return current_chunk_.and_then(
+        [&](const auto& _c) { return ArrowTypes<T>::get_value(_c, ix_); });
   }
 
   bool end() const noexcept {

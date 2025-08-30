@@ -18,6 +18,7 @@
 #include "../../Timestamp.hpp"
 #include "../../Tuple.hpp"
 #include "../../concepts.hpp"
+#include "../../enums.hpp"
 #include "../../internal/StringLiteral.hpp"
 #include "../../internal/has_reflection_type_v.hpp"
 #include "../../internal/ptr_cast.hpp"
@@ -42,6 +43,11 @@ struct ArrowTypes<bool> {
     }
   }
 
+  static Result<bool> get_value(const Ref<ArrayType>& _chunk,
+                                const int64_t _ix) {
+    return _chunk->Value(_ix);
+  }
+
   static auto make_builder() { return BuilderType(); }
 };
 
@@ -57,6 +63,11 @@ struct ArrowTypes<uint8_t> {
     if (!status.ok()) {
       throw std::runtime_error(status.message());
     }
+  }
+
+  static Result<uint8_t> get_value(const Ref<ArrayType>& _chunk,
+                                   const int64_t _ix) {
+    return _chunk->Value(_ix);
   }
 
   static auto make_builder() { return BuilderType(); }
@@ -76,6 +87,11 @@ struct ArrowTypes<uint16_t> {
     }
   }
 
+  static Result<uint16_t> get_value(const Ref<ArrayType>& _chunk,
+                                    const int64_t _ix) {
+    return _chunk->Value(_ix);
+  }
+
   static auto make_builder() { return BuilderType(); }
 };
 
@@ -91,6 +107,11 @@ struct ArrowTypes<uint32_t> {
     if (!status.ok()) {
       throw std::runtime_error(status.message());
     }
+  }
+
+  static Result<uint32_t> get_value(const Ref<ArrayType>& _chunk,
+                                    const int64_t _ix) {
+    return _chunk->Value(_ix);
   }
 
   static auto make_builder() { return BuilderType(); }
@@ -110,6 +131,11 @@ struct ArrowTypes<uint64_t> {
     }
   }
 
+  static Result<uint64_t> get_value(const Ref<ArrayType>& _chunk,
+                                    const int64_t _ix) {
+    return _chunk->Value(_ix);
+  }
+
   static auto make_builder() { return BuilderType(); }
 };
 
@@ -125,6 +151,11 @@ struct ArrowTypes<int8_t> {
     if (!status.ok()) {
       throw std::runtime_error(status.message());
     }
+  }
+
+  static Result<int8_t> get_value(const Ref<ArrayType>& _chunk,
+                                  const int64_t _ix) {
+    return _chunk->Value(_ix);
   }
 
   static auto make_builder() { return BuilderType(); }
@@ -144,6 +175,11 @@ struct ArrowTypes<int16_t> {
     }
   }
 
+  static Result<int16_t> get_value(const Ref<ArrayType>& _chunk,
+                                   const int64_t _ix) {
+    return _chunk->Value(_ix);
+  }
+
   static auto make_builder() { return BuilderType(); }
 };
 
@@ -159,6 +195,11 @@ struct ArrowTypes<int32_t> {
     if (!status.ok()) {
       throw std::runtime_error(status.message());
     }
+  }
+
+  static Result<int32_t> get_value(const Ref<ArrayType>& _chunk,
+                                   const int64_t _ix) {
+    return _chunk->Value(_ix);
   }
 
   static auto make_builder() { return BuilderType(); }
@@ -178,6 +219,11 @@ struct ArrowTypes<int64_t> {
     }
   }
 
+  static Result<int64_t> get_value(const Ref<ArrayType>& _chunk,
+                                   const int64_t _ix) {
+    return _chunk->Value(_ix);
+  }
+
   static auto make_builder() { return BuilderType(); }
 };
 
@@ -193,6 +239,11 @@ struct ArrowTypes<float> {
     if (!status.ok()) {
       throw std::runtime_error(status.message());
     }
+  }
+
+  static Result<float> get_value(const Ref<ArrayType>& _chunk,
+                                 const int64_t _ix) {
+    return _chunk->Value(_ix);
   }
 
   static auto make_builder() { return BuilderType(); }
@@ -212,6 +263,11 @@ struct ArrowTypes<double> {
     }
   }
 
+  static Result<double> get_value(const Ref<ArrayType>& _chunk,
+                                  const int64_t _ix) {
+    return _chunk->Value(_ix);
+  }
+
   static auto make_builder() { return BuilderType(); }
 };
 
@@ -227,6 +283,33 @@ struct ArrowTypes<std::string> {
     if (!status.ok()) {
       throw std::runtime_error(status.message());
     }
+  }
+
+  static Result<std::string> get_value(const Ref<ArrayType>& _chunk,
+                                       const int64_t _ix) {
+    return std::string(_chunk->Value(_ix));
+  }
+
+  static auto make_builder() { return BuilderType(); }
+};
+
+template <class T>
+  requires enchantum::Enum<T>
+struct ArrowTypes<T> {
+  using ArrayType = arrow::StringArray;
+  using BuilderType = arrow::StringBuilder;
+
+  static auto data_type() { return arrow::utf8(); }
+
+  static void add_to_builder(const T& _val, BuilderType* _builder) {
+    const auto status = _builder->Append(enum_to_string(_val));
+    if (!status.ok()) {
+      throw std::runtime_error(status.message());
+    }
+  }
+
+  static Result<T> get_value(const Ref<ArrayType>& _chunk, const int64_t _ix) {
+    return string_to_enum<T>(std::string(_chunk->Value(_ix)));
   }
 
   static auto make_builder() { return BuilderType(); }
@@ -248,6 +331,12 @@ struct ArrowTypes<T> {
     }
   }
 
+  static Result<T> get_value(const Ref<ArrayType>& _chunk, const int64_t _ix) {
+    const auto begin = internal::ptr_cast<const typename T::value_type*>(
+        _chunk->Value(_ix).data());
+    return T(begin, begin + _chunk->Value(_ix).size());
+  }
+
   static auto make_builder() { return BuilderType(); }
 };
 
@@ -263,6 +352,11 @@ struct ArrowTypes<Timestamp<_format>> {
     if (!status.ok()) {
       throw std::runtime_error(status.message());
     }
+  }
+
+  static Result<Timestamp<_format>> get_value(const Ref<ArrayType>& _chunk,
+                                              const int64_t _ix) {
+    return Timestamp<_format>(_chunk->Value(_ix) / 1000);
   }
 
   static auto make_builder() {
@@ -284,6 +378,18 @@ struct ArrowTypes<T> {
   static void add_to_builder(const auto _val, BuilderType* _builder) {
     ArrowTypes<typename T::ReflectionType>::add_to_builder(_val.reflection(),
                                                            _builder);
+  }
+
+  static Result<T> get_value(const Ref<ArrayType>& _chunk, const int64_t _ix) {
+    return ArrowTypes<std::remove_cvref_t<typename T::ReflectionType>>::
+        get_value(_chunk, _ix)
+            .and_then([](const auto& _v) -> Result<T> {
+              try {
+                return T(_v);
+              } catch (const std::exception& e) {
+                return error(e.what());
+              }
+            });
   }
 
   static auto make_builder() {
@@ -309,6 +415,11 @@ struct ArrowTypes<std::optional<T>> {
     }
   }
 
+  static auto get_value(const Ref<ArrayType>& _chunk, const int64_t _ix) {
+    return ArrowTypes<std::remove_cvref_t<T>>::get_value(_chunk, _ix)
+        .transform([](const auto& _v) { return std::make_optional<T>(_v); });
+  }
+
   static auto make_builder() { return ArrowTypes<T>::make_builder(); }
 };
 
@@ -328,6 +439,11 @@ struct ArrowTypes<std::shared_ptr<T>> {
         throw std::runtime_error(status.message());
       }
     }
+  }
+
+  static auto get_value(const Ref<ArrayType>& _chunk, const int64_t _ix) {
+    return ArrowTypes<std::remove_cvref_t<T>>::get_value(_chunk, _ix)
+        .transform([](const auto& _v) { return std::make_shared<T>(_v); });
   }
 
   static auto make_builder() { return ArrowTypes<T>::make_builder(); }
@@ -351,6 +467,11 @@ struct ArrowTypes<std::unique_ptr<T>> {
     }
   }
 
+  static auto get_value(const Ref<ArrayType>& _chunk, const int64_t _ix) {
+    return ArrowTypes<std::remove_cvref_t<T>>::get_value(_chunk, _ix)
+        .transform([](const auto& _v) { return std::make_unique<T>(_v); });
+  }
+
   static auto make_builder() { return ArrowTypes<T>::make_builder(); }
 };
 
@@ -363,6 +484,11 @@ struct ArrowTypes<Box<T>> {
 
   static void add_to_builder(const auto _val, BuilderType* _builder) {
     ArrowTypes<T>::add_to_builder(*_val, _builder);
+  }
+
+  static auto get_value(const Ref<ArrayType>& _chunk, const int64_t _ix) {
+    return ArrowTypes<std::remove_cvref_t<T>>::get_value(_chunk, _ix)
+        .transform([](const auto& _v) { return Box<T>::make(_v); });
   }
 
   static auto make_builder() { return ArrowTypes<T>::make_builder(); }
@@ -379,6 +505,11 @@ struct ArrowTypes<Ref<T>> {
     ArrowTypes<T>::add_to_builder(*_val, _builder);
   }
 
+  static auto get_value(const Ref<ArrayType>& _chunk, const int64_t _ix) {
+    return ArrowTypes<std::remove_cvref_t<T>>::get_value(_chunk, _ix)
+        .transform([](const auto& _v) { return Ref<T>::make(_v); });
+  }
+
   static auto make_builder() { return ArrowTypes<T>::make_builder(); }
 };
 
@@ -391,6 +522,11 @@ struct ArrowTypes<Rename<_name, T>> {
 
   static void add_to_builder(const auto _val, BuilderType* _builder) {
     ArrowTypes<T>::add_to_builder(_val.value(), _builder);
+  }
+
+  static auto get_value(const Ref<ArrayType>& _chunk, const int64_t _ix) {
+    return ArrowTypes<std::remove_cvref_t<T>>::get_value(_chunk, _ix)
+        .transform([](const auto& _v) { return Rename<_name, T>(_v); });
   }
 
   static auto make_builder() { return ArrowTypes<T>::make_builder(); }
