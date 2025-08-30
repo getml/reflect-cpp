@@ -29,6 +29,23 @@ template <class T>
 struct ArrowTypes;
 
 template <>
+struct ArrowTypes<bool> {
+  using ArrayType = arrow::BooleanArray;
+  using BuilderType = arrow::BooleanBuilder;
+
+  static auto data_type() { return arrow::boolean(); }
+
+  static void add_to_builder(const bool _val, BuilderType* _builder) {
+    const auto status = _builder->Append(_val);
+    if (!status.ok()) {
+      throw std::runtime_error(status.message());
+    }
+  }
+
+  static auto make_builder() { return BuilderType(); }
+};
+
+template <>
 struct ArrowTypes<uint8_t> {
   using ArrayType = arrow::UInt8Array;
   using BuilderType = arrow::UInt8Builder;
