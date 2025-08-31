@@ -30,7 +30,6 @@ reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boile
 
 <br>
 
-
 ## Table of Contents
 
 ### On this page
@@ -38,6 +37,7 @@ reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boile
   - [Feature Overview](#feature-overview)
     - [Simple Example](#simple-example)
     - [More Comprehensive Example](#more-comprehensive-example)
+    - [Tabular data](#tabular-data)
     - [Error messages](#error-messages)
     - [JSON schema](#json-schema)
     - [Enums](#enums)
@@ -70,6 +70,7 @@ The following table lists the serialization formats currently supported by refle
 | CBOR         | [jsoncons](https://github.com/danielaparker/jsoncons)| >= 0.176.0   | BSL 1.0    | JSON-like binary format                              |
 | flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 | Schema-less version of flatbuffers, binary format    |
 | msgpack      | [msgpack-c](https://github.com/msgpack/msgpack-c)    | >= 6.0.0     | BSL 1.0    | JSON-like binary format                              |
+| parquet      | [Apache Arrow](https://arrow.apache.org/)            | >= 21.0.0    | Apache 2.0 | Tabular binary format                                |
 | TOML         | [toml++](https://github.com/marzer/tomlplusplus)     | >= 3.4.0     | MIT        | Textual format with an emphasis on readability       |
 | UBJSON       | [jsoncons](https://github.com/danielaparker/jsoncons)| >= 0.176.0   | BSL 1.0    | JSON-like binary format                              |
 | XML          | [pugixml](https://github.com/zeux/pugixml)           | >= 1.14      | MIT        | Textual format used in many legacy projects          |
@@ -145,7 +146,7 @@ age: 45
 ```
 
 This will work for just about any example in the entire documentation 
-and any supported format, except where explicitly noted otherwise:
+and any of the following formats, except where explicitly noted otherwise:
 
 ```cpp
 rfl::avro::write(homer);
@@ -240,6 +241,34 @@ homer2.first_name = "Marge";
 
 std::cout << "Hello, my name is " << homer2.first_name() << " "
           << homer2.last_name() << "." << std::endl;
+```
+
+### Tabular data
+
+reflect-cpp also supports tabular data formats, like Parquet:
+
+```cpp
+#include <rfl/parquet.hpp>
+
+const auto people =
+  std::vector<Person>({Person{.first_name = "Bart",
+                              .birthday = "1987-04-19",
+                              .age = 10,
+                              .email = "bart@simpson.com"},
+                       Person{.first_name = "Lisa",
+                              .birthday = "1987-04-19",
+                              .age = 8,
+                              .email = "lisa@simpson.com"},
+                       Person{.first_name = "Maggie",
+                              .birthday = "1987-04-19",
+                              .age = 0,
+                              .email = "maggie@simpson.com"},
+                       Person{.first_name = "Homer",
+                              .birthday = "1987-04-19",
+                              .age = 45,
+                              .email = "homer@simpson.com"}});
+
+const auto bytestring = rfl::parquet::write(people);
 ```
 
 ### Error messages
