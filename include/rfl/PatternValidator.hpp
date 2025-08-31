@@ -23,7 +23,8 @@ struct PatternValidator {
   using Regex = Literal<_regex>;
 
   static Result<std::string> validate(const std::string& _str) noexcept {
-    if (ctre::match<_regex.arr_>(_str)) {
+    if (ctre::match<ctll::fixed_string<_regex.length>{
+            ctll::construct_from_pointer, _regex.arr_.data()}>(_str)) {
       return _str;
     } else {
       std::stringstream stream;

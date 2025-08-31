@@ -30,6 +30,8 @@ struct StringLiteral {
     return std::string_view(std::data(arr_), N - 1);
   }
 
+  static constexpr size_t length = N - 1;
+
   std::array<char, N> arr_{};
 };
 
