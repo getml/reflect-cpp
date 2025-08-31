@@ -1,11 +1,15 @@
 #ifndef RFL_PARQUET_SETTINGS_HPP_
 #define RFL_PARQUET_SETTINGS_HPP_
 
+#include <arrow/io/api.h>
+#include <parquet/arrow/writer.h>
+
 #include "../Field.hpp"
 #include "../replace.hpp"
-#include "Compression.hpp"
 
 namespace rfl::parquet {
+
+using Compression = arrow::Compression::type;
 
 struct Settings {
   /// The size of the chunks of the parquet file.
