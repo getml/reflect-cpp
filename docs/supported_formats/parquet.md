@@ -50,11 +50,32 @@ const std::vector<char> bytes = rfl::parquet::write(people, settings);
 ```
 
 Available compression options include:
-- `SNAPPY` (default) - Fast compression/decompression
-- `GZIP` - Good compression ratio
-- `LZ4` - Very fast compression
-- `ZSTD` - Excellent compression ratio
-- `BROTLI` - Good compression for text data
+
+- `UNCOMPRESSED` - No compression, fastest read/write but largest file size
+- `SNAPPY` (default) - Fast compression/decompression, good balance of speed and size
+- `GZIP` - Good compression ratio, slower than Snappy but better compression
+- `BROTLI` - Good compression for text data, optimized for web content
+- `ZSTD` - Excellent compression ratio, modern algorithm with good speed
+- `LZ4` - Very fast compression/decompression, lower compression ratio
+- `LZ4_FRAME` - LZ4 with frame format, better compatibility
+- `LZO` - Fast compression, older algorithm
+- `BZ2` - High compression ratio, slower compression/decompression
+- `LZ4_HADOOP` - LZ4 optimized for Hadoop ecosystem
+
+```cpp
+// Examples of different compression settings
+const auto snappy_settings = rfl::parquet::Settings{}
+    .with_compression(rfl::parquet::Compression::SNAPPY);
+
+const auto gzip_settings = rfl::parquet::Settings{}
+    .with_compression(rfl::parquet::Compression::GZIP);
+
+const auto zstd_settings = rfl::parquet::Settings{}
+    .with_compression(rfl::parquet::Compression::ZSTD);
+
+const auto uncompressed_settings = rfl::parquet::Settings{}
+    .with_compression(rfl::parquet::Compression::UNCOMPRESSED);
+```
 
 ## Loading and saving
 
