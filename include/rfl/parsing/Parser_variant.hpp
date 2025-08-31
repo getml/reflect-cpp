@@ -85,6 +85,7 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
     } else {
       std::optional<std::variant<AlternativeTypes...>> result;
       std::vector<Error> errors;
+      errors.reserve(sizeof...(AlternativeTypes));
       read_variant(
           _r, _var, &result, &errors,
           std::make_integer_sequence<int, sizeof...(AlternativeTypes)>());
@@ -213,9 +214,9 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
           std::remove_cvref_t<internal::nth_element_t<_i, AlternativeTypes...>>;
       auto res = Parser<R, W, AltType, ProcessorsType>::read(_r, _var);
       if (res) {
-        *_result = std::move(*res);
+        _result->emplace(std::move(*res));
       } else {
-        _errors->emplace_back(res.error());
+        _errors->emplace_back(std::move(res.error()));
       }
     }
   }
