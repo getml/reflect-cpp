@@ -301,7 +301,7 @@ struct ArrowTypes<T> {
 
   static auto data_type() { return arrow::utf8(); }
 
-  static void add_to_builder(const T& _val, BuilderType* _builder) {
+  static void add_to_builder(const T _val, BuilderType* _builder) {
     const auto status = _builder->Append(enum_to_string(_val));
     if (!status.ok()) {
       throw std::runtime_error(status.message());
@@ -347,7 +347,7 @@ struct ArrowTypes<Timestamp<_format>> {
 
   static auto data_type() { return arrow::timestamp(arrow::TimeUnit::SECOND); }
 
-  static void add_to_builder(const auto _val, BuilderType* _builder) {
+  static void add_to_builder(const auto& _val, BuilderType* _builder) {
     const auto status = _builder->Append(_val.to_time_t());
     if (!status.ok()) {
       throw std::runtime_error(status.message());
@@ -375,7 +375,7 @@ struct ArrowTypes<T> {
     return ArrowTypes<typename T::ReflectionType>::data_type();
   }
 
-  static void add_to_builder(const auto _val, BuilderType* _builder) {
+  static void add_to_builder(const auto& _val, BuilderType* _builder) {
     ArrowTypes<typename T::ReflectionType>::add_to_builder(_val.reflection(),
                                                            _builder);
   }
@@ -404,7 +404,7 @@ struct ArrowTypes<std::optional<T>> {
 
   static auto data_type() { return ArrowTypes<T>::data_type(); }
 
-  static void add_to_builder(const auto _val, BuilderType* _builder) {
+  static void add_to_builder(const auto& _val, BuilderType* _builder) {
     if (_val) {
       ArrowTypes<T>::add_to_builder(*_val, _builder);
     } else {
@@ -430,7 +430,7 @@ struct ArrowTypes<std::shared_ptr<T>> {
 
   static auto data_type() { return ArrowTypes<T>::data_type(); }
 
-  static void add_to_builder(const auto _val, BuilderType* _builder) {
+  static void add_to_builder(const auto& _val, BuilderType* _builder) {
     if (_val) {
       ArrowTypes<T>::add_to_builder(*_val, _builder);
     } else {
@@ -456,7 +456,7 @@ struct ArrowTypes<std::unique_ptr<T>> {
 
   static auto data_type() { return ArrowTypes<T>::data_type(); }
 
-  static void add_to_builder(const auto _val, BuilderType* _builder) {
+  static void add_to_builder(const auto& _val, BuilderType* _builder) {
     if (_val) {
       ArrowTypes<T>::add_to_builder(*_val, _builder);
     } else {
@@ -482,7 +482,7 @@ struct ArrowTypes<Box<T>> {
 
   static auto data_type() { return ArrowTypes<T>::data_type(); }
 
-  static void add_to_builder(const auto _val, BuilderType* _builder) {
+  static void add_to_builder(const auto& _val, BuilderType* _builder) {
     ArrowTypes<T>::add_to_builder(*_val, _builder);
   }
 
@@ -501,7 +501,7 @@ struct ArrowTypes<Ref<T>> {
 
   static auto data_type() { return ArrowTypes<T>::data_type(); }
 
-  static void add_to_builder(const auto _val, BuilderType* _builder) {
+  static void add_to_builder(const auto& _val, BuilderType* _builder) {
     ArrowTypes<T>::add_to_builder(*_val, _builder);
   }
 
@@ -520,7 +520,7 @@ struct ArrowTypes<Rename<_name, T>> {
 
   static auto data_type() { return ArrowTypes<T>::data_type(); }
 
-  static void add_to_builder(const auto _val, BuilderType* _builder) {
+  static void add_to_builder(const auto& _val, BuilderType* _builder) {
     ArrowTypes<T>::add_to_builder(_val.value(), _builder);
   }
 
