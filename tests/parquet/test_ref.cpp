@@ -32,7 +32,10 @@ TEST(parquet, test_ref) {
              .age = 8,
              .email = rfl::make_ref<rfl::Email>("lisa@simpson.com")});
   people.emplace_back(
-      Person{.first_name = "Maggie", .birthday = "1987-04-19", .age = 0});
+      Person{.first_name = "Maggie",
+             .birthday = "1987-04-19",
+             .age = 0,
+             .email = rfl::make_ref<rfl::Email>("maggie@simpson.com")});
   people.emplace_back(
       Person{.first_name = "Homer",
              .birthday = "1987-04-19",
