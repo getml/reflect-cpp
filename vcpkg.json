@@ -115,7 +115,7 @@
       "dependencies": [
         {
           "name": "arrow",
-          "version>=": "19.0.1",
+          "version>=": "21.0.0",
           "features": ["parquet"]
         }
       ]
