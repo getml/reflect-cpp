@@ -76,10 +76,10 @@ class Timestamp {
   /// Trivial (const) accessor to the underlying time stamp.
   const std::tm& tm() const { return tm_; }
 
-  /// Returns time_t by calling std::mktime under-the-hood.
+  /// Returns time_t by calling timegm under-the-hood.
   time_t to_time_t() const {
     auto tm = tm_;
-    return std::mktime(&tm) - timezone;
+    return static_cast<time_t>(timegm(&tm) - tm_.tm_gmtoff);
   }
 
  private:
