@@ -76,10 +76,14 @@ class Timestamp {
   /// Trivial (const) accessor to the underlying time stamp.
   const std::tm& tm() const { return tm_; }
 
-  /// Returns time_t by calling timegm under-the-hood.
+  /// Returns a UTC time represented by a time_t type.
   time_t to_time_t() const {
     auto tm = tm_;
+#if defined(_MSC_VER) || defined(__MINGW32__)
+    return _mkgmtime(&tm);
+#else
     return static_cast<time_t>(timegm(&tm) - tm_.tm_gmtoff);
+#endif
   }
 
  private:
