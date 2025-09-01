@@ -28,8 +28,10 @@ jobs:
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
+      - name: Install bison 
+        run: brew install bison
       - name: Install ninja 
-        run: brew install bison ninja
+        run: brew install ninja
         if: matrix.os == 'macos-latest'
       - name: Compile
         env:
