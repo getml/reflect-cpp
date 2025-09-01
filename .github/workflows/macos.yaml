@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["macos-latest", "macos-13"]
-        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "XML", "TOML", "UBJSON", "YAML", "benchmarks"]
+        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "PARQUET", "TOML", "UBJSON", "XML", "YAML", "benchmarks"]
     name: "${{ matrix.os }} (${{ matrix.format }})"
     runs-on: ${{ matrix.os }}
     steps:
@@ -29,7 +29,7 @@ jobs:
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
       - name: Install ninja 
-        run: brew install ninja
+        run: brew install bison ninja
         if: matrix.os == 'macos-latest'
       - name: Compile
         env:
