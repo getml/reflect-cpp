@@ -110,6 +110,16 @@
         }
       ]
     },
+    "parquet": {
+      "description": "Enable parquet support",
+      "dependencies": [
+        {
+          "name": "arrow",
+          "version>=": "21.0.0",
+          "features": ["parquet"]
+        }
+      ]
+    },
     "tests": {
       "description": "Compile the tests",
       "dependencies": [

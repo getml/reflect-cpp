@@ -36,6 +36,10 @@ if (REFLECTCPP_MSGPACK)
     add_subdirectory(msgpack)
 endif()
 
+if (REFLECTCPP_PARQUET)
+    add_subdirectory(parquet)
+endif()
+
 if (REFLECTCPP_TOML)
     add_subdirectory(toml)
 endif()

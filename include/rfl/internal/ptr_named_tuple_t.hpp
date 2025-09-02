@@ -13,7 +13,7 @@ namespace internal {
 
 template <class T>
 using ptr_named_tuple_t =
-    typename std::invoke_result<decltype(to_ptr_named_tuple<T>), T>::type;
+    std::invoke_result_t<decltype(to_ptr_named_tuple<T>), T>;
 
 }  // namespace internal
 }  // namespace rfl
