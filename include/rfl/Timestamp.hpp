@@ -39,7 +39,11 @@ class Timestamp {
 
   Timestamp(const time_t _t) : tm_(std::tm{}) {
     auto t = _t;
-    tm_ = *std::gmtime(&t);
+#if defined(_MSC_VER) || defined(__MINGW32__)
+    gmtime_s(&tm_, &t);
+#else
+    gmtime_r(&t, &tm_);
+#endif
   }
 
   ~Timestamp() = default;
