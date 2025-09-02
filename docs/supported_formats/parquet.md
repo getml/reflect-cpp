@@ -1,5 +1,3 @@
-# Parquet 
-
 For Parquet support, you must also include the header `<rfl/parquet.hpp>` and link to the [Apache Arrow](https://arrow.apache.org/) and [Apache Parquet](https://parquet.apache.org/) libraries.
 Furthermore, when compiling reflect-cpp, you need to pass `-DREFLECTCPP_PARQUET=ON` to cmake.
 
@@ -79,7 +77,7 @@ const auto uncompressed_settings = rfl::parquet::Settings{}
 
 ## Loading and saving
 
-You can also load and save to disc using a very similar syntax:
+You can also load and save to disk using a very similar syntax:
 
 ```cpp
 const rfl::Result<std::vector<Person>> result = rfl::parquet::load<std::vector<Person>>("/path/to/file.parquet");
