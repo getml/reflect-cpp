@@ -267,9 +267,6 @@ if (REFLECTCPP_MSGPACK)
 endif ()
 
 if (REFLECTCPP_PARQUET)
-    list(APPEND REFLECT_CPP_SOURCES
-        src/reflectcpp_parquet.cpp
-    )
     if (NOT TARGET Arrow)
         find_package(Arrow CONFIG REQUIRED)
     endif()
