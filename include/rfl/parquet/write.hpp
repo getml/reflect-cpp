@@ -25,7 +25,9 @@ Ref<arrow::Buffer> to_buffer(const auto& _arr, const Settings& _settings) {
   using T = std::remove_cvref_t<decltype(_arr)>;
 
   const auto table =
-      parsing::tabular::ArrowWriter<T, Ps...>(_settings.chunksize)
+      parsing::tabular::ArrowWriter<
+          T, parsing::tabular::SerializationType::parquet, Ps...>(
+          _settings.chunksize)
           .to_table(_arr);
 
   const auto props = ::parquet::WriterProperties::Builder()
