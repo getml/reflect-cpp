@@ -78,8 +78,11 @@ class ArrowReader {
   Result<ValueType> new_value(auto* _chunked_array_iterators) const noexcept {
     alignas(ValueType) unsigned char buf[sizeof(ValueType)]{};
     auto ptr = internal::ptr_cast<ValueType*>(&buf);
+
     auto view = to_view(*ptr);
+
     using ViewType = std::remove_cvref_t<decltype(view)>;
+
     try {
       const auto set_one = [&]<size_t _i>(std::integral_constant<size_t, _i>) {
         using FieldType = tuple_element_t<_i, typename ViewType::Fields>;
@@ -99,11 +102,11 @@ class ArrowReader {
       [&]<size_t... _is>(std::integer_sequence<size_t, _is...>) {
         (set_one(std::integral_constant<size_t, _is>{}), ...);
       }(std::make_integer_sequence<size_t, view.size()>());
-
-      return std::move(*ptr);
     } catch (const std::exception& e) {
       return error(e.what());
     }
+
+    return std::move(*ptr);
   }
 
   template <size_t _i, class ViewType>

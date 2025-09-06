@@ -51,9 +51,7 @@ class ChunkedArrayIterator {
         [&](const auto& _c) { return ArrowTypes<T>::get_value(_c, ix_); });
   }
 
-  bool end() const noexcept {
-    return !current_chunk_ || (chunk_ix_ >= arr_->num_chunks());
-  }
+  bool end() const noexcept { return chunk_ix_ >= arr_->num_chunks(); }
 
   ChunkedArrayIterator<T>& operator++() noexcept {
     if (!current_chunk_) {
@@ -74,8 +72,7 @@ class ChunkedArrayIterator {
   static Result<Ref<ArrayType>> get_chunk(const Ref<arrow::ChunkedArray>& _arr,
                                           const int _chunk_ix) noexcept {
     if (_chunk_ix < _arr->num_chunks()) {
-      return Ref<ArrayType>::make(
-          std::static_pointer_cast<ArrayType>(_arr->chunk(_chunk_ix)));
+      return ArrowTypes<T>::get_array(_arr->chunk(_chunk_ix));
     } else {
       return error("chunk_ix out of bounds.");
     }

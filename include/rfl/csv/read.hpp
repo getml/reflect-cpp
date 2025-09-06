@@ -7,6 +7,7 @@
 #include <istream>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "../Processors.hpp"
 #include "../Result.hpp"
@@ -57,8 +58,8 @@ Result<internal::wrap_in_rfl_array_t<T>> read(const char* _str,
 
 /// Parses an object from CSV using reflection.
 template <class T, class... Ps>
-auto read(const std::string& _str) {
-  return read<T, Ps...>(_str.c_str(), _str.size());
+auto read(const std::string_view _str) {
+  return read<T, Ps...>(_str.data(), _str.size());
 }
 
 /// Parses an object from a stream.
