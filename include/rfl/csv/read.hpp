@@ -14,13 +14,15 @@
 #include "../concepts.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
 #include "../parsing/tabular/ArrowReader.hpp"
+#include "Settings.hpp"
 
 namespace rfl::csv {
 
 /// Parses an object from CSV using reflection.
 template <class T, class... Ps>
-Result<internal::wrap_in_rfl_array_t<T>> read(const char* _str,
-                                              const size_t _size) {
+Result<internal::wrap_in_rfl_array_t<T>> read(
+    const char* _str, const size_t _size,
+    const Settings& _settings = Settings{}) {
   arrow::io::IOContext io_context = arrow::io::default_io_context();
 
   const auto buffer = std::make_shared<arrow::Buffer>(
@@ -30,8 +32,17 @@ Result<internal::wrap_in_rfl_array_t<T>> read(const char* _str,
       std::make_shared<arrow::io::BufferReader>(buffer);
 
   auto read_options = arrow::csv::ReadOptions::Defaults();
-  auto parse_options = arrow::csv::ParseOptions::Defaults();
   auto convert_options = arrow::csv::ConvertOptions::Defaults();
+
+  auto parse_options = arrow::csv::ParseOptions::Defaults();
+  parse_options.delimiter = _settings.delimiter;
+  parse_options.quoting = _settings.quoting;
+  parse_options.quote_char = _settings.quote_char;
+  parse_options.double_quote = _settings.double_quote;
+  parse_options.escaping = _settings.escaping;
+  parse_options.escape_char = _settings.escape_char;
+  parse_options.newlines_in_values = _settings.newlines_in_values;
+  parse_options.ignore_empty_lines = _settings.ignore_empty_lines;
 
   auto maybe_reader = arrow::csv::TableReader::Make(
       io_context, input, read_options, parse_options, convert_options);
@@ -60,16 +71,16 @@ Result<internal::wrap_in_rfl_array_t<T>> read(const char* _str,
 
 /// Parses an object from CSV using reflection.
 template <class T, class... Ps>
-auto read(const std::string_view _str) {
-  return read<T, Ps...>(_str.data(), _str.size());
+auto read(const std::string_view _str, const Settings& _settings = Settings{}) {
+  return read<T, Ps...>(_str.data(), _str.size(), _settings);
 }
 
 /// Parses an object from a stream.
 template <class T, class... Ps>
-auto read(std::istream& _stream) {
+auto read(std::istream& _stream, const Settings& _settings = Settings{}) {
   std::istreambuf_iterator<char> begin(_stream), end;
   auto bytes = std::vector<char>(begin, end);
-  return read<T, Ps...>(bytes.data(), bytes.size());
+  return read<T, Ps...>(bytes.data(), bytes.size(), _settings);
 }
 
 }  // namespace rfl::csv

@@ -27,7 +27,7 @@ Ref<arrow::Buffer> to_buffer(const auto& _arr, const Settings& _settings) {
 
   const auto table =
       parsing::tabular::ArrowWriter<T, parsing::tabular::SerializationType::csv,
-                                    Ps...>(_settings.chunksize)
+                                    Ps...>(_settings.batch_size)
           .to_table(_arr);
 
   const auto output_buffer = arrow::io::BufferOutputStream::Create();
@@ -36,9 +36,14 @@ Ref<arrow::Buffer> to_buffer(const auto& _arr, const Settings& _settings) {
     throw std::runtime_error(output_buffer.status().message());
   }
 
+  auto options = arrow::csv::WriteOptions::Defaults();
+  options.batch_size = _settings.batch_size;
+  options.delimiter = _settings.delimiter;
+  options.quoting_style = _settings.quoting ? arrow::csv::QuotingStyle::Needed
+                                            : arrow::csv::QuotingStyle::None;
+
   const auto status =
-      arrow::csv::WriteCSV(*table, arrow::csv::WriteOptions::Defaults(),
-                           output_buffer.ValueOrDie().get());
+      arrow::csv::WriteCSV(*table, options, output_buffer.ValueOrDie().get());
 
   if (!status.ok()) {
     throw std::runtime_error(status.message());

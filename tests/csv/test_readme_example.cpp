@@ -10,8 +10,8 @@ namespace test_readme_example {
 using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
 
 struct Person {
-  rfl::Rename<"firstName", std::string> first_name;
-  rfl::Rename<"lastName", std::string> last_name = "Simpson";
+  std::string first_name;
+  std::string last_name = "Simpson";
   std::string town = "Springfield";
   rfl::Timestamp<"%Y-%m-%d"> birthday;
   Age age;

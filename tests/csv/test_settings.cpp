@@ -1,16 +1,13 @@
-#include <gtest/gtest.h>
-
-#include <cassert>
 #include <iostream>
-#include <rfl.hpp>
 #include <rfl/csv.hpp>
 #include <string>
 #include <vector>
 
-namespace test_save_load {
+#include "write_and_read.hpp"
 
-using Age =
-    rfl::Validator<int64_t, rfl::AllOf<rfl::Minimum<0>, rfl::Maximum<130>>>;
+namespace test_settings {
+
+using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
 
 struct Person {
   std::string first_name;
@@ -21,8 +18,8 @@ struct Person {
   rfl::Email email;
 };
 
-TEST(csv, test_save_load) {
-  const auto people1 =
+TEST(csv, test_settings) {
+  const auto people =
       std::vector<Person>({Person{.first_name = "Bart",
                                   .birthday = "1987-04-19",
                                   .age = 10,
@@ -42,14 +39,6 @@ TEST(csv, test_save_load) {
 
   const auto settings = rfl::csv::Settings{}.with_delimiter(';');
 
-  rfl::csv::save("people.csv", people1, settings);
-
-  const auto people2 =
-      rfl::csv::load<std::vector<Person>>("people.csv", settings).value();
-
-  const auto bytes1 = rfl::csv::write(people1);
-  const auto bytes2 = rfl::csv::write(people2);
-
-  EXPECT_EQ(bytes1, bytes2);
+  write_and_read(people, settings);
 }
-}  // namespace test_save_load
+}  // namespace test_settings
