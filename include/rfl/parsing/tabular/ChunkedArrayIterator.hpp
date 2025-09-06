@@ -16,13 +16,13 @@
 
 namespace rfl::parsing::tabular {
 
-template <class T>
+template <class T, SerializationType _s>
 class ChunkedArrayIterator {
  public:
   using difference_type = std::ptrdiff_t;
   using value_type = Result<T>;
 
-  using ArrayType = array_t<T>;
+  using ArrayType = array_t<T, _s>;
 
   static ChunkedArrayIterator make(const Ref<arrow::ChunkedArray>& _arr) {
     return ChunkedArrayIterator(_arr);
@@ -48,12 +48,12 @@ class ChunkedArrayIterator {
     }
 
     return current_chunk_.and_then(
-        [&](const auto& _c) { return ArrowTypes<T>::get_value(_c, ix_); });
+        [&](const auto& _c) { return ArrowTypes<T, _s>::get_value(_c, ix_); });
   }
 
   bool end() const noexcept { return chunk_ix_ >= arr_->num_chunks(); }
 
-  ChunkedArrayIterator<T>& operator++() noexcept {
+  ChunkedArrayIterator& operator++() noexcept {
     if (!current_chunk_) {
       return *this;
     }
@@ -72,7 +72,7 @@ class ChunkedArrayIterator {
   static Result<Ref<ArrayType>> get_chunk(const Ref<arrow::ChunkedArray>& _arr,
                                           const int _chunk_ix) noexcept {
     if (_chunk_ix < _arr->num_chunks()) {
-      return ArrowTypes<T>::get_array(_arr->chunk(_chunk_ix));
+      return ArrowTypes<T, _s>::get_array(_arr->chunk(_chunk_ix));
     } else {
       return error("chunk_ix out of bounds.");
     }

@@ -23,7 +23,7 @@
 
 namespace rfl::parsing::tabular {
 
-template <class VecType, class... Ps>
+template <class VecType, SerializationType _s, class... Ps>
 class ArrowReader {
   static_assert(!Processors<Ps...>::add_tags_to_variants_,
                 "rfl::AddTagsToVariants cannot be used for tabular data.");
@@ -51,7 +51,8 @@ class ArrowReader {
   ~ArrowReader() = default;
 
   Result<VecType> read() const noexcept {
-    return make_chunked_array_iterators<named_tuple_t<ValueType, Ps...>>(table_)
+    return make_chunked_array_iterators<named_tuple_t<ValueType, Ps...>, _s>(
+               table_)
         .and_then([&](auto chunked_array_iterators) -> Result<VecType> {
           VecType result;
           while (!end(chunked_array_iterators)) {

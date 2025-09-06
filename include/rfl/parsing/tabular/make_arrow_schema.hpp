@@ -8,9 +8,9 @@
 
 namespace rfl::parsing::tabular {
 
-template <class T>
+template <class T, SerializationType _s>
 inline auto make_arrow_schema() {
-  return ArrowBuildersType<named_tuple_t<std::remove_cvref_t<T>>>::schema();
+  return ArrowBuildersType<named_tuple_t<std::remove_cvref_t<T>>, _s>::schema();
 }
 
 }  // namespace rfl::parsing::tabular

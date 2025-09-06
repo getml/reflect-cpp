@@ -16,7 +16,7 @@ struct Person {
   std::string first_name;
   std::string last_name = "Simpson";
   std::string town = "Springfield";
-  // rfl::Timestamp<"%Y-%m-%d"> birthday;
+  rfl::Timestamp<"%Y-%m-%d"> birthday;
   Age age;
   rfl::Email email;
 };
@@ -24,19 +24,19 @@ struct Person {
 TEST(csv, test_save_load) {
   const auto people1 =
       std::vector<Person>({Person{.first_name = "Bart",
-                                  //.birthday = "1987-04-19",
+                                  .birthday = "1987-04-19",
                                   .age = 10,
                                   .email = "bart@simpson.com"},
                            Person{.first_name = "Lisa",
-                                  //.birthday = "1987-04-19",
+                                  .birthday = "1987-04-19",
                                   .age = 8,
                                   .email = "lisa@simpson.com"},
                            Person{.first_name = "Maggie",
-                                  //.birthday = "1987-04-19",
+                                  .birthday = "1987-04-19",
                                   .age = 0,
                                   .email = "maggie@simpson.com"},
                            Person{.first_name = "Homer",
-                                  //.birthday = "1987-04-19",
+                                  .birthday = "1987-04-19",
                                   .age = 45,
                                   .email = "homer@simpson.com"}});
 

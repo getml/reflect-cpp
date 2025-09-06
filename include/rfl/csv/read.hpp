@@ -50,7 +50,9 @@ Result<internal::wrap_in_rfl_array_t<T>> read(const char* _str,
 
   const std::shared_ptr<arrow::Table> table = *maybe_table;
 
-  using ArrowReader = parsing::tabular::ArrowReader<T, Ps...>;
+  using ArrowReader =
+      parsing::tabular::ArrowReader<T, parsing::tabular::SerializationType::csv,
+                                    Ps...>;
 
   return ArrowReader::make(table).and_then(
       [](const auto& _r) { return _r.read(); });

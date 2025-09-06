@@ -5,8 +5,8 @@
 
 namespace rfl::parsing::tabular {
 
-template <class T>
-using array_t = typename ArrowTypes<std::remove_cvref_t<T>>::ArrayType;
+template <class T, SerializationType _s>
+using array_t = typename ArrowTypes<std::remove_cvref_t<T>, _s>::ArrayType;
 
 }  // namespace rfl::parsing::tabular
 

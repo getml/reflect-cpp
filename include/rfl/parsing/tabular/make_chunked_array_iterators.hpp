@@ -15,17 +15,17 @@
 #include "../../Ref.hpp"
 #include "../../Result.hpp"
 #include "../../Tuple.hpp"
-#include "ArrowTypes.hpp"
 #include "ChunkedArrayIterator.hpp"
 
 namespace rfl::parsing::tabular {
 
-template <class NamedTupleType>
+template <class NamedTupleType, SerializationType _s>
 struct MakeChunkedArrayIterators;
 
-template <class... FieldTypes>
-struct MakeChunkedArrayIterators<NamedTuple<FieldTypes...>> {
-  using TupleType = Tuple<ChunkedArrayIterator<typename FieldTypes::Type>...>;
+template <SerializationType _s, class... FieldTypes>
+struct MakeChunkedArrayIterators<NamedTuple<FieldTypes...>, _s> {
+  using TupleType =
+      Tuple<ChunkedArrayIterator<typename FieldTypes::Type, _s>...>;
 
   Result<TupleType> operator()(const Ref<arrow::Table>& _table) const {
     const auto get_column =
@@ -40,7 +40,8 @@ struct MakeChunkedArrayIterators<NamedTuple<FieldTypes...>> {
     try {
       return TupleType(
           get_column(typename FieldTypes::Name().str())
-              .transform(ChunkedArrayIterator<typename FieldTypes::Type>::make)
+              .transform(
+                  ChunkedArrayIterator<typename FieldTypes::Type, _s>::make)
               .value()...);
     } catch (const std::exception& e) {
       return error(e.what());
@@ -48,9 +49,9 @@ struct MakeChunkedArrayIterators<NamedTuple<FieldTypes...>> {
   }
 };
 
-template <class NamedTupleType>
+template <class NamedTupleType, SerializationType _s>
 const auto make_chunked_array_iterators =
-    MakeChunkedArrayIterators<NamedTupleType>{};
+    MakeChunkedArrayIterators<NamedTupleType, _s>{};
 
 }  // namespace rfl::parsing::tabular
 
