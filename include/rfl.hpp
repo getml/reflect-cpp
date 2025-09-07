@@ -45,10 +45,12 @@
 #include "rfl/UnderlyingEnums.hpp"
 #include "rfl/Validator.hpp"
 #include "rfl/Variant.hpp"
+#include "rfl/Vectorstring.hpp"
 #include "rfl/always_false.hpp"
 #include "rfl/apply.hpp"
 #include "rfl/as.hpp"
 #include "rfl/comparisons.hpp"
+#include "rfl/concepts.hpp"
 #include "rfl/default.hpp"
 #include "rfl/define_literal.hpp"
 #include "rfl/define_named_tuple.hpp"
@@ -74,6 +76,7 @@
 #include "rfl/to_view.hpp"
 #include "rfl/tuple_cat.hpp"
 #include "rfl/type_name_t.hpp"
+#include "rfl/view_t.hpp"
 #include "rfl/visit.hpp"
 
 #ifdef _MSC_VER

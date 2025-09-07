@@ -37,6 +37,15 @@ class Timestamp {
 
   Timestamp(const std::tm& _tm) : tm_(_tm) {}
 
+  Timestamp(const time_t _t) : tm_(std::tm{}) {
+    auto t = _t;
+#if defined(_MSC_VER) || defined(__MINGW32__)
+    gmtime_s(&tm_, &t);
+#else
+    gmtime_r(&t, &tm_);
+#endif
+  }
+
   ~Timestamp() = default;
 
   /// Returns a result containing the timestamp when successful or an Error
@@ -55,6 +64,12 @@ class Timestamp {
     return from_string(_str.c_str());
   }
 
+  /// Returns a result containing the timestamp when successful or an Error
+  /// otherwise.
+  static Result<Timestamp> make(const auto& _str) noexcept {
+    return from_string(_str);
+  }
+
   /// Necessary for the serialization to work.
   ReflectionType reflection() const {
     char outstr[200];
@@ -70,6 +85,16 @@ class Timestamp {
 
   /// Trivial (const) accessor to the underlying time stamp.
   const std::tm& tm() const { return tm_; }
+
+  /// Returns a UTC time represented by a time_t type.
+  time_t to_time_t() const {
+    auto tm = tm_;
+#if defined(_MSC_VER) || defined(__MINGW32__)
+    return _mkgmtime(&tm);
+#else
+    return static_cast<time_t>(timegm(&tm) - tm_.tm_gmtoff);
+#endif
+  }
 
  private:
 #if defined(_MSC_VER) || defined(__MINGW32__)

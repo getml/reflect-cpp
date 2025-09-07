@@ -23,12 +23,14 @@
 #include "Parser_rfl_variant.hpp"
 #include "Parser_shared_ptr.hpp"
 #include "Parser_skip.hpp"
+#include "Parser_span.hpp"
 #include "Parser_string_view.hpp"
 #include "Parser_tagged_union.hpp"
 #include "Parser_tuple.hpp"
 #include "Parser_unique_ptr.hpp"
 #include "Parser_variant.hpp"
 #include "Parser_vector_like.hpp"
+#include "Parser_vectorstring.hpp"
 #include "Parser_wstring.hpp"
 
 #endif

@@ -30,7 +30,6 @@ reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boile
 
 <br>
 
-
 ## Table of Contents
 
 ### On this page
@@ -38,6 +37,7 @@ reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boile
   - [Feature Overview](#feature-overview)
     - [Simple Example](#simple-example)
     - [More Comprehensive Example](#more-comprehensive-example)
+    - [Tabular data](#tabular-data)
     - [Error messages](#error-messages)
     - [JSON schema](#json-schema)
     - [Enums](#enums)
@@ -68,8 +68,10 @@ The following table lists the serialization formats currently supported by refle
 | BSON         | [libbson](https://github.com/mongodb/mongo-c-driver) | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
 | Cap'n Proto  | [capnproto](https://capnproto.org)                   | >= 1.0.2     | MIT        | Schemaful binary format                              |
 | CBOR         | [jsoncons](https://github.com/danielaparker/jsoncons)| >= 0.176.0   | BSL 1.0    | JSON-like binary format                              |
+| CSV          | [Apache Arrow](https://arrow.apache.org/)            | >= 21.0.0    | Apache 2.0 | Tabular textual format                               |
 | flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 | Schema-less version of flatbuffers, binary format    |
 | msgpack      | [msgpack-c](https://github.com/msgpack/msgpack-c)    | >= 6.0.0     | BSL 1.0    | JSON-like binary format                              |
+| parquet      | [Apache Arrow](https://arrow.apache.org/)            | >= 21.0.0    | Apache 2.0 | Tabular binary format                                |
 | TOML         | [toml++](https://github.com/marzer/tomlplusplus)     | >= 3.4.0     | MIT        | Textual format with an emphasis on readability       |
 | UBJSON       | [jsoncons](https://github.com/danielaparker/jsoncons)| >= 0.176.0   | BSL 1.0    | JSON-like binary format                              |
 | XML          | [pugixml](https://github.com/zeux/pugixml)           | >= 1.14      | MIT        | Textual format used in many legacy projects          |
@@ -145,7 +147,7 @@ age: 45
 ```
 
 This will work for just about any example in the entire documentation 
-and any supported format, except where explicitly noted otherwise:
+and any of the following formats, except where explicitly noted otherwise:
 
 ```cpp
 rfl::avro::write(homer);
@@ -240,6 +242,54 @@ homer2.first_name = "Marge";
 
 std::cout << "Hello, my name is " << homer2.first_name() << " "
           << homer2.last_name() << "." << std::endl;
+```
+
+### Tabular data
+
+reflect-cpp also supports tabular data formats, like CSV or Parquet:
+
+```cpp
+#include <rfl/csv.hpp>
+#include <rfl/parquet.hpp>
+
+struct Person {
+    std::string first_name;
+    std::string last_name = "Simpson";
+    std::string town = "Springfield";
+    int age;
+    rfl::Email email;
+};
+
+const auto people =
+  std::vector<Person>({Person{.first_name = "Bart",
+                              .birthday = "1987-04-19",
+                              .age = 10,
+                              .email = "bart@simpson.com"},
+                       Person{.first_name = "Lisa",
+                              .birthday = "1987-04-19",
+                              .age = 8,
+                              .email = "lisa@simpson.com"},
+                       Person{.first_name = "Maggie",
+                              .birthday = "1987-04-19",
+                              .age = 0,
+                              .email = "maggie@simpson.com"},
+                       Person{.first_name = "Homer",
+                              .birthday = "1987-04-19",
+                              .age = 45,
+                              .email = "homer@simpson.com"}});
+
+const auto csv_string = rfl::csv::write(people);
+const auto bytestring = rfl::parquet::write(people);
+```
+
+This will resulting CSV will look like this:
+
+```
+"first_name","last_name","town","birthday","age","email"
+"Bart","Simpson","Springfield",1987-04-19,10,"bart@simpson.com"
+"Lisa","Simpson","Springfield",1987-04-19,8,"lisa@simpson.com"
+"Maggie","Simpson","Springfield",1987-04-19,0,"maggie@simpson.com"
+"Homer","Simpson","Springfield",1987-04-19,45,"homer@simpson.com"
 ```
 
 ### Error messages
@@ -500,7 +550,9 @@ reflect-cpp supports the following containers from the C++ standard library:
 - `std::pair`
 - `std::set`
 - `std::shared_ptr`
+- `std::span`
 - `std::string`
+- `std::string_view`
 - `std::tuple`
 - `std::unique_ptr`
 - `std::unordered_map`
@@ -561,9 +613,24 @@ cmake --build build -j 4  # gcc, clang
 cmake --build build --config Release -j 4  # MSVC
 ```
 
-If you need support for any other supported [serialization formats](#serialization-formats), refer to the [documentation](https://rfl.getml.com/docs-readme) for installation instructions.
+To install all supported serialization formats, first install vcpkg:
 
-You can also [include the source files](https://rfl.getml.com/install/#option-1-include-source-files-into-your-own-build) into your build or compile it using [cmake and vcpkg.](https://rfl.getml.com/install/#option-3-compilation-using-cmake-and-vcpkg) For detailed installation instructions, please refer to the [install guide](https://rfl.getml.com/install).
+```bash
+git submodule update --init
+./vcpkg/bootstrap-vcpkg.sh # Linux, macOS
+./vcpkg/bootstrap-vcpkg.bat # Windows
+# You may be prompted to install additional dependencies.
+```
+
+Then, compile the library:
+
+```bash
+cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_ALL_FORMATS=ON
+cmake --build build -j 4 # gcc, clang
+cmake --build build --config Release -j 4 # MSVC
+```
+
+For other installation methods, refer to the [documentation](https://rfl.getml.com/docs-readme).
 
 ## The team behind reflect-cpp
 

@@ -20,6 +20,7 @@
 #include "../internal/processed_t.hpp"
 #include "../internal/ptr_cast.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
+#include "../thirdparty/enchantum/enchantum.hpp"
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
@@ -45,9 +46,10 @@ struct Parser {
   /// Expresses the variables as type T.
   static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
     if constexpr (internal::has_read_reflector<T>) {
-      const auto wrap_in_t = [](auto _named_tuple) -> Result<T> {
+      const auto wrap_in_t = [](auto&& _named_tuple) -> Result<T> {
         try {
-          return Reflector<T>::to(_named_tuple);
+          using NT = decltype(_named_tuple);
+          return Reflector<T>::to(std::forward<NT>(_named_tuple));
         } catch (std::exception& e) {
           return error(e.what());
         }
@@ -66,9 +68,10 @@ struct Parser {
     } else {
       if constexpr (internal::has_reflection_type_v<T>) {
         using ReflectionType = std::remove_cvref_t<typename T::ReflectionType>;
-        const auto wrap_in_t = [](auto _named_tuple) -> Result<T> {
+        const auto wrap_in_t = [](auto&& _named_tuple) -> Result<T> {
           try {
-            return T{std::move(_named_tuple)};
+            using NT = decltype(_named_tuple);
+            return T{std::forward<NT>(_named_tuple)};
           } catch (std::exception& e) {
             return error(e.what());
           }
@@ -86,8 +89,11 @@ struct Parser {
       } else if constexpr (std::is_enum_v<T>) {
         if constexpr (ProcessorsType::underlying_enums_ ||
                       schemaful::IsSchemafulReader<R>) {
-          return static_cast<T>(
-              *_r.template to_basic_type<std::underlying_type_t<T>>(_var));
+          static_assert(enchantum::ScopedEnum<T>,
+                        "The enum must be a scoped enum in order to retrieve "
+                        "the underlying value.");
+          return _r.template to_basic_type<std::underlying_type_t<T>>(_var)
+              .transform([](const auto _val) { return static_cast<T>(_val); });
         } else {
           return _r.template to_basic_type<std::string>(_var).and_then(
               rfl::string_to_enum<T>);

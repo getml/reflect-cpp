@@ -45,10 +45,12 @@
 *.bson
 *.capnproto
 *.cbor
+*.csv
 *.json
 *.fb
 *.flexbuf
 *.msgpack
+*.parquet
 *.toml
 *.ubjson
 *.xml

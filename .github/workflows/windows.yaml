@@ -7,6 +7,11 @@ env:
 
 jobs:
   windows-msvc:
+    strategy:
+      fail-fast: false
+      matrix:
+        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "PARQUET", "TOML", "UBJSON", "XML", "YAML", "benchmarks"]
+    name: "windows-msvc (${{ matrix.format }})"
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -22,29 +27,41 @@ jobs:
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
       - uses: ilammy/msvc-dev-cmd@v1
       - uses: lukka/run-vcpkg@v11
-      - name: Compile
+      - name: Compile benchmarks 
+        if: matrix.format == 'benchmarks' 
         run: |
-          cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CAPNPROTO=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release -j4 
+      - name: Compile tests (JSON)
+        if: matrix.format == 'JSON'
+        run: |
+          cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release -j4 
+      - name: Compile tests (Other formats)
+        if: matrix.format != 'JSON' && matrix.format != 'benchmarks'
+        run: |
+          cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release -j4 
       - name: Run tests
         run: |
           ctest --test-dir build --output-on-failure
-      - name: Run benchmarks
+      - name: Run benchmarks 
+        if: matrix.format == 'benchmarks' 
         run: |
-          echo '# Benchmarks' >> $env:GITHUB_STEP_SUMMARY 
-          echo '## Benchmarks across different formats' >> $env:GITHUB_STEP_SUMMARY 
-          echo '```' >> $env:GITHUB_STEP_SUMMARY
-          .\build\benchmarks\all\Release\reflect-cpp-all-format-benchmarks.exe --benchmark_filter=canada_read >> $env:GITHUB_STEP_SUMMARY
-          .\build\benchmarks\all\Release\reflect-cpp-all-format-benchmarks.exe --benchmark_filter=canada_write >> $env:GITHUB_STEP_SUMMARY
-          .\build\benchmarks\all\Release\reflect-cpp-all-format-benchmarks.exe --benchmark_filter=licenses_read >> $env:GITHUB_STEP_SUMMARY
-          .\build\benchmarks\all\Release\reflect-cpp-all-format-benchmarks.exe --benchmark_filter=licenses_write >> $env:GITHUB_STEP_SUMMARY
-          .\build\benchmarks\all\Release\reflect-cpp-all-format-benchmarks.exe --benchmark_filter=person_read >> $env:GITHUB_STEP_SUMMARY
-          .\build\benchmarks\all\Release\reflect-cpp-all-format-benchmarks.exe --benchmark_filter=person_write >> $env:GITHUB_STEP_SUMMARY
-          echo '```' >> $env:GITHUB_STEP_SUMMARY
-          echo '## Benchmarks for JSON' >> $env:GITHUB_STEP_SUMMARY 
-          echo '```' >> $env:GITHUB_STEP_SUMMARY
-          .\build\benchmarks\json\Release\reflect-cpp-json-benchmarks.exe --benchmark_filter=person_read >> $env:GITHUB_STEP_SUMMARY
-          .\build\benchmarks\json\Release\reflect-cpp-json-benchmarks.exe --benchmark_filter=canada >> $env:GITHUB_STEP_SUMMARY
-          .\build\benchmarks\json\Release\reflect-cpp-json-benchmarks.exe --benchmark_filter=licenses >> $env:GITHUB_STEP_SUMMARY
-          echo '```' >> $env:GITHUB_STEP_SUMMARY
+          echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY 
+          echo '## Benchmarks across different formats' >> $GITHUB_STEP_SUMMARY 
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_write >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo '## Benchmarks for JSON' >> $GITHUB_STEP_SUMMARY 
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=licenses >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
  

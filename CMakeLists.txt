@@ -3,17 +3,20 @@ cmake_minimum_required(VERSION 3.23)
 option(REFLECTCPP_BUILD_SHARED "Build shared library" ${BUILD_SHARED_LIBS})
 option(REFLECTCPP_INSTALL "Install reflect cpp" OFF)
 
+option(REFLECTCPP_ALL_FORMATS "Enable all supported formats" OFF)
 option(REFLECTCPP_JSON "Enable JSON support" ON) # enabled by default
-option(REFLECTCPP_AVRO "Enable AVRO support" OFF)
-option(REFLECTCPP_BSON "Enable BSON support" OFF)
-option(REFLECTCPP_CAPNPROTO "Enable Cap’n Proto support" OFF)
-option(REFLECTCPP_CBOR "Enable CBOR support" OFF)
-option(REFLECTCPP_FLEXBUFFERS "Enable flexbuffers support" OFF)
-option(REFLECTCPP_MSGPACK "Enable msgpack support" OFF)
-option(REFLECTCPP_XML "Enable XML support" OFF)
-option(REFLECTCPP_TOML "Enable TOML support" OFF)
-option(REFLECTCPP_UBJSON "Enable UBJSON support" OFF)
-option(REFLECTCPP_YAML "Enable YAML support" OFF)
+option(REFLECTCPP_AVRO "Enable AVRO support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_BSON "Enable BSON support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_CAPNPROTO "Enable Cap’n Proto support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_CBOR "Enable CBOR support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_CSV "Enable CSV support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_FLEXBUFFERS "Enable flexbuffers support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_MSGPACK "Enable msgpack support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_PARQUET "Enable parquet support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_XML "Enable XML support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_TOML "Enable TOML support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_UBJSON "Enable UBJSON support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_YAML "Enable YAML support" ${REFLECTCPP_ALL_FORMATS})
 
 option(REFLECTCPP_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
@@ -53,10 +56,17 @@ endif()
 
 if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_BUILD_BENCHMARKS OR
     (REFLECTCPP_JSON AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES) OR REFLECTCPP_AVRO OR
-    REFLECTCPP_BSON OR REFLECTCPP_CAPNPROTO OR REFLECTCPP_CBOR OR REFLECTCPP_FLEXBUFFERS OR 
-    REFLECTCPP_MSGPACK OR REFLECTCPP_XML OR REFLECTCPP_TOML OR REFLECTCPP_UBJSON OR REFLECTCPP_YAML)
+    REFLECTCPP_BSON OR REFLECTCPP_CAPNPROTO OR REFLECTCPP_CBOR OR REFLECTCPP_CSV OR
+    REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_MSGPACK OR REFLECTCPP_PARQUET OR REFLECTCPP_XML OR 
+    REFLECTCPP_TOML OR REFLECTCPP_UBJSON OR REFLECTCPP_YAML)
     # enable vcpkg per default if features other than JSON are required
     set(REFLECTCPP_USE_VCPKG_DEFAULT ON)
+endif()
+
+if(REFLECTCPP_JSON OR REFLECTCPP_AVRO OR REFLECTCPP_CBOR OR REFLECTCPP_UBJSON)
+    set(_REFLECTCPP_NEEDS_JSON_IMPL ON)
+else()
+    set(_REFLECTCPP_NEEDS_JSON_IMPL OFF)
 endif()
 
 option(REFLECTCPP_USE_VCPKG "Use VCPKG to download and build dependencies" ${REFLECTCPP_USE_VCPKG_DEFAULT})
@@ -86,6 +96,10 @@ if (REFLECTCPP_USE_VCPKG)
         list(APPEND VCPKG_MANIFEST_FEATURES "cbor")
     endif()
     
+    if (REFLECTCPP_CSV)
+        list(APPEND VCPKG_MANIFEST_FEATURES "csv")
+    endif()
+    
     if (NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
         list(APPEND VCPKG_MANIFEST_FEATURES "ctre")
     endif()
@@ -94,7 +108,7 @@ if (REFLECTCPP_USE_VCPKG)
         list(APPEND VCPKG_MANIFEST_FEATURES "flexbuffers")
     endif()
     
-    if (REFLECTCPP_JSON AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
+    if (_REFLECTCPP_NEEDS_JSON_IMPL AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
         list(APPEND VCPKG_MANIFEST_FEATURES "json")
     endif()
     
@@ -102,6 +116,10 @@ if (REFLECTCPP_USE_VCPKG)
         list(APPEND VCPKG_MANIFEST_FEATURES "msgpack")
     endif()
      
+    if (REFLECTCPP_PARQUET)
+        list(APPEND VCPKG_MANIFEST_FEATURES "parquet")
+    endif()
+    
     if (REFLECTCPP_TOML)
         list(APPEND VCPKG_MANIFEST_FEATURES "toml")
     endif()
@@ -121,7 +139,7 @@ if (REFLECTCPP_USE_VCPKG)
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
 endif ()
 
-project(reflectcpp VERSION 0.19.0 LANGUAGES CXX)
+project(reflectcpp VERSION 0.20.0 LANGUAGES CXX)
 
 if (PROJECT_IS_TOP_LEVEL)
     set(REFLECTCPP_INSTALL ON)
@@ -162,7 +180,7 @@ else ()
     target_link_libraries(reflectcpp PUBLIC ctre::ctre)
 endif ()
 
-if (REFLECTCPP_JSON)
+if (_REFLECTCPP_NEEDS_JSON_IMPL)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_json.cpp
     )
@@ -233,6 +251,13 @@ if (REFLECTCPP_CBOR)
     include_directories(PUBLIC ${jsoncons_INCLUDE_DIRS})
 endif ()
 
+if (REFLECTCPP_CSV)
+    if (NOT TARGET Arrow)
+        find_package(Arrow CONFIG REQUIRED)
+    endif()
+    target_link_libraries(reflectcpp PUBLIC "$<IF:$<BOOL:${ARROW_BUILD_STATIC}>,Arrow::arrow_static,Arrow::arrow_shared>")
+endif ()
+
 if (REFLECTCPP_FLEXBUFFERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_flexbuf.cpp
@@ -251,6 +276,17 @@ if (REFLECTCPP_MSGPACK)
         find_package(msgpack-c CONFIG REQUIRED NAMES msgpack msgpack-c)
     endif()
     target_link_libraries(reflectcpp PUBLIC msgpack-c)
+endif ()
+
+if (REFLECTCPP_PARQUET)
+    if (NOT TARGET Arrow)
+        find_package(Arrow CONFIG REQUIRED)
+    endif()
+    if (NOT TARGET Parquet)
+        find_package(Parquet CONFIG REQUIRED)
+    endif()
+    target_link_libraries(reflectcpp PUBLIC "$<IF:$<BOOL:${ARROW_BUILD_STATIC}>,Arrow::arrow_static,Arrow::arrow_shared>")
+    target_link_libraries(reflectcpp PUBLIC "$<IF:$<BOOL:${ARROW_BUILD_STATIC}>,Parquet::parquet_static,Parquet::parquet_shared>")
 endif ()
 
 if (REFLECTCPP_TOML)

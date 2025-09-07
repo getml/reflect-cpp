@@ -15,6 +15,7 @@
 
 #include "../Bytestring.hpp"
 #include "../Result.hpp"
+#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../internal/ptr_cast.hpp"
 
@@ -76,13 +77,22 @@ struct Reader {
       return std::string(_var.AsString().c_str());
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
+                                      rfl::Bytestring>() ||
+                         std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Vectorstring>()) {
+      using VectorType = std::remove_cvref_t<T>;
+      using ValueType = typename VectorType::value_type;
       if (!_var.IsBlob()) {
-        return error("Could not cast to a bytestring.");
+        if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Bytestring>()) {
+          return error("Could not cast to bytestring.");
+        } else {
+          return error("Could not cast to vectorstring.");
+        }
       }
       const auto blob = _var.AsBlob();
-      const auto data = internal::ptr_cast<const std::byte*>(blob.data());
-      return rfl::Bytestring(data, data + blob.size());
+      const auto data = internal::ptr_cast<const ValueType*>(blob.data());
+      return VectorType(data, data + blob.size());
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!_var.IsBool()) {
