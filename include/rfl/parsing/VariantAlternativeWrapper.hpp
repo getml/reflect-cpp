@@ -26,9 +26,12 @@ template <class T>
 consteval auto make_tag() {
   if constexpr (internal::has_tag_v<T>) {
     return typename T::Tag();
+
+  } else if constexpr (std::is_same_v<std::remove_cvref_t<T>, std::string>) {
+    return Literal<"std::string">();
+
   } else {
-    return Literal<
-        internal::get_type_name<T>()>();
+    return Literal<internal::get_type_name<T>()>();
   }
 }
 
