@@ -96,9 +96,11 @@ nav:
       - BSON: supported_formats/bson.md
       - Cap'n Proto: supported_formats/capnproto.md
       - CBOR: supported_formats/cbor.md
+      - CSV: supported_formats/csv.md
       - FlexBuffers: supported_formats/flexbuffers.md
       - JSON: supported_formats/json.md
       - MessagePack: supported_formats/msgpack.md
+      - Parquet: supported_formats/parquet.md
       - TOML: supported_formats/toml.md
       - UBJSON: supported_formats/ubjson.md
       - XML: supported_formats/xml.md

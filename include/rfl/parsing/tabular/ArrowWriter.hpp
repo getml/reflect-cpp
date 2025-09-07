@@ -20,7 +20,7 @@
 
 namespace rfl::parsing::tabular {
 
-template <class VecType, class... Ps>
+template <class VecType, SerializationType _s, class... Ps>
 class ArrowWriter {
   static_assert(!Processors<Ps...>::add_tags_to_variants_,
                 "rfl::AddTagsToVariants cannot be used for tabular data.");
@@ -43,7 +43,7 @@ class ArrowWriter {
 
   std::shared_ptr<arrow::Table> to_table(const VecType& _data) const {
     return arrow::Table::Make(
-        make_arrow_schema<named_tuple_t<ValueType, Ps...>>(),
+        make_arrow_schema<named_tuple_t<ValueType, Ps...>, _s>(),
         to_chunked_arrays(_data));
   }
 
@@ -55,13 +55,13 @@ class ArrowWriter {
   size_t chunksize_;
 };
 
-template <class VecType, class... Ps>
+template <class VecType, SerializationType _s, class... Ps>
 std::vector<std::shared_ptr<arrow::ChunkedArray>>
-ArrowWriter<VecType, Ps...>::to_chunked_arrays(const VecType& _data) const {
+ArrowWriter<VecType, _s, Ps...>::to_chunked_arrays(const VecType& _data) const {
   using ValueType = typename VecType::value_type;
 
   auto builders =
-      make_arrow_builders<named_tuple_t<typename VecType::value_type>>();
+      make_arrow_builders<named_tuple_t<typename VecType::value_type>, _s>();
 
   constexpr size_t size = tuple_size_v<decltype(builders)>;
 
@@ -78,7 +78,7 @@ ArrowWriter<VecType, Ps...>::to_chunked_arrays(const VecType& _data) const {
 
       [&]<int... _is>(const auto& _v, auto* _b,
                       std::integer_sequence<int, _is...>) {
-        (add_to_builder(*get<_is>(_v), &(_b->template get<_is>())), ...);
+        (add_to_builder<_s>(*get<_is>(_v), &(_b->template get<_is>())), ...);
       }(view, &builders, std::make_integer_sequence<int, size>());
     }
 
@@ -103,7 +103,7 @@ ArrowWriter<VecType, Ps...>::to_chunked_arrays(const VecType& _data) const {
     }
   }
 
-  const auto data_types = make_arrow_data_types<ValueType>();
+  const auto data_types = make_arrow_data_types<ValueType, _s>();
 
   return [&]<size_t... _is>(std::integer_sequence<size_t, _is...>) {
     return std::vector<std::shared_ptr<arrow::ChunkedArray>>(

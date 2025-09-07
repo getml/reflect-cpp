@@ -1,3 +1,5 @@
+# parquet
+
 For Parquet support, you must also include the header `<rfl/parquet.hpp>` and link to the [Apache Arrow](https://arrow.apache.org/) and [Apache Parquet](https://parquet.apache.org/) libraries.
 Furthermore, when compiling reflect-cpp, you need to pass `-DREFLECTCPP_PARQUET=ON` to cmake.
 

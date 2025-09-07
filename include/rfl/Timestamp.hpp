@@ -64,6 +64,12 @@ class Timestamp {
     return from_string(_str.c_str());
   }
 
+  /// Returns a result containing the timestamp when successful or an Error
+  /// otherwise.
+  static Result<Timestamp> make(const auto& _str) noexcept {
+    return from_string(_str);
+  }
+
   /// Necessary for the serialization to work.
   ReflectionType reflection() const {
     char outstr[200];

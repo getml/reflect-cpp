@@ -45,6 +45,7 @@
 *.bson
 *.capnproto
 *.cbor
+*.csv
 *.json
 *.fb
 *.flexbuf

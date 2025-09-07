@@ -1,8 +1,9 @@
-#ifndef RFL_PARQUET_WRITE_HPP_
-#define RFL_PARQUET_WRITE_HPP_
+#ifndef RFL_CSV_WRITE_HPP_
+#define RFL_CSV_WRITE_HPP_
 
+#include <arrow/csv/api.h>
+#include <arrow/csv/writer.h>
 #include <arrow/io/api.h>
-#include <parquet/arrow/writer.h>
 
 #include <cstdint>
 #include <ostream>
@@ -17,25 +18,17 @@
 #include "../parsing/tabular/ArrowWriter.hpp"
 #include "Settings.hpp"
 
-namespace rfl::parquet {
+namespace rfl::csv {
 
-/// Returns parquet bytes.
+/// Returns CSV bytes.
 template <class... Ps>
 Ref<arrow::Buffer> to_buffer(const auto& _arr, const Settings& _settings) {
   using T = std::remove_cvref_t<decltype(_arr)>;
 
   const auto table =
-      parsing::tabular::ArrowWriter<
-          T, parsing::tabular::SerializationType::parquet, Ps...>(
-          _settings.chunksize)
+      parsing::tabular::ArrowWriter<T, parsing::tabular::SerializationType::csv,
+                                    Ps...>(_settings.batch_size)
           .to_table(_arr);
-
-  const auto props = ::parquet::WriterProperties::Builder()
-                         .compression(_settings.compression)
-                         ->build();
-
-  const auto arrow_props =
-      ::parquet::ArrowWriterProperties::Builder().store_schema()->build();
 
   const auto output_buffer = arrow::io::BufferOutputStream::Create();
 
@@ -43,9 +36,15 @@ Ref<arrow::Buffer> to_buffer(const auto& _arr, const Settings& _settings) {
     throw std::runtime_error(output_buffer.status().message());
   }
 
-  const auto status = ::parquet::arrow::WriteTable(
-      *table.get(), arrow::default_memory_pool(), output_buffer.ValueOrDie(),
-      _settings.chunksize, props, arrow_props);
+  auto options = arrow::csv::WriteOptions::Defaults();
+  options.batch_size = _settings.batch_size;
+  options.delimiter = _settings.delimiter;
+  options.null_string = _settings.null_string;
+  options.quoting_style = _settings.quoting ? arrow::csv::QuotingStyle::Needed
+                                            : arrow::csv::QuotingStyle::None;
+
+  const auto status =
+      arrow::csv::WriteCSV(*table, options, output_buffer.ValueOrDie().get());
 
   if (!status.ok()) {
     throw std::runtime_error(status.message());
@@ -60,16 +59,15 @@ Ref<arrow::Buffer> to_buffer(const auto& _arr, const Settings& _settings) {
   return Ref<arrow::Buffer>::make(buffer.ValueOrDie()).value();
 }
 
-/// Returns parquet bytes.
+/// Returns CSV bytes.
 template <class... Ps>
-std::vector<char> write(const auto& _arr,
-                        const Settings& _settings = Settings{}) {
+std::string write(const auto& _arr, const Settings& _settings = Settings{}) {
   const auto buffer = to_buffer<Ps...>(_arr, _settings);
   const auto view = std::string_view(*buffer);
-  return std::vector<char>(view.begin(), view.end());
+  return std::string(view);
 }
 
-/// Writes a PARQUET into an ostream.
+/// Writes a CSV into an ostream.
 template <class... Ps>
 std::ostream& write(const auto& _arr, std::ostream& _stream,
                     const Settings& _settings = Settings{}) {
@@ -78,6 +76,6 @@ std::ostream& write(const auto& _arr, std::ostream& _stream,
   return _stream;
 }
 
-}  // namespace rfl::parquet
+}  // namespace rfl::csv
 
 #endif

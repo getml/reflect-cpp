@@ -16,40 +16,42 @@
 
 namespace rfl::parsing::tabular {
 
-template <class T>
-using arrow_builder_t = typename ArrowTypes<
-    std::remove_cvref_t<std::remove_pointer_t<T>>>::BuilderType;
+template <class T, SerializationType _s>
+using arrow_builder_t =
+    typename ArrowTypes<std::remove_cvref_t<std::remove_pointer_t<T>>,
+                        _s>::BuilderType;
 
-template <class T>
+template <class T, SerializationType _s>
 struct ArrowBuildersType;
 
-template <class... FieldTypes>
-struct ArrowBuildersType<NamedTuple<FieldTypes...>> {
-  using Type = Tuple<arrow_builder_t<typename FieldTypes::Type>...>;
+template <SerializationType _s, class... FieldTypes>
+struct ArrowBuildersType<NamedTuple<FieldTypes...>, _s> {
+  using Type = Tuple<arrow_builder_t<typename FieldTypes::Type, _s>...>;
 
   static auto data_types() {
     return [&]<size_t... _is>(std::integer_sequence<size_t, _is...>) {
       return std::array<std::shared_ptr<arrow::DataType>,
                         sizeof...(FieldTypes)>(
-          {ArrowTypes<typename FieldTypes::Type>::data_type()...});
+          {ArrowTypes<typename FieldTypes::Type, _s>::data_type()...});
     }(std::make_integer_sequence<size_t, sizeof...(FieldTypes)>());
   }
 
   static Type make_builders() {
-    return Type(ArrowTypes<typename FieldTypes::Type>::make_builder()...);
+    return Type(ArrowTypes<typename FieldTypes::Type, _s>::make_builder()...);
   }
 
   static auto schema() {
-    const auto fields = std::vector<std::shared_ptr<arrow::Field>>(
-        {arrow::field(typename FieldTypes::Name().str(),
-                      ArrowTypes<typename FieldTypes::Type>::data_type())...});
+    const auto fields =
+        std::vector<std::shared_ptr<arrow::Field>>({arrow::field(
+            typename FieldTypes::Name().str(),
+            ArrowTypes<typename FieldTypes::Type, _s>::data_type())...});
     return arrow::schema(fields);
   }
 };
 
-template <class T>
+template <class T, SerializationType _s>
 auto make_arrow_builders() {
-  return ArrowBuildersType<std::remove_cvref_t<T>>::make_builders();
+  return ArrowBuildersType<std::remove_cvref_t<T>, _s>::make_builders();
 }
 
 }  // namespace rfl::parsing::tabular
