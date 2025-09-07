@@ -249,7 +249,16 @@ std::cout << "Hello, my name is " << homer2.first_name() << " "
 reflect-cpp also supports tabular data formats, like CSV or Parquet:
 
 ```cpp
+#include <rfl/csv.hpp>
 #include <rfl/parquet.hpp>
+
+struct Person {
+    std::string first_name;
+    std::string last_name = "Simpson";
+    std::string town = "Springfield";
+    int age;
+    rfl::Email email;
+};
 
 const auto people =
   std::vector<Person>({Person{.first_name = "Bart",
@@ -276,7 +285,7 @@ const auto bytestring = rfl::parquet::write(people);
 This will resulting CSV will look like this:
 
 ```
-"first_name";"last_name";"town";"birthday";"age";"email"
+"first_name","last_name","town","birthday","age","email"
 "Bart";"Simpson";"Springfield";1987-04-19;10;"bart@simpson.com"
 "Lisa";"Simpson";"Springfield";1987-04-19;8;"lisa@simpson.com"
 "Maggie";"Simpson";"Springfield";1987-04-19;0;"maggie@simpson.com"
