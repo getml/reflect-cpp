@@ -33,6 +33,9 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
 
   auto read_options = arrow::csv::ReadOptions::Defaults();
   auto convert_options = arrow::csv::ConvertOptions::Defaults();
+  convert_options.null_values =
+      std::vector<std::string>({_settings.null_string});
+  convert_options.strings_can_be_null = true;
 
   auto parse_options = arrow::csv::ParseOptions::Defaults();
   parse_options.delimiter = _settings.delimiter;

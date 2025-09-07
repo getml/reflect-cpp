@@ -24,6 +24,10 @@ struct Settings {
   /// Quoting character (if quoting is true). Only relevant for reading.
   char quote_char = '"';
 
+  /// The string to be used for null values. Quotes are not allowed in this
+  /// string.
+  std::string null_string = "n/a";
+
   /// Whether a quote inside a value is double-quoted. Only relevant for
   /// reading.
   bool double_quote = true;
@@ -56,7 +60,11 @@ struct Settings {
   }
 
   Settings with_quote_char(const char _quote_char) const noexcept {
-    return replace(*this, make_field<"quote_char">(quote_char));
+    return replace(*this, make_field<"quote_char">(_quote_char));
+  }
+
+  Settings with_null_string(const std::string& _null_string) const noexcept {
+    return replace(*this, make_field<"null_string">(_null_string));
   }
 
   Settings with_double_quote(const bool _double_quote) const noexcept {

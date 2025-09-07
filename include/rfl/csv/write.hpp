@@ -39,6 +39,7 @@ Ref<arrow::Buffer> to_buffer(const auto& _arr, const Settings& _settings) {
   auto options = arrow::csv::WriteOptions::Defaults();
   options.batch_size = _settings.batch_size;
   options.delimiter = _settings.delimiter;
+  options.null_string = _settings.null_string;
   options.quoting_style = _settings.quoting ? arrow::csv::QuotingStyle::Needed
                                             : arrow::csv::QuotingStyle::None;
 
