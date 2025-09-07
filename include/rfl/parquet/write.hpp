@@ -72,7 +72,7 @@ std::vector<char> write(const auto& _arr,
 /// Writes a PARQUET into an ostream.
 template <class... Ps>
 std::ostream& write(const auto& _arr, std::ostream& _stream,
-                    const Settings& _settings = Settings{}) noexcept {
+                    const Settings& _settings = Settings{}) {
   auto buffer = to_buffer<Ps...>(_arr, _settings);
   _stream << std::string_view(*buffer);
   return _stream;
