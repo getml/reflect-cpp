@@ -68,6 +68,7 @@ The following table lists the serialization formats currently supported by refle
 | BSON         | [libbson](https://github.com/mongodb/mongo-c-driver) | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
 | Cap'n Proto  | [capnproto](https://capnproto.org)                   | >= 1.0.2     | MIT        | Schemaful binary format                              |
 | CBOR         | [jsoncons](https://github.com/danielaparker/jsoncons)| >= 0.176.0   | BSL 1.0    | JSON-like binary format                              |
+| CSV          | [Apache Arrow](https://arrow.apache.org/)            | >= 21.0.0    | Apache 2.0 | Tabular textual format                               |
 | flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 | Schema-less version of flatbuffers, binary format    |
 | msgpack      | [msgpack-c](https://github.com/msgpack/msgpack-c)    | >= 6.0.0     | BSL 1.0    | JSON-like binary format                              |
 | parquet      | [Apache Arrow](https://arrow.apache.org/)            | >= 21.0.0    | Apache 2.0 | Tabular binary format                                |
@@ -245,7 +246,7 @@ std::cout << "Hello, my name is " << homer2.first_name() << " "
 
 ### Tabular data
 
-reflect-cpp also supports tabular data formats, like Parquet:
+reflect-cpp also supports tabular data formats, like CSV or Parquet:
 
 ```cpp
 #include <rfl/parquet.hpp>
@@ -268,7 +269,18 @@ const auto people =
                               .age = 45,
                               .email = "homer@simpson.com"}});
 
+const auto csv_string = rfl::csv::write(people);
 const auto bytestring = rfl::parquet::write(people);
+```
+
+This will resulting CSV will look like this:
+
+```
+"first_name";"last_name";"town";"birthday";"age";"email"
+"Bart";"Simpson";"Springfield";1987-04-19;10;"bart@simpson.com"
+"Lisa";"Simpson";"Springfield";1987-04-19;8;"lisa@simpson.com"
+"Maggie";"Simpson";"Springfield";1987-04-19;0;"maggie@simpson.com"
+"Homer";"Simpson";"Springfield";1987-04-19;45;"homer@simpson.com"
 ```
 
 ### Error messages
