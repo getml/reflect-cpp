@@ -286,10 +286,10 @@ This will resulting CSV will look like this:
 
 ```
 "first_name","last_name","town","birthday","age","email"
-"Bart";"Simpson";"Springfield";1987-04-19;10;"bart@simpson.com"
-"Lisa";"Simpson";"Springfield";1987-04-19;8;"lisa@simpson.com"
-"Maggie";"Simpson";"Springfield";1987-04-19;0;"maggie@simpson.com"
-"Homer";"Simpson";"Springfield";1987-04-19;45;"homer@simpson.com"
+"Bart","Simpson","Springfield",1987-04-19,10,"bart@simpson.com"
+"Lisa","Simpson","Springfield",1987-04-19,8,"lisa@simpson.com"
+"Maggie","Simpson","Springfield",1987-04-19,0,"maggie@simpson.com"
+"Homer","Simpson","Springfield",1987-04-19,45,"homer@simpson.com"
 ```
 
 ### Error messages
