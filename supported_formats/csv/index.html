@@ -12,13 +12,13 @@
         <meta name="author" content="Code17 GmbH">
       
       
-        <link rel="canonical" href="https://rfl.getml.com/supported_formats/msgpack/">
+        <link rel="canonical" href="https://rfl.getml.com/supported_formats/csv/">
       
       
-        <link rel="prev" href="../json/">
+        <link rel="prev" href="../cbor/">
       
       
-        <link rel="next" href="../parquet/">
+        <link rel="next" href="../flexbuffers/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>MessagePack - reflect-cpp</title>
+        <title>CSV - reflect-cpp</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#msgpack" class="md-skip">
+        <a href="#csv" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              MessagePack
+              CSV
             
           </span>
         </div>
@@ -555,10 +555,36 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../csv/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    
+  
+    CSV
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -573,6 +599,177 @@
   
 
       </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reading-and-writing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading and writing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-and-saving" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loading and saving
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-from-and-writing-into-streams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading from and writing into streams
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#field-name-transformations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field name transformations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enums-and-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enums and validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-of-tabular-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations of tabular formats
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Limitations of tabular formats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#collections-requirement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Collections requirement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-nested-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No nested objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-rflflatten-for-nested-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using rfl::Flatten for nested objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-variant-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No variant types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-arrays-except-bytestrings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No arrays (except bytestrings)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -636,36 +833,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    
-  
-    MessagePack
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../msgpack/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -680,72 +851,6 @@
   
 
       </a>
-      
-        
-
-  
-
-<nav class="md-nav md-nav--secondary" aria-label="Page contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Page contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#reading-and-writing" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reading and writing
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#loading-and-saving" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Loading and saving
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#reading-from-and-writing-into-streams" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reading from and writing into streams
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#custom-constructors" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Custom constructors
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2348,6 +2453,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#loading-and-saving" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2370,13 +2486,107 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#custom-constructors" class="md-nav__link">
+  <a href="#field-name-transformations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Custom constructors
+        Field name transformations
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enums-and-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enums and validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-of-tabular-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations of tabular formats
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Limitations of tabular formats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#collections-requirement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Collections requirement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-nested-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No nested objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-rflflatten-for-nested-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using rfl::Flatten for nested objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-variant-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No variant types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-arrays-except-bytestrings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No arrays (except bytestrings)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2446,73 +2656,169 @@
   
 
 
-<h1 id="msgpack">msgpack<a class="headerlink" href="#msgpack" title="Permanent link">&para;</a></h1>
-<p>For msgpack support, you must also include the header <code>&lt;rfl/msgpack.hpp&gt;</code> and link to the <a href="https://github.com/msgpack/msgpack-c">msgpack-c</a> library.
-Furthermore, when compiling reflect-cpp, you need to pass <code>-DREFLECTCPP_MSGPACK=ON</code> to cmake. If you are using vcpkg or Conan, there
-should be an appropriate feature (vcpkg) or option (Conan) that will abstract this away for you.</p>
-<p>msgpack is a JSON-like binary format with an emphasis on small binary sizes.</p>
+<h1 id="csv">csv<a class="headerlink" href="#csv" title="Permanent link">&para;</a></h1>
+<p>For CSV support, include the header <code>&lt;rfl/csv.hpp&gt;</code> and link to the <a href="https://arrow.apache.org/">Apache Arrow</a> library.
+Furthermore, when compiling reflect-cpp, you need to pass <code>-DREFLECTCPP_CSV=ON</code> to cmake.</p>
+<p>CSV is a tabular text format. Like other tabular formats in reflect-cpp, CSV is designed for collections of flat records and has limitations for nested or variant types.</p>
 <h2 id="reading-and-writing">Reading and writing<a class="headerlink" href="#reading-and-writing" title="Permanent link">&para;</a></h2>
 <p>Suppose you have a struct like this:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">;</span>
 <span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Timestamp</span><span class="o">&lt;</span><span class="s">&quot;%Y-%m-%d&quot;</span><span class="o">&gt;</span><span class="w"> </span><span class="n">birthday</span><span class="p">;</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">children</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">age</span><span class="p">;</span>
+<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Email</span><span class="w"> </span><span class="n">email</span><span class="p">;</span>
 <span class="p">};</span>
 </code></pre></div>
-<p>A <code>Person</code> can be serialized like this:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{...};</span>
-<span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">msgpack</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">person</span><span class="p">);</span>
-</code></pre></div>
-<p>You can parse bytes like this:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">msgpack</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
-</code></pre></div>
-<h2 id="loading-and-saving">Loading and saving<a class="headerlink" href="#loading-and-saving" title="Permanent link">&para;</a></h2>
-<p>You can also load and save to disc using a very similar syntax:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">msgpack</span><span class="o">::</span><span class="n">load</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;/path/to/file.msgpack&quot;</span><span class="p">);</span>
+<p>Important: CSV is a tabular format that requires collections of records. You cannot serialize individual structs - you must use containers like <code>std::vector&lt;Person&gt;</code>, <code>std::deque&lt;Person&gt;</code>, etc.</p>
+<p>Write a collection to a string (CSV bytes) like this:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">people</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">{</span>
+<span class="w">    </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Bart&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">birthday</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1987-04-19&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;bart@simpson.com&quot;</span><span class="p">},</span>
+<span class="w">    </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Lisa&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">birthday</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;1987-04-19&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;lisa@simpson.com&quot;</span><span class="p">}</span>
+<span class="p">};</span>
 
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{...};</span>
-<span class="n">rfl</span><span class="o">::</span><span class="n">msgpack</span><span class="o">::</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;/path/to/file.msgpack&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">person</span><span class="p">);</span>
+<span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">csv_text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">csv</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">people</span><span class="p">);</span>
+</code></pre></div>
+<p>Parse from a string or bytes view:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">csv</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">csv_text</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">&para;</a></h2>
+<p>CSV behavior can be configured using <code>rfl::csv::Settings</code>:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">settings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">csv</span><span class="o">::</span><span class="n">Settings</span><span class="p">{}</span>
+<span class="w">    </span><span class="p">.</span><span class="n">with_delimiter</span><span class="p">(</span><span class="sc">&#39;;&#39;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">with_quoting</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">with_quote_char</span><span class="p">(</span><span class="sc">&#39;&quot;&#39;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">with_null_string</span><span class="p">(</span><span class="s">&quot;n/a&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">with_double_quote</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">with_escaping</span><span class="p">(</span><span class="nb">false</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">with_escape_char</span><span class="p">(</span><span class="sc">&#39;\\&#39;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">with_newlines_in_values</span><span class="p">(</span><span class="nb">false</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">with_ignore_empty_lines</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="n">with_batch_size</span><span class="p">(</span><span class="mi">1024</span><span class="p">);</span>
+
+<span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">csv_text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">csv</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">people</span><span class="p">,</span><span class="w"> </span><span class="n">settings</span><span class="p">);</span>
+</code></pre></div>
+<p>Key options:
+- <code>batch_size</code> - Maximum number of rows processed per batch (performance tuning)
+- <code>delimiter</code> - Field delimiter character
+- <code>quoting</code> - Whether to use quoting when writing
+- <code>quote_char</code> - Quote character used when reading
+- <code>null_string</code> - String representation for null values
+- <code>double_quote</code> - Whether a quote inside a value is double-quoted (reading)
+- <code>escaping</code> - Whether escaping is used (reading)
+- <code>escape_char</code> - Escape character (reading)
+- <code>newlines_in_values</code> - Whether CR/LF are allowed inside values (reading)
+- <code>ignore_empty_lines</code> - Whether empty lines are ignored (reading)</p>
+<h2 id="loading-and-saving">Loading and saving<a class="headerlink" href="#loading-and-saving" title="Permanent link">&para;</a></h2>
+<p>You can load from and save to disk:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">csv</span><span class="o">::</span><span class="n">load</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="s">&quot;/path/to/file.csv&quot;</span><span class="p">);</span>
+
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">people</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">{...};</span>
+<span class="n">rfl</span><span class="o">::</span><span class="n">csv</span><span class="o">::</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;/path/to/file.csv&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">people</span><span class="p">);</span>
+</code></pre></div>
+<p>With custom settings:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">settings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">csv</span><span class="o">::</span><span class="n">Settings</span><span class="p">{}.</span><span class="n">with_delimiter</span><span class="p">(</span><span class="sc">&#39;;&#39;</span><span class="p">);</span>
+<span class="n">rfl</span><span class="o">::</span><span class="n">csv</span><span class="o">::</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;/path/to/file.csv&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">people</span><span class="p">,</span><span class="w"> </span><span class="n">settings</span><span class="p">);</span>
 </code></pre></div>
 <h2 id="reading-from-and-writing-into-streams">Reading from and writing into streams<a class="headerlink" href="#reading-from-and-writing-into-streams" title="Permanent link">&para;</a></h2>
-<p>You can also read from and write into any <code>std::istream</code> and <code>std::ostream</code> respectively.</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">msgpack</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">(</span><span class="n">my_istream</span><span class="p">);</span>
+<p>You can read from any <code>std::istream</code> and write to any <code>std::ostream</code>:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">csv</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">my_istream</span><span class="p">);</span>
 
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{...};</span>
-<span class="n">rfl</span><span class="o">::</span><span class="n">msgpack</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">person</span><span class="p">,</span><span class="w"> </span><span class="n">my_ostream</span><span class="p">);</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">people</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">{...};</span>
+<span class="n">rfl</span><span class="o">::</span><span class="n">csv</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">people</span><span class="p">,</span><span class="w"> </span><span class="n">my_ostream</span><span class="p">);</span>
 </code></pre></div>
-<p>Note that <code>std::cout</code> is also an ostream, so this works as well:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="n">rfl</span><span class="o">::</span><span class="n">msgpack</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">person</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<p>With custom settings:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">settings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">csv</span><span class="o">::</span><span class="n">Settings</span><span class="p">{}.</span><span class="n">with_delimiter</span><span class="p">(</span><span class="sc">&#39;;&#39;</span><span class="p">);</span>
+<span class="n">rfl</span><span class="o">::</span><span class="n">csv</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">people</span><span class="p">,</span><span class="w"> </span><span class="n">my_ostream</span><span class="p">,</span><span class="w"> </span><span class="n">settings</span><span class="p">);</span>
 </code></pre></div>
-<p>(Since msgpack is a binary format, the readability of this will be limited, but it might be useful for debugging).</p>
-<h2 id="custom-constructors">Custom constructors<a class="headerlink" href="#custom-constructors" title="Permanent link">&para;</a></h2>
-<p>One of the great things about C++ is that it gives you control over
-when and how you code is compiled.</p>
-<p>For large and complex systems of structs, it is often a good idea to split up
-your code into smaller compilation units. You can do so using custom constructors.</p>
-<p>For the msgpack format, these must be a static function on your struct or class called
-<code>from_msgpack</code> that take a <code>rfl::msgpack::Reader::InputVarType</code> as input and return
-the class or the class wrapped in <code>rfl::Result</code>.</p>
-<p>In your header file you can write something like this:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;firstName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
+<h2 id="field-name-transformations">Field name transformations<a class="headerlink" href="#field-name-transformations" title="Permanent link">&para;</a></h2>
+<p>Like other formats, CSV supports field name transformations via processors, e.g. <code>SnakeCaseToCamelCase</code>:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">people</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">{...};</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">csv</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">SnakeCaseToCamelCase</span><span class="o">&gt;</span><span class="p">(</span><span class="n">csv_text</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="enums-and-validation">Enums and validation<a class="headerlink" href="#enums-and-validation" title="Permanent link">&para;</a></h2>
+<p>CSV supports enums and validated types. Enums are written/read as strings:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">FirstName</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Bart</span><span class="p">,</span><span class="w"> </span><span class="n">Lisa</span><span class="p">,</span><span class="w"> </span><span class="n">Maggie</span><span class="p">,</span><span class="w"> </span><span class="n">Homer</span><span class="w"> </span><span class="p">};</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;firstName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">FirstName</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
 <span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">&quot;lastName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
 <span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Timestamp</span><span class="o">&lt;</span><span class="s">&quot;%Y-%m-%d&quot;</span><span class="o">&gt;</span><span class="w"> </span><span class="n">birthday</span><span class="p">;</span>
-
-<span class="w">    </span><span class="k">using</span><span class="w"> </span><span class="n">InputVarType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">typename</span><span class="w"> </span><span class="nc">rfl</span><span class="o">::</span><span class="n">msgpack</span><span class="o">::</span><span class="n">Reader</span><span class="o">::</span><span class="n">InputVarType</span><span class="p">;</span>
-<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">from_msgpack</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputVarType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_obj</span><span class="p">);</span>
+<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Validator</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Minimum</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Maximum</span><span class="o">&lt;</span><span class="mi">130</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">age</span><span class="p">;</span>
+<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Email</span><span class="w"> </span><span class="n">email</span><span class="p">;</span>
 <span class="p">};</span>
 </code></pre></div>
-<p>And in your source file, you implement <code>from_msgpack</code> as follows:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Person</span><span class="o">::</span><span class="n">from_msgpack</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputVarType</span><span class="o">&amp;</span><span class="w"> </span><span class="n">_obj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">from_nt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">auto</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">_nt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">from_named_tuple</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">_nt</span><span class="p">));</span>
-<span class="w">    </span><span class="p">};</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">msgpack</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">named_tuple_t</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">_obj</span><span class="p">)</span>
-<span class="w">        </span><span class="p">.</span><span class="n">transform</span><span class="p">(</span><span class="n">from_nt</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div>
-<p>This will force the compiler to only compile the msgpack parsing when the source file is compiled.</p>
+<h2 id="limitations-of-tabular-formats">Limitations of tabular formats<a class="headerlink" href="#limitations-of-tabular-formats" title="Permanent link">&para;</a></h2>
+<p>CSV, like other tabular formats, has limitations compared to hierarchical formats such as JSON or XML:</p>
+<h3 id="collections-requirement">Collections requirement<a class="headerlink" href="#collections-requirement" title="Permanent link">&para;</a></h3>
+<p>You must serialize collections, not individual objects:
+<div class="language-cpp highlight"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">people</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{...};</span><span class="w">  </span><span class="c1">// ✅ Correct</span>
+<span class="n">Person</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{...};</span><span class="w">               </span><span class="c1">// ❌ Wrong - must be in a container</span>
+</code></pre></div></p>
+<h3 id="no-nested-objects">No nested objects<a class="headerlink" href="#no-nested-objects" title="Permanent link">&para;</a></h3>
+<p>Each field must be a primitive type, enum, or a simple validated type. Nested objects are not automatically flattened:
+<div class="language-cpp highlight"><pre><span></span><code><span class="c1">// This would NOT work as expected - nested objects are not automatically flattened</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Address</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">street</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">city</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Address</span><span class="w"> </span><span class="n">address</span><span class="p">;</span><span class="w">  </span><span class="c1">// ❌ Will cause compilation errors for CSV</span>
+<span class="p">};</span>
+</code></pre></div></p>
+<h3 id="using-rflflatten-for-nested-objects">Using rfl::Flatten for nested objects<a class="headerlink" href="#using-rflflatten-for-nested-objects" title="Permanent link">&para;</a></h3>
+<p>If you need to include nested objects, use <code>rfl::Flatten</code> to explicitly flatten them:
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Address</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">street</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">city</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Flatten</span><span class="o">&lt;</span><span class="n">Address</span><span class="o">&gt;</span><span class="w"> </span><span class="n">address</span><span class="p">;</span><span class="w">  </span><span class="c1">// ✅ This will flatten the Address fields</span>
+<span class="p">};</span>
+
+<span class="c1">// The resulting CSV will have columns: first_name, last_name, street, city</span>
+</code></pre></div></p>
+<h3 id="no-variant-types">No variant types<a class="headerlink" href="#no-variant-types" title="Permanent link">&para;</a></h3>
+<p>Variant types like <code>std::variant</code>, <code>rfl::Variant</code>, or <code>rfl::TaggedUnion</code> cannot be serialized to CSV as separate columns:
+<div class="language-cpp highlight"><pre><span></span><code><span class="c1">// ❌ This will NOT work</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">status</span><span class="p">;</span><span class="w">  </span><span class="c1">// Variant - not supported</span>
+<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Variant</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">type</span><span class="p">;</span><span class="w">    </span><span class="c1">// rfl::Variant - not supported</span>
+<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">TaggedUnion</span><span class="o">&lt;</span><span class="s">&quot;type&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">category</span><span class="p">;</span><span class="w">  </span><span class="c1">// TaggedUnion - not supported</span>
+<span class="p">};</span>
+</code></pre></div></p>
+<h3 id="no-arrays-except-bytestrings">No arrays (except bytestrings)<a class="headerlink" href="#no-arrays-except-bytestrings" title="Permanent link">&para;</a></h3>
+<p>CSV output here does not support arrays (lists) of values in a single column. The only array-like field supported is binary data represented as bytestrings:
+<div class="language-cpp highlight"><pre><span></span><code><span class="c1">// ❌ This will NOT work</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">hobbies</span><span class="p">;</span><span class="w">  </span><span class="c1">// Array of strings - not supported</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">scores</span><span class="p">;</span><span class="w">           </span><span class="c1">// Array of integers - not supported</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Address</span><span class="o">&gt;</span><span class="w"> </span><span class="n">addresses</span><span class="p">;</span><span class="w">    </span><span class="c1">// Array of objects - not supported</span>
+<span class="p">};</span>
+
+<span class="c1">// ✅ This works</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">Blob</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">binary_data</span><span class="p">;</span><span class="w">      </span><span class="c1">// Binary data supported as bytestring</span>
+<span class="p">};</span>
+</code></pre></div></p>
+<h3 id="use-cases">Use cases<a class="headerlink" href="#use-cases" title="Permanent link">&para;</a></h3>
+<p>CSV is ideal for:
+- Data exchange and interoperability
+- Simple, flat data structures with consistent types
+- Human-readable datasets</p>
+<p>CSV is less suitable for:
+- Complex nested data structures
+- Data with arrays or variant types
+- Strict schemas with evolving types
+- Very large datasets where binary columnar formats are preferred</p>
 
 
 

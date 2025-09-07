@@ -15,6 +15,10 @@
         <link rel="canonical" href="https://rfl.getml.com/supported_formats/parquet/">
       
       
+        <link rel="prev" href="../msgpack/">
+      
+      
+        <link rel="next" href="../toml/">
       
       
         
@@ -78,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#reading-and-writing" class="md-skip">
+        <a href="#parquet" class="md-skip">
           Skip to content
         </a>
       
@@ -246,10 +250,12 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../avro/" class="md-tabs__link">
           
   
@@ -388,23 +394,28 @@
       
   
   
+    
   
   
+  
     
     
     
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -421,7 +432,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -547,6 +558,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../csv/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    CSV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../flexbuffers/" class="md-nav__link">
         
   
@@ -616,6 +654,241 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    
+  
+    Parquet
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Parquet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reading-and-writing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading and writing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#settings-and-compression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings and compression
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-and-saving" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loading and saving
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-from-and-writing-into-streams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading from and writing into streams
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#field-name-transformations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Field name transformations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-processors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported processors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enums-and-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enums and validation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#no-variant-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No variant types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-of-tabular-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations of tabular formats
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Limitations of tabular formats">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#no-nested-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No nested objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-rflflatten-for-nested-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using rfl::Flatten for nested objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#collections-requirement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Collections requirement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-arrays-except-bytestrings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No arrays (except bytestrings)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2170,6 +2443,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2355,6 +2630,44 @@
   
 
 
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Welcome
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../avro/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Supported Formats
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
               
               <article class="md-content__inner md-typeset">
                 
@@ -2365,8 +2678,7 @@
   
 
 
-  <h1>Parquet</h1>
-
+<h1 id="parquet">parquet<a class="headerlink" href="#parquet" title="Permanent link">&para;</a></h1>
 <p>For Parquet support, you must also include the header <code>&lt;rfl/parquet.hpp&gt;</code> and link to the <a href="https://arrow.apache.org/">Apache Arrow</a> and <a href="https://parquet.apache.org/">Apache Parquet</a> libraries.
 Furthermore, when compiling reflect-cpp, you need to pass <code>-DREFLECTCPP_PARQUET=ON</code> to cmake.</p>
 <p>Parquet is a columnar storage format optimized for analytical workloads. Unlike most other formats supported by reflect-cpp, Parquet is designed for tabular data and has specific limitations regarding nested structures.</p>
