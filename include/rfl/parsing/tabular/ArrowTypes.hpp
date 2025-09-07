@@ -426,9 +426,13 @@ struct ArrowTypes<T, _s> {
       const std::shared_ptr<arrow::Array>& _arr) {
     if (_arr->type()->Equals(data_type())) {
       return Ref<ArrayType>::make(std::static_pointer_cast<ArrayType>(_arr));
+
+    } else if (_arr->type()->Equals(arrow::utf8())) {
+      return Ref<ArrayType>::make(std::static_pointer_cast<ArrayType>(_arr));
+
     } else {
-      return error("Expected binary array, got " + _arr->type()->ToString() +
-                   ".");
+      return error("Expected binary or string array, got " +
+                   _arr->type()->ToString() + ".");
     }
   }
 
@@ -439,6 +443,38 @@ struct ArrowTypes<T, _s> {
   }
 
   static auto make_builder() { return BuilderType(); }
+
+  static Result<Ref<arrow::BinaryArray>> transform_string(
+      const std::shared_ptr<arrow::StringArray>& _arr) noexcept {
+    if (!_arr) {
+      return error(
+          "transform_string: std::shared_ptr not set. This is a "
+          "bug, please report.");
+    }
+
+    auto builder = arrow::BinaryBuilder();
+
+    for (int64_t i = 0; i < _arr->length(); ++i) {
+      if (_arr->IsNull(i)) {
+        const auto status = builder.AppendNull();
+        if (!status.ok()) {
+          return error(status.message());
+        }
+      } else {
+        const std::string_view s = _arr->Value(i);
+        const auto status = builder.Append(
+            internal::ptr_cast<const uint8_t*>(s.data()), s.size());
+        if (!status.ok()) {
+          return error(status.message());
+        }
+      }
+    }
+
+    std::shared_ptr<arrow::Array> res;
+    const auto status = builder.Finish(&res);
+    return Ref<arrow::BinaryArray>::make(
+        std::static_pointer_cast<arrow::BinaryArray>(res));
+  }
 };
 
 template <internal::StringLiteral _format, SerializationType _s>
