@@ -11,8 +11,8 @@ Suppose you have a struct like this:
 
 ```cpp
 struct Person {
-    rfl::Rename<"firstName", std::string> first_name;
-    rfl::Rename<"lastName", std::string> last_name;
+    std::string first_name;
+    std::string last_name = "Simpson";
     rfl::Timestamp<"%Y-%m-%d"> birthday;
     unsigned int age;
     rfl::Email email;
