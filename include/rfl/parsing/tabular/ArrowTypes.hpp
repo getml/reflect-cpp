@@ -428,7 +428,8 @@ struct ArrowTypes<T, _s> {
       return Ref<ArrayType>::make(std::static_pointer_cast<ArrayType>(_arr));
 
     } else if (_arr->type()->Equals(arrow::utf8())) {
-      return Ref<ArrayType>::make(std::static_pointer_cast<ArrayType>(_arr));
+      return transform_string(
+          std::static_pointer_cast<arrow::StringArray>(_arr));
 
     } else {
       return error("Expected binary or string array, got " +
