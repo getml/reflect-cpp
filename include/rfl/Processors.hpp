@@ -19,6 +19,7 @@ struct Processors;
 template <>
 struct Processors<> {
   static constexpr bool add_tags_to_variants_ = false;
+  static constexpr bool add_namespaced_tags_to_variants_ = false;
   static constexpr bool allow_raw_ptrs_ = false;
   static constexpr bool all_required_ = false;
   static constexpr bool default_if_missing_ = false;
@@ -37,6 +38,10 @@ struct Processors<Head, Tail...> {
   static constexpr bool add_tags_to_variants_ =
       std::disjunction_v<internal::is_add_tags_to_variants<Head>,
                          internal::is_add_tags_to_variants<Tail>...>;
+
+  static constexpr bool add_namespaced_tags_to_variants_ =
+      std::disjunction_v<internal::is_add_namespaced_tags_to_variants<Head>,
+                         internal::is_add_namespaced_tags_to_variants<Tail>...>;
 
   static constexpr bool allow_raw_ptrs_ =
       std::disjunction_v<internal::is_allow_raw_ptrs<Head>,

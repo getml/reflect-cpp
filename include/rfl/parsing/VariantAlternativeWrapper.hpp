@@ -22,24 +22,28 @@ struct GetName<Literal<_name>> {
   constexpr static internal::StringLiteral name_ = _name;
 };
 
-template <class T>
+template <class T, bool _remove_namespaces = true>
 consteval auto make_tag() {
   if constexpr (internal::has_tag_v<T>) {
     return typename T::Tag();
-  } else {
+  } else if constexpr (std::is_same_v<std::remove_cvref_t<T>, std::string>) {
+    return Literal<"std::string">();
+  } else if constexpr (_remove_namespaces) {
     return Literal<
         internal::remove_namespaces<internal::get_type_name<T>()>()>();
+  } else {
+    return Literal<internal::get_type_name<T>()>();
   }
 }
 
-template <class T>
+template <class T, bool _remove_namespaces = true>
 using tag_t = std::invoke_result_t<
-    decltype(make_tag<std::remove_cvref_t<std::remove_pointer_t<T>>>)>;
+    decltype(make_tag<std::remove_cvref_t<std::remove_pointer_t<T>>, _remove_namespaces>)>;
 
 }  // namespace vaw
 
-template <class T>
-using VariantAlternativeWrapper = Field<vaw::GetName<vaw::tag_t<T>>::name_, T>;
+template <class T, bool _remove_namespaces = true>
+using VariantAlternativeWrapper = Field<vaw::GetName<vaw::tag_t<T, _remove_namespaces>>::name_, T>;
 
 }  // namespace rfl::parsing
 

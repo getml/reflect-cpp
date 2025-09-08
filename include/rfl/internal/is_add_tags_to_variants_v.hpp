@@ -22,6 +22,20 @@ template <class T>
 constexpr bool is_add_tags_to_variants_v = is_add_tags_to_variants<
     std::remove_cvref_t<std::remove_pointer_t<T>>>::value;
 
+template <class T>
+class is_add_namespaced_tags_to_variants;
+
+template <class T>
+class is_add_namespaced_tags_to_variants : public std::false_type {};
+
+template <>
+class is_add_namespaced_tags_to_variants<AddNamespacedTagsToVariants> : public std::true_type {};
+
+template <class T>
+constexpr bool is_add_namespaced_tags_to_variants_v = is_add_namespaced_tags_to_variants<
+    std::remove_cvref_t<std::remove_pointer_t<T>>>::value;
+
+
 }  // namespace rfl::internal
 
 #endif
