@@ -69,6 +69,9 @@ struct Processors<Head, Tail...> {
 
   template <class T, class NamedTupleType>
   static auto process(NamedTupleType&& _named_tuple) {
+    static_assert(!add_tags_to_variants_ || !add_namespaced_tags_to_variants_,  
+                  "You cannot add both rfl::AddTagsToVariants and "  
+                  "rfl::AddNamespacedTagsToVariants.");  
     return Processors<Tail...>::template process<T>(
         Head::template process<T>(std::move(_named_tuple)));
   }
