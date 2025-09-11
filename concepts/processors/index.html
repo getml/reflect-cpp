@@ -1161,6 +1161,56 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#rfladdnamespacedtagstovariants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rfl::AddNamespacedTagsToVariants
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="rfl::AddNamespacedTagsToVariants">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-case-structs-with-the-same-name-in-different-namespaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use-case: Structs with the same name in different namespaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-structs-with-rflgeneric-fields-that-would-otherwise-create-naming-conflicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use-case: Structs with rfl::Generic fields that would otherwise create naming conflicts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-rfladdnamespacedtagstovariants-vs-rfladdtagstovariants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to use rfl::AddNamespacedTagsToVariants vs rfl::AddTagsToVariants
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#rflallowrawptrs" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2478,6 +2528,56 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#rfladdnamespacedtagstovariants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rfl::AddNamespacedTagsToVariants
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="rfl::AddNamespacedTagsToVariants">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-case-structs-with-the-same-name-in-different-namespaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use-case: Structs with the same name in different namespaces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-structs-with-rflgeneric-fields-that-would-otherwise-create-naming-conflicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use-case: Structs with rfl::Generic fields that would otherwise create naming conflicts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-rfladdnamespacedtagstovariants-vs-rfladdtagstovariants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to use rfl::AddNamespacedTagsToVariants vs rfl::AddTagsToVariants
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#rflallowrawptrs" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2703,6 +2803,7 @@
 <ul>
 <li><code>rfl::AddStructName</code> </li>
 <li><code>rfl::AddTagsToVariants</code> </li>
+<li><code>rfl::AddNamespacedTagsToVariants</code> </li>
 <li><code>rfl::AllowRawPtrs</code> </li>
 <li><code>rfl::DefaultIfMissing</code> </li>
 <li><code>rfl::NoExtraFields</code> </li>
@@ -2760,6 +2861,74 @@ indistinguishable when they are serialized. The will both be serialized to <code
 </code></pre></div>
 <p>Note that there are other ways to address problems like this, for instance <code>rfl::TaggedUnion</code>.
 Please refer to the relevant sections of the documentation.</p>
+<h3 id="rfladdnamespacedtagstovariants"><code>rfl::AddNamespacedTagsToVariants</code><a class="headerlink" href="#rfladdnamespacedtagstovariants" title="Permanent link">&para;</a></h3>
+<p>This processor is similar to <code>rfl::AddTagsToVariants</code>, but instead of using just the struct name as the tag, it uses the full namespaced type name. This is particularly useful when you have:</p>
+<ol>
+<li>Structs with the same name in different namespaces</li>
+<li>Structs with <code>rfl::Generic</code> fields that would otherwise create naming conflicts</li>
+</ol>
+<h4 id="use-case-structs-with-the-same-name-in-different-namespaces">Use-case: Structs with the same name in different namespaces<a class="headerlink" href="#use-case-structs-with-the-same-name-in-different-namespaces" title="Permanent link">&para;</a></h4>
+<p>Consider this example where <code>rfl::AddTagsToVariants</code> would fail:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">namespace</span><span class="w"> </span><span class="nn">Result</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">Message</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="p">}</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">Error</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">Message</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">error</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">error_id</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="p">}</span>
+
+<span class="k">using</span><span class="w"> </span><span class="n">Messages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="n">Result</span><span class="o">::</span><span class="n">Message</span><span class="p">,</span><span class="w"> </span><span class="n">Error</span><span class="o">::</span><span class="n">Message</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">msgs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Messages</span><span class="o">&gt;</span><span class="p">{</span>
+<span class="w">  </span><span class="n">Result</span><span class="o">::</span><span class="n">Message</span><span class="p">{.</span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;success&quot;</span><span class="p">},</span>
+<span class="w">  </span><span class="n">Error</span><span class="o">::</span><span class="n">Message</span><span class="p">{.</span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;failure&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">error_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">404</span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">// This would cause problems with rfl::AddTagsToVariants because both </span>
+<span class="c1">// structs have the same name &quot;Message&quot;</span>
+
+<span class="c1">// But this works perfectly:</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">AddNamespacedTagsToVariants</span><span class="o">&gt;</span><span class="p">(</span><span class="n">msgs</span><span class="p">);</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">msgs2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Messages</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">AddNamespacedTagsToVariants</span><span class="o">&gt;</span><span class="p">(</span><span class="n">json_string</span><span class="p">);</span>
+</code></pre></div>
+<p>The resulting JSON includes the full namespace path:</p>
+<div class="language-json highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;Result::Message&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">}},</span>
+<span class="w">  </span><span class="p">{</span><span class="nt">&quot;Error::Message&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;failure&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;error_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">404</span><span class="p">}}</span>
+<span class="p">]</span>
+</code></pre></div>
+<h4 id="use-case-structs-with-rflgeneric-fields-that-would-otherwise-create-naming-conflicts">Use-case: Structs with <code>rfl::Generic</code> fields that would otherwise create naming conflicts<a class="headerlink" href="#use-case-structs-with-rflgeneric-fields-that-would-otherwise-create-naming-conflicts" title="Permanent link">&para;</a></h4>
+<p>Another use case is with <code>rfl::Generic</code> fields, where multiple structs contain generic fields that would otherwise create naming conflicts:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">APIResult</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Generic</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">  </span><span class="c1">// Could be string, number, object, etc.</span>
+<span class="p">};</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">APIError</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Generic</span><span class="w"> </span><span class="n">error</span><span class="p">;</span><span class="w">   </span><span class="c1">// Could be string, number, object, etc.</span>
+<span class="p">};</span>
+
+<span class="k">using</span><span class="w"> </span><span class="n">APIResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="n">APIResult</span><span class="p">,</span><span class="w"> </span><span class="n">APIError</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">APIResult</span><span class="p">{.</span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="s">&quot;200&quot;</span><span class="p">)};</span>
+
+<span class="c1">// Without namespaces, both Generic fields would have the same tag name.</span>
+<span class="c1">// With namespaces, they get unique identifiers:</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">AddNamespacedTagsToVariants</span><span class="o">&gt;</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+</code></pre></div>
+<p>This generates:</p>
+<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;APIResult&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;result&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;std::string&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;200&quot;</span><span class="p">}}}</span>
+</code></pre></div>
+<h4 id="when-to-use-rfladdnamespacedtagstovariants-vs-rfladdtagstovariants">When to use <code>rfl::AddNamespacedTagsToVariants</code> vs <code>rfl::AddTagsToVariants</code><a class="headerlink" href="#when-to-use-rfladdnamespacedtagstovariants-vs-rfladdtagstovariants" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Use <code>rfl::AddTagsToVariants</code> when struct names are unique and you want shorter, cleaner tags</li>
+<li>Use <code>rfl::AddNamespacedTagsToVariants</code> when you have naming conflicts or need to distinguish between types in different namespaces</li>
+<li>Custom tags (using <code>Tag = rfl::Literal&lt;"custom_name"&gt;</code>) work with both processors and are not affected by the namespace handling</li>
+</ul>
 <h3 id="rflallowrawptrs"><code>rfl::AllowRawPtrs</code><a class="headerlink" href="#rflallowrawptrs" title="Permanent link">&para;</a></h3>
 <p>By default, reflect-cpp does not allow <em>reading into</em> raw pointers, <code>std::string_view</code> or <code>std::span</code>. 
 (<em>Writing from</em> raw pointers is never a problem.) This is because reading into raw pointers 

@@ -1257,6 +1257,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#automatic-tags-with-full-namespaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic tags with full namespaces
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rfltaggedunion-internally-tagged" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2372,6 +2383,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#automatic-tags-with-full-namespaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic tags with full namespaces
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rfltaggedunion-internally-tagged" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2531,6 +2553,37 @@ several problems with this:</p>
 <span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">r2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">Shapes</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">AddTagsToVariants</span><span class="o">&gt;</span><span class="p">(</span><span class="n">json_string</span><span class="p">);</span>
 </code></pre></div>
 <p>Please refer to the section on processors in this documentation for more information.</p>
+<h2 id="automatic-tags-with-full-namespaces">Automatic tags with full namespaces<a class="headerlink" href="#automatic-tags-with-full-namespaces" title="Permanent link">&para;</a></h2>
+<p>In some cases, you might have struct name conflicts between different namespaces, or types that would generate identical tags when namespaces are removed. For these situations, you can use <code>rfl::AddNamespacedTagsToVariants</code> instead:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">namespace</span><span class="w"> </span><span class="nn">Result</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">Message</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="p">}</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">Error</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">Message</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">error</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">error_id</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="p">}</span>
+
+<span class="k">using</span><span class="w"> </span><span class="n">Messages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">variant</span><span class="o">&lt;</span><span class="n">Result</span><span class="o">::</span><span class="n">Message</span><span class="p">,</span><span class="w"> </span><span class="n">Error</span><span class="o">::</span><span class="n">Message</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="n">Messages</span><span class="w"> </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Error</span><span class="o">::</span><span class="n">Message</span><span class="p">{.</span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Something went wrong&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">error_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">404</span><span class="p">};</span>
+
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">AddNamespacedTagsToVariants</span><span class="o">&gt;</span><span class="p">(</span><span class="n">msg</span><span class="p">);</span>
+</code></pre></div>
+<p>This generates JSON with fully qualified type names:</p>
+<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;Error::Message&quot;</span><span class="p">:{</span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="s2">&quot;Something went wrong&quot;</span><span class="p">,</span><span class="nt">&quot;error_id&quot;</span><span class="p">:</span><span class="mi">404</span><span class="p">}}</span>
+</code></pre></div>
+<p>The key differences between <code>rfl::AddTagsToVariants</code> and <code>rfl::AddNamespacedTagsToVariants</code>:</p>
+<ul>
+<li><code>rfl::AddTagsToVariants</code> uses just the struct name (e.g., <code>"Message"</code>)</li>
+<li><code>rfl::AddNamespacedTagsToVariants</code> uses the full namespaced name (e.g., <code>"Error::Message"</code>)</li>
+<li>Both respect custom tags defined with <code>using Tag = rfl::Literal&lt;"custom_name"&gt;</code></li>
+<li>Use the namespaced version when you are using <code>rfl::Generic</code> or need to distinguish between types in different namespaces and don't want to manually tag them as above</li>
+</ul>
 <h2 id="rfltaggedunion-internally-tagged"><code>rfl::TaggedUnion</code> (internally tagged)<a class="headerlink" href="#rfltaggedunion-internally-tagged" title="Permanent link">&para;</a></h2>
 <p>Another way to solve this problem is to add a tag inside the class. That is why we have provided a helper class for these purposes: <code>rfl::TaggedUnion</code>.</p>
 <p>TaggedUnions use the name of the struct as an identifying tag. It will then try to take that field from the JSON object, match it to the correct alternative and then only parse the correct alternative.</p>
