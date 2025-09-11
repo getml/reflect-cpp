@@ -27,6 +27,8 @@ template <class VecType, SerializationType _s, class... Ps>
 class ArrowReader {
   static_assert(!Processors<Ps...>::add_tags_to_variants_,
                 "rfl::AddTagsToVariants cannot be used for tabular data.");
+  static_assert(!Processors<Ps...>::add_namespaced_tags_to_variants_,
+                "rfl::AddNamespacedTagsToVariants cannot be used for tabular data.");
   static_assert(!Processors<Ps...>::all_required_,
                 "rfl::NoOptionals cannot be used for tabular data.");
   static_assert(!Processors<Ps...>::default_if_missing_,

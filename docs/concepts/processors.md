@@ -35,6 +35,7 @@ reflect-cpp currently supports the following processors:
 
 - `rfl::AddStructName` 
 - `rfl::AddTagsToVariants` 
+- `rfl::AddNamespacedTagsToVariants` 
 - `rfl::AllowRawPtrs` 
 - `rfl::DefaultIfMissing` 
 - `rfl::NoExtraFields` 
@@ -116,6 +117,89 @@ struct key_pressed_t {
 
 Note that there are other ways to address problems like this, for instance `rfl::TaggedUnion`.
 Please refer to the relevant sections of the documentation.
+
+### `rfl::AddNamespacedTagsToVariants`
+
+This processor is similar to `rfl::AddTagsToVariants`, but instead of using just the struct name as the tag, it uses the full namespaced type name. This is particularly useful when you have:
+
+1. Structs with the same name in different namespaces
+2. Structs with `rfl::Generic` fields that would otherwise create naming conflicts
+
+#### Use-case: Structs with the same name in different namespaces
+
+Consider this example where `rfl::AddTagsToVariants` would fail:
+
+```cpp
+namespace Result {
+  struct Message {
+    std::string result;
+  };
+}
+
+namespace Error {
+  struct Message {
+    std::string error;
+    int error_id;
+  };
+}
+
+using Messages = std::variant<Result::Message, Error::Message>;
+
+const auto msgs = std::vector<Messages>{
+  Result::Message{.result = "success"},
+  Error::Message{.error = "failure", .error_id = 404}
+};
+
+// This would cause problems with rfl::AddTagsToVariants because both 
+// structs have the same name "Message"
+
+// But this works perfectly:
+const auto json_string = rfl::json::write<rfl::AddNamespacedTagsToVariants>(msgs);
+const auto msgs2 = rfl::json::read<std::vector<Messages>, rfl::AddNamespacedTagsToVariants>(json_string);
+```
+
+The resulting JSON includes the full namespace path:
+
+```json
+[
+  {"Result::Message": {"result": "success"}},
+  {"Error::Message": {"error": "failure", "error_id": 404}}
+]
+```
+
+#### Use-case: Structs with `rfl::Generic` fields that would otherwise create naming conflicts
+
+Another use case is with `rfl::Generic` fields, where multiple structs contain generic fields that would otherwise create naming conflicts:
+
+```cpp
+struct APIResult {
+  rfl::Generic result;  // Could be string, number, object, etc.
+};
+
+struct APIError {
+  rfl::Generic error;   // Could be string, number, object, etc.
+};
+
+using APIResponse = std::variant<APIResult, APIError>;
+
+const auto response = APIResult{.result = std::string("200")};
+
+// Without namespaces, both Generic fields would have the same tag name.
+// With namespaces, they get unique identifiers:
+const auto json_string = rfl::json::write<rfl::AddNamespacedTagsToVariants>(response);
+```
+
+This generates:
+
+```json
+{"APIResult": {"result": {"std::string": "200"}}}
+```
+
+#### When to use `rfl::AddNamespacedTagsToVariants` vs `rfl::AddTagsToVariants`
+
+- Use `rfl::AddTagsToVariants` when struct names are unique and you want shorter, cleaner tags
+- Use `rfl::AddNamespacedTagsToVariants` when you have naming conflicts or need to distinguish between types in different namespaces
+- Custom tags (using `Tag = rfl::Literal<"custom_name">`) work with both processors and are not affected by the namespace handling
 
 ### `rfl::AllowRawPtrs`
 

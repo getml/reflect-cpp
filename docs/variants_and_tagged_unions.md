@@ -57,6 +57,44 @@ const auto r2 = rfl::json::read<Shapes, rfl::AddTagsToVariants>(json_string);
 
 Please refer to the section on processors in this documentation for more information.
 
+## Automatic tags with full namespaces
+
+In some cases, you might have struct name conflicts between different namespaces, or types that would generate identical tags when namespaces are removed. For these situations, you can use `rfl::AddNamespacedTagsToVariants` instead:
+
+```cpp
+namespace Result {
+  struct Message {
+    std::string result;
+  };
+}
+
+namespace Error {
+  struct Message {
+    std::string error;
+    int error_id;
+  };
+}
+
+using Messages = std::variant<Result::Message, Error::Message>;
+
+const Messages msg = Error::Message{.error = "Something went wrong", .error_id = 404};
+
+const auto json_string = rfl::json::write<rfl::AddNamespacedTagsToVariants>(msg);
+```
+
+This generates JSON with fully qualified type names:
+
+```json
+{"Error::Message":{"error":"Something went wrong","error_id":404}}
+```
+
+The key differences between `rfl::AddTagsToVariants` and `rfl::AddNamespacedTagsToVariants`:
+
+- `rfl::AddTagsToVariants` uses just the struct name (e.g., `"Message"`)
+- `rfl::AddNamespacedTagsToVariants` uses the full namespaced name (e.g., `"Error::Message"`)
+- Both respect custom tags defined with `using Tag = rfl::Literal<"custom_name">`
+- Use the namespaced version when you are using `rfl::Generic` or need to distinguish between types in different namespaces and don't want to manually tag them as above
+
 ## `rfl::TaggedUnion` (internally tagged)
 
 Another way to solve this problem is to add a tag inside the class. That is why we have provided a helper class for these purposes: `rfl::TaggedUnion`.
