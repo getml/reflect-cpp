@@ -40,8 +40,10 @@ class ReflectCppConan(ConanFile):
         "fPIC": [True, False],
         "with_capnproto": [True, False],
         "with_cbor": [True, False],
+        "with_csv": [True, False],
         "with_flatbuffers": [True, False],
         "with_msgpack": [True, False],
+        "with_parquet": [True, False],
         "with_toml": [True, False],
         "with_ubjson": [True, False],
         "with_xml": [True, False],
@@ -52,8 +54,10 @@ class ReflectCppConan(ConanFile):
         "fPIC": True,
         "with_capnproto": False,
         "with_cbor": False,
+        "with_csv": False,
         "with_flatbuffers": False,
         "with_msgpack": False,
+        "with_parquet": False,
         "with_toml": False,
         "with_ubjson": False,
         "with_xml": False,
@@ -75,6 +79,8 @@ class ReflectCppConan(ConanFile):
             self.requires("capnproto/1.1.0", transitive_headers=True)
         if self.options.with_cbor or self.options.with_ubjson:
             self.requires("jsoncons/0.176.0", transitive_headers=True)
+        if self.options.with_csv or self.options.with_parquet:
+            self.requires("arrow/21.0.0", transitive_headers=True)
         if self.options.with_flatbuffers:
             self.requires("flatbuffers/24.3.25", transitive_headers=True)
         if self.options.with_msgpack:
@@ -110,8 +116,10 @@ class ReflectCppConan(ConanFile):
         tc.cache_variables["REFLECTCPP_USE_VCPKG"] = False
         tc.cache_variables["REFLECTCPP_CAPNPROTO"] = self.options.with_capnproto
         tc.cache_variables["REFLECTCPP_CBOR"] = self.options.with_cbor
+        tc.cache_variables["REFLECTCPP_CSV"] = self.options.with_csv
         tc.cache_variables["REFLECTCPP_FLEXBUFFERS"] = self.options.with_flatbuffers
         tc.cache_variables["REFLECTCPP_MSGPACK"] = self.options.with_msgpack
+        tc.cache_variables["REFLECTCPP_PARQUET"] = self.options.with_parquet
         tc.cache_variables["REFLECTCPP_TOML"] = self.options.with_toml
         tc.cache_variables["REFLECTCPP_XML"] = self.options.with_xml
         tc.cache_variables["REFLECTCPP_YAML"] = self.options.with_yaml
