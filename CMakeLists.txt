@@ -139,7 +139,7 @@ if (REFLECTCPP_USE_VCPKG)
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
 endif ()
 
-project(reflectcpp VERSION 0.20.0 LANGUAGES CXX)
+project(reflectcpp VERSION 0.21.0 LANGUAGES CXX)
 
 if (PROJECT_IS_TOP_LEVEL)
     set(REFLECTCPP_INSTALL ON)
