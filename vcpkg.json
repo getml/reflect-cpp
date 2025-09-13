@@ -1,19 +1,15 @@
 {
   "name": "reflectcpp",
   "version-string": "0.20.0",
-  "builtin-baseline": "cd124b84feb0c02a24a2d90981e8358fdee0e077",
   "dependencies": [
     {
-      "name": "vcpkg-cmake",
-      "version>=": "2023-05-04"
+      "name": "vcpkg-cmake"
     },
     {
-      "name": "vcpkg-cmake-config",
-      "version>=": "2022-02-06#1"
+      "name": "vcpkg-cmake-config"
     },
     {
-      "name": "vcpkg-pkgconfig-get-modules",
-      "version>=": "2024-04-03"
+      "name": "vcpkg-pkgconfig-get-modules"
     }
   ],
   "features": {
