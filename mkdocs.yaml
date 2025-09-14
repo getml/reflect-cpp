@@ -6,7 +6,7 @@ site_url: https://rfl.getml.com/
 site_author: Code17 GmbH
 site_description: >-
   A C++20 library for fast serialization, deserialization and validation using reflection. 
-  Supports JSON, BSON, CBOR, flexbuffers, msgpack, TOML, XML, YAML / msgpack.org[C++20]
+  Supports JSON, AVRO, BSON, Cap'n Proto, CBOR, CSV, flexbuffers, msgpack, parquet, TOML, UBJSON, XML, YAML 
 
 theme:
   name: "material"
