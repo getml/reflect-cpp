@@ -30,7 +30,9 @@ class Error {
   Error& operator=(Error&&) = default;
 
   /// Returns the error message, equivalent to .what() in std::exception.
-  const std::string& what() const { return what_; }
+  const std::string& what() const & { return what_; }
+  /// Moves the error message out of Error object and leaves what_ in a moved from state
+  std::string what() && { return std::move(what_); }
 
  private:
   /// Documents what went wrong
