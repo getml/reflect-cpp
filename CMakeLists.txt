@@ -26,7 +26,6 @@ option(REFLECTCPP_USE_BUNDLED_DEPENDENCIES "Use the bundled dependencies" ON)
 option(REFLECTCPP_USE_STD_EXPECTED "Use std::expected instead of the built-in Result type (requires C++-23)" OFF)
 
 if(REFLECTCPP_USE_STD_EXPECTED)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DREFLECTCPP_USE_STD_EXPECTED")
     if(NOT DEFINED CMAKE_CXX_STANDARD)
         set(CMAKE_CXX_STANDARD 23)
     endif()
@@ -158,6 +157,10 @@ if (MSVC)
     target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall>)
 else()
     target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall -Wextra>)
+endif()
+
+if(REFLECTCPP_USE_STD_EXPECTED)
+    target_compile_definitions(reflectcpp PUBLIC REFLECTCPP_USE_STD_EXPECTED)
 endif()
 
 set(REFLECT_CPP_SOURCES
