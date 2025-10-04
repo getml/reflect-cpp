@@ -32,11 +32,18 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type,
                                       const bool _no_required);
 
 bool is_optional(const parsing::schema::Type& _t) {
-  const auto handle = [](const auto& _v) -> bool {
+  return _t.variant_.visit([&](const auto& _v) -> bool {
     using T = std::remove_cvref_t<decltype(_v)>;
-    return std::is_same<T, parsing::schema::Type::Optional>();
-  };
-  return rfl::visit(handle, _t.variant_);
+    if constexpr (std::is_same_v<T, parsing::schema::Type::Description>) {
+      return is_optional(*_v.type_);
+
+    } else if constexpr (std::is_same_v<T, parsing::schema::Type::Validated>) {
+      return is_optional(*_v.type_);
+
+    } else {
+      return std::is_same_v<T, parsing::schema::Type::Optional>;
+    }
+  });
 }
 
 std::string numeric_type_to_string(const parsing::schema::Type& _type) {
