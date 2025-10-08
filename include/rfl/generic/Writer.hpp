@@ -2,20 +2,12 @@
 #define GENERIC_WRITER_HPP_
 
 #include <cstddef>
-#include <exception>
-#include <functional>
-#include <map>
-#include <optional>
-#include <sstream>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
 #include <vector>
 
 #include "../Generic.hpp"
-#include "../Result.hpp"
-#include "../Variant.hpp"
 #include "../always_false.hpp"
 
 namespace rfl::generic {

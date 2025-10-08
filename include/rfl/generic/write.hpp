@@ -1,11 +1,6 @@
 #ifndef GENERIC_WRITE_HPP_
 #define GENERIC_WRITE_HPP_
 
-#include <cstddef>
-#include <ostream>
-#include <sstream>
-#include <vector>
-
 #include "../Generic.hpp"
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
