@@ -104,7 +104,7 @@ struct Type {
   };
 
   struct Regex {
-    Literal<"string"> type {};
+    Literal<"string"> type{};
     std::optional<std::string> description{};
     std::string pattern{};
   };
