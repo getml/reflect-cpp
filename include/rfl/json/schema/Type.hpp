@@ -86,7 +86,7 @@ struct Type {
   };
 
   struct Object {
-    Literal<"object"> type = Literal<"object">{};
+    Literal<"object"> type{};
     std::optional<std::string> description{};
     rfl::Object<Type> properties{};
     std::vector<std::string> required{};
