@@ -1,8 +1,6 @@
 #ifndef RFL_INTERNAL_PTRCAST_HPP_
 #define RFL_INTERNAL_PTRCAST_HPP_
 
-#include <bit>
-
 namespace rfl::internal {
 
 /// Normally, we would use std::launder(reinterpret_cast<...>(...)),

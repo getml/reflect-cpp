@@ -29,13 +29,13 @@ SOFTWARE.
 namespace rfl::generic {
 
 Writer::OutputArrayType Writer::array_as_root(
-    const size_t _size) const noexcept {
+    const size_t /*_size*/) const noexcept {
   root_ = Generic::Array();
   return OutputArray{get_if<Generic::Array>(&root_.variant())};
 }
 
 Writer::OutputObjectType Writer::object_as_root(
-    const size_t _size) const noexcept {
+    const size_t /*_size*/) const noexcept {
   root_ = Generic::Object();
   return OutputObject{get_if<Generic::Object>(&root_.variant())};
 }
@@ -46,14 +46,14 @@ Writer::OutputVarType Writer::null_as_root() const noexcept {
 }
 
 Writer::OutputArrayType Writer::add_array_to_array(
-    const size_t _size, OutputArrayType* _parent) const noexcept {
+    const size_t /*_size*/, OutputArrayType* _parent) const noexcept {
   _parent->val_->push_back(Generic(Generic::Array()));
   return OutputArrayType{
       get_if<Generic::Array>(&_parent->val_->rbegin()->variant())};
 }
 
 Writer::OutputArrayType Writer::add_array_to_object(
-    const std::string_view& _name, const size_t _size,
+    const std::string_view& _name, const size_t /*_size*/,
     OutputObjectType* _parent) const noexcept {
   _parent->val_->insert(_name, Generic(Generic::Array()));
   return OutputArrayType{
@@ -61,14 +61,14 @@ Writer::OutputArrayType Writer::add_array_to_object(
 }
 
 Writer::OutputObjectType Writer::add_object_to_array(
-    const size_t _size, OutputArrayType* _parent) const noexcept {
+    const size_t /*_size*/, OutputArrayType* _parent) const noexcept {
   _parent->val_->push_back(Generic(Generic::Object()));
   return OutputObjectType{
       get_if<Generic::Object>(&_parent->val_->rbegin()->variant())};
 }
 
 Writer::OutputObjectType Writer::add_object_to_object(
-    const std::string_view& _name, const size_t _size,
+    const std::string_view& _name, const size_t /*_size*/,
     OutputObjectType* _parent) const noexcept {
   _parent->val_->insert(_name, Generic(Generic::Object()));
   return OutputObjectType{
