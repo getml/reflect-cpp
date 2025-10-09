@@ -2,11 +2,8 @@
 #define RFL_CBOR_WRITER_HPP_
 
 #include <bit>
-#include <exception>
 #include <jsoncons_ext/cbor/cbor_encoder.hpp>
 #include <map>
-#include <sstream>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>

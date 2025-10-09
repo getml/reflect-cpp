@@ -4,12 +4,9 @@
 #include <flatbuffers/flexbuffers.h>
 
 #include <cstddef>
-#include <exception>
 #include <functional>
 #include <map>
 #include <optional>
-#include <sstream>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>

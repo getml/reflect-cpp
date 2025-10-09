@@ -1,10 +1,7 @@
 #ifndef RFL_TOML_WRITER_HPP_
 #define RFL_TOML_WRITER_HPP_
 
-#include <exception>
 #include <map>
-#include <sstream>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <toml++/toml.hpp>
