@@ -192,12 +192,7 @@ class Writer {
   template <class T>
   void set_value(const T& _var, avro_value_t* _val) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      const char* cstr = _var.c_str();
-      if (!cstr) {
-        return;
-      }
-      avro_value_set_string_len(_val, cstr, _var.size() + 1);
-
+      avro_value_set_string_len(_val, _var.c_str(), _var.size() + 1);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>() ||
                          std::is_same<std::remove_cvref_t<T>,
