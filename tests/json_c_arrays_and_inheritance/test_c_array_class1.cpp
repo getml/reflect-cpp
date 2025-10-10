@@ -1,7 +1,7 @@
 #include <string>
 
-#include "rfl.hpp"
-#include "rfl/json.hpp"
+//#include "rfl.hpp"
+//#include "rfl/json.hpp"
 #include "write_and_read.hpp"
 
 namespace test_c_array_class1 {

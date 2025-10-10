@@ -3,7 +3,6 @@
 
 #include <avro.h>
 
-#include <bit>
 #include <istream>
 #include <string>
 #include <type_traits>

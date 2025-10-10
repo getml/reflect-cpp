@@ -1,4 +1,3 @@
-#include <iostream>
 #include <memory>
 #include <rfl.hpp>
 #include <string>

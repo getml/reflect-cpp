@@ -1,8 +1,6 @@
 #ifndef RFL_INTERNAL_TUP_TO_PTR_TUPLE_HPP_
 #define RFL_INTERNAL_TUP_TO_PTR_TUPLE_HPP_
 
-#include <tuple>
-
 #include "../Field.hpp"
 #include "../Tuple.hpp"
 #include "../apply.hpp"

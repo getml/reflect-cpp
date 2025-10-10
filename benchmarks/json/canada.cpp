@@ -2,12 +2,9 @@
 #include <rapidjson/document.h>
 #include <simdjson.h>
 
-#include <array>
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include <optional>
 #include <rfl/json.hpp>
-#include <type_traits>
 #include <vector>
 
 namespace canada {

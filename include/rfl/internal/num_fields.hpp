@@ -29,7 +29,6 @@ the potential array as we can without missing variables in subsequent fields.
 This is the purpose of get_nested_array_size().
 */
 
-#include <algorithm>
 #include <cstddef>
 #include <type_traits>
 #include <utility>

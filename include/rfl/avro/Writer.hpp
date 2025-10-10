@@ -1,21 +1,17 @@
 #ifndef RFL_AVRO_WRITER_HPP_
 #define RFL_AVRO_WRITER_HPP_
 
-#include <avro.h>
-
-#include <bit>
 #include <cstdint>
-#include <map>
 #include <string>
 #include <string_view>
 #include <type_traits>
-#include <variant>
-#include <vector>
 
-#include "../Box.hpp"
+#include <avro.h>
+
+//#include "../Box.hpp"
 #include "../Bytestring.hpp"
-#include "../Ref.hpp"
-#include "../Result.hpp"
+//#include "../Ref.hpp"
+//#include "../Result.hpp"
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../internal/is_literal.hpp"
@@ -138,7 +134,10 @@ class Writer {
   OutputVarType add_value_to_array(const T& _var,
                                    OutputArrayType* _parent) const noexcept {
     avro_value_t new_value;
-    avro_value_append(&_parent->val_, &new_value, nullptr);
+    int result = avro_value_append(&_parent->val_, &new_value, nullptr);
+    if (result != 0) {
+      return OutputVarType{_parent->val_};
+    }
     set_value(_var, &new_value);
     return OutputVarType{new_value};
   }
@@ -147,7 +146,10 @@ class Writer {
   OutputVarType add_value_to_map(const std::string_view& _name, const T& _var,
                                  OutputMapType* _parent) const noexcept {
     avro_value_t new_value;
-    avro_value_add(&_parent->val_, _name.data(), &new_value, nullptr, nullptr);
+    int result = avro_value_add(&_parent->val_, _name.data(), &new_value, nullptr, nullptr);
+    if (result != 0) {
+      return OutputVarType{_parent->val_};
+    }
     set_value(_var, &new_value);
     return OutputVarType{new_value};
   }
@@ -157,7 +159,10 @@ class Writer {
                                     const T& _var,
                                     OutputObjectType* _parent) const noexcept {
     avro_value_t new_value;
-    avro_value_get_by_name(&_parent->val_, _name.data(), &new_value, nullptr);
+    int result = avro_value_get_by_name(&_parent->val_, _name.data(), &new_value, nullptr);
+    if (result != 0) {
+      return OutputVarType{_parent->val_};
+    }
     set_value(_var, &new_value);
     return OutputVarType{new_value};
   }
@@ -165,29 +170,42 @@ class Writer {
   template <class T>
   OutputVarType add_value_to_union(const size_t _index, const T& _var,
                                    OutputUnionType* _parent) const noexcept {
+    if (_index > static_cast<size_t>(INT_MAX)) {
+      return OutputVarType{_parent->val_};
+    }
     avro_value_t new_value;
-    avro_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_value);
+    int result = avro_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_value);
+    if (result != 0) {
+      return OutputVarType{_parent->val_};
+    }
     set_value(_var, &new_value);
     return OutputVarType{new_value};
   }
 
-  void end_array(OutputArrayType* _arr) const noexcept {}
+  void end_array(OutputArrayType* /*_arr*/) const noexcept {}
 
-  void end_map(OutputMapType* _obj) const noexcept {}
+  void end_map(OutputMapType* /*_obj*/) const noexcept {}
 
-  void end_object(OutputObjectType* _obj) const noexcept {}
+  void end_object(OutputObjectType* /*_obj*/) const noexcept {}
 
  private:
   template <class T>
   void set_value(const T& _var, avro_value_t* _val) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      avro_value_set_string_len(_val, _var.c_str(), _var.size() + 1);
+      const char* cstr = _var.c_str();
+      if (!cstr) {
+        return;
+      }
+      avro_value_set_string_len(_val, cstr, _var.size() + 1);
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>() ||
                          std::is_same<std::remove_cvref_t<T>,
                                       rfl::Vectorstring>()) {
       auto var = _var;
+      if (!var.data()) {
+        return;
+      }
       avro_value_set_bytes(_val, var.data(), var.size());
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {

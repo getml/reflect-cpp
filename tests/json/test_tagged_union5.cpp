@@ -1,9 +1,7 @@
 #include <cassert>
-#include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
 #include <string>
-#include <vector>
 
 #include <gtest/gtest.h>
 

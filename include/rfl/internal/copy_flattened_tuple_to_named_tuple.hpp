@@ -1,8 +1,6 @@
 #ifndef RFL_INTERNAL_COPY_FLATTENED_TUPLE_TO_NAMED_TUPLE_HPP_
 #define RFL_INTERNAL_COPY_FLATTENED_TUPLE_TO_NAMED_TUPLE_HPP_
 
-#include <functional>
-#include <tuple>
 #include <type_traits>
 #include <utility>
 

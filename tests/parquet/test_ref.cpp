@@ -1,5 +1,3 @@
-#include <iostream>
-#include <memory>
 #include <rfl/parquet.hpp>
 #include <string>
 #include <vector>

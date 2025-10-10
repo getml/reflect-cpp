@@ -1,12 +1,10 @@
 #include <gtest/gtest.h>
 
-#include <iostream>
 #include <rfl.hpp>
 #include <rfl/avro.hpp>
 #include <string>
-#include <vector>
 
-#include "write_and_read.hpp"
+//#include "write_and_read.hpp"
 
 /// The basic example from the Avro C tutorial.
 namespace test_tutorial_example {

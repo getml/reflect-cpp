@@ -1,8 +1,6 @@
 #ifndef RFL_INTERNAL_HASVALIDATION_HPP_
 #define RFL_INTERNAL_HASVALIDATION_HPP_
 
-#include <type_traits>
-
 #include "../Result.hpp"
 
 namespace rfl {

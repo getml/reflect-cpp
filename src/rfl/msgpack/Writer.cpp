@@ -22,48 +22,48 @@ Writer::OutputVarType Writer::null_as_root() const noexcept {
 }
 
 Writer::OutputArrayType Writer::add_array_to_array(
-    const size_t _size, OutputArrayType* _parent) const noexcept {
+    const size_t _size, OutputArrayType* /*_parent*/) const noexcept {
   return new_array(_size);
 }
 
 Writer::OutputArrayType Writer::add_array_to_object(
     const std::string_view& _name, const size_t _size,
-    OutputObjectType* _parent) const noexcept {
+    OutputObjectType* /*_parent*/) const noexcept {
   msgpack_pack_str(pk_, _name.size());
   msgpack_pack_str_body(pk_, _name.data(), _name.size());
   return new_array(_size);
 }
 
 Writer::OutputObjectType Writer::add_object_to_array(
-    const size_t _size, OutputArrayType* _parent) const noexcept {
+    const size_t _size, OutputArrayType* /*_parent*/) const noexcept {
   return new_object(_size);
 }
 
 Writer::OutputObjectType Writer::add_object_to_object(
     const std::string_view& _name, const size_t _size,
-    OutputObjectType* _parent) const noexcept {
+    OutputObjectType* /*_parent*/) const noexcept {
   msgpack_pack_str(pk_, _name.size());
   msgpack_pack_str_body(pk_, _name.data(), _name.size());
   return new_object(_size);
 }
 
 Writer::OutputVarType Writer::add_null_to_array(
-    OutputArrayType* _parent) const noexcept {
+    OutputArrayType* /*_parent*/) const noexcept {
   msgpack_pack_nil(pk_);
   return OutputVarType{};
 }
 
 Writer::OutputVarType Writer::add_null_to_object(
-    const std::string_view& _name, OutputObjectType* _parent) const noexcept {
+    const std::string_view& _name, OutputObjectType* /*_parent*/) const noexcept {
   msgpack_pack_str(pk_, _name.size());
   msgpack_pack_str_body(pk_, _name.data(), _name.size());
   msgpack_pack_nil(pk_);
   return OutputVarType{};
 }
 
-void Writer::end_array(OutputArrayType* _arr) const noexcept {}
+void Writer::end_array(OutputArrayType* /*_arr*/) const noexcept {}
 
-void Writer::end_object(OutputObjectType* _obj) const noexcept {}
+void Writer::end_object(OutputObjectType* /*_obj*/) const noexcept {}
 
 Writer::OutputArrayType Writer::new_array(const size_t _size) const noexcept {
   msgpack_pack_array(pk_, _size);

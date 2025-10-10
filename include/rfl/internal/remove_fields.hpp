@@ -1,8 +1,6 @@
 #ifndef RFL_INTERNAL_REMOVEFIELDS_HPP_
 #define RFL_INTERNAL_REMOVEFIELDS_HPP_
 
-#include <algorithm>
-#include <tuple>
 #include <type_traits>
 
 #include "../NamedTuple.hpp"

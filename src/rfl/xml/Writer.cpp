@@ -38,14 +38,14 @@ Writer::Writer(const Ref<pugi::xml_node>& _root, const std::string& _root_name)
 Writer::~Writer() = default;
 
 Writer::OutputArrayType Writer::array_as_root(
-    const size_t _size) const noexcept {
+    const size_t /*_size*/) const noexcept {
   auto node_child =
       Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
   return OutputArrayType(root_name_, node_child);
 }
 
 Writer::OutputObjectType Writer::object_as_root(
-    const size_t _size) const noexcept {
+    const size_t /*_size*/) const noexcept {
   auto node_child =
       Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
   return OutputObjectType(node_child);
@@ -66,12 +66,12 @@ Writer::OutputVarType Writer::value_as_root_impl(
 }
 
 Writer::OutputArrayType Writer::add_array_to_array(
-    const size_t _size, OutputArrayType* _parent) const noexcept {
+    const size_t /*_size*/, OutputArrayType* _parent) const noexcept {
   return *_parent;
 }
 
 Writer::OutputArrayType Writer::add_array_to_object(
-    const std::string_view& _name, const size_t _size,
+    const std::string_view& _name, const size_t /*_size*/,
     OutputObjectType* _parent) const noexcept {
   return OutputArrayType(_name, _parent->node_);
 }
@@ -102,14 +102,14 @@ Writer::OutputVarType Writer::add_value_to_object_impl(
 }
 
 Writer::OutputObjectType Writer::add_object_to_array(
-    const size_t _size, OutputArrayType* _parent) const noexcept {
+    const size_t /*_size*/, OutputArrayType* _parent) const noexcept {
   auto node_child =
       Ref<pugi::xml_node>::make(_parent->node_->append_child(_parent->name_));
   return OutputObjectType(node_child);
 }
 
 Writer::OutputObjectType Writer::add_object_to_object(
-    const std::string_view& _name, const size_t _size,
+    const std::string_view& _name, const size_t /*_size*/,
     OutputObjectType* _parent) const noexcept {
   auto node_child =
       Ref<pugi::xml_node>::make(_parent->node_->append_child(_name));
@@ -137,8 +137,8 @@ Writer::OutputVarType Writer::add_null_to_object(
   }
 }
 
-void Writer::end_array(OutputArrayType* _arr) const noexcept {}
+void Writer::end_array(OutputArrayType* /*_arr*/) const noexcept {}
 
-void Writer::end_object(OutputObjectType* _obj) const noexcept {}
+void Writer::end_object(OutputObjectType* /*_obj*/) const noexcept {}
 
 }  // namespace rfl::xml

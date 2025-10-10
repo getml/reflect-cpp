@@ -1,5 +1,4 @@
 #include <cassert>
-#include <iostream>
 #include <rfl.hpp>
 #include <rfl/yaml.hpp>
 #include <string>

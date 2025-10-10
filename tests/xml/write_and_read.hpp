@@ -3,10 +3,8 @@
 
 #include <gtest/gtest.h>
 
-#include <iostream>
 #include <rfl.hpp>
 #include <rfl/xml.hpp>
-#include <string>
 
 template <rfl::internal::StringLiteral _root_name = rfl::internal::StringLiteral(""), class... Ps>
 void write_and_read(const auto& _struct) {

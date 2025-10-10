@@ -1,9 +1,7 @@
 #ifndef RFL_INTERNAL_ISDESCRIPTION_HPP_
 #define RFL_INTERNAL_ISDESCRIPTION_HPP_
 
-#include <tuple>
 #include <type_traits>
-#include <utility>
 
 #include "../Description.hpp"
 #include "StringLiteral.hpp"

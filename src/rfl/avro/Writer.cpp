@@ -12,16 +12,16 @@ Writer::Writer(avro_value_t* _root) : root_(_root){};
 Writer::~Writer() = default;
 
 Writer::OutputArrayType Writer::array_as_root(
-    const size_t _size) const noexcept {
+    const size_t /*_size*/) const noexcept {
   return OutputArrayType{*root_};
 }
 
-Writer::OutputMapType Writer::map_as_root(const size_t _size) const noexcept {
+Writer::OutputMapType Writer::map_as_root(const size_t /*_size*/) const noexcept {
   return OutputMapType{*root_};
 }
 
 Writer::OutputObjectType Writer::object_as_root(
-    const size_t _size) const noexcept {
+    const size_t /*_size*/) const noexcept {
   return OutputObjectType{*root_};
 }
 
@@ -35,14 +35,14 @@ Writer::OutputUnionType Writer::union_as_root() const noexcept {
 }
 
 Writer::OutputArrayType Writer::add_array_to_array(
-    const size_t _size, OutputArrayType* _parent) const noexcept {
+    const size_t /*_size*/, OutputArrayType* _parent) const noexcept {
   avro_value_t new_array;
   avro_value_append(&_parent->val_, &new_array, nullptr);
   return OutputArrayType{new_array};
 }
 
 Writer::OutputArrayType Writer::add_array_to_map(
-    const std::string_view& _name, const size_t _size,
+    const std::string_view& _name, const size_t /*_size*/,
     OutputMapType* _parent) const noexcept {
   avro_value_t new_array;
   avro_value_add(&_parent->val_, _name.data(), &new_array, nullptr, nullptr);
@@ -50,7 +50,7 @@ Writer::OutputArrayType Writer::add_array_to_map(
 }
 
 Writer::OutputArrayType Writer::add_array_to_object(
-    const std::string_view& _name, const size_t _size,
+    const std::string_view& _name, const size_t /*_size*/,
     OutputObjectType* _parent) const noexcept {
   avro_value_t new_array;
   avro_value_get_by_name(&_parent->val_, _name.data(), &new_array, nullptr);
@@ -58,7 +58,7 @@ Writer::OutputArrayType Writer::add_array_to_object(
 }
 
 Writer::OutputArrayType Writer::add_array_to_union(
-    const size_t _index, const size_t _size,
+    const size_t _index, const size_t /*_size*/,
     OutputUnionType* _parent) const noexcept {
   avro_value_t new_array;
   avro_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_array);
@@ -66,14 +66,14 @@ Writer::OutputArrayType Writer::add_array_to_union(
 }
 
 Writer::OutputMapType Writer::add_map_to_array(
-    const size_t _size, OutputArrayType* _parent) const noexcept {
+    const size_t /*_size*/, OutputArrayType* _parent) const noexcept {
   avro_value_t new_map;
   avro_value_append(&_parent->val_, &new_map, nullptr);
   return OutputMapType{new_map};
 }
 
 Writer::OutputMapType Writer::add_map_to_map(
-    const std::string_view& _name, const size_t _size,
+    const std::string_view& _name, const size_t /*_size*/,
     OutputMapType* _parent) const noexcept {
   avro_value_t new_map;
   avro_value_add(&_parent->val_, _name.data(), &new_map, nullptr, nullptr);
@@ -81,7 +81,7 @@ Writer::OutputMapType Writer::add_map_to_map(
 }
 
 Writer::OutputMapType Writer::add_map_to_object(
-    const std::string_view& _name, const size_t _size,
+    const std::string_view& _name, const size_t /*_size*/,
     OutputObjectType* _parent) const noexcept {
   avro_value_t new_map;
   avro_value_get_by_name(&_parent->val_, _name.data(), &new_map, nullptr);
@@ -89,7 +89,7 @@ Writer::OutputMapType Writer::add_map_to_object(
 }
 
 Writer::OutputMapType Writer::add_map_to_union(
-    const size_t _index, const size_t _size,
+    const size_t _index, const size_t /*_size*/,
     OutputUnionType* _parent) const noexcept {
   avro_value_t new_map;
   avro_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_map);
@@ -97,14 +97,14 @@ Writer::OutputMapType Writer::add_map_to_union(
 }
 
 Writer::OutputObjectType Writer::add_object_to_array(
-    const size_t _size, OutputArrayType* _parent) const noexcept {
+    const size_t /*_size*/, OutputArrayType* _parent) const noexcept {
   avro_value_t new_object;
   avro_value_append(&_parent->val_, &new_object, nullptr);
   return OutputObjectType{new_object};
 }
 
 Writer::OutputObjectType Writer::add_object_to_map(
-    const std::string_view& _name, const size_t _size,
+    const std::string_view& _name, const size_t /*_size*/,
     OutputMapType* _parent) const noexcept {
   avro_value_t new_object;
   avro_value_add(&_parent->val_, _name.data(), &new_object, nullptr, nullptr);
@@ -112,7 +112,7 @@ Writer::OutputObjectType Writer::add_object_to_map(
 }
 
 Writer::OutputObjectType Writer::add_object_to_object(
-    const std::string_view& _name, const size_t _size,
+    const std::string_view& _name, const size_t /*_size*/,
     OutputObjectType* _parent) const noexcept {
   avro_value_t new_object;
   avro_value_get_by_name(&_parent->val_, _name.data(), &new_object, nullptr);
@@ -120,7 +120,7 @@ Writer::OutputObjectType Writer::add_object_to_object(
 }
 
 Writer::OutputObjectType Writer::add_object_to_union(
-    const size_t _index, const size_t _size,
+    const size_t _index, const size_t /*_size*/,
     OutputUnionType* _parent) const noexcept {
   avro_value_t new_object;
   avro_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_object);

@@ -2,7 +2,6 @@
 #define RFL_PARSING_PARSER_WSTRING_HPP_
 
 #include <map>
-#include <type_traits>
 
 #include "../Result.hpp"
 #include "../always_false.hpp"

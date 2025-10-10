@@ -1,7 +1,7 @@
 #ifndef RFL_AVRO_LOAD_HPP_
 #define RFL_AVRO_LOAD_HPP_
 
-#include "../Processors.hpp"
+//#include "../Processors.hpp"
 #include "../Result.hpp"
 #include "../io/load_bytes.hpp"
 #include "read.hpp"

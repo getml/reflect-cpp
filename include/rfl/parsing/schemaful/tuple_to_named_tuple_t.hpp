@@ -2,7 +2,6 @@
 #define RFL_PARSING_SCHEMAFUL_TUPLETONAMEDTUPLE_T_HPP_
 
 #include <tuple>
-#include <type_traits>
 #include <utility>
 
 #include "../../NamedTuple.hpp"

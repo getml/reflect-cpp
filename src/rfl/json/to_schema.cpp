@@ -25,6 +25,8 @@ SOFTWARE.
 */
 
 #include "rfl/json/to_schema.hpp"
+#include "rfl/json/schema/Type.hpp"
+#include "rfl/json/write.hpp"
 
 namespace rfl::json {
 
@@ -96,8 +98,8 @@ schema::Type handle_validation_type(
 
     } else if constexpr (std::is_same<T, ValidationType::Size>()) {
       auto t = type_to_json_schema_type(_type, _no_required);
-      const auto to_size = [](const auto _v) {
-        return static_cast<size_t>(_v);
+      const auto to_size = [](const auto _val) {
+        return static_cast<size_t>(_val);
       };
       auto handle_size_variant = [&](auto& _t, const auto& _size_limit) {
         using U = std::remove_cvref_t<decltype(_t)>;

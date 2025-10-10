@@ -1,5 +1,4 @@
 #include <array>
-#include <iostream>
 #include <memory>
 #include <rfl/yaml.hpp>
 #include <string>

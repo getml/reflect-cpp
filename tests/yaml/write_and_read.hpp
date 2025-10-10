@@ -3,9 +3,7 @@
 
 #include <gtest/gtest.h>
 
-#include <iostream>
 #include <rfl/yaml.hpp>
-#include <string>
 
 template <class... Ps>
 void write_and_read(const auto& _struct) {

@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
 #include <string>

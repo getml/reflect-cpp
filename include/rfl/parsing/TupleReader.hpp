@@ -2,10 +2,7 @@
 #define RFL_PARSING_TUPLEREADER_HPP_
 
 #include <sstream>
-#include <string_view>
-#include <tuple>
 #include <type_traits>
-#include <vector>
 
 #include "../Result.hpp"
 #include "../Tuple.hpp"

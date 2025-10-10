@@ -3,17 +3,12 @@
 
 #include <avro.h>
 
-#include <bit>
-#include <cstdint>
 #include <ostream>
-#include <sstream>
-#include <string>
 #include <type_traits>
-#include <utility>
 
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
-#include "Schema.hpp"
+//#include "Schema.hpp"
 #include "Writer.hpp"
 #include "to_schema.hpp"
 

@@ -4,8 +4,6 @@
 #include <bson/bson.h>
 
 #include <ostream>
-#include <sstream>
-#include <string>
 #include <utility>
 
 #include "../Processors.hpp"

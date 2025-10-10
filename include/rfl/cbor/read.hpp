@@ -1,7 +1,6 @@
 #ifndef RFL_CBOR_READ_HPP_
 #define RFL_CBOR_READ_HPP_
 
-#include <bit>
 #include <istream>
 #include <jsoncons/json.hpp>
 #include <jsoncons_ext/cbor/decode_cbor.hpp>

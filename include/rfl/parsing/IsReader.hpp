@@ -1,7 +1,6 @@
 #ifndef RFL_PARSING_ISREADER_HPP_
 #define RFL_PARSING_ISREADER_HPP_
 
-#include <array>
 #include <concepts>
 #include <cstdint>
 #include <functional>

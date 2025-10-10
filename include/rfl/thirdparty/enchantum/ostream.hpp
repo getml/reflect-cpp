@@ -2,7 +2,6 @@
 
 #include "enchantum.hpp"
 #include <iosfwd>
-#include <string_view>
 #include "details/format_util.hpp"
 
 namespace enchantum::ostream_operators {

@@ -2,7 +2,6 @@
 #define RFL_IO_LOAD_STRING_HPP_
 
 #include <fstream>
-#include <iostream>
 #include <string>
 
 #include "../Result.hpp"

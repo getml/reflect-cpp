@@ -1,8 +1,6 @@
 #ifndef RFL_INTERNAL_MOVE_AND_FLATTEN_FIELD_TUPLE_HPP_
 #define RFL_INTERNAL_MOVE_AND_FLATTEN_FIELD_TUPLE_HPP_
 
-#include <tuple>
-
 #include "../Tuple.hpp"
 #include "../tuple_cat.hpp"
 #include "is_flatten_field.hpp"

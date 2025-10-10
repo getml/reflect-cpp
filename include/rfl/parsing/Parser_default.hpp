@@ -2,7 +2,6 @@
 #define RFL_PARSING_PARSER_DEFAULT_HPP_
 
 #include <map>
-#include <stdexcept>
 #include <type_traits>
 
 #include "../Result.hpp"

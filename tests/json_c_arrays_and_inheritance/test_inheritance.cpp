@@ -1,9 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <cassert>
-#include <iostream>
 #include <rfl.hpp>
-#include <tuple>
 
 namespace test_inheritance {
 

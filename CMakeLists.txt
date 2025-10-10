@@ -156,9 +156,27 @@ endif()
 add_library(reflectcpp::reflectcpp ALIAS reflectcpp)
 
 if (MSVC)
-    target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall>)
+    target_compile_options(reflectcpp PRIVATE 
+        $<$<CONFIG:Debug>:
+            -Wall
+        >
+        $<$<CONFIG:Release>:
+            -DNDEBUG
+        >
+    )
 else()
-    target_compile_options(reflectcpp PRIVATE $<$<CONFIG:Debug>:-Wall -Wextra>)
+    target_compile_options(reflectcpp PRIVATE
+        $<$<CONFIG:Debug>:
+            -Wall -Wextra -Wpedantic -Wshadow -Wconversion
+            #-Wnull-dereference -Wold-style-cast
+            #-g3 -fno-omit-frame-pointer
+            #-fsanitize=address,undefined
+            #-fno-sanitize-recover=undefined
+        >
+        $<$<CONFIG:Release>:
+            -DNDEBUG
+        >
+    )
 endif()
 
 if(REFLECTCPP_USE_STD_EXPECTED)

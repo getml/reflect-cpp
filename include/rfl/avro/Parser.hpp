@@ -4,7 +4,7 @@
 #include "../Generic.hpp"
 #include "../Tuple.hpp"
 #include "../always_false.hpp"
-#include "../parsing/Parser.hpp"
+//#include "../parsing/Parser.hpp"
 #include "Reader.hpp"
 #include "Writer.hpp"
 
@@ -82,15 +82,15 @@ struct Parser<avro::Reader, avro::Writer,
   }
 
   template <class P>
-  static void write(const W& _w,
+  static void write(const W& /*_w*/,
                     const internal::Skip<T, _skip_serialization,
-                                         _skip_deserialization>& _skip,
-                    const P& _parent) noexcept {
+                                         _skip_deserialization>& /*_skip*/,
+                    const P& /*_parent*/) noexcept {
     static_assert(always_false_v<P>, "rfl::Skip is unsupported in Avro.");
   }
 
   template <class U>
-  static schema::Type to_schema(U* _definitions) {
+  static schema::Type to_schema(U* /*_definitions*/) {
     static_assert(always_false_v<U>, "rfl::Skip is unsupported in Avro.");
     return schema::Type{};
   }

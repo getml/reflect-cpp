@@ -1,15 +1,16 @@
 #ifndef RFL_INTERNAL_HASFIELDS_HPP_
 #define RFL_INTERNAL_HASFIELDS_HPP_
 
-#include <tuple>
 #include <type_traits>
 #include <utility>
 
 #include "../Tuple.hpp"
-#include "all_fields.hpp"
+//#include "all_fields.hpp"
 #include "is_field.hpp"
 #include "is_flatten_field.hpp"
 #include "ptr_tuple_t.hpp"
+#include "is_named_tuple.hpp"
+
 
 namespace rfl {
 namespace internal {

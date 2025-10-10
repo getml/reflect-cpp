@@ -1,10 +1,8 @@
 #include <gtest/gtest.h>
 
-#include <iostream>
 #include <rfl.hpp>
 #include <rfl/avro.hpp>
 #include <string>
-#include <vector>
 
 #include "write_and_read.hpp"
 

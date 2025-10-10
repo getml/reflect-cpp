@@ -21,6 +21,8 @@
 #include "schemaful/IsSchemafulWriter.hpp"
 #include "schemaful/VariantReader.hpp"
 #include "to_single_error_message.hpp"
+#include "../internal/all_fields.hpp"
+
 
 namespace rfl::parsing {
 

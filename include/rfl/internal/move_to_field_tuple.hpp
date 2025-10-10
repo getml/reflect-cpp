@@ -1,7 +1,6 @@
 #ifndef RFL_INTERNAL_MOVE_TO_FIELD_TUPLE_HPP_
 #define RFL_INTERNAL_MOVE_TO_FIELD_TUPLE_HPP_
 
-#include <tuple>
 #include <type_traits>
 
 #include "../Tuple.hpp"

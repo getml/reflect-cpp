@@ -1,5 +1,4 @@
 #include <array>
-#include <iostream>
 #include <memory>
 #include <rfl/avro.hpp>
 #include <string>

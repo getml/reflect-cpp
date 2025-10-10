@@ -1,22 +1,21 @@
 #ifndef RFL_CAPNPROTO_TOSCHEMA_HPP_
 #define RFL_CAPNPROTO_TOSCHEMA_HPP_
 
-#include <map>
 #include <string>
-#include <type_traits>
 
-#include "../Literal.hpp"
-#include "../Processors.hpp"
+//#include "../Literal.hpp"
+//#include "../Processors.hpp"
 #include "../Result.hpp"
-#include "../SnakeCaseToCamelCase.hpp"
-#include "../Variant.hpp"
-#include "../json.hpp"
-#include "../parsing/schema/Type.hpp"
-#include "../parsing/schema/ValidationType.hpp"
+//#include "../SnakeCaseToCamelCase.hpp"
+//#include "../Variant.hpp"
+//#include "../json.hpp"
+//#include "../parsing/schema/Type.hpp"
+//#include "../parsing/schema/ValidationType.hpp"
 #include "../parsing/schema/make.hpp"
 #include "Schema.hpp"
 #include "Writer.hpp"
-#include "schema/Type.hpp"
+#include "Reader.hpp"
+//#include "schema/Type.hpp"
 
 namespace rfl::capnproto {
 

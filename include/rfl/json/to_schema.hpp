@@ -7,21 +7,19 @@
 #include "../thirdparty/yyjson.h"
 #endif
 
-#include <map>
 #include <string>
-#include <type_traits>
 
-#include "../Literal.hpp"
+//#include "../Literal.hpp"
 #include "../Processors.hpp"
 #include "../Variant.hpp"
-#include "../parsing/schema/Type.hpp"
-#include "../parsing/schema/ValidationType.hpp"
+//#include "../parsing/schema/Type.hpp"
+//#include "../parsing/schema/ValidationType.hpp"
 #include "../parsing/schema/make.hpp"
 #include "Reader.hpp"
 #include "Writer.hpp"
 #include "schema/JSONSchema.hpp"
-#include "schema/Type.hpp"
-#include "write.hpp"
+//#include "schema/Type.hpp"
+//#include "write.hpp"
 
 namespace rfl::json {
 

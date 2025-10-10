@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include <cassert>
-#include <iostream>
 #include <rfl.hpp>
 
 #include "rfl/num_fields.hpp"

@@ -1,9 +1,6 @@
 #include <cassert>
-#include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
-#include <string>
-#include <vector>
 
 #include "write_and_read.hpp"
 

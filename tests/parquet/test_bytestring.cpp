@@ -1,6 +1,4 @@
-#include <iostream>
 #include <rfl/parquet.hpp>
-#include <string>
 #include <vector>
 
 #include "write_and_read.hpp"

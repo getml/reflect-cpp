@@ -28,12 +28,11 @@
 #define ENCHANTUM_MAX_RANGE RFL_ENUM_RANGE_MAX
 
 #include <concepts>
-#include <limits>
-#include <type_traits>
 #include <utility>
 
+#include "../../thirdparty/enchantum/enchantum.hpp"// NOLINT(unused-includes)
+
 #include "../../Literal.hpp"
-#include "../../thirdparty/enchantum/enchantum.hpp"
 #include "Names.hpp"
 #include "range_defined.hpp"
 

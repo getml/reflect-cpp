@@ -1,8 +1,6 @@
 #ifndef RFL_INTERNAL_NTH_ELEMENT_T_HPP_
 #define RFL_INTERNAL_NTH_ELEMENT_T_HPP_
 
-#include <type_traits>
-
 #include "nth_element.hpp"
 
 namespace rfl::internal {

@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <iostream>
 #include <rfl.hpp>
 #include <rfl/capnproto.hpp>
 #include <string>

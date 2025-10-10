@@ -2,7 +2,6 @@
 #define RFL_HASTAGV_HPP_
 
 #include <cstdint>
-#include <utility>
 
 namespace rfl {
 namespace internal {
