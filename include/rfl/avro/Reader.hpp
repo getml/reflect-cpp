@@ -90,9 +90,12 @@ struct Reader {
       if (type != AVRO_BOOLEAN) {
         return rfl::error("Could not cast to boolean.");
       }
-      int result = 0;
-      avro_value_get_boolean(_var.val_, &result);
-      return (result != 0);
+      int result_value = 0;
+      int result = avro_value_get_boolean(_var.val_, &result_value);
+      if (result != 0) {
+        return error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
+      }
+      return (result_value != 0);
 
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       if (type == AVRO_DOUBLE) {
@@ -187,10 +190,18 @@ struct Reader {
   std::optional<Error> read_array(const ArrayReader& _array_reader,
                                   const InputArrayType& _arr) const noexcept {
     size_t size = 0;
-    avro_value_get_size(_arr.val_, &size);
+    int res = avro_value_get_size(_arr.val_, &size);
+    if(res)
+    {
+      return Error(std::string(__FUNCTION__) + " error(" + std::to_string(res) + "): "  + avro_strerror());
+    }
     for (size_t ix = 0; ix < size; ++ix) {
       avro_value_t element;
-      avro_value_get_by_index(_arr.val_, ix, &element, nullptr);
+      res = avro_value_get_by_index(_arr.val_, ix, &element, nullptr);
+      if(res)
+      {
+      return Error(std::string(__FUNCTION__) + " error(" + std::to_string(res) + "): "  + avro_strerror());
+      }
       const auto err = _array_reader.read(InputVarType{&element});
       if (err) {
         return err;
@@ -203,11 +214,19 @@ struct Reader {
   std::optional<Error> read_map(const MapReader& _map_reader,
                                 const InputMapType& _map) const noexcept {
     size_t size = 0;
-    avro_value_get_size(_map.val_, &size);
+    int res = avro_value_get_size(_map.val_, &size);
+    if(res!=0)
+    {
+      return Error(std::string(__FUNCTION__) + " error("+ std::to_string(res)+"): "  + avro_strerror());
+    }
     for (size_t ix = 0; ix < size; ++ix) {
       avro_value_t element;
       const char* key = nullptr;
-      avro_value_get_by_index(_map.val_, ix, &element, &key);
+      res = avro_value_get_by_index(_map.val_, ix, &element, &key);
+      if(res!=0)
+      {
+        return Error(std::string(__FUNCTION__) + " error("+ std::to_string(res)+"): "  + avro_strerror());
+      }
       _map_reader.read(std::string_view(key), InputVarType{&element});
     }
     return std::nullopt;
@@ -217,10 +236,18 @@ struct Reader {
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
     size_t size = 0;
-    avro_value_get_size(_obj.val_, &size);
+    int res = avro_value_get_size(_obj.val_, &size);
+    if(res!=0)
+    {
+      return Error(std::string(__FUNCTION__) + " error("+ std::to_string(res)+"): "  + avro_strerror());
+    }
     for (size_t ix = 0; ix < size; ++ix) {
       avro_value_t element;
-      avro_value_get_by_index(_obj.val_, ix, &element, nullptr);
+      res = avro_value_get_by_index(_obj.val_, ix, &element, nullptr);
+      if(res!=0)
+      {
+        return Error(std::string(__FUNCTION__) + " error("+ std::to_string(res)+"): "  + avro_strerror());
+      }
       _object_reader.read(static_cast<int>(ix), InputVarType{&element});
     }
     return std::nullopt;
