@@ -25,6 +25,7 @@ std::vector<char> write(const auto& _obj, const auto& _schema) {
   avro_value_t root;
   int result = avro_generic_value_new(_schema.iface(), &root);
   if (result != 0) {
+    avro_value_decref(&root);
     throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
   }
 const auto writer = Writer(&root);

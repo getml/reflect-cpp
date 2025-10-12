@@ -191,13 +191,9 @@ class Writer {
  private:
   template <class T>
   void set_value(const T& _var, avro_value_t* _val) const {
-    std::cout << "[DEBUG] set_value called with type: " << typeid(T).name() << std::endl;
-
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      std::cout << "[DEBUG] Processing std::string: " << _var << std::endl;
       int result = avro_value_set_string_len(_val, _var.c_str(), _var.size() + 1);
       if (result != 0) {
-        std::cout << "[DEBUG] avro_value_set_string_len failed with result: " << result << std::endl;
         throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
       }
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
@@ -206,61 +202,43 @@ class Writer {
                                       rfl::Vectorstring>()) {
       auto var = _var;
       if (!var.data()) {
-        std::cout << "[DEBUG] Bytestring/Vectorstring has no data" << std::endl;
         return;
       }
-      std::cout << "[DEBUG] Processing Bytestring/Vectorstring of size: " << var.size() << std::endl;
       int result = avro_value_set_bytes(_val, var.data(), var.size());
       if (result != 0) {
-        std::cout << "[DEBUG] avro_value_set_bytes failed with result: " << result << std::endl;
         throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
       }
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
-      std::cout << "[DEBUG] Processing bool: " << _var << std::endl;
       int result = avro_value_set_boolean(_val, _var);
       if (result != 0) {
-        std::cout << "[DEBUG] avro_value_set_boolean failed with result: " << result << std::endl;
         throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
       }
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-      std::cout << "[DEBUG] Processing floating point: " << _var << std::endl;
       int result = avro_value_set_double(_val, static_cast<double>(_var));
       if (result != 0) {
-        std::cout << "[DEBUG] avro_value_set_double failed with result: " << result << std::endl;
         throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
       }
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      std::cout << "[DEBUG] Processing integral: " << _var << std::endl;
       int result = avro_value_set_long(_val, static_cast<std::int64_t>(_var));
       if (result != 0) {
-        std::cout << "[DEBUG] avro_value_set_long failed with result: " << result << std::endl;
         throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
       }
     } else if constexpr (internal::is_literal_v<T>) {
-      std::cout << "[DEBUG] Processing literal enum: " << static_cast<int>(_var.value()) << std::endl;
       int result = avro_value_set_enum(_val, static_cast<int>(_var.value()));
       if (result != 0) {
-        std::cout << "[DEBUG] avro_value_set_enum failed with result: " << result << std::endl;
         throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
       }
     } else if constexpr (internal::is_validator_v<T>) {
-      std::cout << "[DEBUG] Processing validator type" << std::endl;
-      // Для валидаторов используем внутреннее значение
       using ValueType = std::remove_cvref_t<typename T::ReflectionType>;
       const auto val = _var.value();
       set_value<ValueType>(val, _val);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, rfl::Timestamp<"%Y-%m-%d">>()) {
-      std::cout << "[DEBUG] Processing Timestamp" << std::endl;
-      // Конвертируем Timestamp в строку
       const auto str = _var.to_string();
       set_value<std::string>(str, _val);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, rfl::Email>()) {
-      std::cout << "[DEBUG] Processing Email" << std::endl;
-      // Email является паттерном на базе std::string, используем внутреннее значение
       const auto& str = static_cast<const std::string&>(_var);
       set_value<std::string>(str, _val);
     } else {
-      std::cout << "[DEBUG] Unsupported type reached: " << typeid(T).name() << std::endl;
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
   }

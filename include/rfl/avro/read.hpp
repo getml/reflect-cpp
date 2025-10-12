@@ -39,17 +39,18 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
   int res = avro_generic_value_new(_schema.iface(), &root);
   if (res != 0) {
     avro_value_decref(&root);
+    avro_reader_free(avro_reader);
     return error(std::string("Could not read root value: ") + avro_strerror());
   }
   res = avro_value_read(avro_reader, &root);
   if (res) {
-    avro_reader_free(avro_reader);
     avro_value_decref(&root);
+    avro_reader_free(avro_reader);
     return error(std::string("Could not read root value: ") + avro_strerror());
   }
   auto result = read<T, Ps...>(InputVarType{&root});
-  avro_reader_free(avro_reader);
   avro_value_decref(&root);
+  avro_reader_free(avro_reader);
   return result;
 }
 
