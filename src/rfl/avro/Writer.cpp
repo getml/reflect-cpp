@@ -73,6 +73,9 @@ Writer::OutputArrayType Writer::add_array_to_object(
 Writer::OutputArrayType Writer::add_array_to_union(
     const size_t _index, const size_t /*_size*/,
     OutputUnionType* _parent) const {
+  if (_index > static_cast<size_t>(INT_MAX)) {
+    throw std::runtime_error(std::string(__FUNCTION__) + " index error");
+  }
   avro_value_t new_array;
   int result = avro_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_array);
   if (result != 0) {
@@ -116,6 +119,9 @@ Writer::OutputMapType Writer::add_map_to_object(
 Writer::OutputMapType Writer::add_map_to_union(
     const size_t _index, const size_t /*_size*/,
     OutputUnionType* _parent) const {
+  if (_index > static_cast<size_t>(INT_MAX)) {
+    throw std::runtime_error(std::string(__FUNCTION__) + " index error");
+  }
   avro_value_t new_map;
   int result = avro_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_map);
   if (result != 0) {
@@ -159,6 +165,9 @@ Writer::OutputObjectType Writer::add_object_to_object(
 Writer::OutputObjectType Writer::add_object_to_union(
     const size_t _index, const size_t /*_size*/,
     OutputUnionType* _parent) const {
+  if (_index > static_cast<size_t>(INT_MAX)) {
+    throw std::runtime_error(std::string(__FUNCTION__) + " index error");
+  }
   avro_value_t new_object;
   int result = avro_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_object);
   if (result != 0) {
@@ -199,6 +208,9 @@ Writer::OutputUnionType Writer::add_union_to_object(
 
 Writer::OutputUnionType Writer::add_union_to_union(
     const size_t _index, OutputUnionType* _parent) const {
+  if (_index > static_cast<size_t>(INT_MAX)) {
+    throw std::runtime_error(std::string(__FUNCTION__) + " index error");
+  }
   avro_value_t new_union;
   int result = avro_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_union);
   if (result != 0) {
@@ -251,6 +263,9 @@ Writer::OutputVarType Writer::add_null_to_object(
 
 Writer::OutputVarType Writer::add_null_to_union(
     const size_t _index, OutputUnionType* _parent) const {
+  if (_index > static_cast<size_t>(INT_MAX)) {
+    throw std::runtime_error(std::string(__FUNCTION__) + " index error");
+  }
   avro_value_t new_null;
   int result = avro_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_null);
   if (result != 0) {

@@ -214,15 +214,17 @@ class Writer {
         throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
       }
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-      int result = avro_value_set_double(_val, static_cast<double>(_var));
+      /*int result = avro_value_set_double(_val, static_cast<double>(_var));
       if (result != 0) {
         throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
-      }
+      }*/
+      avro_value_set_double(_val, static_cast<double>(_var));
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      int result = avro_value_set_long(_val, static_cast<std::int64_t>(_var));
+      /*int result = avro_value_set_long(_val, static_cast<std::int64_t>(_var));
       if (result != 0) {
         throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
-      }
+      }*/
+      avro_value_set_long(_val, static_cast<std::int64_t>(_var));
     } else if constexpr (internal::is_literal_v<T>) {
       int result = avro_value_set_enum(_val, static_cast<int>(_var.value()));
       if (result != 0) {

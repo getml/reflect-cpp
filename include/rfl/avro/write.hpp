@@ -28,7 +28,7 @@ std::vector<char> write(const auto& _obj, const auto& _schema) {
     avro_value_decref(&root);
     throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
   }
-const auto writer = Writer(&root);
+  const auto writer = Writer(&root);
   Parser<T, Processors<Ps...>>::write(writer, _obj,
                                       typename ParentType::Root{});
   size_t size = 0;
