@@ -261,7 +261,12 @@ if (REFLECTCPP_CAPNPROTO)
     if (NOT TARGET CapnProto)
         find_package(CapnProto CONFIG REQUIRED)
     endif ()
-     target_link_libraries(reflectcpp PUBLIC CapnProto::kj CapnProto::capnp CapnProto::capnpc CapnProto::kj-gzip)
+    set(CAPNPC_LIB CapnProto::capnpc)
+    if (NOT TARGET CapnProto::capnpc)
+      # in some old versions, there is no alias target CapnProto::capnpc, fallback to capnc
+      set(CAPNPC_LIB capnpc)
+    endif()
+    target_link_libraries(reflectcpp PUBLIC CapnProto::kj CapnProto::capnp ${CAPNPC_LIB} CapnProto::kj-gzip)
 endif ()
 
 if (REFLECTCPP_CBOR)

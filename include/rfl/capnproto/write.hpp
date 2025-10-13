@@ -62,6 +62,13 @@ std::ostream& write(const auto& _obj, std::ostream& _stream) {
   return _stream;
 }
 
+template <class... Ps>
+std::ostream& write(const auto& _obj, const auto& _schema, std::ostream& _stream) {
+  auto buffer = write<Ps...>(_obj, _schema);
+  _stream.write(buffer.data(), buffer.size());
+  return _stream;
+}
+
 }  // namespace rfl::capnproto
 
 #endif

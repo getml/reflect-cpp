@@ -76,6 +76,11 @@ auto read(std::istream& _stream) {
   return read<T, Ps...>(bytes.data(), bytes.size());
 }
 
+template <class T, class... Ps>
+auto read(std::istream& _stream, const Schema<T>& _schema) {
+  return read<T, Ps...>(_stream, _schema);
+}
+
 }  // namespace rfl::capnproto
 
 #endif
