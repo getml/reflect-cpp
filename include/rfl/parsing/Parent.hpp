@@ -1,7 +1,6 @@
 #ifndef RFL_PARSING_PARENT_HPP_
 #define RFL_PARSING_PARENT_HPP_
 
-#include <string>
 #include <string_view>
 #include <type_traits>
 

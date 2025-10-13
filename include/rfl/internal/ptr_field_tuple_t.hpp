@@ -1,10 +1,6 @@
 #ifndef RFL_INTERNAL_PTR_NAMED_TUPLE_T_HPP_
 #define RFL_INTERNAL_PTR_NAMED_TUPLE_T_HPP_
 
-#include <functional>
-#include <tuple>
-#include <type_traits>
-
 #include "to_ptr_field_tuple.hpp"
 
 namespace rfl {

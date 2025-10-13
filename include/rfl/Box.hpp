@@ -2,7 +2,6 @@
 #define RFL_BOX_HPP_
 
 #include <memory>
-#include <stdexcept>
 
 #include "Result.hpp"
 
@@ -146,7 +145,7 @@ namespace std {
 template <class T>
 struct hash<rfl::Box<T>> {
   size_t operator()(const rfl::Box<T>& _b) const {
-    return hash<unique_ptr<T>>()(_b.ptr());
+    return std::hash<std::unique_ptr<T>>{}(_b.ptr());
   }
 };
 

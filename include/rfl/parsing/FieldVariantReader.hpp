@@ -1,13 +1,11 @@
 #ifndef RFL_PARSING_FIELDVARIANTREADER_HPP_
 #define RFL_PARSING_FIELDVARIANTREADER_HPP_
 
-#include <array>
 #include <optional>
 #include <sstream>
 #include <string_view>
 #include <type_traits>
 #include <utility>
-#include <vector>
 
 #include "../Result.hpp"
 #include "../Variant.hpp"

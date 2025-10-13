@@ -2,7 +2,6 @@
 #define RFL_PARSING_PARSER_PAIR_HPP_
 
 #include <map>
-#include <type_traits>
 #include <utility>
 
 #include "../Ref.hpp"

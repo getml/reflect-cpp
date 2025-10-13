@@ -4,9 +4,6 @@
 #include <cstdint>
 #include <jsoncons_ext/cbor/cbor_encoder.hpp>
 #include <ostream>
-#include <sstream>
-#include <string>
-#include <utility>
 
 #include "../internal/ptr_cast.hpp"
 #include "../parsing/Parent.hpp"

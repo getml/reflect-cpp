@@ -2,7 +2,6 @@
 #define RFL_INTERNAL_TO_STD_ARRAY_HPP_
 
 #include <array>
-#include <cstdint>
 #include <type_traits>
 
 namespace rfl::internal {

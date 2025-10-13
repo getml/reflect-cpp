@@ -1,8 +1,6 @@
 #ifndef RFL_PARSING_SCHEMAFUL_TUPLETOOBJECT_HPP_
 #define RFL_PARSING_SCHEMAFUL_TUPLETOOBJECT_HPP_
 
-#include <string>
-
 #include "../schema/Type.hpp"
 
 namespace rfl::parsing::schemaful {

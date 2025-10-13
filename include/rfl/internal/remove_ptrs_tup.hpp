@@ -1,7 +1,6 @@
 #ifndef RFL_INTERNAL_REMOVE_PTRS_TUP_HPP_
 #define RFL_INTERNAL_REMOVE_PTRS_TUP_HPP_
 
-#include <functional>
 #include <type_traits>
 
 #include "../Tuple.hpp"

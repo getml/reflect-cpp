@@ -3,20 +3,14 @@
 
 #include <msgpack.h>
 
-#include <exception>
-#include <map>
-#include <sstream>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
-#include <variant>
-#include <vector>
 
-#include "../Box.hpp"
+//#include "../Box.hpp"
 #include "../Bytestring.hpp"
-#include "../Ref.hpp"
-#include "../Result.hpp"
+//#include "../Ref.hpp"
+//#include "../Result.hpp"
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 
@@ -65,14 +59,14 @@ class Writer {
 
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
-                                   OutputArrayType* _parent) const noexcept {
+                                   OutputArrayType* /*_parent*/) const noexcept {
     return new_value(_var);
   }
 
   template <class T>
   OutputVarType add_value_to_object(const std::string_view& _name,
                                     const T& _var,
-                                    OutputObjectType* _parent) const noexcept {
+                                    OutputObjectType* /*_parent*/) const noexcept {
     msgpack_pack_str(pk_, _name.size());
     msgpack_pack_str_body(pk_, _name.data(), _name.size());
     return new_value(_var);

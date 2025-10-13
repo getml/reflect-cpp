@@ -1,7 +1,6 @@
 #ifndef RFL_MOVE_FROM_TUPLE_HPP_
 #define RFL_MOVE_FROM_TUPLE_HPP_
 
-#include <functional>
 #include <type_traits>
 
 #include "../Tuple.hpp"

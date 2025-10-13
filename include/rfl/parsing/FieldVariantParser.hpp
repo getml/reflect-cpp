@@ -2,7 +2,6 @@
 #define RFL_PARSING_FIELD_VARIANT_PARSER_HPP_
 
 #include <map>
-#include <stdexcept>
 #include <string>
 #include <type_traits>
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "bitflags.hpp"
 #include "details/format_util.hpp"
 #include "enchantum.hpp"
 #include <fmt/format.h>

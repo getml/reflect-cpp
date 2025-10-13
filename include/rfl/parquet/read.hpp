@@ -5,10 +5,9 @@
 #include <parquet/arrow/reader.h>
 
 #include <istream>
-#include <memory>
 #include <string>
 
-#include "../Processors.hpp"
+//#include "../Processors.hpp"
 #include "../Result.hpp"
 #include "../concepts.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"

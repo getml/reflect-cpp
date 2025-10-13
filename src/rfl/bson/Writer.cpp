@@ -7,13 +7,13 @@ Writer::Writer(bson_t* _doc) : doc_(_doc) {}
 Writer::~Writer() = default;
 
 Writer::OutputArrayType Writer::array_as_root(
-    const size_t _size) const noexcept {
+    const size_t /*_size*/) const noexcept {
   bson_array_builder_t* val = bson_array_builder_new();
   return OutputArrayType(val, IsRoot{});
 }
 
 Writer::OutputObjectType Writer::object_as_root(
-    const size_t _size) const noexcept {
+    const size_t /*_size*/) const noexcept {
   return OutputObjectType(doc_, IsRoot{});
 }
 
@@ -23,14 +23,14 @@ Writer::OutputVarType Writer::null_as_root() const noexcept {
 }
 
 Writer::OutputArrayType Writer::add_array_to_array(
-    const size_t _size, OutputArrayType* _parent) const noexcept {
+    const size_t /*_size*/, OutputArrayType* _parent) const noexcept {
   bson_array_builder_t* val;
   bson_array_builder_append_array_builder_begin(_parent->val_, &val);
   return OutputArrayType(val, IsArray{_parent->val_});
 }
 
 Writer::OutputArrayType Writer::add_array_to_object(
-    const std::string_view& _name, const size_t _size,
+    const std::string_view& _name, const size_t /*_size*/,
     OutputObjectType* _parent) const noexcept {
   bson_array_builder_t* val;
   bson_append_array_builder_begin(_parent->val_, _name.data(),
@@ -39,7 +39,7 @@ Writer::OutputArrayType Writer::add_array_to_object(
 }
 
 Writer::OutputObjectType Writer::add_object_to_array(
-    const size_t _size, OutputArrayType* _parent) const noexcept {
+    const size_t /*_size*/, OutputArrayType* _parent) const noexcept {
   subdocs_->emplace_back(rfl::Box<BSONType>());
   bson_array_builder_append_document_begin(_parent->val_,
                                            &(subdocs_->back()->val_));
@@ -47,7 +47,7 @@ Writer::OutputObjectType Writer::add_object_to_array(
 }
 
 Writer::OutputObjectType Writer::add_object_to_object(
-    const std::string_view& _name, const size_t _size,
+    const std::string_view& _name, const size_t /*_size*/,
     OutputObjectType* _parent) const noexcept {
   subdocs_->emplace_back(rfl::Box<BSONType>());
   bson_append_document_begin(_parent->val_, _name.data(),

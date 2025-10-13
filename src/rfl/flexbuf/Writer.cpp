@@ -7,12 +7,12 @@ Writer::Writer(const Ref<flexbuffers::Builder>& _fbb) : fbb_(_fbb) {}
 Writer::~Writer() = default;
 
 Writer::OutputArrayType Writer::array_as_root(
-    const size_t _size) const noexcept {
+    const size_t /*_size*/) const noexcept {
   return new_array();
 }
 
 Writer::OutputObjectType Writer::object_as_root(
-    const size_t _size) const noexcept {
+    const size_t /*_size*/) const noexcept {
   return new_object();
 }
 
@@ -22,35 +22,35 @@ Writer::OutputVarType Writer::null_as_root() const noexcept {
 }
 
 Writer::OutputArrayType Writer::add_array_to_array(
-    const size_t _size, OutputArrayType* _parent) const noexcept {
+    const size_t /*_size*/, OutputArrayType* /*_parent*/) const noexcept {
   return new_array();
 }
 
 Writer::OutputArrayType Writer::add_array_to_object(
-    const std::string_view& _name, const size_t _size,
-    OutputObjectType* _parent) const noexcept {
+    const std::string_view& _name, const size_t /*_size*/,
+    OutputObjectType* /*_parent*/) const noexcept {
   return new_array(_name);
 }
 
 Writer::OutputObjectType Writer::add_object_to_array(
-    const size_t _size, OutputArrayType* _parent) const noexcept {
+    const size_t /*_size*/, OutputArrayType* /*_parent*/) const noexcept {
   return new_object();
 }
 
 Writer::OutputObjectType Writer::add_object_to_object(
-    const std::string_view& _name, const size_t _size,
-    OutputObjectType* _parent) const noexcept {
+    const std::string_view& _name, const size_t /*_size*/,
+    OutputObjectType* /*_parent*/) const noexcept {
   return new_object(_name);
 }
 
 Writer::OutputVarType Writer::add_null_to_array(
-    OutputArrayType* _parent) const noexcept {
+    OutputArrayType* /*_parent*/) const noexcept {
   fbb_->Null();
   return OutputVarType{};
 }
 
 Writer::OutputVarType Writer::add_null_to_object(
-    const std::string_view& _name, OutputObjectType* _parent) const noexcept {
+    const std::string_view& _name, OutputObjectType* /*_parent*/) const noexcept {
   fbb_->Null(_name.data());
   return OutputVarType{};
 }

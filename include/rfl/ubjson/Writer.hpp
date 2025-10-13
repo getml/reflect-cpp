@@ -2,11 +2,8 @@
 #define RFL_UBJSON_WRITER_HPP_
 
 #include <bit>
-#include <exception>
 #include <jsoncons_ext/ubjson/ubjson_encoder.hpp>
 #include <map>
-#include <sstream>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>

@@ -1,8 +1,5 @@
 #include <benchmark/benchmark.h>
 
-#include <array>
-#include <iostream>
-#include <optional>
 #include <rfl/avro.hpp>
 #include <rfl/bson.hpp>
 #include <rfl/capnproto.hpp>
@@ -14,7 +11,6 @@
 #include <rfl/ubjson.hpp>
 #include <rfl/xml.hpp>
 #include <rfl/yaml.hpp>
-#include <type_traits>
 #include <vector>
 namespace person_read {
 

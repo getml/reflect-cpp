@@ -1,7 +1,6 @@
 #ifndef RFL_PARSING_CALL_DESTRUCTORS_ON_TUPLE_WHERE_NECESSARY_HPP_
 #define RFL_PARSING_CALL_DESTRUCTORS_ON_TUPLE_WHERE_NECESSARY_HPP_
 
-#include <array>
 #include <type_traits>
 
 #include "../Tuple.hpp"

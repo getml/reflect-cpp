@@ -1,5 +1,4 @@
 #include <iostream>
-#include <memory>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
 #include <span>

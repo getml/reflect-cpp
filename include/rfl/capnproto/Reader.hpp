@@ -3,12 +3,9 @@
 
 #include <capnp/dynamic.h>
 
-#include <cstddef>
 #include <exception>
 #include <string>
-#include <string_view>
 #include <type_traits>
-#include <vector>
 
 #include "../Bytestring.hpp"
 #include "../Result.hpp"

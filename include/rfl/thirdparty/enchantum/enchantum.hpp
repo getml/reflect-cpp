@@ -5,7 +5,6 @@
 #include "details/string_view.hpp"
 #include "entries.hpp"
 #include <type_traits>
-#include <utility>
 
 namespace enchantum {
 

@@ -2,7 +2,6 @@
 #define RFL_PARSING_PARSER_FILEPATH_HPP_
 
 #include <filesystem>
-#include <utility>
 
 #include "../Result.hpp"
 #include "Parser_base.hpp"

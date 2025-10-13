@@ -4,7 +4,6 @@
 #include <bson/bson.h>
 
 #include <istream>
-#include <string>
 
 #include "../Processors.hpp"
 #include "../concepts.hpp"

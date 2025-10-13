@@ -1,12 +1,10 @@
 #ifndef RFL_INTERNAL_ISATTRIBUTE_HPP_
 #define RFL_INTERNAL_ISATTRIBUTE_HPP_
 
-#include <tuple>
 #include <type_traits>
-#include <utility>
 
 #include "../Attribute.hpp"
-#include "../Field.hpp"
+//#include "../Field.hpp"
 #include "remove_rename.hpp"
 
 namespace rfl {

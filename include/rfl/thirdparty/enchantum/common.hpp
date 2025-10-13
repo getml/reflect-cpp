@@ -1,7 +1,6 @@
 #pragma once
 #include <concepts>
 #include <limits>
-#include <string_view>
 #include <type_traits>
 
 #ifndef ENCHANTUM_ASSERT

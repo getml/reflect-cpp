@@ -1,8 +1,6 @@
 #ifndef RFL_INTERNAL_NT_TO_PTR_NAMED_TUPLE_HPP_
 #define RFL_INTERNAL_NT_TO_PTR_NAMED_TUPLE_HPP_
 
-#include <tuple>
-
 #include "../Field.hpp"
 #include "../Tuple.hpp"
 #include "../make_named_tuple.hpp"

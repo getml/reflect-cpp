@@ -1,4 +1,3 @@
-#include <iostream>
 #include <optional>
 #include <rfl/parquet.hpp>
 #include <string>

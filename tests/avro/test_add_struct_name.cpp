@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -15,7 +14,7 @@ struct Person {
   rfl::Timestamp<"%Y-%m-%d"> birthday;
   Age age;
   rfl::Email email;
-  std::vector<Person> children;
+  std::vector<Person> children{};
 };
 
 TEST(avro, test_add_struct_name) {

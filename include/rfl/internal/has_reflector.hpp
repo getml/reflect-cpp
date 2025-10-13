@@ -1,8 +1,6 @@
 #ifndef RFL_INTERNAL_HASREFLECTOR_HPP_
 #define RFL_INTERNAL_HASREFLECTOR_HPP_
 
-#include <type_traits>
-
 namespace rfl {
 template <typename T>
 struct Reflector;

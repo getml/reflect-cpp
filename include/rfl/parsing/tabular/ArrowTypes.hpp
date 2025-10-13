@@ -3,13 +3,10 @@
 
 #include <arrow/api.h>
 
-#include <array>
-#include <cinttypes>
 #include <memory>
 #include <optional>
 #include <stdexcept>
 #include <string>
-#include <type_traits>
 
 #include "../../Box.hpp"
 #include "../../NamedTuple.hpp"

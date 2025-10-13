@@ -4,7 +4,6 @@
 #include <concepts>
 #include <string>
 #include <string_view>
-#include <variant>
 
 namespace rfl::parsing::schemaful {
 

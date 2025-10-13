@@ -1,4 +1,3 @@
-#include <iostream>
 #include <map>
 #include <rfl.hpp>
 #include <rfl/json.hpp>

@@ -1,5 +1,4 @@
 #include <deque>
-#include <iostream>
 #include <rfl/parquet.hpp>
 #include <string>
 

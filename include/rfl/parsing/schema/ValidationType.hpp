@@ -1,8 +1,6 @@
 #ifndef RFL_PARSING_SCHEMA_VALIDATIONTYPE_HPP_
 #define RFL_PARSING_SCHEMA_VALIDATIONTYPE_HPP_
 
-#include <cstddef>
-#include <map>
 #include <string>
 #include <vector>
 

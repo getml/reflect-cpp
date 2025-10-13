@@ -1,0 +1,8 @@
+Checks: |
+  -misc-unused-using-decls
+  -misc-include-cleaner
+  -modernize-use-using
+  -readability-duplicate-include
+  -readability-redundant-preprocessor
+HeaderFilterRegex: \./.+\\.(h|hpp)$
+WarningsAsErrors: false

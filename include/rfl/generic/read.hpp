@@ -1,12 +1,9 @@
 #ifndef GENERIC_READ_HPP_
 #define GENERIC_READ_HPP_
 
-#include <istream>
-#include <vector>
 
 #include "../Generic.hpp"
 #include "../Processors.hpp"
-#include "../Result.hpp"
 #include "Parser.hpp"
 
 namespace rfl {

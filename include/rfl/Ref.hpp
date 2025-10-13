@@ -129,11 +129,10 @@ inline std::basic_ostream<CharT, Traits>& operator<<(
 }  // namespace rfl
 
 namespace std {
-
 template <class T>
 struct hash<rfl::Ref<T>> {
   size_t operator()(const rfl::Ref<T>& _r) const {
-    return hash<shared_ptr<T>>()(_r.ptr());
+    return std::hash<std::shared_ptr<T>>{}(_r.ptr());
   }
 };
 

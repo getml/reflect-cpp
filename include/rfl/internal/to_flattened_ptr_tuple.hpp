@@ -1,8 +1,6 @@
 #ifndef RFL_INTERNAL_TO_FLATTENED_PTR_TUPLE_HPP_
 #define RFL_INTERNAL_TO_FLATTENED_PTR_TUPLE_HPP_
 
-#include <tuple>
-
 #include "../Tuple.hpp"
 #include "../tuple_cat.hpp"
 #include "has_flatten_fields.hpp"

@@ -2,7 +2,6 @@
 #define RFL_INTERNAL_TUPLE_CALCULATE_POSITIONS_HPP_
 
 #include <array>
-#include <utility>
 
 namespace rfl::internal::tuple {
 

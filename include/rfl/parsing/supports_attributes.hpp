@@ -2,7 +2,6 @@
 #define RFL_PARSING_SUPPORTSATTRIBUTES_HPP_
 
 #include <concepts>
-#include <string>
 #include <string_view>
 
 #include "../Result.hpp"

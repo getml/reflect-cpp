@@ -3,9 +3,7 @@
 
 #include <gtest/gtest.h>
 
-#include <iostream>
 #include <rfl/parquet.hpp>
-#include <string>
 
 template <class... Ps>
 void write_and_read(const auto& _vec, const rfl::parquet::Settings& _settings =

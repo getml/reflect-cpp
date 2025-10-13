@@ -1,5 +1,4 @@
 #include <cassert>
-#include <iostream>
 #include <rfl.hpp>
 #include <rfl/cbor.hpp>
 #include <string>

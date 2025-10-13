@@ -4,20 +4,13 @@
 #include <flatbuffers/flexbuffers.h>
 
 #include <cstddef>
-#include <exception>
-#include <functional>
-#include <map>
-#include <optional>
-#include <sstream>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
-#include <vector>
 
 #include "../Bytestring.hpp"
-#include "../Ref.hpp"
-#include "../Result.hpp"
+//#include "../Ref.hpp"
+//#include "../Result.hpp"
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 
@@ -70,14 +63,14 @@ struct Writer {
 
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
-                                   OutputArrayType* _parent) const noexcept {
+                                   OutputArrayType* /*_parent*/) const noexcept {
     return insert_value(_var);
   }
 
   template <class T>
   OutputVarType add_value_to_object(const std::string_view& _name,
                                     const T& _var,
-                                    OutputObjectType* _parent) const noexcept {
+                                    OutputObjectType* /*_parent*/) const noexcept {
     return insert_value(_name, _var);
   }
 

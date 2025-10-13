@@ -1,4 +1,3 @@
-#include <iostream>
 #include <optional>
 #include <rfl/csv.hpp>
 #include <string>

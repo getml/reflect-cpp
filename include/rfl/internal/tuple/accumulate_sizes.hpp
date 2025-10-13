@@ -2,7 +2,6 @@
 #define RFL_INTERNAL_TUPLE_ACCUMULATE_SIZES_HPP_
 
 #include <array>
-#include <utility>
 
 namespace rfl::internal::tuple {
 
@@ -17,8 +16,8 @@ struct Sizes {
 };
 
 template <class T, unsigned long _last, unsigned long... _is>
-consteval auto operator+(const Sizes<_last, _is...>& _sizes,
-                         const SizeWrapper<T>& _w) {
+consteval auto operator+(const Sizes<_last, _is...>& /*_sizes*/,
+                         const SizeWrapper<T>& /*_w*/) {
   if constexpr (_last % alignof(T) == 0) {
     constexpr auto last_new = _last + sizeof(T);
     return Sizes<last_new, _is..., _last>{};

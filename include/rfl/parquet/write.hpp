@@ -4,16 +4,12 @@
 #include <arrow/io/api.h>
 #include <parquet/arrow/writer.h>
 
-#include <cstdint>
 #include <ostream>
-#include <sstream>
 #include <stdexcept>
-#include <string>
 #include <string_view>
-#include <utility>
 
-#include "../Processors.hpp"
-#include "../Ref.hpp"
+//#include "../Processors.hpp"
+//#include "../Ref.hpp"
 #include "../parsing/tabular/ArrowWriter.hpp"
 #include "Settings.hpp"
 

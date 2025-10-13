@@ -7,8 +7,6 @@
 #include "../thirdparty/yyjson.h"
 #endif
 
-#include <fstream>
-#include <iostream>
 #include <string>
 
 #include "../Result.hpp"
@@ -21,8 +19,8 @@ namespace json {
 template <class... Ps>
 Result<Nothing> save(const std::string& _fname, const auto& _obj,
                      const yyjson_write_flag _flag = 0) {
-  const auto write_func = [_flag](const auto& _obj, auto& _stream) -> auto& {
-    return write<Ps...>(_obj, _stream, _flag);
+  const auto write_func = [_flag](const auto& _obj_ref, auto& _stream) -> auto& {
+    return write<Ps...>(_obj_ref, _stream, _flag);
   };
   return rfl::io::save_string(_fname, _obj, write_func);
 }

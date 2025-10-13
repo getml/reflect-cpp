@@ -3,27 +3,18 @@
 
 #include <bson/bson.h>
 
-#include <array>
-#include <concepts>
 #include <cstddef>
 #include <exception>
-#include <map>
-#include <memory>
 #include <optional>
-#include <sstream>
-#include <stdexcept>
 #include <string>
-#include <string_view>
 #include <type_traits>
-#include <unordered_map>
-#include <vector>
 
-#include "../Box.hpp"
-#include "../Bytestring.hpp"
+//#include "../Box.hpp"
+//#include "../Bytestring.hpp"
 #include "../Result.hpp"
-#include "../Vectorstring.hpp"
+//#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
-#include "../internal/ptr_cast.hpp"
+//#include "../internal/ptr_cast.hpp"
 
 namespace rfl {
 namespace bson {

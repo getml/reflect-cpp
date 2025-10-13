@@ -1,5 +1,4 @@
 #include <array>
-#include <iostream>
 #include <memory>
 #include <rfl/bson.hpp>
 #include <string>

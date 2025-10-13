@@ -2,10 +2,7 @@
 #define RFL_INTERNAL_GET_ITH_FIELD_FROM_FAKE_OBJECT_HPP_
 
 #include <cstddef>
-#include <iostream>
-#include <tuple>
 #include <type_traits>
-#include <utility>
 
 #include "../always_false.hpp"
 #include "get_fake_object.hpp"

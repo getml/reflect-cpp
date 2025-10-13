@@ -2,7 +2,6 @@
 #define RFL_INTERNAL_GETMETAFIELDS_HPP_
 
 #include <array>
-#include <tuple>
 #include <utility>
 
 #include "../MetaField.hpp"

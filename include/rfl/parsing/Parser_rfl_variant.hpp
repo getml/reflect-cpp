@@ -3,12 +3,12 @@
 
 #include <map>
 #include <type_traits>
-#include <variant>
 
 #include "../Result.hpp"
 #include "../Variant.hpp"
 #include "../always_false.hpp"
 #include "../internal/nth_element_t.hpp"
+#include "../internal/all_fields.hpp"
 #include "FieldVariantParser.hpp"
 #include "Parser_base.hpp"
 #include "VariantAlternativeWrapper.hpp"

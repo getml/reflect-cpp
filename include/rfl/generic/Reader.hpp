@@ -2,14 +2,9 @@
 #define GENERIC_READER_HPP_
 
 #include <cstddef>
-#include <exception>
-#include <map>
-#include <sstream>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
-#include <vector>
 
 #include "../Generic.hpp"
 #include "../Result.hpp"
@@ -97,7 +92,7 @@ struct Reader {
 
   template <class T>
   rfl::Result<T> use_custom_constructor(
-      const InputVarType _var) const noexcept {
+      const InputVarType /*_var*/) const noexcept {
     return error("Not supported for generic types");
   }
 };

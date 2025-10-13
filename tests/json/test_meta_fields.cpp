@@ -1,4 +1,3 @@
-#include <iostream>
 #include <rfl.hpp>
 
 #include <gtest/gtest.h>

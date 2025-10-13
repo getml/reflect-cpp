@@ -5,7 +5,6 @@
 #include <map>
 #include <string>
 #include <string_view>
-#include <type_traits>
 
 #include "../Result.hpp"
 #include "../always_false.hpp"

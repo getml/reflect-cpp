@@ -1,7 +1,6 @@
 #ifndef RFL_INTERNAL_FLATTENED_PTR_TUPLE_T_HPP_
 #define RFL_INTERNAL_FLATTENED_PTR_TUPLE_T_HPP_
 
-#include <functional>
 #include <type_traits>
 
 #include "to_flattened_ptr_tuple.hpp"

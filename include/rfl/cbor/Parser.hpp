@@ -1,8 +1,8 @@
 #ifndef RFL_CBOR_PARSER_HPP_
 #define RFL_CBOR_PARSER_HPP_
 
-#include "../Tuple.hpp"
-#include "../parsing/Parser.hpp"
+//#include "../Tuple.hpp"
+//#include "../parsing/Parser.hpp"
 #include "Reader.hpp"
 #include "Writer.hpp"
 

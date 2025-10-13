@@ -3,7 +3,6 @@
 
 #include <chrono>
 #include <map>
-#include <optional>
 #include <type_traits>
 
 #include "../Literal.hpp"

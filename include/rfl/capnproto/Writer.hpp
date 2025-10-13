@@ -4,26 +4,20 @@
 #include <capnp/dynamic.h>
 #include <kj/array.h>
 
-#include <bit>
 #include <cstdint>
-#include <exception>
-#include <map>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
-#include <variant>
-#include <vector>
 
-#include "../Box.hpp"
+//#include "../Box.hpp"
 #include "../Bytestring.hpp"
-#include "../Ref.hpp"
-#include "../Result.hpp"
+//#include "../Ref.hpp"
+//#include "../Result.hpp"
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../internal/is_literal.hpp"
-#include "../internal/ptr_cast.hpp"
+//#include "../internal/ptr_cast.hpp"
 
 namespace rfl::capnproto {
 
@@ -62,14 +56,14 @@ class Writer {
   ~Writer();
 
   template <class T>
-  OutputArrayType array_as_root(const T _size) const noexcept {
+  OutputArrayType array_as_root(const T /*_size*/) const noexcept {
     static_assert(always_false_v<T>,
                   "In Cap'n Proto, root values must always be structs.");
     throw std::runtime_error("Unsupported.");
   }
 
   template <class T>
-  OutputMapType map_as_root(const T _size) const noexcept {
+  OutputMapType map_as_root(const T /*_size*/) const noexcept {
     static_assert(always_false_v<T>,
                   "In Cap'n Proto, root values must always be structs.");
     throw std::runtime_error("Unsupported.");
@@ -92,7 +86,7 @@ class Writer {
   }
 
   template <class T>
-  OutputVarType value_as_root(const T& _var) const noexcept {
+  OutputVarType value_as_root(const T& /*_var*/) const noexcept {
     static_assert(always_false_v<T>,
                   "In Cap'n Proto, root values must always be structs.");
     throw std::runtime_error("Unsupported.");
@@ -261,11 +255,11 @@ class Writer {
     return OutputVarType{};
   }
 
-  void end_array(OutputArrayType* _arr) const noexcept {}
+  void end_array(OutputArrayType* /*_arr*/) const noexcept {}
 
-  void end_map(OutputMapType* _obj) const noexcept {}
+  void end_map(OutputMapType* /*_obj*/) const noexcept {}
 
-  void end_object(OutputObjectType* _obj) const noexcept {}
+  void end_object(OutputObjectType* /*_obj*/) const noexcept {}
 
  private:
   capnp::DynamicStruct::Builder* root_;
