@@ -308,7 +308,7 @@ std::string to_schema_internal_schema(
   const auto to_schema = [&](auto&& _root) -> JSONSchemaType {
     using U = std::decay_t<decltype(_root)>;
     return schema::JSONSchema<U>{
-        .comment = comment.size() ? std::optional(comment) : std::nullopt,
+        .comment = !comment.empty() ? std::optional(std::move(comment)) : std::nullopt,
         .root = std::forward<decltype(_root)>(_root),
         .definitions = definitions,
     };
