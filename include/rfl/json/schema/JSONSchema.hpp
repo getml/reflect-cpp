@@ -15,8 +15,9 @@ template <class T>
 struct JSONSchema {
   Rename<"$schema", Literal<"https://json-schema.org/draft/2020-12/schema">>
       schema{};
+  rfl::Rename<"$comment", std::optional<std::string>> comment{};
   Flatten<T> root{};
-  std::map<std::string, Type> definitions{};
+  rfl::Rename<"$defs", std::map<std::string, Type>> definitions{};
 };
 
 }  // namespace rfl::json::schema
