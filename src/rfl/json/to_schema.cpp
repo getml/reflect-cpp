@@ -25,6 +25,7 @@ SOFTWARE.
 */
 
 #include "rfl/json/to_schema.hpp"
+
 #include "rfl/json/schema/Type.hpp"
 #include "rfl/json/write.hpp"
 
@@ -263,7 +264,7 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type,
 
     } else if constexpr (std::is_same<T, Type::Reference>()) {
       return schema::Type{
-          .value = schema::Type::Reference{.ref = "#/definitions/" + _t.name_}};
+          .value = schema::Type::Reference{.ref = "#/$defs/" + _t.name_}};
 
     } else if constexpr (std::is_same<T, Type::StringMap>()) {
       return schema::Type{
@@ -297,7 +298,8 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type,
 
 std::string to_schema_internal_schema(
     const parsing::schema::Definition& internal_schema,
-    const yyjson_write_flag _flag, const bool _no_required) {
+    const yyjson_write_flag _flag, const bool _no_required,
+    const std::string& comment) {
   auto definitions = std::map<std::string, schema::Type>();
   for (const auto& [k, v] : internal_schema.definitions_) {
     definitions[k] = type_to_json_schema_type(v, _no_required);
@@ -306,8 +308,12 @@ std::string to_schema_internal_schema(
       typename TypeHelper<schema::Type::ReflectionType>::JSONSchemaType;
   const auto to_schema = [&](auto&& _root) -> JSONSchemaType {
     using U = std::decay_t<decltype(_root)>;
-    return schema::JSONSchema<U>{.root = std::move(_root),
-                                 .definitions = definitions};
+    return schema::JSONSchema<U>{
+        .comment =
+            !comment.empty() ? std::optional(std::move(comment)) : std::nullopt,
+        .root = std::forward<decltype(_root)>(_root),
+        .definitions = definitions,
+    };
   };
   auto root = type_to_json_schema_type(internal_schema.root_, _no_required);
   const auto json_schema = rfl::visit(to_schema, std::move(root.value));

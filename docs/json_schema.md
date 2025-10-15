@@ -35,15 +35,15 @@ This will result in the following JSON schema:
 ```json
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$ref": "#/definitions/Person",
-    "definitions": {
+    "$ref": "#/$defs/Person",
+    "$defs": {
         "Person": {
             "type": "object",
             "properties": {
                 "children": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/Person"
+                        "$ref": "#/$defs/Person"
                     }
                 },
                 "email": {
@@ -100,8 +100,8 @@ const std::string json_schema = rfl::json::to_schema<Person>(rfl::json::pretty);
 ```json
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$ref": "#/definitions/Person",
-    "definitions": {
+    "$ref": "#/$defs/Person",
+    "$defs": {
         "Person": {
             "type": "object",
             "properties": {
@@ -109,7 +109,7 @@ const std::string json_schema = rfl::json::to_schema<Person>(rfl::json::pretty);
                     "type": "array",
                     "description": "The person's children. Pass an empty array for no children.",
                     "items": {
-                        "$ref": "#/definitions/Person"
+                        "$ref": "#/$defs/Person"
                     }
                 },
                 "email": {
@@ -151,9 +151,9 @@ const std::string json_schema = rfl::json::to_schema<
 ```json
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$ref": "#/definitions/Person",
+    "$ref": "#/$defs/Person",
     "description": "JSON schema that describes the required attributes for the person class.",
-    "definitions": {
+    "$defs": {
         "Person": {
             "type": "object",
             "properties": {
@@ -161,7 +161,7 @@ const std::string json_schema = rfl::json::to_schema<
                     "type": "array",
                     "description": "The person's children. Pass an empty array for no children.",
                     "items": {
-                        "$ref": "#/definitions/Person"
+                        "$ref": "#/$defs/Person"
                     }
                 },
                 "email": {
