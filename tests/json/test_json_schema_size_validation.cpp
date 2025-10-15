@@ -23,7 +23,7 @@ using SizedMinMax =
 
 TEST(json, test_json_schema_sized_vector_min1_max2) {
   constexpr auto expected =
-      R"({"$schema":"https://json-schema.org/draft/2020-12/schema","allOf":[{"type":"array","items":{"type":"integer"},"minItems":1},{"type":"array","items":{"type":"integer"},"maxItems":2}],"definitions":{}})";
+      R"({"$schema":"https://json-schema.org/draft/2020-12/schema","allOf":[{"type":"array","items":{"type":"integer"},"minItems":1},{"type":"array","items":{"type":"integer"},"maxItems":2}],"$defs":{}})";
 
   auto actual = to_schema<SizedMinMax<std::vector<int>, 1, 2>>();
   ASSERT_EQ(expected, actual);
@@ -33,7 +33,7 @@ TEST(json, test_json_schema_sized_vector_min1_max2) {
 
 TEST(json, test_json_schema_sized_set_min2_max3) {
   constexpr auto expected =
-      R"({"$schema":"https://json-schema.org/draft/2020-12/schema","allOf":[{"type":"array","items":{"type":"integer"},"minItems":2},{"type":"array","items":{"type":"integer"},"maxItems":3}],"definitions":{}})";
+      R"({"$schema":"https://json-schema.org/draft/2020-12/schema","allOf":[{"type":"array","items":{"type":"integer"},"minItems":2},{"type":"array","items":{"type":"integer"},"maxItems":3}],"$defs":{}})";
 
   auto actual = to_schema<SizedMinMax<std::set<int>, 2, 3>>();
   ASSERT_EQ(expected, actual);
@@ -43,7 +43,7 @@ TEST(json, test_json_schema_sized_set_min2_max3) {
 
 TEST(json, test_json_schema_sized_string_min4_max6) {
   constexpr auto expected =
-      R"({"$schema":"https://json-schema.org/draft/2020-12/schema","allOf":[{"type":"string","minLength":4},{"type":"string","maxLength":6}],"definitions":{}})";
+      R"({"$schema":"https://json-schema.org/draft/2020-12/schema","allOf":[{"type":"string","minLength":4},{"type":"string","maxLength":6}],"$defs":{}})";
 
   auto actual = to_schema<SizedMinMax<std::string, 4, 6>>();
   ASSERT_EQ(expected, actual);
@@ -53,7 +53,7 @@ TEST(json, test_json_schema_sized_string_min4_max6) {
 
 TEST(json, test_json_schema_sized_vector_anyof_eq3_eq7) {
   constexpr auto expected =
-      R"({"$schema":"https://json-schema.org/draft/2020-12/schema","anyOf":[{"type":"array","items":{"type":"integer"},"minItems":3,"maxItems":3},{"type":"array","items":{"type":"integer"},"minItems":7,"maxItems":7}],"definitions":{}})";
+      R"({"$schema":"https://json-schema.org/draft/2020-12/schema","anyOf":[{"type":"array","items":{"type":"integer"},"minItems":3,"maxItems":3},{"type":"array","items":{"type":"integer"},"minItems":7,"maxItems":7}],"$defs":{}})";
 
   auto actual =
       to_schema<SizedAnyOf<std::vector<int>, EqualTo<3>, EqualTo<7>>>();
@@ -62,7 +62,7 @@ TEST(json, test_json_schema_sized_vector_anyof_eq3_eq7) {
 
 TEST(json, test_json_schema_sized_set_anyof_eq15_eq16) {
   constexpr auto expected =
-      R"({"$schema":"https://json-schema.org/draft/2020-12/schema","anyOf":[{"type":"array","items":{"type":"integer"},"minItems":16,"maxItems":16},{"type":"array","items":{"type":"integer"},"minItems":16,"maxItems":16}],"definitions":{}})";
+      R"({"$schema":"https://json-schema.org/draft/2020-12/schema","anyOf":[{"type":"array","items":{"type":"integer"},"minItems":16,"maxItems":16},{"type":"array","items":{"type":"integer"},"minItems":16,"maxItems":16}],"$defs":{}})";
 
   auto actual =
       to_schema<SizedAnyOf<std::vector<int>, EqualTo<16>, EqualTo<16>>>();
@@ -71,7 +71,7 @@ TEST(json, test_json_schema_sized_set_anyof_eq15_eq16) {
 
 TEST(json, test_json_schema_sized_string_anyof_eq1_eq10) {
   constexpr auto expected =
-      R"({"$schema":"https://json-schema.org/draft/2020-12/schema","anyOf":[{"type":"array","items":{"type":"integer"},"minItems":1,"maxItems":1},{"type":"array","items":{"type":"integer"},"minItems":10,"maxItems":10}],"definitions":{}})";
+      R"({"$schema":"https://json-schema.org/draft/2020-12/schema","anyOf":[{"type":"array","items":{"type":"integer"},"minItems":1,"maxItems":1},{"type":"array","items":{"type":"integer"},"minItems":10,"maxItems":10}],"$defs":{}})";
 
   auto actual =
       to_schema<SizedAnyOf<std::vector<int>, EqualTo<1>, EqualTo<10>>>();

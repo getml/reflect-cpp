@@ -36,7 +36,7 @@ This will result in the following JSON schema:
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$ref": "#/definitions/Person",
-    "definitions": {
+    "$defs": {
         "Person": {
             "type": "object",
             "properties": {
@@ -101,7 +101,7 @@ const std::string json_schema = rfl::json::to_schema<Person>(rfl::json::pretty);
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$ref": "#/definitions/Person",
-    "definitions": {
+    "$defs": {
         "Person": {
             "type": "object",
             "properties": {
@@ -153,7 +153,7 @@ const std::string json_schema = rfl::json::to_schema<
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$ref": "#/definitions/Person",
     "description": "JSON schema that describes the required attributes for the person class.",
-    "definitions": {
+    "$defs": {
         "Person": {
             "type": "object",
             "properties": {
