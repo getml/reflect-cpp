@@ -25,6 +25,7 @@ SOFTWARE.
 */
 
 #include "rfl/json/to_schema.hpp"
+
 #include "rfl/json/schema/Type.hpp"
 #include "rfl/json/write.hpp"
 
@@ -298,7 +299,7 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type,
 std::string to_schema_internal_schema(
     const parsing::schema::Definition& internal_schema,
     const yyjson_write_flag _flag, const bool _no_required,
-    std::string comment) {
+    const std::string& comment) {
   auto definitions = std::map<std::string, schema::Type>();
   for (const auto& [k, v] : internal_schema.definitions_) {
     definitions[k] = type_to_json_schema_type(v, _no_required);
@@ -308,7 +309,8 @@ std::string to_schema_internal_schema(
   const auto to_schema = [&](auto&& _root) -> JSONSchemaType {
     using U = std::decay_t<decltype(_root)>;
     return schema::JSONSchema<U>{
-        .comment = !comment.empty() ? std::optional(std::move(comment)) : std::nullopt,
+        .comment =
+            !comment.empty() ? std::optional(std::move(comment)) : std::nullopt,
         .root = std::forward<decltype(_root)>(_root),
         .definitions = definitions,
     };
