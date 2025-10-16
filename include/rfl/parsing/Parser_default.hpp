@@ -193,7 +193,9 @@ struct Parser {
     } else if constexpr (internal::is_validator_v<U>) {
       return make_validated<U>(_definitions);
 
-    } else if constexpr (internal::has_reflection_type_v<U>) {
+    } else if constexpr (internal::has_reflection_type_v<U> ||
+                         internal::has_read_reflector<U> ||
+                         internal::has_write_reflector<U>) {
       return make_reference<U>(_definitions);
 
     } else {
@@ -235,13 +237,21 @@ struct Parser {
       std::map<std::string, schema::Type>* _definitions) {
     using Type = schema::Type;
     const auto name = make_type_name<U>();
+
     if (_definitions->find(name) == _definitions->end()) {
       (*_definitions)[name] =
           Type{Type::Integer{}};  // Placeholder to avoid infinite loop.
+
       if constexpr (internal::has_reflection_type_v<U>) {
         (*_definitions)[name] =
             Parser<R, W, typename U::ReflectionType, ProcessorsType>::to_schema(
                 _definitions);
+
+      } else if constexpr (internal::has_read_reflector<U> ||
+                           internal::has_write_reflector<U>) {
+        (*_definitions)[name] = Parser<R, W, typename Reflector<U>::ReflType,
+                                       ProcessorsType>::to_schema(_definitions);
+
       } else {
         using NamedTupleType = internal::processed_t<U, ProcessorsType>;
         (*_definitions)[name] =
