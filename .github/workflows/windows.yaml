@@ -68,7 +68,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "PARQUET", "TOML", "UBJSON", "XML", "YAML", "benchmarks"]
+        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "PARQUET", "TOML", "UBJSON", "XML", "YAML"]
     name: "windows-msvc-shared (${{ matrix.format }})"
     runs-on: windows-latest
     steps:
@@ -85,6 +85,11 @@ jobs:
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
       - uses: ilammy/msvc-dev-cmd@v1
       - uses: lukka/run-vcpkg@v11
+
+      - name: Prepend build folder to PATH
+        run: echo "PATH=$(pwd)/build;$PATH" >> $GITHUB_ENV
+        shell: pwsh
+
       - name: Compile benchmarks 
         if: matrix.format == 'benchmarks' 
         run: |
@@ -103,23 +108,3 @@ jobs:
       - name: Run tests
         run: |
           ctest --test-dir build --output-on-failure
-      - name: Run benchmarks 
-        if: matrix.format == 'benchmarks' 
-        run: |
-          echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY 
-          echo '## Benchmarks across different formats' >> $GITHUB_STEP_SUMMARY 
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_read >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_write >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo '## Benchmarks for JSON' >> $GITHUB_STEP_SUMMARY 
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada >> $GITHUB_STEP_SUMMARY
-          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=licenses >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
- 
