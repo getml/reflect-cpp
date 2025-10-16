@@ -9,10 +9,11 @@
 #include "../../Ref.hpp"
 //#include "../../Rename.hpp"
 #include "../../Variant.hpp"
+#include "../../common.hpp"
 
 namespace rfl::capnproto::schema {
 
-struct Type {
+struct RFL_API Type {
   struct Void {};
 
   struct Bool {};

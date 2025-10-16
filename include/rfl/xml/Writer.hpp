@@ -8,11 +8,12 @@
 
 #include "../Ref.hpp"
 #include "../always_false.hpp"
+#include "../common.hpp"
 
 namespace rfl {
 namespace xml {
 
-struct Writer {
+struct RFL_API Writer {
   struct XMLOutputArray {
     XMLOutputArray(const std::string_view& _name,
                    const Ref<pugi::xml_node>& _node)

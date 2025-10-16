@@ -13,10 +13,11 @@
 //#include "../Result.hpp"
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
+#include "../common.hpp"
 
 namespace rfl::msgpack {
 
-class Writer {
+class RFL_API Writer {
  public:
   struct MsgpackOutputArray {};
 

@@ -17,12 +17,13 @@
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../internal/ptr_cast.hpp"
+#include "../common.hpp"
 
 namespace rfl {
 namespace bson {
 
 /// Please refer to https://mongoc.org/libbson/current/api.html
-class Writer {
+class RFL_API Writer {
   struct BSONType {
     bson_t val_;
   };

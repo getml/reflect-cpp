@@ -179,6 +179,19 @@ else()
     )
 endif()
 
+if(REFLECTCPP_JSON)
+    target_compile_definitions(reflectcpp
+        PRIVATE 
+            YYJSON_EXPORTS 
+        PUBLIC 
+            YYJSON_IMPORTS
+    )
+endif()
+
+if(REFLECTCPP_BUILD_SHARED)
+    target_compile_definitions(reflectcpp PUBLIC RFL_BUILD_SHARED)
+endif()
+
 if(REFLECTCPP_USE_STD_EXPECTED)
     target_compile_definitions(reflectcpp PUBLIC REFLECTCPP_USE_STD_EXPECTED)
 endif()

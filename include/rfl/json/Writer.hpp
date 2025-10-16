@@ -13,11 +13,12 @@
 
 //#include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../common.hpp"
 
 namespace rfl {
 namespace json {
 
-class Writer {
+class RFL_API Writer {
  public:
   struct YYJSONOutputArray {
     YYJSONOutputArray(yyjson_mut_val* _val) : val_(_val) {}
