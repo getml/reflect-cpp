@@ -20,8 +20,8 @@ option(REFLECTCPP_TOML "Enable TOML support" ${REFLECTCPP_ALL_FORMATS})
 option(REFLECTCPP_UBJSON "Enable UBJSON support" ${REFLECTCPP_ALL_FORMATS})
 option(REFLECTCPP_YAML "Enable YAML support" ${REFLECTCPP_ALL_FORMATS})
 
-option(REFLECTCPP_BUILD_BENCHMARKS "Build benchmarks" ON)
-option(REFLECTCPP_BUILD_TESTS "Build tests" ON)
+option(REFLECTCPP_BUILD_BENCHMARKS "Build benchmarks" OFF)
+option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
 
 option(REFLECTCPP_USE_BUNDLED_DEPENDENCIES "Use the bundled dependencies" ON)
 
