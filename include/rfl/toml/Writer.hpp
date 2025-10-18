@@ -11,10 +11,11 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../common.hpp"
 
 namespace rfl::toml {
 
-class Writer {
+class RFL_API Writer {
  public:
   struct TOMLArray {
     ::toml::array* val_;

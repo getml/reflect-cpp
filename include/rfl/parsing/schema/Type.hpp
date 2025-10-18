@@ -10,10 +10,11 @@
 #include "../../Ref.hpp"
 #include "../../Variant.hpp"
 #include "ValidationType.hpp"
+#include "../../common.hpp"
 
 namespace rfl::parsing::schema {
 
-struct Type {
+struct RFL_API Type {
   struct Boolean {};
 
   struct Bytestring {};

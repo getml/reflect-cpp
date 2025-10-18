@@ -10,10 +10,11 @@
 #include "../../Ref.hpp"
 #include "../../Rename.hpp"
 #include "../../Variant.hpp"
+#include "../../common.hpp"
 
 namespace rfl::avro::schema {
 
-struct Type {
+struct RFL_API Type {
   struct Null {
     Literal<"null"> type{};
   };

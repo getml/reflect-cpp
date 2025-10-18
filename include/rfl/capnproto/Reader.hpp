@@ -13,10 +13,11 @@
 #include "../always_false.hpp"
 #include "../internal/is_literal.hpp"
 #include "../internal/ptr_cast.hpp"
+#include "../common.hpp"
 
 namespace rfl::capnproto {
 
-class Reader {
+class RFL_API Reader {
  public:
   struct CapNProtoInputArray {
     capnp::DynamicList::Reader val_;

@@ -11,10 +11,11 @@
 #include "Object.hpp"
 #include "Result.hpp"
 #include "Variant.hpp"
+#include "common.hpp"
 
 namespace rfl {
 
-class Generic {
+class RFL_API Generic {
  public:
   constexpr static std::nullopt_t Null = std::nullopt;
 

@@ -12,10 +12,11 @@
 //#include "../Result.hpp"
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
+#include "../common.hpp"
 
 namespace rfl::cbor {
 
-class Writer {
+class RFL_API Writer {
   using Encoder = jsoncons::cbor::cbor_bytes_encoder;
 
  public:

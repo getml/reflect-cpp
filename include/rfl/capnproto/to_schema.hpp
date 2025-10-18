@@ -16,10 +16,11 @@
 #include "Writer.hpp"
 #include "Reader.hpp"
 //#include "schema/Type.hpp"
+#include "../common.hpp"
 
 namespace rfl::capnproto {
 
-std::string to_string_representation(
+RFL_API std::string to_string_representation(
     const parsing::schema::Definition& internal_schema);
 
 /// This ensures that the schema is only generated once.

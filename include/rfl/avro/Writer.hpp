@@ -15,10 +15,11 @@
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../internal/is_literal.hpp"
+#include "../common.hpp"
 
 namespace rfl::avro {
 
-class Writer {
+class RFL_API Writer {
  public:
   struct AVROOutputArray {
     avro_value_t val_;

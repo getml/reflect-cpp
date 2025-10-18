@@ -9,11 +9,12 @@
 
 #include "../Ref.hpp"
 #include "../always_false.hpp"
+#include "../common.hpp"
 
 namespace rfl {
 namespace yaml {
 
-class Writer {
+class RFL_API Writer {
  public:
   struct YAMLArray {};
 

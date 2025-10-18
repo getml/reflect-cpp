@@ -14,10 +14,11 @@
 #include "Schema.hpp"
 #include "Writer.hpp"
 //#include "schema/Type.hpp"
+#include "../common.hpp"
 
 namespace rfl::avro {
 
-std::string to_json_representation(
+RFL_API std::string to_json_representation(
     const parsing::schema::Definition& internal_schema);
 
 /// Returns the Avro schema for a class.

@@ -13,11 +13,12 @@
 //#include "../Result.hpp"
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
+#include "../common.hpp"
 
 namespace rfl {
 namespace flexbuf {
 
-struct Writer {
+struct RFL_API Writer {
   struct OutputArray {
     size_t start_;
   };

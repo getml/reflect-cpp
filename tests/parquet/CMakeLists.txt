@@ -10,10 +10,11 @@ target_precompile_headers(reflect-cpp-parquet-tests PRIVATE [["rfl.hpp"]] <iostr
 
 target_include_directories(reflect-cpp-parquet-tests SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
 
-target_link_libraries(
-    reflect-cpp-parquet-tests 
-    PRIVATE 
-    "${REFLECT_CPP_GTEST_LIB}"
+target_link_libraries(reflect-cpp-parquet-tests PRIVATE reflectcpp_tests_crt)
+
+add_custom_command(TARGET reflect-cpp-parquet-tests POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:reflect-cpp-parquet-tests> $<TARGET_RUNTIME_DLLS:reflect-cpp-parquet-tests>
+  COMMAND_EXPAND_LISTS
 )
 
 find_package(GTest)

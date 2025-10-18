@@ -179,6 +179,19 @@ else()
     )
 endif()
 
+if(REFLECTCPP_BUILD_SHARED AND REFLECTCPP_USE_BUNDLED_DEPENDENCIES AND _REFLECTCPP_NEEDS_JSON_IMPL)
+    target_compile_definitions(reflectcpp
+        PRIVATE 
+            YYJSON_EXPORTS 
+        INTERFACE 
+            YYJSON_IMPORTS
+    )
+endif()
+
+if(REFLECTCPP_BUILD_SHARED)
+    target_compile_definitions(reflectcpp PUBLIC RFL_BUILD_SHARED)
+endif()
+
 if(REFLECTCPP_USE_STD_EXPECTED)
     target_compile_definitions(reflectcpp PUBLIC REFLECTCPP_USE_STD_EXPECTED)
 endif()
@@ -232,7 +245,20 @@ if (REFLECTCPP_AVRO)
     if (REFLECTCPP_USE_VCPKG)
         target_include_directories(reflectcpp SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
         if (MSVC)
-            target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/avro${CMAKE_STATIC_LIBRARY_SUFFIX}")
+            set(_AVRO_STATIC_LIB "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/avro${CMAKE_STATIC_LIBRARY_SUFFIX}")
+            if(REFLECTCPP_BUILD_SHARED)
+                message(STATUS "With whole archive ${_AVRO_STATIC_LIB}")
+                target_link_libraries(reflectcpp 
+                    PUBLIC 
+                        $<LINK_LIBRARY:WHOLE_ARCHIVE,${_AVRO_STATIC_LIB}> 
+                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/snappy${CMAKE_STATIC_LIBRARY_SUFFIX}" 
+                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/lzma${CMAKE_STATIC_LIBRARY_SUFFIX}" 
+                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/jansson${CMAKE_STATIC_LIBRARY_SUFFIX}"
+                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/zlib${CMAKE_STATIC_LIBRARY_SUFFIX}"
+                )
+            else()
+                target_link_libraries(reflectcpp PUBLIC "${_AVRO_STATIC_LIB}")
+            endif()
         else ()
             target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libavro${CMAKE_STATIC_LIBRARY_SUFFIX}")
         endif ()
@@ -370,9 +396,11 @@ target_sources(reflectcpp PRIVATE ${REFLECT_CPP_SOURCES})
 target_precompile_headers(reflectcpp PRIVATE [["rfl.hpp"]] <iostream> <string> <functional>)
 
 if (REFLECTCPP_BUILD_TESTS)
+    add_library(reflectcpp_tests_crt INTERFACE)
+    target_link_libraries(reflectcpp_tests_crt INTERFACE reflectcpp GTest::gtest_main)
+
     enable_testing()
     find_package(GTest CONFIG REQUIRED)
-    set(REFLECT_CPP_GTEST_LIB reflectcpp GTest::gtest_main)
     add_subdirectory(tests)
 endif ()
 

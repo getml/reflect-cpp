@@ -18,10 +18,11 @@
 #include "../always_false.hpp"
 #include "../internal/is_literal.hpp"
 //#include "../internal/ptr_cast.hpp"
+#include "../common.hpp"
 
 namespace rfl::capnproto {
 
-class Writer {
+class RFL_API Writer {
  public:
   struct CapnProtoOutputArray {
     capnp::DynamicList::Builder val_;
