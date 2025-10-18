@@ -30,7 +30,7 @@
 #define YYJSON_H
 
 /*==============================================================================
- * Header Files
+ * MARK: - Header Files
  *============================================================================*/
 
 #include <float.h>
@@ -41,139 +41,105 @@
 #include <string.h>
 
 /*==============================================================================
- * Compile-time Options
+ * MARK: - Compile-time Options
  *============================================================================*/
 
 /*
- Define as 1 to disable JSON reader if JSON parsing is not required.
-
- This will disable these functions at compile-time:
-    - yyjson_read()
-    - yyjson_read_opts()
-    - yyjson_read_file()
-    - yyjson_read_number()
-    - yyjson_mut_read_number()
-
- This will reduce the binary size by about 60%.
+ Define as 1 to disable JSON reader at compile-time.
+ This disables functions with "read" in their name.
+ Reduces binary size by about 60%.
  */
 #ifndef YYJSON_DISABLE_READER
 #endif
 
 /*
- Define as 1 to disable JSON writer if JSON serialization is not required.
-
- This will disable these functions at compile-time:
-    - yyjson_write()
-    - yyjson_write_file()
-    - yyjson_write_opts()
-    - yyjson_val_write()
-    - yyjson_val_write_file()
-    - yyjson_val_write_opts()
-    - yyjson_mut_write()
-    - yyjson_mut_write_file()
-    - yyjson_mut_write_opts()
-    - yyjson_mut_val_write()
-    - yyjson_mut_val_write_file()
-    - yyjson_mut_val_write_opts()
-
- This will reduce the binary size by about 30%.
+ Define as 1 to disable JSON writer at compile-time.
+ This disables functions with "write" in their name.
+ Reduces binary size by about 30%.
  */
 #ifndef YYJSON_DISABLE_WRITER
 #endif
 
 /*
- Define as 1 to disable JSON Pointer, JSON Patch and JSON Merge Patch supports.
+ Define as 1 to disable JSON incremental reader at compile-time.
+ This disables functions with "incr" in their name.
+ */
+#ifndef YYJSON_DISABLE_INCR_READER
+#endif
 
- This will disable these functions at compile-time:
-    - yyjson_ptr_xxx()
-    - yyjson_mut_ptr_xxx()
-    - yyjson_doc_ptr_xxx()
-    - yyjson_mut_doc_ptr_xxx()
-    - yyjson_patch()
-    - yyjson_mut_patch()
-    - yyjson_merge_patch()
-    - yyjson_mut_merge_patch()
+/*
+ Define as 1 to disable JSON Pointer, JSON Patch and JSON Merge Patch supports.
+ This disables functions with "ptr" or "patch" in their name.
  */
 #ifndef YYJSON_DISABLE_UTILS
 #endif
 
 /*
- Define as 1 to disable the fast floating-point number conversion in yyjson,
- and use libc's `strtod/snprintf` instead.
+ Define as 1 to disable the fast floating-point number conversion in yyjson.
+ Libc's `strtod/snprintf` will be used instead.
 
- This will reduce the binary size by about 30%, but significantly slow down the
+ This reduces binary size by about 30%, but significantly slows down the
  floating-point read/write speed.
  */
 #ifndef YYJSON_DISABLE_FAST_FP_CONV
 #endif
 
 /*
- Define as 1 to disable non-standard JSON support at compile-time:
-    - Reading and writing inf/nan literal, such as `NaN`, `-Infinity`.
-    - Single line and multiple line comments.
-    - Single trailing comma at the end of an object or array.
-    - Invalid unicode in string value.
+ Define as 1 to disable non-standard JSON features support at compile-time,
+ such as YYJSON_READ_ALLOW_XXX and YYJSON_WRITE_ALLOW_XXX.
 
- This will also invalidate these run-time options:
-    - YYJSON_READ_ALLOW_INF_AND_NAN
-    - YYJSON_READ_ALLOW_COMMENTS
-    - YYJSON_READ_ALLOW_TRAILING_COMMAS
-    - YYJSON_READ_ALLOW_INVALID_UNICODE
-    - YYJSON_WRITE_ALLOW_INF_AND_NAN
-    - YYJSON_WRITE_ALLOW_INVALID_UNICODE
-
- This will reduce the binary size by about 10%, and speed up the reading and
- writing speed by about 2% to 6%.
+ This reduces binary size by about 10%, and slightly improves performance.
  */
 #ifndef YYJSON_DISABLE_NON_STANDARD
 #endif
 
 /*
- Define as 1 to disable UTF-8 validation at compile time.
+ Define as 1 to disable UTF-8 validation at compile-time.
 
- If all input strings are guaranteed to be valid UTF-8 encoding (for example,
- some language's String object has already validated the encoding), using this
- flag can avoid redundant UTF-8 validation in yyjson.
+ Use this if all input strings are guaranteed to be valid UTF-8
+ (e.g. language-level String types are already validated).
 
- This flag can speed up the reading and writing speed of non-ASCII encoded
- strings by about 3% to 7%.
+ Disabling UTF-8 validation improves performance for non-ASCII strings by about
+ 3% to 7%.
 
- Note: If this flag is used while passing in illegal UTF-8 strings, the
- following errors may occur:
+ Note: If this flag is enabled while passing illegal UTF-8 strings,
+ the following errors may occur:
  - Escaped characters may be ignored when parsing JSON strings.
- - Ending quotes may be ignored when parsing JSON strings, causing the string
-   to be concatenated to the next value.
- - When accessing `yyjson_mut_val` for serialization, the string ending may be
-   accessed out of bounds, causing a segmentation fault.
+ - Ending quotes may be ignored when parsing JSON strings, causing the
+   string to merge with the next value.
+ - When serializing with `yyjson_mut_val`, the string's end may be accessed
+   out of bounds, potentially causing a segmentation fault.
  */
 #ifndef YYJSON_DISABLE_UTF8_VALIDATION
 #endif
 
 /*
- Define as 1 to indicate that the target architecture does not support unaligned
- memory access. Please refer to the comments in the C file for details.
+ Define as 1 to improve performance on architectures that do not support
+ unaligned memory access.
+
+ Normally, this does not need to be set manually. See the C file for details.
  */
 #ifndef YYJSON_DISABLE_UNALIGNED_MEMORY_ACCESS
 #endif
 
-/* Define as 1 to export symbols when building this library as Windows DLL. */
+/* Define as 1 to export symbols when building this library as a Windows DLL. */
 #ifndef YYJSON_EXPORTS
 #endif
 
-/* Define as 1 to import symbols when using this library as Windows DLL. */
+/* Define as 1 to import symbols when using this library as a Windows DLL. */
 #ifndef YYJSON_IMPORTS
 #endif
 
-/* Define as 1 to include <stdint.h> for compiler which doesn't support C99. */
+/* Define as 1 to include <stdint.h> for compilers without C99 support. */
 #ifndef YYJSON_HAS_STDINT_H
 #endif
 
-/* Define as 1 to include <stdbool.h> for compiler which doesn't support C99. */
+/* Define as 1 to include <stdbool.h> for compilers without C99 support. */
 #ifndef YYJSON_HAS_STDBOOL_H
 #endif
 
 /*==============================================================================
- * Compiler Macros
+ * MARK: - Compiler Macros
  *============================================================================*/
 
 /** compiler version (MSVC) */
@@ -201,8 +167,9 @@
 #endif
 
 /** real gcc check */
-#if !defined(__clang__) && !defined(__INTEL_COMPILER) && !defined(__ICC) && \
-    defined(__GNUC__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__) && !defined(__clang__) && \
+    !defined(__llvm__) && !defined(__INTEL_COMPILER) && !defined(__ICC) && \
+    !defined(__NVCC__) && !defined(__PGI) && !defined(__TINYC__)
 #define YYJSON_IS_REAL_GCC 1
 #else
 #define YYJSON_IS_REAL_GCC 0
@@ -484,7 +451,7 @@ typedef unsigned __int64 uint64_t;
 #endif
 
 /*==============================================================================
- * Compile Hint Begin
+ * MARK: - Compile Hint Begin
  *============================================================================*/
 
 /* extern "C" begin */
@@ -510,29 +477,29 @@ extern "C" {
 #endif
 
 /*==============================================================================
- * Version
+ * MARK: - Version
  *============================================================================*/
 
 /** The major version of yyjson. */
 #define YYJSON_VERSION_MAJOR 0
 
 /** The minor version of yyjson. */
-#define YYJSON_VERSION_MINOR 10
+#define YYJSON_VERSION_MINOR 12
 
 /** The patch version of yyjson. */
 #define YYJSON_VERSION_PATCH 0
 
 /** The version of yyjson in hex: `(major << 16) | (minor << 8) | (patch)`. */
-#define YYJSON_VERSION_HEX 0x000A00
+#define YYJSON_VERSION_HEX 0x000C00
 
 /** The version string of yyjson. */
-#define YYJSON_VERSION_STRING "0.10.0"
+#define YYJSON_VERSION_STRING "0.12.0"
 
 /** The version of yyjson in hex, same as `YYJSON_VERSION_HEX`. */
 yyjson_api uint32_t yyjson_version(void);
 
 /*==============================================================================
- * JSON Types
+ * MARK: - JSON Types
  *============================================================================*/
 
 /** Type of a JSON value (3 bit). */
@@ -592,7 +559,7 @@ typedef uint8_t yyjson_subtype;
 #define YYJSON_PADDING_SIZE 4
 
 /*==============================================================================
- * Allocator
+ * MARK: - Allocator
  *============================================================================*/
 
 /**
@@ -637,7 +604,7 @@ typedef struct yyjson_alc {
     function will fail and return false.
  @return true if the `alc` has been successfully initialized.
 
- @par Example
+ @b Example
  @code
     // parse JSON with stack memory
     char buf[1024];
@@ -674,7 +641,29 @@ yyjson_api yyjson_alc *yyjson_alc_dyn_new(void);
 yyjson_api void yyjson_alc_dyn_free(yyjson_alc *alc);
 
 /*==============================================================================
- * JSON Structure
+ * MARK: - Text Locating
+ *============================================================================*/
+
+/**
+ Locate the line and column number for a byte position in a string.
+ This can be used to get better description for error position.
+
+ @param str The input string.
+ @param len The byte length of the input string.
+ @param pos The byte position within the input string.
+ @param line A pointer to receive the line number, starting from 1.
+ @param col  A pointer to receive the column number, starting from 1.
+ @param chr  A pointer to receive the character index, starting from 0.
+ @return true on success, false if `str` is NULL or `pos` is out of bounds.
+ @note Line/column/character are calculated based on Unicode characters for
+    compatibility with text editors. For multi-byte UTF-8 characters,
+    the returned value may not directly correspond to the byte position.
+ */
+yyjson_api bool yyjson_locate_pos(const char *str, size_t len, size_t pos,
+                                  size_t *line, size_t *col, size_t *chr);
+
+/*==============================================================================
+ * MARK: - JSON Structure
  *============================================================================*/
 
 /**
@@ -706,7 +695,7 @@ typedef struct yyjson_mut_doc yyjson_mut_doc;
 typedef struct yyjson_mut_val yyjson_mut_val;
 
 /*==============================================================================
- * JSON Reader API
+ * MARK: - JSON Reader API
  *============================================================================*/
 
 /** Run-time options for JSON reader. */
@@ -739,7 +728,7 @@ static const yyjson_read_flag YYJSON_READ_STOP_WHEN_DONE = 1 << 1;
     such as `[1,2,3,]`, `{"a":1,"b":2,}` (non-standard). */
 static const yyjson_read_flag YYJSON_READ_ALLOW_TRAILING_COMMAS = 1 << 2;
 
-/** Allow C-style single line and multiple line comments (non-standard). */
+/** Allow C-style single-line and mult-line comments (non-standard). */
 static const yyjson_read_flag YYJSON_READ_ALLOW_COMMENTS = 1 << 3;
 
 /** Allow inf/nan number and literal, case-insensitive,
@@ -766,6 +755,55 @@ static const yyjson_read_flag YYJSON_READ_ALLOW_INVALID_UNICODE = 1 << 6;
     The flag will be overridden by `YYJSON_READ_NUMBER_AS_RAW` flag. */
 static const yyjson_read_flag YYJSON_READ_BIGNUM_AS_RAW = 1 << 7;
 
+/** Allow UTF-8 BOM and skip it before parsing if any (non-standard). */
+static const yyjson_read_flag YYJSON_READ_ALLOW_BOM = 1 << 8;
+
+/** Allow extended number formats (non-standard):
+    - Hexadecimal numbers, such as `0x7B`.
+    - Numbers with leading or trailing decimal point, such as `.123`, `123.`.
+    - Numbers with a leading plus sign, such as `+123`. */
+static const yyjson_read_flag YYJSON_READ_ALLOW_EXT_NUMBER = 1 << 9;
+
+/** Allow extended escape sequences in strings (non-standard):
+    - Additional escapes: `\a`, `\e`, `\v`, ``\'``, `\?`, `\0`.
+    - Hex escapes: `\xNN`, such as `\x7B`.
+    - Line continuation: backslash followed by line terminator sequences.
+    - Unknown escape: if backslash is followed by an unsupported character,
+        the backslash will be removed and the character will be kept as-is.
+        However, `\1`-`\9` will still trigger an error. */
+static const yyjson_read_flag YYJSON_READ_ALLOW_EXT_ESCAPE = 1 << 10;
+
+/** Allow extended whitespace characters (non-standard):
+    - Vertical tab `\v` and form feed `\f`.
+    - Line separator `\u2028` and paragraph separator `\u2029`.
+    - Non-breaking space `\xA0`.
+    - Byte order mark: `\uFEFF`.
+    - Other Unicode characters in the Zs (Separator, space) category. */
+static const yyjson_read_flag YYJSON_READ_ALLOW_EXT_WHITESPACE = 1 << 11;
+
+/** Allow strings enclosed in single quotes (non-standard), such as ``'ab'``. */
+static const yyjson_read_flag YYJSON_READ_ALLOW_SINGLE_QUOTED_STR = 1 << 12;
+
+/** Allow object keys without quotes (non-standard), such as `{a:1,b:2}`.
+    This extends the ECMAScript IdentifierName rule by allowing any
+    non-whitespace character with code point above `U+007F`. */
+static const yyjson_read_flag YYJSON_READ_ALLOW_UNQUOTED_KEY = 1 << 13;
+
+/** Allow JSON5 format, see: [https://json5.org].
+    This flag supports all JSON5 features with some additional extensions:
+    - Accepts more escape sequences than JSON5 (e.g. `\a`, `\e`).
+    - Unquoted keys are not limited to ECMAScript IdentifierName.
+    - Allow case-insensitive `NaN`, `Inf` and `Infinity` literals. */
+static const yyjson_read_flag YYJSON_READ_JSON5 =
+    (1 << 2) |  /* YYJSON_READ_ALLOW_TRAILING_COMMAS */
+    (1 << 3) |  /* YYJSON_READ_ALLOW_COMMENTS */
+    (1 << 4) |  /* YYJSON_READ_ALLOW_INF_AND_NAN */
+    (1 << 9) |  /* YYJSON_READ_ALLOW_EXT_NUMBER */
+    (1 << 10) | /* YYJSON_READ_ALLOW_EXT_ESCAPE */
+    (1 << 11) | /* YYJSON_READ_ALLOW_EXT_WHITESPACE */
+    (1 << 12) | /* YYJSON_READ_ALLOW_SINGLE_QUOTED_STR */
+    (1 << 13);  /* YYJSON_READ_ALLOW_UNQUOTED_KEY */
+
 /** Result code for JSON reader. */
 typedef uint32_t yyjson_read_code;
 
@@ -775,7 +813,7 @@ static const yyjson_read_code YYJSON_READ_SUCCESS = 0;
 /** Invalid parameter, such as NULL input string or 0 input length. */
 static const yyjson_read_code YYJSON_READ_ERROR_INVALID_PARAMETER = 1;
 
-/** Memory allocation failure occurs. */
+/** Memory allocation failed. */
 static const yyjson_read_code YYJSON_READ_ERROR_MEMORY_ALLOCATION = 2;
 
 /** Input JSON string is empty. */
@@ -784,7 +822,7 @@ static const yyjson_read_code YYJSON_READ_ERROR_EMPTY_CONTENT = 3;
 /** Unexpected content after document, such as `[123]abc`. */
 static const yyjson_read_code YYJSON_READ_ERROR_UNEXPECTED_CONTENT = 4;
 
-/** Unexpected ending, such as `[123`. */
+/** Unexpected end of input, the parsed part is valid, such as `[123`. */
 static const yyjson_read_code YYJSON_READ_ERROR_UNEXPECTED_END = 5;
 
 /** Unexpected character inside the document, such as `[abc]`. */
@@ -793,7 +831,7 @@ static const yyjson_read_code YYJSON_READ_ERROR_UNEXPECTED_CHARACTER = 6;
 /** Invalid JSON structure, such as `[1,]`. */
 static const yyjson_read_code YYJSON_READ_ERROR_JSON_STRUCTURE = 7;
 
-/** Invalid comment, such as unclosed multi-line comment. */
+/** Invalid comment, deprecated, use `UNEXPECTED_END` for unclosed comment. */
 static const yyjson_read_code YYJSON_READ_ERROR_INVALID_COMMENT = 8;
 
 /** Invalid number, such as `123.e12`, `000`. */
@@ -811,6 +849,9 @@ static const yyjson_read_code YYJSON_READ_ERROR_FILE_OPEN = 12;
 /** Failed to read a file. */
 static const yyjson_read_code YYJSON_READ_ERROR_FILE_READ = 13;
 
+/** Incomplete input during incremental parsing; parsing state is preserved. */
+static const yyjson_read_code YYJSON_READ_ERROR_MORE = 14;
+
 /** Error information for JSON reader. */
 typedef struct yyjson_read_err {
   /** Error code, see `yyjson_read_code` for all possible values. */
@@ -821,23 +862,7 @@ typedef struct yyjson_read_err {
   size_t pos;
 } yyjson_read_err;
 
-/**
- Locate the line and column number for a byte position in a string.
- This can be used to get better description for error position.
-
- @param str The input string.
- @param len The byte length of the input string.
- @param pos The byte position within the input string.
- @param line A pointer to receive the line number, starting from 1.
- @param col  A pointer to receive the column number, starting from 1.
- @param chr  A pointer to receive the character index, starting from 0.
- @return true on success, false if `str` is NULL or `pos` is out of bounds.
- @note Line/column/character are calculated based on Unicode characters for
-    compatibility with text editors. For multi-byte UTF-8 characters,
-    the returned value may not directly correspond to the byte position.
- */
-yyjson_api bool yyjson_locate_pos(const char *str, size_t len, size_t pos,
-                                  size_t *line, size_t *col, size_t *chr);
+#if !defined(YYJSON_DISABLE_READER) || !YYJSON_DISABLE_READER
 
 /**
  Read JSON with options.
@@ -875,6 +900,7 @@ yyjson_api yyjson_doc *yyjson_read_opts(char *dat, size_t len,
  2. The `alc` is thread-safe or NULL.
 
  @param path The JSON file's path.
+    This should be a null-terminated string using the system's native encoding.
     If this path is NULL or invalid, the function will fail and return NULL.
  @param flg The JSON read options.
     Multiple options can be combined with `|` operator. 0 means no options.
@@ -933,6 +959,66 @@ yyjson_api_inline yyjson_doc *yyjson_read(const char *dat, size_t len,
                           NULL, NULL);
 }
 
+#if !defined(YYJSON_DISABLE_INCR_READER) || !YYJSON_DISABLE_INCR_READER
+
+/** Opaque state for incremental JSON reader. */
+typedef struct yyjson_incr_state yyjson_incr_state;
+
+/**
+ Initialize state for incremental read.
+
+ To read a large JSON document incrementally:
+ 1. Call `yyjson_incr_new()` to create the state for incremental reading.
+ 2. Call `yyjson_incr_read()` repeatedly.
+ 3. Call `yyjson_incr_free()` to free the state.
+
+ Note: The incremental JSON reader only supports standard JSON.
+ Flags for non-standard features (e.g. comments, trailing commas) are ignored.
+
+ @param buf The JSON data, null-terminator is not required.
+    If this parameter is NULL, the function will fail and return NULL.
+ @param buf_len The length of the JSON data in `buf`.
+    If use `YYJSON_READ_INSITU`, `buf_len` should not include the padding size.
+ @param flg The JSON read options.
+    Multiple options can be combined with `|` operator.
+ @param alc The memory allocator used by JSON reader.
+    Pass NULL to use the libc's default allocator.
+ @return A state for incremental reading.
+    It should be freed with `yyjson_incr_free()`.
+    NULL is returned if memory allocation fails.
+*/
+yyjson_api yyjson_incr_state *yyjson_incr_new(char *buf, size_t buf_len,
+                                              yyjson_read_flag flg,
+                                              const yyjson_alc *alc);
+
+/**
+ Performs incremental read of up to `len` bytes.
+
+ If NULL is returned and `err->code` is set to `YYJSON_READ_ERROR_MORE`, it
+ indicates that more data is required to continue parsing. Then, call this
+ function again with incremented `len`. Continue until a document is returned or
+ an error other than `YYJSON_READ_ERROR_MORE` is returned.
+
+ Note: Parsing in very small increments is not efficient. An increment of
+ several kilobytes or megabytes is recommended.
+
+ @param state The state for incremental reading, created using
+    `yyjson_incr_new()`.
+ @param len The number of bytes of JSON data available to parse.
+    If this parameter is 0, the function will fail and return NULL.
+ @param err A pointer to receive error information.
+ @return A new JSON document, or NULL if an error occurs.
+    When the document is no longer needed, it should be freed with
+    `yyjson_doc_free()`.
+*/
+yyjson_api yyjson_doc *yyjson_incr_read(yyjson_incr_state *state, size_t len,
+                                        yyjson_read_err *err);
+
+/** Release the incremental read state and free the memory. */
+yyjson_api void yyjson_incr_free(yyjson_incr_state *state);
+
+#endif /* YYJSON_DISABLE_INCR_READER */
+
 /**
  Returns the size of maximum memory usage to read a JSON data.
 
@@ -943,7 +1029,7 @@ yyjson_api_inline yyjson_doc *yyjson_read(const char *dat, size_t len,
  @param flg The JSON read options.
  @return The maximum memory size to read this JSON, or 0 if overflow.
 
- @par Example
+ @b Example
  @code
     // read multiple JSON with same pre-allocated memory
 
@@ -1016,27 +1102,7 @@ yyjson_api const char *yyjson_read_number(const char *dat, yyjson_val *val,
                                           const yyjson_alc *alc,
                                           yyjson_read_err *err);
 
-/**
- Read a JSON number.
-
- This function is thread-safe when data is not modified by other threads.
-
- @param dat The JSON data (UTF-8 without BOM), null-terminator is required.
-    If this parameter is NULL, the function will fail and return NULL.
- @param val The output value where result is stored.
-    If this parameter is NULL, the function will fail and return NULL.
-    The value will hold either UINT or SINT or REAL number;
- @param flg The JSON read options.
-    Multiple options can be combined with `|` operator. 0 means no options.
-    Supports `YYJSON_READ_NUMBER_AS_RAW` and `YYJSON_READ_ALLOW_INF_AND_NAN`.
- @param alc The memory allocator used for long number.
-    It is only used when the built-in floating point reader is disabled.
-    Pass NULL to use the libc's default allocator.
- @param err A pointer to receive error information.
-    Pass NULL if you don't need error information.
- @return If successful, a pointer to the character after the last character
-    used in the conversion, NULL if an error occurs.
- */
+/** Same as `yyjson_read_number()`. */
 yyjson_api_inline const char *yyjson_mut_read_number(const char *dat,
                                                      yyjson_mut_val *val,
                                                      yyjson_read_flag flg,
@@ -1045,8 +1111,10 @@ yyjson_api_inline const char *yyjson_mut_read_number(const char *dat,
   return yyjson_read_number(dat, (yyjson_val *)val, flg, alc, err);
 }
 
+#endif /* YYJSON_DISABLE_READER) */
+
 /*==============================================================================
- * JSON Writer API
+ * MARK: - JSON Writer API
  *============================================================================*/
 
 /** Run-time options for JSON writer. */
@@ -1090,6 +1158,26 @@ static const yyjson_write_flag YYJSON_WRITE_PRETTY_TWO_SPACES = 1 << 6;
     This can be helpful for text editors or NDJSON. */
 static const yyjson_write_flag YYJSON_WRITE_NEWLINE_AT_END = 1 << 7;
 
+/** The highest 8 bits of `yyjson_write_flag` and real number value's `tag`
+    are reserved for controlling the output format of floating-point numbers. */
+#define YYJSON_WRITE_FP_FLAG_BITS 8
+
+/** The highest 4 bits of flag are reserved for precision value. */
+#define YYJSON_WRITE_FP_PREC_BITS 4
+
+/** Write floating-point number using fixed-point notation.
+    - This is similar to ECMAScript `Number.prototype.toFixed(prec)`,
+      but with trailing zeros removed. The `prec` ranges from 1 to 15.
+    - This will produce shorter output but may lose some precision. */
+#define YYJSON_WRITE_FP_TO_FIXED(prec) \
+  ((yyjson_write_flag)((uint32_t)((uint32_t)(prec)) << (32 - 4)))
+
+/** Write floating-point numbers using single-precision (float).
+    - This casts `double` to `float` before serialization.
+    - This will produce shorter output, but may lose some precision.
+    - This flag is ignored if `YYJSON_WRITE_FP_TO_FIXED(prec)` is also used. */
+#define YYJSON_WRITE_FP_TO_FLOAT ((yyjson_write_flag)(1 << (32 - 5)))
+
 /** Result code for JSON writer */
 typedef uint32_t yyjson_write_code;
 
@@ -1125,8 +1213,10 @@ typedef struct yyjson_write_err {
   const char *msg;
 } yyjson_write_err;
 
+#if !defined(YYJSON_DISABLE_WRITER) || !YYJSON_DISABLE_WRITER
+
 /*==============================================================================
- * JSON Document Writer API
+ * MARK: - JSON Document Writer API
  *============================================================================*/
 
 /**
@@ -1161,6 +1251,7 @@ yyjson_api char *yyjson_write_opts(const yyjson_doc *doc, yyjson_write_flag flg,
  2. The `alc` is thread-safe or NULL.
 
  @param path The JSON file's path.
+    This should be a null-terminated string using the system's native encoding.
     If this path is NULL or invalid, the function will fail and return false.
     If this file is not empty, the content will be discarded.
  @param doc The JSON document.
@@ -1256,6 +1347,7 @@ yyjson_api char *yyjson_mut_write_opts(const yyjson_mut_doc *doc,
  3. The `alc` is thread-safe or NULL.
 
  @param path The JSON file's path.
+    This should be a null-terminated string using the system's native encoding.
     If this path is NULL or invalid, the function will fail and return false.
     If this file is not empty, the content will be discarded.
  @param doc The mutable JSON document.
@@ -1321,7 +1413,7 @@ yyjson_api_inline char *yyjson_mut_write(const yyjson_mut_doc *doc,
 }
 
 /*==============================================================================
- * JSON Value Writer API
+ * MARK: - JSON Value Writer API
  *============================================================================*/
 
 /**
@@ -1357,6 +1449,7 @@ yyjson_api char *yyjson_val_write_opts(const yyjson_val *val,
  2. The `alc` is thread-safe or NULL.
 
  @param path The JSON file's path.
+    This should be a null-terminated string using the system's native encoding.
     If this path is NULL or invalid, the function will fail and return false.
     If this file is not empty, the content will be discarded.
  @param val The JSON root value.
@@ -1454,6 +1547,7 @@ yyjson_api char *yyjson_mut_val_write_opts(const yyjson_mut_val *val,
  3. The `alc` is thread-safe or NULL.
 
  @param path The JSON file's path.
+    This should be a null-terminated string using the system's native encoding.
     If this path is NULL or invalid, the function will fail and return false.
     If this file is not empty, the content will be discarded.
  @param val The mutable JSON root value.
@@ -1519,8 +1613,38 @@ yyjson_api_inline char *yyjson_mut_val_write(const yyjson_mut_val *val,
   return yyjson_mut_val_write_opts(val, flg, NULL, len, NULL);
 }
 
+/**
+ Write a JSON number.
+
+ @param val A JSON number value to be converted to a string.
+    If this parameter is invalid, the function will fail and return NULL.
+ @param buf A buffer to store the resulting null-terminated string.
+    If this parameter is NULL, the function will fail and return NULL.
+    For integer values, the buffer must be at least 21 bytes.
+    For floating-point values, the buffer must be at least 40 bytes.
+ @return On success, returns a pointer to the character after the last
+    written character. On failure, returns NULL.
+ @note
+    - This function is thread-safe and does not allocate memory
+        (when `YYJSON_DISABLE_FAST_FP_CONV` is not defined).
+    - This function will fail and return NULL only in the following cases:
+        1) `val` or `buf` is NULL;
+        2) `val` is not a number type;
+        3) `val` is `inf` or `nan`, and non-standard JSON is explicitly disabled
+            via the `YYJSON_DISABLE_NON_STANDARD` flag.
+ */
+yyjson_api char *yyjson_write_number(const yyjson_val *val, char *buf);
+
+/** Same as `yyjson_write_number()`. */
+yyjson_api_inline char *yyjson_mut_write_number(const yyjson_mut_val *val,
+                                                char *buf) {
+  return yyjson_write_number((const yyjson_val *)val, buf);
+}
+
+#endif /* YYJSON_DISABLE_WRITER */
+
 /*==============================================================================
- * JSON Document API
+ * MARK: - JSON Document API
  *============================================================================*/
 
 /** Returns the root value of this JSON document.
@@ -1543,7 +1667,7 @@ yyjson_api_inline size_t yyjson_doc_get_val_count(yyjson_doc *doc);
 yyjson_api_inline void yyjson_doc_free(yyjson_doc *doc);
 
 /*==============================================================================
- * JSON Value Type API
+ * MARK: - JSON Value Type API
  *============================================================================*/
 
 /** Returns whether the JSON value is raw.
@@ -1603,7 +1727,7 @@ yyjson_api_inline bool yyjson_is_obj(yyjson_val *val);
 yyjson_api_inline bool yyjson_is_ctn(yyjson_val *val);
 
 /*==============================================================================
- * JSON Value Content API
+ * MARK: - JSON Value Content API
  *============================================================================*/
 
 /** Returns the JSON value's type.
@@ -1628,7 +1752,7 @@ yyjson_api_inline const char *yyjson_get_type_desc(yyjson_val *val);
 yyjson_api_inline const char *yyjson_get_raw(yyjson_val *val);
 
 /** Returns the content if the value is bool.
-    Returns NULL if `val` is NULL or type is not bool. */
+    Returns false if `val` is NULL or type is not bool. */
 yyjson_api_inline bool yyjson_get_bool(yyjson_val *val);
 
 /** Returns the content and cast to uint64_t.
@@ -1707,10 +1831,32 @@ yyjson_api_inline bool yyjson_set_sint(yyjson_val *val, int64_t num);
     @warning This will modify the `immutable` value, use with caution. */
 yyjson_api_inline bool yyjson_set_int(yyjson_val *val, int num);
 
+/** Set the value to float.
+    Returns false if input is NULL or `val` is object or array.
+    @warning This will modify the `immutable` value, use with caution. */
+yyjson_api_inline bool yyjson_set_float(yyjson_val *val, float num);
+
+/** Set the value to double.
+    Returns false if input is NULL or `val` is object or array.
+    @warning This will modify the `immutable` value, use with caution. */
+yyjson_api_inline bool yyjson_set_double(yyjson_val *val, double num);
+
 /** Set the value to real.
     Returns false if input is NULL or `val` is object or array.
     @warning This will modify the `immutable` value, use with caution. */
 yyjson_api_inline bool yyjson_set_real(yyjson_val *val, double num);
+
+/** Set the floating-point number's output format to fixed-point notation.
+    Returns false if input is NULL or `val` is not real type.
+    @see YYJSON_WRITE_FP_TO_FIXED flag.
+    @warning This will modify the `immutable` value, use with caution. */
+yyjson_api_inline bool yyjson_set_fp_to_fixed(yyjson_val *val, int prec);
+
+/** Set the floating-point number's output format to single-precision.
+    Returns false if input is NULL or `val` is not real type.
+    @see YYJSON_WRITE_FP_TO_FLOAT flag.
+    @warning This will modify the `immutable` value, use with caution. */
+yyjson_api_inline bool yyjson_set_fp_to_float(yyjson_val *val, bool flt);
 
 /** Set the value to string (null-terminated).
     Returns false if input is NULL or `val` is object or array.
@@ -1723,8 +1869,16 @@ yyjson_api_inline bool yyjson_set_str(yyjson_val *val, const char *str);
 yyjson_api_inline bool yyjson_set_strn(yyjson_val *val, const char *str,
                                        size_t len);
 
+/** Marks this string as not needing to be escaped during JSON writing.
+    This can be used to avoid the overhead of escaping if the string contains
+    only characters that do not require escaping.
+    Returns false if input is NULL or `val` is not string.
+    @see YYJSON_SUBTYPE_NOESC subtype.
+    @warning This will modify the `immutable` value, use with caution. */
+yyjson_api_inline bool yyjson_set_str_noesc(yyjson_val *val, bool noesc);
+
 /*==============================================================================
- * JSON Array API
+ * MARK: - JSON Array API
  *============================================================================*/
 
 /** Returns the number of elements in this array.
@@ -1748,13 +1902,13 @@ yyjson_api_inline yyjson_val *yyjson_arr_get_first(yyjson_val *arr);
 yyjson_api_inline yyjson_val *yyjson_arr_get_last(yyjson_val *arr);
 
 /*==============================================================================
- * JSON Array Iterator API
+ * MARK: - JSON Array Iterator API
  *============================================================================*/
 
 /**
  A JSON array iterator.
 
- @par Example
+ @b Example
  @code
     yyjson_val *val;
     yyjson_arr_iter iter = yyjson_arr_iter_with(arr);
@@ -1810,7 +1964,7 @@ yyjson_api_inline yyjson_val *yyjson_arr_iter_next(yyjson_arr_iter *iter);
  Macro for iterating over an array.
  It works like iterator, but with a more intuitive API.
 
- @par Example
+ @b Example
  @code
     size_t idx, max;
     yyjson_val *val;
@@ -1825,7 +1979,7 @@ yyjson_api_inline yyjson_val *yyjson_arr_iter_next(yyjson_arr_iter *iter);
        (idx) < (max); (idx)++, (val) = unsafe_yyjson_get_next(val))
 
 /*==============================================================================
- * JSON Object API
+ * MARK: - JSON Object API
  *============================================================================*/
 
 /** Returns the number of key-value pairs in this object.
@@ -1853,13 +2007,13 @@ yyjson_api_inline yyjson_val *yyjson_obj_getn(yyjson_val *obj, const char *key,
                                               size_t key_len);
 
 /*==============================================================================
- * JSON Object Iterator API
+ * MARK: - JSON Object Iterator API
  *============================================================================*/
 
 /**
  A JSON object iterator.
 
- @par Example
+ @b Example
  @code
     yyjson_val *key, *val;
     yyjson_obj_iter iter = yyjson_obj_iter_with(obj);
@@ -1974,7 +2128,7 @@ yyjson_api_inline yyjson_val *yyjson_obj_iter_getn(yyjson_obj_iter *iter,
  Macro for iterating over an object.
  It works like iterator, but with a more intuitive API.
 
- @par Example
+ @b Example
  @code
     size_t idx, max;
     yyjson_val *key, *val;
@@ -1990,7 +2144,7 @@ yyjson_api_inline yyjson_val *yyjson_obj_iter_getn(yyjson_obj_iter *iter,
        (idx)++, (key) = unsafe_yyjson_get_next(val), (val) = (key) + 1)
 
 /*==============================================================================
- * Mutable JSON Document API
+ * MARK: - Mutable JSON Document API
  *============================================================================*/
 
 /** Returns the root value of this JSON document.
@@ -2092,7 +2246,7 @@ yyjson_api yyjson_doc *yyjson_mut_val_imut_copy(yyjson_mut_val *val,
                                                 const yyjson_alc *alc);
 
 /*==============================================================================
- * Mutable JSON Value Type API
+ * MARK: - Mutable JSON Value Type API
  *============================================================================*/
 
 /** Returns whether the JSON value is raw.
@@ -2152,7 +2306,7 @@ yyjson_api_inline bool yyjson_mut_is_obj(yyjson_mut_val *val);
 yyjson_api_inline bool yyjson_mut_is_ctn(yyjson_mut_val *val);
 
 /*==============================================================================
- * Mutable JSON Value Content API
+ * MARK: - Mutable JSON Value Content API
  *============================================================================*/
 
 /** Returns the JSON value's type.
@@ -2259,10 +2413,34 @@ yyjson_api_inline bool yyjson_mut_set_sint(yyjson_mut_val *val, int64_t num);
     @warning This function should not be used on an existing object or array. */
 yyjson_api_inline bool yyjson_mut_set_int(yyjson_mut_val *val, int num);
 
+/** Set the value to float.
+    Returns false if input is NULL.
+    @warning This function should not be used on an existing object or array. */
+yyjson_api_inline bool yyjson_mut_set_float(yyjson_mut_val *val, float num);
+
+/** Set the value to double.
+    Returns false if input is NULL.
+    @warning This function should not be used on an existing object or array. */
+yyjson_api_inline bool yyjson_mut_set_double(yyjson_mut_val *val, double num);
+
 /** Set the value to real.
     Returns false if input is NULL.
     @warning This function should not be used on an existing object or array. */
 yyjson_api_inline bool yyjson_mut_set_real(yyjson_mut_val *val, double num);
+
+/** Set the floating-point number's output format to fixed-point notation.
+    Returns false if input is NULL or `val` is not real type.
+    @see YYJSON_WRITE_FP_TO_FIXED flag.
+    @warning This will modify the `immutable` value, use with caution. */
+yyjson_api_inline bool yyjson_mut_set_fp_to_fixed(yyjson_mut_val *val,
+                                                  int prec);
+
+/** Set the floating-point number's output format to single-precision.
+    Returns false if input is NULL or `val` is not real type.
+    @see YYJSON_WRITE_FP_TO_FLOAT flag.
+    @warning This will modify the `immutable` value, use with caution. */
+yyjson_api_inline bool yyjson_mut_set_fp_to_float(yyjson_mut_val *val,
+                                                  bool flt);
 
 /** Set the value to string (null-terminated).
     Returns false if input is NULL.
@@ -2275,6 +2453,15 @@ yyjson_api_inline bool yyjson_mut_set_str(yyjson_mut_val *val, const char *str);
 yyjson_api_inline bool yyjson_mut_set_strn(yyjson_mut_val *val, const char *str,
                                            size_t len);
 
+/** Marks this string as not needing to be escaped during JSON writing.
+    This can be used to avoid the overhead of escaping if the string contains
+    only characters that do not require escaping.
+    Returns false if input is NULL or `val` is not string.
+    @see YYJSON_SUBTYPE_NOESC subtype.
+    @warning This will modify the `immutable` value, use with caution. */
+yyjson_api_inline bool yyjson_mut_set_str_noesc(yyjson_mut_val *val,
+                                                bool noesc);
+
 /** Set the value to array.
     Returns false if input is NULL.
     @warning This function should not be used on an existing object or array. */
@@ -2286,7 +2473,7 @@ yyjson_api_inline bool yyjson_mut_set_arr(yyjson_mut_val *val);
 yyjson_api_inline bool yyjson_mut_set_obj(yyjson_mut_val *val);
 
 /*==============================================================================
- * Mutable JSON Value Creation API
+ * MARK: - Mutable JSON Value Creation API
  *============================================================================*/
 
 /** Creates and returns a raw value, returns NULL on error.
@@ -2343,7 +2530,15 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_sint(yyjson_mut_doc *doc,
 yyjson_api_inline yyjson_mut_val *yyjson_mut_int(yyjson_mut_doc *doc,
                                                  int64_t num);
 
-/** Creates and returns an real number value, returns NULL on error. */
+/** Creates and returns a float number value, returns NULL on error. */
+yyjson_api_inline yyjson_mut_val *yyjson_mut_float(yyjson_mut_doc *doc,
+                                                   float num);
+
+/** Creates and returns a double number value, returns NULL on error. */
+yyjson_api_inline yyjson_mut_val *yyjson_mut_double(yyjson_mut_doc *doc,
+                                                    double num);
+
+/** Creates and returns a real number value, returns NULL on error. */
 yyjson_api_inline yyjson_mut_val *yyjson_mut_real(yyjson_mut_doc *doc,
                                                   double num);
 
@@ -2375,7 +2570,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_strncpy(yyjson_mut_doc *doc,
                                                      size_t len);
 
 /*==============================================================================
- * Mutable JSON Array API
+ * MARK: - Mutable JSON Array API
  *============================================================================*/
 
 /** Returns the number of elements in this array.
@@ -2397,7 +2592,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_get_first(yyjson_mut_val *arr);
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_get_last(yyjson_mut_val *arr);
 
 /*==============================================================================
- * Mutable JSON Array Iterator API
+ * MARK: - Mutable JSON Array Iterator API
  *============================================================================*/
 
 /**
@@ -2406,7 +2601,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_get_last(yyjson_mut_val *arr);
  @warning You should not modify the array while iterating over it, but you can
     use `yyjson_mut_arr_iter_remove()` to remove current value.
 
- @par Example
+ @b Example
  @code
     yyjson_mut_val *val;
     yyjson_mut_arr_iter iter = yyjson_mut_arr_iter_with(arr);
@@ -2478,7 +2673,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_iter_remove(
 
  @warning You should not modify the array while iterating over it.
 
- @par Example
+ @b Example
  @code
     size_t idx, max;
     yyjson_mut_val *val;
@@ -2493,7 +2688,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_iter_remove(
        (idx) < (max); (idx)++, (val) = (val)->next)
 
 /*==============================================================================
- * Mutable JSON Array Creation API
+ * MARK: - Mutable JSON Array Creation API
  *============================================================================*/
 
 /**
@@ -2512,7 +2707,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr(yyjson_mut_doc *doc);
  @param count The value count. If this value is 0, an empty array will return.
  @return The new array. NULL if input is invalid or memory allocation failed.
 
- @par Example
+ @b Example
  @code
     const bool vals[3] = { true, false, true };
     yyjson_mut_val *arr = yyjson_mut_arr_with_bool(doc, vals, 3);
@@ -2531,7 +2726,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_bool(yyjson_mut_doc *doc,
  @param count The number count. If this value is 0, an empty array will return.
  @return The new array. NULL if input is invalid or memory allocation failed.
 
- @par Example
+ @b Example
  @code
     const int64_t vals[3] = { -1, 0, 1 };
     yyjson_mut_val *arr = yyjson_mut_arr_with_sint64(doc, vals, 3);
@@ -2550,7 +2745,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_sint(yyjson_mut_doc *doc,
  @param count The number count. If this value is 0, an empty array will return.
  @return The new array. NULL if input is invalid or memory allocation failed.
 
- @par Example
+ @b Example
  @code
     const uint64_t vals[3] = { 0, 1, 0 };
     yyjson_mut_val *arr = yyjson_mut_arr_with_uint(doc, vals, 3);
@@ -2569,7 +2764,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_uint(yyjson_mut_doc *doc,
  @param count The number count. If this value is 0, an empty array will return.
  @return The new array. NULL if input is invalid or memory allocation failed.
 
- @par Example
+ @b Example
  @code
     const double vals[3] = { 0.1, 0.2, 0.3 };
     yyjson_mut_val *arr = yyjson_mut_arr_with_real(doc, vals, 3);
@@ -2588,7 +2783,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_real(yyjson_mut_doc *doc,
  @param count The number count. If this value is 0, an empty array will return.
  @return The new array. NULL if input is invalid or memory allocation failed.
 
- @par Example
+ @b Example
  @code
     const int8_t vals[3] = { -1, 0, 1 };
     yyjson_mut_val *arr = yyjson_mut_arr_with_sint8(doc, vals, 3);
@@ -2607,7 +2802,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_sint8(yyjson_mut_doc *doc,
  @param count The number count. If this value is 0, an empty array will return.
  @return The new array. NULL if input is invalid or memory allocation failed.
 
- @par Example
+ @b Example
  @code
     const int16_t vals[3] = { -1, 0, 1 };
     yyjson_mut_val *arr = yyjson_mut_arr_with_sint16(doc, vals, 3);
@@ -2625,7 +2820,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_sint16(
  @param count The number count. If this value is 0, an empty array will return.
  @return The new array. NULL if input is invalid or memory allocation failed.
 
- @par Example
+ @b Example
  @code
     const int32_t vals[3] = { -1, 0, 1 };
     yyjson_mut_val *arr = yyjson_mut_arr_with_sint32(doc, vals, 3);
@@ -2643,7 +2838,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_sint32(
  @param count The number count. If this value is 0, an empty array will return.
  @return The new array. NULL if input is invalid or memory allocation failed.
 
- @par Example
+ @b Example
  @code
     const int64_t vals[3] = { -1, 0, 1 };
     yyjson_mut_val *arr = yyjson_mut_arr_with_sint64(doc, vals, 3);
@@ -2661,7 +2856,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_sint64(
  @param count The number count. If this value is 0, an empty array will return.
  @return The new array. NULL if input is invalid or memory allocation failed.
 
- @par Example
+ @b Example
  @code
     const uint8_t vals[3] = { 0, 1, 0 };
     yyjson_mut_val *arr = yyjson_mut_arr_with_uint8(doc, vals, 3);
@@ -2680,7 +2875,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_uint8(yyjson_mut_doc *doc,
  @param count The number count. If this value is 0, an empty array will return.
  @return The new array. NULL if input is invalid or memory allocation failed.
 
- @par Example
+ @b Example
  @code
     const uint16_t vals[3] = { 0, 1, 0 };
     yyjson_mut_val *arr = yyjson_mut_arr_with_uint16(doc, vals, 3);
@@ -2698,7 +2893,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_uint16(
  @param count The number count. If this value is 0, an empty array will return.
  @return The new array. NULL if input is invalid or memory allocation failed.
 
- @par Example
+ @b Example
  @code
     const uint32_t vals[3] = { 0, 1, 0 };
     yyjson_mut_val *arr = yyjson_mut_arr_with_uint32(doc, vals, 3);
@@ -2716,7 +2911,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_uint32(
  @param count The number count. If this value is 0, an empty array will return.
  @return The new array. NULL if input is invalid or memory allocation failed.
 
- @par Example
+ @b Example
  @code
      const uint64_t vals[3] = { 0, 1, 0 };
      yyjson_mut_val *arr = yyjson_mut_arr_with_uint64(doc, vals, 3);
@@ -2734,7 +2929,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_uint64(
  @param count The number count. If this value is 0, an empty array will return.
  @return The new array. NULL if input is invalid or memory allocation failed.
 
- @par Example
+ @b Example
  @code
     const float vals[3] = { -1.0f, 0.0f, 1.0f };
     yyjson_mut_val *arr = yyjson_mut_arr_with_float(doc, vals, 3);
@@ -2753,7 +2948,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_float(yyjson_mut_doc *doc,
  @param count The number count. If this value is 0, an empty array will return.
  @return The new array. NULL if input is invalid or memory allocation failed.
 
- @par Example
+ @b Example
  @code
     const double vals[3] = { -1.0, 0.0, 1.0 };
     yyjson_mut_val *arr = yyjson_mut_arr_with_double(doc, vals, 3);
@@ -2778,7 +2973,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_double(
     unmodified for the lifetime of this JSON document. If these strings will be
     modified, you should use `yyjson_mut_arr_with_strcpy()` instead.
 
- @par Example
+ @b Example
  @code
     const char *vals[3] = { "a", "b", "c" };
     yyjson_mut_val *arr = yyjson_mut_arr_with_str(doc, vals, 3);
@@ -2805,7 +3000,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_str(yyjson_mut_doc *doc,
     unmodified for the lifetime of this JSON document. If these strings will be
     modified, you should use `yyjson_mut_arr_with_strncpy()` instead.
 
- @par Example
+ @b Example
  @code
     const char *vals[3] = { "a", "bb", "c" };
     const size_t lens[3] = { 1, 2, 1 };
@@ -2829,7 +3024,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_strn(yyjson_mut_doc *doc,
     If this value is 0, an empty array will return.
  @return The new array. NULL if input is invalid or memory allocation failed.
 
- @par Example
+ @b Example
  @code
     const char *vals[3] = { "a", "b", "c" };
     yyjson_mut_val *arr = yyjson_mut_arr_with_strcpy(doc, vals, 3);
@@ -2851,7 +3046,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_strcpy(
     If this value is 0, an empty array will return.
  @return The new array. NULL if input is invalid or memory allocation failed.
 
- @par Example
+ @b Example
  @code
     const char *vals[3] = { "a", "bb", "c" };
     const size_t lens[3] = { 1, 2, 1 };
@@ -2862,7 +3057,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_strncpy(
     yyjson_mut_doc *doc, const char **vals, const size_t *lens, size_t count);
 
 /*==============================================================================
- * Mutable JSON Array Modification API
+ * MARK: - Mutable JSON Array Modification API
  *============================================================================*/
 
 /**
@@ -2972,7 +3167,7 @@ yyjson_api_inline bool yyjson_mut_arr_clear(yyjson_mut_val *arr);
 yyjson_api_inline bool yyjson_mut_arr_rotate(yyjson_mut_val *arr, size_t idx);
 
 /*==============================================================================
- * Mutable JSON Array Modification Convenience API
+ * MARK: - Mutable JSON Array Modification Convenience API
  *============================================================================*/
 
 /**
@@ -3051,7 +3246,7 @@ yyjson_api_inline bool yyjson_mut_arr_add_sint(yyjson_mut_doc *doc,
                                                int64_t num);
 
 /**
- Adds a integer value at the end of the array.
+ Adds an integer value at the end of the array.
  @param doc The `doc` is only used for memory allocation.
  @param arr The array to which the value is to be inserted.
     Returns false if it is NULL or not an array.
@@ -3060,6 +3255,29 @@ yyjson_api_inline bool yyjson_mut_arr_add_sint(yyjson_mut_doc *doc,
  */
 yyjson_api_inline bool yyjson_mut_arr_add_int(yyjson_mut_doc *doc,
                                               yyjson_mut_val *arr, int64_t num);
+
+/**
+ Adds a float value at the end of the array.
+ @param doc The `doc` is only used for memory allocation.
+ @param arr The array to which the value is to be inserted.
+    Returns false if it is NULL or not an array.
+ @param num The number to be added.
+ @return Whether successful.
+ */
+yyjson_api_inline bool yyjson_mut_arr_add_float(yyjson_mut_doc *doc,
+                                                yyjson_mut_val *arr, float num);
+
+/**
+ Adds a double value at the end of the array.
+ @param doc The `doc` is only used for memory allocation.
+ @param arr The array to which the value is to be inserted.
+    Returns false if it is NULL or not an array.
+ @param num The number to be added.
+ @return Whether successful.
+ */
+yyjson_api_inline bool yyjson_mut_arr_add_double(yyjson_mut_doc *doc,
+                                                 yyjson_mut_val *arr,
+                                                 double num);
 
 /**
  Adds a double value at the end of the array.
@@ -3147,7 +3365,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_add_obj(yyjson_mut_doc *doc,
                                                          yyjson_mut_val *arr);
 
 /*==============================================================================
- * Mutable JSON Object API
+ * MARK: - Mutable JSON Object API
  *============================================================================*/
 
 /** Returns the number of key-value pairs in this object.
@@ -3177,7 +3395,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_obj_getn(yyjson_mut_val *obj,
                                                       size_t key_len);
 
 /*==============================================================================
- * Mutable JSON Object Iterator API
+ * MARK: - Mutable JSON Object Iterator API
  *============================================================================*/
 
 /**
@@ -3186,7 +3404,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_obj_getn(yyjson_mut_val *obj,
  @warning You should not modify the object while iterating over it, but you can
     use `yyjson_mut_obj_iter_remove()` to remove current value.
 
- @par Example
+ @b Example
  @code
     yyjson_mut_val *key, *val;
     yyjson_mut_obj_iter iter = yyjson_mut_obj_iter_with(obj);
@@ -3316,11 +3534,11 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_obj_iter_getn(
 
  @warning You should not modify the object while iterating over it.
 
- @par Example
+ @b Example
  @code
     size_t idx, max;
-    yyjson_val *key, *val;
-    yyjson_obj_foreach(obj, idx, max, key, val) {
+    yyjson_mut_val *key, *val;
+    yyjson_mut_obj_foreach(obj, idx, max, key, val) {
         your_func(key, val);
     }
  @endcode
@@ -3332,7 +3550,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_obj_iter_getn(
        (idx) < (max); (idx)++, (key) = (val)->next, (val) = (key)->next)
 
 /*==============================================================================
- * Mutable JSON Object Creation API
+ * MARK: - Mutable JSON Object Creation API
  *============================================================================*/
 
 /** Creates and returns a mutable object, returns NULL on error. */
@@ -3346,7 +3564,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_obj(yyjson_mut_doc *doc);
  @warning The input string is not copied, you should keep this string
     unmodified for the lifetime of this JSON document.
 
- @par Example
+ @b Example
  @code
     const char *keys[2] = { "id", "name" };
     const char *vals[2] = { "01", "Harry" };
@@ -3366,7 +3584,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_obj_with_str(yyjson_mut_doc *doc,
  @warning The input string is not copied, you should keep this string
     unmodified for the lifetime of this JSON document.
 
- @par Example
+ @b Example
  @code
     const char *kv_pairs[4] = { "id", "01", "name", "Harry" };
     yyjson_mut_val *obj = yyjson_mut_obj_with_kv(doc, kv_pairs, 2);
@@ -3377,7 +3595,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_obj_with_kv(yyjson_mut_doc *doc,
                                                          size_t pair_count);
 
 /*==============================================================================
- * Mutable JSON Object Modification API
+ * MARK: - Mutable JSON Object Modification API
  *============================================================================*/
 
 /**
@@ -3483,7 +3701,7 @@ yyjson_api_inline bool yyjson_mut_obj_replace(yyjson_mut_val *obj,
 yyjson_api_inline bool yyjson_mut_obj_rotate(yyjson_mut_val *obj, size_t idx);
 
 /*==============================================================================
- * Mutable JSON Object Modification Convenience API
+ * MARK: - Mutable JSON Object Modification Convenience API
  *============================================================================*/
 
 /** Adds a `null` value at the end of the object.
@@ -3556,7 +3774,27 @@ yyjson_api_inline bool yyjson_mut_obj_add_int(yyjson_mut_doc *doc,
                                               yyjson_mut_val *obj,
                                               const char *key, int64_t val);
 
+/** Adds a float value at the end of the object.
+    The `key` should be a null-terminated UTF-8 string.
+    This function allows duplicated key in one object.
+
+    @warning The key string is not copied, you should keep the string
+        unmodified for the lifetime of this JSON document. */
+yyjson_api_inline bool yyjson_mut_obj_add_float(yyjson_mut_doc *doc,
+                                                yyjson_mut_val *obj,
+                                                const char *key, float val);
+
 /** Adds a double value at the end of the object.
+    The `key` should be a null-terminated UTF-8 string.
+    This function allows duplicated key in one object.
+
+    @warning The key string is not copied, you should keep the string
+        unmodified for the lifetime of this JSON document. */
+yyjson_api_inline bool yyjson_mut_obj_add_double(yyjson_mut_doc *doc,
+                                                 yyjson_mut_val *obj,
+                                                 const char *key, double val);
+
+/** Adds a real value at the end of the object.
     The `key` should be a null-terminated UTF-8 string.
     This function allows duplicated key in one object.
 
@@ -3697,8 +3935,10 @@ yyjson_api_inline bool yyjson_mut_obj_rename_keyn(yyjson_mut_doc *doc,
                                                   const char *new_key,
                                                   size_t new_len);
 
+#if !defined(YYJSON_DISABLE_UTILS) || !YYJSON_DISABLE_UTILS
+
 /*==============================================================================
- * JSON Pointer API (RFC 6901)
+ * MARK: - JSON Pointer API (RFC 6901)
  * https://tools.ietf.org/html/rfc6901
  *============================================================================*/
 
@@ -4267,7 +4507,7 @@ yyjson_api_inline bool yyjson_ptr_ctx_replace(yyjson_ptr_ctx *ctx,
 yyjson_api_inline bool yyjson_ptr_ctx_remove(yyjson_ptr_ctx *ctx);
 
 /*==============================================================================
- * JSON Patch API (RFC 6902)
+ * MARK: - JSON Patch API (RFC 6902)
  * https://tools.ietf.org/html/rfc6902
  *============================================================================*/
 
@@ -4332,7 +4572,7 @@ yyjson_api yyjson_mut_val *yyjson_mut_patch(yyjson_mut_doc *doc,
                                             yyjson_patch_err *err);
 
 /*==============================================================================
- * JSON Merge-Patch API (RFC 7386)
+ * MARK: - JSON Merge-Patch API (RFC 7386)
  * https://tools.ietf.org/html/rfc7386
  *============================================================================*/
 
@@ -4360,8 +4600,10 @@ yyjson_api yyjson_mut_val *yyjson_mut_merge_patch(yyjson_mut_doc *doc,
                                                   yyjson_mut_val *orig,
                                                   yyjson_mut_val *patch);
 
+#endif /* YYJSON_DISABLE_UTILS */
+
 /*==============================================================================
- * JSON Structure (Implementation)
+ * MARK: - JSON Structure (Implementation)
  *============================================================================*/
 
 /** Payload of a JSON value (8 bytes). */
@@ -4396,7 +4638,7 @@ struct yyjson_doc {
 };
 
 /*==============================================================================
- * Unsafe JSON Value API (Implementation)
+ * MARK: - Unsafe JSON Value API (Implementation)
  *============================================================================*/
 
 /*
@@ -4449,6 +4691,19 @@ yyjson_api_inline bool unsafe_yyjson_is_str_noesc(const char *str, size_t len) {
   (void)len;
 #endif
   return false;
+}
+
+yyjson_api_inline double unsafe_yyjson_u64_to_f64(uint64_t num) {
+#if YYJSON_U64_TO_F64_NO_IMPL
+  uint64_t msb = ((uint64_t)1) << 63;
+  if ((num & msb) == 0) {
+    return (double)(int64_t)num;
+  } else {
+    return ((double)(int64_t)((num >> 1) | (num & 1))) * (double)2.0;
+  }
+#else
+  return (double)num;
+#endif
 }
 
 yyjson_api_inline yyjson_type unsafe_yyjson_get_type(void *val) {
@@ -4568,17 +4823,7 @@ yyjson_api_inline double unsafe_yyjson_get_num(void *val) {
   } else if (tag == (YYJSON_TYPE_NUM | YYJSON_SUBTYPE_SINT)) {
     return (double)((yyjson_val *)val)->uni.i64;
   } else if (tag == (YYJSON_TYPE_NUM | YYJSON_SUBTYPE_UINT)) {
-#if YYJSON_U64_TO_F64_NO_IMPL
-    uint64_t msb = ((uint64_t)1) << 63;
-    uint64_t num = ((yyjson_val *)val)->uni.u64;
-    if ((num & msb) == 0) {
-      return (double)(int64_t)num;
-    } else {
-      return ((double)(int64_t)((num >> 1) | (num & 1))) * (double)2.0;
-    }
-#else
-    return (double)((yyjson_val *)val)->uni.u64;
-#endif
+    return unsafe_yyjson_u64_to_f64(((yyjson_val *)val)->uni.u64);
   }
   return 0.0;
 }
@@ -4626,6 +4871,14 @@ yyjson_api_inline void unsafe_yyjson_set_len(void *val, size_t len) {
   ((yyjson_val *)val)->tag = tag;
 }
 
+yyjson_api_inline void unsafe_yyjson_set_tag(void *val, yyjson_type type,
+                                             yyjson_subtype subtype,
+                                             size_t len) {
+  uint64_t tag = (uint64_t)len << YYJSON_TAG_BIT;
+  tag |= (type | subtype);
+  ((yyjson_val *)val)->tag = tag;
+}
+
 yyjson_api_inline void unsafe_yyjson_inc_len(void *val) {
   uint64_t tag = ((yyjson_val *)val)->tag;
   tag += (uint64_t)(1 << YYJSON_TAG_BIT);
@@ -4634,68 +4887,87 @@ yyjson_api_inline void unsafe_yyjson_inc_len(void *val) {
 
 yyjson_api_inline void unsafe_yyjson_set_raw(void *val, const char *raw,
                                              size_t len) {
-  unsafe_yyjson_set_type(val, YYJSON_TYPE_RAW, YYJSON_SUBTYPE_NONE);
-  unsafe_yyjson_set_len(val, len);
+  unsafe_yyjson_set_tag(val, YYJSON_TYPE_RAW, YYJSON_SUBTYPE_NONE, len);
   ((yyjson_val *)val)->uni.str = raw;
 }
 
 yyjson_api_inline void unsafe_yyjson_set_null(void *val) {
-  unsafe_yyjson_set_type(val, YYJSON_TYPE_NULL, YYJSON_SUBTYPE_NONE);
-  unsafe_yyjson_set_len(val, 0);
+  unsafe_yyjson_set_tag(val, YYJSON_TYPE_NULL, YYJSON_SUBTYPE_NONE, 0);
 }
 
 yyjson_api_inline void unsafe_yyjson_set_bool(void *val, bool num) {
   yyjson_subtype subtype = num ? YYJSON_SUBTYPE_TRUE : YYJSON_SUBTYPE_FALSE;
-  unsafe_yyjson_set_type(val, YYJSON_TYPE_BOOL, subtype);
-  unsafe_yyjson_set_len(val, 0);
+  unsafe_yyjson_set_tag(val, YYJSON_TYPE_BOOL, subtype, 0);
 }
 
 yyjson_api_inline void unsafe_yyjson_set_uint(void *val, uint64_t num) {
-  unsafe_yyjson_set_type(val, YYJSON_TYPE_NUM, YYJSON_SUBTYPE_UINT);
-  unsafe_yyjson_set_len(val, 0);
+  unsafe_yyjson_set_tag(val, YYJSON_TYPE_NUM, YYJSON_SUBTYPE_UINT, 0);
   ((yyjson_val *)val)->uni.u64 = num;
 }
 
 yyjson_api_inline void unsafe_yyjson_set_sint(void *val, int64_t num) {
-  unsafe_yyjson_set_type(val, YYJSON_TYPE_NUM, YYJSON_SUBTYPE_SINT);
-  unsafe_yyjson_set_len(val, 0);
+  unsafe_yyjson_set_tag(val, YYJSON_TYPE_NUM, YYJSON_SUBTYPE_SINT, 0);
   ((yyjson_val *)val)->uni.i64 = num;
 }
 
-yyjson_api_inline void unsafe_yyjson_set_real(void *val, double num) {
-  unsafe_yyjson_set_type(val, YYJSON_TYPE_NUM, YYJSON_SUBTYPE_REAL);
-  unsafe_yyjson_set_len(val, 0);
+yyjson_api_inline void unsafe_yyjson_set_fp_to_fixed(void *val, int prec) {
+  ((yyjson_val *)val)->tag &= ~((uint64_t)YYJSON_WRITE_FP_TO_FIXED(15) << 32);
+  ((yyjson_val *)val)->tag |= (uint64_t)YYJSON_WRITE_FP_TO_FIXED(prec) << 32;
+}
+
+yyjson_api_inline void unsafe_yyjson_set_fp_to_float(void *val, bool flt) {
+  uint64_t flag = (uint64_t)YYJSON_WRITE_FP_TO_FLOAT << 32;
+  if (flt)
+    ((yyjson_val *)val)->tag |= flag;
+  else
+    ((yyjson_val *)val)->tag &= ~flag;
+}
+
+yyjson_api_inline void unsafe_yyjson_set_float(void *val, float num) {
+  unsafe_yyjson_set_tag(val, YYJSON_TYPE_NUM, YYJSON_SUBTYPE_REAL, 0);
+  ((yyjson_val *)val)->tag |= (uint64_t)YYJSON_WRITE_FP_TO_FLOAT << 32;
+  ((yyjson_val *)val)->uni.f64 = (double)num;
+}
+
+yyjson_api_inline void unsafe_yyjson_set_double(void *val, double num) {
+  unsafe_yyjson_set_tag(val, YYJSON_TYPE_NUM, YYJSON_SUBTYPE_REAL, 0);
   ((yyjson_val *)val)->uni.f64 = num;
+}
+
+yyjson_api_inline void unsafe_yyjson_set_real(void *val, double num) {
+  unsafe_yyjson_set_tag(val, YYJSON_TYPE_NUM, YYJSON_SUBTYPE_REAL, 0);
+  ((yyjson_val *)val)->uni.f64 = num;
+}
+
+yyjson_api_inline void unsafe_yyjson_set_str_noesc(void *val, bool noesc) {
+  ((yyjson_val *)val)->tag &= ~(uint64_t)YYJSON_SUBTYPE_MASK;
+  if (noesc) ((yyjson_val *)val)->tag |= (uint64_t)YYJSON_SUBTYPE_NOESC;
+}
+
+yyjson_api_inline void unsafe_yyjson_set_strn(void *val, const char *str,
+                                              size_t len) {
+  unsafe_yyjson_set_tag(val, YYJSON_TYPE_STR, YYJSON_SUBTYPE_NONE, len);
+  ((yyjson_val *)val)->uni.str = str;
 }
 
 yyjson_api_inline void unsafe_yyjson_set_str(void *val, const char *str) {
   size_t len = strlen(str);
   bool noesc = unsafe_yyjson_is_str_noesc(str, len);
-  yyjson_subtype sub = noesc ? YYJSON_SUBTYPE_NOESC : YYJSON_SUBTYPE_NONE;
-  unsafe_yyjson_set_type(val, YYJSON_TYPE_STR, sub);
-  unsafe_yyjson_set_len(val, len);
-  ((yyjson_val *)val)->uni.str = str;
-}
-
-yyjson_api_inline void unsafe_yyjson_set_strn(void *val, const char *str,
-                                              size_t len) {
-  unsafe_yyjson_set_type(val, YYJSON_TYPE_STR, YYJSON_SUBTYPE_NONE);
-  unsafe_yyjson_set_len(val, len);
+  yyjson_subtype subtype = noesc ? YYJSON_SUBTYPE_NOESC : YYJSON_SUBTYPE_NONE;
+  unsafe_yyjson_set_tag(val, YYJSON_TYPE_STR, subtype, len);
   ((yyjson_val *)val)->uni.str = str;
 }
 
 yyjson_api_inline void unsafe_yyjson_set_arr(void *val, size_t size) {
-  unsafe_yyjson_set_type(val, YYJSON_TYPE_ARR, YYJSON_SUBTYPE_NONE);
-  unsafe_yyjson_set_len(val, size);
+  unsafe_yyjson_set_tag(val, YYJSON_TYPE_ARR, YYJSON_SUBTYPE_NONE, size);
 }
 
 yyjson_api_inline void unsafe_yyjson_set_obj(void *val, size_t size) {
-  unsafe_yyjson_set_type(val, YYJSON_TYPE_OBJ, YYJSON_SUBTYPE_NONE);
-  unsafe_yyjson_set_len(val, size);
+  unsafe_yyjson_set_tag(val, YYJSON_TYPE_OBJ, YYJSON_SUBTYPE_NONE, size);
 }
 
 /*==============================================================================
- * JSON Document API (Implementation)
+ * MARK: - JSON Document API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline yyjson_val *yyjson_doc_get_root(yyjson_doc *doc) {
@@ -4720,7 +4992,7 @@ yyjson_api_inline void yyjson_doc_free(yyjson_doc *doc) {
 }
 
 /*==============================================================================
- * JSON Value Type API (Implementation)
+ * MARK: - JSON Value Type API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline bool yyjson_is_raw(yyjson_val *val) {
@@ -4780,7 +5052,7 @@ yyjson_api_inline bool yyjson_is_ctn(yyjson_val *val) {
 }
 
 /*==============================================================================
- * JSON Value Content API (Implementation)
+ * MARK: - JSON Value Content API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline yyjson_type yyjson_get_type(yyjson_val *val) {
@@ -4920,9 +5192,33 @@ yyjson_api_inline bool yyjson_set_int(yyjson_val *val, int num) {
   return true;
 }
 
+yyjson_api_inline bool yyjson_set_float(yyjson_val *val, float num) {
+  if (yyjson_unlikely(!val || unsafe_yyjson_is_ctn(val))) return false;
+  unsafe_yyjson_set_float(val, num);
+  return true;
+}
+
+yyjson_api_inline bool yyjson_set_double(yyjson_val *val, double num) {
+  if (yyjson_unlikely(!val || unsafe_yyjson_is_ctn(val))) return false;
+  unsafe_yyjson_set_double(val, num);
+  return true;
+}
+
 yyjson_api_inline bool yyjson_set_real(yyjson_val *val, double num) {
   if (yyjson_unlikely(!val || unsafe_yyjson_is_ctn(val))) return false;
   unsafe_yyjson_set_real(val, num);
+  return true;
+}
+
+yyjson_api_inline bool yyjson_set_fp_to_fixed(yyjson_val *val, int prec) {
+  if (yyjson_unlikely(!yyjson_is_real(val))) return false;
+  unsafe_yyjson_set_fp_to_fixed(val, prec);
+  return true;
+}
+
+yyjson_api_inline bool yyjson_set_fp_to_float(yyjson_val *val, bool flt) {
+  if (yyjson_unlikely(!yyjson_is_real(val))) return false;
+  unsafe_yyjson_set_fp_to_float(val, flt);
   return true;
 }
 
@@ -4941,8 +5237,14 @@ yyjson_api_inline bool yyjson_set_strn(yyjson_val *val, const char *str,
   return true;
 }
 
+yyjson_api_inline bool yyjson_set_str_noesc(yyjson_val *val, bool noesc) {
+  if (yyjson_unlikely(!yyjson_is_str(val))) return false;
+  unsafe_yyjson_set_str_noesc(val, noesc);
+  return true;
+}
+
 /*==============================================================================
- * JSON Array API (Implementation)
+ * MARK: - JSON Array API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline size_t yyjson_arr_size(yyjson_val *arr) {
@@ -4990,7 +5292,7 @@ yyjson_api_inline yyjson_val *yyjson_arr_get_last(yyjson_val *arr) {
 }
 
 /*==============================================================================
- * JSON Array Iterator API (Implementation)
+ * MARK: - JSON Array Iterator API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline bool yyjson_arr_iter_init(yyjson_val *arr,
@@ -5027,7 +5329,7 @@ yyjson_api_inline yyjson_val *yyjson_arr_iter_next(yyjson_arr_iter *iter) {
 }
 
 /*==============================================================================
- * JSON Object API (Implementation)
+ * MARK: - JSON Object API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline size_t yyjson_obj_size(yyjson_val *obj) {
@@ -5052,7 +5354,7 @@ yyjson_api_inline yyjson_val *yyjson_obj_getn(yyjson_val *obj, const char *_key,
 }
 
 /*==============================================================================
- * JSON Object Iterator API (Implementation)
+ * MARK: - JSON Object Iterator API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline bool yyjson_obj_iter_init(yyjson_val *obj,
@@ -5127,7 +5429,7 @@ yyjson_api_inline yyjson_val *yyjson_obj_iter_getn(yyjson_obj_iter *iter,
 }
 
 /*==============================================================================
- * Mutable JSON Structure (Implementation)
+ * MARK: - Mutable JSON Structure (Implementation)
  *============================================================================*/
 
 /**
@@ -5240,7 +5542,7 @@ yyjson_api_inline yyjson_mut_val *unsafe_yyjson_mut_val(yyjson_mut_doc *doc,
 }
 
 /*==============================================================================
- * Mutable JSON Document API (Implementation)
+ * MARK: - Mutable JSON Document API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_doc_get_root(yyjson_mut_doc *doc) {
@@ -5253,7 +5555,7 @@ yyjson_api_inline void yyjson_mut_doc_set_root(yyjson_mut_doc *doc,
 }
 
 /*==============================================================================
- * Mutable JSON Value Type API (Implementation)
+ * MARK: - Mutable JSON Value Type API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline bool yyjson_mut_is_raw(yyjson_mut_val *val) {
@@ -5313,7 +5615,7 @@ yyjson_api_inline bool yyjson_mut_is_ctn(yyjson_mut_val *val) {
 }
 
 /*==============================================================================
- * Mutable JSON Value Content API (Implementation)
+ * MARK: - Mutable JSON Value Content API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline yyjson_type yyjson_mut_get_type(yyjson_mut_val *val) {
@@ -5424,9 +5726,35 @@ yyjson_api_inline bool yyjson_mut_set_int(yyjson_mut_val *val, int num) {
   return true;
 }
 
+yyjson_api_inline bool yyjson_mut_set_float(yyjson_mut_val *val, float num) {
+  if (yyjson_unlikely(!val)) return false;
+  unsafe_yyjson_set_float(val, num);
+  return true;
+}
+
+yyjson_api_inline bool yyjson_mut_set_double(yyjson_mut_val *val, double num) {
+  if (yyjson_unlikely(!val)) return false;
+  unsafe_yyjson_set_double(val, num);
+  return true;
+}
+
 yyjson_api_inline bool yyjson_mut_set_real(yyjson_mut_val *val, double num) {
   if (yyjson_unlikely(!val)) return false;
   unsafe_yyjson_set_real(val, num);
+  return true;
+}
+
+yyjson_api_inline bool yyjson_mut_set_fp_to_fixed(yyjson_mut_val *val,
+                                                  int prec) {
+  if (yyjson_unlikely(!yyjson_mut_is_real(val))) return false;
+  unsafe_yyjson_set_fp_to_fixed(val, prec);
+  return true;
+}
+
+yyjson_api_inline bool yyjson_mut_set_fp_to_float(yyjson_mut_val *val,
+                                                  bool flt) {
+  if (yyjson_unlikely(!yyjson_mut_is_real(val))) return false;
+  unsafe_yyjson_set_fp_to_float(val, flt);
   return true;
 }
 
@@ -5444,6 +5772,13 @@ yyjson_api_inline bool yyjson_mut_set_strn(yyjson_mut_val *val, const char *str,
   return true;
 }
 
+yyjson_api_inline bool yyjson_mut_set_str_noesc(yyjson_mut_val *val,
+                                                bool noesc) {
+  if (yyjson_unlikely(!yyjson_mut_is_str(val))) return false;
+  unsafe_yyjson_set_str_noesc(val, noesc);
+  return true;
+}
+
 yyjson_api_inline bool yyjson_mut_set_arr(yyjson_mut_val *val) {
   if (yyjson_unlikely(!val)) return false;
   unsafe_yyjson_set_arr(val, 0);
@@ -5457,204 +5792,142 @@ yyjson_api_inline bool yyjson_mut_set_obj(yyjson_mut_val *val) {
 }
 
 /*==============================================================================
- * Mutable JSON Value Creation API (Implementation)
+ * MARK: - Mutable JSON Value Creation API (Implementation)
  *============================================================================*/
+
+#define yyjson_mut_val_one(func)                         \
+  if (yyjson_likely(doc)) {                              \
+    yyjson_mut_val *val = unsafe_yyjson_mut_val(doc, 1); \
+    if (yyjson_likely(val)) {                            \
+      func return val;                                   \
+    }                                                    \
+  }                                                      \
+  return NULL
+
+#define yyjson_mut_val_one_str(func)                     \
+  if (yyjson_likely(doc && str)) {                       \
+    yyjson_mut_val *val = unsafe_yyjson_mut_val(doc, 1); \
+    if (yyjson_likely(val)) {                            \
+      func return val;                                   \
+    }                                                    \
+  }                                                      \
+  return NULL
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_raw(yyjson_mut_doc *doc,
                                                  const char *str) {
-  if (yyjson_likely(str)) return yyjson_mut_rawn(doc, str, strlen(str));
-  return NULL;
+  yyjson_mut_val_one_str({ unsafe_yyjson_set_raw(val, str, strlen(str)); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_rawn(yyjson_mut_doc *doc,
                                                   const char *str, size_t len) {
-  if (yyjson_likely(doc && str)) {
-    yyjson_mut_val *val = unsafe_yyjson_mut_val(doc, 1);
-    if (yyjson_likely(val)) {
-      val->tag = ((uint64_t)len << YYJSON_TAG_BIT) | YYJSON_TYPE_RAW;
-      val->uni.str = str;
-      return val;
-    }
-  }
-  return NULL;
+  yyjson_mut_val_one_str({ unsafe_yyjson_set_raw(val, str, len); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_rawcpy(yyjson_mut_doc *doc,
                                                     const char *str) {
-  if (yyjson_likely(str)) return yyjson_mut_rawncpy(doc, str, strlen(str));
-  return NULL;
+  yyjson_mut_val_one_str({
+    size_t len = strlen(str);
+    char *new_str = unsafe_yyjson_mut_strncpy(doc, str, len);
+    if (yyjson_unlikely(!new_str)) return NULL;
+    unsafe_yyjson_set_raw(val, new_str, len);
+  });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_rawncpy(yyjson_mut_doc *doc,
                                                      const char *str,
                                                      size_t len) {
-  if (yyjson_likely(doc && str)) {
-    yyjson_mut_val *val = unsafe_yyjson_mut_val(doc, 1);
+  yyjson_mut_val_one_str({
     char *new_str = unsafe_yyjson_mut_strncpy(doc, str, len);
-    if (yyjson_likely(val && new_str)) {
-      val->tag = ((uint64_t)len << YYJSON_TAG_BIT) | YYJSON_TYPE_RAW;
-      val->uni.str = new_str;
-      return val;
-    }
-  }
-  return NULL;
+    if (yyjson_unlikely(!new_str)) return NULL;
+    unsafe_yyjson_set_raw(val, new_str, len);
+  });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_null(yyjson_mut_doc *doc) {
-  if (yyjson_likely(doc)) {
-    yyjson_mut_val *val = unsafe_yyjson_mut_val(doc, 1);
-    if (yyjson_likely(val)) {
-      val->tag = YYJSON_TYPE_NULL | YYJSON_SUBTYPE_NONE;
-      return val;
-    }
-  }
-  return NULL;
+  yyjson_mut_val_one({ unsafe_yyjson_set_null(val); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_true(yyjson_mut_doc *doc) {
-  if (yyjson_likely(doc)) {
-    yyjson_mut_val *val = unsafe_yyjson_mut_val(doc, 1);
-    if (yyjson_likely(val)) {
-      val->tag = YYJSON_TYPE_BOOL | YYJSON_SUBTYPE_TRUE;
-      return val;
-    }
-  }
-  return NULL;
+  yyjson_mut_val_one({ unsafe_yyjson_set_bool(val, true); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_false(yyjson_mut_doc *doc) {
-  if (yyjson_likely(doc)) {
-    yyjson_mut_val *val = unsafe_yyjson_mut_val(doc, 1);
-    if (yyjson_likely(val)) {
-      val->tag = YYJSON_TYPE_BOOL | YYJSON_SUBTYPE_FALSE;
-      return val;
-    }
-  }
-  return NULL;
+  yyjson_mut_val_one({ unsafe_yyjson_set_bool(val, false); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_bool(yyjson_mut_doc *doc,
                                                   bool _val) {
-  if (yyjson_likely(doc)) {
-    yyjson_mut_val *val = unsafe_yyjson_mut_val(doc, 1);
-    if (yyjson_likely(val)) {
-      _val = !!_val;
-      val->tag = YYJSON_TYPE_BOOL | (uint8_t)((uint8_t)_val << 3);
-      return val;
-    }
-  }
-  return NULL;
+  yyjson_mut_val_one({ unsafe_yyjson_set_bool(val, _val); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_uint(yyjson_mut_doc *doc,
                                                   uint64_t num) {
-  if (yyjson_likely(doc)) {
-    yyjson_mut_val *val = unsafe_yyjson_mut_val(doc, 1);
-    if (yyjson_likely(val)) {
-      val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_UINT;
-      val->uni.u64 = num;
-      return val;
-    }
-  }
-  return NULL;
+  yyjson_mut_val_one({ unsafe_yyjson_set_uint(val, num); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_sint(yyjson_mut_doc *doc,
                                                   int64_t num) {
-  if (yyjson_likely(doc)) {
-    yyjson_mut_val *val = unsafe_yyjson_mut_val(doc, 1);
-    if (yyjson_likely(val)) {
-      val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_SINT;
-      val->uni.i64 = num;
-      return val;
-    }
-  }
-  return NULL;
+  yyjson_mut_val_one({ unsafe_yyjson_set_sint(val, num); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_int(yyjson_mut_doc *doc,
                                                  int64_t num) {
-  return yyjson_mut_sint(doc, num);
+  yyjson_mut_val_one({ unsafe_yyjson_set_sint(val, num); });
+}
+
+yyjson_api_inline yyjson_mut_val *yyjson_mut_float(yyjson_mut_doc *doc,
+                                                   float num) {
+  yyjson_mut_val_one({ unsafe_yyjson_set_float(val, num); });
+}
+
+yyjson_api_inline yyjson_mut_val *yyjson_mut_double(yyjson_mut_doc *doc,
+                                                    double num) {
+  yyjson_mut_val_one({ unsafe_yyjson_set_double(val, num); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_real(yyjson_mut_doc *doc,
                                                   double num) {
-  if (yyjson_likely(doc)) {
-    yyjson_mut_val *val = unsafe_yyjson_mut_val(doc, 1);
-    if (yyjson_likely(val)) {
-      val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_REAL;
-      val->uni.f64 = num;
-      return val;
-    }
-  }
-  return NULL;
+  yyjson_mut_val_one({ unsafe_yyjson_set_real(val, num); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_str(yyjson_mut_doc *doc,
                                                  const char *str) {
-  if (yyjson_likely(doc && str)) {
-    size_t len = strlen(str);
-    bool noesc = unsafe_yyjson_is_str_noesc(str, len);
-    yyjson_subtype sub = noesc ? YYJSON_SUBTYPE_NOESC : YYJSON_SUBTYPE_NONE;
-    yyjson_mut_val *val = unsafe_yyjson_mut_val(doc, 1);
-    if (yyjson_likely(val)) {
-      val->tag =
-          ((uint64_t)len << YYJSON_TAG_BIT) | (uint64_t)(YYJSON_TYPE_STR | sub);
-      val->uni.str = str;
-      return val;
-    }
-  }
-  return NULL;
+  yyjson_mut_val_one_str({ unsafe_yyjson_set_str(val, str); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_strn(yyjson_mut_doc *doc,
                                                   const char *str, size_t len) {
-  if (yyjson_likely(doc && str)) {
-    yyjson_mut_val *val = unsafe_yyjson_mut_val(doc, 1);
-    if (yyjson_likely(val)) {
-      val->tag = ((uint64_t)len << YYJSON_TAG_BIT) | YYJSON_TYPE_STR;
-      val->uni.str = str;
-      return val;
-    }
-  }
-  return NULL;
+  yyjson_mut_val_one_str({ unsafe_yyjson_set_strn(val, str, len); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_strcpy(yyjson_mut_doc *doc,
                                                     const char *str) {
-  if (yyjson_likely(doc && str)) {
+  yyjson_mut_val_one_str({
     size_t len = strlen(str);
     bool noesc = unsafe_yyjson_is_str_noesc(str, len);
     yyjson_subtype sub = noesc ? YYJSON_SUBTYPE_NOESC : YYJSON_SUBTYPE_NONE;
-    yyjson_mut_val *val = unsafe_yyjson_mut_val(doc, 1);
     char *new_str = unsafe_yyjson_mut_strncpy(doc, str, len);
-    if (yyjson_likely(val && new_str)) {
-      val->tag =
-          ((uint64_t)len << YYJSON_TAG_BIT) | (uint64_t)(YYJSON_TYPE_STR | sub);
-      val->uni.str = new_str;
-      return val;
-    }
-  }
-  return NULL;
+    if (yyjson_unlikely(!new_str)) return NULL;
+    unsafe_yyjson_set_tag(val, YYJSON_TYPE_STR, sub, len);
+    val->uni.str = new_str;
+  });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_strncpy(yyjson_mut_doc *doc,
                                                      const char *str,
                                                      size_t len) {
-  if (yyjson_likely(doc && str)) {
-    yyjson_mut_val *val = unsafe_yyjson_mut_val(doc, 1);
+  yyjson_mut_val_one_str({
     char *new_str = unsafe_yyjson_mut_strncpy(doc, str, len);
-    if (yyjson_likely(val && new_str)) {
-      val->tag = ((uint64_t)len << YYJSON_TAG_BIT) | YYJSON_TYPE_STR;
-      val->uni.str = new_str;
-      return val;
-    }
-  }
-  return NULL;
+    if (yyjson_unlikely(!new_str)) return NULL;
+    unsafe_yyjson_set_strn(val, new_str, len);
+  });
 }
 
+#undef yyjson_mut_val_one
+#undef yyjson_mut_val_one_str
+
 /*==============================================================================
- * Mutable JSON Array API (Implementation)
+ * MARK: - Mutable JSON Array API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline size_t yyjson_mut_arr_size(yyjson_mut_val *arr) {
@@ -5687,7 +5960,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_get_last(yyjson_mut_val *arr) {
 }
 
 /*==============================================================================
- * Mutable JSON Array Iterator API (Implementation)
+ * MARK: - Mutable JSON Array Iterator API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline bool yyjson_mut_arr_iter_init(yyjson_mut_val *arr,
@@ -5738,14 +6011,14 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_iter_remove(
     iter->max--;
     unsafe_yyjson_set_len(iter->arr, iter->max);
     prev->next = next;
-    iter->cur = next;
+    iter->cur = prev;
     return cur;
   }
   return NULL;
 }
 
 /*==============================================================================
- * Mutable JSON Array Creation API (Implementation)
+ * MARK: - Mutable JSON Array Creation API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr(yyjson_mut_doc *doc) {
@@ -5784,10 +6057,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr(yyjson_mut_doc *doc) {
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_bool(yyjson_mut_doc *doc,
                                                            const bool *vals,
                                                            size_t count) {
-  yyjson_mut_arr_with_func({
-    bool _val = !!vals[i];
-    val->tag = YYJSON_TYPE_BOOL | (uint8_t)((uint8_t)_val << 3);
-  });
+  yyjson_mut_arr_with_func({ unsafe_yyjson_set_bool(val, vals[i]); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_sint(yyjson_mut_doc *doc,
@@ -5805,100 +6075,68 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_uint(yyjson_mut_doc *doc,
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_real(yyjson_mut_doc *doc,
                                                            const double *vals,
                                                            size_t count) {
-  return yyjson_mut_arr_with_double(doc, vals, count);
+  yyjson_mut_arr_with_func({ unsafe_yyjson_set_real(val, vals[i]); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_sint8(yyjson_mut_doc *doc,
                                                             const int8_t *vals,
                                                             size_t count) {
-  yyjson_mut_arr_with_func({
-    val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_SINT;
-    val->uni.i64 = (int64_t)vals[i];
-  });
+  yyjson_mut_arr_with_func({ unsafe_yyjson_set_sint(val, vals[i]); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_sint16(
     yyjson_mut_doc *doc, const int16_t *vals, size_t count) {
-  yyjson_mut_arr_with_func({
-    val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_SINT;
-    val->uni.i64 = vals[i];
-  });
+  yyjson_mut_arr_with_func({ unsafe_yyjson_set_sint(val, vals[i]); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_sint32(
     yyjson_mut_doc *doc, const int32_t *vals, size_t count) {
-  yyjson_mut_arr_with_func({
-    val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_SINT;
-    val->uni.i64 = vals[i];
-  });
+  yyjson_mut_arr_with_func({ unsafe_yyjson_set_sint(val, vals[i]); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_sint64(
     yyjson_mut_doc *doc, const int64_t *vals, size_t count) {
-  yyjson_mut_arr_with_func({
-    val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_SINT;
-    val->uni.i64 = vals[i];
-  });
+  yyjson_mut_arr_with_func({ unsafe_yyjson_set_sint(val, vals[i]); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_uint8(yyjson_mut_doc *doc,
                                                             const uint8_t *vals,
                                                             size_t count) {
-  yyjson_mut_arr_with_func({
-    val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_UINT;
-    val->uni.u64 = vals[i];
-  });
+  yyjson_mut_arr_with_func({ unsafe_yyjson_set_uint(val, vals[i]); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_uint16(
     yyjson_mut_doc *doc, const uint16_t *vals, size_t count) {
-  yyjson_mut_arr_with_func({
-    val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_UINT;
-    val->uni.u64 = vals[i];
-  });
+  yyjson_mut_arr_with_func({ unsafe_yyjson_set_uint(val, vals[i]); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_uint32(
     yyjson_mut_doc *doc, const uint32_t *vals, size_t count) {
-  yyjson_mut_arr_with_func({
-    val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_UINT;
-    val->uni.u64 = vals[i];
-  });
+  yyjson_mut_arr_with_func({ unsafe_yyjson_set_uint(val, vals[i]); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_uint64(
     yyjson_mut_doc *doc, const uint64_t *vals, size_t count) {
-  yyjson_mut_arr_with_func({
-    val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_UINT;
-    val->uni.u64 = vals[i];
-  });
+  yyjson_mut_arr_with_func({ unsafe_yyjson_set_uint(val, vals[i]); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_float(yyjson_mut_doc *doc,
                                                             const float *vals,
                                                             size_t count) {
-  yyjson_mut_arr_with_func({
-    val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_REAL;
-    val->uni.f64 = (double)vals[i];
-  });
+  yyjson_mut_arr_with_func({ unsafe_yyjson_set_float(val, vals[i]); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_double(
     yyjson_mut_doc *doc, const double *vals, size_t count) {
-  yyjson_mut_arr_with_func({
-    val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_REAL;
-    val->uni.f64 = vals[i];
-  });
+  yyjson_mut_arr_with_func({ unsafe_yyjson_set_double(val, vals[i]); });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_str(yyjson_mut_doc *doc,
                                                           const char **vals,
                                                           size_t count) {
   yyjson_mut_arr_with_func({
-    uint64_t len = (uint64_t)strlen(vals[i]);
-    val->tag = (len << YYJSON_TAG_BIT) | YYJSON_TYPE_STR;
-    val->uni.str = vals[i];
-    if (yyjson_unlikely(!val->uni.str)) return NULL;
+    if (yyjson_unlikely(!vals[i])) return NULL;
+    unsafe_yyjson_set_str(val, vals[i]);
   });
 }
 
@@ -5908,44 +6146,44 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_strn(yyjson_mut_doc *doc,
                                                            size_t count) {
   if (yyjson_unlikely(count > 0 && !lens)) return NULL;
   yyjson_mut_arr_with_func({
-    val->tag = ((uint64_t)lens[i] << YYJSON_TAG_BIT) | YYJSON_TYPE_STR;
-    val->uni.str = vals[i];
-    if (yyjson_unlikely(!val->uni.str)) return NULL;
+    if (yyjson_unlikely(!vals[i])) return NULL;
+    unsafe_yyjson_set_strn(val, vals[i], lens[i]);
   });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_strcpy(
     yyjson_mut_doc *doc, const char **vals, size_t count) {
   size_t len;
-  const char *str;
+  const char *str, *new_str;
   yyjson_mut_arr_with_func({
     str = vals[i];
-    if (!str) return NULL;
+    if (yyjson_unlikely(!str)) return NULL;
     len = strlen(str);
-    val->tag = ((uint64_t)len << YYJSON_TAG_BIT) | YYJSON_TYPE_STR;
-    val->uni.str = unsafe_yyjson_mut_strncpy(doc, str, len);
-    if (yyjson_unlikely(!val->uni.str)) return NULL;
+    new_str = unsafe_yyjson_mut_strncpy(doc, str, len);
+    if (yyjson_unlikely(!new_str)) return NULL;
+    unsafe_yyjson_set_strn(val, new_str, len);
   });
 }
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_with_strncpy(
     yyjson_mut_doc *doc, const char **vals, const size_t *lens, size_t count) {
   size_t len;
-  const char *str;
+  const char *str, *new_str;
   if (yyjson_unlikely(count > 0 && !lens)) return NULL;
   yyjson_mut_arr_with_func({
     str = vals[i];
+    if (yyjson_unlikely(!str)) return NULL;
     len = lens[i];
-    val->tag = ((uint64_t)len << YYJSON_TAG_BIT) | YYJSON_TYPE_STR;
-    val->uni.str = unsafe_yyjson_mut_strncpy(doc, str, len);
-    if (yyjson_unlikely(!val->uni.str)) return NULL;
+    new_str = unsafe_yyjson_mut_strncpy(doc, str, len);
+    if (yyjson_unlikely(!new_str)) return NULL;
+    unsafe_yyjson_set_strn(val, new_str, len);
   });
 }
 
 #undef yyjson_mut_arr_with_func
 
 /*==============================================================================
- * Mutable JSON Array Modification API (Implementation)
+ * MARK: - Mutable JSON Array Modification API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline bool yyjson_mut_arr_insert(yyjson_mut_val *arr,
@@ -6152,7 +6390,7 @@ yyjson_api_inline bool yyjson_mut_arr_rotate(yyjson_mut_val *arr, size_t idx) {
 }
 
 /*==============================================================================
- * Mutable JSON Array Modification Convenience API (Implementation)
+ * MARK: - Mutable JSON Array Modification Convenience API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline bool yyjson_mut_arr_add_val(yyjson_mut_val *arr,
@@ -6221,6 +6459,26 @@ yyjson_api_inline bool yyjson_mut_arr_add_int(yyjson_mut_doc *doc,
                                               int64_t num) {
   if (yyjson_likely(doc && yyjson_mut_is_arr(arr))) {
     yyjson_mut_val *val = yyjson_mut_sint(doc, num);
+    return yyjson_mut_arr_append(arr, val);
+  }
+  return false;
+}
+
+yyjson_api_inline bool yyjson_mut_arr_add_float(yyjson_mut_doc *doc,
+                                                yyjson_mut_val *arr,
+                                                float num) {
+  if (yyjson_likely(doc && yyjson_mut_is_arr(arr))) {
+    yyjson_mut_val *val = yyjson_mut_float(doc, num);
+    return yyjson_mut_arr_append(arr, val);
+  }
+  return false;
+}
+
+yyjson_api_inline bool yyjson_mut_arr_add_double(yyjson_mut_doc *doc,
+                                                 yyjson_mut_val *arr,
+                                                 double num) {
+  if (yyjson_likely(doc && yyjson_mut_is_arr(arr))) {
+    yyjson_mut_val *val = yyjson_mut_double(doc, num);
     return yyjson_mut_arr_append(arr, val);
   }
   return false;
@@ -6295,7 +6553,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_arr_add_obj(yyjson_mut_doc *doc,
 }
 
 /*==============================================================================
- * Mutable JSON Object API (Implementation)
+ * MARK: - Mutable JSON Object API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline size_t yyjson_mut_obj_size(yyjson_mut_val *obj) {
@@ -6322,7 +6580,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_obj_getn(yyjson_mut_val *obj,
 }
 
 /*==============================================================================
- * Mutable JSON Object Iterator API (Implementation)
+ * MARK: - Mutable JSON Object Iterator API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline bool yyjson_mut_obj_iter_init(yyjson_mut_val *obj,
@@ -6411,7 +6669,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_obj_iter_getn(
 }
 
 /*==============================================================================
- * Mutable JSON Object Creation API (Implementation)
+ * MARK: - Mutable JSON Object Creation API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline yyjson_mut_val *yyjson_mut_obj(yyjson_mut_doc *doc) {
@@ -6489,7 +6747,7 @@ yyjson_api_inline yyjson_mut_val *yyjson_mut_obj_with_kv(yyjson_mut_doc *doc,
 }
 
 /*==============================================================================
- * Mutable JSON Object Modification API (Implementation)
+ * MARK: - Mutable JSON Object Modification API (Implementation)
  *============================================================================*/
 
 yyjson_api_inline void unsafe_yyjson_mut_obj_add(yyjson_mut_val *obj,
@@ -6675,7 +6933,7 @@ yyjson_api_inline bool yyjson_mut_obj_rotate(yyjson_mut_val *obj, size_t idx) {
 }
 
 /*==============================================================================
- * Mutable JSON Object Modification Convenience API (Implementation)
+ * MARK: - Mutable JSON Object Modification Convenience API (Implementation)
  *============================================================================*/
 
 #define yyjson_mut_obj_add_func(func)                                 \
@@ -6699,68 +6957,63 @@ yyjson_api_inline bool yyjson_mut_obj_rotate(yyjson_mut_val *obj, size_t idx) {
 yyjson_api_inline bool yyjson_mut_obj_add_null(yyjson_mut_doc *doc,
                                                yyjson_mut_val *obj,
                                                const char *_key) {
-  yyjson_mut_obj_add_func(
-      { val->tag = YYJSON_TYPE_NULL | YYJSON_SUBTYPE_NONE; });
+  yyjson_mut_obj_add_func({ unsafe_yyjson_set_null(val); });
 }
 
 yyjson_api_inline bool yyjson_mut_obj_add_true(yyjson_mut_doc *doc,
                                                yyjson_mut_val *obj,
                                                const char *_key) {
-  yyjson_mut_obj_add_func(
-      { val->tag = YYJSON_TYPE_BOOL | YYJSON_SUBTYPE_TRUE; });
+  yyjson_mut_obj_add_func({ unsafe_yyjson_set_bool(val, true); });
 }
 
 yyjson_api_inline bool yyjson_mut_obj_add_false(yyjson_mut_doc *doc,
                                                 yyjson_mut_val *obj,
                                                 const char *_key) {
-  yyjson_mut_obj_add_func(
-      { val->tag = YYJSON_TYPE_BOOL | YYJSON_SUBTYPE_FALSE; });
+  yyjson_mut_obj_add_func({ unsafe_yyjson_set_bool(val, false); });
 }
 
 yyjson_api_inline bool yyjson_mut_obj_add_bool(yyjson_mut_doc *doc,
                                                yyjson_mut_val *obj,
                                                const char *_key, bool _val) {
-  yyjson_mut_obj_add_func({
-    _val = !!_val;
-    val->tag = YYJSON_TYPE_BOOL | (uint8_t)((uint8_t)(_val) << 3);
-  });
+  yyjson_mut_obj_add_func({ unsafe_yyjson_set_bool(val, _val); });
 }
 
 yyjson_api_inline bool yyjson_mut_obj_add_uint(yyjson_mut_doc *doc,
                                                yyjson_mut_val *obj,
                                                const char *_key,
                                                uint64_t _val) {
-  yyjson_mut_obj_add_func({
-    val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_UINT;
-    val->uni.u64 = _val;
-  });
+  yyjson_mut_obj_add_func({ unsafe_yyjson_set_uint(val, _val); });
 }
 
 yyjson_api_inline bool yyjson_mut_obj_add_sint(yyjson_mut_doc *doc,
                                                yyjson_mut_val *obj,
                                                const char *_key, int64_t _val) {
-  yyjson_mut_obj_add_func({
-    val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_SINT;
-    val->uni.i64 = _val;
-  });
+  yyjson_mut_obj_add_func({ unsafe_yyjson_set_sint(val, _val); });
 }
 
 yyjson_api_inline bool yyjson_mut_obj_add_int(yyjson_mut_doc *doc,
                                               yyjson_mut_val *obj,
                                               const char *_key, int64_t _val) {
-  yyjson_mut_obj_add_func({
-    val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_SINT;
-    val->uni.i64 = _val;
-  });
+  yyjson_mut_obj_add_func({ unsafe_yyjson_set_sint(val, _val); });
+}
+
+yyjson_api_inline bool yyjson_mut_obj_add_float(yyjson_mut_doc *doc,
+                                                yyjson_mut_val *obj,
+                                                const char *_key, float _val) {
+  yyjson_mut_obj_add_func({ unsafe_yyjson_set_float(val, _val); });
+}
+
+yyjson_api_inline bool yyjson_mut_obj_add_double(yyjson_mut_doc *doc,
+                                                 yyjson_mut_val *obj,
+                                                 const char *_key,
+                                                 double _val) {
+  yyjson_mut_obj_add_func({ unsafe_yyjson_set_double(val, _val); });
 }
 
 yyjson_api_inline bool yyjson_mut_obj_add_real(yyjson_mut_doc *doc,
                                                yyjson_mut_val *obj,
                                                const char *_key, double _val) {
-  yyjson_mut_obj_add_func({
-    val->tag = YYJSON_TYPE_NUM | YYJSON_SUBTYPE_REAL;
-    val->uni.f64 = _val;
-  });
+  yyjson_mut_obj_add_func({ unsafe_yyjson_set_real(val, _val); });
 }
 
 yyjson_api_inline bool yyjson_mut_obj_add_str(yyjson_mut_doc *doc,
@@ -6892,8 +7145,10 @@ yyjson_api_inline bool yyjson_mut_obj_rename_keyn(yyjson_mut_doc *doc,
   return cpy_key != NULL;
 }
 
+#if !defined(YYJSON_DISABLE_UTILS) || !YYJSON_DISABLE_UTILS
+
 /*==============================================================================
- * JSON Pointer API (Implementation)
+ * MARK: - JSON Pointer API (Implementation)
  *============================================================================*/
 
 #define yyjson_ptr_set_err(_code, _msg)   \
@@ -7530,7 +7785,7 @@ yyjson_api_inline bool yyjson_ptr_ctx_remove(yyjson_ptr_ctx *ctx) {
 #undef yyjson_ptr_set_err
 
 /*==============================================================================
- * JSON Value at Pointer API (Implementation)
+ * MARK: - JSON Value at Pointer API (Implementation)
  *============================================================================*/
 
 /**
@@ -7631,7 +7886,7 @@ yyjson_api_inline bool yyjson_ptr_get_str(yyjson_val *root, const char *ptr,
 }
 
 /*==============================================================================
- * Deprecated
+ * MARK: - Deprecated
  *============================================================================*/
 
 /** @deprecated renamed to `yyjson_doc_ptr_get` */
@@ -7704,8 +7959,10 @@ yyjson_deprecated("renamed to unsafe_yyjson_mut_ptr_getx") yyjson_api_inline
   return unsafe_yyjson_mut_ptr_getx(val, ptr, len, NULL, &err);
 }
 
+#endif /* YYJSON_DISABLE_UTILS */
+
 /*==============================================================================
- * Compiler Hint End
+ * MARK: - Compiler Hint End
  *============================================================================*/
 
 #if defined(__clang__)
