@@ -254,6 +254,7 @@ if (REFLECTCPP_AVRO)
                         "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/snappy${CMAKE_STATIC_LIBRARY_SUFFIX}" 
                         "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/lzma${CMAKE_STATIC_LIBRARY_SUFFIX}" 
                         "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/jansson${CMAKE_STATIC_LIBRARY_SUFFIX}"
+                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/zlib${CMAKE_STATIC_LIBRARY_SUFFIX}"
                 )
             else()
                 target_link_libraries(reflectcpp PUBLIC "${_AVRO_STATIC_LIB}")

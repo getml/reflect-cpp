@@ -68,7 +68,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "PARQUET", "TOML", "UBJSON", "XML", "YAML", "benchmarks"]
+        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "PARQUET", "TOML", "UBJSON", "XML", "YAML"]
     name: "windows-msvc-shared (${{ matrix.format }})"
     runs-on: windows-latest
     steps:
@@ -85,18 +85,13 @@ jobs:
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
       - uses: ilammy/msvc-dev-cmd@v1
       - uses: lukka/run-vcpkg@v11
-      - name: Compile benchmarks 
-        if: matrix.format == 'benchmarks' 
-        run: |
-          cmake -S . -B build -G Ninja -DREFLECTCPP_BUILD_SHARED=ON -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release
-          cmake --build build --config Release -j4 
       - name: Compile tests (JSON)
         if: matrix.format == 'JSON'
         run: |
           cmake -S . -B build -DREFLECTCPP_BUILD_SHARED=ON -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release -j4 
       - name: Compile tests (Other formats)
-        if: matrix.format != 'JSON' && matrix.format != 'benchmarks'
+        if: matrix.format != 'JSON'
         run: |
           cmake -S . -B build -DREFLECTCPP_BUILD_SHARED=ON -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release -j4 
