@@ -40,9 +40,9 @@ TEST(json, test_decode_error_without_exception) {
 
   EXPECT_TRUE(!result.has_value() && true);
 
-  EXPECT_EQ(result.error().what(),
-            "Could not parse document: unexpected character, expected a comma "
-            "or a closing brace");
+  EXPECT_EQ(
+      result.error().what(),
+      "Could not parse document: unexpected character, expected ',' or '}'");
 }
 
 }  // namespace test_error_messages
