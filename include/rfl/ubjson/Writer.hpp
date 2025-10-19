@@ -16,10 +16,11 @@
 #include "../Result.hpp"
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
+#include "../common.hpp"
 
 namespace rfl::ubjson {
 
-class Writer {
+class RFL_API Writer {
   using Encoder = jsoncons::ubjson::ubjson_bytes_encoder;
 
  public:

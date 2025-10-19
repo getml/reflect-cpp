@@ -20,6 +20,7 @@
 #include "schema/JSONSchema.hpp"
 // #include "schema/Type.hpp"
 // #include "write.hpp"
+#include "../common.hpp"
 
 namespace rfl::json {
 
@@ -31,7 +32,7 @@ struct TypeHelper<rfl::Variant<Ts...>> {
   using JSONSchemaType = rfl::Variant<schema::JSONSchema<Ts>...>;
 };
 
-std::string to_schema_internal_schema(
+RFL_API std::string to_schema_internal_schema(
     const parsing::schema::Definition& internal_schema, const yyjson_write_flag,
     const bool _no_required, const std::string& comment = "");
 

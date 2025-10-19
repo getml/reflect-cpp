@@ -9,10 +9,11 @@
 
 #include "../Generic.hpp"
 #include "../always_false.hpp"
+#include "../common.hpp"
 
 namespace rfl::generic {
 
-struct Writer {
+struct RFL_API Writer {
   struct OutputArray {
     Generic::Array* val_;
   };
