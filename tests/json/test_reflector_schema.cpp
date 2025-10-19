@@ -41,6 +41,10 @@ TEST(json, test_reflector_schema) {
   const std::string expected =
       R"({"$schema":"https://json-schema.org/draft/2020-12/schema","$ref":"#/$defs/test_reflector_schema__Parent","$defs":{"rfl__Reflector_test_reflector_schema__Parent___ReflType":{"type":"object","properties":{"first_name":{"type":"string"},"last_name":{"type":"string"},"children":{"type":"array","items":{"$ref":"#/$defs/test_reflector_schema__Person"}}},"required":["first_name","last_name","children"]},"test_reflector_schema__Parent":{"$ref":"#/$defs/rfl__Reflector_test_reflector_schema__Parent___ReflType"},"test_reflector_schema__Person":{"type":"object","properties":{"first_name":{"type":"string"},"last_name":{"type":"string"}},"required":["first_name","last_name"]}}})";
 
-  EXPECT_EQ(rfl::json::to_schema<Parent>(), expected);
+  const std::string expected_windows =
+      R"({"$schema":"https://json-schema.org/draft/2020-12/schema","$ref":"#/$defs/test_reflector_schema__Parent","$defs":{"rfl__Reflector_struct_test_reflector_schema__Parent___ReflType":{"type":"object","properties":{"first_name":{"type":"string"},"last_name":{"type":"string"},"children":{"type":"array","items":{"$ref":"#/$defs/test_reflector_schema__Person"}}},"required":["first_name","last_name","children"]},"test_reflector_schema__Parent":{"$ref":"#/$defs/rfl__Reflector_struct_test_reflector_schema__Parent___ReflType"},"test_reflector_schema__Person":{"type":"object","properties":{"first_name":{"type":"string"},"last_name":{"type":"string"}},"required":["first_name","last_name"]}}})";
+
+  EXPECT_TRUE(rfl::json::to_schema<Parent>() == expected ||
+              rfl::json::to_schema<Parent>() == expected_windows);
 }
 }  // namespace test_reflector_schema
