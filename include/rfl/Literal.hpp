@@ -4,6 +4,7 @@
 #include <compare>
 #include <cstdint>
 #include <functional>
+#include <limits>
 #include <string>
 #include <type_traits>
 #include <utility>
