@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "Literal.hpp"
 #include "Result.hpp"
 #include "internal/StringLiteral.hpp"
 

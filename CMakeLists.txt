@@ -22,6 +22,7 @@ option(REFLECTCPP_YAML "Enable YAML support" ${REFLECTCPP_ALL_FORMATS})
 
 option(REFLECTCPP_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
+option(REFLECTCPP_CHECK_HEADERS "Make sure that all headers are self-contained" OFF)
 
 option(REFLECTCPP_USE_BUNDLED_DEPENDENCIES "Use the bundled dependencies" ON)
 
@@ -55,7 +56,7 @@ if(REFLECTCPP_BUILD_BENCHMARKS)
     set(REFLECTCPP_YAML ON CACHE BOOL "" FORCE)
 endif()
 
-if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_BUILD_BENCHMARKS OR
+if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_BUILD_BENCHMARKS OR REFLECTCPP_CHECK_HEADERS OR
     (REFLECTCPP_JSON AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES) OR REFLECTCPP_AVRO OR
     REFLECTCPP_BSON OR REFLECTCPP_CAPNPROTO OR REFLECTCPP_CBOR OR REFLECTCPP_CSV OR
     REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_MSGPACK OR REFLECTCPP_PARQUET OR REFLECTCPP_XML OR 
@@ -73,31 +74,31 @@ endif()
 option(REFLECTCPP_USE_VCPKG "Use VCPKG to download and build dependencies" ${REFLECTCPP_USE_VCPKG_DEFAULT})
 
 if (REFLECTCPP_USE_VCPKG)
-    if (REFLECTCPP_AVRO)
+    if (REFLECTCPP_AVRO OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "avro")
     endif()
     
-    if (REFLECTCPP_BSON)
+    if (REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "bson")
     endif()
     
-    if (REFLECTCPP_BUILD_BENCHMARKS)
+    if (REFLECTCPP_BUILD_BENCHMARKS OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "benchmarks")
     endif()
 
-    if (REFLECTCPP_BUILD_TESTS)
+    if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "tests")
     endif()
     
-    if (REFLECTCPP_CAPNPROTO)
+    if (REFLECTCPP_CAPNPROTO OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "capnproto")
     endif()
     
-    if (REFLECTCPP_CBOR)
+    if (REFLECTCPP_CBOR OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "cbor")
     endif()
     
-    if (REFLECTCPP_CSV)
+    if (REFLECTCPP_CSV OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "csv")
     endif()
     
@@ -105,7 +106,7 @@ if (REFLECTCPP_USE_VCPKG)
         list(APPEND VCPKG_MANIFEST_FEATURES "ctre")
     endif()
     
-    if (REFLECTCPP_FLEXBUFFERS)
+    if (REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "flexbuffers")
     endif()
     
@@ -113,27 +114,27 @@ if (REFLECTCPP_USE_VCPKG)
         list(APPEND VCPKG_MANIFEST_FEATURES "json")
     endif()
     
-    if (REFLECTCPP_MSGPACK)
+    if (REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "msgpack")
     endif()
      
-    if (REFLECTCPP_PARQUET)
+    if (REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "parquet")
     endif()
     
-    if (REFLECTCPP_TOML)
+    if (REFLECTCPP_TOML OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "toml")
     endif()
     
-    if (REFLECTCPP_UBJSON)
+    if (REFLECTCPP_UBJSON OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "ubjson")
     endif()
 
-    if (REFLECTCPP_XML)
+    if (REFLECTCPP_XML OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "xml")
     endif()
     
-    if (REFLECTCPP_YAML)
+    if (REFLECTCPP_YAML OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "yaml")
     endif()
     
@@ -237,7 +238,7 @@ if (_REFLECTCPP_NEEDS_JSON_IMPL)
     endif ()
 endif ()
 
-if (REFLECTCPP_AVRO)
+if (REFLECTCPP_AVRO OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_avro.cpp
     )
@@ -270,7 +271,7 @@ if (REFLECTCPP_AVRO)
     target_link_libraries(reflectcpp PRIVATE jansson::jansson)
 endif ()
 
-if (REFLECTCPP_BSON)
+if (REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_bson.cpp
     )
@@ -280,7 +281,7 @@ if (REFLECTCPP_BSON)
     target_link_libraries(reflectcpp PUBLIC $<IF:$<TARGET_EXISTS:mongo::bson_static>,mongo::bson_static,mongo::bson_shared>)
 endif ()
 
-if (REFLECTCPP_CAPNPROTO)
+if (REFLECTCPP_CAPNPROTO OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_capnproto.cpp
     )
@@ -295,7 +296,7 @@ if (REFLECTCPP_CAPNPROTO)
     target_link_libraries(reflectcpp PUBLIC CapnProto::kj CapnProto::capnp ${CAPNPC_LIB} CapnProto::kj-gzip)
 endif ()
 
-if (REFLECTCPP_CBOR)
+if (REFLECTCPP_CBOR OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_cbor.cpp
     )
@@ -305,7 +306,7 @@ if (REFLECTCPP_CBOR)
     include_directories(PUBLIC ${jsoncons_INCLUDE_DIRS})
 endif ()
 
-if (REFLECTCPP_CSV)
+if (REFLECTCPP_CSV OR REFLECTCPP_CHECK_HEADERS)
     if (NOT TARGET Arrow)
         find_package(Arrow CONFIG REQUIRED)
     endif()
@@ -316,7 +317,7 @@ if (REFLECTCPP_CSV)
     endif()
 endif ()
 
-if (REFLECTCPP_FLEXBUFFERS)
+if (REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_flexbuf.cpp
     )
@@ -326,7 +327,7 @@ if (REFLECTCPP_FLEXBUFFERS)
     target_link_libraries(reflectcpp PUBLIC flatbuffers::flatbuffers)
 endif ()
 
-if (REFLECTCPP_MSGPACK)
+if (REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_msgpack.cpp
     )
@@ -336,7 +337,7 @@ if (REFLECTCPP_MSGPACK)
     target_link_libraries(reflectcpp PUBLIC msgpack-c)
 endif ()
 
-if (REFLECTCPP_PARQUET)
+if (REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
     if (NOT TARGET Arrow)
         find_package(Arrow CONFIG REQUIRED)
     endif()
@@ -351,7 +352,7 @@ if (REFLECTCPP_PARQUET)
     endif()
 endif ()
 
-if (REFLECTCPP_TOML)
+if (REFLECTCPP_TOML OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_toml.cpp
     )
@@ -361,7 +362,7 @@ if (REFLECTCPP_TOML)
     target_link_libraries(reflectcpp PUBLIC tomlplusplus::tomlplusplus)
 endif()
 
-if (REFLECTCPP_UBJSON)
+if (REFLECTCPP_UBJSON OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_ubjson.cpp
     )
@@ -371,7 +372,7 @@ if (REFLECTCPP_UBJSON)
     include_directories(PUBLIC ${jsoncons_INCLUDE_DIRS})
 endif ()
 
-if (REFLECTCPP_XML)
+if (REFLECTCPP_XML OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_xml.cpp
     )
@@ -381,7 +382,7 @@ if (REFLECTCPP_XML)
     target_link_libraries(reflectcpp PUBLIC pugixml::pugixml)
 endif ()
 
-if (REFLECTCPP_YAML)
+if (REFLECTCPP_YAML OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_yaml.cpp
     )
@@ -414,6 +415,32 @@ if (REFLECTCPP_BUILD_BENCHMARKS)
     target_link_libraries(reflectcpp PUBLIC benchmark::benchmark simdjson::simdjson)
     add_subdirectory(benchmarks)
 endif ()
+
+if(REFLECTCPP_CHECK_HEADERS)
+    file(GLOB_RECURSE PROJECT_HEADERS "include/*.hpp")
+
+    set(TEST_DIR "${CMAKE_CURRENT_BINARY_DIR}/self_contained_tests")
+    file(MAKE_DIRECTORY "${TEST_DIR}")
+
+    foreach(HEADER_FILE ${PROJECT_HEADERS})
+        string(MAKE_C_IDENTIFIER ${HEADER_FILE} HEADER_NAME)
+        set(TEST_SOURCE_FILE "${TEST_DIR}/test_${HEADER_NAME}.cpp")
+
+        file(GENERATE
+            OUTPUT ${TEST_SOURCE_FILE}
+            CONTENT "#include \"${HEADER_FILE}\"\n"
+        )
+
+        add_library(check_header_${HEADER_NAME} "${TEST_SOURCE_FILE}")
+        
+        target_include_directories(check_header_${HEADER_NAME} PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}
+            ${ADDITIONAL_INCLUDE_DIRS}
+        )
+        
+        add_custom_target(check_${HEADER_NAME} ALL DEPENDS check_header_${HEADER_NAME})
+    endforeach()
+endif()
 
 if (REFLECTCPP_INSTALL)
     include(GNUInstallDirs)
@@ -450,9 +477,6 @@ if (REFLECTCPP_INSTALL)
         NAMESPACE reflectcpp::
     )
 endif ()
-
-
-# CPack configuration
 
 # Set general package information
 set(CPACK_PACKAGE_NAME "reflectcpp")

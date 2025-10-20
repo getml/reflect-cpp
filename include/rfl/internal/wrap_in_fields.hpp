@@ -3,6 +3,7 @@
 
 #include <type_traits>
 
+#include "../Field.hpp"
 #include "../Tuple.hpp"
 #include "flattened_ptr_tuple_t.hpp"
 #include "is_flatten_field.hpp"

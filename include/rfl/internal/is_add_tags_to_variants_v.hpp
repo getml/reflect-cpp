@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-//#include "../AddTagsToVariants.hpp"
+#include "../AddTagsToVariants.hpp"
 
 namespace rfl ::internal {
 
@@ -27,12 +27,13 @@ template <class T>
 class is_add_namespaced_tags_to_variants : public std::false_type {};
 
 template <>
-class is_add_namespaced_tags_to_variants<AddNamespacedTagsToVariants> : public std::true_type {};
+class is_add_namespaced_tags_to_variants<AddNamespacedTagsToVariants>
+    : public std::true_type {};
 
 template <class T>
-constexpr bool is_add_namespaced_tags_to_variants_v = is_add_namespaced_tags_to_variants<
-    std::remove_cvref_t<std::remove_pointer_t<T>>>::value;
-
+constexpr bool is_add_namespaced_tags_to_variants_v =
+    is_add_namespaced_tags_to_variants<
+        std::remove_cvref_t<std::remove_pointer_t<T>>>::value;
 
 }  // namespace rfl::internal
 

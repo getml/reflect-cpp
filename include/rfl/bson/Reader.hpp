@@ -9,12 +9,11 @@
 #include <string>
 #include <type_traits>
 
-//#include "../Box.hpp"
-//#include "../Bytestring.hpp"
+#include "../Bytestring.hpp"
 #include "../Result.hpp"
-//#include "../Vectorstring.hpp"
+#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
-//#include "../internal/ptr_cast.hpp"
+#include "../internal/ptr_cast.hpp"
 
 namespace rfl {
 namespace bson {
@@ -110,16 +109,14 @@ struct Reader {
       using VectorType = std::remove_cvref_t<T>;
       using ValueType = typename VectorType::value_type;
       if (btype != BSON_TYPE_BINARY) {
-        if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
+        if constexpr (std::is_same<std::remove_cvref_t<T>, rfl::Bytestring>()) {
           return error("Could not cast to bytestring.");
         } else {
           return error("Could not cast to vectorstring.");
         }
       }
       if (value.v_binary.subtype != BSON_SUBTYPE_BINARY) {
-        if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
+        if constexpr (std::is_same<std::remove_cvref_t<T>, rfl::Bytestring>()) {
           return error(
               "The BSON subtype must be a binary in order to read into a "
               "bytestring.");
