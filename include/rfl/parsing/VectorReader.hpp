@@ -1,9 +1,11 @@
 #ifndef RFL_PARSING_VECTORREADER_HPP_
 #define RFL_PARSING_VECTORREADER_HPP_
 
+#include <optional>
 #include <type_traits>
 
 #include "../Result.hpp"
+#include "Parser_base.hpp"
 #include "is_map_like.hpp"
 #include "is_set_like.hpp"
 

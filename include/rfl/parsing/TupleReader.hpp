@@ -7,6 +7,9 @@
 #include "../Result.hpp"
 #include "../Tuple.hpp"
 #include "../internal/is_array.hpp"
+#include "AreReaderAndWriter.hpp"
+#include "Parser_base.hpp"
+#include "is_required.hpp"
 
 namespace rfl::parsing {
 

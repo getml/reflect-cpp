@@ -6,6 +6,8 @@
 #include <string>
 #include <variant>
 
+#include "../../Result.hpp"
+
 namespace rfl::parsing::schemaful {
 
 using MockVariantType = std::variant<std::string, int>;

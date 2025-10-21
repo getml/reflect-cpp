@@ -2,6 +2,7 @@
 #define RFL_PARSING_VIEWREADERWITHSTRIPPEDFIELDNAMES_HPP_
 
 #include <array>
+#include <optional>
 #include <sstream>
 #include <type_traits>
 #include <utility>
@@ -10,6 +11,7 @@
 #include "../Result.hpp"
 #include "../Tuple.hpp"
 #include "../internal/is_array.hpp"
+#include "Parser_base.hpp"
 
 namespace rfl::parsing {
 

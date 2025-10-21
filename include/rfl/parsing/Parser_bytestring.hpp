@@ -5,6 +5,7 @@
 
 #include "../Bytestring.hpp"
 #include "../Result.hpp"
+#include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 

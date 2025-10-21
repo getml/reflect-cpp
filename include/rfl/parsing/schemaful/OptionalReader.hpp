@@ -5,6 +5,7 @@
 #include <type_traits>
 
 #include "../../Result.hpp"
+#include "../Parser_base.hpp"
 
 namespace rfl::parsing::schemaful {
 
