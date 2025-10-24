@@ -423,22 +423,24 @@ if(REFLECTCPP_CHECK_HEADERS)
     file(MAKE_DIRECTORY "${TEST_DIR}")
 
     foreach(HEADER_FILE ${PROJECT_HEADERS})
-        string(MAKE_C_IDENTIFIER ${HEADER_FILE} HEADER_NAME)
-        set(TEST_SOURCE_FILE "${TEST_DIR}/test_${HEADER_NAME}.cpp")
+        if(NOT HEADER_FILE MATCHES "thirdparty")
+            string(MAKE_C_IDENTIFIER ${HEADER_FILE} HEADER_NAME)
+            set(TEST_SOURCE_FILE "${TEST_DIR}/test_${HEADER_NAME}.cpp")
 
-        file(GENERATE
-            OUTPUT ${TEST_SOURCE_FILE}
-            CONTENT "#include \"${HEADER_FILE}\"\n"
-        )
+            file(GENERATE
+                OUTPUT ${TEST_SOURCE_FILE}
+                CONTENT "#include \"${HEADER_FILE}\"\n"
+            )
 
-        add_library(check_header_${HEADER_NAME} "${TEST_SOURCE_FILE}")
-        
-        target_include_directories(check_header_${HEADER_NAME} PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}
-            ${ADDITIONAL_INCLUDE_DIRS}
-        )
-        
-        add_custom_target(check_${HEADER_NAME} ALL DEPENDS check_header_${HEADER_NAME})
+            add_library(check_header_${HEADER_NAME} "${TEST_SOURCE_FILE}")
+            
+            target_include_directories(check_header_${HEADER_NAME} PRIVATE
+                ${CMAKE_CURRENT_SOURCE_DIR}
+                ${ADDITIONAL_INCLUDE_DIRS}
+            )
+            
+            add_custom_target(check_${HEADER_NAME} ALL DEPENDS check_header_${HEADER_NAME})
+        endif()
     endforeach()
 endif()
 
