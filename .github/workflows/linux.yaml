@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "PARQUET", "TOML", "UBJSON", "XML", "YAML", "benchmarks"]
+        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "PARQUET", "TOML", "UBJSON", "XML", "YAML", "benchmarks", "headers"]
         compiler: [llvm, gcc]
         compiler-version: [11, 12, 13, 14, 16, 17, 18]
         cxx: [20, 23]
@@ -82,12 +82,14 @@ jobs:
             cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
           elif [[ "${{ matrix.format }}" == "benchmarks" ]]; then
             cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release
+          elif [[ "${{ matrix.format }}" == "headers" ]]; then
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_CHECK_HEADERS=ON -DCMAKE_BUILD_TYPE=Release
           else
             cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release
           fi
           cmake --build build -j4
       - name: Run tests
-        if: matrix.format != 'benchmarks'  
+        if: (matrix.format != 'benchmarks') && (matrix.format != 'headers')
         run: |
           ctest --test-dir build --output-on-failure
       - name: Run benchmarks 
