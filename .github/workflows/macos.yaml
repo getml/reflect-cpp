@@ -11,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["macos-latest", "macos-13"]
-        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "PARQUET", "TOML", "UBJSON", "XML", "YAML", "benchmarks"]
+        format: ["tests", "benchmarks"]
     name: "${{ matrix.os }} (${{ matrix.format }})"
     runs-on: ${{ matrix.os }}
     steps:
@@ -43,12 +43,10 @@ jobs:
             export CMAKE_GENERATOR=Ninja
           fi
           $CXX --version
-          if [[ "${{ matrix.format }}" == "JSON" ]]; then
-            cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
-          elif [[ "${{ matrix.format }}" == "benchmarks" ]]; then
+          if [[ "${{ matrix.format }}" == "benchmarks" ]]; then
             cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
           else
-            cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+            cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
           fi
           cmake --build build -j 4
       - name: Run tests
