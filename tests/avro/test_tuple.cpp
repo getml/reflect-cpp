@@ -28,6 +28,6 @@ TEST(avro, test_tuple) {
                  std::tuple<Person, Person, Person>{
                      std::move(bart), std::move(lisa), std::move(maggie)})};
 
-  write_and_read(homer);
+  write_and_read_with_json(homer);
 }
 }  // namespace test_tuple

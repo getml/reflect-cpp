@@ -30,6 +30,6 @@ struct Person {
 TEST(avro, test_custom_class1) {
   const auto bart = Person("Bart");
 
-  write_and_read(bart);
+  write_and_read_with_json(bart);
 }
 }  // namespace test_custom_class1

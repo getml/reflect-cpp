@@ -30,9 +30,9 @@ TEST(avro, test_float_and_int) {
 
   long_struct test_long_struct{.i = 1};
 
-  write_and_read(test_float_struct, "");
-  write_and_read(test_double_struct, "");
-  write_and_read(test_int_struct, "");
-  write_and_read(test_long_struct, "");
+  write_and_read_with_json(test_float_struct);
+  write_and_read_with_json(test_double_struct);
+  write_and_read_with_json(test_int_struct);
+  write_and_read_with_json(test_long_struct);
 }
 }  // namespace test_float_and_int

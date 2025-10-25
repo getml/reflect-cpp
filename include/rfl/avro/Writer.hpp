@@ -16,6 +16,7 @@
 #include "../always_false.hpp"
 #include "../common.hpp"
 #include "../internal/is_literal.hpp"
+#include "rfl/internal/has_reflection_type_v.hpp"
 
 namespace rfl::avro {
 
@@ -186,7 +187,7 @@ class RFL_API Writer {
     int result = avro_value_set_branch(&_parent->val_, static_cast<int>(_index),
                                        &new_value);
     if (result != 0) {
-      throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
+      throw std::runtime_error("Error adding value to union: error(" +
                                std::to_string(result) +
                                "): " + avro_strerror());
     }
@@ -203,14 +204,17 @@ class RFL_API Writer {
  private:
   template <class T>
   void set_value(const T& _var, avro_value_t* _val) const {
-    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
+    using Type = std::remove_cvref_t<T>;
+
+    if constexpr (std::is_same_v<Type, std::string>) {
       int result =
           avro_value_set_string_len(_val, _var.c_str(), _var.size() + 1);
       if (result != 0) {
-        throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
-                                 std::to_string(result) +
-                                 "): " + avro_strerror());
+        throw std::runtime_error(
+            "Error setting string value: " + std::to_string(result) + ": " +
+            avro_strerror());
       }
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>() ||
                          std::is_same<std::remove_cvref_t<T>,
@@ -221,49 +225,61 @@ class RFL_API Writer {
       }
       int result = avro_value_set_bytes(_val, var.data(), var.size());
       if (result != 0) {
-        throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
-                                 std::to_string(result) +
-                                 "): " + avro_strerror());
+        throw std::runtime_error(
+            "Error setting bytestring value: " + std::to_string(result) + ": " +
+            avro_strerror());
       }
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
+
+    } else if constexpr (std::is_same_v<Type, bool>) {
       int result = avro_value_set_boolean(_val, _var);
       if (result != 0) {
-        throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
-                                 std::to_string(result) +
-                                 "): " + avro_strerror());
+        throw std::runtime_error(
+            "Error setting boolean value: " + std::to_string(result) + ": " +
+            avro_strerror());
       }
-    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
+
+    } else if constexpr (std::is_same_v<Type, float>) {
+      int result = avro_value_set_float(_val, static_cast<float>(_var));
+      if (result != 0) {
+        throw std::runtime_error(
+            "Error setting float value: " + std::to_string(result) + ": " +
+            avro_strerror());
+      }
+
+    } else if constexpr (std::is_floating_point_v<Type>) {
       int result = avro_value_set_double(_val, static_cast<double>(_var));
       if (result != 0) {
-        throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
-                                 std::to_string(result) +
-                                 "): " + avro_strerror());
+        throw std::runtime_error(
+            "Error setting double value: " + std::to_string(result) + ": " +
+            avro_strerror());
       }
-    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
+
+    } else if constexpr (std::is_same_v<Type, std::int64_t> ||
+                         std::is_same_v<Type, std::uint32_t> ||
+                         std::is_same_v<Type, std::uint64_t>) {
       int result = avro_value_set_long(_val, static_cast<std::int64_t>(_var));
       if (result != 0) {
-        throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
-                                 std::to_string(result) +
-                                 "): " + avro_strerror());
+        throw std::runtime_error(
+            "Error setting long value: " + std::to_string(result) + ": " +
+            avro_strerror());
       }
+
+    } else if constexpr (std::is_integral_v<Type>) {
+      int result = avro_value_set_int(_val, static_cast<std::int32_t>(_var));
+      if (result != 0) {
+        throw std::runtime_error(
+            "Error setting int value: " + std::to_string(result) + ": " +
+            avro_strerror());
+      }
+
     } else if constexpr (internal::is_literal_v<T>) {
       int result = avro_value_set_enum(_val, static_cast<int>(_var.value()));
       if (result != 0) {
-        throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
-                                 std::to_string(result) +
-                                 "): " + avro_strerror());
+        throw std::runtime_error(
+            "Error setting literal value: " + std::to_string(result) + ": " +
+            avro_strerror());
       }
-    } else if constexpr (internal::is_validator_v<T>) {
-      using ValueType = std::remove_cvref_t<typename T::ReflectionType>;
-      const auto val = _var.value();
-      set_value<ValueType>(val, _val);
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Timestamp<"%Y-%m-%d">>()) {
-      const auto str = _var.to_string();
-      set_value<std::string>(str, _val);
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>, rfl::Email>()) {
-      const auto& str = static_cast<const std::string&>(_var);
-      set_value<std::string>(str, _val);
+
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }

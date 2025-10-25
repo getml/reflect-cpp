@@ -25,7 +25,7 @@ struct Circle {
 TEST(avro, test_flag_enum_with_int) {
   const auto circle = Circle{.radius = 2.0, .color = static_cast<Color>(10000)};
 
-  write_and_read(circle);
+  write_and_read_with_json(circle);
 }
 
 }  // namespace test_flag_enum_with_int

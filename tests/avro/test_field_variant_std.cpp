@@ -26,6 +26,6 @@ TEST(avro, test_field_variant_std) {
   const Shapes r =
       rfl::make_field<"rectangle">(Rectangle{.height = 10, .width = 5});
 
-  write_and_read(r);
+  write_and_read_with_json(r);
 }
 }  // namespace test_field_variant_std

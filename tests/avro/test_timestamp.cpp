@@ -14,7 +14,7 @@ struct Person {
   TS birthday;
 };
 
-TEST(avro, test_timestamp) { 
+TEST(avro, test_timestamp) {
   const auto result = TS::from_string("nonsense");
 
   if (result) {
@@ -24,6 +24,6 @@ TEST(avro, test_timestamp) {
 
   const auto bart = Person{.first_name = "Bart", .birthday = "1987-04-19"};
 
-  write_and_read(bart);
+  write_and_read_with_json(bart);
 }
 }  // namespace test_timestamp

@@ -14,6 +14,6 @@ TEST(avro, test_string_map) {
   homer.insert(
       std::make_pair("lastName", std::make_unique<std::string>("Simpson")));
 
-  write_and_read(homer);
+  write_and_read_with_json(homer);
 }
 }  // namespace test_string_map

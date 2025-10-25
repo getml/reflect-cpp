@@ -35,7 +35,6 @@ TEST(avro, test_box) {
 
   const DecisionTree tree{.leaf_or_node = std::move(node)};
 
-  write_and_read(tree);
-
+  write_and_read_with_json(tree);
 }
 }  // namespace test_box

@@ -16,7 +16,7 @@ struct Circle {
 TEST(avro, test_enum) {
   const auto circle = Circle{.radius = 2.0, .color = Color::green};
 
-  write_and_read(circle);
+  write_and_read_with_json(circle);
 }
 
 }  // namespace test_enum

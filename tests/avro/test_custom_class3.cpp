@@ -56,7 +56,7 @@ namespace test_custom_class3 {
 TEST(avro, test_custom_class3) {
   const auto bart = Person("Bart", "Simpson", 10);
 
-  write_and_read(bart);
+  write_and_read_with_json(bart);
 }
 
 }  // namespace test_custom_class3

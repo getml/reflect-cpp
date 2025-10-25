@@ -25,6 +25,6 @@ TEST(avro, test_readme_example3) {
              .birthday = "1987-04-19",
              .children = std::vector<Person>({bart, lisa, maggie})};
 
-  write_and_read(homer);
+  write_and_read_with_json(homer);
 }
 }  // namespace test_readme_example3

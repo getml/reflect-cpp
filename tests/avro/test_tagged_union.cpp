@@ -22,6 +22,6 @@ using Shapes = rfl::TaggedUnion<"shape", Rectangle, Circle, Square>;
 
 TEST(avro, test_tagged_union) {
   const Shapes r = Rectangle{.height = 10, .width = 5};
-  write_and_read(r);
+  write_and_read_with_json(r);
 }
 }  // namespace test_tagged_union

@@ -23,6 +23,6 @@ using Shapes = rfl::Variant<Circle, Rectangle, std::unique_ptr<Square>>;
 TEST(avro, test_rfl_variant) {
   const Shapes r = Rectangle{.height = 10, .width = 5};
 
-  write_and_read(r);
+  write_and_read_with_json(r);
 }
 }  // namespace test_variant

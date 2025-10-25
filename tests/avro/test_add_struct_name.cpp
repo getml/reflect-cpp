@@ -40,6 +40,6 @@ TEST(avro, test_add_struct_name) {
              .email = "homer@simpson.com",
              .children = std::vector<Person>({bart, lisa, maggie})};
 
-  write_and_read<rfl::AddStructName<"type">>(homer);
+  write_and_read_with_json<rfl::AddStructName<"type">>(homer);
 }
 }  // namespace test_add_struct_name

@@ -26,6 +26,6 @@ TEST(avro, test_flatten) {
       .employer = rfl::make_box<std::string>("Mr. Burns"),
       .salary = 60000.0};
 
-  write_and_read(employee);
+  write_and_read_with_json(employee);
 }
 }  // namespace test_flatten
