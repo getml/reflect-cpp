@@ -55,9 +55,6 @@ schema::Type type_to_avro_schema_type(
       return schema::Type{.value = schema::Type::Bytes{}};
 
     } else if constexpr (std::is_same<T, Type::Int32>() ||
-                         std::is_same<T, Type::Int64>() ||
-                         std::is_same<T, Type::UInt32>() ||
-                         std::is_same<T, Type::UInt64>() ||
                          std::is_same<T, Type::Integer>()) {
       return schema::Type{.value = schema::Type::Int{}};
 

@@ -6,7 +6,6 @@
 #include <string>
 
 #include "../../Literal.hpp"
-//#include "../../Object.hpp"
 #include "../../Ref.hpp"
 #include "../../Rename.hpp"
 #include "../../Variant.hpp"
@@ -36,7 +35,7 @@ struct RFL_API Type {
   };
 
   struct Double {
-    Literal<"float"> type{};
+    Literal<"double"> type{};
   };
 
   struct Bytes {

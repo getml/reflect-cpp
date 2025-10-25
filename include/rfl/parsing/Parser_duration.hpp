@@ -50,8 +50,7 @@ struct Parser<R, W, std::chrono::duration<Rep, Period>, ProcessorsType> {
   }
 
   template <class P>
-  static void write(const W& _w, const DurationType& _d,
-                    const P& _parent) noexcept {
+  static void write(const W& _w, const DurationType& _d, const P& _parent) {
     const auto r =
         RType{.count = static_cast<int64_t>(_d.count()), .unit = make_unit()};
     return Parser<R, W, RType, ProcessorsType>::write(_w, r, _parent);

@@ -23,7 +23,7 @@ struct DecisionTree {
   rfl::Field<"leafOrNode", LeafOrNode> leaf_or_node;
 };
 
-TEST(avro, test_ref) { 
+TEST(avro, test_ref) {
   const auto leaf1 = DecisionTree::Leaf{.value = 3.0};
 
   const auto leaf2 = DecisionTree::Leaf{.value = 5.0};
@@ -35,7 +35,6 @@ TEST(avro, test_ref) {
 
   const DecisionTree tree{.leaf_or_node = std::move(node)};
 
-  write_and_read(tree);
-
+  write_and_read_with_json(tree);
 }
 }  // namespace test_ref

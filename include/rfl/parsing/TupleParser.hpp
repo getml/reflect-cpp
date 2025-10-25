@@ -73,8 +73,7 @@ struct TupleParser {
   }
 
   template <class P>
-  static void write(const W& _w, const TupleType& _tup,
-                    const P& _parent) noexcept {
+  static void write(const W& _w, const TupleType& _tup, const P& _parent) {
     if constexpr (schemaful::IsSchemafulWriter<W>) {
       const auto named_tuple = schemaful::tuple_to_named_tuple(_tup);
       Parser<R, W, std::remove_cvref_t<decltype(named_tuple)>,
@@ -115,7 +114,7 @@ struct TupleParser {
 
   template <int _i, class P>
   static void add_to_array(const W& _w, const TupleType& _tup,
-                           const P& _parent) noexcept {
+                           const P& _parent) {
     using NewFieldType =
         std::remove_cvref_t<rfl::tuple_element_t<_i, TupleType>>;
     Parser<R, W, NewFieldType, ProcessorsType>::write(_w, rfl::get<_i>(_tup),
@@ -124,7 +123,7 @@ struct TupleParser {
 
   template <int... _is, class P>
   static void to_array(const W& _w, const TupleType& _tup, const P& _parent,
-                       std::integer_sequence<int, _is...>) noexcept {
+                       std::integer_sequence<int, _is...>) {
     (add_to_array<_is>(_w, _tup, _parent), ...);
   }
 };

@@ -20,7 +20,6 @@ TEST(avro, test_default_values) {
   const auto homer =
       Person{.first_name = "Homer", .children = std::move(children)};
 
-  write_and_read(homer);
-
+  write_and_read_with_json(homer);
 }
 }  // namespace test_deque

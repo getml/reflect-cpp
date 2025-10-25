@@ -28,6 +28,6 @@ TEST(avro, test_snake_case_to_camel_case) {
              .birthday = "1987-04-19",
              .children = std::vector<Person>({bart, lisa, maggie})};
 
-  write_and_read<rfl::SnakeCaseToCamelCase>(homer);
+  write_and_read_with_json<rfl::SnakeCaseToCamelCase>(homer);
 }
 }  // namespace test_snake_case_to_camel_case

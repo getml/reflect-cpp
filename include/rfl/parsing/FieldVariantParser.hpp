@@ -57,7 +57,7 @@ struct FieldVariantParser {
 
   template <class P>
   static void write(const W& _w, const rfl::Variant<FieldTypes...>& _v,
-                    const P& _parent) noexcept {
+                    const P& _parent) {
     static_assert(
         internal::no_duplicate_field_names<rfl::Tuple<FieldTypes...>>(),
         "Externally tagged variants cannot have duplicate field "

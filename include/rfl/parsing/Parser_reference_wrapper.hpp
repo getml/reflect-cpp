@@ -31,7 +31,7 @@ struct Parser<R, W, std::reference_wrapper<T>, ProcessorsType> {
 
   template <class P>
   static void write(const W& _w, const std::reference_wrapper<T> _ref,
-                    const P& _p) noexcept {
+                    const P& _p) {
     Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, _ref.get(),
                                                                 _p);
   }

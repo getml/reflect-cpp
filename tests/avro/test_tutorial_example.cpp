@@ -4,20 +4,8 @@
 #include <rfl/avro.hpp>
 #include <string>
 
-//#include "write_and_read.hpp"
-
 /// The basic example from the Avro C tutorial.
 namespace test_tutorial_example {
-
-const char PERSON_SCHEMA[] =
-    "{\"type\":\"record\",\
-  \"name\":\"Person\",\
-  \"fields\":[\
-     {\"name\": \"ID\", \"type\": \"long\"},\
-     {\"name\": \"First\", \"type\": \"string\"},\
-     {\"name\": \"Last\", \"type\": \"string\"},\
-     {\"name\": \"Phone\", \"type\": \"string\"},\
-     {\"name\": \"Age\", \"type\": \"int\"}]}";
 
 struct Person {
   size_t ID;
@@ -33,12 +21,11 @@ TEST(avro, test_tutorial_example) {
                              .Last = "Graves",
                              .Phone = "(555) 123-5678",
                              .Age = 30};
-  const auto schema = rfl::avro::Schema<Person>::from_json(PERSON_SCHEMA);
-  const auto serialized1 = rfl::avro::write(person, schema.value());
-  const auto res = rfl::avro::read<Person>(serialized1, schema.value());
+  const auto serialized1 = rfl::avro::write(person);
+  const auto res = rfl::avro::read<Person>(serialized1);
   EXPECT_TRUE(res && true) << "Test failed on read. Error: "
                            << res.error().what();
-  const auto serialized2 = rfl::avro::write(res.value(), schema.value());
+  const auto serialized2 = rfl::avro::write(res.value());
   EXPECT_EQ(serialized1, serialized2);
 }
 }  // namespace test_tutorial_example

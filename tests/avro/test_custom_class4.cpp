@@ -58,6 +58,6 @@ TEST(avro, test_custom_class4) {
   const auto bart = test_custom_class4::Person(
       "Bart", rfl::make_box<std::string>("Simpson"), 10);
 
-  write_and_read(bart);
+  write_and_read_with_json(bart);
 }
 }  // namespace test_custom_class4

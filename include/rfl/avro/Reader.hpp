@@ -9,10 +9,9 @@
 #include <string_view>
 #include <type_traits>
 
-#include "../Bytestring.hpp"
 #include "../Result.hpp"
-#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
+#include "../concepts.hpp"
 #include "../internal/is_literal.hpp"
 #include "../parsing/schemaful/IsSchemafulReader.hpp"
 
@@ -67,22 +66,15 @@ struct Reader {
         return std::string("");
       }
       return std::string(c_str, size - 1);
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>() ||
-                         std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Vectorstring>()) {
+    } else if constexpr (concepts::MutableContiguousByteContainer<
+                             std::remove_cvref_t<T>>) {
       using VectorType = std::remove_cvref_t<T>;
       using ValueType = typename VectorType::value_type;
       const void* ptr = nullptr;
       size_t size = 0;
       const auto err = avro_value_get_bytes(_var.val_, &ptr, &size);
       if (err) {
-        if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
-          return error("Could not cast to bytestring.");
-        } else {
-          return error("Could not cast to vectorstring.");
-        }
+        return error("Could not cast to bytestring.");
       }
       const auto data = internal::ptr_cast<const ValueType*>(ptr);
       return VectorType(data, data + size);
@@ -93,7 +85,8 @@ struct Reader {
       int result_value = 0;
       int result = avro_value_get_boolean(_var.val_, &result_value);
       if (result != 0) {
-        return error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
+        return error(std::string(__FUNCTION__) + " error(" +
+                     std::to_string(result) + "): " + avro_strerror());
       }
       return (result_value != 0);
 
@@ -191,16 +184,16 @@ struct Reader {
                                   const InputArrayType& _arr) const noexcept {
     size_t size = 0;
     int res = avro_value_get_size(_arr.val_, &size);
-    if(res)
-    {
-      return Error(std::string(__FUNCTION__) + " error(" + std::to_string(res) + "): "  + avro_strerror());
+    if (res) {
+      return Error(std::string(__FUNCTION__) + " error(" + std::to_string(res) +
+                   "): " + avro_strerror());
     }
     for (size_t ix = 0; ix < size; ++ix) {
       avro_value_t element;
       res = avro_value_get_by_index(_arr.val_, ix, &element, nullptr);
-      if(res)
-      {
-      return Error(std::string(__FUNCTION__) + " error(" + std::to_string(res) + "): "  + avro_strerror());
+      if (res) {
+        return Error(std::string(__FUNCTION__) + " error(" +
+                     std::to_string(res) + "): " + avro_strerror());
       }
       const auto err = _array_reader.read(InputVarType{&element});
       if (err) {
@@ -215,17 +208,17 @@ struct Reader {
                                 const InputMapType& _map) const noexcept {
     size_t size = 0;
     int res = avro_value_get_size(_map.val_, &size);
-    if(res!=0)
-    {
-      return Error(std::string(__FUNCTION__) + " error("+ std::to_string(res)+"): "  + avro_strerror());
+    if (res != 0) {
+      return Error(std::string(__FUNCTION__) + " error(" + std::to_string(res) +
+                   "): " + avro_strerror());
     }
     for (size_t ix = 0; ix < size; ++ix) {
       avro_value_t element;
       const char* key = nullptr;
       res = avro_value_get_by_index(_map.val_, ix, &element, &key);
-      if(res!=0)
-      {
-        return Error(std::string(__FUNCTION__) + " error("+ std::to_string(res)+"): "  + avro_strerror());
+      if (res != 0) {
+        return Error(std::string(__FUNCTION__) + " error(" +
+                     std::to_string(res) + "): " + avro_strerror());
       }
       _map_reader.read(std::string_view(key), InputVarType{&element});
     }
@@ -237,16 +230,16 @@ struct Reader {
                                    const InputObjectType& _obj) const noexcept {
     size_t size = 0;
     int res = avro_value_get_size(_obj.val_, &size);
-    if(res!=0)
-    {
-      return Error(std::string(__FUNCTION__) + " error("+ std::to_string(res)+"): "  + avro_strerror());
+    if (res != 0) {
+      return Error(std::string(__FUNCTION__) + " error(" + std::to_string(res) +
+                   "): " + avro_strerror());
     }
     for (size_t ix = 0; ix < size; ++ix) {
       avro_value_t element;
       res = avro_value_get_by_index(_obj.val_, ix, &element, nullptr);
-      if(res!=0)
-      {
-        return Error(std::string(__FUNCTION__) + " error("+ std::to_string(res)+"): "  + avro_strerror());
+      if (res != 0) {
+        return Error(std::string(__FUNCTION__) + " error(" +
+                     std::to_string(res) + "): " + avro_strerror());
       }
       _object_reader.read(static_cast<int>(ix), InputVarType{&element});
     }

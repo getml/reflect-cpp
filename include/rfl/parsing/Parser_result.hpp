@@ -45,8 +45,7 @@ struct Parser<R, W, Result<T>, ProcessorsType> {
   }
 
   template <class P>
-  static void write(const W& _w, const Result<T>& _r,
-                    const P& _parent) noexcept {
+  static void write(const W& _w, const Result<T>& _r, const P& _parent) {
     if (_r) {
       Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(
           _w, _r.value(), _parent);

@@ -16,7 +16,7 @@ namespace parsing {
 
 template <class R, class W, class T, internal::StringLiteral _name,
           class ProcessorsType>
-requires AreReaderAndWriter<R, W, Rename<_name, T>>
+  requires AreReaderAndWriter<R, W, Rename<_name, T>>
 struct Parser<R, W, Rename<_name, T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
@@ -31,7 +31,7 @@ struct Parser<R, W, Rename<_name, T>, ProcessorsType> {
 
   template <class P>
   static void write(const W& _w, const Rename<_name, T>& _rename,
-                    const P& _parent) noexcept {
+                    const P& _parent) {
     Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(
         _w, _rename.value(), _parent);
   }

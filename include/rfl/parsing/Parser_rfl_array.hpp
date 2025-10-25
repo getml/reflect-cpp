@@ -15,7 +15,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, internal::Array<T>>
+  requires AreReaderAndWriter<R, W, internal::Array<T>>
 struct Parser<R, W, internal::Array<T>, ProcessorsType> {
  public:
   using InputArrayType = typename R::InputArrayType;
@@ -30,7 +30,7 @@ struct Parser<R, W, internal::Array<T>, ProcessorsType> {
 
   template <class P>
   static void write(const W& _w, const internal::Array<T>& _arr,
-                    const P& _parent) noexcept {
+                    const P& _parent) {
     Parser<R, W, StdArray, ProcessorsType>::write(_w, _arr.arr_, _parent);
   }
 

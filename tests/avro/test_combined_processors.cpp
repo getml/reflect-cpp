@@ -43,6 +43,6 @@ TEST(avro, test_combined_processors) {
   using Processors =
       rfl::Processors<rfl::SnakeCaseToCamelCase, rfl::AddStructName<"type">>;
 
-  write_and_read<Processors>(homer);
+  write_and_read_with_json<Processors>(homer);
 }
 }  // namespace test_combined_processors

@@ -105,7 +105,7 @@ struct Parser {
   }
 
   template <class P>
-  static void write(const W& _w, const T& _var, const P& _parent) noexcept {
+  static void write(const W& _w, const T& _var, const P& _parent) {
     if constexpr (internal::has_write_reflector<T>) {
       Parser<R, W, typename Reflector<T>::ReflType, ProcessorsType>::write(
           _w, Reflector<T>::from(_var), _parent);
