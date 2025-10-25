@@ -11,13 +11,11 @@
 #include <vector>
 
 #include "../Box.hpp"
-#include "../Bytestring.hpp"
 #include "../Ref.hpp"
-//#include "../Result.hpp"
-#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
-#include "../internal/ptr_cast.hpp"
 #include "../common.hpp"
+#include "../concepts.hpp"
+#include "../internal/ptr_cast.hpp"
 
 namespace rfl {
 namespace bson {
@@ -79,43 +77,65 @@ class RFL_API Writer {
   }
 
   OutputArrayType add_array_to_array(const size_t _size,
-                                     OutputArrayType* _parent) const noexcept;
+                                     OutputArrayType* _parent) const;
 
   OutputArrayType add_array_to_object(const std::string_view& _name,
                                       const size_t _size,
-                                      OutputObjectType* _parent) const noexcept;
+                                      OutputObjectType* _parent) const;
 
   OutputObjectType add_object_to_array(const size_t _size,
-                                       OutputArrayType* _parent) const noexcept;
+                                       OutputArrayType* _parent) const;
 
-  OutputObjectType add_object_to_object(
-      const std::string_view& _name, const size_t _size,
-      OutputObjectType* _parent) const noexcept;
+  OutputObjectType add_object_to_object(const std::string_view& _name,
+                                        const size_t _size,
+                                        OutputObjectType* _parent) const;
 
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
-                                   OutputArrayType* _parent) const noexcept {
+                                   OutputArrayType* _parent) const {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      bson_array_builder_append_utf8(_parent->val_, _var.c_str(),
-                                     static_cast<int>(_var.size()));
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>() ||
-                         std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Vectorstring>()) {
-      bson_array_builder_append_binary(
+      const bool ok = bson_array_builder_append_utf8(
+          _parent->val_, _var.c_str(), static_cast<int>(_var.size()));
+      if (!ok) {
+        throw std::runtime_error("Could not append utf-8 to array.");
+      }
+
+    } else if constexpr (concepts::MutableContiguousByteContainer<
+                             std::remove_cvref_t<T>>) {
+      const bool ok = bson_array_builder_append_binary(
           _parent->val_, BSON_SUBTYPE_BINARY,
           internal::ptr_cast<const uint8_t*>(_var.data()),
           static_cast<uint32_t>(_var.size()));
+      if (!ok) {
+        throw std::runtime_error("Could not append binary to array.");
+      }
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
-      bson_array_builder_append_bool(_parent->val_, _var);
+      const bool ok = bson_array_builder_append_bool(_parent->val_, _var);
+      if (!ok) {
+        throw std::runtime_error("Could not append bool to array.");
+      }
+
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-      bson_array_builder_append_double(_parent->val_,
-                                       static_cast<double>(_var));
+      const bool ok = bson_array_builder_append_double(
+          _parent->val_, static_cast<double>(_var));
+      if (!ok) {
+        throw std::runtime_error("Could not append float to array.");
+      }
+
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      bson_array_builder_append_int64(_parent->val_,
-                                      static_cast<std::int64_t>(_var));
+      const bool ok = bson_array_builder_append_int64(
+          _parent->val_, static_cast<std::int64_t>(_var));
+      if (!ok) {
+        throw std::runtime_error("Could not append integer to array.");
+      }
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bson_oid_t>()) {
-      bson_array_builder_append_oid(_parent->val_, &_var);
+      const bool ok = bson_array_builder_append_oid(_parent->val_, &_var);
+      if (!ok) {
+        throw std::runtime_error("Could not append OID to array.");
+      }
+
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
@@ -125,47 +145,75 @@ class RFL_API Writer {
   template <class T>
   OutputVarType add_value_to_object(const std::string_view& _name,
                                     const T& _var,
-                                    OutputObjectType* _parent) const noexcept {
+                                    OutputObjectType* _parent) const {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      bson_append_utf8(_parent->val_, _name.data(),
-                       static_cast<int>(_name.size()), _var.c_str(),
-                       static_cast<int>(_var.size()));
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>() ||
-                         std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Vectorstring>()) {
-      bson_append_binary(_parent->val_, _name.data(),
-                         static_cast<int>(_name.size()), BSON_SUBTYPE_BINARY,
-                         internal::ptr_cast<const uint8_t*>(_var.data()),
-                         static_cast<uint32_t>(_var.size()));
+      const bool ok = bson_append_utf8(
+          _parent->val_, _name.data(), static_cast<int>(_name.size()),
+          _var.c_str(), static_cast<int>(_var.size()));
+      if (!ok) {
+        throw std::runtime_error("Could not utf-8 field '" +
+                                 std::string(_name) + "' to object.");
+      }
+
+    } else if constexpr (concepts::MutableContiguousByteContainer<
+                             std::remove_cvref_t<T>>) {
+      const bool ok = bson_append_binary(
+          _parent->val_, _name.data(), static_cast<int>(_name.size()),
+          BSON_SUBTYPE_BINARY, internal::ptr_cast<const uint8_t*>(_var.data()),
+          static_cast<uint32_t>(_var.size()));
+      if (!ok) {
+        throw std::runtime_error("Could not binary field '" +
+                                 std::string(_name) + "' to object.");
+      }
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
-      bson_append_bool(_parent->val_, _name.data(),
-                       static_cast<int>(_name.size()), _var);
+      const bool ok = bson_append_bool(_parent->val_, _name.data(),
+                                       static_cast<int>(_name.size()), _var);
+      if (!ok) {
+        throw std::runtime_error("Could not boolean field '" +
+                                 std::string(_name) + "' to object.");
+      }
+
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-      bson_append_double(_parent->val_, _name.data(),
-                         static_cast<int>(_name.size()),
-                         static_cast<double>(_var));
+      const bool ok = bson_append_double(_parent->val_, _name.data(),
+                                         static_cast<int>(_name.size()),
+                                         static_cast<double>(_var));
+      if (!ok) {
+        throw std::runtime_error("Could not floating point field '" +
+                                 std::string(_name) + "' to object.");
+      }
+
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      bson_append_int64(_parent->val_, _name.data(),
-                        static_cast<int>(_name.size()),
-                        static_cast<std::int64_t>(_var));
+      const bool ok = bson_append_int64(_parent->val_, _name.data(),
+                                        static_cast<int>(_name.size()),
+                                        static_cast<std::int64_t>(_var));
+      if (!ok) {
+        throw std::runtime_error("Could not int field '" + std::string(_name) +
+                                 "' to object.");
+      }
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bson_oid_t>()) {
-      bson_append_oid(_parent->val_, _name.data(),
-                      static_cast<int>(_name.size()), &_var);
+      const bool ok = bson_append_oid(_parent->val_, _name.data(),
+                                      static_cast<int>(_name.size()), &_var);
+      if (!ok) {
+        throw std::runtime_error("Could not oid field '" + std::string(_name) +
+                                 "' to object.");
+      }
+
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
     return OutputVarType{};
   }
 
-  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept;
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const;
 
   OutputVarType add_null_to_object(const std::string_view& _name,
-                                   OutputObjectType* _parent) const noexcept;
+                                   OutputObjectType* _parent) const;
 
-  void end_array(OutputArrayType* _arr) const noexcept;
+  void end_array(OutputArrayType* _arr) const;
 
-  void end_object(OutputObjectType* _obj) const noexcept;
+  void end_object(OutputObjectType* _obj) const;
 
  private:
   /// Pointer to the main document. In BSON, documents are what are usually

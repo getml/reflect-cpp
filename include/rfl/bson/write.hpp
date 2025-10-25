@@ -17,7 +17,7 @@ namespace bson {
 /// Returns BSON bytes. Careful: It is the responsibility of the caller to call
 /// bson_free on the returned pointer.
 template <class... Ps>
-std::pair<uint8_t*, size_t> to_buffer(const auto& _obj) noexcept {
+std::pair<uint8_t*, size_t> to_buffer(const auto& _obj) {
   using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
   bson_t* doc = nullptr;
@@ -41,7 +41,7 @@ std::pair<uint8_t*, size_t> to_buffer(const auto& _obj) noexcept {
 
 /// Returns BSON bytes.
 template <class... Ps>
-std::vector<char> write(const auto& _obj) noexcept {
+std::vector<char> write(const auto& _obj) {
   auto [buf, len] = to_buffer<Ps...>(_obj);
   const auto result = std::vector<char>(internal::ptr_cast<char*>(buf),
                                         internal::ptr_cast<char*>(buf) + len);
@@ -51,7 +51,7 @@ std::vector<char> write(const auto& _obj) noexcept {
 
 /// Writes a BSON into an ostream.
 template <class... Ps>
-std::ostream& write(const auto& _obj, std::ostream& _stream) noexcept {
+std::ostream& write(const auto& _obj, std::ostream& _stream) {
   auto [buf, len] = to_buffer<Ps...>(_obj);
   _stream.write(internal::ptr_cast<const char*>(buf), len);
   bson_free(buf);

@@ -9,10 +9,9 @@
 #include <string>
 #include <type_traits>
 
-#include "../Bytestring.hpp"
 #include "../Result.hpp"
-#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
+#include "../concepts.hpp"
 #include "../internal/ptr_cast.hpp"
 
 namespace rfl {
@@ -102,10 +101,8 @@ struct Reader {
               "Could not cast to string. The type must be UTF8 or symbol.");
       }
 
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>() ||
-                         std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Vectorstring>()) {
+    } else if constexpr (concepts::MutableContiguousByteContainer<
+                             std::remove_cvref_t<T>>) {
       using VectorType = std::remove_cvref_t<T>;
       using ValueType = typename VectorType::value_type;
       if (btype != BSON_TYPE_BINARY) {
