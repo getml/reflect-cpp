@@ -1,10 +1,11 @@
 #ifndef RFL_CAPNPROTO_PARSER_HPP_
 #define RFL_CAPNPROTO_PARSER_HPP_
 
-//#include "../Generic.hpp"
+#include "../Generic.hpp"
+#include "../NamedTuple.hpp"
 #include "../Tuple.hpp"
 #include "../always_false.hpp"
-//#include "../parsing/Parser.hpp"
+#include "../parsing/Parser.hpp"
 #include "Reader.hpp"
 #include "Writer.hpp"
 

@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "../Result.hpp"
 #include "../internal/strings/strings.hpp"
 
 namespace rfl::parsing {

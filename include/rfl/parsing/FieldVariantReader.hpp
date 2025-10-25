@@ -11,6 +11,7 @@
 #include "../Variant.hpp"
 #include "../internal/is_array.hpp"
 #include "../internal/nth_element_t.hpp"
+#include "Parser_base.hpp"
 
 namespace rfl::parsing {
 

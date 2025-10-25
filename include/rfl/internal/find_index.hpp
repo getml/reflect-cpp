@@ -1,6 +1,7 @@
 #ifndef RFL_FIND_INDEX_HPP_
 #define RFL_FIND_INDEX_HPP_
 
+#include "../Tuple.hpp"
 #include "StringLiteral.hpp"
 
 namespace rfl {

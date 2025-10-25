@@ -2,8 +2,11 @@
 #define RFL_PARSING_SCHEMAFUL_ISSCHEMAFULREADER_HPP_
 
 #include <concepts>
+#include <optional>
 #include <string>
 #include <variant>
+
+#include "../../Result.hpp"
 
 namespace rfl::parsing::schemaful {
 

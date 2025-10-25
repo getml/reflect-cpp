@@ -4,6 +4,7 @@
 #include <type_traits>
 
 #include "../Field.hpp"
+#include "../NamedTuple.hpp"
 #include "StringLiteral.hpp"
 #include "wrap_in_rfl_array_t.hpp"
 

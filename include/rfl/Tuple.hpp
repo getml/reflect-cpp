@@ -2,6 +2,7 @@
 #define RFL_TUPLE_HPP_
 
 #include <array>
+#include <cstddef>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -43,9 +44,7 @@ class Tuple {
 
   Tuple(const Tuple& _other) { copy_from_other(_other, seq_); }
 
-  Tuple(Tuple&& _other) noexcept {
-    move_from_other(std::move(_other), seq_);
-  }
+  Tuple(Tuple&& _other) noexcept { move_from_other(std::move(_other), seq_); }
 
   ~Tuple() { destroy_if_necessary(seq_); }
 
@@ -154,8 +153,7 @@ class Tuple {
   }
 
   template <int... _is>
-  void move_from_other(Tuple&& _other,
-                       std::integer_sequence<int, _is...>) {
+  void move_from_other(Tuple&& _other, std::integer_sequence<int, _is...>) {
     const auto move_one = [this]<int _i>(auto&& _other,
                                          std::integral_constant<int, _i>) {
       using Type = internal::nth_element_t<_i, Types...>;

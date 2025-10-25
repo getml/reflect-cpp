@@ -4,6 +4,7 @@
 #include <capnp/dynamic.h>
 
 #include <exception>
+#include <optional>
 #include <string>
 #include <type_traits>
 
@@ -11,9 +12,9 @@
 #include "../Result.hpp"
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
+#include "../common.hpp"
 #include "../internal/is_literal.hpp"
 #include "../internal/ptr_cast.hpp"
-#include "../common.hpp"
 
 namespace rfl::capnproto {
 
@@ -69,8 +70,7 @@ class RFL_API Reader {
       using VectorType = std::remove_cvref_t<T>;
       using ValueType = typename VectorType::value_type;
       if (type != capnp::DynamicValue::DATA) {
-        if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
+        if constexpr (std::is_same<std::remove_cvref_t<T>, rfl::Bytestring>()) {
           return error("Could not cast to bytestring.");
         } else {
           return error("Could not cast to vectorstring.");
