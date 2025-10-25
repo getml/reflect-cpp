@@ -15,6 +15,7 @@
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../common.hpp"
+#include "../concepts.hpp"
 #include "../internal/is_literal.hpp"
 #include "../internal/is_validator.hpp"
 #include "../patterns.hpp"
@@ -216,7 +217,7 @@ class RFL_API Writer {
             avro_strerror());
       }
 
-    } else if constexpr (concepts::MutableContiguousByteContainer<T>) {
+    } else if constexpr (concepts::MutableContiguousByteContainer<Type>) {
       auto var = _var;
       if (!var.data()) {
         return;
