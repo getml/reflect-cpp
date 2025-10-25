@@ -9,6 +9,8 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/has_reflection_type_v.hpp"
+#include "Parser_base.hpp"
 
 namespace rfl::parsing {
 
@@ -56,7 +58,8 @@ class MapReader {
   }
 
   Result<std::pair<KeyType, ValueType>> make_key(auto&& _pair) const noexcept {
-    static_assert(std::is_rvalue_reference_v<decltype(_pair)>, "Expected an rvalue");
+    static_assert(std::is_rvalue_reference_v<decltype(_pair)>,
+                  "Expected an rvalue");
     const auto to_pair =
         [&](auto&& _key) -> Result<std::pair<KeyType, ValueType>> {
       try {

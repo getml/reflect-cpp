@@ -8,6 +8,7 @@
 #include "../Generic.hpp"
 #include "../Rename.hpp"
 #include "../internal/StringLiteral.hpp"
+#include "../internal/has_reflection_type_v.hpp"
 #include "../internal/is_rename.hpp"
 #include "is_map_like.hpp"
 #include "is_vector_like.hpp"

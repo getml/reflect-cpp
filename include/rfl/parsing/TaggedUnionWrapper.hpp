@@ -3,6 +3,7 @@
 
 #include <type_traits>
 
+#include "../Field.hpp"
 #include "../Flatten.hpp"
 #include "../Rename.hpp"
 #include "../internal/StringLiteral.hpp"

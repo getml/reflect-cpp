@@ -3,14 +3,13 @@
 
 #include <msgpack.h>
 
+#include <cstdint>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <type_traits>
 
-//#include "../Box.hpp"
 #include "../Bytestring.hpp"
-//#include "../Ref.hpp"
-//#include "../Result.hpp"
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../common.hpp"
@@ -47,27 +46,27 @@ class RFL_API Writer {
   OutputArrayType add_array_to_array(const size_t _size,
                                      OutputArrayType* _parent) const noexcept;
 
-  OutputArrayType add_array_to_object(
-      const std::string_view& _name, const size_t _size,
-      OutputObjectType* _parent) const noexcept;
+  OutputArrayType add_array_to_object(const std::string_view& _name,
+                                      const size_t _size,
+                                      OutputObjectType* _parent) const noexcept;
 
-  OutputObjectType add_object_to_array(
-      const size_t _size, OutputArrayType* _parent) const noexcept;
+  OutputObjectType add_object_to_array(const size_t _size,
+                                       OutputArrayType* _parent) const noexcept;
 
   OutputObjectType add_object_to_object(
       const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept;
 
   template <class T>
-  OutputVarType add_value_to_array(const T& _var,
-                                   OutputArrayType* /*_parent*/) const noexcept {
+  OutputVarType add_value_to_array(
+      const T& _var, OutputArrayType* /*_parent*/) const noexcept {
     return new_value(_var);
   }
 
   template <class T>
-  OutputVarType add_value_to_object(const std::string_view& _name,
-                                    const T& _var,
-                                    OutputObjectType* /*_parent*/) const noexcept {
+  OutputVarType add_value_to_object(
+      const std::string_view& _name, const T& _var,
+      OutputObjectType* /*_parent*/) const noexcept {
     msgpack_pack_str(pk_, _name.size());
     msgpack_pack_str_body(pk_, _name.data(), _name.size());
     return new_value(_var);
@@ -93,7 +92,8 @@ class RFL_API Writer {
     if constexpr (std::is_same<Type, std::string>()) {
       msgpack_pack_str(pk_, _var.size());
       msgpack_pack_str_body(pk_, _var.c_str(), _var.size());
-    } else if constexpr (std::is_same<Type, rfl::Bytestring>() || std::is_same<Type, rfl::Vectorstring>()) {
+    } else if constexpr (std::is_same<Type, rfl::Bytestring>() ||
+                         std::is_same<Type, rfl::Vectorstring>()) {
       msgpack_pack_bin(pk_, _var.size());
       msgpack_pack_bin_body(pk_, _var.data(), _var.size());
     } else if constexpr (std::is_same<Type, bool>()) {

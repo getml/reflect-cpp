@@ -3,8 +3,9 @@
 
 #include <map>
 
-#include "../Vectorstring.hpp"
 #include "../Result.hpp"
+#include "../Vectorstring.hpp"
+#include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
@@ -17,7 +18,7 @@ struct Parser<R, W, Vectorstring, ProcessorsType> {
   using ParentType = Parent<W>;
 
   static Result<Vectorstring> read(const R& _r,
-                                 const InputVarType& _var) noexcept {
+                                   const InputVarType& _var) noexcept {
     return _r.template to_basic_type<Vectorstring>(_var);
   }
 

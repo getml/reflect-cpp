@@ -1,6 +1,8 @@
 #ifndef RFL_CAPNPROTO_IS_NAMED_TYPE_HPP_
 #define RFL_CAPNPROTO_IS_NAMED_TYPE_HPP_
 
+#include "../parsing/schema/Type.hpp"
+
 namespace rfl::capnproto {
 
 inline bool is_named_type(const parsing::schema::Type& _type) {

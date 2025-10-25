@@ -1,6 +1,7 @@
 #ifndef RFL_INTERNAL_ARRAY_HPP_
 #define RFL_INTERNAL_ARRAY_HPP_
 
+#include <cstddef>
 #include <type_traits>
 
 #include "to_std_array.hpp"
@@ -9,7 +10,7 @@ namespace rfl {
 namespace internal {
 
 template <class T>
-requires std::is_array_v<T>
+  requires std::is_array_v<T>
 struct Array {
   using Type = T;
   using StdArrayType = to_std_array_t<T>;

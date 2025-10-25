@@ -10,6 +10,7 @@
 #include "../always_false.hpp"
 #include "../internal/strings/strings.hpp"
 #include "../named_tuple_t.hpp"
+#include "../visit.hpp"
 #include "Parser_base.hpp"
 #include "TaggedUnionWrapper.hpp"
 #include "is_tagged_union_wrapper.hpp"
@@ -157,13 +158,13 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
         using T = tagged_union_wrapper_no_ptr_t<std::invoke_result_t<
             decltype(wrap_if_necessary<AlternativeType>), AlternativeType>>;
         *_result = Parser<R, W, T, ProcessorsType>::read(_r, _var)
-                    .transform(get_fields)
-                    .transform(to_tagged_union)
-                    .transform_error(embellish_error);
+                       .transform(get_fields)
+                       .transform(to_tagged_union)
+                       .transform_error(embellish_error);
       } else {
         *_result = Parser<R, W, AlternativeType, ProcessorsType>::read(_r, _var)
-                    .transform(to_tagged_union)
-                    .transform_error(embellish_error);
+                       .transform(to_tagged_union)
+                       .transform_error(embellish_error);
       }
 
       *_match_found = true;

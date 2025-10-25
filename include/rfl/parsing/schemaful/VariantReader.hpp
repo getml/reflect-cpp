@@ -6,6 +6,7 @@
 
 #include "../../Result.hpp"
 #include "../../internal/nth_element_t.hpp"
+#include "../Parser_base.hpp"
 
 namespace rfl::parsing::schemaful {
 

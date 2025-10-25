@@ -9,8 +9,7 @@
 #include <type_traits>
 
 #include "../Bytestring.hpp"
-//#include "../Ref.hpp"
-//#include "../Result.hpp"
+#include "../Ref.hpp"
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../common.hpp"
@@ -51,27 +50,27 @@ struct RFL_API Writer {
   OutputArrayType add_array_to_array(const size_t _size,
                                      OutputArrayType* _parent) const noexcept;
 
-  OutputArrayType add_array_to_object(
-      const std::string_view& _name, const size_t _size,
-      OutputObjectType* _parent) const noexcept;
+  OutputArrayType add_array_to_object(const std::string_view& _name,
+                                      const size_t _size,
+                                      OutputObjectType* _parent) const noexcept;
 
-  OutputObjectType add_object_to_array(
-      const size_t _size, OutputArrayType* _parent) const noexcept;
+  OutputObjectType add_object_to_array(const size_t _size,
+                                       OutputArrayType* _parent) const noexcept;
 
   OutputObjectType add_object_to_object(
       const std::string_view& _name, const size_t _size,
       OutputObjectType* _parent) const noexcept;
 
   template <class T>
-  OutputVarType add_value_to_array(const T& _var,
-                                   OutputArrayType* /*_parent*/) const noexcept {
+  OutputVarType add_value_to_array(
+      const T& _var, OutputArrayType* /*_parent*/) const noexcept {
     return insert_value(_var);
   }
 
   template <class T>
-  OutputVarType add_value_to_object(const std::string_view& _name,
-                                    const T& _var,
-                                    OutputObjectType* /*_parent*/) const noexcept {
+  OutputVarType add_value_to_object(
+      const std::string_view& _name, const T& _var,
+      OutputObjectType* /*_parent*/) const noexcept {
     return insert_value(_name, _var);
   }
 

@@ -2,6 +2,7 @@
 #define RFL_INTERNAL_PROCESSORS_HPP_
 
 #include <type_traits>
+#include <utility>
 
 #include "internal/is_add_tags_to_variants_v.hpp"
 #include "internal/is_allow_raw_ptrs_v.hpp"
@@ -69,9 +70,9 @@ struct Processors<Head, Tail...> {
 
   template <class T, class NamedTupleType>
   static auto process(NamedTupleType&& _named_tuple) {
-    static_assert(!add_tags_to_variants_ || !add_namespaced_tags_to_variants_,  
-                  "You cannot add both rfl::AddTagsToVariants and "  
-                  "rfl::AddNamespacedTagsToVariants.");  
+    static_assert(!add_tags_to_variants_ || !add_namespaced_tags_to_variants_,
+                  "You cannot add both rfl::AddTagsToVariants and "
+                  "rfl::AddNamespacedTagsToVariants.");
     return Processors<Tail...>::template process<T>(
         Head::template process<T>(std::move(_named_tuple)));
   }

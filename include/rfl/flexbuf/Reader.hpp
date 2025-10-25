@@ -9,11 +9,12 @@
 #include <string_view>
 #include <type_traits>
 
-//#include "../Bytestring.hpp"
+#include "../Bytestring.hpp"
+#include "../Ref.hpp"
 #include "../Result.hpp"
-//#include "../Vectorstring.hpp"
+#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
-//#include "../internal/ptr_cast.hpp"
+#include "../internal/ptr_cast.hpp"
 
 namespace rfl {
 namespace flexbuf {
@@ -79,8 +80,7 @@ struct Reader {
       using VectorType = std::remove_cvref_t<T>;
       using ValueType = typename VectorType::value_type;
       if (!_var.IsBlob()) {
-        if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>()) {
+        if constexpr (std::is_same<std::remove_cvref_t<T>, rfl::Bytestring>()) {
           return error("Could not cast to bytestring.");
         } else {
           return error("Could not cast to vectorstring.");

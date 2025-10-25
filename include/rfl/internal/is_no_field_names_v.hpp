@@ -3,10 +3,9 @@
 
 #include <type_traits>
 
-//#include "../NoFieldNames.hpp"
+#include "../NoFieldNames.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class T>
 class is_no_field_names;
@@ -21,7 +20,6 @@ template <class T>
 constexpr bool is_no_field_names_v =
     is_no_field_names<std::remove_cvref_t<std::remove_pointer_t<T>>>::value;
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

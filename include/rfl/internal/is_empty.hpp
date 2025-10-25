@@ -5,6 +5,7 @@
 
 #include "../Tuple.hpp"
 #include "is_named_tuple.hpp"
+#include "ptr_tuple_t.hpp"
 
 namespace rfl::internal {
 

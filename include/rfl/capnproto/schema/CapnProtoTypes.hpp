@@ -3,6 +3,7 @@
 
 #include <map>
 
+#include "../../internal/strings/strings.hpp"
 #include "Type.hpp"
 
 namespace rfl::capnproto::schema {

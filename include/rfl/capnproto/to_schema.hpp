@@ -3,20 +3,20 @@
 
 #include <string>
 
-//#include "../Literal.hpp"
-//#include "../Processors.hpp"
+#include "../Literal.hpp"
+#include "../Processors.hpp"
 #include "../Result.hpp"
-//#include "../SnakeCaseToCamelCase.hpp"
-//#include "../Variant.hpp"
-//#include "../json.hpp"
-//#include "../parsing/schema/Type.hpp"
-//#include "../parsing/schema/ValidationType.hpp"
+#include "../SnakeCaseToCamelCase.hpp"
+#include "../Variant.hpp"
+#include "../common.hpp"
+#include "../json.hpp"
+#include "../parsing/schema/Type.hpp"
+#include "../parsing/schema/ValidationType.hpp"
 #include "../parsing/schema/make.hpp"
+#include "Reader.hpp"
 #include "Schema.hpp"
 #include "Writer.hpp"
-#include "Reader.hpp"
-//#include "schema/Type.hpp"
-#include "../common.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl::capnproto {
 

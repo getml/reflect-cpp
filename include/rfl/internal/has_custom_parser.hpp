@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-//#include "../parsing/Parser.hpp"
+#include "../parsing/Parser.hpp"
 
 namespace rfl::internal {
 

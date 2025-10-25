@@ -3,10 +3,9 @@
 
 #include <type_traits>
 
-//#include "../DefaultIfMissing.hpp"
+#include "../DefaultIfMissing.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class T>
 class is_default_if_missing;
@@ -21,7 +20,6 @@ template <class T>
 constexpr bool is_default_if_missing_v =
     is_default_if_missing<std::remove_cvref_t<std::remove_pointer_t<T>>>::value;
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif
