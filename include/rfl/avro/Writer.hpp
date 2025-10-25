@@ -15,8 +15,9 @@
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../common.hpp"
+#include "../concepts.hpp"
+#include "../internal/has_reflection_type_v.hpp"
 #include "../internal/is_literal.hpp"
-#include "rfl/internal/has_reflection_type_v.hpp"
 
 namespace rfl::avro {
 
@@ -215,10 +216,7 @@ class RFL_API Writer {
             avro_strerror());
       }
 
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>() ||
-                         std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Vectorstring>()) {
+    } else if constexpr (concepts::MutableContiguousByteContainer<T>) {
       auto var = _var;
       if (!var.data()) {
         return;
