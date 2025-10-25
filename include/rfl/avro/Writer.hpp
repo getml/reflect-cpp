@@ -1,21 +1,21 @@
 #ifndef RFL_AVRO_WRITER_HPP_
 #define RFL_AVRO_WRITER_HPP_
 
+#include <avro.h>
+
 #include <cstdint>
 #include <string>
 #include <string_view>
 #include <type_traits>
 
-#include <avro.h>
-
-//#include "../Box.hpp"
+// #include "../Box.hpp"
 #include "../Bytestring.hpp"
-//#include "../Ref.hpp"
-//#include "../Result.hpp"
+// #include "../Ref.hpp"
+// #include "../Result.hpp"
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
-#include "../internal/is_literal.hpp"
 #include "../common.hpp"
+#include "../internal/is_literal.hpp"
 
 namespace rfl::avro {
 
@@ -51,15 +51,15 @@ class RFL_API Writer {
 
   ~Writer();
 
-  OutputArrayType array_as_root(const size_t _size) const noexcept;
+  OutputArrayType array_as_root(const size_t _size) const;
 
-  OutputMapType map_as_root(const size_t _size) const noexcept;
+  OutputMapType map_as_root(const size_t _size) const;
 
-  OutputObjectType object_as_root(const size_t _size) const noexcept;
+  OutputObjectType object_as_root(const size_t _size) const;
 
   OutputVarType null_as_root() const;
 
-  OutputUnionType union_as_root() const noexcept;
+  OutputUnionType union_as_root() const;
 
   template <class T>
   OutputVarType value_as_root(const T& _var) const {
@@ -102,9 +102,9 @@ class RFL_API Writer {
                                      const size_t _size,
                                      OutputMapType* _parent) const;
 
-  OutputObjectType add_object_to_object(
-      const std::string_view& _name, const size_t _size,
-      OutputObjectType* _parent) const;
+  OutputObjectType add_object_to_object(const std::string_view& _name,
+                                        const size_t _size,
+                                        OutputObjectType* _parent) const;
 
   OutputObjectType add_object_to_union(const size_t _index, const size_t _size,
                                        OutputUnionType* _parent) const;
@@ -137,7 +137,9 @@ class RFL_API Writer {
     avro_value_t new_value;
     int result = avro_value_append(&_parent->val_, &new_value, nullptr);
     if (result != 0) {
-      throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
+      throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
+                               std::to_string(result) +
+                               "): " + avro_strerror());
     }
     set_value(_var, &new_value);
     return OutputVarType{new_value};
@@ -147,9 +149,12 @@ class RFL_API Writer {
   OutputVarType add_value_to_map(const std::string_view& _name, const T& _var,
                                  OutputMapType* _parent) const {
     avro_value_t new_value;
-    int result = avro_value_add(&_parent->val_, _name.data(), &new_value, nullptr, nullptr);
+    int result = avro_value_add(&_parent->val_, _name.data(), &new_value,
+                                nullptr, nullptr);
     if (result != 0) {
-      throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
+      throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
+                               std::to_string(result) +
+                               "): " + avro_strerror());
     }
     set_value(_var, &new_value);
     return OutputVarType{new_value};
@@ -160,9 +165,12 @@ class RFL_API Writer {
                                     const T& _var,
                                     OutputObjectType* _parent) const {
     avro_value_t new_value;
-    int result = avro_value_get_by_name(&_parent->val_, _name.data(), &new_value, nullptr);
+    int result = avro_value_get_by_name(&_parent->val_, _name.data(),
+                                        &new_value, nullptr);
     if (result != 0) {
-      throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
+      throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
+                               std::to_string(result) +
+                               "): " + avro_strerror());
     }
     set_value(_var, &new_value);
     return OutputVarType{new_value};
@@ -175,9 +183,12 @@ class RFL_API Writer {
       throw std::runtime_error(std::string(__FUNCTION__) + " index error");
     }
     avro_value_t new_value;
-    int result = avro_value_set_branch(&_parent->val_, static_cast<int>(_index), &new_value);
+    int result = avro_value_set_branch(&_parent->val_, static_cast<int>(_index),
+                                       &new_value);
     if (result != 0) {
-      throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
+      throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
+                               std::to_string(result) +
+                               "): " + avro_strerror());
     }
     set_value(_var, &new_value);
     return OutputVarType{new_value};
@@ -193,9 +204,12 @@ class RFL_API Writer {
   template <class T>
   void set_value(const T& _var, avro_value_t* _val) const {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      int result = avro_value_set_string_len(_val, _var.c_str(), _var.size() + 1);
+      int result =
+          avro_value_set_string_len(_val, _var.c_str(), _var.size() + 1);
       if (result != 0) {
-        throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
+        throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
+                                 std::to_string(result) +
+                                 "): " + avro_strerror());
       }
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>() ||
@@ -207,35 +221,44 @@ class RFL_API Writer {
       }
       int result = avro_value_set_bytes(_val, var.data(), var.size());
       if (result != 0) {
-        throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
+        throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
+                                 std::to_string(result) +
+                                 "): " + avro_strerror());
       }
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       int result = avro_value_set_boolean(_val, _var);
       if (result != 0) {
-        throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
+        throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
+                                 std::to_string(result) +
+                                 "): " + avro_strerror());
       }
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-      /*int result = avro_value_set_double(_val, static_cast<double>(_var));
+      int result = avro_value_set_double(_val, static_cast<double>(_var));
       if (result != 0) {
-        throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
-      }*/
-      avro_value_set_double(_val, static_cast<double>(_var));
+        throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
+                                 std::to_string(result) +
+                                 "): " + avro_strerror());
+      }
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      /*int result = avro_value_set_long(_val, static_cast<std::int64_t>(_var));
+      int result = avro_value_set_long(_val, static_cast<std::int64_t>(_var));
       if (result != 0) {
-        throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
-      }*/
-      avro_value_set_long(_val, static_cast<std::int64_t>(_var));
+        throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
+                                 std::to_string(result) +
+                                 "): " + avro_strerror());
+      }
     } else if constexpr (internal::is_literal_v<T>) {
       int result = avro_value_set_enum(_val, static_cast<int>(_var.value()));
       if (result != 0) {
-        throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
+        throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
+                                 std::to_string(result) +
+                                 "): " + avro_strerror());
       }
     } else if constexpr (internal::is_validator_v<T>) {
       using ValueType = std::remove_cvref_t<typename T::ReflectionType>;
       const auto val = _var.value();
       set_value<ValueType>(val, _val);
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>, rfl::Timestamp<"%Y-%m-%d">>()) {
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                      rfl::Timestamp<"%Y-%m-%d">>()) {
       const auto str = _var.to_string();
       set_value<std::string>(str, _val);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, rfl::Email>()) {
