@@ -127,7 +127,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
                                         const std::string& _disc_value,
                                         const InputVarType& _var,
                                         ResultType* _result,
-                                        bool* _match_found) noexcept {
+                                        bool* _match_found) {
     using AlternativeType = std::remove_cvref_t<
         std::variant_alternative_t<_i, std::variant<AlternativeTypes...>>>;
 
@@ -206,8 +206,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
 
   /// Writes a wrapped version of the original object, which contains the tag.
   template <class T, class P>
-  static void write_wrapped(const W& _w, const T& _val,
-                            const P& _parent) noexcept {
+  static void write_wrapped(const W& _w, const T& _val, const P& _parent) {
     const auto wrapped = wrap_if_necessary<T>(_val);
     Parser<R, W, std::remove_cvref_t<decltype(wrapped)>, ProcessorsType>::write(
         _w, wrapped, _parent);
@@ -216,7 +215,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
   /// Generates a wrapped version of the original object, which contains the
   /// tag, if the object doesn't already contain the wrap.
   template <class T>
-  static auto wrap_if_necessary(const T& _val) noexcept {
+  static auto wrap_if_necessary(const T& _val) {
     if constexpr (named_tuple_t<T>::Names::template contains<
                       _discriminator>()) {
       return _val;
