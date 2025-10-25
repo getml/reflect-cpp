@@ -39,8 +39,7 @@ struct CustomParser {
   }
 
   template <class P>
-  static auto write(const W& _w, const OriginalClass& _p,
-                    const P& _parent) noexcept {
+  static auto write(const W& _w, const OriginalClass& _p, const P& _parent) {
     Parser<R, W, CustomParserHelperStruct, ProcessorsType>::write(
         _w, HelperStruct::from_class(_p), _parent);
   }

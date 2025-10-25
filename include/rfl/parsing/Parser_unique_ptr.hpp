@@ -46,7 +46,7 @@ struct Parser<R, W, std::unique_ptr<T>, ProcessorsType> {
 
   template <class P>
   static void write(const W& _w, const std::unique_ptr<T>& _s,
-                    const P& _parent) noexcept {
+                    const P& _parent) {
     if constexpr (schemaful::IsSchemafulWriter<W>) {
       auto u = ParentType::add_union(_w, _parent);
       using UnionType = typename ParentType::template Union<decltype(u)>;

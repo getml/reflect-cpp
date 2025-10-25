@@ -52,8 +52,7 @@ struct Parser<R, W, std::wstring, ProcessorsType> {
   }
 
   template <class P>
-  static void write(const W& _w, const std::wstring& _str,
-                    const P& _parent) noexcept {
+  static void write(const W& _w, const std::wstring& _str, const P& _parent) {
     if (_str.empty()) {
       ParentType::add_value(_w, std::string(), _parent);
       return;

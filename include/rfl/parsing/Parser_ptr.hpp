@@ -47,7 +47,7 @@ struct Parser<R, W, T*, ProcessorsType> {
   }
 
   template <class P>
-  static void write(const W& _w, const T* _ptr, const P& _parent) noexcept {
+  static void write(const W& _w, const T* _ptr, const P& _parent) {
     if (!_ptr) {
       ParentType::add_null(_w, _parent);
       return;

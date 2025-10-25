@@ -44,7 +44,7 @@ struct Parser<R, W,
   static void write(const W& _w,
                     const internal::Skip<T, _skip_serialization,
                                          _skip_deserialization>& _skip,
-                    const P& _parent) noexcept {
+                    const P& _parent) {
     if constexpr (_skip_serialization) {
       ParentType::add_null(_w, _parent);
     } else {

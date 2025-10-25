@@ -72,8 +72,7 @@ struct VectorParser {
   }
 
   template <class P>
-  static void write(const W& _w, const VecType& _vec,
-                    const P& _parent) noexcept {
+  static void write(const W& _w, const VecType& _vec, const P& _parent) {
     if constexpr (treat_as_map()) {
       MapParser<R, W, VecType, ProcessorsType>::write(_w, _vec, _parent);
     } else {

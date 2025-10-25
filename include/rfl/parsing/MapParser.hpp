@@ -44,7 +44,7 @@ struct MapParser {
   }
 
   template <class P>
-  static void write(const W& _w, const MapType& _m, const P& _parent) noexcept {
+  static void write(const W& _w, const MapType& _m, const P& _parent) {
     if constexpr (schemaful::IsSchemafulWriter<W>) {
       write_map(_w, _m, _parent);
     } else {
@@ -82,8 +82,7 @@ struct MapParser {
   }
 
   template <class P>
-  static void write_map(const W& _w, const MapType& _m,
-                        const P& _parent) noexcept {
+  static void write_map(const W& _w, const MapType& _m, const P& _parent) {
     auto m = ParentType::add_map(_w, _m.size(), _parent);
 
     using ParentMapType =
@@ -122,8 +121,7 @@ struct MapParser {
   }
 
   template <class P>
-  static void write_object(const W& _w, const MapType& _m,
-                           const P& _parent) noexcept {
+  static void write_object(const W& _w, const MapType& _m, const P& _parent) {
     auto obj = ParentType::add_object(_w, _m.size(), _parent);
     for (const auto& [k, v] : _m) {
       if constexpr (internal::has_reflection_type_v<KeyType>) {

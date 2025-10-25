@@ -23,8 +23,7 @@ struct Parser<R, W, Vectorstring, ProcessorsType> {
   }
 
   template <class P>
-  static void write(const W& _w, const Vectorstring& _b,
-                    const P& _parent) noexcept {
+  static void write(const W& _w, const Vectorstring& _b, const P& _parent) {
     ParentType::add_value(_w, _b, _parent);
   }
 

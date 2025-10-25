@@ -13,19 +13,21 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class T, Copyability C, class ProcessorsType>
-requires AreReaderAndWriter<R, W, Box<T, C>>
+  requires AreReaderAndWriter<R, W, Box<T, C>>
 struct Parser<R, W, Box<T, C>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
-  static Result<Box<T, C>> read(const R& _r, const InputVarType& _var) noexcept {
-    const auto to_box = [](auto&& _t) { return Box<T, C>::make(std::move(_t)); };
+  static Result<Box<T, C>> read(const R& _r,
+                                const InputVarType& _var) noexcept {
+    const auto to_box = [](auto&& _t) {
+      return Box<T, C>::make(std::move(_t));
+    };
     return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r, _var)
         .transform(to_box);
   }
 
   template <class P>
-  static void write(const W& _w, const Box<T, C>& _box,
-                    const P& _parent) noexcept {
+  static void write(const W& _w, const Box<T, C>& _box, const P& _parent) {
     Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, *_box,
                                                                 _parent);
   }

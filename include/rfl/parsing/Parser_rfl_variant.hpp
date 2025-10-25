@@ -92,7 +92,7 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
   template <class P>
   static void write(const W& _w,
                     const rfl::Variant<AlternativeTypes...>& _variant,
-                    const P& _parent) noexcept {
+                    const P& _parent) {
     if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
       if constexpr (schemaful::IsSchemafulWriter<W>) {
         using WrappedType = rfl::Variant<

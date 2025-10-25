@@ -145,7 +145,7 @@ struct NamedTupleParser {
 
   template <class P>
   static void write(const W& _w, const NamedTuple<FieldTypes...>& _tup,
-                    const P& _parent) noexcept {
+                    const P& _parent) {
     if constexpr (_no_field_names) {
       auto arr = ParentType::add_array(_w, _tup.num_fields(), _parent);
       build_object(_w, _tup, &arr, std::make_integer_sequence<int, size_>());
@@ -169,7 +169,7 @@ struct NamedTupleParser {
   template <int _i>
   static void add_field_to_object(const W& _w,
                                   const NamedTuple<FieldTypes...>& _tup,
-                                  OutputObjectOrArrayType* _ptr) noexcept {
+                                  OutputObjectOrArrayType* _ptr) {
     using FieldType = internal::nth_element_t<_i, FieldTypes...>;
     using ValueType = std::remove_cvref_t<typename FieldType::Type>;
     const auto value = rfl::get<_i>(_tup);
@@ -222,7 +222,7 @@ struct NamedTupleParser {
   template <int... _is>
   static void build_object(const W& _w, const NamedTuple<FieldTypes...>& _tup,
                            OutputObjectOrArrayType* _ptr,
-                           std::integer_sequence<int, _is...>) noexcept {
+                           std::integer_sequence<int, _is...>) {
     (add_field_to_object<_is>(_w, _tup, _ptr), ...);
   }
 

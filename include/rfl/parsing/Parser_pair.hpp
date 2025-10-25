@@ -15,7 +15,7 @@ namespace parsing {
 
 template <class R, class W, class FirstType, class SecondType,
           class ProcessorsType>
-requires AreReaderAndWriter<R, W, std::pair<FirstType, SecondType>>
+  requires AreReaderAndWriter<R, W, std::pair<FirstType, SecondType>>
 struct Parser<R, W, std::pair<FirstType, SecondType>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
@@ -33,7 +33,7 @@ struct Parser<R, W, std::pair<FirstType, SecondType>, ProcessorsType> {
 
   template <class P>
   static void write(const W& _w, const std::pair<FirstType, SecondType>& _p,
-                    const P& _parent) noexcept {
+                    const P& _parent) {
     const auto tup = std::make_tuple(&_p.first, &_p.second);
     Parser<R, W, std::tuple<const FirstType*, const SecondType*>,
            ProcessorsType>::write(_w, tup, _parent);

@@ -46,8 +46,7 @@ struct Parser<R, W, std::string_view, ProcessorsType> {
   }
 
   template <class P>
-  static void write(const W& _w, const std::string_view& _str,
-                    const P& _p) noexcept {
+  static void write(const W& _w, const std::string_view& _str, const P& _p) {
     Parser<R, W, std::string, ProcessorsType>::write(_w, std::string(_str), _p);
   }
 

@@ -10,15 +10,10 @@
 #include <string_view>
 #include <type_traits>
 
-#include "../Bytestring.hpp"
-#include "../Timestamp.hpp"
-#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../common.hpp"
 #include "../concepts.hpp"
 #include "../internal/is_literal.hpp"
-#include "../internal/is_validator.hpp"
-#include "../patterns.hpp"
 
 namespace rfl::avro {
 
@@ -140,7 +135,7 @@ class RFL_API Writer {
     avro_value_t new_value;
     int result = avro_value_append(&_parent->val_, &new_value, nullptr);
     if (result != 0) {
-      throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
+      throw std::runtime_error("Error adding value to array: error(" +
                                std::to_string(result) +
                                "): " + avro_strerror());
     }
@@ -155,7 +150,7 @@ class RFL_API Writer {
     int result = avro_value_add(&_parent->val_, _name.data(), &new_value,
                                 nullptr, nullptr);
     if (result != 0) {
-      throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
+      throw std::runtime_error("Error adding value to map: error(" +
                                std::to_string(result) +
                                "): " + avro_strerror());
     }
@@ -171,7 +166,7 @@ class RFL_API Writer {
     int result = avro_value_get_by_name(&_parent->val_, _name.data(),
                                         &new_value, nullptr);
     if (result != 0) {
-      throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
+      throw std::runtime_error("Error adding value to object: error(" +
                                std::to_string(result) +
                                "): " + avro_strerror());
     }
@@ -183,7 +178,7 @@ class RFL_API Writer {
   OutputVarType add_value_to_union(const size_t _index, const T& _var,
                                    OutputUnionType* _parent) const {
     if (_index > static_cast<size_t>(INT_MAX)) {
-      throw std::runtime_error(std::string(__FUNCTION__) + " index error");
+      throw std::runtime_error("Error adding value to unions: Index error");
     }
     avro_value_t new_value;
     int result = avro_value_set_branch(&_parent->val_, static_cast<int>(_index),

@@ -33,7 +33,7 @@ struct Parser<R, W, std::filesystem::path, ProcessorsType> {
 
   template <class P>
   static void write(const W& _w, const std::filesystem::path& _p,
-                    const P& _parent) noexcept {
+                    const P& _parent) {
     return Parser<R, W, std::string, ProcessorsType>::write(_w, _p.string(),
                                                             _parent);
   }

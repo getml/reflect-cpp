@@ -73,7 +73,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
   static void write(
       const W& _w,
       const TaggedUnion<_discriminator, AlternativeTypes...>& _tagged_union,
-      const P& _parent) noexcept {
+      const P& _parent) {
     if constexpr (schemaful::IsSchemafulWriter<W>) {
       Parser<R, W, Variant<AlternativeTypes...>, ProcessorsType>::write(
           _w, _tagged_union.variant(), _parent);

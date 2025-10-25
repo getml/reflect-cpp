@@ -55,8 +55,7 @@ struct Parser<R, W, std::span<T>, ProcessorsType> {
   }
 
   template <class P>
-  static void write(const W& _w, const std::span<T>& _span,
-                    const P& _parent) noexcept {
+  static void write(const W& _w, const std::span<T>& _span, const P& _parent) {
     auto arr = ParentType::add_array(_w, _span.size(), _parent);
     const auto new_parent = typename ParentType::Array{&arr};
     for (const auto& v : _span) {

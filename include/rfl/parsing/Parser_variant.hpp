@@ -11,6 +11,7 @@
 #include "../Result.hpp"
 #include "../Variant.hpp"
 #include "../always_false.hpp"
+#include "../internal/all_fields.hpp"
 #include "../internal/to_ptr_field.hpp"
 #include "FieldVariantParser.hpp"
 #include "Parent.hpp"
@@ -21,8 +22,6 @@
 #include "schemaful/IsSchemafulWriter.hpp"
 #include "schemaful/VariantReader.hpp"
 #include "to_single_error_message.hpp"
-#include "../internal/all_fields.hpp"
-
 
 namespace rfl::parsing {
 
@@ -72,11 +71,11 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
         return _r.template read_union<std::variant<AlternativeTypes...>, V>(_u);
       });
 
-    } else if constexpr (ProcessorsType::add_tags_to_variants_ || 
+    } else if constexpr (ProcessorsType::add_tags_to_variants_ ||
                          ProcessorsType::add_namespaced_tags_to_variants_) {
       constexpr bool remove_namespaces = ProcessorsType::add_tags_to_variants_;
-      using FieldVariantType =
-          rfl::Variant<VariantAlternativeWrapper<AlternativeTypes, remove_namespaces>...>;
+      using FieldVariantType = rfl::Variant<
+          VariantAlternativeWrapper<AlternativeTypes, remove_namespaces>...>;
       const auto from_field_variant =
           [](auto&& _field) -> std::variant<AlternativeTypes...> {
         return std::move(_field.value());
@@ -109,7 +108,7 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
   template <class P>
   static void write(const W& _w,
                     const std::variant<AlternativeTypes...>& _variant,
-                    const P& _parent) noexcept {
+                    const P& _parent) {
     if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
       if constexpr (schemaful::IsSchemafulWriter<W>) {
         using WrappedType = rfl::Variant<
@@ -152,11 +151,12 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
           },
           _variant);
 
-    } else if constexpr (ProcessorsType::add_tags_to_variants_ || 
+    } else if constexpr (ProcessorsType::add_tags_to_variants_ ||
                          ProcessorsType::add_namespaced_tags_to_variants_) {
       constexpr bool remove_namespaces = ProcessorsType::add_tags_to_variants_;
       using FieldVariantType =
-          rfl::Variant<VariantAlternativeWrapper<const AlternativeTypes*, remove_namespaces>...>;
+          rfl::Variant<VariantAlternativeWrapper<const AlternativeTypes*,
+                                                 remove_namespaces>...>;
       const auto to_field_variant =
           []<class T>(const T& _t) -> FieldVariantType {
         return VariantAlternativeWrapper<const T*, remove_namespaces>(&_t);
@@ -179,11 +179,11 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
       return FieldVariantParser<R, W, ProcessorsType,
                                 AlternativeTypes...>::to_schema(_definitions);
 
-    } else if constexpr (ProcessorsType::add_tags_to_variants_ || 
+    } else if constexpr (ProcessorsType::add_tags_to_variants_ ||
                          ProcessorsType::add_namespaced_tags_to_variants_) {
       constexpr bool remove_namespaces = ProcessorsType::add_tags_to_variants_;
-      using FieldVariantType =
-          rfl::Variant<VariantAlternativeWrapper<AlternativeTypes, remove_namespaces>...>;
+      using FieldVariantType = rfl::Variant<
+          VariantAlternativeWrapper<AlternativeTypes, remove_namespaces>...>;
       return Parser<R, W, FieldVariantType, ProcessorsType>::to_schema(
           _definitions);
 

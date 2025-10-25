@@ -17,7 +17,7 @@ namespace rfl {
 namespace parsing {
 
 template <class R, class W, class T, size_t _size, class ProcessorsType>
-requires AreReaderAndWriter<R, W, T[_size]>
+  requires AreReaderAndWriter<R, W, T[_size]>
 struct Parser<R, W, T[_size], ProcessorsType> {
  public:
   using InputArrayType = typename R::InputArrayType;
@@ -33,8 +33,7 @@ struct Parser<R, W, T[_size], ProcessorsType> {
   }
 
   template <class P>
-  static void write(const W& _w, const CArray& _arr,
-                    const P& _parent) noexcept {
+  static void write(const W& _w, const CArray& _arr, const P& _parent) {
     auto arr = ParentType::add_array(_w, _size, _parent);
     const auto new_parent = typename ParentType::Array{&arr};
     for (const auto& e : _arr) {
