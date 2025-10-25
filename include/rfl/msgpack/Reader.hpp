@@ -13,7 +13,6 @@
 #include "../always_false.hpp"
 #include "../concepts.hpp"
 #include "../internal/ptr_cast.hpp"
-#include "rfl/concepts.hpp"
 
 namespace rfl {
 namespace msgpack {
