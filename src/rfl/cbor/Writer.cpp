@@ -6,72 +6,70 @@ Writer::Writer(Encoder* _encoder) : encoder_(_encoder) {}
 
 Writer::~Writer() = default;
 
-Writer::OutputArrayType Writer::array_as_root(
-    const size_t _size) const noexcept {
+Writer::OutputArrayType Writer::array_as_root(const size_t _size) const {
   return new_array(_size);
 }
 
-Writer::OutputObjectType Writer::object_as_root(
-    const size_t) const noexcept {
+Writer::OutputObjectType Writer::object_as_root(const size_t) const {
   return new_object();
 }
 
-Writer::OutputVarType Writer::null_as_root() const noexcept {
+Writer::OutputVarType Writer::null_as_root() const {
   encoder_->null_value();
   return OutputVarType{};
 }
 
 Writer::OutputArrayType Writer::add_array_to_array(
-    const size_t _size, OutputArrayType* /*_parent*/) const noexcept {
+    const size_t _size, OutputArrayType* /*_parent*/) const {
   return new_array(_size);
 }
 
 Writer::OutputArrayType Writer::add_array_to_object(
     const std::string_view& _name, const size_t _size,
-    OutputObjectType* /*_parent*/) const noexcept {
+    OutputObjectType* /*_parent*/) const {
   encoder_->key(_name);
   return new_array(_size);
 }
 
 Writer::OutputObjectType Writer::add_object_to_array(
-    const size_t, OutputArrayType* /*_parent*/) const noexcept {
+    const size_t, OutputArrayType* /*_parent*/) const {
   return new_object();
 }
 
 Writer::OutputObjectType Writer::add_object_to_object(
     const std::string_view& _name, const size_t,
-    OutputObjectType* /*_parent*/) const noexcept {
+    OutputObjectType* /*_parent*/) const {
   encoder_->key(_name);
   return new_object();
 }
 
 Writer::OutputVarType Writer::add_null_to_array(
-    OutputArrayType* /*_parent*/) const noexcept {
+    OutputArrayType* /*_parent*/) const {
   encoder_->null_value();
   return OutputVarType{};
 }
 
 Writer::OutputVarType Writer::add_null_to_object(
-    const std::string_view& _name, OutputObjectType* /*_parent*/) const noexcept {
+    const std::string_view& _name, OutputObjectType* /*_parent*/) const {
   encoder_->key(_name);
   encoder_->null_value();
   return OutputVarType{};
 }
 
-void Writer::end_array(OutputArrayType* /*_arr*/) const noexcept {
+void Writer::end_array(OutputArrayType* /*_arr*/) const {
   encoder_->end_array();
 }
 
-void Writer::end_object(OutputObjectType* /*_obj*/) const noexcept {
+void Writer::end_object(OutputObjectType* /*_obj*/) const {
   encoder_->end_object();
 }
 
-Writer::OutputArrayType Writer::new_array(const size_t _size) const noexcept {
+Writer::OutputArrayType Writer::new_array(const size_t _size) const {
   encoder_->begin_array(_size);
   return OutputArrayType{};
 }
 
-Writer::OutputObjectType Writer::new_object() const noexcept {
+Writer::OutputObjectType Writer::new_object() const {
   encoder_->begin_object();
   return OutputObjectType{};
 }

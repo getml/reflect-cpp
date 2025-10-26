@@ -6,10 +6,10 @@
 #include <string_view>
 #include <type_traits>
 
-//#include "../Box.hpp"
+// #include "../Box.hpp"
 #include "../Bytestring.hpp"
-//#include "../Ref.hpp"
-//#include "../Result.hpp"
+// #include "../Ref.hpp"
+// #include "../Result.hpp"
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../common.hpp"
@@ -34,61 +34,61 @@ class RFL_API Writer {
 
   ~Writer();
 
-  OutputArrayType array_as_root(const size_t _size) const noexcept;
+  OutputArrayType array_as_root(const size_t _size) const;
 
-  OutputObjectType object_as_root(const size_t) const noexcept;
+  OutputObjectType object_as_root(const size_t) const;
 
-  OutputVarType null_as_root() const noexcept;
+  OutputVarType null_as_root() const;
 
   template <class T>
-  OutputVarType value_as_root(const T& _var) const noexcept {
+  OutputVarType value_as_root(const T& _var) const {
     return new_value(_var);
   }
 
   OutputArrayType add_array_to_array(const size_t _size,
-                                     OutputArrayType* _parent) const noexcept;
+                                     OutputArrayType* _parent) const;
 
   OutputArrayType add_array_to_object(const std::string_view& _name,
                                       const size_t _size,
-                                      OutputObjectType* _parent) const noexcept;
+                                      OutputObjectType* _parent) const;
 
   OutputObjectType add_object_to_array(const size_t,
-                                       OutputArrayType* _parent) const noexcept;
+                                       OutputArrayType* _parent) const;
 
-  OutputObjectType add_object_to_object(
-      const std::string_view& _name, const size_t,
-      OutputObjectType* _parent) const noexcept;
+  OutputObjectType add_object_to_object(const std::string_view& _name,
+                                        const size_t,
+                                        OutputObjectType* _parent) const;
 
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
-                                   OutputArrayType* /*_parent*/) const noexcept {
+                                   OutputArrayType* /*_parent*/) const {
     return new_value(_var);
   }
 
   template <class T>
   OutputVarType add_value_to_object(const std::string_view& _name,
                                     const T& _var,
-                                    OutputObjectType* /*_parent*/) const noexcept {
+                                    OutputObjectType* /*_parent*/) const {
     encoder_->key(_name);
     return new_value(_var);
   }
 
-  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept;
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const;
 
   OutputVarType add_null_to_object(const std::string_view& _name,
-                                   OutputObjectType* _parent) const noexcept;
+                                   OutputObjectType* _parent) const;
 
-  void end_array(OutputArrayType* _arr) const noexcept;
+  void end_array(OutputArrayType* _arr) const;
 
-  void end_object(OutputObjectType* _obj) const noexcept;
+  void end_object(OutputObjectType* _obj) const;
 
  private:
-  OutputArrayType new_array(const size_t _size) const noexcept;
+  OutputArrayType new_array(const size_t _size) const;
 
-  OutputObjectType new_object() const noexcept;
+  OutputObjectType new_object() const;
 
   template <class T>
-  OutputVarType new_value(const T& _var) const noexcept {
+  OutputVarType new_value(const T& _var) const {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       encoder_->string_value(_var);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
