@@ -13,7 +13,7 @@ namespace rfl::cbor {
 
 /// Returns CBOR bytes.
 template <class... Ps>
-std::vector<char> write(const auto& _obj) noexcept {
+std::vector<char> write(const auto& _obj) {
   using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
   std::vector<uint8_t> buffer;
@@ -28,7 +28,7 @@ std::vector<char> write(const auto& _obj) noexcept {
 
 /// Writes a CBOR into an ostream.
 template <class... Ps>
-std::ostream& write(const auto& _obj, std::ostream& _stream) noexcept {
+std::ostream& write(const auto& _obj, std::ostream& _stream) {
   auto buffer = write<Ps...>(_obj);
   _stream.write(buffer.data(), buffer.size());
   return _stream;
