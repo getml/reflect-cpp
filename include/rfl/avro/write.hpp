@@ -4,6 +4,7 @@
 #include <avro.h>
 
 #include <ostream>
+#include <stdexcept>
 #include <type_traits>
 
 #include "../parsing/Parent.hpp"

@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <ostream>
+#include <stdexcept>
 #include <utility>
 
 #include "../Processors.hpp"

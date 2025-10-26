@@ -4,6 +4,7 @@
 #include <bson/bson.h>
 
 #include <cstddef>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>

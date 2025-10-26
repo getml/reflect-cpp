@@ -9,6 +9,7 @@
 #endif
 
 #include <ostream>
+#include <stdexcept>
 #include <string>
 
 #include "../Processors.hpp"
