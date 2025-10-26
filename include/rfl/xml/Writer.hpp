@@ -40,60 +40,60 @@ struct RFL_API Writer {
 
   ~Writer();
 
-  OutputArrayType array_as_root(const size_t _size) const noexcept;
+  OutputArrayType array_as_root(const size_t _size) const;
 
-  OutputObjectType object_as_root(const size_t _size) const noexcept;
+  OutputObjectType object_as_root(const size_t _size) const;
 
-  OutputVarType null_as_root() const noexcept;
+  OutputVarType null_as_root() const;
 
   template <class T>
-  OutputVarType value_as_root(const T& _var) const noexcept {
+  OutputVarType value_as_root(const T& _var) const {
     const auto str = to_string(_var);
     return value_as_root_impl(str);
   }
 
   OutputArrayType add_array_to_array(const size_t _size,
-                                     OutputArrayType* _parent) const noexcept;
+                                     OutputArrayType* _parent) const;
 
   OutputArrayType add_array_to_object(const std::string_view& _name,
                                       const size_t _size,
-                                      OutputObjectType* _parent) const noexcept;
+                                      OutputObjectType* _parent) const;
 
   OutputObjectType add_object_to_array(const size_t _size,
-                                       OutputArrayType* _parent) const noexcept;
+                                       OutputArrayType* _parent) const;
 
-  OutputObjectType add_object_to_object(
-      const std::string_view& _name, const size_t _size,
-      OutputObjectType* _parent) const noexcept;
+  OutputObjectType add_object_to_object(const std::string_view& _name,
+                                        const size_t _size,
+                                        OutputObjectType* _parent) const;
 
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
-                                   OutputArrayType* _parent) const noexcept {
+                                   OutputArrayType* _parent) const {
     const auto str = to_string(_var);
     return add_value_to_array_impl(str, _parent);
   }
 
   template <class T>
-  OutputVarType add_value_to_object(
-      const std::string_view& _name, const T& _var, OutputObjectType* _parent,
-      const bool _is_attribute = false) const noexcept {
+  OutputVarType add_value_to_object(const std::string_view& _name,
+                                    const T& _var, OutputObjectType* _parent,
+                                    const bool _is_attribute = false) const {
     const auto str = to_string(_var);
     return add_value_to_object_impl(_name, str, _parent, _is_attribute);
   }
 
-  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept;
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const;
 
-  OutputVarType add_null_to_object(
-      const std::string_view& _name, OutputObjectType* _parent,
-      const bool _is_attribute = false) const noexcept;
+  OutputVarType add_null_to_object(const std::string_view& _name,
+                                   OutputObjectType* _parent,
+                                   const bool _is_attribute = false) const;
 
-  void end_array(OutputArrayType* _arr) const noexcept;
+  void end_array(OutputArrayType* _arr) const;
 
-  void end_object(OutputObjectType* _obj) const noexcept;
+  void end_object(OutputObjectType* _obj) const;
 
  private:
   template <class T>
-  std::string to_string(const T& _val) const noexcept {
+  std::string to_string(const T& _val) const {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       return _val;
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
@@ -106,15 +106,14 @@ struct RFL_API Writer {
     }
   }
 
-  OutputVarType value_as_root_impl(const std::string& _str) const noexcept;
+  OutputVarType value_as_root_impl(const std::string& _str) const;
 
-  OutputVarType add_value_to_array_impl(
-      const std::string& _str, OutputArrayType* _parent) const noexcept;
+  OutputVarType add_value_to_array_impl(const std::string& _str,
+                                        OutputArrayType* _parent) const;
 
   OutputVarType add_value_to_object_impl(
       const std::string_view& _name, const std::string& _str,
-      OutputObjectType* _parent,
-      const bool _is_attribute = false) const noexcept;
+      OutputObjectType* _parent, const bool _is_attribute = false) const;
 
  public:
   Ref<pugi::xml_node> root_;
