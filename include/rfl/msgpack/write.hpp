@@ -6,6 +6,7 @@
 #include <ostream>
 
 #include "../Processors.hpp"
+#include "../Result.hpp"
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
 
@@ -21,10 +22,16 @@ std::vector<char> write(const auto& _obj) {
   msgpack_packer pk;
   msgpack_packer_init(&pk, &sbuf, msgpack_sbuffer_write);
   auto w = Writer(&pk);
-  Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
-  auto bytes = std::vector<char>(sbuf.data, sbuf.data + sbuf.size);
+  const auto bytes = [&]() -> Result<std::vector<char>> {
+    try {
+      Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
+      return std::vector<char>(sbuf.data, sbuf.data + sbuf.size);
+    } catch (const std::exception& e) {
+      return error(e.what());
+    }
+  }();
   msgpack_sbuffer_destroy(&sbuf);
-  return bytes;
+  return bytes.value();
 }
 
 /// Writes a MSGPACK into an ostream.
