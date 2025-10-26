@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "../Processors.hpp"
+#include "../Result.hpp"
 #include "../internal/ptr_cast.hpp"
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
@@ -17,7 +18,7 @@ namespace bson {
 /// Returns BSON bytes. Careful: It is the responsibility of the caller to call
 /// bson_free on the returned pointer.
 template <class... Ps>
-std::pair<uint8_t*, size_t> to_buffer(const auto& _obj) {
+Result<std::pair<uint8_t*, size_t>> to_buffer(const auto& _obj) noexcept {
   using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
   bson_t* doc = nullptr;
@@ -31,30 +32,46 @@ std::pair<uint8_t*, size_t> to_buffer(const auto& _obj) {
   static_assert(!ProcessorsType::no_field_names_,
                 "The NoFieldNames processor is not supported for BSON, XML, "
                 "TOML, or YAML.");
-  Parser<T, ProcessorsType>::write(rfl_writer, _obj,
-                                   typename ParentType::Root{});
+  const auto nothing = [&]() -> Result<Nothing> {
+    try {
+      Parser<T, ProcessorsType>::write(rfl_writer, _obj,
+                                       typename ParentType::Root{});
+      return Nothing{};
+    } catch (const std::exception& e) {
+      return error(e.what());
+    }
+  }();
   bson_writer_end(bson_writer);
   const auto len = bson_writer_get_length(bson_writer);
   bson_writer_destroy(bson_writer);
-  return std::make_pair(buf, len);
+  return nothing.transform(
+      [&](const auto&) { return std::make_pair(buf, len); });
 }
 
 /// Returns BSON bytes.
 template <class... Ps>
 std::vector<char> write(const auto& _obj) {
-  auto [buf, len] = to_buffer<Ps...>(_obj);
-  const auto result = std::vector<char>(internal::ptr_cast<char*>(buf),
-                                        internal::ptr_cast<char*>(buf) + len);
-  bson_free(buf);
-  return result;
+  return to_buffer<Ps...>(_obj)
+      .transform([](const auto& _p) {
+        const auto vec =
+            std::vector<char>(internal::ptr_cast<char*>(_p.first),
+                              internal::ptr_cast<char*>(_p.first) + _p.second);
+        bson_free(_p.first);
+        return vec;
+      })
+      .value();
 }
 
 /// Writes a BSON into an ostream.
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) {
-  auto [buf, len] = to_buffer<Ps...>(_obj);
-  _stream.write(internal::ptr_cast<const char*>(buf), len);
-  bson_free(buf);
+  to_buffer<Ps...>(_obj)
+      .transform([&](const auto& _p) {
+        _stream.write(internal::ptr_cast<const char*>(_p.first), _p.second);
+        bson_free(_p.first);
+        return Nothing{};
+      })
+      .value();
   return _stream;
 }
 

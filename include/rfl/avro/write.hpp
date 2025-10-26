@@ -8,7 +8,6 @@
 
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
-//#include "Schema.hpp"
 #include "Writer.hpp"
 #include "to_schema.hpp"
 
@@ -26,25 +25,37 @@ std::vector<char> write(const auto& _obj, const auto& _schema) {
   int result = avro_generic_value_new(_schema.iface(), &root);
   if (result != 0) {
     avro_value_decref(&root);
-    throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
+    throw std::runtime_error(std::string(__FUNCTION__) + " error(" +
+                             std::to_string(result) + "): " + avro_strerror());
   }
   const auto writer = Writer(&root);
-  Parser<T, Processors<Ps...>>::write(writer, _obj,
-                                      typename ParentType::Root{});
-  size_t size = 0;
-  result = avro_value_sizeof(&root, &size);
-  if (result != 0) {
-    throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
-  }
-  std::vector<char> buffer(size);
-  avro_writer_t avro_writer = avro_writer_memory(buffer.data(), buffer.size());
-  result = avro_value_write(avro_writer, &root);
-  if (result != 0) {
-    throw std::runtime_error(std::string(__FUNCTION__) + " error("+ std::to_string(result)+"): "  + avro_strerror());
-  }
+  const auto buffer = [&]() -> Result<std::vector<char>> {
+    try {
+      Parser<T, Processors<Ps...>>::write(writer, _obj,
+                                          typename ParentType::Root{});
+    } catch (std::exception& e) {
+      return error(e.what());
+    }
+    size_t size = 0;
+    result = avro_value_sizeof(&root, &size);
+    if (result != 0) {
+      return error(std::string(__FUNCTION__) + " error(" +
+                   std::to_string(result) + "): " + avro_strerror());
+    }
+    std::vector<char> buffer(size);
+    avro_writer_t avro_writer =
+        avro_writer_memory(buffer.data(), buffer.size());
+    result = avro_value_write(avro_writer, &root);
+    if (result != 0) {
+      avro_writer_free(avro_writer);
+      return error(std::string(__FUNCTION__) + " error(" +
+                   std::to_string(result) + "): " + avro_strerror());
+    }
+    avro_writer_free(avro_writer);
+    return buffer;
+  }();
   avro_value_decref(&root);
-  avro_writer_free(avro_writer);
-  return buffer;
+  return buffer.value();
 }
 
 /// Returns AVRO bytes.
