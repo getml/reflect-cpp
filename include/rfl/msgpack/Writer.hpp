@@ -63,8 +63,14 @@ class RFL_API Writer {
   template <class T>
   OutputVarType add_value_to_object(const std::string_view& _name,
                                     const T& _var, OutputObjectType*) const {
-    msgpack_pack_str(pk_, _name.size());
-    msgpack_pack_str_body(pk_, _name.data(), _name.size());
+    auto err = msgpack_pack_str(pk_, _name.size());
+    if (err) {
+      throw std::runtime_error("Could not pack string.");
+    }
+    err = msgpack_pack_str_body(pk_, _name.data(), _name.size());
+    if (err) {
+      throw std::runtime_error("Could not pack string body.");
+    }
     return new_value(_var);
   }
 
