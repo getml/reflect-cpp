@@ -3,16 +3,14 @@
 
 #include <msgpack.h>
 
-#include <cstdint>
-#include <optional>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <type_traits>
 
-#include "../Bytestring.hpp"
-#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../common.hpp"
+#include "../concepts.hpp"
 
 namespace rfl::msgpack {
 
@@ -32,80 +30,112 @@ class RFL_API Writer {
 
   ~Writer();
 
-  OutputArrayType array_as_root(const size_t _size) const noexcept;
+  OutputArrayType array_as_root(const size_t _size) const;
 
-  OutputObjectType object_as_root(const size_t _size) const noexcept;
+  OutputObjectType object_as_root(const size_t _size) const;
 
-  OutputVarType null_as_root() const noexcept;
+  OutputVarType null_as_root() const;
 
   template <class T>
-  OutputVarType value_as_root(const T& _var) const noexcept {
+  OutputVarType value_as_root(const T& _var) const {
     return new_value(_var);
   }
 
   OutputArrayType add_array_to_array(const size_t _size,
-                                     OutputArrayType* _parent) const noexcept;
+                                     OutputArrayType* _parent) const;
 
   OutputArrayType add_array_to_object(const std::string_view& _name,
                                       const size_t _size,
-                                      OutputObjectType* _parent) const noexcept;
+                                      OutputObjectType* _parent) const;
 
   OutputObjectType add_object_to_array(const size_t _size,
-                                       OutputArrayType* _parent) const noexcept;
+                                       OutputArrayType* _parent) const;
 
-  OutputObjectType add_object_to_object(
-      const std::string_view& _name, const size_t _size,
-      OutputObjectType* _parent) const noexcept;
+  OutputObjectType add_object_to_object(const std::string_view& _name,
+                                        const size_t _size,
+                                        OutputObjectType* _parent) const;
 
   template <class T>
-  OutputVarType add_value_to_array(
-      const T& _var, OutputArrayType* /*_parent*/) const noexcept {
+  OutputVarType add_value_to_array(const T& _var, OutputArrayType*) const {
     return new_value(_var);
   }
 
   template <class T>
-  OutputVarType add_value_to_object(
-      const std::string_view& _name, const T& _var,
-      OutputObjectType* /*_parent*/) const noexcept {
-    msgpack_pack_str(pk_, _name.size());
-    msgpack_pack_str_body(pk_, _name.data(), _name.size());
+  OutputVarType add_value_to_object(const std::string_view& _name,
+                                    const T& _var, OutputObjectType*) const {
+    auto err = msgpack_pack_str(pk_, _name.size());
+    if (err) {
+      throw std::runtime_error("Could not pack string.");
+    }
+    err = msgpack_pack_str_body(pk_, _name.data(), _name.size());
+    if (err) {
+      throw std::runtime_error("Could not pack string body.");
+    }
     return new_value(_var);
   }
 
-  OutputVarType add_null_to_array(OutputArrayType* _parent) const noexcept;
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const;
 
   OutputVarType add_null_to_object(const std::string_view& _name,
-                                   OutputObjectType* _parent) const noexcept;
+                                   OutputObjectType* _parent) const;
 
   void end_array(OutputArrayType* _arr) const noexcept;
 
   void end_object(OutputObjectType* _obj) const noexcept;
 
  private:
-  OutputArrayType new_array(const size_t _size) const noexcept;
+  OutputArrayType new_array(const size_t _size) const;
 
-  OutputObjectType new_object(const size_t _size) const noexcept;
+  OutputObjectType new_object(const size_t _size) const;
 
   template <class T>
-  OutputVarType new_value(const T& _var) const noexcept {
+  OutputVarType new_value(const T& _var) const {
     using Type = std::remove_cvref_t<T>;
     if constexpr (std::is_same<Type, std::string>()) {
-      msgpack_pack_str(pk_, _var.size());
-      msgpack_pack_str_body(pk_, _var.c_str(), _var.size());
-    } else if constexpr (std::is_same<Type, rfl::Bytestring>() ||
-                         std::is_same<Type, rfl::Vectorstring>()) {
-      msgpack_pack_bin(pk_, _var.size());
-      msgpack_pack_bin_body(pk_, _var.data(), _var.size());
+      auto err = msgpack_pack_str(pk_, _var.size());
+      if (err) {
+        throw std::runtime_error("Could not pack string.");
+      }
+      err = msgpack_pack_str_body(pk_, _var.c_str(), _var.size());
+      if (err) {
+        throw std::runtime_error("Could not pack string body.");
+      }
+
+    } else if constexpr (concepts::MutableContiguousByteContainer<Type>) {
+      auto err = msgpack_pack_bin(pk_, _var.size());
+      if (err) {
+        throw std::runtime_error("Could not pack binary string.");
+      }
+      err = msgpack_pack_bin_body(pk_, _var.data(), _var.size());
+      if (err) {
+        throw std::runtime_error("Could not pack binary string.");
+      }
+
     } else if constexpr (std::is_same<Type, bool>()) {
       if (_var) {
-        msgpack_pack_true(pk_);
+        const auto err = msgpack_pack_true(pk_);
+        if (err) {
+          throw std::runtime_error("Could not pack boolean.");
+        }
       } else {
-        msgpack_pack_false(pk_);
+        const auto err = msgpack_pack_false(pk_);
+        if (err) {
+          throw std::runtime_error("Could not pack boolean.");
+        }
       }
+
     } else if constexpr (std::is_floating_point<Type>()) {
-      msgpack_pack_double(pk_, static_cast<double>(_var));
+      const auto err = msgpack_pack_double(pk_, static_cast<double>(_var));
+      if (err) {
+        throw std::runtime_error("Could not pack double.");
+      }
+
     } else if constexpr (std::is_integral<Type>()) {
-      msgpack_pack_int64(pk_, static_cast<std::int64_t>(_var));
+      const auto err = msgpack_pack_int64(pk_, static_cast<std::int64_t>(_var));
+      if (err) {
+        throw std::runtime_error("Could not pack int.");
+      }
+
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }

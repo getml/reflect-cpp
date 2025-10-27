@@ -23,60 +23,93 @@ Writer::OutputVarType Writer::null_as_root() const noexcept {
 }
 
 Writer::OutputArrayType Writer::add_array_to_array(
-    const size_t /*_size*/, OutputArrayType* _parent) const noexcept {
+    const size_t /*_size*/, OutputArrayType* _parent) const {
   bson_array_builder_t* val;
-  bson_array_builder_append_array_builder_begin(_parent->val_, &val);
+  const bool ok =
+      bson_array_builder_append_array_builder_begin(_parent->val_, &val);
+  if (!ok) {
+    throw std::runtime_error("Could not array to array.");
+  }
   return OutputArrayType(val, IsArray{_parent->val_});
 }
 
 Writer::OutputArrayType Writer::add_array_to_object(
     const std::string_view& _name, const size_t /*_size*/,
-    OutputObjectType* _parent) const noexcept {
+    OutputObjectType* _parent) const {
   bson_array_builder_t* val;
-  bson_append_array_builder_begin(_parent->val_, _name.data(),
-                                  static_cast<int>(_name.size()), &val);
+  const bool ok = bson_append_array_builder_begin(
+      _parent->val_, _name.data(), static_cast<int>(_name.size()), &val);
+  if (!ok) {
+    throw std::runtime_error("Could not array to array.");
+  }
   return OutputArrayType(val, IsObject{_parent->val_});
 }
 
 Writer::OutputObjectType Writer::add_object_to_array(
-    const size_t /*_size*/, OutputArrayType* _parent) const noexcept {
+    const size_t /*_size*/, OutputArrayType* _parent) const {
   subdocs_->emplace_back(rfl::Box<BSONType>());
-  bson_array_builder_append_document_begin(_parent->val_,
-                                           &(subdocs_->back()->val_));
+  const bool ok = bson_array_builder_append_document_begin(
+      _parent->val_, &(subdocs_->back()->val_));
+  if (!ok) {
+    throw std::runtime_error("Could not object to array.");
+  }
   return OutputObjectType(&subdocs_->back()->val_, IsArray{_parent->val_});
 }
 
 Writer::OutputObjectType Writer::add_object_to_object(
     const std::string_view& _name, const size_t /*_size*/,
-    OutputObjectType* _parent) const noexcept {
+    OutputObjectType* _parent) const {
   subdocs_->emplace_back(rfl::Box<BSONType>());
-  bson_append_document_begin(_parent->val_, _name.data(),
-                             static_cast<int>(_name.size()),
-                             &(subdocs_->back()->val_));
+  const bool ok = bson_append_document_begin(_parent->val_, _name.data(),
+                                             static_cast<int>(_name.size()),
+                                             &(subdocs_->back()->val_));
+  if (!ok) {
+    throw std::runtime_error("Could not add object to object.");
+  }
   return OutputObjectType(&subdocs_->back()->val_, IsObject{_parent->val_});
 }
 
 Writer::OutputVarType Writer::add_null_to_array(
-    OutputArrayType* _parent) const noexcept {
-  bson_array_builder_append_null(_parent->val_);
+    OutputArrayType* _parent) const {
+  const bool ok = bson_array_builder_append_null(_parent->val_);
+  if (!ok) {
+    throw std::runtime_error("Could not add null to array.");
+  }
   return OutputVarType{};
 }
 
 Writer::OutputVarType Writer::add_null_to_object(
-    const std::string_view& _name, OutputObjectType* _parent) const noexcept {
-  bson_append_null(_parent->val_, _name.data(), static_cast<int>(_name.size()));
+    const std::string_view& _name, OutputObjectType* _parent) const {
+  const bool ok = bson_append_null(_parent->val_, _name.data(),
+                                   static_cast<int>(_name.size()));
+  if (!ok) {
+    throw std::runtime_error("Could not add null to object.");
+  }
   return OutputVarType{};
 }
 
-void Writer::end_array(OutputArrayType* _arr) const noexcept {
+void Writer::end_array(OutputArrayType* _arr) const {
   const auto handle = [&](const auto _parent) {
     using Type = std::remove_cvref_t<decltype(_parent)>;
     if constexpr (std::is_same<Type, IsArray>()) {
-      bson_array_builder_append_array_builder_end(_parent.ptr_, _arr->val_);
+      const bool ok =
+          bson_array_builder_append_array_builder_end(_parent.ptr_, _arr->val_);
+      if (!ok) {
+        throw std::runtime_error("Could not end array.");
+      }
+
     } else if constexpr (std::is_same<Type, IsObject>()) {
-      bson_append_array_builder_end(_parent.ptr_, _arr->val_);
+      const bool ok = bson_append_array_builder_end(_parent.ptr_, _arr->val_);
+      if (!ok) {
+        throw std::runtime_error("Could not end array.");
+      }
+
     } else if constexpr (std::is_same<Type, IsRoot>()) {
-      bson_array_builder_build(_arr->val_, doc_);
+      const bool ok = bson_array_builder_build(_arr->val_, doc_);
+      if (!ok) {
+        throw std::runtime_error("Could not end array.");
+      }
+
     } else {
       static_assert(rfl::always_false_v<Type>, "Unsupported type.");
     }
@@ -84,13 +117,22 @@ void Writer::end_array(OutputArrayType* _arr) const noexcept {
   std::visit(handle, _arr->parent_);
 }
 
-void Writer::end_object(OutputObjectType* _obj) const noexcept {
+void Writer::end_object(OutputObjectType* _obj) const {
   const auto handle = [&](const auto _parent) {
     using Type = std::remove_cvref_t<decltype(_parent)>;
     if constexpr (std::is_same<Type, IsArray>()) {
-      bson_array_builder_append_document_end(_parent.ptr_, _obj->val_);
+      const bool ok =
+          bson_array_builder_append_document_end(_parent.ptr_, _obj->val_);
+      if (!ok) {
+        throw std::runtime_error("Could not end object.");
+      }
+
     } else if constexpr (std::is_same<Type, IsObject>()) {
-      bson_append_document_end(_parent.ptr_, _obj->val_);
+      const bool ok = bson_append_document_end(_parent.ptr_, _obj->val_);
+      if (!ok) {
+        throw std::runtime_error("Could not end object.");
+      }
+
     } else if constexpr (std::is_same<Type, IsRoot>()) {
     } else {
       static_assert(rfl::always_false_v<Type>, "Unsupported type.");

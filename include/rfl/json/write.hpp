@@ -9,6 +9,7 @@
 #endif
 
 #include <ostream>
+#include <stdexcept>
 #include <string>
 
 #include "../Processors.hpp"
@@ -26,18 +27,17 @@ template <class... Ps>
 std::string write(const auto& _obj, const yyjson_write_flag _flag = 0) {
   using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
-  auto w = Writer(yyjson_mut_doc_new(NULL));
+  auto w = Writer();
   Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
   yyjson_write_err err;
   const char* json_c_str =
-      yyjson_mut_write_opts(w.doc_, _flag, NULL, NULL, &err);
+      yyjson_mut_write_opts(w.doc(), _flag, NULL, NULL, &err);
   if (!json_c_str) {
     throw std::runtime_error("An error occured while writing to JSON: " +
                              std::string(err.msg));
   }
   const auto json_str = std::string(json_c_str);
   free((void*)json_c_str);
-  yyjson_mut_doc_free(w.doc_);
   return json_str;
 }
 
@@ -47,18 +47,17 @@ std::ostream& write(const auto& _obj, std::ostream& _stream,
                     const yyjson_write_flag _flag = 0) {
   using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
-  auto w = Writer(yyjson_mut_doc_new(NULL));
+  auto w = Writer();
   Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
   yyjson_write_err err;
   const char* json_c_str =
-      yyjson_mut_write_opts(w.doc_, _flag, NULL, NULL, &err);
+      yyjson_mut_write_opts(w.doc(), _flag, NULL, NULL, &err);
   if (!json_c_str) {
     throw std::runtime_error("An error occured while writing to JSON: " +
                              std::string(err.msg));
   }
   _stream << json_c_str;
   free((void*)json_c_str);
-  yyjson_mut_doc_free(w.doc_);
   return _stream;
 }
 

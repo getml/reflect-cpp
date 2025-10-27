@@ -9,10 +9,9 @@
 #include <string>
 #include <string_view>
 
-#include "../Bytestring.hpp"
 #include "../Result.hpp"
-#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
+#include "../concepts.hpp"
 #include "../internal/ptr_cast.hpp"
 
 namespace rfl {
@@ -66,18 +65,12 @@ struct Reader {
       const auto str = _var.via.str;
       return std::string(str.ptr, str.size);
 
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>() ||
-                         std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Vectorstring>()) {
+    } else if constexpr (concepts::MutableContiguousByteContainer<
+                             std::remove_cvref_t<T>>) {
       using VectorType = std::remove_cvref_t<T>;
       using ValueType = typename VectorType::value_type;
       if (type != MSGPACK_OBJECT_BIN) {
-        if constexpr (std::is_same<std::remove_cvref_t<T>, rfl::Bytestring>()) {
-          return error("Could not cast to bytestring.");
-        } else {
-          return error("Could not cast to vectorstring.");
-        }
+        return error("Could not cast to bytestring.");
       }
       const auto bin = _var.via.bin;
       const auto data = internal::ptr_cast<const ValueType*>(bin.ptr);

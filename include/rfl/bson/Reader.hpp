@@ -9,10 +9,9 @@
 #include <string>
 #include <type_traits>
 
-#include "../Bytestring.hpp"
 #include "../Result.hpp"
-#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
+#include "../concepts.hpp"
 #include "../internal/ptr_cast.hpp"
 
 namespace rfl {
@@ -102,29 +101,17 @@ struct Reader {
               "Could not cast to string. The type must be UTF8 or symbol.");
       }
 
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>() ||
-                         std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Vectorstring>()) {
+    } else if constexpr (concepts::MutableContiguousByteContainer<
+                             std::remove_cvref_t<T>>) {
       using VectorType = std::remove_cvref_t<T>;
       using ValueType = typename VectorType::value_type;
       if (btype != BSON_TYPE_BINARY) {
-        if constexpr (std::is_same<std::remove_cvref_t<T>, rfl::Bytestring>()) {
-          return error("Could not cast to bytestring.");
-        } else {
-          return error("Could not cast to vectorstring.");
-        }
+        return error("Could not cast to bytestring.");
       }
       if (value.v_binary.subtype != BSON_SUBTYPE_BINARY) {
-        if constexpr (std::is_same<std::remove_cvref_t<T>, rfl::Bytestring>()) {
-          return error(
-              "The BSON subtype must be a binary in order to read into a "
-              "bytestring.");
-        } else {
-          return error(
-              "The BSON subtype must be a binary in order to read into a "
-              "vectorstring.");
-        }
+        return error(
+            "The BSON subtype must be a binary in order to read into a "
+            "bytestring.");
       }
       const auto data =
           internal::ptr_cast<const ValueType*>(value.v_binary.data);

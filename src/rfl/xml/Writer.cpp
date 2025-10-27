@@ -37,28 +37,26 @@ Writer::Writer(const Ref<pugi::xml_node>& _root, const std::string& _root_name)
 
 Writer::~Writer() = default;
 
-Writer::OutputArrayType Writer::array_as_root(
-    const size_t /*_size*/) const noexcept {
+Writer::OutputArrayType Writer::array_as_root(const size_t /*_size*/) const {
   auto node_child =
       Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
   return OutputArrayType(root_name_, node_child);
 }
 
-Writer::OutputObjectType Writer::object_as_root(
-    const size_t /*_size*/) const noexcept {
+Writer::OutputObjectType Writer::object_as_root(const size_t /*_size*/) const {
   auto node_child =
       Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
   return OutputObjectType(node_child);
 }
 
-Writer::OutputVarType Writer::null_as_root() const noexcept {
+Writer::OutputVarType Writer::null_as_root() const {
   auto node_child =
       Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
   return OutputVarType(node_child);
 }
 
 Writer::OutputVarType Writer::value_as_root_impl(
-    const std::string& _str) const noexcept {
+    const std::string& _str) const {
   auto node_child =
       Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
   node_child->append_child(pugi::node_pcdata).set_value(_str.c_str());
@@ -66,18 +64,18 @@ Writer::OutputVarType Writer::value_as_root_impl(
 }
 
 Writer::OutputArrayType Writer::add_array_to_array(
-    const size_t /*_size*/, OutputArrayType* _parent) const noexcept {
+    const size_t /*_size*/, OutputArrayType* _parent) const {
   return *_parent;
 }
 
 Writer::OutputArrayType Writer::add_array_to_object(
     const std::string_view& _name, const size_t /*_size*/,
-    OutputObjectType* _parent) const noexcept {
+    OutputObjectType* _parent) const {
   return OutputArrayType(_name, _parent->node_);
 }
 
 Writer::OutputVarType Writer::add_value_to_array_impl(
-    const std::string& _str, OutputArrayType* _parent) const noexcept {
+    const std::string& _str, OutputArrayType* _parent) const {
   auto node_child =
       Ref<pugi::xml_node>::make(_parent->node_->append_child(_parent->name_));
   node_child->append_child(pugi::node_pcdata).set_value(_str.c_str());
@@ -86,7 +84,7 @@ Writer::OutputVarType Writer::add_value_to_array_impl(
 
 Writer::OutputVarType Writer::add_value_to_object_impl(
     const std::string_view& _name, const std::string& _str,
-    OutputObjectType* _parent, const bool _is_attribute) const noexcept {
+    OutputObjectType* _parent, const bool _is_attribute) const {
   if (_is_attribute) {
     _parent->node_->append_attribute(_name) = _str.c_str();
     return OutputVarType(_parent->node_);
@@ -102,7 +100,7 @@ Writer::OutputVarType Writer::add_value_to_object_impl(
 }
 
 Writer::OutputObjectType Writer::add_object_to_array(
-    const size_t /*_size*/, OutputArrayType* _parent) const noexcept {
+    const size_t /*_size*/, OutputArrayType* _parent) const {
   auto node_child =
       Ref<pugi::xml_node>::make(_parent->node_->append_child(_parent->name_));
   return OutputObjectType(node_child);
@@ -110,14 +108,14 @@ Writer::OutputObjectType Writer::add_object_to_array(
 
 Writer::OutputObjectType Writer::add_object_to_object(
     const std::string_view& _name, const size_t /*_size*/,
-    OutputObjectType* _parent) const noexcept {
+    OutputObjectType* _parent) const {
   auto node_child =
       Ref<pugi::xml_node>::make(_parent->node_->append_child(_name));
   return OutputObjectType(node_child);
 }
 
 Writer::OutputVarType Writer::add_null_to_array(
-    OutputArrayType* _parent) const noexcept {
+    OutputArrayType* _parent) const {
   auto node_child =
       Ref<pugi::xml_node>::make(_parent->node_->append_child(_parent->name_));
   return OutputVarType(node_child);
@@ -125,7 +123,7 @@ Writer::OutputVarType Writer::add_null_to_array(
 
 Writer::OutputVarType Writer::add_null_to_object(
     const std::string_view& _name, OutputObjectType* _parent,
-    const bool _is_attribute) const noexcept {
+    const bool _is_attribute) const {
   if (_is_attribute) {
     return OutputVarType(_parent->node_);
   } else if (_name == XML_CONTENT) {
@@ -137,8 +135,8 @@ Writer::OutputVarType Writer::add_null_to_object(
   }
 }
 
-void Writer::end_array(OutputArrayType* /*_arr*/) const noexcept {}
+void Writer::end_array(OutputArrayType* /*_arr*/) const {}
 
-void Writer::end_object(OutputObjectType* /*_obj*/) const noexcept {}
+void Writer::end_object(OutputObjectType* /*_obj*/) const {}
 
 }  // namespace rfl::xml
