@@ -70,11 +70,7 @@ struct Reader {
       using VectorType = std::remove_cvref_t<T>;
       using ValueType = typename VectorType::value_type;
       if (type != MSGPACK_OBJECT_BIN) {
-        if constexpr (std::is_same<std::remove_cvref_t<T>, rfl::Bytestring>()) {
-          return error("Could not cast to bytestring.");
-        } else {
-          return error("Could not cast to vectorstring.");
-        }
+        return error("Could not cast to bytestring.");
       }
       const auto bin = _var.via.bin;
       const auto data = internal::ptr_cast<const ValueType*>(bin.ptr);
