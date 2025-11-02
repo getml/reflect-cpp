@@ -45,6 +45,9 @@ jobs:
             compiler-version: 17
             cxx: 23  
     name: "${{ github.job }} (${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }})"
+    concurrency:
+      group: "linux-${{ github.ref }}-${{ github.job }}-${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}"
+      cancel-in-progress: true
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
