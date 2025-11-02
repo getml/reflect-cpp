@@ -14,7 +14,7 @@ jobs:
         format: ["tests", "benchmarks"]
     name: "${{ matrix.os }} (${{ matrix.format }})"
     concurrency:
-      group: "macos-${{ github.ref }}-${{ github.job }}-${{ matrix.format }}"
+      group: "macos-${{ github.ref }}-${{ github.job }}-${{ matrix.os }}-${{ matrix.format }}"
       cancel-in-progress: true
     runs-on: ${{ matrix.os }}
     steps:
