@@ -147,7 +147,8 @@ class RFL_API Writer {
   OutputVarType add_value_to_map(const std::string_view& _name, const T& _var,
                                  OutputMapType* _parent) const {
     avro_value_t new_value;
-    int result = avro_value_add(&_parent->val_, _name.data(), &new_value,
+    // Copy name to nullterminate.
+    int result = avro_value_add(&_parent->val_, std::string(_name).c_str(), &new_value,
                                 nullptr, nullptr);
     if (result != 0) {
       throw std::runtime_error("Error adding value to map: error(" +
@@ -163,7 +164,8 @@ class RFL_API Writer {
                                     const T& _var,
                                     OutputObjectType* _parent) const {
     avro_value_t new_value;
-    int result = avro_value_get_by_name(&_parent->val_, _name.data(),
+    // Copy name to nullterminate.
+    int result = avro_value_get_by_name(&_parent->val_, std::string(_name).c_str(),
                                         &new_value, nullptr);
     if (result != 0) {
       throw std::runtime_error("Error adding value to object: error(" +

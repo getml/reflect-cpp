@@ -59,7 +59,7 @@ void Writer::end_object(OutputObjectType* /*_obj*/) const {
 }
 
 Writer::OutputArrayType Writer::new_array(const std::string_view& _name) const {
-  (*out_) << YAML::Key << _name.data() << YAML::Value << YAML::BeginSeq;
+  (*out_) << YAML::Key << make_yaml_string(_name) << YAML::Value << YAML::BeginSeq;
   return OutputArrayType{};
 }
 
@@ -70,7 +70,7 @@ Writer::OutputArrayType Writer::new_array() const {
 
 Writer::OutputObjectType Writer::new_object(
     const std::string_view& _name) const {
-  (*out_) << YAML::Key << _name.data() << YAML::Value << YAML::BeginMap;
+  (*out_) << YAML::Key << make_yaml_string(_name) << YAML::Value << YAML::BeginMap;
   return OutputObjectType{};
 }
 

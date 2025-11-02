@@ -78,6 +78,16 @@ class RFL_API Writer {
   void end_object(OutputObjectType* _obj) const;
 
  private:
+  // Wraps a "string_view" if the YAML library is of version 0.8 or below
+  // and does not support "string_view".
+  static inline auto make_yaml_string(const std::string_view& _val)
+  {
+    if constexpr(requires(YAML::Emitter& a, std::string_view b) { a << b; })
+      return _val;
+    else
+      return std::string(_val);
+  }
+  
   template <class T>
   OutputVarType insert_value(const std::string_view& _name,
                              const T& _var) const {
@@ -85,14 +95,14 @@ class RFL_API Writer {
                   std::is_same<std::remove_cvref_t<T>, bool>() ||
                   std::is_same<std::remove_cvref_t<T>,
                                std::remove_cvref_t<decltype(YAML::Null)>>()) {
-      (*out_) << YAML::Key << _name.data() << YAML::Value << _var;
+      (*out_) << YAML::Key << make_yaml_string(_name) << YAML::Value << _var;
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       // std::to_string is necessary to ensure that floating point values are
       // always written as floats.
-      (*out_) << YAML::Key << _name.data() << YAML::Value
+      (*out_) << YAML::Key << make_yaml_string(_name) << YAML::Value
               << std::to_string(_var);
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      (*out_) << YAML::Key << _name.data() << YAML::Value
+      (*out_) << YAML::Key << make_yaml_string(_name) << YAML::Value
               << static_cast<int64_t>(_var);
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");

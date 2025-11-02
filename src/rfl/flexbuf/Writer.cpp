@@ -51,7 +51,8 @@ Writer::OutputVarType Writer::add_null_to_array(
 
 Writer::OutputVarType Writer::add_null_to_object(
     const std::string_view& _name, OutputObjectType* /*_parent*/) const {
-  fbb_->Null(_name.data());
+  // Copy the string, because "std::string_view" might not be nullterminated.
+  fbb_->Null(std::string(_name).c_str());
   return OutputVarType{};
 }
 
@@ -64,7 +65,8 @@ void Writer::end_object(OutputObjectType* _obj) const {
 }
 
 Writer::OutputArrayType Writer::new_array(const std::string_view& _name) const {
-  const auto start = fbb_->StartVector(_name.data());
+  // Copy the string, because "std::string_view" might not be nullterminated.
+  const auto start = fbb_->StartVector(std::string(_name).c_str()); 
   return OutputArrayType{start};
 }
 
@@ -75,7 +77,8 @@ Writer::OutputArrayType Writer::new_array() const {
 
 Writer::OutputObjectType Writer::new_object(
     const std::string_view& _name) const {
-  const auto start = fbb_->StartMap(_name.data());
+  // Copy the string, because "std::string_view" might not be nullterminated.
+  const auto start = fbb_->StartMap(std::string(_name).c_str());
   return OutputObjectType{start};
 }
 

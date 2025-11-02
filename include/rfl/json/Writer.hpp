@@ -96,7 +96,7 @@ class RFL_API Writer {
                                     OutputObjectType* _parent) const {
     const auto val = from_basic_type(_var);
     const bool ok = yyjson_mut_obj_add(
-        _parent->val_, yyjson_mut_strcpy(doc(), _name.data()), val.val_);
+        _parent->val_, yyjson_mut_strncpy(doc(), _name.data(), _name.size()), val.val_);
     if (!ok) {
       throw std::runtime_error("Could not add field '" + std::string(_name) +
                                "' to object.");
@@ -117,7 +117,7 @@ class RFL_API Writer {
   template <class T>
   OutputVarType from_basic_type(const T& _var) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      return OutputVarType(yyjson_mut_strcpy(doc(), _var.c_str()));
+      return OutputVarType(yyjson_mut_strncpy(doc(), _var.c_str(), _var.size()));
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       return OutputVarType(yyjson_mut_bool(doc(), _var));
