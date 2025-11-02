@@ -13,6 +13,9 @@ jobs:
         os: ["macos-latest", "macos-13"]
         format: ["tests", "benchmarks"]
     name: "${{ matrix.os }} (${{ matrix.format }})"
+    concurrency:
+      group: "macos-${{ github.ref }}-${{ github.job }}-${{ matrix.format }}"
+      cancel-in-progress: true
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
