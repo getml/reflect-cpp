@@ -17,7 +17,7 @@ inline std::string to_single_error_message(
     std::optional<std::string> _msg_prefix = std::nullopt,
     size_t _err_limit = 10) {
   if (_errors.size() == 1) {
-    return std::move(_errors[0].what());
+    return _errors[0].what();
   } else {
     std::stringstream stream;
     stream << (_msg_prefix
