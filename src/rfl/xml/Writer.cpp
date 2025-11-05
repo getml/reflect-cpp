@@ -39,27 +39,27 @@ Writer::~Writer() = default;
 
 Writer::OutputArrayType Writer::array_as_root(const size_t /*_size*/) const {
   auto node_child =
-      Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
+      Ref<pugi::xml_node>::make(root_->append_child(root_name_));
   return OutputArrayType(root_name_, node_child);
 }
 
 Writer::OutputObjectType Writer::object_as_root(const size_t /*_size*/) const {
   auto node_child =
-      Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
+      Ref<pugi::xml_node>::make(root_->append_child(root_name_));
   return OutputObjectType(node_child);
 }
 
 Writer::OutputVarType Writer::null_as_root() const {
   auto node_child =
-      Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
+      Ref<pugi::xml_node>::make(root_->append_child(root_name_));
   return OutputVarType(node_child);
 }
 
 Writer::OutputVarType Writer::value_as_root_impl(
     const std::string& _str) const {
   auto node_child =
-      Ref<pugi::xml_node>::make(root_->append_child(root_name_.c_str()));
-  node_child->append_child(pugi::node_pcdata).set_value(_str.c_str());
+      Ref<pugi::xml_node>::make(root_->append_child(root_name_));
+  node_child->append_child(pugi::node_pcdata).set_value(_str);
   return OutputVarType(node_child);
 }
 
@@ -78,7 +78,7 @@ Writer::OutputVarType Writer::add_value_to_array_impl(
     const std::string& _str, OutputArrayType* _parent) const {
   auto node_child =
       Ref<pugi::xml_node>::make(_parent->node_->append_child(_parent->name_));
-  node_child->append_child(pugi::node_pcdata).set_value(_str.c_str());
+  node_child->append_child(pugi::node_pcdata).set_value(_str);
   return OutputVarType(node_child);
 }
 
@@ -86,15 +86,15 @@ Writer::OutputVarType Writer::add_value_to_object_impl(
     const std::string_view& _name, const std::string& _str,
     OutputObjectType* _parent, const bool _is_attribute) const {
   if (_is_attribute) {
-    _parent->node_->append_attribute(_name) = _str.c_str();
+    _parent->node_->append_attribute(_name) = _str;
     return OutputVarType(_parent->node_);
   } else if (_name == XML_CONTENT) {
-    _parent->node_->append_child(pugi::node_pcdata).set_value(_str.c_str());
+    _parent->node_->append_child(pugi::node_pcdata).set_value(_str);
     return OutputVarType(_parent->node_);
   } else {
     auto node_child =
         Ref<pugi::xml_node>::make(_parent->node_->append_child(_name));
-    node_child->append_child(pugi::node_pcdata).set_value(_str.c_str());
+    node_child->append_child(pugi::node_pcdata).set_value(_str);
     return OutputVarType(node_child);
   }
 }

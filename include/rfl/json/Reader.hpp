@@ -88,7 +88,7 @@ struct Reader {
     yyjson_obj_iter_init(_obj.val_, &iter);
     yyjson_val* key;
     while ((key = yyjson_obj_iter_next(&iter))) {
-      const auto name = std::string_view(yyjson_get_str(key));
+      const auto name = std::string_view(yyjson_get_str(key), yyjson_get_len(key));
       _object_reader.read(name, InputVarType(yyjson_obj_iter_get_val(key)));
     }
     return std::nullopt;
@@ -101,7 +101,7 @@ struct Reader {
       if (r == NULL) {
         return error("Could not cast to string.");
       }
-      return std::string(r);
+      return std::string(r, yyjson_get_len(_var.val_));
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       if (!yyjson_is_bool(_var.val_)) {
