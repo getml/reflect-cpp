@@ -79,6 +79,9 @@ struct Parser<R, W, std::chrono::duration<Rep, Period>, ProcessorsType> {
       case Unit::value_of<"minutes">():
         return SupportedTypes(std::chrono::minutes(_r.count));
 
+      case Unit::value_of<"hours">():
+        return SupportedTypes(std::chrono::hours(_r.count));
+
       case Unit::value_of<"days">():
         return SupportedTypes(std::chrono::days(_r.count));
 
