@@ -28,7 +28,7 @@ struct Parser<R, W, Vectorstring, ProcessorsType> {
   }
 
   static schema::Type to_schema(
-      std::map<std::string, schema::Type>* /*_definitions*/) {
+      std::map<std::string, schema::Type>* [[maybe_unused]] _definitions) {
     return schema::Type{schema::Type::Vectorstring{}};
   }
 };
