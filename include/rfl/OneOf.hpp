@@ -43,7 +43,7 @@ struct OneOf {
   static rfl::Result<T> validate_impl(const T& _value,
                                       std::vector<Error> _errors) {
     return Head::validate(_value)
-        .and_then([&](auto&& /*_result*/) -> rfl::Result<T> {
+        .and_then([&](auto&& [[maybe_unused]] _result) -> rfl::Result<T> {
           if constexpr (sizeof...(Tail) == 0) {
             if (_errors.size() == sizeof...(Cs)) {
               return _value;
