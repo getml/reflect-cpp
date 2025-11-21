@@ -126,13 +126,23 @@ class RFL_API Generic {
   }
 
   /// Casts the underlying value to a double or returns an rfl::Error, if the
-  /// underlying value is not a double.
+  /// underlying value is not a number or the conversion would result in loss of
+  /// precision.
   Result<double> to_double() const noexcept {
     return std::visit(
         [](auto _v) -> Result<double> {
           using V = std::remove_cvref_t<decltype(_v)>;
           if constexpr (std::is_same_v<V, double>) {
             return _v;
+          } else if constexpr (std::is_same_v<V, int64_t>) {
+            auto _d = static_cast<double>(_v);
+            if (static_cast<int64_t>(_d) == _v) {
+              return _d;
+            } else {
+              return error(
+                  "rfl::Generic: Could not cast the underlying value to a "
+                  "double without loss of precision.");
+            }
           } else {
             return error(
                 "rfl::Generic: Could not cast the underlying value to a "
