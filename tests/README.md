@@ -45,7 +45,7 @@ ctest --test-dir build --output-on-failure
 
 Or you can run tests individually, as in:
 
-```
+```shell
 ./build/tests/avro/reflect-cpp-avro-tests
 ./build/tests/bson/reflect-cpp-bson-tests
 ./build/tests/capnproto/reflect-cpp-capnproto-tests
