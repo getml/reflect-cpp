@@ -193,7 +193,7 @@ class RFL_API Writer {
     auto entries =
         OutputArrayType{_parent->val_.get("entries").as<capnp::DynamicList>()};
     auto new_entry = add_object_to_array(2, &entries);
-    add_value_to_object("key", std::string(_name), &new_entry);
+    new_entry.val_.set("key", { _name.data(), _name.size() });
     return add_value_to_object("value", _var, &new_entry);
   }
 
@@ -202,20 +202,20 @@ class RFL_API Writer {
                                     const T& _var,
                                     OutputObjectType* _parent) const {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      _parent->val_.set(_name.data(), _var.c_str());
+      _parent->val_.set({ _name.data(), _name.size() }, { _var.c_str(), _var.size() });
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
       const auto array_ptr = kj::ArrayPtr<const kj::byte>(
           internal::ptr_cast<const unsigned char*>(_var.data()), _var.size());
-      _parent->val_.set(_name.data(), capnp::Data::Reader(array_ptr));
+      _parent->val_.set({ _name.data(), _name.size() }, capnp::Data::Reader(array_ptr));
 
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
                          std::is_same<std::remove_cvref_t<T>, bool>()) {
-      _parent->val_.set(_name.data(), _var);
+      _parent->val_.set({ _name.data(), _name.size() }, _var);
 
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      _parent->val_.set(_name.data(), static_cast<std::int64_t>(_var));
+      _parent->val_.set({ _name.data(), _name.size() }, static_cast<std::int64_t>(_var));
 
     } else if constexpr (internal::is_literal_v<T>) {
       return add_value_to_object(_name, _var.value(), _parent);

@@ -93,9 +93,9 @@ struct RFL_API Writer {
 
  private:
   template <class T>
-  std::string to_string(const T& _val) const {
+  decltype(auto) to_string(const T& _val) const {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      return _val;
+      return _val; // Return reference to avoid expensive string copy.
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       return _val ? "true" : "false";
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
