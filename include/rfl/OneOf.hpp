@@ -47,6 +47,8 @@ struct OneOf {
           if constexpr (sizeof...(Tail) == 0) {
             if (_errors.size() == sizeof...(Cs)) {
               return _value;
+              // The AI suggests  return std::forward<decltype(_result)>(_result);
+              // is it correct in this context?
             }
             return error(make_error_message(_errors));
           } else {
