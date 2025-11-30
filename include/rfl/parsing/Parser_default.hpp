@@ -8,6 +8,7 @@
 #include "../always_false.hpp"
 #include "../enums.hpp"
 #include "../from_named_tuple.hpp"
+#include "../internal/has_default_val_v.hpp"
 #include "../internal/has_reflection_method_v.hpp"
 #include "../internal/has_reflection_type_v.hpp"
 #include "../internal/has_reflector.hpp"
@@ -79,7 +80,8 @@ struct Parser {
             .and_then(wrap_in_t);
 
       } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
-        if constexpr (ProcessorsType::default_if_missing_) {
+        if constexpr (ProcessorsType::default_if_missing_ ||
+                      internal::has_default_val_v<T>) {
           return read_struct_with_default(_r, _var);
         } else {
           return read_struct(_r, _var);

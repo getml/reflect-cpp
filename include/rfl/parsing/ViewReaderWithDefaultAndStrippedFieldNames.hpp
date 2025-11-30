@@ -27,6 +27,13 @@ class ViewReaderWithDefaultAndStrippedFieldNames {
 
   ~ViewReaderWithDefaultAndStrippedFieldNames() = default;
 
+  std::array<bool, size_> found() const {
+    std::array<bool, size_> f;
+    std::fill(f.begin(), f.begin() + i_, true);
+    std::fill(f.begin() + i_, f.end(), false);
+    return f;
+  }
+
   /// Assigns the parsed version of _var to the field signified by i_, to be
   /// used when the field names are stripped.
   std::optional<Error> read(const InputVarType& _var) const {
