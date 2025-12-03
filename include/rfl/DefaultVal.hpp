@@ -108,8 +108,9 @@ struct DefaultVal {
   /// Assigns the underlying object.
   template <class U>
   auto& operator=(DefaultVal<U>&& _field) {
-    value_ = std::forward<T>(_field.value_);
+    value_ = std::move(_field.value_);
     return *this;
+  }
   }
 
   /// Assigns the underlying object.
