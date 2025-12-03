@@ -32,7 +32,7 @@ struct DefaultVal {
   DefaultVal(const DefaultVal<U>& _field) : value_(_field.get()) {}
 
   template <class U>
-  DefaultVal(DefaultVal<U>&& _field) : value_(_field.get()) {}
+  DefaultVal(DefaultVal<U>&& _field) noexcept(noexcept(Type(std::move(_field.value())))) : value_(std::move(_field.value())) {}
 
   template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
                                              bool>::type = true>
