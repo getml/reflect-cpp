@@ -11,11 +11,6 @@ namespace rfl {
 template <class T>
 struct DefaultVal {
  public:
-  template <class StructType, class NamedTupleType>
-  static StructType process(NamedTupleType&& _named_tuple) {
-    return _named_tuple;
-  }
-
   using Type = std::remove_cvref_t<T>;
 
   DefaultVal() : value_(Type()) {}
@@ -32,24 +27,25 @@ struct DefaultVal {
   DefaultVal(const DefaultVal<U>& _field) : value_(_field.get()) {}
 
   template <class U>
-  DefaultVal(DefaultVal<U>&& _field) noexcept(noexcept(Type(std::move(_field.value())))) : value_(std::move(_field.value())) {}
+  DefaultVal(DefaultVal<U>&& _field) noexcept(
+      noexcept(Type(std::move(_field.value()))))
+      : value_(std::move(_field.value())) {}
 
   template <class U>
     requires(std::is_convertible_v<U, Type>)
   DefaultVal(const U& _value) : value_(_value) {}
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires(std::is_convertible_v<U, Type>)
   DefaultVal(U&& _value) noexcept : value_(std::forward<U>(_value)) {}
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires(std::is_convertible_v<U, Type>)
   DefaultVal(const DefaultVal<U>& _field) : value_(_field.value()) {}
 
   /// Assigns the underlying object to its default value.
-  template <class U = Type,
-            typename std::enable_if<std::is_default_constructible_v<U>,
-                                    bool>::type = true>
+  template <class U = Type>
+    requires(std::is_default_constructible_v<U>)
   DefaultVal(const Default&) : value_(Type()) {}
 
   ~DefaultVal() = default;
@@ -108,9 +104,8 @@ struct DefaultVal {
   /// Assigns the underlying object.
   template <class U>
   auto& operator=(DefaultVal<U>&& _field) {
-    value_ = std::move(_field.value_);
+    value_ = std::forward<U>(_field.value_);
     return *this;
-  }
   }
 
   /// Assigns the underlying object.
