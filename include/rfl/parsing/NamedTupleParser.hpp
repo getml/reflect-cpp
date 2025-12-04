@@ -10,6 +10,7 @@
 #include "../NamedTuple.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/has_default_val_v.hpp"
 #include "../internal/is_array.hpp"
 #include "../internal/is_attribute.hpp"
 #include "../internal/is_basic_type.hpp"
