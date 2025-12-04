@@ -1,9 +1,14 @@
 #ifndef RFL_PARSING_PARSER_DEFAULTVAL_HPP_
 #define RFL_PARSING_PARSER_DEFAULTVAL_HPP_
 
+#include <map>
 #include <type_traits>
 
 #include "../DefaultVal.hpp"
+#include "AreReaderAndWriter.hpp"
+#include "Parent.hpp"
+#include "Parser_base.hpp"
+#include "schema/Type.hpp"
 
 namespace rfl::parsing {
 
