@@ -166,7 +166,8 @@ class RFL_API Reader {
       for (auto entry : entries) {
         auto s = entry.template as<capnp::DynamicStruct>();
         const auto key = s.get("key").as<capnp::Text>();
-        _map_reader.read(std::string_view(key.cStr(), key.size()), InputVarType{s.get("value")});
+        _map_reader.read(std::string_view(key.cStr(), key.size()),
+                         InputVarType{s.get("value")});
       }
       return std::nullopt;
     } catch (std::exception& e) {
