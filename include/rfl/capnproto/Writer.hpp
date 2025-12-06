@@ -262,7 +262,7 @@ class RFL_API Writer {
 
  private:
   kj::StringPtr to_kj_string_ptr(const std::string_view& _str) const {
-    return kj::StringPtr(_str.begin(), _str.end());
+    return kj::StringPtr(_str.data(), _str.size());
   }
 
  private:
