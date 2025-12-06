@@ -47,8 +47,9 @@ Writer::OutputArrayType Writer::add_array_to_map(const std::string_view& _name,
 Writer::OutputArrayType Writer::add_array_to_object(
     const std::string_view& _name, const size_t _size,
     OutputObjectType* _parent) const {
-  return OutputArrayType{_parent->val_.init(_name.data(), SafeSizeToUInt(_size))
-                             .as<capnp::DynamicList>()};
+  return OutputArrayType{
+      _parent->val_.init(to_kj_string_ptr(_name), SafeSizeToUInt(_size))
+          .as<capnp::DynamicList>()};
 }
 
 Writer::OutputArrayType Writer::add_array_to_union(
@@ -111,7 +112,7 @@ Writer::OutputObjectType Writer::add_object_to_object(
     const std::string_view& _name, const size_t /*_size*/,
     OutputObjectType* _parent) const {
   return OutputObjectType{
-      _parent->val_.get(_name.data()).as<capnp::DynamicStruct>()};
+      _parent->val_.get(to_kj_string_ptr(_name)).as<capnp::DynamicStruct>()};
 }
 
 Writer::OutputObjectType Writer::add_object_to_union(
@@ -142,7 +143,7 @@ Writer::OutputUnionType Writer::add_union_to_map(const std::string_view& _name,
 Writer::OutputUnionType Writer::add_union_to_object(
     const std::string_view& _name, OutputObjectType* _parent) const {
   return OutputUnionType{
-      _parent->val_.get(_name.data()).as<capnp::DynamicStruct>()};
+      _parent->val_.get(to_kj_string_ptr(_name)).as<capnp::DynamicStruct>()};
 }
 
 Writer::OutputUnionType Writer::add_union_to_union(
@@ -171,7 +172,7 @@ Writer::OutputVarType Writer::add_null_to_map(const std::string_view& _name,
 
 Writer::OutputVarType Writer::add_null_to_object(
     const std::string_view& _name, OutputObjectType* _parent) const {
-  _parent->val_.set(_name.data(), capnp::VOID);
+  _parent->val_.set(to_kj_string_ptr(_name), capnp::VOID);
   return OutputVarType{};
 }
 
