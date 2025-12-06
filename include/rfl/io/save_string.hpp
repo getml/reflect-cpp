@@ -14,6 +14,9 @@ Result<Nothing> save_string(const std::string& _fname, const T& _obj,
                             const WriteFunction& _write) {
   try {
     std::ofstream outfile;
+    if (!outfile.is_open()) {
+      return error("Unable to open file '" + _fname + "' for writing.");
+    }
     outfile.open(_fname);
     _write(_obj, outfile);
     outfile.close();
