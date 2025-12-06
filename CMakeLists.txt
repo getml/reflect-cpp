@@ -332,7 +332,7 @@ if (REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
         src/reflectcpp_msgpack.cpp
     )
     if (NOT TARGET msgpack-c)
-        find_package(msgpack-c CONFIG REQUIRED NAMES msgpack msgpack-c)
+        find_package(msgpack-c CONFIG REQUIRED NAMES msgpack msgpack-c msgpackc)
     endif()
     target_link_libraries(reflectcpp PUBLIC msgpack-c)
 endif ()
