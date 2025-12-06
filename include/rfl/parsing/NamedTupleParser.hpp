@@ -10,9 +10,11 @@
 #include "../NamedTuple.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/has_default_val_v.hpp"
 #include "../internal/is_array.hpp"
 #include "../internal/is_attribute.hpp"
 #include "../internal/is_basic_type.hpp"
+#include "../internal/is_default_val_v.hpp"
 #include "../internal/is_extra_fields.hpp"
 #include "../internal/is_skip.hpp"
 #include "../internal/no_duplicate_field_names.hpp"
@@ -108,7 +110,6 @@ struct NamedTupleParser {
       auto arr = _r.to_array(_var);
       if (!arr) [[unlikely]] {
         auto set = std::array<bool, NamedTupleType::size()>{};
-        // return std::make_pair(set, arr.error());
         return std::make_pair(set, arr.error());
       }
       return read_object_or_array(_r, *arr, _view);
@@ -254,8 +255,10 @@ struct NamedTupleParser {
 
     if (!std::get<_i>(_found)) {
       constexpr bool is_required_field =
+          !internal::is_default_val_v<ValueType> &&
           !internal::is_extra_fields_v<ValueType> &&
           (_all_required || is_required<ValueType, _ignore_empty_containers>());
+
       if constexpr (is_required_field) {
         constexpr auto current_name =
             internal::nth_element_t<_i, FieldTypes...>::name();
@@ -263,7 +266,8 @@ struct NamedTupleParser {
         stream << "Field named '" << std::string(current_name)
                << "' not found.";
         _errors->emplace_back(Error(stream.str()));
-      } else {
+
+      } else if constexpr (!internal::has_default_val_v<NamedTupleType>) {
         if constexpr (!std::is_const_v<ValueType>) {
           ::new (rfl::get<_i>(_view)) ValueType();
         } else {
@@ -338,9 +342,15 @@ struct NamedTupleParser {
         return err;
       }
     }
+    if constexpr (internal::has_default_val_v<NamedTupleType> &&
+                  !ProcessorsType::default_if_missing_) {
+      handle_missing_fields(reader.found(), *_view, nullptr, &errors,
+                            std::make_integer_sequence<int, size_>());
+    }
     if (errors.size() != 0) {
       return to_single_error_message(errors);
     }
+
     return std::nullopt;
   }
 };

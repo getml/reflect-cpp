@@ -45,10 +45,6 @@ class Literal {
 
   Literal(const std::string& _str) : value_(find_value(_str).value()) {}
 
-  /// A single-field literal is special because it
-  /// can also have a default constructor.
-  template <ValueType num_fields = num_fields_,
-            typename = std::enable_if_t<num_fields <= 1>>
   Literal() : value_(0) {}
 
   ~Literal() = default;

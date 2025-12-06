@@ -31,6 +31,8 @@ class ViewReaderWithDefault {
 
   ~ViewReaderWithDefault() = default;
 
+  const std::array<bool, size_>& found() const { return *found_; }
+
   /// Assigns the parsed version of _var to the field signified by _name, if
   /// such a field exists in the underlying view.
   void read(const std::string_view& _name, const InputVarType& _var) const {

@@ -12,6 +12,9 @@ jobs:
       matrix:
         format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "PARQUET", "TOML", "UBJSON", "XML", "YAML", "benchmarks"]
     name: "windows-msvc (${{ matrix.format }})"
+    concurrency:
+      group: "windows-${{ github.ref }}-${{ github.job }}-${{ matrix.format }}"
+      cancel-in-progress: true
     runs-on: windows-latest
     steps:
       - name: Checkout

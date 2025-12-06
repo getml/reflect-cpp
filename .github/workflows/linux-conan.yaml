@@ -5,6 +5,9 @@ on: [ push, pull_request ]
 jobs:
   linux:
     name: "${{ github.job }} (Conan)"
+    concurrency:
+      group: "linux-${{ github.ref }}-${{ github.job }}-conan"
+      cancel-in-progress: true
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout

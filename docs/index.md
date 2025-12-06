@@ -34,6 +34,7 @@ reflect-cpp fills an important gap in C++ development. It minimizes boilerplate 
 - Simple [installation](https://rfl.getml.com/install)
 - Simple extendability to [other serialization formats](https://rfl.getml.com/supported_formats/supporting_your_own_format)
 - Simple extendability to [custom classes](https://rfl.getml.com/concepts/custom_classes)
+- Support for default-valued fields via `rfl::DefaultVal` (see [Default values](default_val.md))
 - Being one of the fastest serialization libraries in existence, as demonstrated by our [benchmarks](https://rfl.getml.com/benchmarks)
   
 
