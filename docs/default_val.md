@@ -46,7 +46,7 @@ Example (no field names / positional arrays):
 DefaultVal also works when using rfl::NoFieldNames (positional JSON arrays). Omitted positions that correspond to DefaultVal fields get their default values:
 
 ```cpp
-const auto homer = rfl::json::read<Person, rfl::NoFieldNames>(R"(["Homer"])" ).value();
+const auto homer = rfl::json::read<Person, rfl::NoFieldNames>(R"(["Homer"])").value();
 // homer.first_name == "Homer"
 // homer.last_name == "Simpson"
 // homer.town == ""
@@ -54,11 +54,11 @@ const auto homer = rfl::json::read<Person, rfl::NoFieldNames>(R"(["Homer"])" ).v
 
 ## When to use
 
-Use rfl::DefaultVal when you want a field to be optional at the input side but still available as a value on the resulting object (no std::optional or pointer indirection). It is particularly useful for fields with sensible defaults (for example, a common last name, a default configuration value, or empty containers/strings).
+Use `rfl::DefaultVal` when you want a field to be optional at the input side but still available as a value on the resulting object (no std::optional or pointer indirection). It is particularly useful for fields with sensible defaults (for example, a common last name, a default configuration value, or empty containers/strings).
 
 ## Notes
 
 - The underlying type must be default-constructible to allow resetting via `rfl::Default` or when no explicit default is supplied.
-- DefaultVal preserves normal read/write semantics; other fields that are not DefaultVal remain required unless expressed as optionals or handled by processors (e.g., rfl::DefaultIfMissing).
+- DefaultVal preserves normal read/write semantics; other fields that are not DefaultVal remain required unless expressed as optionals or handled by processors (e.g., `rfl::DefaultIfMissing`).
 
 For more advanced control over when fields are considered missing and how defaults are applied, see the processors documentation (e.g., `rfl::DefaultIfMissing`).

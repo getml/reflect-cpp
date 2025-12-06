@@ -113,6 +113,7 @@ nav:
     - The basics:
       - Structs: concepts/structs.md
       - Optional fields: optional_fields.md
+      - Default values: default_val.md
       - Struct flattening: flatten_structs.md
       - Processors: concepts/processors.md
       - The rfl::Field-syntax: concepts/field_syntax.md
