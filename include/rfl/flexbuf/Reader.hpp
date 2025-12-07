@@ -24,21 +24,9 @@ struct Reader {
   using InputObjectType = flexbuffers::Map;
   using InputVarType = flexbuffers::Reference;
 
-  template <class T, class = void>
-  struct has_from_flexbuf : std::false_type {};
-
   template <class T>
-  concept has_from_flexbuf = requires(InputVarType input) {
-    { T::from_flexbuf(input) } -> std::same_as<T>;
-  };
-
-  template <class T>
-  concept has_from_flexbuf_result = requires(InputVarType input) {
-    { T::from_flexbuf(input) } -> std::same_as<rfl::Result<T>>;
-  };
-
-  template <class T>
-  static constexpr bool has_custom_constructor = has_from_flexbuf<T>::value;
+  static constexpr bool has_custom_constructor =
+      (requires(InputVarType var) { T::from_flexbuf(var); });
 
   rfl::Result<InputVarType> get_field_from_array(
       const size_t _idx, const InputArrayType& _arr) const noexcept {
