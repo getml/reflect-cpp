@@ -87,19 +87,6 @@ struct Parser {
           return read_struct(_r, _var);
         }
 
-      } else if constexpr (std::is_enum_v<T>) {
-        if constexpr (ProcessorsType::underlying_enums_ ||
-                      schemaful::IsSchemafulReader<R>) {
-          static_assert(enchantum::ScopedEnum<T>,
-                        "The enum must be a scoped enum in order to retrieve "
-                        "the underlying value.");
-          return _r.template to_basic_type<std::underlying_type_t<T>>(_var)
-              .transform([](const auto _val) { return static_cast<T>(_val); });
-        } else {
-          return _r.template to_basic_type<std::string>(_var).and_then(
-              rfl::string_to_enum<T>);
-        }
-
       } else {
         return _r.template to_basic_type<std::remove_cvref_t<T>>(_var);
       }
@@ -132,16 +119,6 @@ struct Parser {
       using PtrNamedTupleType = std::remove_cvref_t<decltype(ptr_named_tuple)>;
       Parser<R, W, PtrNamedTupleType, ProcessorsType>::write(
           _w, ptr_named_tuple, _parent);
-
-    } else if constexpr (std::is_enum_v<T>) {
-      if constexpr (ProcessorsType::underlying_enums_ ||
-                    schemaful::IsSchemafulWriter<W>) {
-        const auto val = static_cast<std::underlying_type_t<T>>(_var);
-        ParentType::add_value(_w, val, _parent);
-      } else {
-        const auto str = rfl::enum_to_string(_var);
-        ParentType::add_value(_w, str, _parent);
-      }
 
     } else {
       ParentType::add_value(_w, _var, _parent);
@@ -183,9 +160,6 @@ struct Parser {
     } else if constexpr (rfl::internal::is_description_v<U>) {
       return make_description<U>(_definitions);
 
-    } else if constexpr (std::is_enum_v<U>) {
-      return make_enum<U>(_definitions);
-
     } else if constexpr (std::is_class_v<U> && std::is_aggregate_v<U>) {
       return make_reference<U>(_definitions);
 
@@ -215,23 +189,6 @@ struct Parser {
         .type_ =
             Ref<Type>::make(Parser<R, W, std::remove_cvref_t<typename U::Type>,
                                    ProcessorsType>::to_schema(_definitions))}};
-  }
-
-  template <class U>
-  static schema::Type make_enum(
-      std::map<std::string, schema::Type>* _definitions) {
-    using Type = schema::Type;
-    if constexpr (ProcessorsType::underlying_enums_ ||
-                  schemaful::IsSchemafulReader<R>) {
-      return Type{Type::Integer{}};
-    } else if constexpr (enchantum::is_bitflag<U>) {
-      return Type{Type::String{}};
-    } else {
-      return Parser<
-          R, W,
-          typename decltype(internal::enums::get_enum_names<U>())::Literal,
-          ProcessorsType>::to_schema(_definitions);
-    }
   }
 
   template <class U>

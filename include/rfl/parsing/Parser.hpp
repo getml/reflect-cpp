@@ -9,6 +9,7 @@
 #include "Parser_default.hpp"
 #include "Parser_default_val.hpp"
 #include "Parser_duration.hpp"
+#include "Parser_enum.hpp"
 #include "Parser_filepath.hpp"
 #include "Parser_map_like.hpp"
 #include "Parser_named_tuple.hpp"
