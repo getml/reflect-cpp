@@ -3,6 +3,7 @@
 
 #include "Parser_array.hpp"
 #include "Parser_base.hpp"
+#include "Parser_basic_type.hpp"
 #include "Parser_box.hpp"
 #include "Parser_bytestring.hpp"
 #include "Parser_c_array.hpp"
