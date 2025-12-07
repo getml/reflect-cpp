@@ -13,7 +13,7 @@ namespace rfl {
 
 /// Used to define a field in the NamedTuple.
 template <class T>
-requires std::is_integral_v<T>
+  requires std::is_integral_v<T>
 struct Oct {
   /// The underlying type.
   using Type = T;
@@ -34,16 +34,16 @@ struct Oct {
   template <class U>
   Oct(Oct<U>&& _other) : value_(_other.get()) {}
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, Type>
   Oct(const U& _value) : value_(_value) {}
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, Type>
   Oct(U&& _value) noexcept : value_(std::forward<U>(_value)) {}
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, Type>
   Oct(const Oct<U>& _other) : value_(_other.value()) {}
 
   Oct(const std::string& _str) {
@@ -68,8 +68,8 @@ struct Oct {
   }
 
   /// Assigns the underlying object.
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, Type>
   auto& operator=(const U& _value) {
     value_ = _value;
     return *this;

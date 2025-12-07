@@ -4,8 +4,7 @@
 #include <string>
 #include <type_traits>
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class T>
 constexpr bool is_basic_type_v =
@@ -14,7 +13,6 @@ constexpr bool is_basic_type_v =
     std::is_same<std::remove_cvref_t<T>, std::string>() ||
     std::is_same<std::remove_cvref_t<T>, bool>();
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

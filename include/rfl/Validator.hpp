@@ -41,13 +41,13 @@ struct Validator {
   Validator(const T& _value)
       : value_(ValidationType::validate(_value).value()) {}
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, T>
   Validator(U&& _value)
       : value_(ValidationType::validate(T(std::forward<U>(_value))).value()) {}
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, T>
   Validator(const U& _value)
       : value_(ValidationType::validate(T(_value)).value()) {}
 
@@ -66,24 +66,22 @@ struct Validator {
   }
 
   /// Assigns the underlying object.
-  Validator& operator=(const Validator& _other) =
-      default;
+  Validator& operator=(const Validator& _other) = default;
 
   /// Assigns the underlying object.
-  Validator& operator=(Validator&& _other) noexcept =
-      default;
+  Validator& operator=(Validator&& _other) noexcept = default;
 
   /// Assigns the underlying object.
-  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, T>
   auto& operator=(U&& _value) noexcept {
     value_ = ValidationType::validate(T(std::forward<U>(_value))).value();
     return *this;
   }
 
   /// Assigns the underlying object.
-  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, T>
   auto& operator=(const U& _value) {
     value_ = ValidationType::validate(T(_value)).value();
     return *this;

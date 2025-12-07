@@ -33,22 +33,21 @@ struct Attribute {
   template <class U>
   Attribute(Attribute<U>&& _attr) : value_(_attr.get()) {}
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, Type>
   Attribute(const U& _value) : value_(_value) {}
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, Type>
   Attribute(U&& _value) noexcept : value_(std::forward<U>(_value)) {}
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, Type>
   Attribute(const Attribute<U>& _attr) : value_(_attr.value()) {}
 
   /// Assigns the underlying object to its default value.
-  template <class U = Type,
-            typename std::enable_if<std::is_default_constructible_v<U>,
-                                    bool>::type = true>
+  template <class U = Type>
+    requires std::is_default_constructible_v<U>
   Attribute(const Default&) : value_(Type()) {}
 
   ~Attribute() = default;
@@ -75,17 +74,16 @@ struct Attribute {
   }
 
   /// Assigns the underlying object.
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, Type>
   auto& operator=(const U& _value) {
     value_ = _value;
     return *this;
   }
 
   /// Assigns the underlying object to its default value.
-  template <class U = Type,
-            typename std::enable_if<std::is_default_constructible_v<U>,
-                                    bool>::type = true>
+  template <class U = Type>
+    requires std::is_default_constructible_v<U>
   auto& operator=(const Default&) {
     value_ = Type();
     return *this;

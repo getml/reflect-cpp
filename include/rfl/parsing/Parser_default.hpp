@@ -79,29 +79,12 @@ struct Parser {
         return Parser<R, W, ReflectionType, ProcessorsType>::read(_r, _var)
             .and_then(wrap_in_t);
 
-      } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
-        if constexpr (ProcessorsType::default_if_missing_ ||
-                      internal::has_default_val_v<T>) {
-          return read_struct_with_default(_r, _var);
-        } else {
-          return read_struct(_r, _var);
-        }
-
-      } else if constexpr (std::is_enum_v<T>) {
-        if constexpr (ProcessorsType::underlying_enums_ ||
-                      schemaful::IsSchemafulReader<R>) {
-          static_assert(enchantum::ScopedEnum<T>,
-                        "The enum must be a scoped enum in order to retrieve "
-                        "the underlying value.");
-          return _r.template to_basic_type<std::underlying_type_t<T>>(_var)
-              .transform([](const auto _val) { return static_cast<T>(_val); });
-        } else {
-          return _r.template to_basic_type<std::string>(_var).and_then(
-              rfl::string_to_enum<T>);
-        }
+      } else if constexpr (ProcessorsType::default_if_missing_ ||
+                           internal::has_default_val_v<T>) {
+        return read_struct_with_default(_r, _var);
 
       } else {
-        return _r.template to_basic_type<std::remove_cvref_t<T>>(_var);
+        return read_struct(_r, _var);
       }
     }
   }
@@ -126,25 +109,12 @@ struct Parser {
         Parser<R, W, ReflectionType, ProcessorsType>::write(_w, r, _parent);
       }
 
-    } else if constexpr (std::is_class_v<T> && std::is_aggregate_v<T>) {
+    } else {
       const auto ptr_named_tuple = ProcessorsType::template process<T>(
           internal::to_ptr_named_tuple(_var));
       using PtrNamedTupleType = std::remove_cvref_t<decltype(ptr_named_tuple)>;
       Parser<R, W, PtrNamedTupleType, ProcessorsType>::write(
           _w, ptr_named_tuple, _parent);
-
-    } else if constexpr (std::is_enum_v<T>) {
-      if constexpr (ProcessorsType::underlying_enums_ ||
-                    schemaful::IsSchemafulWriter<W>) {
-        const auto val = static_cast<std::underlying_type_t<T>>(_var);
-        ParentType::add_value(_w, val, _parent);
-      } else {
-        const auto str = rfl::enum_to_string(_var);
-        ParentType::add_value(_w, str, _parent);
-      }
-
-    } else {
-      ParentType::add_value(_w, _var, _parent);
     }
   }
 
@@ -153,38 +123,9 @@ struct Parser {
       std::map<std::string, schema::Type>* _definitions) {
     using U = std::remove_cvref_t<T>;
     using Type = schema::Type;
-    if constexpr (std::is_same<U, bool>()) {
-      return Type{Type::Boolean{}};
 
-    } else if constexpr (std::is_same<U, std::int32_t>()) {
-      return Type{Type::Int32{}};
-
-    } else if constexpr (std::is_same<U, std::int64_t>()) {
-      return Type{Type::Int64{}};
-
-    } else if constexpr (std::is_same<U, std::uint32_t>()) {
-      return Type{Type::UInt32{}};
-
-    } else if constexpr (std::is_same<U, std::uint64_t>()) {
-      return Type{Type::UInt64{}};
-
-    } else if constexpr (std::is_integral<U>()) {
-      return Type{Type::Integer{}};
-
-    } else if constexpr (std::is_same<U, float>()) {
-      return Type{Type::Float{}};
-
-    } else if constexpr (std::is_floating_point_v<U>) {
-      return Type{Type::Double{}};
-
-    } else if constexpr (std::is_same<U, std::string>()) {
-      return Type{Type::String{}};
-
-    } else if constexpr (rfl::internal::is_description_v<U>) {
+    if constexpr (rfl::internal::is_description_v<U>) {
       return make_description<U>(_definitions);
-
-    } else if constexpr (std::is_enum_v<U>) {
-      return make_enum<U>(_definitions);
 
     } else if constexpr (std::is_class_v<U> && std::is_aggregate_v<U>) {
       return make_reference<U>(_definitions);
@@ -215,23 +156,6 @@ struct Parser {
         .type_ =
             Ref<Type>::make(Parser<R, W, std::remove_cvref_t<typename U::Type>,
                                    ProcessorsType>::to_schema(_definitions))}};
-  }
-
-  template <class U>
-  static schema::Type make_enum(
-      std::map<std::string, schema::Type>* _definitions) {
-    using Type = schema::Type;
-    if constexpr (ProcessorsType::underlying_enums_ ||
-                  schemaful::IsSchemafulReader<R>) {
-      return Type{Type::Integer{}};
-    } else if constexpr (enchantum::is_bitflag<U>) {
-      return Type{Type::String{}};
-    } else {
-      return Parser<
-          R, W,
-          typename decltype(internal::enums::get_enum_names<U>())::Literal,
-          ProcessorsType>::to_schema(_definitions);
-    }
   }
 
   template <class U>
@@ -277,10 +201,10 @@ struct Parser {
         .validation_ = ValidationType::template to_schema<ReflectionType>()}};
   }
 
-  /// The way this works is that we allocate space on the stack in this size of
-  /// the struct in which we then write the individual fields using
-  /// views and placement new. This is how we deal with the fact that some
-  /// fields might not be default-constructible.
+  /// The way this works is that we allocate space on the stack in this size
+  /// of the struct in which we then write the individual fields using views
+  /// and placement new. This is how we deal with the fact that some fields
+  /// might not be default-constructible.
   static Result<T> read_struct(const R& _r, const InputVarType& _var) {
     alignas(T) unsigned char buf[sizeof(T)]{};
     auto ptr = internal::ptr_cast<T*>(&buf);
@@ -297,10 +221,10 @@ struct Parser {
     return res;
   }
 
-  /// This is actually more straight-forward than the standard case - we just
-  /// allocate a struct and then fill it. But it is less efficient and it
-  /// assumes that all values on the struct have a default constructor, so we
-  /// only use it when the DefaultIfMissing preprocessor is added.
+  /// This is actually more straight-forward than the standard case - we
+  /// just allocate a struct and then fill it. But it is less efficient and
+  /// it assumes that all values on the struct have a default constructor,
+  /// so we only use it when the DefaultIfMissing preprocessor is added.
   static Result<T> read_struct_with_default(const R& _r,
                                             const InputVarType& _var) {
     auto t = T{};

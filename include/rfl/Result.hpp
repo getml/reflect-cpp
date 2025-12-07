@@ -27,8 +27,9 @@ class Error {
   Error& operator=(Error&&) = default;
 
   /// Returns the error message, equivalent to .what() in std::exception.
-  const std::string& what() const & { return what_; }
-  /// Moves the error message out of Error object and leaves what_ in a moved from state
+  const std::string& what() const& { return what_; }
+  /// Moves the error message out of Error object and leaves what_ in a moved
+  /// from state
   std::string what() && { return std::move(what_); }
 
  private:
@@ -108,16 +109,16 @@ class Result {
     copy_from_other(_other);
   }
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, T>
   Result(Result<U>&& _other) : success_(_other && true) {
     auto temp = std::forward<Result<U> >(_other).transform(
         [](U&& _u) { return T(std::forward<U>(_u)); });
     move_from_other(temp);
   }
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, T>
   Result(const Result<U>& _other) : success_(_other && true) {
     auto temp = _other.transform([](const U& _u) { return T(_u); });
     move_from_other(temp);
@@ -201,8 +202,8 @@ class Result {
   }
 
   /// Assigns the underlying object.
-  template <class U, typename std::enable_if<std::is_convertible_v<U, T>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, T>
   auto& operator=(const Result<U>& _other) {
     const auto to_t = [](const U& _u) -> T { return _u; };
     t_or_err_ = _other.transform(to_t).t_or_err_;
