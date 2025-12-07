@@ -28,16 +28,14 @@ struct Reader {
   struct has_from_flexbuf : std::false_type {};
 
   template <class T>
-  struct has_from_flexbuf<
-      T, std::enable_if_t<std::is_invocable_r<T, decltype(T::from_flexbuf),
-                                              InputVarType>::value>>
-      : std::true_type {};
+  concept has_from_flexbuf = requires(InputVarType input) {
+    { T::from_flexbuf(input) } -> std::same_as<T>;
+  };
 
   template <class T>
-  struct has_from_flexbuf<
-      T, std::enable_if_t<std::is_invocable_r<
-             rfl::Result<T>, decltype(T::from_flexbuf), InputVarType>::value>>
-      : std::true_type {};
+  concept has_from_flexbuf_result = requires(InputVarType input) {
+    { T::from_flexbuf(input) } -> std::same_as<rfl::Result<T>>;
+  };
 
   template <class T>
   static constexpr bool has_custom_constructor = has_from_flexbuf<T>::value;

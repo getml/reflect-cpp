@@ -49,28 +49,22 @@ class Variant {
     move_from_type(FirstAlternative());
   }
 
-  Variant(const Variant& _other)
-      : index_(IndexType()), data_(DataType()) {
+  Variant(const Variant& _other) : index_(IndexType()), data_(DataType()) {
     copy_from_other(_other);
   }
 
-  Variant(Variant&& _other) noexcept
-      : index_(IndexType()), data_(DataType()) {
+  Variant(Variant&& _other) noexcept : index_(IndexType()), data_(DataType()) {
     move_from_other(std::move(_other));
   }
 
-  template <class T,
-            typename std::enable_if<internal::variant::is_alternative_type<
-                                        T, AlternativeTypes...>(),
-                                    bool>::type = true>
+  template <class T>
+    requires internal::variant::is_alternative_type_v<T, AlternativeTypes...>
   Variant(const T& _t) : index_(IndexType()), data_(DataType()) {
     copy_from_type(_t);
   }
 
-  template <class T,
-            typename std::enable_if<internal::variant::is_alternative_type<
-                                        T, AlternativeTypes...>(),
-                                    bool>::type = true>
+  template <class T>
+    requires internal::variant::is_alternative_type_v<T, AlternativeTypes...>
   Variant(T&& _t) noexcept : index_(IndexType()), data_(DataType()) {
     move_from_type(std::forward<T>(_t));
   }
@@ -97,10 +91,8 @@ class Variant {
   constexpr int index() const noexcept { return index_; }
 
   /// Assigns the underlying object.
-  template <class T,
-            typename std::enable_if<internal::variant::is_alternative_type<
-                                        T, AlternativeTypes...>(),
-                                    bool>::type = true>
+  template <class T>
+    requires internal::variant::is_alternative_type_v<T, AlternativeTypes...>
   Variant& operator=(const T& _t) {
     auto temp = Variant(_t);
     destroy_if_necessary();
@@ -109,10 +101,8 @@ class Variant {
   }
 
   /// Assigns the underlying object.
-  template <class T,
-            typename std::enable_if<internal::variant::is_alternative_type<
-                                        T, AlternativeTypes...>(),
-                                    bool>::type = true>
+  template <class T>
+    requires internal::variant::is_alternative_type_v<T, AlternativeTypes...>
   Variant& operator=(T&& _t) noexcept {
     destroy_if_necessary();
     move_from_type(std::forward<T>(_t));
@@ -311,9 +301,9 @@ class Variant {
   template <class F, class ResultType, IndexType... _is>
   void do_visit_with_result(const F& _f, std::optional<ResultType>* _result,
                             std::integer_sequence<IndexType, _is...>) {
-    const auto visit_one = [this]<IndexType _i>(const F& _f,
-                                                std::optional<ResultType>* _result,
-                                                Index<_i>) {
+    const auto visit_one = [this]<IndexType _i>(
+                               const F& _f, std::optional<ResultType>* _result,
+                               Index<_i>) {
       if (!*_result && index_ == _i) {
         _result->emplace(_f(get_alternative<_i>()));
       }
@@ -324,9 +314,9 @@ class Variant {
   template <class F, class ResultType, IndexType... _is>
   void do_visit_with_result(const F& _f, std::optional<ResultType>* _result,
                             std::integer_sequence<IndexType, _is...>) const {
-    const auto visit_one = [this]<IndexType _i>(const F& _f,
-                                                std::optional<ResultType>* _result,
-                                                Index<_i>) {
+    const auto visit_one = [this]<IndexType _i>(
+                               const F& _f, std::optional<ResultType>* _result,
+                               Index<_i>) {
       if (!*_result && index_ == _i) {
         _result->emplace(_f(get_alternative<_i>()));
       }
@@ -337,8 +327,8 @@ class Variant {
   template <class F, class ResultType, IndexType... _is>
   void do_visit_with_reference(F& _f, ResultType** _result,
                                std::integer_sequence<IndexType, _is...>) {
-    const auto visit_one = [this]<IndexType _i>(const F& _f, ResultType** _result,
-                                                Index<_i>) {
+    const auto visit_one = [this]<IndexType _i>(
+                               const F& _f, ResultType** _result, Index<_i>) {
       if (!*_result && index_ == _i) {
         *_result = &_f(get_alternative<_i>());
       }
@@ -349,8 +339,8 @@ class Variant {
   template <class F, class ResultType, IndexType... _is>
   void do_visit_with_reference(F& _f, ResultType** _result,
                                std::integer_sequence<IndexType, _is...>) const {
-    const auto visit_one = [this]<IndexType _i>(const F& _f, ResultType** _result,
-                                                Index<_i>) {
+    const auto visit_one = [this]<IndexType _i>(
+                               const F& _f, ResultType** _result, Index<_i>) {
       if (!*_result && index_ == _i) {
         *_result = &_f(get_alternative<_i>());
       }
@@ -361,8 +351,8 @@ class Variant {
   template <class F, class ResultType, IndexType... _is>
   void do_visit_with_reference(const F& _f, ResultType** _result,
                                std::integer_sequence<IndexType, _is...>) {
-    const auto visit_one = [this]<IndexType _i>(const F& _f, ResultType** _result,
-                                                Index<_i>) {
+    const auto visit_one = [this]<IndexType _i>(
+                               const F& _f, ResultType** _result, Index<_i>) {
       if (!*_result && index_ == _i) {
         *_result = &_f(get_alternative<_i>());
       }
@@ -373,8 +363,8 @@ class Variant {
   template <class F, class ResultType, IndexType... _is>
   void do_visit_with_reference(const F& _f, ResultType** _result,
                                std::integer_sequence<IndexType, _is...>) const {
-    const auto visit_one = [this]<IndexType _i>(const F& _f, ResultType** _result,
-                                                Index<_i>) {
+    const auto visit_one = [this]<IndexType _i>(
+                               const F& _f, ResultType** _result, Index<_i>) {
       if (!*_result && index_ == _i) {
         *_result = &_f(get_alternative<_i>());
       }

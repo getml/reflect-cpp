@@ -38,16 +38,14 @@ class RFL_API Generic {
 
   Generic(const ReflectionType& _value);
 
-  template <class T,
-            typename std::enable_if<std::is_convertible_v<T, VariantType>,
-                                    bool>::type = true>
+  template <class T>
+    requires std::is_convertible_v<T, VariantType>
   Generic(const T& _value) {
     value_ = _value;
   }
 
-  template <class T,
-            typename std::enable_if<std::is_convertible_v<T, VariantType>,
-                                    bool>::type = true>
+  template <class T>
+    requires std::is_convertible_v<T, VariantType>
   Generic(T&& _value) noexcept : value_(std::forward<T>(_value)) {}
 
   ~Generic();
@@ -65,9 +63,8 @@ class RFL_API Generic {
   Generic& operator=(VariantType&& _value) noexcept;
 
   /// Assigns the underlying object.
-  template <class T,
-            typename std::enable_if<std::is_convertible_v<T, VariantType>,
-                                    bool>::type = true>
+  template <class T>
+    requires std::is_convertible_v<T, VariantType>
   auto& operator=(const T& _value) {
     using Type = std::remove_cvref_t<T>;
     if constexpr (std::is_same_v<Type, bool>) {

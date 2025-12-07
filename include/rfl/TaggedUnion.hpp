@@ -28,14 +28,12 @@ struct TaggedUnion {
   TaggedUnion(TaggedUnion<_discriminator, Ts...>&& _tagged_union) noexcept =
       default;
 
-  template <class T,
-            typename std::enable_if<std::is_convertible_v<T, VariantType>,
-                                    bool>::type = true>
+  template <class T>
+    requires std::is_convertible_v<T, VariantType>
   TaggedUnion(const T& _t) : variant_(_t) {}
 
-  template <class T,
-            typename std::enable_if<std::is_convertible_v<T, VariantType>,
-                                    bool>::type = true>
+  template <class T>
+    requires std::is_convertible_v<T, VariantType>
   TaggedUnion(T&& _t) noexcept : variant_(std::forward<T>(_t)) {}
 
   ~TaggedUnion() = default;
@@ -53,18 +51,16 @@ struct TaggedUnion {
   }
 
   /// Assigns the underlying object.
-  template <class T,
-            typename std::enable_if<std::is_convertible_v<T, VariantType>,
-                                    bool>::type = true>
+  template <class T>
+    requires std::is_convertible_v<T, VariantType>
   TaggedUnion<_discriminator, Ts...>& operator=(T&& _variant) {
     variant_ = std::forward<T>(_variant);
     return *this;
   }
 
   /// Assigns the underlying object.
-  template <class T,
-            typename std::enable_if<std::is_convertible_v<T, VariantType>,
-                                    bool>::type = true>
+  template <class T>
+    requires std::is_convertible_v<T, VariantType>
   TaggedUnion<_discriminator, Ts...>& operator=(const T& _variant) {
     variant_ = _variant;
     return *this;
@@ -121,24 +117,18 @@ template <class T>
 using possible_tags_t = typename PossibleTags<T>::Type;
 
 template <internal::StringLiteral _discriminator, class... Ts>
-bool operator==(
-  const TaggedUnion<_discriminator, Ts...>& lhs,
-  const TaggedUnion<_discriminator, Ts...>& rhs
-  ) {
-
+bool operator==(const TaggedUnion<_discriminator, Ts...>& lhs,
+                const TaggedUnion<_discriminator, Ts...>& rhs) {
   return (lhs.variant().index() == rhs.variant().index()) &&
-         lhs.variant().visit(
-           [&rhs](const auto& l) {
-               return rhs.variant().visit(
-                 [&l](const auto& r) -> bool {
-                   if constexpr (std::is_same_v<std::decay_t<decltype(l)>, std::decay_t<decltype(r)>>)
-                     return l == r;
-                   else
-                     return false;
-               }
-             );
-           }
-         );
+         lhs.variant().visit([&rhs](const auto& l) {
+           return rhs.variant().visit([&l](const auto& r) -> bool {
+             if constexpr (std::is_same_v<std::decay_t<decltype(l)>,
+                                          std::decay_t<decltype(r)>>)
+               return l == r;
+             else
+               return false;
+           });
+         });
 }
 
 }  // namespace rfl

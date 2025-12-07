@@ -13,7 +13,7 @@ namespace rfl {
 
 /// Used to define a field in the NamedTuple.
 template <class T>
-requires std::is_unsigned_v<T>
+  requires std::is_unsigned_v<T>
 struct Binary {
   /// The underlying type.
   using Type = T;
@@ -36,16 +36,16 @@ struct Binary {
   template <class U>
   Binary(Binary<U>&& _other) : value_(_other.get()) {}
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, Type>
   Binary(const U& _value) : value_(_value) {}
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, Type>
   Binary(U&& _value) noexcept : value_(std::forward<U>(_value)) {}
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, Type>
   Binary(const Binary<U>& _other) : value_(_other.value()) {}
 
   Binary(const std::string& _str)
@@ -69,8 +69,8 @@ struct Binary {
   }
 
   /// Assigns the underlying object.
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, Type>
   auto& operator=(const U& _value) {
     value_ = _value;
     return *this;

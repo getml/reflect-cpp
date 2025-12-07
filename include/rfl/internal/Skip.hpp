@@ -41,24 +41,21 @@ class Skip {
 
   template <class U, bool _skip_s, bool _skip_d>
   Skip(Skip<U, _skip_s, _skip_d>&& _other) : value_(_other.get()) {}
-
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, Type>
   Skip(const U& _value) : value_(_value) {}
 
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, Type>
   Skip(U&& _value) noexcept : value_(std::forward<U>(_value)) {}
 
-  template <class U, bool _skip_s, bool _skip_d,
-            typename std::enable_if<std::is_convertible_v<U, Type>,
-                                    bool>::type = true>
+  template <class U, bool _skip_s, bool _skip_d>
+    requires std::is_convertible_v<U, Type>
   Skip(const Skip<U, _skip_s, _skip_d>& _skip) : value_(_skip.value()) {}
 
   /// Assigns the underlying object to its default value.
-  template <class U = Type,
-            typename std::enable_if<std::is_default_constructible_v<U>,
-                                    bool>::type = true>
+  template <class U = Type>
+    requires std::is_default_constructible_v<U>
   Skip(const Default&) : value_(Type()) {}
 
   ~Skip() = default;
@@ -88,17 +85,16 @@ class Skip {
   }
 
   /// Assigns the underlying object.
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
+  template <class U>
+    requires std::is_convertible_v<U, Type>
   auto& operator=(const U& _value) {
     value_ = _value;
     return *this;
   }
 
   /// Assigns the underlying object to its default value.
-  template <class U = Type,
-            typename std::enable_if<std::is_default_constructible_v<U>,
-                                    bool>::type = true>
+  template <class U = Type>
+    requires std::is_default_constructible_v<U>
   auto& operator=(const Default&) {
     value_ = Type();
     return *this;

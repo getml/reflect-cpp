@@ -14,6 +14,10 @@ static constexpr bool is_alternative_type() {
          -1;
 }
 
+template <class T, class... AlternativeTypes>
+constexpr bool is_alternative_type_v =
+    is_alternative_type<T, AlternativeTypes...>();
+
 }  // namespace rfl::internal::variant
 
 #endif
