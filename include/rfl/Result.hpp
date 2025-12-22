@@ -445,4 +445,22 @@ inline Unexpected<Error> error(const Error& _err) {
 
 }  // namespace rfl
 
+#ifdef REFLECTCPP_USE_STD_EXPECTED
+template <>
+class std::bad_expected_access<rfl::Error> : public bad_expected_access<void> {
+ public:
+  explicit constexpr bad_expected_access(rfl::Error er) : err_(std::move(er)) {}
+  const char* what() const noexcept override { return err_.what().c_str(); }
+
+  template <typename Self>
+  [[nodiscard]]
+  auto error(this Self&& self) noexcept {
+    return std::forward<Self>(self).err_;
+  }
+
+ private:
+  rfl::Error err_;
+};
+#endif
+
 #endif
