@@ -356,7 +356,7 @@ if (REFLECTCPP_TOML OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_toml.cpp
     )
-    if (NOT TARGET tomlplusplus)
+    if (NOT TARGET tomlplusplus::tomlplusplus)
       find_package(tomlplusplus)
     endif()
     target_link_libraries(reflectcpp PUBLIC tomlplusplus::tomlplusplus)
