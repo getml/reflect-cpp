@@ -23,7 +23,7 @@ Suppose you have a struct like this:
 struct Person{
     std::string first_name;  
     std::string last_name; 
-    int[5] post_code;
+    int post_code[5];
 };
 ```
 
