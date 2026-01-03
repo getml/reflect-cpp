@@ -292,7 +292,7 @@ if (REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
         set(bson_tgt_linkage static)
     endif()
 
-    find_package(${BSON_PACKAGE_NAME} 1.25.1...2 REQUIRED)
+    find_package(${BSON_PACKAGE_NAME} 1.25.1 REQUIRED)
     target_link_libraries(reflectcpp PUBLIC "${bson_tgt_name_prefix}${bson_tgt_linkage}")
 endif ()
 
