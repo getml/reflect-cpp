@@ -76,7 +76,6 @@
         {
           "name": "arrow",
           "version>=": "21.0.0",
-          "default-features": false,
           "features": ["csv"]
         }
       ]

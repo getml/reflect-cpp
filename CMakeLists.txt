@@ -346,10 +346,12 @@ if (REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_msgpack.cpp
     )
-    if (NOT TARGET msgpack-c)
-        find_package(msgpack-c CONFIG REQUIRED NAMES msgpack msgpack-c msgpackc)
+    find_package(msgpack-c CONFIG REQUIRED NAMES msgpack msgpack-c msgpackc)
+    if(NOT REFLECTCPP_BUILD_SHARED AND TARGET msgpack-c-static)
+        target_link_libraries(reflectcpp PUBLIC msgpack-c-static)
+    else()
+        target_link_libraries(reflectcpp PUBLIC msgpack-c)
     endif()
-    target_link_libraries(reflectcpp PUBLIC $<IF:$<TARGET_EXISTS:msgpack-c>,msgpack-c,$<IF:$<TARGET_EXISTS:msgpackc>,msgpackc,msgpack-c>>)
 endif ()
 
 if (REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
