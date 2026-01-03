@@ -29,7 +29,7 @@ if ((REFLECTCPP_JSON OR REFLECTCPP_AVRO OR REFLECTCPP_CBOR OR REFLECTCPP_UBJSON)
 endif()
 
 if (REFLECTCPP_BSON)  
-  find_dependency(bson-1.0)
+  find_dependency(@BSON_PACKAGE_NAME@ 1.25.1...2)
 endif ()
 
 if (REFLECTCPP_CAPNPROTO)  
