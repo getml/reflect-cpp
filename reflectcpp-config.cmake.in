@@ -49,12 +49,12 @@ if (REFLECTCPP_FLEXBUFFERS)
 endif ()
 
 if (REFLECTCPP_MSGPACK)
-  find_dependency(msgpack-c)
+  find_dependency(msgpack-c NAMES msgpack-c msgpack msgpackc)
 endif()
 
 if (REFLECTCPP_PARQUET)
   find_dependency(Arrow)
-  find_dependency(Parquet)
+  find_dependency(Parquet NAMES Parquet Arrow)
 endif()
 
 if (REFLECTCPP_TOML)
