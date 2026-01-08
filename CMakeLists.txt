@@ -280,15 +280,17 @@ if (REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
 
     find_package(bson 1.25.1 CONFIG REQUIRED NAMES bson bson-1.0)
 
-    # The package and target names have changed in libbson v2
+    # The package and target names have changed since v2
     # https://github.com/mongodb/mongo-c-driver/releases/tag/2.0.0
-    if(TARGET bson::${linkage_type})
-        target_link_libraries(reflectcpp PUBLIC bson::${linkage_type})
-    elseif(TARGET mongo::bson_${linkage_type})
-        target_link_libraries(reflectcpp PUBLIC mongo::bson_${linkage_type})
-    else()
-        message(FATAL_ERROR "Could not find a suitable libbson target")
+    set(bson_lib bson::${linkage_type})
+    if(NOT TARGET "${bson_lib}")
+        set(bson_lib mongo::bson_${linkage_type})
+        if(NOT TARGET "${bson_lib}")
+            message(FATAL_ERROR "Could not find a suitable libbson target")
+        endif()
     endif()
+
+    target_link_libraries(reflectcpp PUBLIC "${bson_lib}")
 endif ()
 
 if (REFLECTCPP_CAPNPROTO OR REFLECTCPP_CHECK_HEADERS)
@@ -316,22 +318,28 @@ if (REFLECTCPP_CBOR OR REFLECTCPP_CHECK_HEADERS)
     include_directories(PUBLIC ${jsoncons_INCLUDE_DIRS})
 endif ()
 
+set(arrow_lib Arrow::arrow_${linkage_type})
 if (REFLECTCPP_CSV OR REFLECTCPP_CHECK_HEADERS)
-    if (NOT TARGET Arrow::arrow_${linkage_type})
+    if (NOT TARGET "${arrow_lib}")
         find_package(Arrow CONFIG REQUIRED)
     endif()
 
-    target_link_libraries(reflectcpp PUBLIC Arrow::arrow_${linkage_type})
+    target_link_libraries(reflectcpp PUBLIC "${arrow_lib}")
 endif ()
 
 if (REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_flexbuf.cpp
     )
-    if (NOT TARGET flatbuffers::flatbuffers)
-        find_package(flatbuffers CONFIG REQUIRED)
-    endif ()
-    target_link_libraries(reflectcpp PUBLIC flatbuffers::flatbuffers)
+
+    find_package(flatbuffers CONFIG REQUIRED)
+
+    set(flatbuf_lib flatbuffers::flatbuffers)
+    if(REFLECTCPP_BUILD_SHARED AND TARGET flatbuffers::flatbuffers_shared)
+        set(flatbuf_lib flatbuffers::flatbuffers_shared)
+    endif()
+
+    target_link_libraries(reflectcpp PUBLIC "${flatbuf_lib}")
 endif ()
 
 if (REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
@@ -348,18 +356,19 @@ if (REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
     endif()
 endif ()
 
+set(parquet_lib Parquet::parquet_${linkage_type})
 if (REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
-    if (NOT TARGET Arrow::arrow_${linkage_type})
+    if (NOT TARGET "${arrow_lib}")
         find_package(Arrow CONFIG REQUIRED)
     endif()
 
-    if (NOT TARGET Parquet::parquet_${linkage_type})
+    if (NOT TARGET "${parquet_lib}")
         find_package(Parquet CONFIG REQUIRED
             NAMES Parquet Arrow  # Conan merges the Parquet package into Arrow
         )
     endif()
 
-    target_link_libraries(reflectcpp PUBLIC Arrow::arrow_${linkage_type} Parquet::parquet_${linkage_type})
+    target_link_libraries(reflectcpp PUBLIC "${arrow_lib}" "${parquet_lib}")
 endif ()
 
 if (REFLECTCPP_TOML OR REFLECTCPP_CHECK_HEADERS)
