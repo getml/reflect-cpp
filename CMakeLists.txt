@@ -278,18 +278,17 @@ if (REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
         src/reflectcpp_bson.cpp
     )
 
-    # vcpkg doesn't yet have libbson>=2, where the package and target names have changed
-    # https://github.com/mongodb/mongo-c-driver/releases/tag/2.0.0
-    if(REFLECTCPP_USE_VCPKG)
-        set(BSON_PACKAGE_NAME bson-1.0)
-        set(bson_lib mongo::bson_${linkage_type})
-    else()
-        set(BSON_PACKAGE_NAME bson)
-        set(bson_lib bson::${linkage_type})
-    endif()
+    find_package(bson 1.25.1 CONFIG REQUIRED NAMES bson bson-1.0)
 
-    find_package(${BSON_PACKAGE_NAME} 1.25.1 CONFIG REQUIRED)
-    target_link_libraries(reflectcpp PUBLIC "${bson_lib}")
+    # The package and target names have changed in libbson v2
+    # https://github.com/mongodb/mongo-c-driver/releases/tag/2.0.0
+    if(TARGET bson::${linkage_type})
+        target_link_libraries(reflectcpp PUBLIC bson::${linkage_type})
+    elseif(TARGET mongo::bson_${linkage_type})
+        target_link_libraries(reflectcpp PUBLIC mongo::bson_${linkage_type})
+    else()
+        message(FATAL_ERROR "Could not find a suitable libbson target")
+    endif()
 endif ()
 
 if (REFLECTCPP_CAPNPROTO OR REFLECTCPP_CHECK_HEADERS)
@@ -318,12 +317,11 @@ if (REFLECTCPP_CBOR OR REFLECTCPP_CHECK_HEADERS)
 endif ()
 
 if (REFLECTCPP_CSV OR REFLECTCPP_CHECK_HEADERS)
-    set(arrow_lib Arrow::arrow_${linkage_type})
-    if (NOT TARGET "${arrow_lib}")
+    if (NOT TARGET Arrow::arrow_${linkage_type})
         find_package(Arrow CONFIG REQUIRED)
     endif()
 
-    target_link_libraries(reflectcpp PUBLIC "${arrow_lib}")
+    target_link_libraries(reflectcpp PUBLIC Arrow::arrow_${linkage_type})
 endif ()
 
 if (REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_CHECK_HEADERS)
@@ -340,29 +338,28 @@ if (REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_msgpack.cpp
     )
+
     find_package(msgpack-c CONFIG REQUIRED NAMES msgpack-c msgpack msgpackc)
+
     if(NOT REFLECTCPP_BUILD_SHARED AND TARGET msgpack-c-static)
-        set(msgpack_lib msgpack-c-static)
+        target_link_libraries(reflectcpp PUBLIC msgpack-c-static)
     else()
-        set(msgpack_lib msgpack-c)
+        target_link_libraries(reflectcpp PUBLIC msgpack-c)
     endif()
-    target_link_libraries(reflectcpp PUBLIC "${msgpack_lib}")
 endif ()
 
 if (REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
-    set(arrow_lib Arrow::arrow_${linkage_type})
-    if (NOT TARGET "${arrow_lib}")
+    if (NOT TARGET Arrow::arrow_${linkage_type})
         find_package(Arrow CONFIG REQUIRED)
     endif()
 
-    set(parquet_lib Parquet::parquet_${linkage_type})
-    if (NOT TARGET "${parquet_lib}")
+    if (NOT TARGET Parquet::parquet_${linkage_type})
         find_package(Parquet CONFIG REQUIRED
-            NAMES Parquet Arrow  # Conan combines the Parquet package into Arrow
+            NAMES Parquet Arrow  # Conan merges the Parquet package into Arrow
         )
     endif()
 
-    target_link_libraries(reflectcpp PUBLIC "${arrow_lib}" "${parquet_lib}")
+    target_link_libraries(reflectcpp PUBLIC Arrow::arrow_${linkage_type} Parquet::parquet_${linkage_type})
 endif ()
 
 if (REFLECTCPP_TOML OR REFLECTCPP_CHECK_HEADERS)
