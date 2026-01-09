@@ -454,7 +454,7 @@ class std::bad_expected_access<rfl::Error> : public bad_expected_access<void> {
 
   template <typename Self>
   [[nodiscard]]
-  auto error(this Self&& self) noexcept {
+  auto error(Self&& self) noexcept {
     return std::forward<Self>(self).err_;
   }
 
