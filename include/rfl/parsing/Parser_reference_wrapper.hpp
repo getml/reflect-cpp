@@ -24,7 +24,7 @@ struct Parser<R, W, std::reference_wrapper<T>, ProcessorsType> {
                   "Reading into std::reference_wrapper is dangerous and "
                   "therefore unsupported. "
                   "Please consider using std::unique_ptr, rfl::Box, "
-                  "std::shared_ptr, or"
+                  "std::shared_ptr, or "
                   "rfl::Ref instead.");
     return error("Unsupported.");
   }
