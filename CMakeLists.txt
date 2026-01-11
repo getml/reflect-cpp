@@ -150,8 +150,10 @@ endif()
 if (REFLECTCPP_BUILD_SHARED)
     add_library(reflectcpp SHARED)
     set_target_properties(reflectcpp PROPERTIES SOVERSION ${PROJECT_VERSION})
+    set(linkage_type shared)
 else()
     add_library(reflectcpp STATIC)
+    set(linkage_type static)
 endif()
 
 add_library(reflectcpp::reflectcpp ALIAS reflectcpp)
@@ -275,10 +277,20 @@ if (REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_bson.cpp
     )
-    if (NOT TARGET mongo::bson_static AND NOT TARGET mongo::bson_shared)
-        find_package(bson-1.0 CONFIG REQUIRED)
-    endif ()
-    target_link_libraries(reflectcpp PUBLIC $<IF:$<TARGET_EXISTS:mongo::bson_static>,mongo::bson_static,mongo::bson_shared>)
+
+    find_package(bson 1.25.1 CONFIG REQUIRED NAMES bson bson-1.0)
+
+    # The package and target names have changed since v2
+    # https://github.com/mongodb/mongo-c-driver/releases/tag/2.0.0
+    set(bson_lib bson::${linkage_type})
+    if(NOT TARGET "${bson_lib}")
+        set(bson_lib mongo::bson_${linkage_type})
+        if(NOT TARGET "${bson_lib}")
+            message(FATAL_ERROR "Could not find a suitable libbson target")
+        endif()
+    endif()
+
+    target_link_libraries(reflectcpp PUBLIC "${bson_lib}")
 endif ()
 
 if (REFLECTCPP_CAPNPROTO OR REFLECTCPP_CHECK_HEADERS)
@@ -306,50 +318,57 @@ if (REFLECTCPP_CBOR OR REFLECTCPP_CHECK_HEADERS)
     include_directories(PUBLIC ${jsoncons_INCLUDE_DIRS})
 endif ()
 
+set(arrow_lib Arrow::arrow_${linkage_type})
 if (REFLECTCPP_CSV OR REFLECTCPP_CHECK_HEADERS)
-    if (NOT TARGET Arrow)
+    if (NOT TARGET "${arrow_lib}")
         find_package(Arrow CONFIG REQUIRED)
     endif()
-    if (REFLECTCPP_USE_VCPKG)
-        target_link_libraries(reflectcpp PUBLIC "$<IF:$<BOOL:${ARROW_BUILD_STATIC}>,Arrow::arrow_static,Arrow::arrow_shared>")
-    else()
-        target_link_libraries(reflectcpp PUBLIC "arrow::arrow")
-    endif()
+
+    target_link_libraries(reflectcpp PUBLIC "${arrow_lib}")
 endif ()
 
 if (REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_flexbuf.cpp
     )
-    if (NOT TARGET flatbuffers::flatbuffers)
-        find_package(flatbuffers CONFIG REQUIRED)
-    endif ()
-    target_link_libraries(reflectcpp PUBLIC flatbuffers::flatbuffers)
+
+    find_package(flatbuffers CONFIG REQUIRED)
+
+    set(flatbuf_lib flatbuffers::flatbuffers)
+    if(REFLECTCPP_BUILD_SHARED AND TARGET flatbuffers::flatbuffers_shared)
+        set(flatbuf_lib flatbuffers::flatbuffers_shared)
+    endif()
+
+    target_link_libraries(reflectcpp PUBLIC "${flatbuf_lib}")
 endif ()
 
 if (REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_msgpack.cpp
     )
-    if (NOT TARGET msgpack-c)
-        find_package(msgpack-c CONFIG REQUIRED NAMES msgpack msgpack-c msgpackc)
+
+    find_package(msgpack-c CONFIG REQUIRED NAMES msgpack-c msgpack msgpackc)
+
+    if(NOT REFLECTCPP_BUILD_SHARED AND TARGET msgpack-c-static)
+        target_link_libraries(reflectcpp PUBLIC msgpack-c-static)
+    else()
+        target_link_libraries(reflectcpp PUBLIC msgpack-c)
     endif()
-    target_link_libraries(reflectcpp PUBLIC $<IF:$<TARGET_EXISTS:msgpack-c>,msgpack-c,$<IF:$<TARGET_EXISTS:msgpackc>,msgpackc,msgpack-c>>)
 endif ()
 
+set(parquet_lib Parquet::parquet_${linkage_type})
 if (REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
-    if (NOT TARGET Arrow)
+    if (NOT TARGET "${arrow_lib}")
         find_package(Arrow CONFIG REQUIRED)
     endif()
-    if (REFLECTCPP_USE_VCPKG)
-        if (NOT TARGET Parquet)
-            find_package(Parquet CONFIG REQUIRED)
-        endif()
-        target_link_libraries(reflectcpp PUBLIC "$<IF:$<BOOL:${ARROW_BUILD_STATIC}>,Arrow::arrow_static,Arrow::arrow_shared>")
-        target_link_libraries(reflectcpp PUBLIC "$<IF:$<BOOL:${ARROW_BUILD_STATIC}>,Parquet::parquet_static,Parquet::parquet_shared>")
-    else()
-        target_link_libraries(reflectcpp PUBLIC "arrow::arrow")
+
+    if (NOT TARGET "${parquet_lib}")
+        find_package(Parquet CONFIG REQUIRED
+            NAMES Parquet Arrow  # Conan merges the Parquet package into Arrow
+        )
     endif()
+
+    target_link_libraries(reflectcpp PUBLIC "${arrow_lib}" "${parquet_lib}")
 endif ()
 
 if (REFLECTCPP_TOML OR REFLECTCPP_CHECK_HEADERS)
