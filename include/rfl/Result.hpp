@@ -17,14 +17,19 @@ namespace rfl {
 /// Defines the error class to be returned when something went wrong
 class Error {
  public:
+  Error() = default;
+
   Error(const std::string& _what) : what_(_what) {}
   Error(std::string&& _what) : what_(std::move(_what)) {}
 
-  Error(const Error& e) = default;
-  Error(Error&& e) = default;
+  ~Error() = default;
 
-  Error& operator=(const Error&) = default;
-  Error& operator=(Error&&) = default;
+  Error(const Error& e) = default;
+  Error(Error&& e) noexcept = default;
+
+  Error& operator=(const Error& _other) = default;
+
+  Error& operator=(Error&& _other) noexcept = default;
 
   /// Returns the error message, equivalent to .what() in std::exception.
   const std::string& what() const& { return what_; }
@@ -450,12 +455,12 @@ template <>
 class std::bad_expected_access<rfl::Error> : public bad_expected_access<void> {
  public:
   explicit constexpr bad_expected_access(rfl::Error er) : err_(std::move(er)) {}
+
   const char* what() const noexcept override { return err_.what().c_str(); }
 
-  template <typename Self>
   [[nodiscard]]
-  auto error(this Self&& self) noexcept {
-    return std::forward<Self>(self).err_;
+  auto error() const noexcept {
+    return err_;
   }
 
  private:

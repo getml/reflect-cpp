@@ -40,7 +40,7 @@ struct Parser<R, W, std::unique_ptr<T>, ProcessorsType> {
       }
       return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r,
                                                                         _var)
-          .transform([](T&& _t) { return std::make_unique<T>(std::move(_t)); });
+          .transform([](T _t) { return std::make_unique<T>(std::move(_t)); });
     }
   }
 
