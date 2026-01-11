@@ -54,6 +54,7 @@
 *.toml
 *.ubjson
 *.xml
+!package.xml
 *.yml
 *.yaml
 

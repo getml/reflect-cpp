@@ -141,9 +141,11 @@ if (REFLECTCPP_USE_VCPKG)
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
 endif ()
 
-project(reflectcpp VERSION 0.23.0 LANGUAGES CXX)
+project(reflect_cpp VERSION 0.23.0 LANGUAGES CXX)
 
-if (PROJECT_IS_TOP_LEVEL)
+find_package(ament_cmake QUIET)
+
+if (PROJECT_IS_TOP_LEVEL AND ament_cmake_FOUND)
     set(REFLECTCPP_INSTALL ON)
 endif()
 
@@ -507,4 +509,8 @@ set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
 set(CPACK_RPM_PACKAGE_REQUIRES "")
 
 include(CPack)
+
+if (ament_cmake_FOUND)
+    ament_package()
+endif()
 
