@@ -154,18 +154,13 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
         return Error(stream.str());
       };
 
-      if constexpr (no_field_names_) {
-        using T = tagged_union_wrapper_no_ptr_t<std::invoke_result_t<
-            decltype(wrap_if_necessary<AlternativeType>), AlternativeType>>;
-        *_result = Parser<R, W, T, ProcessorsType>::read(_r, _var)
-                       .transform(get_fields)
-                       .transform(to_tagged_union)
-                       .transform_error(embellish_error);
-      } else {
-        *_result = Parser<R, W, AlternativeType, ProcessorsType>::read(_r, _var)
-                       .transform(to_tagged_union)
-                       .transform_error(embellish_error);
-      }
+      using T = tagged_union_wrapper_no_ptr_t<std::invoke_result_t<
+          decltype(wrap_if_necessary<AlternativeType>), AlternativeType>>;
+
+      *_result = Parser<R, W, T, ProcessorsType>::read(_r, _var)
+                     .transform(get_fields)
+                     .transform(to_tagged_union)
+                     .transform_error(embellish_error);
 
       *_match_found = true;
     }
