@@ -458,9 +458,14 @@ class std::bad_expected_access<rfl::Error> : public bad_expected_access<void> {
 
   const char* what() const noexcept override { return err_.what().c_str(); }
 
-  [[nodiscard]]
-  auto error() const noexcept {
-    return err_;
+  [[nodiscard]] rfl::Error& error() & noexcept { return err_; }
+
+  [[nodiscard]] const rfl::Error& error() const& noexcept { return err_; }
+
+  [[nodiscard]] rfl::Error&& error() && noexcept { return std::move(err_); }
+
+  [[nodiscard]] const rfl::Error&& error() const&& noexcept {
+    return std::move(err_);
   }
 
  private:
