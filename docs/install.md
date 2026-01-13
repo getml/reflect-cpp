@@ -150,11 +150,11 @@ CMake-config package.
    vcs import src < src/.repos
    ```
 
-2. Build the package with `colcon` (package name: `reflect_cpp`). The build
+2. Build the package with `colcon` (package name: `reflectcpp`). The build
    enables installation automatically when invoked from an ament workspace:
 
    ```bash
-   colcon build --packages-select reflect_cpp
+   colcon build --packages-select reflectcpp
    ```
 
 3. Link against reflect-cpp from your ROS 2 package via the exported CMake
