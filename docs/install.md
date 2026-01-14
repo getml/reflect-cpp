@@ -128,3 +128,42 @@ If you want to include all formats supported on Conan, do the following:
 ```bash
 conan build . --build=missing -s compiler.cppstd=gnu20 -o *:with_cbor=True -o *:with_flatbuffers=True -o *:with_msgpack=True -o *:with_toml=True -o *:with_ubjson=True -o *:with_xml=True -o *:with_yaml=True
 ```
+
+## Option 7: Integrate as a ROS2 package
+
+reflect-cpp now ships with an `ament_cmake` package manifest so it can be
+built directly in a ROS 2 workspace and consumed like any other
+CMake-config package.
+
+1. Fetch the sources with `vcs` using the `.repos` file from the
+   [tea-ros2](https://github.com/getml/tea-ros2) workspace, which already
+   tracks `reflect-cpp`:
+
+   ```bash
+   mkdir -p ~/ros2_ws/src
+   cd ~/ros2_ws
+   # adding the entry to your vcs .repos file, or create one
+   # reflect-cpp:
+   #   type: git
+   #   url: git@github.com:getml/reflect-cpp.git
+   #   version: main
+   vcs import src < src/.repos
+   ```
+
+2. Build the package with `colcon` (package name: `reflectcpp`). The build
+   enables installation automatically when invoked from an ament workspace:
+
+   ```bash
+   colcon build --packages-select reflectcpp
+   ```
+
+3. Link against reflect-cpp from your ROS 2 package via the exported CMake
+   config.
+
+   ```cmake
+   find_package(reflectcpp REQUIRED)
+   target_link_libraries(${PROJECT_NAME} reflectcpp::reflectcpp)
+   ```
+
+   This makes the `reflectcpp::reflectcpp` target available to your nodes
+   while keeping the ROS build flow unchanged.

@@ -143,6 +143,8 @@ endif ()
 
 project(reflectcpp VERSION 0.23.0 LANGUAGES CXX)
 
+find_package(ament_cmake QUIET)
+
 if (PROJECT_IS_TOP_LEVEL)
     set(REFLECTCPP_INSTALL ON)
 endif()
@@ -507,4 +509,8 @@ set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
 set(CPACK_RPM_PACKAGE_REQUIRES "")
 
 include(CPack)
+
+if (ament_cmake_FOUND)
+    ament_package()
+endif()
 
