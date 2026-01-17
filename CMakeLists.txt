@@ -356,16 +356,22 @@ if (REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
     endif()
 endif ()
 
-set(parquet_lib Parquet::parquet_${linkage_type})
 if (REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
     if (NOT TARGET "${arrow_lib}")
         find_package(Arrow CONFIG REQUIRED)
     endif()
 
+    find_package(Parquet CONFIG REQUIRED
+        NAMES Parquet Arrow  # Conan merges the Parquet package into Arrow
+    )
+
+    set(parquet_lib Parquet::parquet_${linkage_type})
     if (NOT TARGET "${parquet_lib}")
-        find_package(Parquet CONFIG REQUIRED
-            NAMES Parquet Arrow  # Conan merges the Parquet package into Arrow
-        )
+        if (TARGET Parquet::parquet_shared)
+            set(parquet_lib Parquet::parquet_shared)
+        else()
+            set(parquet_lib arrow::arrow)
+        endif()
     endif()
 
     target_link_libraries(reflectcpp PUBLIC "${arrow_lib}" "${parquet_lib}")
