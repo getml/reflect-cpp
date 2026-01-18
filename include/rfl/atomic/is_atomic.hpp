@@ -64,67 +64,6 @@ struct is_atomic<T[N]> {
   }
 };
 
-template <class T>
-struct is_atomic<std::shared_ptr<T>> {
-  using Type = std::remove_cvref_t<T>;
-
-  static constexpr bool value = is_atomic<Type>::value;
-  using RemoveAtomicT =
-      std::shared_ptr<typename is_atomic<Type>::RemoveAtomicT>;
-  static void set(RemoveAtomicT&& val, std::shared_ptr<T>* _t) {
-    if (val) {
-      auto ptr = std::make_shared<Type>();
-      is_atomic<T>::set(
-          std::forward<typename is_atomic<T>::RemoveAtomicT>(*val), ptr.get());
-      *_t = std::move(ptr);
-    }
-  }
-};
-
-template <class T>
-struct is_atomic<std::unique_ptr<T>> {
-  using Type = std::remove_cvref_t<T>;
-
-  static constexpr bool value = is_atomic<Type>::value;
-  using RemoveAtomicT =
-      std::unique_ptr<typename is_atomic<Type>::RemoveAtomicT>;
-  static void set(RemoveAtomicT&& val, std::unique_ptr<T>* _t) {
-    if (val) {
-      auto ptr = std::make_unique<Type>();
-      is_atomic<T>::set(
-          std::forward<typename is_atomic<T>::RemoveAtomicT>(*val), ptr.get());
-      *_t = std::move(ptr);
-    }
-  }
-};
-
-template <class T>
-struct is_atomic<Ref<T>> {
-  using Type = std::remove_cvref_t<T>;
-
-  static constexpr bool value = is_atomic<Type>::value;
-  using RemoveAtomicT = Ref<typename is_atomic<Type>::RemoveAtomicT>;
-  static void set(RemoveAtomicT&& val, Ref<T>* _t) {
-    auto ref = Ref<Type>::make();
-    is_atomic<Type>::set(
-        std::forward<typename is_atomic<Type>::RemoveAtomicT>(*val), &(*ref));
-    *_t = std::move(ref);
-  }
-};
-
-template <class T>
-struct is_atomic<Box<T>> {
-  using Type = std::remove_cvref_t<T>;
-  static constexpr bool value = is_atomic<Type>::value;
-  using RemoveAtomicT = Box<typename is_atomic<Type>::RemoveAtomicT>;
-  static void set(RemoveAtomicT&& val, Box<T>* _t) {
-    auto box = Box<Type>::make();
-    is_atomic<Type>::set(
-        std::forward<typename is_atomic<Type>::RemoveAtomicT>(*val), &(*box));
-    *_t = std::move(box);
-  }
-};
-
 template <class... Fields>
 struct is_atomic<NamedTuple<Fields...>> {
   static constexpr bool value =
