@@ -175,15 +175,6 @@ struct is_atomic<T> {
 };
 
 template <class T>
-  requires(std::is_class_v<T> && std::is_aggregate_v<T> &&
-           std::is_move_constructible_v<T>)
-struct is_atomic<T> {
-  static constexpr bool value = false;
-  using RemoveAtomicT = T;
-  static void set(RemoveAtomicT&& val, T* _t) { *_t = std::forward<T>(val); };
-};
-
-template <class T>
 constexpr bool is_atomic_v = is_atomic<std::remove_cvref_t<T>>::value;
 
 }  // namespace rfl::atomic
