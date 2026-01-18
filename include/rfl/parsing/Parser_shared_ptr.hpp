@@ -8,6 +8,9 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../atomic/is_atomic.hpp"
+#include "../atomic/remove_atomic_t.hpp"
+#include "../atomic/set_atomic.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
@@ -26,7 +29,19 @@ struct Parser<R, W, std::shared_ptr<T>, ProcessorsType> {
 
   static Result<std::shared_ptr<T>> read(const R& _r,
                                          const InputVarType& _var) noexcept {
-    if constexpr (schemaful::IsSchemafulReader<R>) {
+    if constexpr (atomic::is_atomic_v<T>) {
+      using RemoveAtomicT = std::shared_ptr<atomic::remove_atomic_t<T>>;
+      return Parser<R, W, RemoveAtomicT, ProcessorsType>::read(_r, _var)
+          .transform([](auto&& _t) {
+            if (!_t) {
+              return std::shared_ptr<T>();
+            }
+            auto atomic_shared_ptr = std::make_shared<T>();
+            atomic::set_atomic(std::move(*_t), atomic_shared_ptr.get());
+            return atomic_shared_ptr;
+          });
+
+    } else if constexpr (schemaful::IsSchemafulReader<R>) {
       using S = schemaful::SharedPtrReader<R, W, std::remove_cvref_t<T>,
                                            ProcessorsType>;
       const auto to_shared = [&](const auto& _u) -> Result<std::shared_ptr<T>> {

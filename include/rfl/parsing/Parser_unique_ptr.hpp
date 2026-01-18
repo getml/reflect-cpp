@@ -8,6 +8,9 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../atomic/is_atomic.hpp"
+#include "../atomic/remove_atomic_t.hpp"
+#include "../atomic/set_atomic.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
@@ -15,8 +18,7 @@
 #include "schemaful/IsSchemafulWriter.hpp"
 #include "schemaful/UniquePtrReader.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl ::parsing {
 
 template <class R, class W, class T, class ProcessorsType>
   requires AreReaderAndWriter<R, W, std::unique_ptr<T>>
@@ -27,7 +29,19 @@ struct Parser<R, W, std::unique_ptr<T>, ProcessorsType> {
 
   static Result<std::unique_ptr<T>> read(const R& _r,
                                          const InputVarType& _var) noexcept {
-    if constexpr (schemaful::IsSchemafulReader<R>) {
+    if constexpr (atomic::is_atomic_v<T>) {
+      using RemoveAtomicT = std::unique_ptr<atomic::remove_atomic_t<T>>;
+      return Parser<R, W, RemoveAtomicT, ProcessorsType>::read(_r, _var)
+          .transform([](auto&& _t) {
+            if (!_t) {
+              return std::unique_ptr<T>();
+            }
+            auto atomic_unique_ptr = std::make_unique<T>();
+            atomic::set_atomic(std::move(*_t), atomic_unique_ptr.get());
+            return atomic_unique_ptr;
+          });
+
+    } else if constexpr (schemaful::IsSchemafulReader<R>) {
       using S = schemaful::UniquePtrReader<R, W, std::remove_cvref_t<T>,
                                            ProcessorsType>;
       const auto to_unique = [&](const auto& _u) -> Result<std::unique_ptr<T>> {
@@ -75,7 +89,6 @@ struct Parser<R, W, std::unique_ptr<T>, ProcessorsType> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif
