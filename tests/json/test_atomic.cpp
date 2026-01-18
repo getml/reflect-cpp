@@ -11,6 +11,7 @@ namespace test_atomic {
 struct Stats {
   std::atomic<std::uint64_t> bytes_downloaded;
   std::atomic<bool> finished;
+  std::atomic_flag atomic_flag;
   rfl::Ref<std::atomic<int>> ref_atomic_int;
   rfl::Box<std::atomic<int>> box_atomic_int;
   std::shared_ptr<std::atomic<int>> shared_atomic_int;
@@ -21,6 +22,7 @@ TEST(json, test_atomic) {
   auto stats =
       Stats{.bytes_downloaded = 123456789,
             .finished = true,
+            .atomic_flag = ATOMIC_FLAG_INIT,
             .ref_atomic_int = rfl::make_ref<std::atomic<int>>(42),
             .box_atomic_int = rfl::Box<std::atomic<int>>::make(7),
             .shared_atomic_int = std::make_shared<std::atomic<int>>(13),
@@ -40,6 +42,6 @@ TEST(json, test_atomic) {
   EXPECT_EQ(rfl::json::write(stats2), json_str);
   EXPECT_EQ(
       json_str,
-      R"({"bytes_downloaded":123456789,"finished":true,"ref_atomic_int":42,"box_atomic_int":7,"shared_atomic_int":13,"unique_atomic_int":21})");
+      R"({"bytes_downloaded":123456789,"finished":true,"atomic_flag":false,"ref_atomic_int":42,"box_atomic_int":7,"shared_atomic_int":13,"unique_atomic_int":21})");
 }
 }  // namespace test_atomic

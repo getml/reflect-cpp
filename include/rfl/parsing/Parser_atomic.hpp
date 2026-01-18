@@ -18,11 +18,7 @@ template <class R, class W, class T, class ProcessorsType>
 struct Parser<R, W, std::atomic<T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
-  using ParentType = Parent<W>;
-
-  static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
-    return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r, _var);
-  }
+  /// Read is not supported for atomic types - we must used rfl::atomic instead.
 
   template <class P>
   static void write(const W& _w, const std::atomic<T>& _a, const P& _parent) {

@@ -3,12 +3,9 @@
 
 #include <array>
 #include <atomic>
-#include <memory>
 #include <type_traits>
 
-#include "../Box.hpp"
 #include "../NamedTuple.hpp"
-#include "../Ref.hpp"
 #include "../Tuple.hpp"
 #include "../named_tuple_t.hpp"
 #include "../to_view.hpp"
@@ -32,6 +29,19 @@ struct is_atomic<std::atomic<T>> {
   static void set(RemoveAtomicT&& val, std::atomic<T>* _t) {
     _t->store(std::forward<RemoveAtomicT>(val), std::memory_order_relaxed);
   };
+};
+
+template <>
+struct is_atomic<std::atomic_flag> {
+  static constexpr bool value = true;
+  using RemoveAtomicT = bool;
+  static void set(RemoveAtomicT&& val, std::atomic_flag* _t) {
+    if (val) {
+      _t->test_and_set(std::memory_order_relaxed);
+    } else {
+      _t->clear(std::memory_order_relaxed);
+    }
+  }
 };
 
 template <class T, size_t N>
@@ -58,7 +68,7 @@ struct is_atomic<T[N]> {
   static void set(RemoveAtomicT&& val, T (*_t)[N]) {
     for (size_t i = 0; i < N; ++i) {
       is_atomic<T>::set(
-          std::forward<typename is_atomic<T>::RemoveAtomicT>(val[i]),
+          std::forward<typename is_atomic<Type>::RemoveAtomicT>(val[i]),
           &((*_t)[i]));
     }
   }
@@ -75,7 +85,8 @@ struct is_atomic<NamedTuple<Fields...>> {
 
   static void set(RemoveAtomicT&& val, NamedTuple<Fields...>* _t) {
     (is_atomic<typename Fields::Type>::set(
-         std::forward<typename is_atomic<typename Fields::Type>::RemoveAtomicT>(
+         std::forward<typename is_atomic<
+             std::remove_cvref_t<typename Fields::Type>>::RemoveAtomicT>(
              val.template get<Fields::name_>()),
          &(_t->template get<Fields::name_>())),
      ...);
@@ -83,8 +94,7 @@ struct is_atomic<NamedTuple<Fields...>> {
 };
 
 template <class T>
-  requires(std::is_class_v<T> && std::is_aggregate_v<T> &&
-           !std::is_move_constructible_v<T>)
+  requires(std::is_class_v<T> && std::is_aggregate_v<T>)
 struct is_atomic<T> {
   static constexpr bool value = is_atomic<named_tuple_t<T>>::value;
 
