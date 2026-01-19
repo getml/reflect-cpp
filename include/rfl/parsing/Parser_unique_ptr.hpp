@@ -11,6 +11,7 @@
 #include "../atomic/is_atomic.hpp"
 #include "../atomic/remove_atomic_t.hpp"
 #include "../atomic/set_atomic.hpp"
+#include "../internal/has_default_val_v.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
@@ -31,6 +32,12 @@ struct Parser<R, W, std::unique_ptr<T>, ProcessorsType> {
                                          const InputVarType& _var) noexcept {
     if constexpr (atomic::is_atomic_v<T>) {
       using RemoveAtomicT = std::unique_ptr<atomic::remove_atomic_t<T>>;
+
+      static_assert(!internal::has_default_val_v<RemoveAtomicT>,
+                    "Atomic types cannot be mixed with rfl::DefaultVal");
+      static_assert(!ProcessorsType::default_if_missing_,
+                    "Atomic types cannot be mixed with rfl::DefaultIfMissing");
+
       return Parser<R, W, RemoveAtomicT, ProcessorsType>::read(_r, _var)
           .transform([](auto&& _t) {
             if (!_t) {
@@ -48,6 +55,7 @@ struct Parser<R, W, std::unique_ptr<T>, ProcessorsType> {
         return _r.template read_union<std::unique_ptr<T>, S>(_u);
       };
       return _r.to_union(_var).and_then(to_unique);
+
     } else {
       if (_r.is_empty(_var)) {
         return std::unique_ptr<T>();
