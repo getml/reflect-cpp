@@ -23,6 +23,7 @@ option(REFLECTCPP_YAML "Enable YAML support" ${REFLECTCPP_ALL_FORMATS})
 option(REFLECTCPP_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
 option(REFLECTCPP_CHECK_HEADERS "Make sure that all headers are self-contained" OFF)
+option(REFLECTCPP_BUILD_MODULES "Build reflectcpp as a C++ module" OFF)
 
 option(REFLECTCPP_USE_BUNDLED_DEPENDENCIES "Use the bundled dependencies" ON)
 
@@ -444,6 +445,10 @@ if(REFLECTCPP_CHECK_HEADERS)
             add_custom_target(check_${HEADER_NAME} ALL DEPENDS check_header_${HEADER_NAME})
         endif()
     endforeach()
+endif()
+
+if (REFLECTCPP_BUILD_MODULES)
+    add_subdirectory(src/modules)
 endif()
 
 if (REFLECTCPP_INSTALL)
