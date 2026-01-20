@@ -128,6 +128,7 @@ nav:
       - C arrays and inheritance: c_arrays_and_inheritance.md
       - rfl::Bytestring: bytestring.md
       - rfl::Binary, rfl::Hex and rfl::Oct: number_systems.md
+      - std::atomic, std::atomic_flag: atomic.md
     - Validation:
       - Regex patterns: patterns.md
       - Validating numbers: validating_numbers.md

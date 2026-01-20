@@ -8,6 +8,10 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../atomic/is_atomic.hpp"
+#include "../atomic/remove_atomic_t.hpp"
+#include "../atomic/set_atomic.hpp"
+#include "../internal/has_default_val_v.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
@@ -26,13 +30,32 @@ struct Parser<R, W, std::shared_ptr<T>, ProcessorsType> {
 
   static Result<std::shared_ptr<T>> read(const R& _r,
                                          const InputVarType& _var) noexcept {
-    if constexpr (schemaful::IsSchemafulReader<R>) {
+    if constexpr (atomic::is_atomic_v<T>) {
+      using RemoveAtomicT = std::shared_ptr<atomic::remove_atomic_t<T>>;
+
+      static_assert(!internal::has_default_val_v<RemoveAtomicT>,
+                    "Atomic types cannot be mixed with rfl::DefaultVal");
+      static_assert(!ProcessorsType::default_if_missing_,
+                    "Atomic types cannot be mixed with rfl::DefaultIfMissing");
+
+      return Parser<R, W, RemoveAtomicT, ProcessorsType>::read(_r, _var)
+          .transform([](auto&& _t) {
+            if (!_t) {
+              return std::shared_ptr<T>();
+            }
+            auto atomic_shared_ptr = std::make_shared<T>();
+            atomic::set_atomic(std::move(*_t), atomic_shared_ptr.get());
+            return atomic_shared_ptr;
+          });
+
+    } else if constexpr (schemaful::IsSchemafulReader<R>) {
       using S = schemaful::SharedPtrReader<R, W, std::remove_cvref_t<T>,
                                            ProcessorsType>;
       const auto to_shared = [&](const auto& _u) -> Result<std::shared_ptr<T>> {
         return _r.template read_union<std::shared_ptr<T>, S>(_u);
       };
       return _r.to_union(_var).and_then(to_shared);
+
     } else {
       if (_r.is_empty(_var)) {
         return std::shared_ptr<T>();

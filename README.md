@@ -530,7 +530,6 @@ const auto c = C{.f1 = "C++", .f2 = "is", .f4 = "great"};
 const auto c2 = rfl::replace(c, a);
 ```
 
-
 ### Support for containers
 
 #### C++ standard library
@@ -538,6 +537,8 @@ const auto c2 = rfl::replace(c, a);
 reflect-cpp supports the following containers from the C++ standard library:
 
 - `std::array`
+- `std::atomic`
+- `std::atomic_flag`
 - `std::deque`
 - `std::chrono::duration`
 - `std::filesystem::path`

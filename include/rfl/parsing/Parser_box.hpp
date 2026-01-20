@@ -6,11 +6,14 @@
 
 #include "../Box.hpp"
 #include "../Result.hpp"
+#include "../atomic/is_atomic.hpp"
+#include "../atomic/remove_atomic_t.hpp"
+#include "../atomic/set_atomic.hpp"
+#include "../internal/has_default_val_v.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
 template <class R, class W, class T, Copyability C, class ProcessorsType>
   requires AreReaderAndWriter<R, W, Box<T, C>>
@@ -19,11 +22,29 @@ struct Parser<R, W, Box<T, C>, ProcessorsType> {
 
   static Result<Box<T, C>> read(const R& _r,
                                 const InputVarType& _var) noexcept {
-    const auto to_box = [](auto&& _t) {
-      return Box<T, C>::make(std::move(_t));
-    };
-    return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r, _var)
-        .transform(to_box);
+    if constexpr (atomic::is_atomic_v<T>) {
+      using RemoveAtomicT = atomic::remove_atomic_t<T>;
+
+      static_assert(!internal::has_default_val_v<RemoveAtomicT>,
+                    "Atomic types cannot be mixed with rfl::DefaultVal");
+      static_assert(!ProcessorsType::default_if_missing_,
+                    "Atomic types cannot be mixed with rfl::DefaultIfMissing");
+
+      return Parser<R, W, RemoveAtomicT, ProcessorsType>::read(_r, _var)
+          .transform([](auto&& _t) {
+            auto atomic_box = Box<T>::make();
+            atomic::set_atomic(std::move(_t), &(*atomic_box));
+            return atomic_box;
+          });
+
+    } else {
+      const auto to_box = [](auto&& _t) {
+        return Box<T, C>::make(std::move(_t));
+      };
+      return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r,
+                                                                        _var)
+          .transform(to_box);
+    }
   }
 
   template <class P>
@@ -39,7 +60,6 @@ struct Parser<R, W, Box<T, C>, ProcessorsType> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif

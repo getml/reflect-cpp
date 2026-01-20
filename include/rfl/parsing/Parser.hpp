@@ -2,6 +2,8 @@
 #define RFL_PARSING_PARSER_HPP_
 
 #include "Parser_array.hpp"
+#include "Parser_atomic.hpp"
+#include "Parser_atomic_flag.hpp"
 #include "Parser_base.hpp"
 #include "Parser_basic_type.hpp"
 #include "Parser_box.hpp"
