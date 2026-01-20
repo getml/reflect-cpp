@@ -136,7 +136,7 @@ built directly in a ROS 2 workspace and consumed like any other
 CMake-config package.
 
 1. Fetch the sources with `vcs` using the `.repos` file from the
-   [tea-ros2](https://github.com/getml/tea-ros2) workspace, which already
+   tea-ros2 workspace, which already
    tracks `reflect-cpp`:
 
    ```bash
