@@ -974,6 +974,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#option-7-integrate-as-a-ros2-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 7: Integrate as a ROS2 package
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1551,6 +1562,33 @@
     
   
     rfl::Binary, rfl::Hex and rfl::Oct
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../atomic/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    std::atomic, std::atomic_flag
   
 
     
@@ -2484,6 +2522,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#option-7-integrate-as-a-ros2-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 7: Integrate as a ROS2 package
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2600,6 +2649,39 @@ repository and execute the following:</p>
 <p>If you want to include all formats supported on Conan, do the following:</p>
 <div class="language-bash highlight"><pre><span></span><code>conan<span class="w"> </span>build<span class="w"> </span>.<span class="w"> </span>--build<span class="o">=</span>missing<span class="w"> </span>-s<span class="w"> </span>compiler.cppstd<span class="o">=</span>gnu20<span class="w"> </span>-o<span class="w"> </span>*:with_cbor<span class="o">=</span>True<span class="w"> </span>-o<span class="w"> </span>*:with_flatbuffers<span class="o">=</span>True<span class="w"> </span>-o<span class="w"> </span>*:with_msgpack<span class="o">=</span>True<span class="w"> </span>-o<span class="w"> </span>*:with_toml<span class="o">=</span>True<span class="w"> </span>-o<span class="w"> </span>*:with_ubjson<span class="o">=</span>True<span class="w"> </span>-o<span class="w"> </span>*:with_xml<span class="o">=</span>True<span class="w"> </span>-o<span class="w"> </span>*:with_yaml<span class="o">=</span>True
 </code></pre></div>
+<h2 id="option-7-integrate-as-a-ros2-package">Option 7: Integrate as a ROS2 package<a class="headerlink" href="#option-7-integrate-as-a-ros2-package" title="Permanent link">&para;</a></h2>
+<p>reflect-cpp now ships with an <code>ament_cmake</code> package manifest so it can be
+built directly in a ROS 2 workspace and consumed like any other
+CMake-config package.</p>
+<ol>
+<li>Fetch the sources with <code>vcs</code> using the <code>.repos</code> file from the
+   tea-ros2 workspace, which already
+   tracks <code>reflect-cpp</code>:</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>~/ros2_ws/src
+<span class="nb">cd</span><span class="w"> </span>~/ros2_ws
+<span class="c1"># adding the entry to your vcs .repos file, or create one</span>
+<span class="c1"># reflect-cpp:</span>
+<span class="c1">#   type: git</span>
+<span class="c1">#   url: git@github.com:getml/reflect-cpp.git</span>
+<span class="c1">#   version: main</span>
+vcs<span class="w"> </span>import<span class="w"> </span>src<span class="w"> </span>&lt;<span class="w"> </span>src/.repos
+</code></pre></div>
+<ol>
+<li>Build the package with <code>colcon</code> (package name: <code>reflectcpp</code>). The build
+   enables installation automatically when invoked from an ament workspace:</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code>colcon<span class="w"> </span>build<span class="w"> </span>--packages-select<span class="w"> </span>reflectcpp
+</code></pre></div>
+<ol>
+<li>Link against reflect-cpp from your ROS 2 package via the exported CMake
+   config.</li>
+</ol>
+<div class="language-cmake highlight"><pre><span></span><code><span class="nb">find_package</span><span class="p">(</span><span class="s">reflectcpp</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">reflectcpp::reflectcpp</span><span class="p">)</span>
+</code></pre></div>
+<p>This makes the <code>reflectcpp::reflectcpp</code> target available to your nodes
+   while keeping the ROS build flow unchanged.</p>
 
 
 

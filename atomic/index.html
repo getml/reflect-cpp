@@ -12,31 +12,31 @@
         <meta name="author" content="Code17 GmbH">
       
       
-        <link rel="canonical" href="https://rfl.getml.com/concepts/field_syntax/">
+        <link rel="canonical" href="https://rfl.getml.com/atomic/">
       
       
-        <link rel="prev" href="../processors/">
+        <link rel="prev" href="../number_systems/">
       
       
-        <link rel="next" href="../../literals/">
+        <link rel="next" href="../patterns/">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.39+insiders-4.53.14">
     
     
       
-        <title>The rfl::Field-syntax - reflect-cpp</title>
+        <title>std::atomic, std::atomic_flag - reflect-cpp</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.fd1ad6e4.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.fd1ad6e4.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +55,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/tweaks.css">
+      <link rel="stylesheet" href="../assets/stylesheets/tweaks.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#the-rflfield-syntax" class="md-skip">
+        <a href="#atomic-variables-stdatomic-and-stdatomic_flag" class="md-skip">
           Skip to content
         </a>
       
@@ -96,7 +96,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="reflect-cpp" class="md-header__button md-logo" aria-label="reflect-cpp" data-md-component="logo">
+    <a href=".." title="reflect-cpp" class="md-header__button md-logo" aria-label="reflect-cpp" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              The rfl::Field-syntax
+              std::atomic, std::atomic_flag
             
           </span>
         </div>
@@ -235,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href=".." class="md-tabs__link">
         
   
     
@@ -254,7 +254,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../supported_formats/avro/" class="md-tabs__link">
+        <a href="../supported_formats/avro/" class="md-tabs__link">
           
   
   Supported Formats
@@ -270,7 +270,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../install/" class="md-tabs__link">
+      <a href="../install/" class="md-tabs__link">
         
   
     
@@ -291,7 +291,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../../docs-readme/" class="md-tabs__link">
+        <a href="../docs-readme/" class="md-tabs__link">
           
   
   Documentation
@@ -307,7 +307,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../contributing/" class="md-tabs__link">
+      <a href="../contributing/" class="md-tabs__link">
         
   
     
@@ -341,7 +341,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="reflect-cpp" class="md-nav__button md-logo" aria-label="reflect-cpp" data-md-component="logo">
+    <a href=".." title="reflect-cpp" class="md-nav__button md-logo" aria-label="reflect-cpp" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -371,7 +371,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -445,7 +445,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../supported_formats/avro/" class="md-nav__link">
+      <a href="../supported_formats/avro/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -472,7 +472,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../supported_formats/bson/" class="md-nav__link">
+      <a href="../supported_formats/bson/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -499,7 +499,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../supported_formats/capnproto/" class="md-nav__link">
+      <a href="../supported_formats/capnproto/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -526,7 +526,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../supported_formats/cbor/" class="md-nav__link">
+      <a href="../supported_formats/cbor/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -553,7 +553,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../supported_formats/csv/" class="md-nav__link">
+      <a href="../supported_formats/csv/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -580,7 +580,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../supported_formats/flexbuffers/" class="md-nav__link">
+      <a href="../supported_formats/flexbuffers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -607,7 +607,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../supported_formats/json/" class="md-nav__link">
+      <a href="../supported_formats/json/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -634,7 +634,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../supported_formats/msgpack/" class="md-nav__link">
+      <a href="../supported_formats/msgpack/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -661,7 +661,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../supported_formats/parquet/" class="md-nav__link">
+      <a href="../supported_formats/parquet/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -688,7 +688,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../supported_formats/toml/" class="md-nav__link">
+      <a href="../supported_formats/toml/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -715,7 +715,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../supported_formats/ubjson/" class="md-nav__link">
+      <a href="../supported_formats/ubjson/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -742,7 +742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../supported_formats/xml/" class="md-nav__link">
+      <a href="../supported_formats/xml/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -769,7 +769,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../supported_formats/yaml/" class="md-nav__link">
+      <a href="../supported_formats/yaml/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -796,7 +796,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../supported_formats/supporting_your_own_format/" class="md-nav__link">
+      <a href="../supported_formats/supporting_your_own_format/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -830,7 +830,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../install/" class="md-nav__link">
+      <a href="../install/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -909,7 +909,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs-readme/" class="md-nav__link">
+      <a href="../docs-readme/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -986,7 +986,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../structs/" class="md-nav__link">
+      <a href="../concepts/structs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1013,7 +1013,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../optional_fields/" class="md-nav__link">
+      <a href="../optional_fields/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1040,7 +1040,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../default_val/" class="md-nav__link">
+      <a href="../default_val/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1067,7 +1067,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../flatten_structs/" class="md-nav__link">
+      <a href="../flatten_structs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1094,13 +1094,337 @@
   
   
     <li class="md-nav__item">
-      <a href="../processors/" class="md-nav__link">
+      <a href="../concepts/processors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     
   
     Processors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/field_syntax/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    The rfl::Field-syntax
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../literals/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    String literals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../enums/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Enums
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../variants_and_tagged_unions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    std::variant and rfl::TaggedUnion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rfl_ref/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    rfl::Box and rfl::Ref
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../timestamps/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    rfl::Timestamp
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rfl_skip/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    rfl::Skip
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../result/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    rfl::Result
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../standard_containers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Standard containers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../c_arrays_and_inheritance/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    C arrays and inheritance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bytestring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    rfl::Bytestring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../number_systems/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    rfl::Binary, rfl::Hex and rfl::Oct
   
 
     
@@ -1130,13 +1454,13 @@
         
       
       
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
   
   <span class="md-ellipsis">
     
   
-    The rfl::Field-syntax
+    std::atomic, std::atomic_flag
   
 
     
@@ -1144,318 +1468,10 @@
   
   
 
-      </a>
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../literals/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    String literals
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../enums/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Enums
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../variants_and_tagged_unions/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    std::variant and rfl::TaggedUnion
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../rfl_ref/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    rfl::Box and rfl::Ref
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../timestamps/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    rfl::Timestamp
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../rfl_skip/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    rfl::Skip
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../result/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    rfl::Result
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../standard_containers/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Standard containers
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../c_arrays_and_inheritance/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    C arrays and inheritance
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../bytestring/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    rfl::Bytestring
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../number_systems/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    rfl::Binary, rfl::Hex and rfl::Oct
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../atomic/" class="md-nav__link">
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1470,6 +1486,100 @@
   
 
       </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#supported-atomic-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported atomic types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-writing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example (writing)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example (reading)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example (reading)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-wrap-in-rflref-rflbox-stdshared_ptr-or-stdunique_ptr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Wrap in rfl::Ref, rfl::Box, std::shared_ptr or std::unique_ptr
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-read-into-a-non-atomic-representation-and-then-set-atomic-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Read into a non-atomic representation and then set atomic fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-and-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations and notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1538,7 +1648,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../patterns/" class="md-nav__link">
+      <a href="../patterns/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1565,7 +1675,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../validating_numbers/" class="md-nav__link">
+      <a href="../validating_numbers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1592,7 +1702,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../composing_validators/" class="md-nav__link">
+      <a href="../composing_validators/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1619,7 +1729,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../size_validation/" class="md-nav__link">
+      <a href="../size_validation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1646,7 +1756,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../json_schema/" class="md-nav__link">
+      <a href="../json_schema/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1729,7 +1839,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../object/" class="md-nav__link">
+      <a href="../object/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1756,7 +1866,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../generic/" class="md-nav__link">
+      <a href="../generic/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1783,7 +1893,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../extra_fields/" class="md-nav__link">
+      <a href="../extra_fields/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1866,7 +1976,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../custom_classes/" class="md-nav__link">
+      <a href="../concepts/custom_classes/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1893,7 +2003,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../custom_parser/" class="md-nav__link">
+      <a href="../custom_parser/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1976,7 +2086,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../replace/" class="md-nav__link">
+      <a href="../replace/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2003,7 +2113,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../as/" class="md-nav__link">
+      <a href="../as/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2030,7 +2140,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../named_tuple/" class="md-nav__link">
+      <a href="../named_tuple/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2057,7 +2167,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../rfl_tuple/" class="md-nav__link">
+      <a href="../rfl_tuple/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2084,7 +2194,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../to_view/" class="md-nav__link">
+      <a href="../to_view/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2167,7 +2277,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../supported_formats/supporting_your_own_format/" class="md-nav__link">
+      <a href="../supported_formats/supporting_your_own_format/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2194,7 +2304,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../backwards_compatability/" class="md-nav__link">
+      <a href="../backwards_compatability/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2221,7 +2331,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../benchmarks/" class="md-nav__link">
+      <a href="../benchmarks/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2263,7 +2373,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../contributing/" class="md-nav__link">
+      <a href="../contributing/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2304,6 +2414,86 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#supported-atomic-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported atomic types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-writing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example (writing)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example (reading)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example (reading)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-wrap-in-rflref-rflbox-stdshared_ptr-or-stdunique_ptr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Wrap in rfl::Ref, rfl::Box, std::shared_ptr or std::unique_ptr
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-read-into-a-non-atomic-representation-and-then-set-atomic-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Read into a non-atomic representation and then set atomic fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-and-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations and notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2326,7 +2516,7 @@
         
   
     <li class="md-path__item">
-      <a href="../.." class="md-path__link">
+      <a href=".." class="md-path__link">
         
   <span class="md-ellipsis">
     Welcome
@@ -2343,7 +2533,7 @@
     
     
       <li class="md-path__item">
-        <a href="../../docs-readme/" class="md-path__link">
+        <a href="../docs-readme/" class="md-path__link">
           
   <span class="md-ellipsis">
     Documentation
@@ -2360,7 +2550,7 @@
     
     
       <li class="md-path__item">
-        <a href="../structs/" class="md-path__link">
+        <a href="../concepts/structs/" class="md-path__link">
           
   <span class="md-ellipsis">
     The basics
@@ -2385,56 +2575,59 @@
   
 
 
-<h1 id="the-rflfield-syntax">The <code>rfl::Field</code>-syntax<a class="headerlink" href="#the-rflfield-syntax" title="Permanent link">&para;</a></h1>
-<p>As we have shown, reflect-cpp can automatically retrieve field names from structs.</p>
-<p>However, it also possible to annotate the fields using <code>rfl::Field</code>, like this:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="s">&quot;firstName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
-<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="s">&quot;lastName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
-<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="s">&quot;children&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">children</span><span class="p">;</span>
+<h1 id="atomic-variables-stdatomic-and-stdatomic_flag">Atomic variables (<code>std::atomic</code> and <code>std::atomic_flag</code>)<a class="headerlink" href="#atomic-variables-stdatomic-and-stdatomic_flag" title="Permanent link">&para;</a></h1>
+<p>reflect-cpp supports serializing and deserializing atomic types. The library treats atomic wrappers as containers around an underlying value and provides helpers to read plain (non-atomic) representations from input and to set atomic fields afterwards.</p>
+<h2 id="supported-atomic-types">Supported atomic types<a class="headerlink" href="#supported-atomic-types" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>std::atomic&lt;T&gt;</code></li>
+<li><code>std::atomic_flag</code> (serialized as a boolean)</li>
+<li>Arrays of atomic types (std::array<T, N> and C-style arrays)</li>
+<li>Aggregate types (structs/NamedTuple) containing atomic fields — each atomic field is handled independently</li>
+</ul>
+<h2 id="example-writing">Example (writing)<a class="headerlink" href="#example-writing" title="Permanent link">&para;</a></h2>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Stats</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">bytes_downloaded</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">finished</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">atomic_flag</span><span class="w"> </span><span class="n">atomic_flag</span><span class="p">;</span>
 <span class="p">};</span>
-</code></pre></div>
-<p>These annotations are required if you are planning to use a compiler other than MSVC, GCC or clang.</p>
-<p>There are a two things you have to keep in mind:</p>
-<p>1) If you annotate <em>some</em> of the fields using <code>rfl::Field</code>, then you must annotate <em>all</em> of them.
-2) If you are combining structs using <code>rfl::Flatten</code>, then they structs combined like this must either be annotated or not.</p>
-<p>You can initilize your struct like this:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">bart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Bart&quot;</span><span class="p">,</span>
-<span class="w">                         </span><span class="p">.</span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">,</span>
-<span class="w">                         </span><span class="p">.</span><span class="n">children</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">()};</span>
-</code></pre></div>
-<p>Note that all fields must be explicitly set. This is on purpose, because it prevents you from accidentally forgetting fields,
-which can lead to tricky runtime errors.</p>
-<p>You can initialize a field using <code>rfl::default_value</code>:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">bart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Bart&quot;</span><span class="p">,</span>
-<span class="w">                         </span><span class="p">.</span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">,</span>
-<span class="w">                         </span><span class="p">.</span><span class="n">children</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">default_value</span><span class="p">};</span>
-</code></pre></div>
-<p>You can also initialize fields in the struct declaration itself:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="s">&quot;firstName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
-<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="s">&quot;lastName&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">;</span>
-<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Field</span><span class="o">&lt;</span><span class="s">&quot;children&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">children</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">default_value</span><span class="p">;</span>
-<span class="p">};</span>
-</code></pre></div>
-<p>Because you now have explicitly set those fields, you do not have to do this every time:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">bart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Bart&quot;</span><span class="p">};</span>
 
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">lisa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Lisa&quot;</span><span class="p">};</span>
+<span class="n">Stats</span><span class="w"> </span><span class="n">stats</span><span class="p">{.</span><span class="n">bytes_downloaded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">123456789</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">finished</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">atomic_flag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ATOMIC_FLAG_INIT</span><span class="p">};</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">stats</span><span class="p">);</span>
+<span class="c1">// -&gt; {&quot;bytes_downloaded&quot;:123456789,&quot;finished&quot;:true,&quot;atomic_flag&quot;:false}</span>
+</code></pre></div>
+<p>Note: the exact boolean value for <code>atomic_flag</code> depends on whether it is set or cleared.</p>
+<h2 id="example-reading">Example (reading)<a class="headerlink" href="#example-reading" title="Permanent link">&para;</a></h2>
+<p>Reading atomic variables is not quite trivial, because atomic fields cannot be copied or moved. Consider the following example:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="c1">// const auto res = rfl::json::read&lt;Stats&gt;(json_str); </span>
+<span class="c1">// This will NOT compile because std::atomic&lt;T&gt; is neither copyable nor movable</span>
+</code></pre></div>
+<p>There are two ways around this problem:</p>
+<h3 id="1-wrap-in-rflref-rflbox-stdshared_ptr-or-stdunique_ptr">1. Wrap in <code>rfl::Ref</code>, <code>rfl::Box</code>, <code>std::shared_ptr</code> or <code>std::unique_ptr</code><a class="headerlink" href="#1-wrap-in-rflref-rflbox-stdshared_ptr-or-stdunique_ptr" title="Permanent link">&para;</a></h3>
+<p>The easiest way to read structs with atomic fields is to wrap them in a pointer-like type such as <code>rfl::Ref</code>, <code>rfl::Box</code>, <code>std::shared_ptr</code> or <code>std::unique_ptr</code>. This works because the pointer-like types themselves are copyable/movable, even if the underlying type is not.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">Ref</span><span class="o">&lt;</span><span class="n">Stats</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">json_str</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="2-read-into-a-non-atomic-representation-and-then-set-atomic-fields">2. Read into a non-atomic representation and then set atomic fields<a class="headerlink" href="#2-read-into-a-non-atomic-representation-and-then-set-atomic-fields" title="Permanent link">&para;</a></h3>
+<p>The second way is to read into a non-atomic representation of the struct and then set the atomic fields afterwards using <code>rfl::atomic::set_atomic_fields</code>. The non-atomic representation can be obtained using <code>rfl::atomic::remove_atomic_t</code>.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="n">Stats</span><span class="w"> </span><span class="n">stats</span><span class="p">;</span>
 
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">maggie</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Maggie&quot;</span><span class="p">};</span>
+<span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">Nothing</span><span class="o">&gt;</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">atomic</span><span class="o">::</span><span class="n">remove_atomic_t</span><span class="o">&lt;</span><span class="n">Stats</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">transform</span><span class="p">([</span><span class="o">&amp;</span><span class="p">](</span><span class="k">auto</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">non_atomic_stats</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">atomic</span><span class="o">::</span><span class="n">set_atomic_fields</span><span class="p">(</span><span class="n">non_atomic_stats</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">stats</span><span class="p">);</span>
+<span class="w">        </span><span class="p">});</span>
 
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">homer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Homer&quot;</span><span class="p">,</span>
-<span class="w">                          </span><span class="p">.</span><span class="n">children</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">({</span><span class="n">bart</span><span class="p">,</span><span class="w"> </span><span class="n">lisa</span><span class="p">,</span><span class="w"> </span><span class="n">maggie</span><span class="p">})};</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">res</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// handle error</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Error reading JSON: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">res</span><span class="p">.</span><span class="n">error</span><span class="p">().</span><span class="n">what</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span>
 </code></pre></div>
-<p>You can write this to a JSON string:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">homer</span><span class="p">);</span>
-</code></pre></div>
-<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;firstName&quot;</span><span class="p">:</span><span class="s2">&quot;Homer&quot;</span><span class="p">,</span><span class="nt">&quot;lastName&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">,</span><span class="nt">&quot;children&quot;</span><span class="p">:[{</span><span class="nt">&quot;firstName&quot;</span><span class="p">:</span><span class="s2">&quot;Bart&quot;</span><span class="p">,</span><span class="nt">&quot;lastName&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">,</span><span class="nt">&quot;children&quot;</span><span class="p">:[]},{</span><span class="nt">&quot;firstName&quot;</span><span class="p">:</span><span class="s2">&quot;Lisa&quot;</span><span class="p">,</span><span class="nt">&quot;lastName&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">,</span><span class="nt">&quot;children&quot;</span><span class="p">:[]},{</span><span class="nt">&quot;firstName&quot;</span><span class="p">:</span><span class="s2">&quot;Maggie&quot;</span><span class="p">,</span><span class="nt">&quot;lastName&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">,</span><span class="nt">&quot;children&quot;</span><span class="p">:[]}]}</span>
-</code></pre></div>
-<p>And you can parse it back into a struct:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">homer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">(</span><span class="n">json_string</span><span class="p">).</span><span class="n">value</span><span class="p">();</span>
-</code></pre></div>
+<h2 id="limitations-and-notes">Limitations and notes<a class="headerlink" href="#limitations-and-notes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Structs containing atomic fields must be default-constructible.</li>
+<li>Atomic types cannot be mixed with <code>rfl::DefaultVal</code> or the <code>rfl::DefaultIfMissing</code> processor; attempting to do so triggers a static assertion at compile-time (see parser implementations).</li>
+<li>The semantics used for setting atomic values use relaxed memory order (<code>std::memory_order_relaxed</code>).</li>
+<li>For complex aggregates, <code>rfl::atomic</code> will recurse into nested fields and arrays to set atomic members.</li>
+</ul>
 
 
 
@@ -2528,10 +2721,10 @@ which can lead to tricky runtime errors.</p>
       <div class="md-progress" data-md-component="progress" role="progressbar"></div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "announce.dismiss", "navigation.tabs", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.preview", "navigation.instant.progress", "navigation.path", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.c7c1ca2c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "announce.dismiss", "navigation.tabs", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.preview", "navigation.instant.progress", "navigation.path", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow"], "search": "../assets/javascripts/workers/search.c7c1ca2c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.9c5b6415.min.js"></script>
+      <script src="../assets/javascripts/bundle.9c5b6415.min.js"></script>
       
     
   </body>
