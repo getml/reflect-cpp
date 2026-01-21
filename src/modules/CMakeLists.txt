@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 
 add_library(reflectcpp_module)
 
-set(MODULE_FILES rfl.cppm)
+set(MODULE_FILES)
 
 if(REFLECTCPP_JSON)
     list(APPEND MODULE_FILES rfl.json.cppm)
@@ -73,6 +73,8 @@ target_sources(reflectcpp_module
     PUBLIC
         FILE_SET CXX_MODULES FILES ${MODULE_FILES}
 )
+
+list(APPEND MODULE_FILES rfl.module.cppm)
 
 target_compile_features(reflectcpp_module PUBLIC cxx_std_23)
 
