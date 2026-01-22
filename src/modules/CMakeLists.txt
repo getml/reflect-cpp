@@ -69,12 +69,12 @@ if(REFLECTCPP_YAML)
     target_compile_definitions(reflectcpp_module PUBLIC REFLECTCPP_YAML)
 endif()
 
+list(APPEND MODULE_FILES rfl.cppm)
+
 target_sources(reflectcpp_module
     PUBLIC
         FILE_SET CXX_MODULES FILES ${MODULE_FILES}
 )
-
-list(APPEND MODULE_FILES rfl.module.cppm)
 
 target_compile_features(reflectcpp_module PUBLIC cxx_std_23)
 
