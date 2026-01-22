@@ -101,6 +101,16 @@ schema::Type type_to_avro_schema_type(
                                               std::to_string(++(*_num_unnamed)),
                                       .symbols = _t.values_}};
 
+    } else if constexpr (std::is_same<T, Type::DescribedLiteral>()) {
+      auto symbols = std::vector<std::string>();
+      for (const auto& v : _t.values_) {
+        symbols.push_back(v.value_);
+      }
+      return schema::Type{
+          .value = schema::Type::Enum{.name = std::string("unnamed_") +
+                                              std::to_string(++(*_num_unnamed)),
+                                      .symbols = symbols}};
+
     } else if constexpr (std::is_same<T, Type::Object>()) {
       auto record = schema::Type::Record{
           .name = std::string("unnamed_") + std::to_string(++(*_num_unnamed))};

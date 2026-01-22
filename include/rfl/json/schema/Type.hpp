@@ -118,6 +118,11 @@ struct Type {
     std::string pattern{};
   };
 
+  struct StringConst {
+    rfl::Flatten<Annotations> annotations{};
+    rfl::Rename<"const", std::string> value{};
+  };
+
   struct StringEnum {
     Literal<"string"> type{};
     rfl::Flatten<Annotations> annotations{};
@@ -148,8 +153,8 @@ struct Type {
   using ReflectionType =
       rfl::Variant<AllOf, AnyOf, Boolean, ExclusiveMaximum, ExclusiveMinimum,
                    FixedSizeTypedArray, Integer, Maximum, Minimum, Number, Null,
-                   Object, OneOf, Reference, Regex, String, StringEnum,
-                   StringMap, Tuple, TypedArray>;
+                   Object, OneOf, Reference, Regex, String, StringConst,
+                   StringEnum, StringMap, Tuple, TypedArray>;
 
   const auto& reflection() const { return value; }
 
