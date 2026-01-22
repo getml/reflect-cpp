@@ -399,13 +399,16 @@ set_target_properties(reflectcpp PROPERTIES LINKER_LANGUAGE CXX)
 target_sources(reflectcpp PRIVATE ${REFLECT_CPP_SOURCES})
 target_precompile_headers(reflectcpp PRIVATE [["rfl.hpp"]] <iostream> <string> <functional>)
 
-if (REFLECTCPP_BUILD_TESTS)
+if (REFLECTCPP_BUILD_MODULES)
+    add_subdirectory(src/modules)
+endif()
+
+if (REFLECTCPP_BUILD_TESTS AND NOT REFLECTCPP_BUILD_MODULES)
     add_library(reflectcpp_tests_crt INTERFACE)
     target_link_libraries(reflectcpp_tests_crt INTERFACE reflectcpp GTest::gtest_main)
-
+	
     enable_testing()
     find_package(GTest CONFIG REQUIRED)
-    add_subdirectory(tests)
 endif ()
 
 if (REFLECTCPP_BUILD_BENCHMARKS)
@@ -447,9 +450,6 @@ if(REFLECTCPP_CHECK_HEADERS)
     endforeach()
 endif()
 
-if (REFLECTCPP_BUILD_MODULES)
-    add_subdirectory(src/modules)
-endif()
 
 if (REFLECTCPP_INSTALL)
     include(GNUInstallDirs)

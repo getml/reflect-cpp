@@ -92,6 +92,19 @@ install(TARGETS reflectcpp_module
     EXPORT ${PROJECT_NAME}Targets
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/src/module
 )
+
+if (REFLECTCPP_BUILD_TESTS)
+	add_executable(reflect-cpp-modules-tests)
+	target_include_directories(reflect-cpp-modules-tests PUBLIC
+	    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+	    $<INSTALL_INTERFACE:include>
+	)
+	target_sources(reflect-cpp-modules-tests PUBLIC "tests.cpp")
+	target_sources(reflect-cpp-modules-tests
+	    PUBLIC
+	    FILE_SET all_my_modules TYPE CXX_MODULES FILES ${MODULE_FILES} 
+	)
+endif()
