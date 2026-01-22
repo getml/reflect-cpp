@@ -5,6 +5,7 @@
 #include <type_traits>
 
 #include "../Result.hpp"
+#include "../config.hpp"
 #include "../enums.hpp"
 #include "../thirdparty/enchantum/enchantum.hpp"
 #include "AreReaderAndWriter.hpp"
@@ -70,6 +71,17 @@ struct Parser<R, W, T, ProcessorsType> {
       return Type{Type::Integer{}};
     } else if constexpr (enchantum::is_bitflag<U>) {
       return Type{Type::String{}};
+    } else if constexpr (config::enum_descriptions<U>::has_descriptions) {
+      // Generate DescribedLiteral for enums with descriptions
+      auto described = Type::DescribedLiteral{};
+      constexpr auto enumerators = get_enumerator_array<U>();
+      for (const auto& [name, value] : enumerators) {
+        auto desc = config::enum_descriptions<U>::get(value);
+        described.values_.push_back(Type::DescribedLiteral::ValueWithDescription{
+            .value_ = std::string(name),
+            .description_ = std::string(desc)});
+      }
+      return Type{std::move(described)};
     } else {
       return Parser<
           R, W,
