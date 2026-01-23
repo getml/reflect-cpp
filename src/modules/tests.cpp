@@ -1,16 +1,15 @@
 import rfl;
 
-import std.string;
-import std.vector;
-
-using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
+#include <string>
+#include <type_traits>
+#include <vector>
 
 struct Person {
   rfl::Rename<"firstName", std::string> first_name;
   rfl::Rename<"lastName", std::string> last_name = "Simpson";
   std::string town = "Springfield";
   rfl::Timestamp<"%Y-%m-%d"> birthday;
-  Age age;
+  unsigned int age;
   rfl::Email email;
   std::vector<Person> child;
 };
