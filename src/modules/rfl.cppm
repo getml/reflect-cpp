@@ -4,6 +4,46 @@ module;
 
 export module rfl;
 
+#ifdef REFLECTCPP_AVRO
+export import :avro;
+#endif
+#ifdef REFLECTCPP_BSON
+export import :bson;
+#endif
+#ifdef REFLECTCPP_CAPNPROTO
+export import :capnproto;
+#endif
+#ifdef REFLECTCPP_CBOR
+export import :cbor;
+#endif
+#ifdef REFLECTCPP_CSV
+export import :csv;
+#endif
+#ifdef REFLECTCPP_FLEXBUFFERS
+export import :flexbuf;
+#endif
+#ifdef REFLECTCPP_JSON
+export import :json;
+#endif
+#ifdef REFLECTCPP_MSGPACK
+export import :msgpack;
+#endif
+#ifdef REFLECTCPP_PARQUET
+export import :parquet;
+#endif
+#ifdef REFLECTCPP_TOML
+export import :toml;
+#endif
+#ifdef REFLECTCPP_UBJSON
+export import :ubjson;
+#endif
+#ifdef REFLECTCPP_XML
+export import :xml;
+#endif
+#ifdef REFLECTCPP_YAML
+export import :yaml;
+#endif
+
 export namespace rfl {
 using rfl::AddNamespacedTagsToVariants;
 using rfl::AddStructName;
