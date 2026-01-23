@@ -7,7 +7,7 @@ namespace rfl {
 /// to trigger the default value of the type.
 struct Default {};
 
-inline static const auto default_value = Default{};
+inline const auto default_value = Default{};
 
 }  // namespace rfl
 
