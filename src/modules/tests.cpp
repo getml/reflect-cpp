@@ -1,43 +1,62 @@
-import rfl;
-
 #include <string>
-#include <type_traits>
 #include <vector>
 
+import rfl;
+
+using String = std::string;
+template <typename T>
+using Vector = std::vector<T>;
+
+using rfl::Email;
+using rfl::Minimum;
+using rfl::Maximum;
+using rfl::Rename;
+using rfl::Timestamp;
+using rfl::Validator;
+
+using Age = Validator<unsigned int, Minimum<0>, Maximum<130>>;
+
 struct Person {
-  rfl::Rename<"firstName", std::string> first_name;
-  rfl::Rename<"lastName", std::string> last_name = "Simpson";
-  std::string town = "Springfield";
-  rfl::Timestamp<"%Y-%m-%d"> birthday;
-  unsigned int age;
-  rfl::Email email;
-  std::vector<Person> child;
+    Rename<"firstName", String> first_name;
+    Rename<"lastName", String> last_name = "Simpson";
+    String town = "Springfield";
+    Timestamp<"%Y-%m-%d"> birthday;
+    Age age;
+    Email email;
+    Vector<Person> child;
 };
 
 void test_json() {
-  const auto bart = Person{.first_name = "Bart",
-                           .birthday = "1987-04-19",
-                           .age = 10,
-                           .email = "bart@simpson.com"};
+    const Person bart{
+        .first_name = "Bart",
+        .birthday = "1987-04-19",
+        .age = 10,
+        .email = "bart@simpson.com"
+    };
 
-  const auto lisa = Person{.first_name = "Lisa",
-                           .birthday = "1987-04-19",
-                           .age = 8,
-                           .email = "lisa@simpson.com"};
+    const Person lisa{
+        .first_name = "Lisa",
+        .birthday = "1987-04-19",
+        .age = 8,
+        .email = "lisa@simpson.com"
+    };
 
-  const auto maggie = Person{.first_name = "Maggie",
-                             .birthday = "1987-04-19",
-                             .age = 0,
-                             .email = "maggie@simpson.com"};
+    const Person maggie{
+        .birthday = "1987-04-19",
+        .age = 0,
+        .email = "maggie@simpson.com"
+    };
 
-  const auto homer = Person{.first_name = "Homer",
-                            .birthday = "1987-04-19",
-                            .age = 45,
-                            .email = "homer@simpson.com",
-                            .child = std::vector<Person>({bart, lisa, maggie})};
+    const Person homer{
+        .first_name = "Homer",
+        .birthday = "1987-04-19",
+        .age = 45,
+        .email = "homer@simpson.com",
+        .child = Vector<Person>({bart, lisa, maggie})
+    };
 }
 
 int main() {
-  test_json();
-  return 0;
+    test_json();
+    return 0;
 }
