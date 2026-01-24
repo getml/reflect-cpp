@@ -20,9 +20,8 @@ struct DecisionTree {
 
   using LeafOrNode = rfl::TaggedUnion<"type", Leaf, Node>;
 
-  rfl::Field<"leafOrNode", LeafOrNode> leaf_or_node;
+  rfl::Rename<"leafOrNode", LeafOrNode> leaf_or_node;
 };
-
 
 TEST(generic, test_box) {
   auto leaf1 = DecisionTree::Leaf{.value = 3.0};
@@ -37,13 +36,10 @@ TEST(generic, test_box) {
   const DecisionTree tree{.leaf_or_node = std::move(node)};
 
   write_and_read(tree);
-
 }
 }  // namespace test_box
 
-
-namespace test_copyable_box
-{
+namespace test_copyable_box {
 struct DecisionTree {
   struct Leaf {
     using Tag = rfl::Literal<"Leaf">;
@@ -59,8 +55,9 @@ struct DecisionTree {
 
   using LeafOrNode = rfl::TaggedUnion<"type", Leaf, Node>;
 
-  rfl::Field<"leafOrNode", LeafOrNode> leaf_or_node;
+  rfl::Rename<"leafOrNode", LeafOrNode> leaf_or_node;
 };
+
 TEST(generic, copyable_box) {
   auto leaf1 = DecisionTree::Leaf{.value = 3.0};
 
@@ -77,12 +74,18 @@ TEST(generic, copyable_box) {
 
   const DecisionTree tree2 = tree1;
 
-  auto lesser_leaf_tree2 = rfl::get<DecisionTree::Leaf>(rfl::get<DecisionTree::Node>(tree2.leaf_or_node.get().variant()).lesser.get()->leaf_or_node.get().variant());
+  auto lesser_leaf_tree2 = rfl::get<DecisionTree::Leaf>(
+      rfl::get<DecisionTree::Node>(tree2.leaf_or_node().variant())
+          .lesser.get()
+          ->leaf_or_node.get()
+          .variant());
   lesser_leaf_tree2.value = 1.0;
 
-
-  auto lesser_leaf_tree1 = rfl::get<DecisionTree::Leaf>(rfl::get<DecisionTree::Node>(tree1.leaf_or_node.get().variant()).lesser.get()->leaf_or_node.get().variant());
+  auto lesser_leaf_tree1 = rfl::get<DecisionTree::Leaf>(
+      rfl::get<DecisionTree::Node>(tree1.leaf_or_node().variant())
+          .lesser.get()
+          ->leaf_or_node.get()
+          .variant());
   EXPECT_NE(lesser_leaf_tree1.value, lesser_leaf_tree2.value);
-
 }
-} // namespace test_copyable_box
+}  // namespace test_copyable_box

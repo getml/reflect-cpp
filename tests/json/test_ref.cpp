@@ -22,7 +22,7 @@ struct DecisionTree {
 
   using LeafOrNode = rfl::TaggedUnion<"type", Leaf, Node>;
 
-  rfl::Field<"leafOrNode", LeafOrNode> leaf_or_node;
+  rfl::Rename<"leafOrNode", LeafOrNode> leaf_or_node;
 };
 
 TEST(json, test_ref) {
