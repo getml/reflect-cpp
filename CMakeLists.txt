@@ -365,15 +365,15 @@ if (REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
         NAMES Parquet Arrow  # Conan merges the Parquet package into Arrow
     )
 
-    set(parquet_lib Parquet::parquet_${linkage_type})
-    if (NOT TARGET "${parquet_lib}")
-        if (TARGET Parquet::parquet_shared)
-            set(parquet_lib Parquet::parquet_shared)
-        else()
-            set(parquet_lib arrow::arrow)
-        endif()
-    endif()
+    # Dump all imported targets for debugging
+    set(msg "Imported targets:\n")
+    get_property(imported_targets DIRECTORY "${CMAKE_CURRENT_LIST_DIR}" PROPERTY IMPORTED_TARGETS)
+    foreach(target IN ITEMS ${imported_targets})
+      string(APPEND msg "  - ${target}\n")
+    endforeach()
+    message(DEBUG "${msg}")
 
+    set(parquet_lib "$<IF:$<BOOL:${ARROW_BUILD_STATIC}>,Parquet::parquet_static,Parquet::parquet_shared>")
     target_link_libraries(reflectcpp PUBLIC "${arrow_lib}" "${parquet_lib}")
 endif ()
 
