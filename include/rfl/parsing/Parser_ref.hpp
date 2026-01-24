@@ -7,11 +7,14 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../atomic/is_atomic.hpp"
+#include "../atomic/remove_atomic_t.hpp"
+#include "../atomic/set_atomic.hpp"
+#include "../internal/has_default_val_v.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
 template <class R, class W, class T, class ProcessorsType>
   requires AreReaderAndWriter<R, W, Ref<T>>
@@ -19,9 +22,29 @@ struct Parser<R, W, Ref<T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
   static Result<Ref<T>> read(const R& _r, const InputVarType& _var) noexcept {
-    const auto to_ref = [&](auto&& _t) { return Ref<T>::make(std::move(_t)); };
-    return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r, _var)
-        .transform(to_ref);
+    if constexpr (atomic::is_atomic_v<T>) {
+      using RemoveAtomicT = atomic::remove_atomic_t<T>;
+
+      static_assert(!internal::has_default_val_v<RemoveAtomicT>,
+                    "Atomic types cannot be mixed with rfl::DefaultVal");
+      static_assert(!ProcessorsType::default_if_missing_,
+                    "Atomic types cannot be mixed with rfl::DefaultIfMissing");
+
+      return Parser<R, W, RemoveAtomicT, ProcessorsType>::read(_r, _var)
+          .transform([](auto&& _t) {
+            auto atomic_ref = Ref<T>::make();
+            atomic::set_atomic(std::move(_t), &(*atomic_ref));
+            return atomic_ref;
+          });
+
+    } else {
+      const auto to_ref = [&](auto&& _t) {
+        return Ref<T>::make(std::move(_t));
+      };
+      return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r,
+                                                                        _var)
+          .transform(to_ref);
+    }
   }
 
   template <class P>
@@ -37,7 +60,6 @@ struct Parser<R, W, Ref<T>, ProcessorsType> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif

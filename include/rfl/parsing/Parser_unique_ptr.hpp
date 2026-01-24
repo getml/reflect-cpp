@@ -8,6 +8,10 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../atomic/is_atomic.hpp"
+#include "../atomic/remove_atomic_t.hpp"
+#include "../atomic/set_atomic.hpp"
+#include "../internal/has_default_val_v.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
@@ -15,8 +19,7 @@
 #include "schemaful/IsSchemafulWriter.hpp"
 #include "schemaful/UniquePtrReader.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl ::parsing {
 
 template <class R, class W, class T, class ProcessorsType>
   requires AreReaderAndWriter<R, W, std::unique_ptr<T>>
@@ -27,20 +30,39 @@ struct Parser<R, W, std::unique_ptr<T>, ProcessorsType> {
 
   static Result<std::unique_ptr<T>> read(const R& _r,
                                          const InputVarType& _var) noexcept {
-    if constexpr (schemaful::IsSchemafulReader<R>) {
+    if constexpr (atomic::is_atomic_v<T>) {
+      using RemoveAtomicT = std::unique_ptr<atomic::remove_atomic_t<T>>;
+
+      static_assert(!internal::has_default_val_v<RemoveAtomicT>,
+                    "Atomic types cannot be mixed with rfl::DefaultVal");
+      static_assert(!ProcessorsType::default_if_missing_,
+                    "Atomic types cannot be mixed with rfl::DefaultIfMissing");
+
+      return Parser<R, W, RemoveAtomicT, ProcessorsType>::read(_r, _var)
+          .transform([](auto&& _t) {
+            if (!_t) {
+              return std::unique_ptr<T>();
+            }
+            auto atomic_unique_ptr = std::make_unique<T>();
+            atomic::set_atomic(std::move(*_t), atomic_unique_ptr.get());
+            return atomic_unique_ptr;
+          });
+
+    } else if constexpr (schemaful::IsSchemafulReader<R>) {
       using S = schemaful::UniquePtrReader<R, W, std::remove_cvref_t<T>,
                                            ProcessorsType>;
       const auto to_unique = [&](const auto& _u) -> Result<std::unique_ptr<T>> {
         return _r.template read_union<std::unique_ptr<T>, S>(_u);
       };
       return _r.to_union(_var).and_then(to_unique);
+
     } else {
       if (_r.is_empty(_var)) {
         return std::unique_ptr<T>();
       }
       return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r,
                                                                         _var)
-          .transform([](T&& _t) { return std::make_unique<T>(std::move(_t)); });
+          .transform([](T _t) { return std::make_unique<T>(std::move(_t)); });
     }
   }
 
@@ -75,7 +97,6 @@ struct Parser<R, W, std::unique_ptr<T>, ProcessorsType> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif

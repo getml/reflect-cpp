@@ -143,6 +143,8 @@ endif()
 
 project(reflectcpp VERSION 0.23.0 LANGUAGES CXX)
 
+find_package(ament_cmake QUIET)
+
 if(PROJECT_IS_TOP_LEVEL)
     set(REFLECTCPP_INSTALL ON)
 endif()
@@ -487,12 +489,18 @@ if(REFLECTCPP_INSTALL)
     include(CMakePackageConfigHelpers)
 
     configure_package_config_file(reflectcpp-config.cmake.in
-      ${CMAKE_CURRENT_BINARY_DIR}/reflectcpp-config.cmake
-      INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp
-      )
+        ${CMAKE_CURRENT_BINARY_DIR}/reflectcpp-config.cmake
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp
+    )
+    write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/reflectcpp-version.cmake
+        COMPATIBILITY SameMinorVersion
+    )
 
     install(
-        FILES "${CMAKE_CURRENT_BINARY_DIR}/reflectcpp-config.cmake"
+        FILES
+            "${CMAKE_CURRENT_BINARY_DIR}/reflectcpp-config.cmake"
+            "${CMAKE_CURRENT_BINARY_DIR}/reflectcpp-version.cmake"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp"
     )
 
@@ -503,13 +511,14 @@ if(REFLECTCPP_INSTALL)
         FILE_SET reflectcpp_headers
         TYPE HEADERS
         BASE_DIRS $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-        FILES ${RFL_HEADERS})
+        FILES ${RFL_HEADERS}
+    )
 
     install(
         TARGETS reflectcpp
         EXPORT reflectcpp-exports
         FILE_SET reflectcpp_headers DESTINATION ${INCLUDE_INSTALL_DIR}
-        )
+    )
 
     install(
         EXPORT reflectcpp-exports
@@ -546,3 +555,6 @@ set(CPACK_RPM_PACKAGE_REQUIRES "")
 
 include(CPack)
 
+if(ament_cmake_FOUND)
+    ament_package()
+endif()

@@ -34,6 +34,10 @@
 
 [rfl::Binary, rfl::Hex and rfl::Oct](number_systems.md)- For expressing numbers in different formats.
 
+[Default values](default_val.md) - For defining default values for fields that might be absent during deserialization.
+
+[Atomic types](atomic.md) - For serializing and deserializing atomic types.
+
 ## Validation
 
 [Regex patterns](patterns.md) - For requiring that strings follow used-defined regex patterns.

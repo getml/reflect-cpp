@@ -224,7 +224,7 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
       if (res) {
         _result->emplace(std::move(*res));
       } else {
-        _errors->emplace_back(std::move(res.error()));
+        _errors->emplace_back(res.error());
       }
     }
   }
