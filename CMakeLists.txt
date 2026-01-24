@@ -278,17 +278,14 @@ if(REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
         src/reflectcpp_bson.cpp
     )
 
+    # The package and target names have changed since v2: https://github.com/mongodb/mongo-c-driver/releases/tag/2.0.0
+    # bson-1.0 is for compatibility with older versions
     find_package(bson 1.25.1 CONFIG REQUIRED NAMES bson bson-1.0)
 
-    # The package and target names have changed since v2
-    # https://github.com/mongodb/mongo-c-driver/releases/tag/2.0.0
     set(bson_lib bson::${preferred_lib_type})
     if(NOT TARGET "${bson_lib}")
+        # fallback to old target name
         set(bson_lib mongo::bson_${preferred_lib_type})
-
-        if(NOT TARGET "${bson_lib}")
-            message(FATAL_ERROR "Could not find a suitable libbson library target to link with")
-        endif()
     endif()
 
     target_link_libraries(reflectcpp PUBLIC "${bson_lib}")
@@ -326,10 +323,8 @@ if(REFLECTCPP_CSV OR REFLECTCPP_CHECK_HEADERS)
         set(arrow_lib Arrow::arrow_${preferred_lib_type})
     elseif(TARGET Arrow::arrow_static)
         set(arrow_lib Arrow::arrow_static)
-    elseif(TARGET Arrow::arrow_shared)
-        set(arrow_lib Arrow::arrow_shared)
     else()
-        message(FATAL_ERROR "Could not find a suitable Arrow library target to link with")
+        set(arrow_lib Arrow::arrow_shared)
     endif()
 
     target_link_libraries(reflectcpp PUBLIC "${arrow_lib}")
@@ -344,10 +339,8 @@ if(REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_CHECK_HEADERS)
 
     if(REFLECTCPP_BUILD_SHARED AND TARGET flatbuffers::flatbuffers_shared)
         set(flatbuf_lib flatbuffers::flatbuffers_shared)
-    elseif(TARGET flatbuffers::flatbuffers)
-        set(flatbuf_lib flatbuffers::flatbuffers)
     else()
-        message(FATAL_ERROR "Could not find a suitable FlatBuffers library target to link with")
+        set(flatbuf_lib flatbuffers::flatbuffers)
     endif()
 
     target_link_libraries(reflectcpp PUBLIC "${flatbuf_lib}")
@@ -362,12 +355,8 @@ if(REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
 
     if(NOT REFLECTCPP_BUILD_SHARED AND TARGET msgpack-c-static)
         set(msgpack_lib msgpack-c-static)
-    elseif(TARGET msgpack-c)
-        set(msgpack_lib msgpack-c)
-    elseif(TARGET msgpack)
-        set(msgpack_lib msgpack)
     else()
-        message(FATAL_ERROR "Could not find a suitable msgpack-c library target to link with")
+        set(msgpack_lib msgpack-c)
     endif()
 
     target_link_libraries(reflectcpp PUBLIC "${msgpack_lib}")
@@ -381,10 +370,8 @@ if(REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
             set(arrow_lib Arrow::arrow_${preferred_lib_type})
         elseif(TARGET Arrow::arrow_static)
             set(arrow_lib Arrow::arrow_static)
-        elseif(TARGET Arrow::arrow_shared)
-            set(arrow_lib Arrow::arrow_shared)
         else()
-            message(FATAL_ERROR "Could not find a suitable Arrow library target to link with")
+            set(arrow_lib Arrow::arrow_shared)
         endif()
     endif()
 
@@ -396,10 +383,8 @@ if(REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
         set(parquet_lib Parquet::parquet_${preferred_lib_type})
     elseif(TARGET Parquet::parquet_static)
         set(parquet_lib Parquet::parquet_static)
-    elseif(TARGET Parquet::parquet_shared)
-        set(parquet_lib Parquet::parquet_shared)
     else()
-        message(FATAL_ERROR "Could not find a suitable Parquet library target to link with")
+        set(parquet_lib Parquet::parquet_shared)
     endif()
 
     target_link_libraries(reflectcpp PUBLIC "${arrow_lib}" "${parquet_lib}")
