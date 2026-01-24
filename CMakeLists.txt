@@ -56,10 +56,10 @@ if(REFLECTCPP_BUILD_BENCHMARKS)
     set(REFLECTCPP_YAML ON CACHE BOOL "" FORCE)
 endif()
 
-if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_BUILD_BENCHMARKS OR REFLECTCPP_CHECK_HEADERS OR
+if(REFLECTCPP_BUILD_TESTS OR REFLECTCPP_BUILD_BENCHMARKS OR REFLECTCPP_CHECK_HEADERS OR
     (REFLECTCPP_JSON AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES) OR REFLECTCPP_AVRO OR
     REFLECTCPP_BSON OR REFLECTCPP_CAPNPROTO OR REFLECTCPP_CBOR OR REFLECTCPP_CSV OR
-    REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_MSGPACK OR REFLECTCPP_PARQUET OR REFLECTCPP_XML OR 
+    REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_MSGPACK OR REFLECTCPP_PARQUET OR REFLECTCPP_XML OR
     REFLECTCPP_TOML OR REFLECTCPP_UBJSON OR REFLECTCPP_YAML)
     # enable vcpkg per default if features other than JSON are required
     set(REFLECTCPP_USE_VCPKG_DEFAULT ON)
@@ -73,81 +73,81 @@ endif()
 
 option(REFLECTCPP_USE_VCPKG "Use VCPKG to download and build dependencies" ${REFLECTCPP_USE_VCPKG_DEFAULT})
 
-if (REFLECTCPP_USE_VCPKG)
-    if (REFLECTCPP_AVRO OR REFLECTCPP_CHECK_HEADERS)
+if(REFLECTCPP_USE_VCPKG)
+    if(REFLECTCPP_AVRO OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "avro")
     endif()
-    
-    if (REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
+
+    if(REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "bson")
     endif()
-    
-    if (REFLECTCPP_BUILD_BENCHMARKS OR REFLECTCPP_CHECK_HEADERS)
+
+    if(REFLECTCPP_BUILD_BENCHMARKS OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "benchmarks")
     endif()
 
-    if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_CHECK_HEADERS)
+    if(REFLECTCPP_BUILD_TESTS OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "tests")
     endif()
-    
-    if (REFLECTCPP_CAPNPROTO OR REFLECTCPP_CHECK_HEADERS)
+
+    if(REFLECTCPP_CAPNPROTO OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "capnproto")
     endif()
-    
-    if (REFLECTCPP_CBOR OR REFLECTCPP_CHECK_HEADERS)
+
+    if(REFLECTCPP_CBOR OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "cbor")
     endif()
-    
-    if (REFLECTCPP_CSV OR REFLECTCPP_CHECK_HEADERS)
+
+    if(REFLECTCPP_CSV OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "csv")
     endif()
-    
-    if (NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
+
+    if(NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
         list(APPEND VCPKG_MANIFEST_FEATURES "ctre")
     endif()
-    
-    if (REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_CHECK_HEADERS)
+
+    if(REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "flexbuffers")
     endif()
-    
-    if (_REFLECTCPP_NEEDS_JSON_IMPL AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
+
+    if(_REFLECTCPP_NEEDS_JSON_IMPL AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
         list(APPEND VCPKG_MANIFEST_FEATURES "json")
     endif()
-    
-    if (REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
+
+    if(REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "msgpack")
     endif()
-     
-    if (REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
+
+    if(REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "parquet")
     endif()
-    
-    if (REFLECTCPP_TOML OR REFLECTCPP_CHECK_HEADERS)
+
+    if(REFLECTCPP_TOML OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "toml")
     endif()
-    
-    if (REFLECTCPP_UBJSON OR REFLECTCPP_CHECK_HEADERS)
+
+    if(REFLECTCPP_UBJSON OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "ubjson")
     endif()
 
-    if (REFLECTCPP_XML OR REFLECTCPP_CHECK_HEADERS)
+    if(REFLECTCPP_XML OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "xml")
     endif()
-    
-    if (REFLECTCPP_YAML OR REFLECTCPP_CHECK_HEADERS)
+
+    if(REFLECTCPP_YAML OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "yaml")
     endif()
-    
+
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
-endif ()
+endif()
 
 project(reflectcpp VERSION 0.23.0 LANGUAGES CXX)
 
-if (PROJECT_IS_TOP_LEVEL)
+if(PROJECT_IS_TOP_LEVEL)
     set(REFLECTCPP_INSTALL ON)
 endif()
 
-if (REFLECTCPP_BUILD_SHARED)
+if(REFLECTCPP_BUILD_SHARED)
     add_library(reflectcpp SHARED)
     set_target_properties(reflectcpp PROPERTIES SOVERSION ${PROJECT_VERSION})
     set(preferred_lib_type shared)
@@ -158,8 +158,8 @@ endif()
 
 add_library(reflectcpp::reflectcpp ALIAS reflectcpp)
 
-if (MSVC)
-    target_compile_options(reflectcpp PRIVATE 
+if(MSVC)
+    target_compile_options(reflectcpp PRIVATE
         $<$<CONFIG:Debug>:
             -Wall
         >
@@ -184,9 +184,9 @@ endif()
 
 if(REFLECTCPP_BUILD_SHARED AND REFLECTCPP_USE_BUNDLED_DEPENDENCIES AND _REFLECTCPP_NEEDS_JSON_IMPL)
     target_compile_definitions(reflectcpp
-        PRIVATE 
-            YYJSON_EXPORTS 
-        INTERFACE 
+        PRIVATE
+            YYJSON_EXPORTS
+        INTERFACE
             YYJSON_IMPORTS
     )
 endif()
@@ -208,22 +208,22 @@ target_include_directories(
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>)
 
-if (REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
+if(REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
     target_include_directories(
         reflectcpp PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rfl/thirdparty>)
-else ()
-    if (NOT TARGET ctre::ctre)
+else()
+    if(NOT TARGET ctre::ctre)
         find_package(ctre CONFIG REQUIRED)
-    endif ()
+    endif()
     target_link_libraries(reflectcpp PUBLIC ctre::ctre)
-endif ()
+endif()
 
-if (_REFLECTCPP_NEEDS_JSON_IMPL)
+if(_REFLECTCPP_NEEDS_JSON_IMPL)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_json.cpp
     )
-    if (REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
+    if(REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
         list(APPEND REFLECT_CPP_SOURCES
             src/yyjson.c
         )
@@ -232,48 +232,48 @@ if (_REFLECTCPP_NEEDS_JSON_IMPL)
         target_include_directories(
             reflectcpp PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rfl/thirdparty>)
-    else ()
-        if (NOT TARGET yyjson::yyjson)
+    else()
+        if(NOT TARGET yyjson::yyjson)
             find_package(yyjson CONFIG REQUIRED)
-        endif ()
+        endif()
         target_link_libraries(reflectcpp PUBLIC yyjson::yyjson)
-    endif ()
-endif ()
+    endif()
+endif()
 
-if (REFLECTCPP_AVRO OR REFLECTCPP_CHECK_HEADERS)
+if(REFLECTCPP_AVRO OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_avro.cpp
     )
     find_package(jansson CONFIG REQUIRED)
-    if (REFLECTCPP_USE_VCPKG)
+    if(REFLECTCPP_USE_VCPKG)
         target_include_directories(reflectcpp SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
-        if (MSVC)
+        if(MSVC)
             set(_AVRO_STATIC_LIB "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/avro${CMAKE_STATIC_LIBRARY_SUFFIX}")
             if(REFLECTCPP_BUILD_SHARED)
                 message(STATUS "With whole archive ${_AVRO_STATIC_LIB}")
-                target_link_libraries(reflectcpp 
-                    PUBLIC 
-                        $<LINK_LIBRARY:WHOLE_ARCHIVE,${_AVRO_STATIC_LIB}> 
-                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/snappy${CMAKE_STATIC_LIBRARY_SUFFIX}" 
-                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/lzma${CMAKE_STATIC_LIBRARY_SUFFIX}" 
+                target_link_libraries(reflectcpp
+                    PUBLIC
+                        $<LINK_LIBRARY:WHOLE_ARCHIVE,${_AVRO_STATIC_LIB}>
+                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/snappy${CMAKE_STATIC_LIBRARY_SUFFIX}"
+                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/lzma${CMAKE_STATIC_LIBRARY_SUFFIX}"
                         "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/jansson${CMAKE_STATIC_LIBRARY_SUFFIX}"
                         "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/zlib${CMAKE_STATIC_LIBRARY_SUFFIX}"
                 )
             else()
                 target_link_libraries(reflectcpp PUBLIC "${_AVRO_STATIC_LIB}")
             endif()
-        else ()
+        else()
             target_link_libraries(reflectcpp PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/libavro${CMAKE_STATIC_LIBRARY_SUFFIX}")
-        endif ()
-    else ()
+        endif()
+    else()
         find_package(PkgConfig REQUIRED)
         pkg_check_modules(avro REQUIRED IMPORTED_TARGET avro-c)
         target_link_libraries(reflectcpp PUBLIC PkgConfig::avro)
-    endif ()
+    endif()
     target_link_libraries(reflectcpp PRIVATE jansson::jansson)
-endif ()
+endif()
 
-if (REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
+if(REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_bson.cpp
     )
@@ -287,102 +287,104 @@ if (REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
         set(bson_lib mongo::bson_${preferred_lib_type})
 
         if(NOT TARGET "${bson_lib}")
-            message(FATAL_ERROR "Could not find a suitable libbson target to link with")
+            message(FATAL_ERROR "Could not find a suitable libbson library target to link with")
         endif()
     endif()
 
     target_link_libraries(reflectcpp PUBLIC "${bson_lib}")
-endif ()
+endif()
 
-if (REFLECTCPP_CAPNPROTO OR REFLECTCPP_CHECK_HEADERS)
+if(REFLECTCPP_CAPNPROTO OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_capnproto.cpp
     )
-    if (NOT TARGET CapnProto)
+    if(NOT TARGET CapnProto)
         find_package(CapnProto CONFIG REQUIRED)
-    endif ()
+    endif()
     set(capnpc_lib CapnProto::capnpc)
-    if (NOT TARGET CapnProto::capnpc)
-      # in some old versions, there is no alias target CapnProto::capnpc, fallback to capnc
-      set(capnpc_lib capnpc)
+    if(NOT TARGET CapnProto::capnpc)
+        # in some old versions, there is no alias target CapnProto::capnpc, fallback to capnc
+        set(capnpc_lib capnpc)
     endif()
     target_link_libraries(reflectcpp PUBLIC CapnProto::kj CapnProto::capnp ${capnpc_lib} CapnProto::kj-gzip)
-endif ()
+endif()
 
-if (REFLECTCPP_CBOR OR REFLECTCPP_CHECK_HEADERS)
+if(REFLECTCPP_CBOR OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_cbor.cpp
     )
-    if (NOT TARGET jsoncons)
+    if(NOT TARGET jsoncons)
       find_package(jsoncons CONFIG REQUIRED)
     endif()
     include_directories(PUBLIC ${jsoncons_INCLUDE_DIRS})
-endif ()
+endif()
 
-if (REFLECTCPP_CSV OR REFLECTCPP_CHECK_HEADERS)
+if(REFLECTCPP_CSV OR REFLECTCPP_CHECK_HEADERS)
     find_package(Arrow CONFIG REQUIRED)
 
-    if (TARGET Arrow::arrow_static AND TARGET Arrow::arrow_shared)
+    if(TARGET Arrow::arrow_static AND TARGET Arrow::arrow_shared)
         set(arrow_lib Arrow::arrow_${preferred_lib_type})
-    elseif (TARGET Arrow::arrow_static)
+    elseif(TARGET Arrow::arrow_static)
         set(arrow_lib Arrow::arrow_static)
-    elseif (TARGET Arrow::arrow_shared)
+    elseif(TARGET Arrow::arrow_shared)
         set(arrow_lib Arrow::arrow_shared)
-    else ()
-        message(FATAL_ERROR "Could not find a suitable Arrow target to link with")
+    else()
+        message(FATAL_ERROR "Could not find a suitable Arrow library target to link with")
     endif()
 
     target_link_libraries(reflectcpp PUBLIC "${arrow_lib}")
-endif ()
+endif()
 
-if (REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_CHECK_HEADERS)
+if(REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_flexbuf.cpp
     )
 
     find_package(flatbuffers CONFIG REQUIRED)
 
-    if (REFLECTCPP_BUILD_SHARED AND TARGET flatbuffers::flatbuffers_shared)
+    if(REFLECTCPP_BUILD_SHARED AND TARGET flatbuffers::flatbuffers_shared)
         set(flatbuf_lib flatbuffers::flatbuffers_shared)
-    else ()
+    elseif(TARGET flatbuffers::flatbuffers)
         set(flatbuf_lib flatbuffers::flatbuffers)
+    else()
+        message(FATAL_ERROR "Could not find a suitable FlatBuffers library target to link with")
     endif()
 
     target_link_libraries(reflectcpp PUBLIC "${flatbuf_lib}")
-endif ()
+endif()
 
-if (REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
+if(REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_msgpack.cpp
     )
 
     find_package(msgpack-c CONFIG REQUIRED NAMES msgpack-c msgpack msgpackc)
 
-    if (NOT REFLECTCPP_BUILD_SHARED AND TARGET msgpack-c-static)
+    if(NOT REFLECTCPP_BUILD_SHARED AND TARGET msgpack-c-static)
         set(msgpack_lib msgpack-c-static)
-    elseif (TARGET msgpack-c)
+    elseif(TARGET msgpack-c)
         set(msgpack_lib msgpack-c)
-    elseif (TARGET msgpack)
+    elseif(TARGET msgpack)
         set(msgpack_lib msgpack)
-    else ()
-        message(FATAL_ERROR "Could not find a suitable msgpack-c target to link with")
+    else()
+        message(FATAL_ERROR "Could not find a suitable msgpack-c library target to link with")
     endif()
 
     target_link_libraries(reflectcpp PUBLIC "${msgpack_lib}")
-endif ()
+endif()
 
-if (REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
-    if (NOT TARGET "${arrow_lib}")
+if(REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
+    if(NOT TARGET "${arrow_lib}")
         find_package(Arrow CONFIG REQUIRED)
 
-        if (TARGET Arrow::arrow_static AND TARGET Arrow::arrow_shared)
+        if(TARGET Arrow::arrow_static AND TARGET Arrow::arrow_shared)
             set(arrow_lib Arrow::arrow_${preferred_lib_type})
-        elseif (TARGET Arrow::arrow_static)
+        elseif(TARGET Arrow::arrow_static)
             set(arrow_lib Arrow::arrow_static)
-        elseif (TARGET Arrow::arrow_shared)
+        elseif(TARGET Arrow::arrow_shared)
             set(arrow_lib Arrow::arrow_shared)
         else()
-            message(FATAL_ERROR "Could not find a suitable Arrow target to link with")
+            message(FATAL_ERROR "Could not find a suitable Arrow library target to link with")
         endif()
     endif()
 
@@ -390,82 +392,82 @@ if (REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
         NAMES Parquet Arrow  # Conan merges the Parquet package into Arrow
     )
 
-    if (TARGET Parquet::parquet_static AND TARGET Parquet::parquet_shared)
+    if(TARGET Parquet::parquet_static AND TARGET Parquet::parquet_shared)
         set(parquet_lib Parquet::parquet_${preferred_lib_type})
-    elseif (TARGET Parquet::parquet_static)
+    elseif(TARGET Parquet::parquet_static)
         set(parquet_lib Parquet::parquet_static)
-    elseif (TARGET Parquet::parquet_shared)
+    elseif(TARGET Parquet::parquet_shared)
         set(parquet_lib Parquet::parquet_shared)
     else()
-        message(FATAL_ERROR "Could not find a suitable Parquet target to link with")
+        message(FATAL_ERROR "Could not find a suitable Parquet library target to link with")
     endif()
 
     target_link_libraries(reflectcpp PUBLIC "${arrow_lib}" "${parquet_lib}")
-endif ()
+endif()
 
-if (REFLECTCPP_TOML OR REFLECTCPP_CHECK_HEADERS)
+if(REFLECTCPP_TOML OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_toml.cpp
     )
-    if (NOT TARGET tomlplusplus::tomlplusplus)
+    if(NOT TARGET tomlplusplus::tomlplusplus)
       find_package(tomlplusplus)
     endif()
     target_link_libraries(reflectcpp PUBLIC tomlplusplus::tomlplusplus)
 endif()
 
-if (REFLECTCPP_UBJSON OR REFLECTCPP_CHECK_HEADERS)
+if(REFLECTCPP_UBJSON OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_ubjson.cpp
     )
-    if (NOT TARGET jsoncons)
+    if(NOT TARGET jsoncons)
       find_package(jsoncons CONFIG REQUIRED)
     endif()
     include_directories(PUBLIC ${jsoncons_INCLUDE_DIRS})
-endif ()
+endif()
 
-if (REFLECTCPP_XML OR REFLECTCPP_CHECK_HEADERS)
+if(REFLECTCPP_XML OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_xml.cpp
     )
-    if (NOT TARGET pugixml::pugixml)
+    if(NOT TARGET pugixml::pugixml)
         find_package(pugixml CONFIG REQUIRED)
-    endif ()
+    endif()
     target_link_libraries(reflectcpp PUBLIC pugixml::pugixml)
-endif ()
+endif()
 
-if (REFLECTCPP_YAML OR REFLECTCPP_CHECK_HEADERS)
+if(REFLECTCPP_YAML OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_yaml.cpp
     )
-    if (NOT TARGET yaml-cpp::yaml-cpp)
+    if(NOT TARGET yaml-cpp::yaml-cpp)
         find_package(yaml-cpp CONFIG REQUIRED)
-    endif ()
+    endif()
     target_link_libraries(reflectcpp PUBLIC yaml-cpp::yaml-cpp)
-endif ()
+endif()
 
 set_target_properties(reflectcpp PROPERTIES LINKER_LANGUAGE CXX)
 target_sources(reflectcpp PRIVATE ${REFLECT_CPP_SOURCES})
 target_precompile_headers(reflectcpp PRIVATE [["rfl.hpp"]] <iostream> <string> <functional>)
 
-if (REFLECTCPP_BUILD_TESTS)
+if(REFLECTCPP_BUILD_TESTS)
     add_library(reflectcpp_tests_crt INTERFACE)
     target_link_libraries(reflectcpp_tests_crt INTERFACE reflectcpp GTest::gtest_main)
 
     enable_testing()
     find_package(GTest CONFIG REQUIRED)
     add_subdirectory(tests)
-endif ()
+endif()
 
-if (REFLECTCPP_BUILD_BENCHMARKS)
-    if (NOT TARGET benchmark::benchmark)
+if(REFLECTCPP_BUILD_BENCHMARKS)
+    if(NOT TARGET benchmark::benchmark)
         find_package(benchmark CONFIG REQUIRED)
-    endif ()
-    if (NOT TARGET simdjson::simdjson)
+    endif()
+    if(NOT TARGET simdjson::simdjson)
         find_package(simdjson CONFIG REQUIRED)
-    endif ()
+    endif()
     target_link_libraries(reflectcpp PUBLIC benchmark::benchmark simdjson::simdjson)
     add_subdirectory(benchmarks)
-endif ()
+endif()
 
 if(REFLECTCPP_CHECK_HEADERS)
     file(GLOB_RECURSE PROJECT_HEADERS "include/*.hpp")
@@ -484,18 +486,18 @@ if(REFLECTCPP_CHECK_HEADERS)
             )
 
             add_library(check_header_${HEADER_NAME} "${TEST_SOURCE_FILE}")
-            
+
             target_include_directories(check_header_${HEADER_NAME} PRIVATE
                 ${CMAKE_CURRENT_SOURCE_DIR}
                 ${ADDITIONAL_INCLUDE_DIRS}
             )
-            
+
             add_custom_target(check_${HEADER_NAME} ALL DEPENDS check_header_${HEADER_NAME})
         endif()
     endforeach()
 endif()
 
-if (REFLECTCPP_INSTALL)
+if(REFLECTCPP_INSTALL)
     include(GNUInstallDirs)
     include(CMakePackageConfigHelpers)
 
@@ -529,7 +531,7 @@ if (REFLECTCPP_INSTALL)
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp
         NAMESPACE reflectcpp::
     )
-endif ()
+endif()
 
 # Set general package information
 set(CPACK_PACKAGE_NAME "reflectcpp")
