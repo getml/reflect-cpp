@@ -20,10 +20,10 @@ struct DecisionTree {
 
   using LeafOrNode = rfl::TaggedUnion<"type", Leaf, Node>;
 
-  rfl::Field<"leafOrNode", LeafOrNode> leaf_or_node;
+  rfl::Rename<"leafOrNode", LeafOrNode> leaf_or_node;
 };
 
-TEST(toml, test_ref) { 
+TEST(toml, test_ref) {
   const auto leaf1 = DecisionTree::Leaf{.value = 3.0};
 
   const auto leaf2 = DecisionTree::Leaf{.value = 5.0};
@@ -36,6 +36,5 @@ TEST(toml, test_ref) {
   const DecisionTree tree{.leaf_or_node = std::move(node)};
 
   write_and_read(tree);
-
 }
 }  // namespace test_ref
