@@ -7,15 +7,15 @@
 namespace test_flatten {
 
 struct Person {
-  rfl::Field<"firstName", std::string> first_name;
-  rfl::Field<"lastName", rfl::Box<std::string>> last_name;
-  rfl::Field<"age", int> age;
+  rfl::Rename<"firstName", std::string> first_name;
+  rfl::Rename<"lastName", rfl::Box<std::string>> last_name;
+  rfl::Rename<"age", int> age;
 };
 
 struct Employee {
   rfl::Flatten<Person> person;
-  rfl::Field<"employer", rfl::Box<std::string>> employer;
-  rfl::Field<"salary", float> salary;
+  rfl::Rename<"employer", rfl::Box<std::string>> employer;
+  rfl::Rename<"salary", float> salary;
 };
 
 TEST(avro, test_flatten) {

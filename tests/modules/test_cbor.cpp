@@ -1,4 +1,4 @@
-#ifdef REFLECTCPP_JSON
+#ifdef REFLECTCPP_CBOR
 
 #include <gtest/gtest.h>
 
@@ -8,7 +8,7 @@
 
 import rfl;
 
-namespace test_json {
+namespace test_cbor {
 
 using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
 
@@ -22,7 +22,7 @@ struct Person {
   std::vector<Person> children;
 };
 
-TEST(modules, test_json) {
+TEST(modules, test_cbor) {
   const auto bart = Person{.first_name = "Bart",
                            .birthday = "1987-04-19",
                            .age = 10,
@@ -45,13 +45,13 @@ TEST(modules, test_json) {
              .email = "homer@simpson.com",
              .children = std::vector<Person>({bart, lisa, maggie})};
 
-  const auto json_str = rfl::json::write(homer);
-  const auto homer2 = rfl::json::read<Person>(json_str).value();
-  const auto json_str2 = rfl::json::write(homer2);
+  const auto cbor_bytes = rfl::cbor::write(homer);
+  const auto homer2 = rfl::cbor::read<Person>(cbor_bytes).value();
+  const auto cbor_bytes2 = rfl::cbor::write(homer2);
 
-  ASSERT_EQ(json_str, json_str2);
+  ASSERT_EQ(cbor_bytes, cbor_bytes2);
 }
 
-}  // namespace test_json
+}  // namespace test_cbor
 
-#endif  // REFLECTCPP_JSON
+#endif  // REFLECTCPP_MSGPACK

@@ -20,7 +20,7 @@ struct DecisionTree {
 
   using LeafOrNode = rfl::TaggedUnion<"type", Leaf, Node>;
 
-  rfl::Field<"leafOrNode", LeafOrNode> leaf_or_node;
+  rfl::Rename<"leafOrNode", LeafOrNode> leaf_or_node;
 };
 
 TEST(cbor, test_box) {
@@ -36,6 +36,5 @@ TEST(cbor, test_box) {
   const DecisionTree tree{.leaf_or_node = std::move(node)};
 
   write_and_read(tree);
-
 }
 }  // namespace test_box

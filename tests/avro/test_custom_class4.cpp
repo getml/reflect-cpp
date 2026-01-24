@@ -26,9 +26,9 @@ struct Person {
 };
 
 struct PersonImpl {
-  rfl::Field<"firstName", std::string> first_name;
-  rfl::Field<"lastName", rfl::Box<std::string>> last_name;
-  rfl::Field<"age", int> age;
+  rfl::Rename<"firstName", std::string> first_name;
+  rfl::Rename<"lastName", rfl::Box<std::string>> last_name;
+  rfl::Rename<"age", int> age;
 
   static PersonImpl from_class(const Person& _p) noexcept {
     return PersonImpl{.first_name = _p.first_name(),

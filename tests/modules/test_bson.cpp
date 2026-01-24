@@ -1,4 +1,4 @@
-#ifdef REFLECTCPP_JSON
+#ifdef REFLECTCPP_BSON
 
 #include <gtest/gtest.h>
 
@@ -8,7 +8,7 @@
 
 import rfl;
 
-namespace test_json {
+namespace test_bson {
 
 using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
 
@@ -22,7 +22,7 @@ struct Person {
   std::vector<Person> children;
 };
 
-TEST(modules, test_json) {
+TEST(modules, test_bson) {
   const auto bart = Person{.first_name = "Bart",
                            .birthday = "1987-04-19",
                            .age = 10,
@@ -45,13 +45,13 @@ TEST(modules, test_json) {
              .email = "homer@simpson.com",
              .children = std::vector<Person>({bart, lisa, maggie})};
 
-  const auto json_str = rfl::json::write(homer);
-  const auto homer2 = rfl::json::read<Person>(json_str).value();
-  const auto json_str2 = rfl::json::write(homer2);
+  const auto bson_bytes = rfl::bson::write(homer);
+  const auto homer2 = rfl::bson::read<Person>(bson_bytes).value();
+  const auto bson_bytes2 = rfl::bson::write(homer2);
 
-  ASSERT_EQ(json_str, json_str2);
+  ASSERT_EQ(bson_bytes, bson_bytes2);
 }
 
-}  // namespace test_json
+}  // namespace test_bson
 
-#endif  // REFLECTCPP_JSON
+#endif  // REFLECTCPP_MSGPACK
