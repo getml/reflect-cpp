@@ -6,11 +6,11 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -Werror -ggdb -ftemplate-backtrace-limit=0")
 endif()
 
-if (REFLECTCPP_JSON)
-    add_subdirectory(generic)
-    add_subdirectory(json)
-    add_subdirectory(json_c_arrays_and_inheritance)
-endif ()
+#if (REFLECTCPP_JSON)
+#    add_subdirectory(generic)
+#    add_subdirectory(json)
+#    add_subdirectory(json_c_arrays_and_inheritance)
+#endif ()
 
 if (REFLECTCPP_AVRO)
     add_subdirectory(avro)
@@ -18,6 +18,10 @@ endif()
 
 if (REFLECTCPP_BSON)
     add_subdirectory(bson)
+endif()
+
+if (REFLECTCPP_BUILD_MODULES)
+    add_subdirectory(modules)
 endif()
 
 if (REFLECTCPP_CAPNPROTO)

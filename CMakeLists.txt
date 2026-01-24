@@ -403,12 +403,14 @@ if (REFLECTCPP_BUILD_MODULES)
     add_subdirectory(src/modules)
 endif()
 
-if (REFLECTCPP_BUILD_TESTS AND NOT REFLECTCPP_BUILD_MODULES)
+if (REFLECTCPP_BUILD_TESTS)
     add_library(reflectcpp_tests_crt INTERFACE)
     target_link_libraries(reflectcpp_tests_crt INTERFACE reflectcpp GTest::gtest_main)
 	
     enable_testing()
     find_package(GTest CONFIG REQUIRED)
+    
+    add_subdirectory(tests)
 endif ()
 
 if (REFLECTCPP_BUILD_BENCHMARKS)
