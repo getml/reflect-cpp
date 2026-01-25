@@ -6,7 +6,7 @@
 
 #include "../Result.hpp"
 #include "../enums.hpp"
-#include "../thirdparty/enchantum/enchantum.hpp"
+#include "enchantum/enchantum.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
