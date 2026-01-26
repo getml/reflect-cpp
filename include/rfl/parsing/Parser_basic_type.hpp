@@ -54,8 +54,7 @@ struct Parser<R, W, T, ProcessorsType> {
   }
 
   /// Generates a schema for the underlying type.
-  static schema::Type to_schema(
-      std::map<std::string, schema::Type>* _definitions) {
+  static schema::Type to_schema(std::map<std::string, schema::Type>*) {
     using U = std::remove_cvref_t<T>;
     using Type = schema::Type;
     if constexpr (std::is_same<U, bool>()) {

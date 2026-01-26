@@ -27,8 +27,7 @@ struct Parser<R, W, Bytestring, ProcessorsType> {
     ParentType::add_value(_w, _b, _parent);
   }
 
-  static schema::Type to_schema(
-    [[maybe_unused]] std::map<std::string, schema::Type>* _definitions) {
+  static schema::Type to_schema(std::map<std::string, schema::Type>*) {
     return schema::Type{schema::Type::Bytestring{}};
   }
 };
