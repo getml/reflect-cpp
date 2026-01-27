@@ -4,6 +4,7 @@
 #include <type_traits>
 
 #include "../DefaultVal.hpp"
+#include "../Rename.hpp"
 
 namespace rfl::internal {
 
@@ -15,6 +16,10 @@ class is_default_val : public std::false_type {};
 
 template <class T>
 class is_default_val<DefaultVal<T>> : public std::true_type {};
+
+template <class T, internal::StringLiteral _new_name>
+class is_default_val<Rename<_new_name, DefaultVal<T>>> : public std::true_type {
+};
 
 template <class T>
 constexpr bool is_default_val_v =
