@@ -60,6 +60,7 @@ std::vector<std::string> split(const std::string& _str,
 
 std::string to_camel_case(const std::string& _str) {
   std::string result;
+  result.reserve(_str.size());
   bool capitalize = false;
   for (const char ch : _str) {
     if (ch == '_') {
