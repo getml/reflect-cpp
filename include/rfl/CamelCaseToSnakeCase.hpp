@@ -9,7 +9,7 @@ namespace rfl {
 
 struct CamelCaseToSnakeCase {
  public:
-  /// Replaces all instances of snake_case field names with camelCase.
+  /// Replaces all instances of camelCase field names with snake_case.
   template <class StructType>
   static auto process(const auto& _named_tuple) {
     return _named_tuple.transform([]<class FieldType>(const FieldType& _f) {
