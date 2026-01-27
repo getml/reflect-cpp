@@ -21,4 +21,4 @@ TEST(json, test_camel_case_to_snake_case_rename) {
       R"({"first_name":"Homer","last_name":"Simpson","homeTown":"Springfield"})");
 }
 
-}  // namespace test_pascal_case_to_camel_case_rename
+}  // namespace test_camel_case_to_snake_case_rename
