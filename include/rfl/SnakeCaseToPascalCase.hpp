@@ -3,7 +3,7 @@
 
 #include "Field.hpp"
 #include "internal/is_rename.hpp"
-#include "internal/transform_snake_case.hpp"
+#include "internal/transform_case.hpp"
 
 namespace rfl {
 

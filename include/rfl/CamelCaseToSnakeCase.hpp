@@ -1,5 +1,5 @@
-#ifndef RFL_SNAKECASETOCAMELCASE_HPP_
-#define RFL_SNAKECASETOCAMELCASE_HPP_
+#ifndef RFL_CAMELCASETOSNAKECASE_HPP_
+#define RFL_CAMELCASETOSNAKECASE_HPP_
 
 #include "Field.hpp"
 #include "internal/is_rename.hpp"
@@ -7,7 +7,7 @@
 
 namespace rfl {
 
-struct SnakeCaseToCamelCase {
+struct CamelCaseToSnakeCase {
  public:
   /// Replaces all instances of snake_case field names with camelCase.
   template <class StructType>
@@ -27,8 +27,7 @@ struct SnakeCaseToCamelCase {
   template <class FieldType>
   static auto handle_one_field(const FieldType& _f) {
     using NewFieldType =
-        Field<internal::transform_snake_case<FieldType::name_,
-                                             /*capitalize=*/false>(),
+        Field<internal::transform_camel_case<FieldType::name_>(),
               typename FieldType::Type>;
     return NewFieldType(_f.value());
   }

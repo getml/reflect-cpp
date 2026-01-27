@@ -41,6 +41,7 @@
 #include "rfl/Skip.hpp"
 #include "rfl/SnakeCaseToCamelCase.hpp"
 #include "rfl/SnakeCaseToPascalCase.hpp"
+#include "rfl/CamelCaseToSnakeCase.hpp"
 #include "rfl/TaggedUnion.hpp"
 #include "rfl/Timestamp.hpp"
 #include "rfl/UnderlyingEnums.hpp"
