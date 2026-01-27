@@ -5,6 +5,7 @@
 
 #include "../DefaultVal.hpp"
 #include "../Rename.hpp"
+#include "StringLiteral.hpp"
 
 namespace rfl::internal {
 

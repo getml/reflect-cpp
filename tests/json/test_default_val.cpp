@@ -29,6 +29,7 @@ TEST(json, test_default_val) {
   EXPECT_EQ(homer.first_name, "Homer");
   EXPECT_EQ(homer.last_name.value(), "Simpson");
   EXPECT_EQ(homer.town.value(), "");
+  EXPECT_EQ(homer.home_country().value(), "USA");
 
   write_and_read(
       Person{"Waylon", "Smith", "Springfield"},
