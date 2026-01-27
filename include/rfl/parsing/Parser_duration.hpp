@@ -99,43 +99,46 @@ struct Parser<R, W, std::chrono::duration<Rep, Period>, ProcessorsType> {
     }
   }
 
+  template <typename OtherDuration>
+  inline static constexpr bool samePeriodAs =
+      std::is_same_v<typename DurationType::period,
+                     typename OtherDuration::period>;
+
   static auto make_unit() noexcept {
-    if constexpr (std::is_same_v<DurationType, std::chrono::nanoseconds>) {
+    if constexpr (samePeriodAs<std::chrono::nanoseconds>) {
       return Unit::make<"nanoseconds">();
 
-    } else if constexpr (std::is_same_v<DurationType,
-                                        std::chrono::microseconds>) {
+    } else if constexpr (samePeriodAs<std::chrono::microseconds>) {
       return Unit::make<"microseconds">();
 
-    } else if constexpr (std::is_same_v<DurationType,
-                                        std::chrono::milliseconds>) {
+    } else if constexpr (samePeriodAs<std::chrono::milliseconds>) {
       return Unit::make<"milliseconds">();
 
-    } else if constexpr (std::is_same_v<DurationType, std::chrono::seconds>) {
+    } else if constexpr (samePeriodAs<std::chrono::seconds>) {
       return Unit::make<"seconds">();
 
-    } else if constexpr (std::is_same_v<DurationType, std::chrono::minutes>) {
+    } else if constexpr (samePeriodAs<std::chrono::minutes>) {
       return Unit::make<"minutes">();
 
-    } else if constexpr (std::is_same_v<DurationType, std::chrono::hours>) {
+    } else if constexpr (samePeriodAs<std::chrono::hours>) {
       return Unit::make<"hours">();
 
-    } else if constexpr (std::is_same_v<DurationType, std::chrono::days>) {
+    } else if constexpr (samePeriodAs<std::chrono::days>) {
       return Unit::make<"days">();
 
-    } else if constexpr (std::is_same_v<DurationType, std::chrono::weeks>) {
+    } else if constexpr (samePeriodAs<std::chrono::weeks>) {
       return Unit::make<"weeks">();
 
-    } else if constexpr (std::is_same_v<DurationType, std::chrono::months>) {
+    } else if constexpr (samePeriodAs<std::chrono::months>) {
       return Unit::make<"months">();
 
-    } else if constexpr (std::is_same_v<DurationType, std::chrono::years>) {
+    } else if constexpr (samePeriodAs<std::chrono::years>) {
       return Unit::make<"years">();
 
     } else {
       static_assert(always_false_v<DurationType>, "Unsupported type.");
     }
-  };
+  }
 };
 
 }  // namespace rfl::parsing
