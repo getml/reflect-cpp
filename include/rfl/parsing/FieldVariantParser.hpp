@@ -73,7 +73,7 @@ struct FieldVariantParser {
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions,
-      [[maybe_unused]] std::vector<schema::Type> _types = {}) {
+      std::vector<schema::Type> = {}) {
     using VariantType = rfl::Variant<NamedTuple<FieldTypes>...>;
     return Parser<R, W, VariantType, ProcessorsType>::to_schema(_definitions);
   }
