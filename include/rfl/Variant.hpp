@@ -223,7 +223,7 @@ class Variant {
   template <class F, IndexType... _is>
   void do_visit_no_result(F& _f, bool* _visited,
                           std::integer_sequence<IndexType, _is...>) {
-    auto visit_one = [this]<IndexType _i>(const F& _f, bool* _visited,
+    auto visit_one = [this]<IndexType _i>(F& _f, bool* _visited,
                                           Index<_i>) {
       if (!*_visited && index_ == _i) {
         _f(get_alternative<_i>());
@@ -236,7 +236,7 @@ class Variant {
   template <class F, IndexType... _is>
   void do_visit_no_result(F& _f, bool* _visited,
                           std::integer_sequence<IndexType, _is...>) const {
-    auto visit_one = [this]<IndexType _i>(const F& _f, bool* _visited,
+    auto visit_one = [this]<IndexType _i>(F& _f, bool* _visited,
                                           Index<_i>) {
       if (!*_visited && index_ == _i) {
         _f(get_alternative<_i>());
@@ -275,7 +275,7 @@ class Variant {
   template <class F, class ResultType, IndexType... _is>
   void do_visit_with_result(F& _f, std::optional<ResultType>* _result,
                             std::integer_sequence<IndexType, _is...>) {
-    auto visit_one = [this]<IndexType _i>(const F& _f,
+    auto visit_one = [this]<IndexType _i>(F& _f,
                                           std::optional<ResultType>* _result,
                                           Index<_i>) {
       if (!*_result && index_ == _i) {
@@ -288,7 +288,7 @@ class Variant {
   template <class F, class ResultType, IndexType... _is>
   void do_visit_with_result(F& _f, std::optional<ResultType>* _result,
                             std::integer_sequence<IndexType, _is...>) const {
-    auto visit_one = [this]<IndexType _i>(const F& _f,
+    auto visit_one = [this]<IndexType _i>(F& _f,
                                           std::optional<ResultType>* _result,
                                           Index<_i>) {
       if (!*_result && index_ == _i) {
@@ -328,7 +328,7 @@ class Variant {
   void do_visit_with_reference(F& _f, ResultType** _result,
                                std::integer_sequence<IndexType, _is...>) {
     const auto visit_one = [this]<IndexType _i>(
-                               const F& _f, ResultType** _result, Index<_i>) {
+                               F& _f, ResultType** _result, Index<_i>) {
       if (!*_result && index_ == _i) {
         *_result = &_f(get_alternative<_i>());
       }
@@ -340,7 +340,7 @@ class Variant {
   void do_visit_with_reference(F& _f, ResultType** _result,
                                std::integer_sequence<IndexType, _is...>) const {
     const auto visit_one = [this]<IndexType _i>(
-                               const F& _f, ResultType** _result, Index<_i>) {
+                               F& _f, ResultType** _result, Index<_i>) {
       if (!*_result && index_ == _i) {
         *_result = &_f(get_alternative<_i>());
       }
