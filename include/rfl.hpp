@@ -40,6 +40,7 @@
 #include "rfl/Size.hpp"
 #include "rfl/Skip.hpp"
 #include "rfl/SnakeCaseToCamelCase.hpp"
+#include "rfl/SnakeCaseToKebabCase.hpp"
 #include "rfl/SnakeCaseToPascalCase.hpp"
 #include "rfl/CamelCaseToSnakeCase.hpp"
 #include "rfl/TaggedUnion.hpp"
