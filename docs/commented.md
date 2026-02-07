@@ -2,7 +2,7 @@
 
 The `rfl::Commented<T>` wrapper allows you to add comments to fields in your structs. These comments are then serialized in formats that support them, such as YAML and XML.
 
-Note that `rfl::Commented` is currently unsupported by formats that do not have a standard way of representing comments, such as JSON.
+Note that `rfl::Commented` is currently unsupported by formats that do not have a standard way of representing comments, such as JSON. Also note that comments are **write-only**: they are ignored during deserialization.
 
 ## Example (YAML)
 
