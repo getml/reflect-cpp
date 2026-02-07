@@ -28,30 +28,21 @@ struct Parser<R, W, Commented<T>, ProcessorsType> {
 
   static Result<Commented<T>> read(const R& _r,
                                    const InputVarType& _var) noexcept {
-    if constexpr (supports_comments<R>) {
-      return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r,
-                                                                        _var)
-          .transform([&](auto&& _t) {
-            return Commented<T>(std::move(_t), _r.get_comment(_var));
-          });
-    } else {
-      return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r,
-                                                                        _var)
-          .transform([](auto&& _t) {
-            return Commented<T>(std::forward<decltype(_t)>(_t));
-          });
-    }
+    return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r, _var)
+        .transform([](auto&& _t) {
+          return Commented<T>(std::forward<decltype(_t)>(_t));
+        });
   }
 
   template <class P>
   static void write(const W& _w, const Commented<T>& _c, const P& _parent) {
-    if constexpr (supports_comments<W>) {
-      if (_c.comment()) {
-        _w.add_comment(_parent, *_c.comment());
-      }
-    }
     Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, _c.get(),
                                                                 _parent);
+    if constexpr (supports_comments<W>) {
+      if (_c.comment()) {
+        ParentType::add_comment(_w, *_c.comment(), _parent);
+      }
+    }
   }
 
   static schema::Type to_schema(

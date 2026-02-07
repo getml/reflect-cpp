@@ -11,8 +11,7 @@
 #include "../always_false.hpp"
 #include "../common.hpp"
 
-namespace rfl {
-namespace yaml {
+namespace rfl::yaml {
 
 class RFL_API Writer {
  public:
@@ -42,11 +41,17 @@ class RFL_API Writer {
   }
 
   OutputArrayType add_array_to_array(const size_t _size,
-                                     OutputArrayType* _parent) const;
+                                     OutputArrayType* /*_parent*/) const;
 
   OutputArrayType add_array_to_object(const std::string_view& _name,
                                       const size_t _size,
-                                      OutputObjectType* _parent) const;
+                                      OutputObjectType* /*_parent*/) const;
+
+  void add_comment_to_array(const std::string_view& _comment,
+                            OutputArrayType* _parent) const;
+
+  void add_comment_to_object(const std::string_view& _comment,
+                             OutputObjectType* _parent) const;
 
   OutputObjectType add_object_to_array(const size_t _size,
                                        OutputArrayType* _parent) const;
@@ -122,6 +127,8 @@ class RFL_API Writer {
 
   OutputArrayType new_array() const;
 
+  void new_comment(const std::string_view& _comment) const;
+
   OutputObjectType new_object(const std::string_view& _name) const;
 
   OutputObjectType new_object() const;
@@ -130,7 +137,6 @@ class RFL_API Writer {
   const Ref<YAML::Emitter> out_;
 };
 
-}  // namespace yaml
-}  // namespace rfl
+}  // namespace rfl::yaml
 
 #endif
