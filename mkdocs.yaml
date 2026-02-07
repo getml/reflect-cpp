@@ -123,6 +123,7 @@ nav:
       - rfl::Box and rfl::Ref: rfl_ref.md
       - rfl::Timestamp: timestamps.md
       - rfl::Skip: rfl_skip.md
+      - rfl::Commented: commented.md
       - rfl::Result: result.md
       - Standard containers: standard_containers.md
       - C arrays and inheritance: c_arrays_and_inheritance.md
