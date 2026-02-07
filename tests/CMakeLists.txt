@@ -10,6 +10,7 @@ if (REFLECTCPP_JSON)
     add_subdirectory(generic)
     add_subdirectory(json)
     add_subdirectory(json_c_arrays_and_inheritance)
+    add_subdirectory(cli)
 endif ()
 
 if (REFLECTCPP_AVRO)
