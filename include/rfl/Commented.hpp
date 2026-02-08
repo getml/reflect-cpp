@@ -11,7 +11,7 @@
 namespace rfl {
 
 template <class T>
-class Commented {
+struct Commented {
  public:
   using Type = std::remove_cvref_t<T>;
 
@@ -144,7 +144,6 @@ class Commented {
   /// Returns the underlying object.
   const Type& value() const { return value_; }
 
- private:
   /// The comment associated with the field.
   std::optional<std::string> comment_;
 
