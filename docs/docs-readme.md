@@ -24,7 +24,7 @@
 
 [rfl::Skip](rfl_skip.md) - For skipping fields during serialization and/or deserialization.
 
-[rfl::Commented](commented.md) - For adding comments to your serialized format (only supported by some formats, such as YAML). 
+[rfl::Commented](commented.md) - For adding comments to your serialized format (only supported by some formats, such as YAML or XML). 
 
 [rfl::Result](result.md) - For error handling without exceptions.
 
