@@ -92,11 +92,29 @@ struct Validator {
     return value() == _other.value();
   }
 
-  /// Exposes the underlying value.
-  T& value() { return value_; }
+  /// Returns the underlying object.
+  const T& get() const noexcept { return value_; }
+
+  /// Returns the underlying object.
+  T& get() noexcept { return value_; }
+
+  /// Returns the underlying object.
+  T& operator*() noexcept { return value_; }
+
+  /// Returns the underlying object.
+  const T& operator*() const noexcept { return value_; }
+
+  /// Returns the underlying object.
+  T& operator()() noexcept { return value_; }
+
+  /// Returns the underlying object.
+  const T& operator()() const noexcept { return value_; }
 
   /// Exposes the underlying value.
-  const T& value() const { return value_; }
+  T& value() noexcept { return value_; }
+
+  /// Exposes the underlying value.
+  const T& value() const noexcept { return value_; }
 
   /// Necessary for the serialization to work.
   const T& reflection() const { return value_; }

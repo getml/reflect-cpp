@@ -27,8 +27,7 @@ const auto person1 = Person{.birthday = "1970-01-01"};
 const auto person2 = Person{.birthday = std::tm{...}};
 ```
 
-You can access the underlying `std::tm` struct using the `.tm()` method and you can generate 
-the string representation using the `.str()` method.
+You can access the underlying `std::tm` struct using the `.tm()`, `.get()`, `.value()`, `operator()()`, or `operator*()` method (const and non-const overloads). You can generate the string representation using the `.str()` method.
 
 ```cpp
 const std::tm birthday = person1.birthday.tm();

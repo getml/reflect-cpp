@@ -55,7 +55,7 @@ The resulting JSON strings looks as follows:
 
 `rfl::Generic` contains some convenience methods that allow you to handle parsed data:
 
-You can retrieve the underlying `std::variant` using `.get()`. This then allows you to handle allow possible seven cases using the [visitor pattern](https://en.cppreference.com/w/cpp/utility/variant/visit).
+You can retrieve the underlying `std::variant` using `.get()`, `.value()`, `operator()()`, or `operator*()`. This then allows you to handle all possible seven cases using the [visitor pattern](https://en.cppreference.com/w/cpp/utility/variant/visit).
 
 If you have a guess what the types of a particular field might be, you can use any of the seven convenience methods `.to_array()`, `.to_bool()`, `.to_double()`, `.to_int()`, `.to_null()`, `.to_object()`, `.to_string()`. Each
 of these methods will return an `rfl::Result<...>` with the corresponding type, if the `rfl::Generic` does indeed contain such a type.

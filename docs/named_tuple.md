@@ -107,6 +107,10 @@ person.apply([](const auto& f) {
   auto field_name = f.name();
   const auto& value = f.value();
 });
+
+### `rfl::Field` API convenience
+
+`rfl::Field` behaves like a thin wrapper around the underlying type. You can access the underlying value using `.get()`, `.value()`, `operator()()`, or `operator*()` (const and non-const overloads).
 ```
 
 ### Monadic operations: `.transform` and `.and_then`

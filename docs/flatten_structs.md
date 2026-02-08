@@ -68,3 +68,6 @@ This flattens all fields into a single JSON object:
 {"firstName":"Homer","lastName":"Simpson","age":45,"salary":60000.0}
 ```
 
+## API convenience
+
+`rfl::Flatten` behaves like a thin wrapper around the underlying type. You can access the underlying value using `.get()`, `.value()`, `operator()()`, or `operator*()` (const and non-const overloads).

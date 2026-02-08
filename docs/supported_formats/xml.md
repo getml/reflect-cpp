@@ -137,6 +137,8 @@ This will result in the following XML string:
 
 Note that only boolean values, string values, integral values or floating point values can be represented as attributes.
 
+`rfl::Attribute` behaves like a thin wrapper around the underlying type. Much like `rfl::Field`, you can access the underlying value using `.get()`, `.value()`, `operator()()`, or `operator*()` (const and non-const overloads).
+
 There also is a special field name called `xml_content` to be used when you want a value directly inserted into the content.
 Again, only boolean values, string values, integral values or floating point values can be represented this way:
 
