@@ -10,7 +10,7 @@
 #include "../always_false.hpp"
 #include "../common.hpp"
 
-namespace rfl ::xml {
+namespace rfl::xml {
 
 struct RFL_API Writer {
   struct XMLOutputArray {
