@@ -2392,7 +2392,7 @@ if you want an integer that is greater or equal to 10, you can do the following:
 </code></pre></div>
 <p>When you then use the type <code>IntGreaterThan10</code> inside you <code>rfl::Field</code>, the condition will be automatically
 validated.</p>
-<p>The underlying value can be retrieved using the <code>.value()</code> method.</p>
+<p>The underlying value can be retrieved using the <code>.get()</code>, <code>.value()</code>, <code>operator()()</code>, or <code>operator*()</code> method (const and non-const overloads).</p>
 <p>The current conditions are currently supported by reflect-cpp:</p>
 <ul>
 <li><code>rfl::EqualTo</code></li>

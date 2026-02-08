@@ -2591,6 +2591,7 @@
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
+<p><code>rfl::Description</code> behaves like a thin wrapper around the underlying type. Much like <code>rfl::Field</code>, you can access the underlying value using <code>.get()</code>, <code>.value()</code>, <code>operator()()</code>, or <code>operator*()</code> (const and non-const overloads).</p>
 <p>You also add a description to the entire JSON schema:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">json_schema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">to_schema</span><span class="o">&lt;</span>
 <span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Description</span><span class="o">&lt;</span><span class="s">&quot;JSON schema that describes the required &quot;</span>

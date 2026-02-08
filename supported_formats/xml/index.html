@@ -2700,6 +2700,7 @@ If you want something to be displayed as an attribute, you must mark it as such:
 <span class="nt">&lt;/Person&gt;</span>
 </code></pre></div>
 <p>Note that only boolean values, string values, integral values or floating point values can be represented as attributes.</p>
+<p><code>rfl::Attribute</code> behaves like a thin wrapper around the underlying type. Much like <code>rfl::Field</code>, you can access the underlying value using <code>.get()</code>, <code>.value()</code>, <code>operator()()</code>, or <code>operator*()</code> (const and non-const overloads).</p>
 <p>There also is a special field name called <code>xml_content</code> to be used when you want a value directly inserted into the content.
 Again, only boolean values, string values, integral values or floating point values can be represented this way:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>

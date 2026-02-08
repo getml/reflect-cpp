@@ -1148,6 +1148,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#api-convenience" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API convenience
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2392,6 +2403,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#api-convenience" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API convenience
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2529,6 +2551,8 @@ all fields will be flattened to a single JSON object.</p>
 <p>This flattens all fields into a single JSON object:</p>
 <div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;firstName&quot;</span><span class="p">:</span><span class="s2">&quot;Homer&quot;</span><span class="p">,</span><span class="nt">&quot;lastName&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">,</span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="mi">45</span><span class="p">,</span><span class="nt">&quot;salary&quot;</span><span class="p">:</span><span class="mf">60000.0</span><span class="p">}</span>
 </code></pre></div>
+<h2 id="api-convenience">API convenience<a class="headerlink" href="#api-convenience" title="Permanent link">&para;</a></h2>
+<p><code>rfl::Flatten</code> behaves like a thin wrapper around the underlying type. You can access the underlying value using <code>.get()</code>, <code>.value()</code>, <code>operator()()</code>, or <code>operator*()</code> (const and non-const overloads).</p>
 
 
 

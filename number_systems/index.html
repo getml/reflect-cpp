@@ -2404,7 +2404,7 @@ in binary, hex and octal format.</p>
 </code></pre></div>
 <p>Note that the contained type must be integral for <code>rfl::Hex</code> and <code>rfl::Oct</code>. For <code>rfl::Binary</code>, it must be unsigned. Moreover, 
 the number of digits for <code>rfl::Binary</code> will be determined by the bitsize of the type.</p>
-<p>You can access the contained value using <code>.value()</code>, <code>.get()</code> or simply <code>operator()</code>.</p>
+<p>You can access the contained value using <code>.value()</code>, <code>.get()</code>, <code>operator()()</code>, or <code>operator*()</code> (const and non-const overloads).</p>
 <p>You can produce the string representation using <code>.str()</code>.</p>
 
 
