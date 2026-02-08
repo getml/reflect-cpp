@@ -36,15 +36,14 @@ struct Commented {
       : comment_(_commented.comment()), value_(_commented.get()) {}
 
   template <class U>
-  Commented(Commented<U>&& _commented) noexcept(
-      noexcept(Type(std::move(_commented.value()))))
+  Commented(Commented<U>&& _commented) noexcept
       : comment_(std::move(_commented.comment())),
         value_(std::move(_commented.value())) {}
 
   template <class U>
     requires(std::is_convertible_v<U, Type>)
   Commented(const Commented<U>& _commented)
-      : comment_(commented.comment()), value_(_commented.value()) {}
+      : comment_(_commented.comment()), value_(_commented.value()) {}
 
   template <class U>
     requires(std::is_convertible_v<U, Type>)
