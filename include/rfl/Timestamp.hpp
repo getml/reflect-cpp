@@ -72,28 +72,28 @@ class Timestamp {
   }
 
   /// Returns the underlying object.
-  const std::tm& get() const { return tm_; }
+  const std::tm& get() const noexcept { return tm_; }
 
   /// Returns the underlying object.
-  std::tm& get() { return tm_; }
+  std::tm& get() noexcept { return tm_; }
 
   /// Returns the underlying object.
-  std::tm& operator*() { return tm_; }
+  std::tm& operator*() noexcept { return tm_; }
 
   /// Returns the underlying object.
-  const std::tm& operator*() const { return tm_; }
+  const std::tm& operator*() const noexcept { return tm_; }
 
   /// Returns the underlying object.
-  std::tm& operator()() { return tm_; }
+  std::tm& operator()() noexcept { return tm_; }
 
   /// Returns the underlying object.
-  const std::tm& operator()() const { return tm_; }
+  const std::tm& operator()() const noexcept { return tm_; }
 
   /// Returns the underlying object.
-  std::tm& value() { return tm_; }
+  std::tm& value() noexcept { return tm_; }
 
   /// Returns the underlying object.
-  const std::tm& value() const { return tm_; }
+  const std::tm& value() const noexcept { return tm_; }
 
   /// Necessary for the serialization to work.
   ReflectionType reflection() const {

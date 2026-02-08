@@ -52,22 +52,22 @@ struct Hex {
   ~Hex() = default;
 
   /// Returns the underlying object.
-  const Type& get() const { return value_; }
+  const Type& get() const noexcept { return value_; }
 
   /// Returns the underlying object.
-  Type& get() { return value_; }
+  Type& get() noexcept { return value_; }
 
   /// Returns the underlying object.
-  Type& operator*() { return value_; }
+  Type& operator*() noexcept { return value_; }
 
   /// Returns the underlying object.
-  const Type& operator*() const { return value_; }
+  const Type& operator*() const noexcept { return value_; }
 
   /// Returns the underlying object.
-  Type& operator()() { return value_; }
+  Type& operator()() noexcept { return value_; }
 
   /// Returns the underlying object.
-  const Type& operator()() const { return value_; }
+  const Type& operator()() const noexcept { return value_; }
 
   /// Assigns the underlying object.
   auto& operator=(const Type& _value) {
@@ -124,10 +124,10 @@ struct Hex {
   std::string str() const { return reflection(); }
 
   /// Returns the underlying object.
-  Type& value() { return value_; }
+  Type& value() noexcept { return value_; }
 
   /// Returns the underlying object.
-  const Type& value() const { return value_; }
+  const Type& value() const noexcept { return value_; }
 
   /// The underlying value.
   Type value_;
