@@ -43,15 +43,16 @@ struct Commented {
 
   template <class U>
     requires(std::is_convertible_v<U, Type>)
+  Commented(const Commented<U>& _commented)
+      : comment_(commented.comment()), value_(_commented.value()) {}
+
+  template <class U>
+    requires(std::is_convertible_v<U, Type>)
   Commented(const U& _value) : value_(_value) {}
 
   template <class U>
     requires(std::is_convertible_v<U, Type>)
   Commented(U&& _value) noexcept : value_(std::forward<U>(_value)) {}
-
-  template <class U>
-    requires(std::is_convertible_v<U, Type>)
-  Commented(const Commented<U>& _commented) : value_(_commented.value()) {}
 
   /// Assigns the underlying object to its default value.
   template <class U = Type>
