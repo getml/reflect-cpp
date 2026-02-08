@@ -47,9 +47,8 @@ struct Parser<R, W, Commented<T>, ProcessorsType> {
 
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
-    using U = std::remove_cvref_t<T>;
-    return schema::Type{schema::Type::Optional{Ref<schema::Type>::make(
-        Parser<R, W, U, ProcessorsType>::to_schema(_definitions))}};
+    return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::to_schema(
+        _definitions);
   }
 };
 
