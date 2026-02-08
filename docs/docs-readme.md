@@ -24,6 +24,8 @@
 
 [rfl::Skip](rfl_skip.md) - For skipping fields during serialization and/or deserialization.
 
+[rfl::Commented](commented.md) - For adding comments to your serialized format (only supported by some formats, such as YAML). 
+
 [rfl::Result](result.md) - For error handling without exceptions.
 
 [Standard containers](standard_containers.md) - Describes how reflect-cpp treats containers in the standard library.
