@@ -122,13 +122,15 @@ struct Commented {
   template <class U>
   auto& operator=(const Commented<U>& _commented) {
     value_ = _commented.get();
+    comment_ = _commented.comment();
     return *this;
   }
 
   /// Assigns the underlying object.
   template <class U>
   auto& operator=(Commented<U>&& _commented) {
-    value_ = std::forward<U>(_commented.value_);
+    value_ = std::move(_commented.value_);
+    comment_ = std::move(_commented.comment_);
     return *this;
   }
 
