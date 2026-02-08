@@ -92,6 +92,24 @@ struct Validator {
     return value() == _other.value();
   }
 
+  /// Returns the underlying object.
+  const T& get() const { return value_; }
+
+  /// Returns the underlying object.
+  T& get() { return value_; }
+
+  /// Returns the underlying object.
+  T& operator*() { return value_; }
+
+  /// Returns the underlying object.
+  const T& operator*() const { return value_; }
+
+  /// Returns the underlying object.
+  T& operator()() { return value_; }
+
+  /// Returns the underlying object.
+  const T& operator()() const { return value_; }
+
   /// Exposes the underlying value.
   T& value() { return value_; }
 

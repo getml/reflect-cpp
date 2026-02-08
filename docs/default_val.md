@@ -25,7 +25,7 @@ std::string s = p.last_name.value();
 
 API convenience:
 
-- .get(), .value(), operator()() — access the underlying value (const and non-const overloads).
+- .get(), .value(), operator()(), operator*() — access the underlying value (const and non-const overloads).
 - set(...) — assign underlying value.
 
 ## JSON behaviour

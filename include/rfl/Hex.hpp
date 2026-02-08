@@ -55,6 +55,15 @@ struct Hex {
   const Type& get() const { return value_; }
 
   /// Returns the underlying object.
+  Type& get() { return value_; }
+
+  /// Returns the underlying object.
+  Type& operator*() { return value_; }
+
+  /// Returns the underlying object.
+  const Type& operator*() const { return value_; }
+
+  /// Returns the underlying object.
   Type& operator()() { return value_; }
 
   /// Returns the underlying object.

@@ -53,6 +53,27 @@ class RFL_API Generic {
   /// Returns the underlying object.
   const VariantType& get() const { return value_; }
 
+  /// Returns the underlying object.
+  VariantType& get() { return value_; }
+
+  /// Returns the underlying object.
+  VariantType& operator*() { return value_; }
+
+  /// Returns the underlying object.
+  const VariantType& operator*() const { return value_; }
+
+  /// Returns the underlying object.
+  VariantType& operator()() { return value_; }
+
+  /// Returns the underlying object.
+  const VariantType& operator()() const { return value_; }
+
+  /// Returns the underlying object.
+  VariantType& value() { return value_; }
+
+  /// Returns the underlying object.
+  const VariantType& value() const { return value_; }
+
   /// Whether the object contains the null value.
   bool is_null() const noexcept;
 

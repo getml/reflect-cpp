@@ -48,10 +48,22 @@ struct Flatten {
   const Type& get() const { return value_; }
 
   /// Returns the underlying object.
+  Type& operator*() { return value_; }
+
+  /// Returns the underlying object.
+  const Type& operator*() const { return value_; }
+
+  /// Returns the underlying object.
   Type& operator()() { return value_; }
 
   /// Returns the underlying object.
   const Type& operator()() const { return value_; }
+
+  /// Returns the underlying object.
+  Type& value() { return value_; }
+
+  /// Returns the underlying object.
+  const Type& value() const { return value_; }
 
   /// Assigns the underlying object.
   Flatten& operator=(const T& _value) {

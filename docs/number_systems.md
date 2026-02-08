@@ -25,6 +25,6 @@ This results in the following JSON:
 Note that the contained type must be integral for `rfl::Hex` and `rfl::Oct`. For `rfl::Binary`, it must be unsigned. Moreover, 
 the number of digits for `rfl::Binary` will be determined by the bitsize of the type.
 
-You can access the contained value using `.value()`, `.get()` or simply `operator()`.
+You can access the contained value using `.value()`, `.get()`, `operator()()`, or `operator*()` (const and non-const overloads).
 
 You can produce the string representation using `.str()`.

@@ -50,6 +50,7 @@ You can access the underlying value in the field `town` using any of the followi
 person.town();
 person.town.get();
 person.town.value();
+*person.town;
 ```
 
 You can assign the underlying field just like any other field:
