@@ -514,6 +514,10 @@ set(CPACK_DEBIAN_PACKAGE_DEPENDS "")
 
 # RPM specific configuration
 set(CPACK_RPM_PACKAGE_REQUIRES "")
+set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
+set(CPACK_RPM_PACKAGE_LICENSE "MIT")
+set(CPACK_RPM_PACKAGE_LICENSE "MIT")
+set(CPACK_RPM_PACKAGE_URL "https://rfl.getml.com")
 
 include(CPack)
 
