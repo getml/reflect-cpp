@@ -30,7 +30,7 @@
 #include <concepts>
 #include <utility>
 
-#include "../../thirdparty/enchantum/enchantum.hpp"// NOLINT(unused-includes)
+#include "enchantum/enchantum.hpp"// NOLINT(unused-includes)
 
 #include "../../Literal.hpp"
 #include "Names.hpp"
