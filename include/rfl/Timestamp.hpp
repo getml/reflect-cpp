@@ -71,6 +71,30 @@ class Timestamp {
     return from_string(_str);
   }
 
+  /// Returns the underlying object.
+  const std::tm& get() const noexcept { return tm_; }
+
+  /// Returns the underlying object.
+  std::tm& get() noexcept { return tm_; }
+
+  /// Returns the underlying object.
+  std::tm& operator*() noexcept { return tm_; }
+
+  /// Returns the underlying object.
+  const std::tm& operator*() const noexcept { return tm_; }
+
+  /// Returns the underlying object.
+  std::tm& operator()() noexcept { return tm_; }
+
+  /// Returns the underlying object.
+  const std::tm& operator()() const noexcept { return tm_; }
+
+  /// Returns the underlying object.
+  std::tm& value() noexcept { return tm_; }
+
+  /// Returns the underlying object.
+  const std::tm& value() const noexcept { return tm_; }
+
   /// Necessary for the serialization to work.
   ReflectionType reflection() const {
     char outstr[200];

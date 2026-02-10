@@ -142,8 +142,7 @@ class ViewReader {
       if (!already_assigned) {
         std::stringstream stream;
         stream << "Value named '" << _current_name_or_index
-               << "' not used. Remove the rfl::NoExtraFields processor or add "
-                  "rfl::ExtraFields to avoid this error message.";
+               << "' not used.";
         _errors->emplace_back(Error(stream.str()));
       }
     }

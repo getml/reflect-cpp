@@ -139,6 +139,8 @@ const std::string json_schema = rfl::json::to_schema<Person>(rfl::json::pretty);
 }
 ```
 
+`rfl::Description` behaves like a thin wrapper around the underlying type. Much like `rfl::Field`, you can access the underlying value using `.get()`, `.value()`, `operator()()`, or `operator*()` (const and non-const overloads).
+
 You also add a description to the entire JSON schema:
 
 ```cpp
