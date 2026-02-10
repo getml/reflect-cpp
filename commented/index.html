@@ -12,13 +12,13 @@
         <meta name="author" content="Code17 GmbH">
       
       
-        <link rel="canonical" href="https://rfl.getml.com/standard_containers/">
+        <link rel="canonical" href="https://rfl.getml.com/commented/">
       
       
-        <link rel="prev" href="../result/">
+        <link rel="prev" href="../rfl_skip/">
       
       
-        <link rel="next" href="../c_arrays_and_inheritance/">
+        <link rel="next" href="../result/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Standard containers - reflect-cpp</title>
+        <title>rfl::Commented - reflect-cpp</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#support-for-standard-containers" class="md-skip">
+        <a href="#rflcommented" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Standard containers
+              rfl::Commented
             
           </span>
         </div>
@@ -1307,10 +1307,36 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../commented/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    
+  
+    rfl::Commented
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1325,6 +1351,61 @@
   
 
       </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#example-yaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example (YAML)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-xml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example (XML)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-convenience" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API convenience
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1361,19 +1442,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../standard_containers/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1388,7 +1460,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2331,6 +2402,47 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#example-yaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example (YAML)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-xml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example (XML)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-convenience" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API convenience
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2412,41 +2524,67 @@
   
 
 
-<h1 id="support-for-standard-containers">Support for standard containers<a class="headerlink" href="#support-for-standard-containers" title="Permanent link">&para;</a></h1>
-<p>The serialization and deserialization of containers is handled as follows:</p>
-<p><code>std::map&lt;std::string, ...&gt;</code>, <code>std::unordered_map&lt;std::string, ...&gt;</code>, 
-maps with any numeric types (integral and floating points) as keys,
-and any objects where the <code>ReflectionType</code> is either a <code>std::string</code> or
-a numeric type are treated as objects.</p>
-<p>Consider the following map:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">homer</span><span class="p">;</span>
-<span class="n">homer</span><span class="p">[</span><span class="s">&quot;firstName&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Homer&quot;</span><span class="p">;</span>
-<span class="n">homer</span><span class="p">[</span><span class="s">&quot;lastName&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">;</span>
+<h1 id="rflcommented"><code>rfl::Commented</code><a class="headerlink" href="#rflcommented" title="Permanent link">&para;</a></h1>
+<p>The <code>rfl::Commented&lt;T&gt;</code> wrapper allows you to add comments to fields in your structs. These comments are then serialized in formats that support them, such as YAML and XML.</p>
+<p>Note that <code>rfl::Commented</code> is currently unsupported by formats that do not have a standard way of representing comments, such as JSON. Also note that comments are <strong>write-only</strong>: they are ignored during deserialization.</p>
+<h2 id="example-yaml">Example (YAML)<a class="headerlink" href="#example-yaml" title="Permanent link">&para;</a></h2>
+<p>In YAML, the comments are added as line comments (<code>#</code>):</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Commented</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">town</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">homer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Homer&quot;</span><span class="p">,</span>
+<span class="w">                          </span><span class="p">.</span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">,</span>
+<span class="w">                          </span><span class="p">.</span><span class="n">town</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Commented</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">                              </span><span class="s">&quot;Springfield&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;The town where Homer lives&quot;</span><span class="p">)};</span>
+
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">yaml_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">yaml</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">homer</span><span class="p">);</span>
 </code></pre></div>
-<p>This will be represented as follows:</p>
-<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;firstName&quot;</span><span class="p">:</span><span class="s2">&quot;Homer&quot;</span><span class="p">,</span><span class="nt">&quot;lastName&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">}</span>
+<p>This will result in the following YAML:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span class="nt">first_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Homer</span>
+<span class="nt">last_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Simpson</span>
+<span class="nt">town</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Springfield</span><span class="w">  </span><span class="c1"># The town where Homer lives</span>
 </code></pre></div>
-<p>The same is true for numeric types:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">homer</span><span class="p">;</span>
-<span class="n">homer</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Homer&quot;</span><span class="p">;</span>
-<span class="n">homer</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">;</span>
+<h2 id="example-xml">Example (XML)<a class="headerlink" href="#example-xml" title="Permanent link">&para;</a></h2>
+<p>In XML, the comments are added as <code>&lt;!-- comment --&gt;</code> blocks after the field:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Commented</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">town</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">homer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Homer&quot;</span><span class="p">,</span>
+<span class="w">                          </span><span class="p">.</span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">,</span>
+<span class="w">                          </span><span class="p">.</span><span class="n">town</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Commented</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">                              </span><span class="s">&quot;Springfield&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;The town where Homer lives&quot;</span><span class="p">)};</span>
+
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">xml_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">xml</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">homer</span><span class="p">);</span>
 </code></pre></div>
-<p>This will be represented as follows:</p>
-<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;1&quot;</span><span class="p">:</span><span class="s2">&quot;Homer&quot;</span><span class="p">,</span><span class="nt">&quot;2&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">}</span>
+<p>This will result in the following XML:</p>
+<div class="language-xml highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+<span class="nt">&lt;Person&gt;</span>
+<span class="w">    </span><span class="nt">&lt;first_name&gt;</span>Homer<span class="nt">&lt;/first_name&gt;</span>
+<span class="w">    </span><span class="nt">&lt;last_name&gt;</span>Simpson<span class="nt">&lt;/last_name&gt;</span>
+<span class="w">    </span><span class="nt">&lt;town&gt;</span>Springfield<span class="nt">&lt;/town&gt;</span>
+<span class="w">    </span><span class="cm">&lt;!--The town where Homer lives--&gt;</span>
+<span class="nt">&lt;/Person&gt;</span>
 </code></pre></div>
-<p>If you wrap your keys into a <code>rfl::Validator</code>, this will be treated as an object as well:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">using</span><span class="w"> </span><span class="n">Between1and3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Validator</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Minimum</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Maximum</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;&gt;</span><span class="p">;</span>
-<span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">Between1and3</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">homer</span><span class="p">;</span>
-<span class="n">homer</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Homer&quot;</span><span class="p">;</span>
-<span class="n">homer</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">;</span>
+<h2 id="api-convenience">API convenience<a class="headerlink" href="#api-convenience" title="Permanent link">&para;</a></h2>
+<p><code>rfl::Commented</code> provides several ways to access and modify the underlying value and the comment:</p>
+<ul>
+<li><code>.get()</code>, <code>.value()</code>, <code>operator()()</code> — access the underlying value (const and non-const overloads).</li>
+<li><code>.comment()</code> — returns an <code>std::optional&lt;std::string&gt;</code> containing the comment.</li>
+<li><code>.add_comment(std::string)</code> — sets or updates the comment.</li>
+<li><code>.set(...)</code>, <code>operator=(...)</code> — assign the underlying value.</li>
+</ul>
+<p>Example:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="n">Person</span><span class="w"> </span><span class="n">p</span><span class="p">;</span>
+<span class="n">p</span><span class="p">.</span><span class="n">town</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Springfield&quot;</span><span class="p">;</span>
+<span class="n">p</span><span class="p">.</span><span class="n">town</span><span class="p">.</span><span class="n">add_comment</span><span class="p">(</span><span class="s">&quot;The town where Homer lives&quot;</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">town</span><span class="p">.</span><span class="n">value</span><span class="p">();</span>
 </code></pre></div>
-<p>This will also be represented as follows:</p>
-<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;1&quot;</span><span class="p">:</span><span class="s2">&quot;Homer&quot;</span><span class="p">,</span><span class="nt">&quot;2&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">}</span>
-</code></pre></div>
-<p>All other supported standard containers 
-(other than <code>std::variant</code>, <code>std::optional</code>, <code>std::unique_ptr</code> and <code>std::shared_ptr</code>) 
-will be represented as arrays. Containers for which the <code>value_type</code>
-is a key-value-pair will be represented as arrays of pairs. </p>
 
 
 
