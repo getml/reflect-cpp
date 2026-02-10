@@ -10,8 +10,7 @@
 #include "../always_false.hpp"
 #include "../common.hpp"
 
-namespace rfl {
-namespace xml {
+namespace rfl::xml {
 
 struct RFL_API Writer {
   struct XMLOutputArray {
@@ -59,6 +58,12 @@ struct RFL_API Writer {
                                       const size_t _size,
                                       OutputObjectType* _parent) const;
 
+  void add_comment_to_array(const std::string_view& _comment,
+                            OutputArrayType* _parent) const;
+
+  void add_comment_to_object(const std::string_view& _comment,
+                             OutputObjectType* _parent) const;
+
   OutputObjectType add_object_to_array(const size_t _size,
                                        OutputArrayType* _parent) const;
 
@@ -95,7 +100,7 @@ struct RFL_API Writer {
   template <class T>
   decltype(auto) to_string(const T& _val) const {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      return _val; // Return reference to avoid expensive string copy.
+      return _val;  // Return reference to avoid expensive string copy.
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       return _val ? "true" : "false";
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
@@ -121,7 +126,6 @@ struct RFL_API Writer {
   std::string root_name_;
 };
 
-}  // namespace xml
-}  // namespace rfl
+}  // namespace rfl::xml
 
 #endif  // RFL_XML_WRITER_HPP_

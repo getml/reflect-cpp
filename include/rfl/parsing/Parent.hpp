@@ -7,6 +7,7 @@
 #include "../always_false.hpp"
 #include "schemaful/IsSchemafulWriter.hpp"
 #include "supports_attributes.hpp"
+#include "supports_comments.hpp"
 
 namespace rfl::parsing {
 
@@ -68,6 +69,21 @@ struct Parent {
 
     } else {
       static_assert(always_false_v<Type>, "Unsupported option.");
+    }
+  }
+
+  /// Adds a comment to the parent element, if supported by the writer.
+  template <class ParentType>
+  static void add_comment(const W& _w, std::string_view _comment,
+                          const ParentType& _parent) {
+    using Type = std::remove_cvref_t<ParentType>;
+    if constexpr (supports_comments<W>) {
+      if constexpr (std::is_same<Type, Array>()) {
+        _w.add_comment_to_array(_comment, _parent.arr_);
+
+      } else if constexpr (std::is_same<Type, Object>()) {
+        _w.add_comment_to_object(_comment, _parent.obj_);
+      }
     }
   }
 

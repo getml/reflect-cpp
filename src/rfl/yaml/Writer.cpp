@@ -29,6 +29,16 @@ Writer::OutputArrayType Writer::add_array_to_object(
   return new_array(_name);
 }
 
+void Writer::add_comment_to_array(const std::string_view& _comment,
+                                  OutputArrayType*) const {
+  new_comment(_comment);
+}
+
+void Writer::add_comment_to_object(const std::string_view& _comment,
+                                   OutputObjectType*) const {
+  new_comment(_comment);
+}
+
 Writer::OutputObjectType Writer::add_object_to_array(
     const size_t /*_size*/, OutputArrayType* /*_parent*/) const {
   return new_object();
@@ -66,6 +76,10 @@ Writer::OutputArrayType Writer::new_array(const std::string_view& _name) const {
 Writer::OutputArrayType Writer::new_array() const {
   (*out_) << YAML::BeginSeq;
   return OutputArrayType{};
+}
+
+void Writer::new_comment(const std::string_view& _comment) const {
+  (*out_) << YAML::Comment(std::string(_comment));
 }
 
 Writer::OutputObjectType Writer::new_object(

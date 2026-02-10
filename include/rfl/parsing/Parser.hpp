@@ -9,6 +9,7 @@
 #include "Parser_box.hpp"
 #include "Parser_bytestring.hpp"
 #include "Parser_c_array.hpp"
+#include "Parser_commented.hpp"
 #include "Parser_default.hpp"
 #include "Parser_default_val.hpp"
 #include "Parser_duration.hpp"
