@@ -6,6 +6,7 @@
 #include "Parser.hpp"
 #include "Reader.hpp"
 #include "parse_argv.hpp"
+#include "resolve_args.hpp"
 
 namespace rfl::cli {
 
@@ -14,11 +15,13 @@ namespace rfl::cli {
 /// Example: struct field `host_name` matches CLI argument `--host-name`.
 template <class T, class... Ps>
 rfl::Result<T> read(int argc, char* argv[]) {
-  return parse_argv(argc, argv).and_then(
-      [](auto _args) -> rfl::Result<T> {
+  using ProcessorsType = Processors<SnakeCaseToKebabCase, Ps...>;
+  return parse_argv(argc, argv)
+      .and_then(resolve_args<T, ProcessorsType>)
+      .and_then([](auto _args) -> rfl::Result<T> {
         const auto r = Reader();
         const auto var = CliVarType{&_args, "", std::nullopt};
-        return Parser<T, Processors<SnakeCaseToKebabCase, Ps...>>::read(r, var);
+        return Parser<T, ProcessorsType>::read(r, var);
       });
 }
 

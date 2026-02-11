@@ -1,0 +1,159 @@
+#ifndef RFL_CLI_RESOLVE_ARGS_HPP_
+#define RFL_CLI_RESOLVE_ARGS_HPP_
+
+#include <map>
+#include <string>
+#include <vector>
+
+#include "../Result.hpp"
+#include "../internal/is_positional.hpp"
+#include "../internal/is_short.hpp"
+#include "../internal/processed_t.hpp"
+
+namespace rfl::cli {
+
+struct ParsedArgs {
+  std::map<std::string, std::string> named;
+  std::map<std::string, std::string> short_args;
+  std::vector<std::string> positional;
+};
+
+namespace detail {
+
+template <class NamedTupleType, size_t _i>
+struct field_info {
+  using FieldType = rfl::tuple_element_t<_i, typename NamedTupleType::Fields>;
+  using InnerType = typename FieldType::Type;
+
+  static constexpr bool is_positional =
+      rfl::internal::is_positional_v<InnerType>;
+  static constexpr bool is_short = rfl::internal::is_short_v<InnerType>;
+
+  static constexpr std::string_view name() { return FieldType::name(); }
+};
+
+template <class NamedTupleType, size_t _i>
+constexpr auto get_short_name() {
+  using Info = field_info<NamedTupleType, _i>;
+  if constexpr (Info::is_short) {
+    return Info::InnerType::short_name_;
+  }
+  else {
+    return rfl::internal::StringLiteral<1>("");
+  }
+}
+
+template <class NamedTupleType, size_t _i, size_t... _is>
+void collect_positional_names(
+    std::vector<std::string>& _names,
+    std::index_sequence<_i, _is...>
+) {
+  using Info = field_info<NamedTupleType, _i>;
+  if constexpr (Info::is_positional) {
+    _names.emplace_back(Info::name());
+  }
+  if constexpr (sizeof...(_is) > 0) {
+    collect_positional_names<NamedTupleType>(_names, std::index_sequence<_is...>{});
+  }
+}
+
+template <class NamedTupleType>
+void collect_positional_names(
+    std::vector<std::string>&,
+    std::index_sequence<>
+) {}
+
+template <class NamedTupleType, size_t _i, size_t... _is>
+rfl::Result<bool> collect_short_mapping(
+    std::map<std::string, std::string>& _mapping,
+    std::index_sequence<_i, _is...>
+) {
+  using Info = field_info<NamedTupleType, _i>;
+  if constexpr (Info::is_short) {
+    constexpr auto short_lit = get_short_name<NamedTupleType, _i>();
+    const auto short_str = std::string(short_lit.string_view());
+    const auto long_str = std::string(Info::name());
+    if (!_mapping.emplace(short_str, long_str).second) {
+      return rfl::error(
+          "Duplicate short name '-" + short_str + "' in struct definition.");
+    }
+  }
+  if constexpr (sizeof...(_is) > 0) {
+    return collect_short_mapping<NamedTupleType>(
+        _mapping, std::index_sequence<_is...>{});
+  }
+  return true;
+}
+
+template <class NamedTupleType>
+rfl::Result<bool> collect_short_mapping(
+    std::map<std::string, std::string>&,
+    std::index_sequence<>
+) {
+  return true;
+}
+
+}  // namespace detail
+
+/// Resolves ParsedArgs into a flat key-value map using compile-time
+/// metadata from the target struct T.
+template <class T, class ProcessorsType>
+rfl::Result<std::map<std::string, std::string>> resolve_args(
+    ParsedArgs _parsed
+) {
+  using NT = rfl::internal::processed_t<T, ProcessorsType>;
+  constexpr auto sz = NT::size();
+  using Indices = std::make_index_sequence<sz>;
+
+  // Collect positional field names (in declaration order).
+  std::vector<std::string> positional_names;
+  detail::collect_positional_names<NT>(positional_names, Indices{});
+
+  // Collect short-to-long mapping.
+  std::map<std::string, std::string> short_to_long;
+  const auto short_result =
+      detail::collect_short_mapping<NT>(short_to_long, Indices{});
+  if (!short_result) {
+    return rfl::error(short_result.error().what());
+  }
+
+  auto& result = _parsed.named;
+
+  // Merge positional args.
+  if (_parsed.positional.size() > positional_names.size()) {
+    return rfl::error(
+        "Too many positional arguments: expected at most "
+        + std::to_string(positional_names.size()) + ", got "
+        + std::to_string(_parsed.positional.size()) + ".");
+  }
+  for (size_t i = 0; i < _parsed.positional.size(); ++i) {
+    const auto& long_name = positional_names[i];
+    if (result.count(long_name)) {
+      return rfl::error(
+          "Conflict: positional argument and '--" + long_name
+          + "' both provided.");
+    }
+    result.emplace(long_name, std::move(_parsed.positional[i]));
+  }
+
+  // Merge short args.
+  for (auto& [short_name, value] : _parsed.short_args) {
+    const auto it = short_to_long.find(short_name);
+    if (it == short_to_long.end()) {
+      return rfl::error("Unknown short argument: -" + short_name);
+    }
+    const auto& long_name = it->second;
+    if (result.count(long_name)) {
+      return rfl::error(
+          "Conflict: '-" + short_name + "' and '--" + long_name
+          + "' both provided.");
+    }
+    result.emplace(long_name, std::move(value));
+  }
+
+  return std::move(result);
+}
+
+}  // namespace rfl::cli
+
+#endif
