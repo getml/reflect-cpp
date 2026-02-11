@@ -2,6 +2,7 @@
 #define RFL_ENUMS_HPP_
 
 #include <string>
+#include <sstream>
 
 #include "Result.hpp"
 #include "internal/enums/get_enum_names.hpp"
@@ -11,6 +12,46 @@
 
 namespace rfl {
 
+// Returns a named tuple mapping names of enumerators of the given enum type to
+// their values.
+template <enchantum::Enum EnumType>
+auto get_enumerators() {
+  return internal::enums::names_to_enumerator_named_tuple(
+      internal::enums::get_enum_names<EnumType>());
+}
+
+// Returns a named tuple mapping names of enumerators of the given enum type to
+// their underlying values.
+template <enchantum::Enum EnumType>
+auto get_underlying_enumerators() {
+  return internal::enums::names_to_underlying_enumerator_named_tuple(
+      internal::enums::get_enum_names<EnumType>());
+}
+
+// Returns an std::array containing pairs of enumerator names (as
+// std::string_view) and values.
+template <enchantum::Enum EnumType>
+constexpr auto get_enumerator_array() {
+  return internal::enums::names_to_enumerator_array(
+      internal::enums::get_enum_names<EnumType>());
+}
+
+// Returns an std::array containing pairs of enumerator names (as
+// std::string_view) and underlying values.
+template <enchantum::Enum EnumType>
+constexpr auto get_underlying_enumerator_array() {
+  return internal::enums::names_to_underlying_enumerator_array(
+      internal::enums::get_enum_names<EnumType>());
+}
+
+// Returns the range of the given enum type as a pair of the minimum and maximum
+template <enchantum::Enum EnumType>
+constexpr auto get_enum_range() {
+  return std::make_pair(enchantum::enum_traits<EnumType>::min,
+                        enchantum::enum_traits<EnumType>::max);
+}
+
+// Converts an enum value to tis string representation.
 template <enchantum::Enum EnumType>
 std::string enum_to_string(const EnumType _enum) {
   const auto to_string_or_number = [](const EnumType e) {
@@ -52,7 +93,17 @@ Result<EnumType> string_to_enum(const std::string& _str) {
     try {
       return static_cast<EnumType>(std::stoi(name));
     } catch (std::exception& exp) {
-      return error(exp.what());
+      std::string msg = "Invalid enum value: '";
+      msg += name;
+      msg += "'. Must be one of [";
+      const char* sep = "";
+      for (const auto& p : get_enumerator_array<EnumType>()) {
+        msg += sep;
+        msg += p.first;
+        sep = ", ";
+      }
+      msg += "].";
+      return error(msg);
     }
   };
 
@@ -72,45 +123,6 @@ Result<EnumType> string_to_enum(const std::string& _str) {
   } else {
     return cast_numbers_or_names(_str);
   }
-}
-
-// Returns a named tuple mapping names of enumerators of the given enum type to
-// their values.
-template <enchantum::Enum EnumType>
-auto get_enumerators() {
-  return internal::enums::names_to_enumerator_named_tuple(
-      internal::enums::get_enum_names<EnumType>());
-}
-
-// Returns a named tuple mapping names of enumerators of the given enum type to
-// their underlying values.
-template <enchantum::Enum EnumType>
-auto get_underlying_enumerators() {
-  return internal::enums::names_to_underlying_enumerator_named_tuple(
-      internal::enums::get_enum_names<EnumType>());
-}
-
-// Returns an std::array containing pairs of enumerator names (as
-// std::string_view) and values.
-template <enchantum::Enum EnumType>
-constexpr auto get_enumerator_array() {
-  return internal::enums::names_to_enumerator_array(
-      internal::enums::get_enum_names<EnumType>());
-}
-
-// Returns an std::array containing pairs of enumerator names (as
-// std::string_view) and underlying values.
-template <enchantum::Enum EnumType>
-constexpr auto get_underlying_enumerator_array() {
-  return internal::enums::names_to_underlying_enumerator_array(
-      internal::enums::get_enum_names<EnumType>());
-}
-
-// Returns the range of the given enum type as a pair of the minimum and maximum
-template <enchantum::Enum EnumType>
-constexpr auto get_enum_range() {
-  return std::make_pair(enchantum::enum_traits<EnumType>::min,
-                        enchantum::enum_traits<EnumType>::max);
 }
 
 }  // namespace rfl
