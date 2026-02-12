@@ -17,6 +17,8 @@ struct TaggedUnion {
   /// The type of the underlying variant.
   using VariantType = rfl::Variant<Ts...>;
 
+  TaggedUnion() = default;
+
   TaggedUnion(const VariantType& _variant) : variant_(_variant) {}
 
   TaggedUnion(VariantType&& _variant) noexcept
