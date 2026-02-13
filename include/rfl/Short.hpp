@@ -19,6 +19,8 @@ struct Short {
   /// The short name.
   static constexpr auto short_name_ = _name;
 
+  static_assert(_name.length == 1, "Short name must be exactly one character.");
+
   Short() : value_(Type()) {}
 
   Short(const Type& _value) : value_(_value) {}
@@ -33,7 +35,7 @@ struct Short {
   Short(const Short<_name, U>& _field) : value_(_field.get()) {}
 
   template <class U>
-  Short(Short<_name, U>&& _field) : value_(_field.get()) {}
+  Short(Short<_name, U>&& _field) : value_(std::move(_field.value_)) {}
 
   template <class U>
     requires std::is_convertible_v<U, Type>
@@ -103,7 +105,7 @@ struct Short {
   /// Assigns the underlying object.
   template <class U>
   auto& operator=(Short<_name, U>&& _field) {
-    value_ = std::forward<T>(_field.value_);
+    value_ = std::move(_field.value_);
     return *this;
   }
 

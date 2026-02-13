@@ -201,6 +201,12 @@ struct Reader {
 
   rfl::Result<InputObjectType> to_object(
       const InputVarType& _var) const noexcept {
+    if (!_var.args) {
+      return error("Cannot convert to object: no argument map available"
+                   + (_var.path.empty()
+                          ? std::string(".")
+                          : " for key '" + _var.path + "'."));
+    }
     const auto prefix = _var.path.empty()
         ? std::string("")
         : _var.path + path_separator;
@@ -242,10 +248,14 @@ struct Reader {
     while (true) {
       const auto pos = _str.find(_delim, start);
       if (pos == std::string::npos) {
-        result.emplace_back(_str.substr(start));
+        if (start < _str.size()) {
+          result.emplace_back(_str.substr(start));
+        }
         break;
       }
-      result.emplace_back(_str.substr(start, pos - start));
+      if (pos > start) {
+        result.emplace_back(_str.substr(start, pos - start));
+      }
       start = pos + 1;
     }
     return result;
