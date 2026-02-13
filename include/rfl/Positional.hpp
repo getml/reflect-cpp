@@ -29,7 +29,7 @@ struct Positional {
   Positional(const Positional<U>& _field) : value_(_field.get()) {}
 
   template <class U>
-  Positional(Positional<U>&& _field) : value_(_field.get()) {}
+  Positional(Positional<U>&& _field) : value_(std::move(_field.value_)) {}
 
   template <class U>
     requires std::is_convertible_v<U, Type>
@@ -99,7 +99,7 @@ struct Positional {
   /// Assigns the underlying object.
   template <class U>
   auto& operator=(Positional<U>&& _field) {
-    value_ = std::forward<T>(_field.value_);
+    value_ = std::move(_field.value_);
     return *this;
   }
 

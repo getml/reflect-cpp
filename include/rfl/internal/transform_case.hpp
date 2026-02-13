@@ -72,6 +72,7 @@ consteval auto transform_camel_case() {
     return transform_camel_case<_name, _i + 1, chars..., _name.arr_[_i]>();
   }
 }
+
 /// Transforms the field name from snake_case to kebab-case.
 template <internal::StringLiteral _name, size_t _i = 0, char... chars>
 consteval auto transform_snake_to_kebab() {

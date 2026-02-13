@@ -43,4 +43,17 @@ TEST(cli, test_vector_int) {
   EXPECT_EQ(result.value().values[2], 3);
 }
 
+TEST(cli, test_vector_skips_empty_elements) {
+  const char* args[] = {
+      "program",
+      "--name=app",
+      "--tags=dev,,prod"
+  };
+  const auto result = rfl::cli::read<Config>(3, const_cast<char**>(args));
+  ASSERT_TRUE(result) << result.error().what();
+  ASSERT_EQ(result.value().tags.size(), 2u);
+  EXPECT_EQ(result.value().tags[0], "dev");
+  EXPECT_EQ(result.value().tags[1], "prod");
+}
+
 }  // namespace test_vector

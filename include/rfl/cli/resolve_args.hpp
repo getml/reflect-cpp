@@ -2,6 +2,7 @@
 #define RFL_CLI_RESOLVE_ARGS_HPP_
 
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -20,6 +21,19 @@ struct ParsedArgs {
 
 namespace detail {
 
+template <class T, bool _is_positional, bool _is_short>
+consteval bool check_no_nested_wrappers() {
+  if constexpr (_is_positional) {
+    return !rfl::internal::is_short_v<typename T::Type>;
+  }
+  else if constexpr (_is_short) {
+    return !rfl::internal::is_positional_v<typename T::Type>;
+  }
+  else {
+    return true;
+  }
+}
+
 template <class NamedTupleType, size_t _i>
 struct field_info {
   using FieldType = rfl::tuple_element_t<_i, typename NamedTupleType::Fields>;
@@ -28,6 +42,11 @@ struct field_info {
   static constexpr bool is_positional =
       rfl::internal::is_positional_v<InnerType>;
   static constexpr bool is_short = rfl::internal::is_short_v<InnerType>;
+
+  static_assert(
+      check_no_nested_wrappers<InnerType, is_positional, is_short>(),
+      "Nested wrappers (Positional<Short<...>> or Short<..., Positional<...>>) "
+      "are not allowed.");
 
   static constexpr std::string_view name() { return FieldType::name(); }
 };
@@ -93,6 +112,38 @@ rfl::Result<bool> collect_short_mapping(
   return true;
 }
 
+template <class NamedTupleType, size_t _i>
+consteval bool is_short_bool() {
+  using Info = field_info<NamedTupleType, _i>;
+  if constexpr (Info::is_short) {
+    return std::is_same_v<typename Info::InnerType::Type, bool>;
+  }
+  else {
+    return false;
+  }
+}
+
+template <class NamedTupleType, size_t _i, size_t... _is>
+void collect_short_bool_names(
+    std::set<std::string>& _names,
+    std::index_sequence<_i, _is...>
+) {
+  if constexpr (is_short_bool<NamedTupleType, _i>()) {
+    constexpr auto short_lit = get_short_name<NamedTupleType, _i>();
+    _names.emplace(short_lit.string_view());
+  }
+  if constexpr (sizeof...(_is) > 0) {
+    collect_short_bool_names<NamedTupleType>(
+        _names, std::index_sequence<_is...>{});
+  }
+}
+
+template <class NamedTupleType>
+void collect_short_bool_names(
+    std::set<std::string>&,
+    std::index_sequence<>
+) {}
+
 }  // namespace detail
 
 /// Resolves ParsedArgs into a flat key-value map using compile-time
@@ -115,6 +166,22 @@ rfl::Result<std::map<std::string, std::string>> resolve_args(
       detail::collect_short_mapping<NT>(short_to_long, Indices{});
   if (!short_result) {
     return rfl::error(short_result.error().what());
+  }
+
+  // Reclaim non-boolean values from short bool flags.
+  // parse_argv doesn't know types, so `-v somefile` consumes "somefile" as
+  // the value of -v.  Since -v is bool, "somefile" is not a valid bool value
+  // and must be returned to the positional list.
+  std::set<std::string> short_bool_names;
+  detail::collect_short_bool_names<NT>(short_bool_names, Indices{});
+  for (auto& [short_name, value] : _parsed.short_args) {
+    if (short_bool_names.count(short_name)
+        && value != "true" && value != "false"
+        && value != "0" && value != "1"
+        && !value.empty()) {
+      _parsed.positional.push_back(value);
+      value.clear();
+    }
   }
 
   auto& result = _parsed.named;
