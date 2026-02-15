@@ -21,7 +21,8 @@ struct Short {
 
   static_assert(_name.length == 1, "Short name must be exactly one character.");
 
-  Short() : value_(Type()) {}
+  Short() requires std::is_default_constructible_v<Type>
+      : value_(Type()) {}
 
   Short(const Type& _value) : value_(_value) {}
 

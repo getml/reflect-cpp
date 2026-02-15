@@ -1,6 +1,7 @@
 #ifndef RFL_CLI_PARSE_ARGV_HPP_
 #define RFL_CLI_PARSE_ARGV_HPP_
 
+#include <cctype>
 #include <map>
 #include <span>
 #include <string>
@@ -12,12 +13,24 @@
 
 namespace rfl::cli {
 
+/// Returns true if the token looks like a CLI option (starts with '-'
+/// followed by a letter), as opposed to a negative number like "-42".
+inline bool looks_like_option(std::string_view _token) noexcept {
+  return _token.size() >= 2
+         && _token[0] == '-'
+         && !std::isdigit(static_cast<unsigned char>(_token[1]))
+         && _token[1] != '.';
+}
+
 /// Parses command-line arguments into categorized buckets:
 /// --key=value / --flag → named
 /// -x value / -x=value / -x → short_args
 /// bare arguments → positional
 /// -- → everything after goes to positional
 inline rfl::Result<ParsedArgs> parse_argv(int argc, char* argv[]) {
+  if (argc < 0 || (argc > 0 && !argv)) {
+    return error("Invalid argc/argv.");
+  }
   ParsedArgs result;
   if (argc <= 1) {
     return result;
@@ -47,11 +60,10 @@ inline rfl::Result<ParsedArgs> parse_argv(int argc, char* argv[]) {
       auto val = std::string(
           eq == std::string_view::npos ? "" : arg.substr(eq + 1));
       if (key.empty()) {
-        return error("Empty key in argument: --" + std::string(arg));
+        return error("Empty key in argument: " + std::string(arg_raw));
       }
-      const auto key_copy = key;
       if (!result.named.emplace(std::move(key), std::move(val)).second) {
-        return error("Duplicate argument: --" + key_copy);
+        return error("Duplicate argument: " + std::string(arg_raw));
       }
       continue;
     }
@@ -64,31 +76,32 @@ inline rfl::Result<ParsedArgs> parse_argv(int argc, char* argv[]) {
         // -x=value
         auto key = std::string(arg.substr(0, eq));
         auto val = std::string(arg.substr(eq + 1));
-        const auto short_key_copy = key;
+        result.short_order.emplace_back(key);
         if (!result.short_args.emplace(std::move(key), std::move(val)).second) {
-          return error("Duplicate short argument: -" + short_key_copy);
+          return error("Duplicate short argument: " + std::string(arg_raw));
         }
       }
       else {
         auto key = std::string(arg);
-        const auto short_key_copy = key;
-        // Peek at next token: if it exists and doesn't start with '-',
+        // Peek at next token: if it exists and doesn't look like an option,
         // consume it as the value.
         if (i + 1 < args.size()) {
           const std::string_view next(args[i + 1]);
-          if (!next.empty() && next[0] != '-') {
+          if (!next.empty() && !looks_like_option(next)) {
             ++i;
             auto val = std::string(next);
+            result.short_order.emplace_back(key);
             if (!result.short_args.emplace(
                     std::move(key), std::move(val)).second) {
-              return error("Duplicate short argument: -" + short_key_copy);
+              return error("Duplicate short argument: " + std::string(arg_raw));
             }
             continue;
           }
         }
         // No value — boolean flag.
+        result.short_order.emplace_back(key);
         if (!result.short_args.emplace(std::move(key), "").second) {
-          return error("Duplicate short argument: -" + short_key_copy);
+          return error("Duplicate short argument: " + std::string(arg_raw));
         }
       }
       continue;

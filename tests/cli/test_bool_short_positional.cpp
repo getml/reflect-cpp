@@ -59,4 +59,26 @@ TEST(cli, test_int_short_still_consumes_value) {
   EXPECT_EQ(result.value().input_file(), "file.txt");
 }
 
+struct MultiBoolConfig {
+  rfl::Short<"v", bool> verbose;
+  rfl::Short<"d", bool> debug;
+  rfl::Positional<std::string> first;
+  rfl::Positional<std::string> second;
+};
+
+TEST(cli, test_multi_bool_short_preserves_positional_order) {
+  const char* args[] = {
+      "program",
+      "-v", "file1.txt",
+      "-d", "file2.txt"
+  };
+  const auto result = rfl::cli::read<MultiBoolConfig>(
+      5, const_cast<char**>(args));
+  ASSERT_TRUE(result) << result.error().what();
+  EXPECT_TRUE(result.value().verbose());
+  EXPECT_TRUE(result.value().debug());
+  EXPECT_EQ(result.value().first(), "file1.txt");
+  EXPECT_EQ(result.value().second(), "file2.txt");
+}
+
 }  // namespace test_bool_short_positional

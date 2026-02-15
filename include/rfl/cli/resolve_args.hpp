@@ -17,6 +17,8 @@ struct ParsedArgs {
   std::map<std::string, std::string> named;
   std::map<std::string, std::string> short_args;
   std::vector<std::string> positional;
+  /// Insertion order of short arg keys (for stable reclaim ordering).
+  std::vector<std::string> short_order;
 };
 
 namespace detail {
@@ -172,26 +174,45 @@ rfl::Result<std::map<std::string, std::string>> resolve_args(
   // parse_argv doesn't know types, so `-v somefile` consumes "somefile" as
   // the value of -v.  Since -v is bool, "somefile" is not a valid bool value
   // and must be returned to the positional list.
+  // We iterate in insertion order (short_order) to preserve argv ordering.
   std::set<std::string> short_bool_names;
   detail::collect_short_bool_names<NT>(short_bool_names, Indices{});
-  for (auto& [short_name, value] : _parsed.short_args) {
-    if (short_bool_names.count(short_name)
-        && value != "true" && value != "false"
+  std::vector<std::string> reclaimed;
+  for (const auto& short_name : _parsed.short_order) {
+    if (!short_bool_names.count(short_name)) {
+      continue;
+    }
+    auto it = _parsed.short_args.find(short_name);
+    if (it == _parsed.short_args.end()) {
+      continue;
+    }
+    auto& value = it->second;
+    if (value != "true" && value != "false"
         && value != "0" && value != "1"
         && !value.empty()) {
-      _parsed.positional.push_back(value);
+      reclaimed.push_back(value);
       value.clear();
     }
+  }
+  // Insert reclaimed values before existing positional args to preserve
+  // the original argv order: `-v file1 file2` → positional ["file1", "file2"].
+  if (!reclaimed.empty()) {
+    _parsed.positional.insert(
+        _parsed.positional.begin(),
+        std::make_move_iterator(reclaimed.begin()),
+        std::make_move_iterator(reclaimed.end()));
   }
 
   auto& result = _parsed.named;
 
   // Merge positional args.
   if (_parsed.positional.size() > positional_names.size()) {
-    return rfl::error(
-        "Too many positional arguments: expected at most "
-        + std::to_string(positional_names.size()) + ", got "
-        + std::to_string(_parsed.positional.size()) + ".");
+    auto msg = std::string("Too many positional arguments: expected at most ");
+    msg += std::to_string(positional_names.size());
+    msg += ", got ";
+    msg += std::to_string(_parsed.positional.size());
+    msg += ".";
+    return rfl::error(std::move(msg));
   }
   for (size_t i = 0; i < _parsed.positional.size(); ++i) {
     const auto& long_name = positional_names[i];
