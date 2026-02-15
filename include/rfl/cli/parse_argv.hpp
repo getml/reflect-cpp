@@ -35,6 +35,16 @@ inline rfl::Result<ParsedArgs> parse_argv(int argc, char* argv[]) {
   if (argc <= 1) {
     return result;
   }
+
+  const auto add_short = [&](std::string _key, std::string _val,
+                             std::string_view _raw) -> rfl::Result<bool> {
+    result.short_order.emplace_back(_key);
+    if (!result.short_args.emplace(std::move(_key), std::move(_val)).second) {
+      return error("Duplicate short argument: " + std::string(_raw));
+    }
+    return true;
+  };
+
   const auto args = std::span(argv + 1, argc - 1);
   bool force_positional = false;
   for (size_t i = 0; i < args.size(); ++i) {
@@ -52,7 +62,7 @@ inline rfl::Result<ParsedArgs> parse_argv(int argc, char* argv[]) {
     }
 
     // Long argument: --key=value or --flag.
-    if (arg_raw.size() >= 2 && arg_raw[0] == '-' && arg_raw[1] == '-') {
+    if (arg_raw.starts_with("--")) {
       const auto arg = arg_raw.substr(2);
       const auto eq = arg.find('=');
       auto key = std::string(
@@ -69,41 +79,27 @@ inline rfl::Result<ParsedArgs> parse_argv(int argc, char* argv[]) {
     }
 
     // Short argument: -x value, -x=value, or -x (bool).
-    if (arg_raw.size() >= 2 && arg_raw[0] == '-' && arg_raw[1] != '-') {
+    if (arg_raw.size() >= 2 && arg_raw[0] == '-') {
       const auto arg = arg_raw.substr(1);
       const auto eq = arg.find('=');
+
+      // -x=value
       if (eq != std::string_view::npos) {
-        // -x=value
-        auto key = std::string(arg.substr(0, eq));
-        auto val = std::string(arg.substr(eq + 1));
-        result.short_order.emplace_back(key);
-        if (!result.short_args.emplace(std::move(key), std::move(val)).second) {
-          return error("Duplicate short argument: " + std::string(arg_raw));
-        }
+        const auto r = add_short(
+            std::string(arg.substr(0, eq)),
+            std::string(arg.substr(eq + 1)), arg_raw);
+        if (!r) { return error(r.error().what()); }
+        continue;
       }
-      else {
-        auto key = std::string(arg);
-        // Peek at next token: if it exists and doesn't look like an option,
-        // consume it as the value.
-        if (i + 1 < args.size()) {
-          const std::string_view next(args[i + 1]);
-          if (!next.empty() && !looks_like_option(next)) {
-            ++i;
-            auto val = std::string(next);
-            result.short_order.emplace_back(key);
-            if (!result.short_args.emplace(
-                    std::move(key), std::move(val)).second) {
-              return error("Duplicate short argument: " + std::string(arg_raw));
-            }
-            continue;
-          }
-        }
-        // No value — boolean flag.
-        result.short_order.emplace_back(key);
-        if (!result.short_args.emplace(std::move(key), "").second) {
-          return error("Duplicate short argument: " + std::string(arg_raw));
-        }
+
+      // -x value or -x (bool flag).
+      // Peek at next token: consume as value if it doesn't look like an option.
+      auto val = std::string();
+      if (i + 1 < args.size() && !looks_like_option(args[i + 1])) {
+        val = std::string(args[++i]);
       }
+      const auto r = add_short(std::string(arg), std::move(val), arg_raw);
+      if (!r) { return error(r.error().what()); }
       continue;
     }
 
