@@ -72,6 +72,24 @@ consteval auto transform_camel_case() {
     return transform_camel_case<_name, _i + 1, chars..., _name.arr_[_i]>();
   }
 }
+
+/// Transforms the field name from snake_case to kebab-case.
+template <internal::StringLiteral _name, size_t _i = 0, char... chars>
+consteval auto transform_snake_to_kebab() {
+  if constexpr (_i == _name.arr_.size()) {
+    return StringLiteral<sizeof...(chars) + 1>(chars...);
+
+  } else if constexpr (_name.arr_[_i] == '\0') {
+    return transform_snake_to_kebab<_name, _name.arr_.size(), chars...>();
+
+  } else if constexpr (_name.arr_[_i] == '_') {
+    return transform_snake_to_kebab<_name, _i + 1, chars..., '-'>();
+
+  } else {
+    return transform_snake_to_kebab<_name, _i + 1, chars..., _name.arr_[_i]>();
+  }
+}
+
 }  // namespace rfl::internal
 
 #endif
