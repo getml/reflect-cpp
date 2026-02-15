@@ -15,7 +15,8 @@ struct Positional {
   /// The underlying type.
   using Type = T;
 
-  Positional() : value_(Type()) {}
+  Positional() requires std::is_default_constructible_v<Type>
+      : value_(Type()) {}
 
   Positional(const Type& _value) : value_(_value) {}
 
