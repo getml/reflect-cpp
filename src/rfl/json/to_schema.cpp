@@ -237,6 +237,19 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type,
       return schema::Type{.value =
                               schema::Type::StringEnum{.values = _t.values_}};
 
+    } else if constexpr (std::is_same<T, Type::DescribedLiteral>()) {
+      // Convert to OneOf with StringConst for each described value
+      auto one_of = std::vector<schema::Type>();
+      for (const auto& v : _t.values_) {
+        one_of.push_back(schema::Type{
+            .value = schema::Type::StringConst{
+                .description = v.description_.empty()
+                                   ? std::nullopt
+                                   : std::optional<std::string>(v.description_),
+                .value = v.value_}});
+      }
+      return schema::Type{.value = schema::Type::OneOf{.oneOf = one_of}};
+
     } else if constexpr (std::is_same<T, Type::Object>()) {
       auto properties = rfl::Object<schema::Type>();
       auto required = std::vector<std::string>();
