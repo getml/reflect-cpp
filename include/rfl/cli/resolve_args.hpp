@@ -21,7 +21,7 @@ struct ParsedArgs {
   std::vector<std::string> short_order;
 };
 
-namespace detail {
+namespace internal {
 
 template <class T, bool _is_positional, bool _is_short>
 consteval bool check_no_nested_wrappers() {
@@ -146,7 +146,7 @@ void collect_short_bool_names(
     std::index_sequence<>
 ) {}
 
-}  // namespace detail
+}  // namespace internal
 
 /// Resolves ParsedArgs into a flat key-value map using compile-time
 /// metadata from the target struct T.
@@ -160,12 +160,12 @@ rfl::Result<std::map<std::string, std::string>> resolve_args(
 
   // Collect positional field names (in declaration order).
   std::vector<std::string> positional_names;
-  detail::collect_positional_names<NT>(positional_names, Indices{});
+  internal::collect_positional_names<NT>(positional_names, Indices{});
 
   // Collect short-to-long mapping.
   std::map<std::string, std::string> short_to_long;
   const auto short_result =
-      detail::collect_short_mapping<NT>(short_to_long, Indices{});
+      internal::collect_short_mapping<NT>(short_to_long, Indices{});
   if (!short_result) {
     return rfl::error(short_result.error().what());
   }
@@ -176,7 +176,7 @@ rfl::Result<std::map<std::string, std::string>> resolve_args(
   // and must be returned to the positional list.
   // We iterate in insertion order (short_order) to preserve argv ordering.
   std::set<std::string> short_bool_names;
-  detail::collect_short_bool_names<NT>(short_bool_names, Indices{});
+  internal::collect_short_bool_names<NT>(short_bool_names, Indices{});
   std::vector<std::string> reclaimed;
   for (const auto& short_name : _parsed.short_order) {
     if (!short_bool_names.count(short_name)) {
