@@ -6,10 +6,14 @@
 #include <type_traits>
 
 #include "../Generic.hpp"
+#include "../Positional.hpp"
 #include "../Rename.hpp"
+#include "../Short.hpp"
 #include "../internal/StringLiteral.hpp"
 #include "../internal/has_reflection_type_v.hpp"
+#include "../internal/is_positional.hpp"
 #include "../internal/is_rename.hpp"
+#include "../internal/is_short.hpp"
 #include "is_map_like.hpp"
 #include "is_vector_like.hpp"
 
@@ -44,6 +48,10 @@ consteval bool is_required() {
     return is_required<typename Type::ReflectionType,
                        _ignore_empty_containers>();
   } else if constexpr (internal::is_rename_v<Type>) {
+    return is_required<typename Type::Type, _ignore_empty_containers>();
+  } else if constexpr (internal::is_positional_v<Type>) {
+    return is_required<typename Type::Type, _ignore_empty_containers>();
+  } else if constexpr (internal::is_short_v<Type>) {
     return is_required<typename Type::Type, _ignore_empty_containers>();
   } else {
     return !(is_never_required_v<Type> ||
