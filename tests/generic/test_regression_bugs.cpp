@@ -9,7 +9,7 @@
 
 #include <rfl.hpp>
 
-// Bug 1.1 — Tuple::operator<=> always returns equivalent (inverted condition)
+// Tuple::operator<=> always returns equivalent (inverted condition)
 // File: include/rfl/Tuple.hpp:107
 // The condition checks `_ordering != equivalent && elements differ` but should
 // check `_ordering == equivalent && elements differ` (or simply always compare
@@ -32,7 +32,7 @@ TEST(regression, tuple_spaceship_less) {
 
 }  // namespace test_tuple_spaceship
 
-// Bug 1.2 — Result::operator=(const Result<U>&) does not update success_
+// Result::operator=(const Result<U>&) does not update success_
 // File: include/rfl/Result.hpp:210-216
 // The operator copies t_or_err_ from _other.transform(...) but never updates
 // success_ flag.
@@ -53,7 +53,7 @@ TEST(regression, result_cross_type_assign_error_clears_success) {
 
 }  // namespace test_result_cross_assign
 
-// Bug 1.3 — Validator::operator=(U&&) is noexcept but calls .value() which
+// Validator::operator=(U&&) is noexcept but calls .value() which
 // throws File: include/rfl/Validator.hpp:77
 // If validation fails, .value() throws inside a noexcept function →
 // std::terminate.
@@ -75,7 +75,7 @@ TEST(regression, validator_assign_rvalue_operator_is_noexcept_but_can_throw) {
 
 }  // namespace test_validator_noexcept
 
-// Bug 1.14 — Generic::to_int() silently truncates int64_t → int
+// Generic::to_int() silently truncates int64_t → int
 // File: include/rfl/Generic.hpp:175-188
 // Does static_cast<int>(_v) without range check. Values outside [INT_MIN,
 // INT_MAX] are silently truncated.
@@ -101,7 +101,7 @@ TEST(regression, generic_to_int_rejects_underflow) {
 
 }  // namespace test_generic_to_int_truncation
 
-// Bug 3.1 — Validator::get() returns mutable reference, bypassing validation
+// Validator::get() returns mutable reference, bypassing validation
 // File: include/rfl/Validator.hpp:98-99
 // Non-const get() returns T&, allowing direct write that skips validation.
 namespace test_validator_mutable_get {
@@ -118,7 +118,7 @@ TEST(regression, validator_get_does_not_allow_invalid_mutation) {
 
 }  // namespace test_validator_mutable_get
 
-// Bug 3.2 — Box/Ref operator<=> compares pointer addresses, not values
+// Box/Ref operator<=> compares pointer addresses, not values
 // File: include/rfl/Box.hpp:130-132, include/rfl/Ref.hpp:118-119
 namespace test_box_ref_spaceship {
 
@@ -138,7 +138,7 @@ TEST(regression, ref_spaceship_compares_values_not_pointers) {
 
 }  // namespace test_box_ref_spaceship
 
-// Bug 3.9 — Field cross-type move constructor copies instead of moving
+// Field cross-type move constructor copies instead of moving
 // File: include/rfl/Field.hpp:37
 // `value_(_field.get())` calls get() which returns lvalue ref → copy ctor
 namespace test_field_cross_move {
@@ -179,7 +179,7 @@ TEST(regression, field_cross_type_move_does_not_copy) {
 
 }  // namespace test_field_cross_move
 
-// Bug 3.10 — Result::value_or(T&&) returns T&& instead of T
+// Result::value_or(T&&) returns T&& instead of T
 // File: include/rfl/Result.hpp:295
 // Returning rvalue reference to a parameter is dangerous (dangling).
 // Should return by value.
@@ -197,8 +197,8 @@ TEST(regression, result_value_or_returns_value_not_rvalue_ref) {
 
 }  // namespace test_result_value_or_return_type
 
-// Bug 3.13 — TaggedUnion has typo: `discrimininator_` instead of
-// `discriminator_` File: include/rfl/TaggedUnion.hpp:15
+// TaggedUnion has typo: `discrimininator_` instead of `discriminator_`
+// File: include/rfl/TaggedUnion.hpp:15
 namespace test_tagged_union_discriminator_name {
 
 struct A {

@@ -6,8 +6,8 @@
 #include <rfl.hpp>
 #include <rfl/json.hpp>
 
-// Bug 1.15 — transform_camel_case prepends '_' to names starting with
-// uppercase File: include/rfl/internal/transform_case.hpp:60-73
+// transform_camel_case prepends '_' to names starting with uppercase
+// File: include/rfl/internal/transform_case.hpp:60-73
 // When i==0 and the first character is uppercase, it unconditionally prepends
 // '_'. E.g. "MyField" → "_my_field" instead of "my_field".
 namespace test_camel_case_leading_underscore {
@@ -26,7 +26,7 @@ TEST(regression, camel_case_to_snake_case_no_leading_underscore) {
 
 }  // namespace test_camel_case_leading_underscore
 
-// Bug 1.8 — Timestamp::to_time_t() double-subtracts timezone
+// Timestamp::to_time_t() double-subtracts timezone
 // File: include/rfl/Timestamp.hpp:120
 // `timegm(&tm) - tm_.tm_gmtoff` — timegm already treats input as UTC,
 // so subtracting tm_gmtoff is a double correction. When tm_gmtoff != 0,
@@ -57,7 +57,7 @@ TEST(regression, timestamp_to_time_t_no_double_timezone_correction) {
 
 }  // namespace test_timestamp_double_timezone
 
-// Bug 3.12 — FieldVariantParser wrong error message for zero fields
+// FieldVariantParser wrong error message for zero fields
 // File: include/rfl/parsing/FieldVariantParser.hpp:47-50
 // When the input object has zero matching fields, the error says
 // "found more than one" which is misleading. Should say something
