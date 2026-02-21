@@ -65,8 +65,11 @@ consteval auto transform_camel_case() {
   } else if constexpr (_name.arr_[_i] == '\0') {
     return transform_camel_case<_name, _name.arr_.size(), chars...>();
 
-  } else if constexpr (is_upper<_name.arr_[_i]>()) {
+  } else if constexpr (is_upper<_name.arr_[_i]>() && sizeof...(chars) > 0) {
     return transform_camel_case<_name, _i + 1, chars..., '_', to_lower<_name.arr_[_i]>()>();
+
+  } else if constexpr (is_upper<_name.arr_[_i]>()) {
+    return transform_camel_case<_name, _i + 1, chars..., to_lower<_name.arr_[_i]>()>();
 
   } else {
     return transform_camel_case<_name, _i + 1, chars..., _name.arr_[_i]>();

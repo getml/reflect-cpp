@@ -34,7 +34,7 @@ struct Field {
   Field(const Field<_name, U>& _field) : value_(_field.get()) {}
 
   template <class U>
-  Field(Field<_name, U>&& _field) : value_(_field.get()) {}
+  Field(Field<_name, U>&& _field) : value_(std::move(_field.get())) {}
 
   template <class U>
     requires std::is_convertible_v<U, Type>

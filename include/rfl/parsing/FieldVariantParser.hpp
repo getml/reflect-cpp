@@ -47,7 +47,7 @@ struct FieldVariantParser {
       if (!field_variant) {
         return error(
             "Could not parse: Expected the object to have "
-            "exactly one field, but found more than one.");
+            "exactly one field, but found none.");
       }
       return std::move(*field_variant);
     };

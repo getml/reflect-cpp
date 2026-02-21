@@ -148,7 +148,7 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
       const auto embellish_error = [&](auto&& _e) {
         std::stringstream stream;
         stream << "Could not parse tagged union with "
-                  "discrimininator "
+                  "discriminator "
                << _discriminator.str() << " '" << _disc_value
                << "': " << _e.what();
         return Error(stream.str());

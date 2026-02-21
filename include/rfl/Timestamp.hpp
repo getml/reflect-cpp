@@ -117,7 +117,7 @@ class Timestamp {
 #if defined(_MSC_VER) || defined(__MINGW32__)
     return _mkgmtime(&tm);
 #else
-    return static_cast<time_t>(timegm(&tm) - tm_.tm_gmtoff);
+    return timegm(&tm);
 #endif
   }
 

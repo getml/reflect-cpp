@@ -104,7 +104,7 @@ class Tuple {
 
     const auto compare = [&]<int _i>(std::strong_ordering* _ordering,
                                      std::integral_constant<int, _i>) {
-      if (*_ordering != std::strong_ordering::equivalent &&
+      if (*_ordering == std::strong_ordering::equivalent &&
           this->get<_i>() != _other.template get<_i>()) {
         *_ordering = (this->get<_i>() <=> _other.template get<_i>());
       }

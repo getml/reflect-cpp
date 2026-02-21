@@ -2,6 +2,7 @@
 #define RFL_CLI_READER_HPP_
 
 #include <concepts>
+#include <limits>
 #include <map>
 #include <optional>
 #include <set>
@@ -74,7 +75,16 @@ rfl::Result<T> parse_value(
     const std::string& _str, const std::string& _path
 ) noexcept {
   try {
-    return static_cast<T>(std::stoull(_str));
+    if (!_str.empty() && _str[0] == '-') {
+      return error(
+          "Value '" + _str + "' is negative, cannot convert to unsigned integer for key '" + _path + "'.");
+    }
+    const auto val = std::stoull(_str);
+    if (val > static_cast<unsigned long long>(std::numeric_limits<T>::max())) {
+      return error(
+          "Value '" + _str + "' is out of range for key '" + _path + "'.");
+    }
+    return static_cast<T>(val);
   }
   catch (...) {
     return error(

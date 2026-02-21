@@ -211,7 +211,10 @@ class Result {
     requires std::is_convertible_v<U, T>
   auto& operator=(const Result<U>& _other) {
     const auto to_t = [](const U& _u) -> T { return _u; };
-    t_or_err_ = _other.transform(to_t).t_or_err_;
+    auto temp = _other.transform(to_t);
+    destroy();
+    success_ = temp.success_;
+    move_from_other(temp);
     return *this;
   }
 
@@ -292,7 +295,7 @@ class Result {
   }
 
   /// Returns the value or a default.
-  T&& value_or(T&& _default) && noexcept {
+  T value_or(T&& _default) && noexcept {
     if (success_) {
       return std::move(*this).get_t();
     } else {

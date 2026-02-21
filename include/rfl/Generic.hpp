@@ -1,6 +1,7 @@
 #ifndef RFL_GENERIC_HPP_
 #define RFL_GENERIC_HPP_
 
+#include <limits>
 #include <optional>
 #include <ostream>
 #include <string>
@@ -177,6 +178,11 @@ class RFL_API Generic {
         [](auto _v) -> Result<int> {
           using V = std::remove_cvref_t<decltype(_v)>;
           if constexpr (std::is_same_v<V, int64_t>) {
+            if (_v < static_cast<int64_t>(std::numeric_limits<int>::min()) ||
+                _v > static_cast<int64_t>(std::numeric_limits<int>::max())) {
+              return error(
+                  "rfl::Generic: int64_t value out of range for int.");
+            }
             return static_cast<int>(_v);
           } else {
             return error(

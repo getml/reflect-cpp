@@ -109,14 +109,11 @@ namespace test_validator_mutable_get {
 using PositiveInt = rfl::Validator<int, rfl::Minimum<0>>;
 
 TEST(regression, validator_get_does_not_allow_invalid_mutation) {
-  auto v = PositiveInt(10);
-  ASSERT_EQ(v.get(), 10);
-
-  // Directly mutate through mutable get() — bypasses validation
-  v.get() = -10;
-  EXPECT_GE(v.get(), 0)
-      << "Validator::get() returned a mutable reference that allowed "
-         "writing -10, bypassing Minimum<0> validation";
+  // After fix: get() returns const T&, so assignment through it is impossible
+  constexpr bool can_assign_through_get =
+      std::is_assignable_v<decltype(std::declval<PositiveInt&>().get()), int>;
+  EXPECT_FALSE(can_assign_through_get)
+      << "Validator::get() should return const T&, preventing direct mutation";
 }
 
 }  // namespace test_validator_mutable_get
