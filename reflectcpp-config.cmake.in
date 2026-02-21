@@ -25,18 +25,18 @@ if (NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
 endif()
 
 if ((REFLECTCPP_JSON OR REFLECTCPP_AVRO OR REFLECTCPP_CBOR OR REFLECTCPP_UBJSON) AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
-  find_dependency(yyjson)  
+  find_dependency(yyjson)
 endif()
 
-if (REFLECTCPP_BSON)  
+if (REFLECTCPP_BSON)
   find_dependency(bson 1.25.1 NAMES bson bson-1.0)
 endif ()
 
-if (REFLECTCPP_CAPNPROTO)  
+if (REFLECTCPP_CAPNPROTO)
   find_dependency(CapnProto)
 endif ()
 
-if (REFLECTCPP_CBOR OR REFLECTCPP_UBJSON)  
+if (REFLECTCPP_CBOR OR REFLECTCPP_UBJSON)
   find_dependency(jsoncons)
 endif ()
 
@@ -54,7 +54,9 @@ endif()
 
 if (REFLECTCPP_PARQUET)
   find_dependency(Arrow)
-  find_dependency(Parquet NAMES Parquet Arrow)
+  if(NOT TARGET Parquet::parquet_static AND NOT TARGET Parquet::parquet_shared)
+    find_dependency(Parquet)
+  endif()
 endif()
 
 if (REFLECTCPP_TOML)

@@ -321,12 +321,17 @@ endif()
 if(REFLECTCPP_CSV OR REFLECTCPP_CHECK_HEADERS)
     find_package(Arrow CONFIG REQUIRED)
 
-    if(ARROW_BUILD_STATIC AND ARROW_BUILD_SHARED)
+    if(TARGET Arrow::arrow_${preferred_lib_type})
         set(arrow_lib Arrow::arrow_${preferred_lib_type})
-    elseif(ARROW_BUILD_STATIC)
+    elseif(TARGET Arrow::arrow_static)
         set(arrow_lib Arrow::arrow_static)
-    else()
+    elseif(TARGET Arrow::arrow_shared)
         set(arrow_lib Arrow::arrow_shared)
+    elseif(TARGET arrow::arrow)
+        # Conan generates this target name
+        set(arrow_lib arrow::arrow)
+    else()
+        message(FATAL_ERROR "Could not find an Arrow imported target")
     endif()
 
     target_link_libraries(reflectcpp PUBLIC "${arrow_lib}")
@@ -365,39 +370,43 @@ if(REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
 endif()
 
 if(REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
-    if(NOT TARGET "${arrow_lib}")
+    # Ensure Arrow is found
+    if(NOT DEFINED arrow_lib)
         find_package(Arrow CONFIG REQUIRED)
 
-        if(ARROW_BUILD_STATIC AND ARROW_BUILD_SHARED)
+        if(TARGET Arrow::arrow_${preferred_lib_type})
             set(arrow_lib Arrow::arrow_${preferred_lib_type})
-        elseif(ARROW_BUILD_STATIC)
+        elseif(TARGET Arrow::arrow_static)
             set(arrow_lib Arrow::arrow_static)
-        else()
+        elseif(TARGET Arrow::arrow_shared)
             set(arrow_lib Arrow::arrow_shared)
+        elseif(TARGET arrow::arrow)
+            # Conan generates this target name
+            set(arrow_lib arrow::arrow)
+        else()
+            message(FATAL_ERROR "Could not find an Arrow imported target")
         endif()
     endif()
 
-    find_package(Parquet CONFIG REQUIRED
-        NAMES Parquet Arrow  # Conan merges the Parquet package into Arrow
-    )
+    # Try to find Parquet as a separate package (vcpkg, system installs).
+    # On Conan, Parquet targets may already be available through the Arrow package.
+    if(NOT TARGET Parquet::parquet_static AND NOT TARGET Parquet::parquet_shared)
+        find_package(Parquet CONFIG QUIET)
+    endif()
 
-    # Dump all imported targets for debugging
-    set(msg "Imported targets:\n")
-    get_property(imported_targets DIRECTORY "${CMAKE_CURRENT_LIST_DIR}" PROPERTY IMPORTED_TARGETS)
-    foreach(target IN ITEMS ${imported_targets})
-      string(APPEND msg "  - ${target}\n")
-    endforeach()
-    message(STATUS "${msg}")
-
-    if(ARROW_BUILD_STATIC AND ARROW_BUILD_SHARED)
+    # Determine the Parquet target to use
+    if(TARGET Parquet::parquet_${preferred_lib_type})
         set(parquet_lib Parquet::parquet_${preferred_lib_type})
-    elseif(ARROW_BUILD_STATIC)
+    elseif(TARGET Parquet::parquet_static)
         set(parquet_lib Parquet::parquet_static)
-    else()
+    elseif(TARGET Parquet::parquet_shared)
         set(parquet_lib Parquet::parquet_shared)
     endif()
 
-    target_link_libraries(reflectcpp PUBLIC "${arrow_lib}" "${parquet_lib}")
+    target_link_libraries(reflectcpp PUBLIC "${arrow_lib}")
+    if(DEFINED parquet_lib)
+        target_link_libraries(reflectcpp PUBLIC "${parquet_lib}")
+    endif()
 endif()
 
 if(REFLECTCPP_TOML OR REFLECTCPP_CHECK_HEADERS)
