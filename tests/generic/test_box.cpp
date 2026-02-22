@@ -1,4 +1,5 @@
 #include <cassert>
+#include <compare>
 #include <rfl.hpp>
 
 #include "write_and_read.hpp"
@@ -86,3 +87,14 @@ TEST(generic, copyable_box) {
 
 }
 } // namespace test_copyable_box
+
+namespace test_box_spaceship {
+
+TEST(regression, box_spaceship_compares_values_not_pointers) {
+  const auto a = rfl::make_box<int>(42);
+  const auto b = rfl::make_box<int>(42);
+  EXPECT_EQ(a <=> b, std::strong_ordering::equivalent)
+      << "Box<int>(42) <=> Box<int>(42) should compare values, not pointers";
+}
+
+}  // namespace test_box_spaceship

@@ -1,4 +1,5 @@
 #include <cassert>
+#include <compare>
 #include <rfl.hpp>
 
 #include "write_and_read.hpp"
@@ -39,3 +40,14 @@ TEST(generic, test_ref) {
 
 }
 }  // namespace test_ref
+
+namespace test_ref_spaceship {
+
+TEST(regression, ref_spaceship_compares_values_not_pointers) {
+  const auto a = rfl::make_ref<int>(42);
+  const auto b = rfl::make_ref<int>(42);
+  EXPECT_EQ(a <=> b, std::strong_ordering::equivalent)
+      << "Ref<int>(42) <=> Ref<int>(42) should compare values, not pointers";
+}
+
+}  // namespace test_ref_spaceship
