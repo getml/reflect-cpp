@@ -14,6 +14,9 @@ You can construct literals as follows:
 
 ```cpp
 const auto my_literal = MyLiteral::make<"option1">();
+
+// Construction from std::string requires an explicit call:
+const auto my_literal2 = MyLiteral(my_string);
 ```
 
 Literals that contain only one option also have a default constructor.
