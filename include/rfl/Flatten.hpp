@@ -29,7 +29,7 @@ struct Flatten {
   Flatten(const Flatten<U>& _f) : value_(_f.get()) {}
 
   template <class U>
-  Flatten(Flatten<U>&& _f) : value_(_f.get()) {}
+  Flatten(Flatten<U>&& _f) : value_(std::move(_f.get())) {}
 
   template <class U>
     requires std::is_convertible_v<U, Type>

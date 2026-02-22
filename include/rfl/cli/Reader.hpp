@@ -1,6 +1,7 @@
 #ifndef RFL_CLI_READER_HPP_
 #define RFL_CLI_READER_HPP_
 
+#include <charconv>
 #include <concepts>
 #include <limits>
 #include <map>
@@ -61,13 +62,14 @@ template <class T> requires (std::is_floating_point_v<T>)
 rfl::Result<T> parse_value(
     const std::string& _str, const std::string& _path
 ) noexcept {
-  try {
-    return static_cast<T>(std::stod(_str));
-  }
-  catch (...) {
+  T value;
+  const auto [ptr, ec] =
+      std::from_chars(_str.data(), _str.data() + _str.size(), value);
+  if (ec != std::errc() || ptr != _str.data() + _str.size()) {
     return error(
         "Could not cast '" + _str + "' to floating point for key '" + _path + "'.");
   }
+  return value;
 }
 
 template <class T> requires (std::is_unsigned_v<T> && !std::same_as<T, bool>)

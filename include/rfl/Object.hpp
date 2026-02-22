@@ -26,7 +26,7 @@ class Object {
   using mapped_type = T;
   using value_type = std::pair<std::string, T>;
   using size_type = typename DataType::size_type;
-  using difference_type = typename DataType::size_type;
+  using difference_type = typename DataType::difference_type;
   using reference = value_type&;
   using const_reference = const value_type&;
   using pointer = typename DataType::pointer;
