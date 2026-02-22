@@ -337,6 +337,39 @@ TEST(regression, flatten_cross_type_move_does_not_copy) {
 
 }  // namespace test_flatten_cross_move
 
+// Flatten(U&&) universal reference constructor copies instead of forwarding
+// File: include/rfl/Flatten.hpp:40
+// `value_(_value)` — _value is a named parameter (lvalue), so copy ctor is
+// called even when an rvalue is passed. Should be `value_(std::forward<U>(_value))`.
+// Note: When U == Type, the exact-match Flatten(Type&&) on line 22 is selected,
+// so the bug only manifests for cross-type construction via Flatten(U&&).
+namespace test_flatten_universal_ref_ctor {
+
+using test_flatten_cross_move::FlatBase;
+using test_flatten_cross_move::FlatDerived;
+
+TEST(regression, flatten_universal_ref_ctor_forwards_rvalue) {
+  auto val = FlatDerived{};
+  val.copies = 0;
+  val.moves = 0;
+
+  // Cross-type rvalue: Flatten<FlatBase>(FlatDerived&&) selects Flatten(U&&)
+  // where U = FlatDerived. Without std::forward, _value is an lvalue →
+  // FlatBase(const FlatDerived&) is called instead of FlatBase(FlatDerived&&).
+  auto flat = rfl::Flatten<FlatBase>(std::move(val));
+  EXPECT_TRUE(flat.get().from_rvalue)
+      << "Flatten(U&&) should forward rvalue to Type's converting "
+         "move ctor, but value_(_value) without std::forward causes a copy";
+}
+
+}  // namespace test_flatten_universal_ref_ctor
+
+// Flatten::operator=(Flatten<U>&&) uses std::forward<U>(_f) which passes
+// Flatten<U> instead of U — fails to compile for cross-type assignment.
+// File: include/rfl/Flatten.hpp:103-105
+// Should be `value_ = std::move(_f.get())`.
+// Tested via compile test: generic/compile_fail/flatten_cross_type_move_assign.cpp
+
 // Skip cross-type move constructor copies instead of moving
 // File: include/rfl/internal/Skip.hpp:43
 // Same issue as Flatten: `value_(_other.get())` copies instead of moving.
