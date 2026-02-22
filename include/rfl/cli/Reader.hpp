@@ -3,7 +3,6 @@
 
 #include <charconv>
 #include <concepts>
-#include <limits>
 #include <map>
 #include <optional>
 #include <set>
@@ -72,45 +71,18 @@ rfl::Result<T> parse_value(
   return value;
 }
 
-template <class T> requires (std::is_unsigned_v<T> && !std::same_as<T, bool>)
+template <class T> requires (std::is_integral_v<T> && !std::same_as<T, bool>)
 rfl::Result<T> parse_value(
     const std::string& _str, const std::string& _path
 ) noexcept {
-  try {
-    if (!_str.empty() && _str[0] == '-') {
-      return error(
-          "Value '" + _str + "' is negative, cannot convert to unsigned integer for key '" + _path + "'.");
-    }
-    const auto val = std::stoull(_str);
-    if (val > static_cast<unsigned long long>(std::numeric_limits<T>::max())) {
-      return error(
-          "Value '" + _str + "' is out of range for key '" + _path + "'.");
-    }
-    return static_cast<T>(val);
-  }
-  catch (...) {
-    return error(
-        "Could not cast '" + _str + "' to unsigned integer for key '" + _path + "'.");
-  }
-}
-
-template <class T> requires (std::is_integral_v<T> && std::is_signed_v<T>)
-rfl::Result<T> parse_value(
-    const std::string& _str, const std::string& _path
-) noexcept {
-  try {
-    const auto val = std::stoll(_str);
-    if (val < static_cast<long long>(std::numeric_limits<T>::min())
-        || val > static_cast<long long>(std::numeric_limits<T>::max())) {
-      return error(
-          "Value '" + _str + "' is out of range for key '" + _path + "'.");
-    }
-    return static_cast<T>(val);
-  }
-  catch (...) {
+  T value;
+  const auto [ptr, ec] =
+      std::from_chars(_str.data(), _str.data() + _str.size(), value);
+  if (ec != std::errc() || ptr != _str.data() + _str.size()) {
     return error(
         "Could not cast '" + _str + "' to integer for key '" + _path + "'.");
   }
+  return value;
 }
 
 struct Reader {
