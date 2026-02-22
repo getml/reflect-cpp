@@ -77,3 +77,7 @@ TEST(regression, field_variant_empty_object_error_message) {
 }
 
 }  // namespace test_field_variant_empty_object
+
+// Parser_string_view / Parser_span memory leak bugs are tested
+// in tests/alloc/ — a separate executable with custom operator new[]/delete[]
+// that tracks allocations to detect leaks without ASAN.

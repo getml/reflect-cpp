@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <clocale>
 #include <cstdint>
 #include <string>
 
@@ -45,3 +46,43 @@ TEST(regression, cli_rejects_out_of_range_for_narrow_type) {
 }
 
 }  // namespace test_cli_narrowing_cast
+
+// cli::Reader uses std::stod which is locale-dependent
+// File: include/rfl/cli/Reader.hpp:64
+// std::stod uses the current C locale. In locales where the decimal
+// separator is a comma (e.g. de_DE), "3.14" parses incorrectly.
+namespace test_cli_stod_locale {
+
+struct FloatConfig {
+  double rate;
+};
+
+TEST(regression, cli_float_parsing_ignores_locale) {
+  // Save current locale
+  const char* old_locale = std::setlocale(LC_NUMERIC, nullptr);
+  std::string saved_locale = old_locale ? old_locale : "C";
+
+  // Try to set a locale that uses comma as decimal separator
+  const char* result = std::setlocale(LC_NUMERIC, "de_DE.UTF-8");
+  if (!result) {
+    result = std::setlocale(LC_NUMERIC, "de_DE");
+  }
+  if (!result) {
+    // Locale not available on this system, skip test
+    GTEST_SKIP() << "de_DE locale not available, skipping locale test";
+  }
+
+  const char* args[] = {"program", "--rate=3.14"};
+  const auto res = rfl::cli::read<FloatConfig>(2, const_cast<char**>(args));
+
+  // Restore locale before assertions
+  std::setlocale(LC_NUMERIC, saved_locale.c_str());
+
+  ASSERT_TRUE(res) << "cli::read should parse '3.14' even in de_DE locale. "
+                       "Error: " << res.error().what();
+  EXPECT_DOUBLE_EQ(res.value().rate, 3.14)
+      << "cli::read parsed '3.14' as " << res.value().rate
+      << " due to locale-dependent std::stod";
+}
+
+}  // namespace test_cli_stod_locale

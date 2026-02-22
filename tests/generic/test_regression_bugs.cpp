@@ -229,3 +229,170 @@ TEST(regression, tagged_union_discriminator_spelling) {
 }
 
 }  // namespace test_tagged_union_discriminator_name
+
+// Result::error() && returns Error& instead of Error&&
+// File: include/rfl/Result.hpp:338
+// The rvalue-qualified overload returns Error& but get_err() && returns Error&&.
+// Should return Error&& for consistency and move semantics.
+namespace test_result_error_rvalue_return_type {
+
+TEST(regression, result_error_rvalue_qualified_returns_rvalue_ref) {
+  using ResultType = rfl::Result<int>;
+  using ReturnType =
+      decltype(std::declval<ResultType&&>().error());
+  constexpr bool returns_rvalue_ref = std::is_same_v<ReturnType, rfl::Error&&>;
+  constexpr bool returns_lvalue_ref = std::is_same_v<ReturnType, rfl::Error&>;
+  EXPECT_TRUE(returns_rvalue_ref)
+      << "Result::error() && should return Error&&, not Error&. "
+         "Currently returns lvalue ref: " << returns_lvalue_ref;
+}
+
+}  // namespace test_result_error_rvalue_return_type
+
+// Object::difference_type is unsigned (size_type) instead of signed
+// File: include/rfl/Object.hpp:29
+// C++ standard requires difference_type to be a signed integer type.
+// Using size_type (unsigned) violates container requirements.
+namespace test_object_difference_type_signed {
+
+TEST(regression, object_difference_type_is_signed) {
+  using DiffType = rfl::Object<int>::difference_type;
+  EXPECT_TRUE(std::is_signed_v<DiffType>)
+      << "Object::difference_type should be signed per C++ standard, "
+         "but is unsigned (size_type)";
+}
+
+}  // namespace test_object_difference_type_signed
+
+// Literal(const std::string&) is implicit — can throw unexpectedly
+// File: include/rfl/Literal.hpp:46
+// Constructor is not explicit, allowing implicit conversion from std::string
+// which throws std::runtime_error on invalid input.
+namespace test_literal_implicit_constructor {
+
+TEST(regression, literal_constructor_is_explicit) {
+  using LitType = rfl::Literal<"a", "b", "c">;
+  constexpr bool is_implicit =
+      std::is_convertible_v<std::string, LitType>;
+  EXPECT_FALSE(is_implicit)
+      << "Literal(const std::string&) should be explicit to prevent "
+         "unexpected exceptions from implicit conversions";
+}
+
+}  // namespace test_literal_implicit_constructor
+
+// Flatten cross-type move constructor copies instead of moving
+// File: include/rfl/Flatten.hpp:32
+// `value_(_f.get())` calls get() which returns lvalue ref → copy ctor.
+// Should be `value_(std::move(_f.get()))`.
+namespace test_flatten_cross_move {
+
+struct FlatDerived;
+
+struct FlatBase {
+  int copies = 0;
+  int moves = 0;
+  bool from_rvalue = false;
+
+  FlatBase() = default;
+  FlatBase(const FlatBase& other)
+      : copies(other.copies + 1), moves(other.moves) {}
+  FlatBase(FlatBase&& other) noexcept
+      : copies(other.copies), moves(other.moves + 1) {}
+  FlatBase(const FlatDerived& other);
+  FlatBase(FlatDerived&& other) noexcept;
+  FlatBase& operator=(const FlatBase&) = default;
+  FlatBase& operator=(FlatBase&&) noexcept = default;
+};
+
+struct FlatDerived {
+  int copies = 0;
+  int moves = 0;
+
+  FlatDerived() = default;
+  FlatDerived(const FlatDerived& other)
+      : copies(other.copies + 1), moves(other.moves) {}
+  FlatDerived(FlatDerived&& other) noexcept
+      : copies(other.copies), moves(other.moves + 1) {}
+};
+
+inline FlatBase::FlatBase(const FlatDerived& other)
+    : copies(other.copies), moves(other.moves), from_rvalue(false) {}
+inline FlatBase::FlatBase(FlatDerived&& other) noexcept
+    : copies(other.copies), moves(other.moves), from_rvalue(true) {}
+
+TEST(regression, flatten_cross_type_move_does_not_copy) {
+  auto source = rfl::Flatten<FlatDerived>(FlatDerived{});
+  source.get().copies = 0;
+  source.get().moves = 0;
+
+  // Flatten(Flatten<U>&& _f) uses `value_(_f.get())` — get() returns
+  // lvalue ref, so FlatBase(const FlatDerived&) is called instead of
+  // FlatBase(FlatDerived&&). The fix would be `value_(std::move(_f.get()))`.
+  auto dest = rfl::Flatten<FlatBase>(std::move(source));
+  EXPECT_TRUE(dest.get().from_rvalue)
+      << "Flatten cross-type move constructor should use rvalue conversion, "
+         "but get() returns lvalue ref, so lvalue conversion is used instead";
+}
+
+}  // namespace test_flatten_cross_move
+
+// Skip cross-type move constructor copies instead of moving
+// File: include/rfl/internal/Skip.hpp:43
+// Same issue as Flatten: `value_(_other.get())` copies instead of moving.
+namespace test_skip_cross_move {
+
+struct SkipDerived2;
+
+struct SkipBase {
+  int copies = 0;
+  int moves = 0;
+  bool from_rvalue = false;
+
+  SkipBase() = default;
+  SkipBase(const SkipBase& other)
+      : copies(other.copies + 1), moves(other.moves) {}
+  SkipBase(SkipBase&& other) noexcept
+      : copies(other.copies), moves(other.moves + 1) {}
+  SkipBase(const SkipDerived2& other);
+  SkipBase(SkipDerived2&& other) noexcept;
+  SkipBase& operator=(const SkipBase&) = default;
+  SkipBase& operator=(SkipBase&&) noexcept = default;
+};
+
+struct SkipDerived2 {
+  int copies = 0;
+  int moves = 0;
+
+  SkipDerived2() = default;
+  SkipDerived2(const SkipDerived2& other)
+      : copies(other.copies + 1), moves(other.moves) {}
+  SkipDerived2(SkipDerived2&& other) noexcept
+      : copies(other.copies), moves(other.moves + 1) {}
+};
+
+inline SkipBase::SkipBase(const SkipDerived2& other)
+    : copies(other.copies), moves(other.moves), from_rvalue(false) {}
+inline SkipBase::SkipBase(SkipDerived2&& other) noexcept
+    : copies(other.copies), moves(other.moves), from_rvalue(true) {}
+
+TEST(regression, skip_cross_type_move_does_not_copy) {
+  auto source =
+      rfl::internal::Skip<SkipDerived2, true, true>(SkipDerived2{});
+  source.get().copies = 0;
+  source.get().moves = 0;
+
+  auto dest = rfl::internal::Skip<SkipBase, true, true>(std::move(source));
+  EXPECT_TRUE(dest.get().from_rvalue)
+      << "Skip cross-type move constructor should use rvalue conversion, "
+         "but get() returns lvalue ref, so lvalue conversion is used instead";
+}
+
+}  // namespace test_skip_cross_move
+
+// Timestamp::reflection() does not check strftime return value
+// File: include/rfl/Timestamp.hpp:100-102
+// NOT TESTABLE: The format is a compile-time template parameter, so we cannot
+// create a format that exceeds the 200-char output buffer at runtime.
+// Any format long enough to overflow would also need to be parseable by
+// strptime from a matching input string.
