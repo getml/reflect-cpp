@@ -99,7 +99,12 @@ struct Reader {
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       const auto str = std::visit(get_value, _var.node_or_attribute_);
       try {
-        return static_cast<T>(std::stoi(str));
+        if constexpr (std::is_unsigned<std::remove_cvref_t<T>>()) {
+          return static_cast<T>(std::stoull(str));
+        }
+        else {
+          return static_cast<T>(std::stoll(str));
+        }
       } catch (std::exception& e) {
         return error("Could not cast '" + std::string(str) + "' to integer.");
       }

@@ -32,7 +32,7 @@ add_test(
 )
 set_tests_properties(
   capnproto_regression.read_istream_schema_should_compile
-  PROPERTIES WILL_FAIL TRUE
+  PROPERTIES WILL_FAIL FALSE
 )
 add_library(capnproto-compile-fail-read-istream-schema OBJECT EXCLUDE_FROM_ALL
   compile_fail/capnproto_read_istream_schema.cpp

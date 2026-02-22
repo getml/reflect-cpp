@@ -124,12 +124,24 @@ struct Reader {
       return value.v_bool;
 
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-      if (btype != BSON_TYPE_DOUBLE) {
-        return error(
-            "Could not cast to numeric value. The type must be double, "
-            "int32, int64 or date_time.");
+      switch (btype) {
+        case BSON_TYPE_DOUBLE:
+          return static_cast<T>(value.v_double);
+
+        case BSON_TYPE_INT32:
+          return static_cast<T>(value.v_int32);
+
+        case BSON_TYPE_INT64:
+          return static_cast<T>(value.v_int64);
+
+        case BSON_TYPE_DATE_TIME:
+          return static_cast<T>(value.v_datetime);
+
+        default:
+          return error(
+              "Could not cast to numeric value. The type must be double, "
+              "int32, int64 or date_time.");
       }
-      return static_cast<T>(value.v_double);
 
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       switch (btype) {

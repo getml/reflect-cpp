@@ -32,8 +32,14 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
   msgpack_zone mempool;
   msgpack_zone_init(&mempool, 2048);
   msgpack_object deserialized;
-  msgpack_unpack(internal::ptr_cast<const char*>(_bytes), _size, NULL, &mempool,
-                 &deserialized);
+  const auto rc = msgpack_unpack(
+      internal::ptr_cast<const char*>(_bytes), _size, NULL, &mempool,
+      &deserialized);
+  if (rc != MSGPACK_UNPACK_SUCCESS && rc != MSGPACK_UNPACK_EXTRA_BYTES) {
+    msgpack_zone_destroy(&mempool);
+    return Result<internal::wrap_in_rfl_array_t<T>>(
+        error("Failed to unpack msgpack data."));
+  }
   auto r = read<T, Ps...>(deserialized);
   msgpack_zone_destroy(&mempool);
   return r;
