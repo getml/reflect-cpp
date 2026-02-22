@@ -81,6 +81,7 @@ class ReflectCppConan(ConanFile):
             self.requires("jsoncons/0.176.0", transitive_headers=True)
         if self.options.with_csv or self.options.with_parquet:
             self.requires("arrow/21.0.0", transitive_headers=True)
+            self.default_options["arrow/*:with_csv"] = self.options.with_csv
         if self.options.with_flatbuffers:
             self.requires("flatbuffers/24.3.25", transitive_headers=True)
         if self.options.with_msgpack:
