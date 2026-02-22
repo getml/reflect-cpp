@@ -68,3 +68,41 @@ TEST(xml_regression, read_uint64_large_value) {
 }
 
 }  // namespace test_xml_reader_int64
+
+// xml::Reader narrowing: stoull/stoll + static_cast<T> silently truncates
+// for types narrower than 64-bit (e.g. int16_t, uint16_t).
+namespace test_xml_reader_narrowing {
+
+struct WithInt16 {
+  int16_t value;
+};
+
+struct WithUint16 {
+  uint16_t value;
+};
+
+TEST(xml_regression, read_rejects_out_of_range_for_int16) {
+  const auto xml = std::string(
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+      "<WithInt16><value>99999</value></WithInt16>");
+  const auto res = rfl::xml::read<WithInt16>(xml);
+  EXPECT_FALSE(res) << "99999 should be rejected for int16_t field";
+}
+
+TEST(xml_regression, read_rejects_negative_for_uint16) {
+  const auto xml = std::string(
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+      "<WithUint16><value>-1</value></WithUint16>");
+  const auto res = rfl::xml::read<WithUint16>(xml);
+  EXPECT_FALSE(res) << "-1 should be rejected for uint16_t field";
+}
+
+TEST(xml_regression, read_rejects_large_negative_for_int16) {
+  const auto xml = std::string(
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+      "<WithInt16><value>-99999</value></WithInt16>");
+  const auto res = rfl::xml::read<WithInt16>(xml);
+  EXPECT_FALSE(res) << "-99999 should be rejected for int16_t field";
+}
+
+}  // namespace test_xml_reader_narrowing

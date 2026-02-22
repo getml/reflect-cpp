@@ -1,6 +1,7 @@
 #ifndef RFL_XML_READER_HPP_
 #define RFL_XML_READER_HPP_
 
+#include <charconv>
 #include <exception>
 #include <optional>
 #include <pugixml.hpp>
@@ -98,16 +99,13 @@ struct Reader {
 
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       const auto str = std::visit(get_value, _var.node_or_attribute_);
-      try {
-        if constexpr (std::is_unsigned<std::remove_cvref_t<T>>()) {
-          return static_cast<T>(std::stoull(str));
-        }
-        else {
-          return static_cast<T>(std::stoll(str));
-        }
-      } catch (std::exception& e) {
+      T value;
+      const auto [ptr, ec] =
+          std::from_chars(str.data(), str.data() + str.size(), value);
+      if (ec != std::errc() || ptr != str.data() + str.size()) {
         return error("Could not cast '" + std::string(str) + "' to integer.");
       }
+      return value;
 
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
