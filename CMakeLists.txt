@@ -4,7 +4,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(REFLECTCPP_BUILD_SHARED "Build shared library" ${BUILD_SHARED_LIBS})
 option(REFLECTCPP_STRICT_WARNINGS "Enable strict compiler warnings" OFF)
-option(REFLECTCPP_INSTALL "Install reflect cpp" ON)
+option(REFLECTCPP_INSTALL "Install reflect cpp" OFF)
 
 option(REFLECTCPP_ALL_FORMATS "Enable all supported formats" OFF)
 option(REFLECTCPP_JSON "Enable JSON support" ON) # enabled by default
