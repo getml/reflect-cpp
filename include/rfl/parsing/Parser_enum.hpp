@@ -7,6 +7,7 @@
 #include "../Result.hpp"
 #include "../enums.hpp"
 #include "../thirdparty/enchantum/enchantum.hpp"
+#include "../internal/has_reflector.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
@@ -29,7 +30,20 @@ struct Parser<R, W, T, ProcessorsType> {
 
   /// Expresses the variables as type T.
   static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
-    if constexpr (ProcessorsType::underlying_enums_ ||
+    if constexpr (internal::has_read_reflector<T>) {
+      const auto wrap_in_t = [](auto&& _named_tuple) -> Result<T> {
+        try {
+          using NT = decltype(_named_tuple);
+          return Reflector<T>::to(std::forward<NT>(_named_tuple));
+        } catch (std::exception& e) {
+          return error(e.what());
+        }
+      };
+      return Parser<R, W, typename Reflector<T>::ReflType,
+                    ProcessorsType>::read(_r, _var)
+          .and_then(wrap_in_t);
+
+    } else if constexpr (ProcessorsType::underlying_enums_ ||
                   schemaful::IsSchemafulReader<R>) {
       static_assert(enchantum::ScopedEnum<T>,
                     "The enum must be a scoped enum in order to retrieve "
@@ -44,7 +58,10 @@ struct Parser<R, W, T, ProcessorsType> {
 
   template <class P>
   static void write(const W& _w, const T& _var, const P& _parent) {
-    if constexpr (ProcessorsType::underlying_enums_ ||
+    if constexpr (internal::has_write_reflector<T>) {
+      Parser<R, W, typename Reflector<T>::ReflType, ProcessorsType>::write(
+          _w, Reflector<T>::from(_var), _parent);
+    } else if constexpr (ProcessorsType::underlying_enums_ ||
                   schemaful::IsSchemafulWriter<W>) {
       const auto val = static_cast<std::underlying_type_t<T>>(_var);
       ParentType::add_value(_w, val, _parent);
@@ -57,7 +74,12 @@ struct Parser<R, W, T, ProcessorsType> {
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     using U = std::remove_cvref_t<T>;
-    return make_enum<U>(_definitions);
+    if constexpr (internal::has_read_reflector<U> ||
+                         internal::has_write_reflector<U>) {
+      return make_reference<U>(_definitions);
+    } else {
+      return make_enum<U>(_definitions);
+    }    
   }
 
  private:
@@ -76,6 +98,19 @@ struct Parser<R, W, T, ProcessorsType> {
           typename decltype(internal::enums::get_enum_names<U>())::Literal,
           ProcessorsType>::to_schema(_definitions);
     }
+  }
+
+  template <class U>
+  static schema::Type make_reference(
+      std::map<std::string, schema::Type>* _definitions) {
+    using Type = schema::Type;
+    const auto name = make_type_name<U>();
+
+    if (_definitions->find(name) == _definitions->end()) {
+        (*_definitions)[name] = Parser<R, W, typename Reflector<U>::ReflType,
+                                       ProcessorsType>::to_schema(_definitions);
+    }
+    return Type{Type::Reference{name}};
   }
 };
 
