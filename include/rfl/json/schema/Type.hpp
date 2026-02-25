@@ -5,6 +5,7 @@
 #include <optional>
 #include <string>
 
+#include "../../Flatten.hpp"
 #include "../../Literal.hpp"
 #include "../../Object.hpp"
 #include "../../Ref.hpp"
@@ -15,24 +16,31 @@ namespace rfl::json::schema {
 
 /// The JSON representation of internal::schema::Type.
 struct Type {
-  struct Boolean {
+  /// Common annotation fields shared by all schema subtypes.
+  struct Annotations {
     std::optional<std::string> description{};
+    std::optional<bool> deprecated{};
+    std::optional<std::string> deprecationMessage{};
+  };
+
+  struct Boolean {
+    rfl::Flatten<Annotations> annotations{};
     Literal<"boolean"> type{};
   };
 
   struct Integer {
     Literal<"integer"> type{};
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
   };
 
   struct Number {
     Literal<"number"> type{};
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
   };
 
   struct String {
     Literal<"string"> type{};
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
     rfl::Rename<"minLength", std::optional<size_t>> minSize{};
     rfl::Rename<"maxLength", std::optional<size_t>> maxSize{};
   };
@@ -40,98 +48,98 @@ struct Type {
   using NumericType = rfl::Variant<Integer, Number>;
 
   struct AllOf {
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
     std::vector<Type> allOf{};
   };
 
   struct AnyOf {
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
     std::vector<Type> anyOf{};
   };
 
   struct ExclusiveMaximum {
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
     rfl::Variant<double, int> exclusiveMaximum{};
     std::string type{};
   };
 
   struct ExclusiveMinimum {
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
     rfl::Variant<double, int> exclusiveMinimum{};
     std::string type{};
   };
 
   struct FixedSizeTypedArray {
     Literal<"array"> type{};
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
     rfl::Ref<Type> items{};
     size_t minItems{};
     size_t maxItems{};
   };
 
   struct Maximum {
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
     rfl::Variant<double, int> maximum{};
     std::string type{};
   };
 
   struct Minimum {
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
     rfl::Variant<double, int> minimum{};
     std::string type{};
   };
 
   struct Null {
     Literal<"null"> type{};
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
   };
 
   struct Object {
     Literal<"object"> type{};
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
     rfl::Object<Type> properties{};
     std::vector<std::string> required{};
     std::shared_ptr<Type> additionalProperties{};
   };
 
   struct OneOf {
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
     std::vector<Type> oneOf{};
   };
 
   struct Reference {
     Rename<"$ref", std::optional<std::string>> ref{};
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
   };
 
   struct Regex {
     Literal<"string"> type{};
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
     std::string pattern{};
   };
 
   struct StringEnum {
     Literal<"string"> type{};
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
     rfl::Rename<"enum", std::vector<std::string>> values{};
   };
 
   struct StringMap {
     Literal<"object"> type{};
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
     rfl::Ref<Type> additionalProperties{};
   };
 
   struct Tuple {
     Literal<"array"> type{};
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
     std::vector<Type> prefixItems{};
     bool items = false;
   };
 
   struct TypedArray {
     Literal<"array"> type{};
-    std::optional<std::string> description{};
+    rfl::Flatten<Annotations> annotations{};
     rfl::Ref<Type> items{};
     rfl::Rename<"minItems", std::optional<size_t>> minSize{};
     rfl::Rename<"maxItems", std::optional<size_t>> maxSize{};
