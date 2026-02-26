@@ -55,9 +55,10 @@ TEST(json, test_deprecated_optional_field) {
 }
 
 TEST(json, test_deprecated_read_write) {
+  const auto expected = R"({"old_name":"legacy","new_name":"current"})";
   const auto obj =
       DeprecatedBasicField{.old_name = "legacy", .new_name = "current"};
-  write_and_read(obj);
+  write_and_read(obj, expected);
 }
 
 }  // namespace test_deprecated_schema

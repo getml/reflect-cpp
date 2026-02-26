@@ -41,13 +41,15 @@ struct Deprecated {
 
   Deprecated(const Deprecated& _field) = default;
 
-  template <class U>
+  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
+                                             bool>::type = true>
   Deprecated(const Deprecated<_deprecation_message, _description, U>& _field)
       : value_(_field.get()) {}
 
-  template <class U>
+  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
+                                             bool>::type = true>
   Deprecated(Deprecated<_deprecation_message, _description, U>&& _field)
-      : value_(_field.get()) {}
+      : value_(std::move(_field.value_)) {}
 
   template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
                                              bool>::type = true>
@@ -56,11 +58,6 @@ struct Deprecated {
   template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
                                              bool>::type = true>
   Deprecated(U&& _value) noexcept : value_(std::forward<U>(_value)) {}
-
-  template <class U, typename std::enable_if<std::is_convertible_v<U, Type>,
-                                             bool>::type = true>
-  Deprecated(const Deprecated<_deprecation_message, _description, U>& _field)
-      : value_(_field.value()) {}
 
   /// Assigns the underlying object to its default value.
   template <class U = Type,
@@ -132,7 +129,7 @@ struct Deprecated {
   /// Assigns the underlying object.
   template <class U>
   auto& operator=(Deprecated<_deprecation_message, _description, U>&& _field) {
-    value_ = std::forward<T>(_field.value_);
+    value_ = std::move(_field.value_);
     return *this;
   }
 

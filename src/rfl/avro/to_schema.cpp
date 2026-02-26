@@ -80,6 +80,10 @@ schema::Type type_to_avro_schema_type(
       }
       return schema::Type{.value = any_of};
 
+    } else if constexpr (std::is_same<T, Type::Deprecated>()) {
+      return type_to_avro_schema_type(*_t.type_, _definitions, _already_known,
+                                      _num_unnamed);
+
     } else if constexpr (std::is_same<T, Type::Description>()) {
       // TODO: Return descriptions
       return type_to_avro_schema_type(*_t.type_, _definitions, _already_known,
