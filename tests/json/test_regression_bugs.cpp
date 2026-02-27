@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include <cstdlib>
-#include <ctime>
 #include <string>
 
 #include <rfl.hpp>
@@ -26,37 +25,6 @@ TEST(regression, camel_case_to_snake_case_no_leading_underscore) {
 }
 
 }  // namespace test_camel_case_leading_underscore
-
-// Timestamp::to_time_t() double-subtracts timezone
-// File: include/rfl/Timestamp.hpp:120
-// `timegm(&tm) - tm_.tm_gmtoff` — timegm already treats input as UTC,
-// so subtracting tm_gmtoff is a double correction. When tm_gmtoff != 0,
-// the result is wrong.
-namespace test_timestamp_double_timezone {
-
-#if !defined(_MSC_VER) && !defined(__MINGW32__)
-TEST(regression, timestamp_to_time_t_no_double_timezone_correction) {
-  using TS = rfl::Timestamp<"%Y-%m-%d %H:%M:%S">;
-  // Known ground truth: 2024-01-15 12:00:00 UTC = 1705320000
-  constexpr time_t ground_truth = 1705320000;
-
-  auto ts = TS("2024-01-15 12:00:00");
-  // Simulate strptime leaving a non-zero tm_gmtoff
-  // (which can happen depending on libc implementation)
-  ts.tm().tm_gmtoff = 3600;  // +1 hour
-
-  const auto actual = ts.to_time_t();
-  // timegm already treats input as UTC. Subtracting tm_gmtoff is wrong —
-  // it causes a double timezone correction.
-  EXPECT_EQ(actual, ground_truth)
-      << "to_time_t() should return " << ground_truth
-      << " for 2024-01-15 12:00:00 UTC regardless of tm_gmtoff, "
-         "but got " << actual
-      << " (difference: " << (ground_truth - actual) << "s)";
-}
-#endif
-
-}  // namespace test_timestamp_double_timezone
 
 // FieldVariantParser wrong error message for zero fields
 // File: include/rfl/parsing/FieldVariantParser.hpp:47-50

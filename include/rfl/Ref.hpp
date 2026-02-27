@@ -116,7 +116,7 @@ auto make_ref(Args&&... _args) {
 
 template <class T1, class T2>
 inline auto operator<=>(const Ref<T1>& _t1, const Ref<T2>& _t2) {
-  return *_t1 <=> *_t2;
+  return _t1.ptr() <=> _t2.ptr();
 }
 
 template <class CharT, class Traits, class T>

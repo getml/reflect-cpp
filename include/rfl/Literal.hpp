@@ -43,7 +43,7 @@ class Literal {
   /// Constructs a Literal from another literal.
   Literal(Literal<fields_...>&& _other) noexcept = default;
 
-  explicit Literal(const std::string& _str) : value_(find_value(_str).value()) {}
+  Literal(const std::string& _str) : value_(find_value(_str).value()) {}
 
   Literal() : value_(0) {}
 

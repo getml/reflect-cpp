@@ -128,7 +128,7 @@ auto make_copyable_box(Args&&... _args) {
 
 template <class T1, class T2>
 inline auto operator<=>(const Box<T1>& _b1, const Box<T2>& _b2) {
-  return *_b1 <=> *_b2;
+  return _b1.ptr() <=> _b2.ptr();
 }
 
 template <class CharT, class Traits, class T>
