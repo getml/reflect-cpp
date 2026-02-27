@@ -47,6 +47,38 @@ TEST(regression, cli_rejects_out_of_range_for_narrow_type) {
 
 }  // namespace test_cli_narrowing_cast
 
+// cli::Reader signed overload — no range check on narrowing cast
+// File: include/rfl/cli/Reader.hpp:101-102
+// static_cast<T>(stoll(str)) silently truncates for int8_t/int16_t/int32_t.
+// E.g. stoll("99999") cast to int16_t wraps silently.
+namespace test_cli_signed_narrowing_cast {
+
+struct SignedConfig {
+  int8_t level;
+};
+
+TEST(regression, cli_rejects_out_of_range_for_signed_narrow_type) {
+  const char* args[] = {"program", "--level=200"};
+  const auto result =
+      rfl::cli::read<SignedConfig>(2, const_cast<char**>(args));
+  EXPECT_FALSE(result)
+      << "cli::read should reject 200 for int8_t (max 127), "
+         "but parsed level="
+      << static_cast<int>(result.value().level);
+}
+
+TEST(regression, cli_rejects_large_negative_for_signed_narrow_type) {
+  const char* args[] = {"program", "--level=-200"};
+  const auto result =
+      rfl::cli::read<SignedConfig>(2, const_cast<char**>(args));
+  EXPECT_FALSE(result)
+      << "cli::read should reject -200 for int8_t (min -128), "
+         "but parsed level="
+      << static_cast<int>(result.value().level);
+}
+
+}  // namespace test_cli_signed_narrowing_cast
+
 // cli::Reader uses std::stod which is locale-dependent
 // File: include/rfl/cli/Reader.hpp:64
 // std::stod uses the current C locale. In locales where the decimal
