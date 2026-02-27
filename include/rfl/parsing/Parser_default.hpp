@@ -13,6 +13,7 @@
 #include "../internal/has_reflection_type_v.hpp"
 #include "../internal/has_reflector.hpp"
 #include "../internal/is_basic_type.hpp"
+#include "../internal/is_deprecated.hpp"
 #include "../internal/is_description.hpp"
 #include "../internal/is_literal.hpp"
 #include "../internal/is_underlying_enums_v.hpp"
@@ -127,6 +128,8 @@ struct Parser {
     if constexpr (rfl::internal::is_description_v<U>) {
       return make_description<U>(_definitions);
 
+    } else if constexpr (rfl::internal::is_deprecated_v<U>) {
+      return make_deprecated<U>(_definitions);
     } else if constexpr (std::is_class_v<U> && std::is_aggregate_v<U>) {
       return make_reference<U>(_definitions);
 
@@ -147,6 +150,18 @@ struct Parser {
   }
 
  private:
+  template <class U>
+  static schema::Type make_deprecated(
+      std::map<std::string, schema::Type>* _definitions) {
+    using Type = schema::Type;
+    return Type{Type::Deprecated{
+        .deprecation_message_ = typename U::DeprecationMessage().str(),
+        .description_ = typename U::Content().str(),
+        .type_ =
+            Ref<Type>::make(Parser<R, W, std::remove_cvref_t<typename U::Type>,
+                                   ProcessorsType>::to_schema(_definitions))}};
+  }
+
   template <class U>
   static schema::Type make_description(
       std::map<std::string, schema::Type>* _definitions) {

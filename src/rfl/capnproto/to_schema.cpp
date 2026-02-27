@@ -179,6 +179,10 @@ schema::Type type_to_capnproto_schema_type(
       return any_of_to_capnproto_schema_type(_t, _definitions, _parent,
                                              _cnp_types);
 
+    } else if constexpr (std::is_same<T, Type::Deprecated>()) {
+      return type_to_capnproto_schema_type(*_t.type_, _definitions, _parent,
+                                           _cnp_types);
+
     } else if constexpr (std::is_same<T, Type::Description>()) {
       return type_to_capnproto_schema_type(*_t.type_, _definitions, _parent,
                                            _cnp_types);
