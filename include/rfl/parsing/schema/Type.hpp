@@ -41,6 +41,12 @@ struct RFL_API Type {
     std::vector<Type> types_;
   };
 
+  struct Deprecated {
+    std::string deprecation_message_;
+    std::string description_;
+    Ref<Type> type_;
+  };
+
   struct Description {
     std::string description_;
     Ref<Type> type_;
@@ -92,7 +98,7 @@ struct RFL_API Type {
 
   using VariantType =
       rfl::Variant<Boolean, Bytestring, Vectorstring, Int32, Int64, UInt32, UInt64, Integer,
-                   Float, Double, String, AnyOf, Description,
+                   Float, Double, String, AnyOf, Deprecated, Description,
                    FixedSizeTypedArray, Literal, Object, Optional, Reference,
                    StringMap, Tuple, TypedArray, Validated>;
 
