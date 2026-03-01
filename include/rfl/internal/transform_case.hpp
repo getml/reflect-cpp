@@ -1,9 +1,16 @@
 #ifndef RFL_INTERNAL_TRANSFORMSNAKECASE_HPP_
 #define RFL_INTERNAL_TRANSFORMSNAKECASE_HPP_
 
+#include <algorithm>
+#include <ranges>
+
 #include "StringLiteral.hpp"
 
 namespace rfl::internal {
+
+constexpr bool is_upper(char c) { return c >= 'A' && c <= 'Z'; }
+
+constexpr char to_lower(char c) { return is_upper(c) ? c - ('A' - 'a') : c; }
 
 /// Capitalizes a lower-case character.
 template <char c>
@@ -24,10 +31,6 @@ consteval char to_lower() {
   }
 }
 
-template <char c>
-consteval bool is_upper() {
-  return c >= 'A' && c <= 'Z';
-}
 
 /// Transforms the field name from snake case to camel case.
 template <internal::StringLiteral _name, bool _capitalize, size_t _i = 0,
@@ -56,23 +59,23 @@ consteval auto transform_snake_case() {
   }
 }
 
-/// Transforms the field name from camel case to snake case
-template <internal::StringLiteral _name, size_t _i = 0, char... chars>
+/// Transforms the field name from camel case to snake case.
+template <internal::StringLiteral _name>
 consteval auto transform_camel_case() {
-  if constexpr (_i == _name.arr_.size()) {
-    return StringLiteral<sizeof...(chars) + 1>(chars...);
+  constexpr auto src = _name.string_view();
+  constexpr auto len = src.size() + std::ranges::count_if(src, is_upper);
 
-  } else if constexpr (_name.arr_[_i] == '\0') {
-    return transform_camel_case<_name, _name.arr_.size(), chars...>();
-
-  } else if constexpr (is_upper<_name.arr_[_i]>() && sizeof...(chars) > 0) {
-    return transform_camel_case<_name, _i + 1, chars..., '_', to_lower<_name.arr_[_i]>()>();
-
-  } else if constexpr (is_upper<_name.arr_[_i]>()) {
-    return transform_camel_case<_name, _i + 1, chars..., to_lower<_name.arr_[_i]>()>();
-
-  } else {
-    return transform_camel_case<_name, _i + 1, chars..., _name.arr_[_i]>();
+  auto result = std::array<char, len + 1>{};
+  size_t j = len;
+  for (const char c : src | std::views::reverse) {
+    result[--j] = to_lower(c);
+    if (is_upper(c)) result[--j] = '_';
+  }
+  if constexpr (!src.empty() && is_upper(src[0])) {
+    return StringLiteral<len>(result.data() + 1);
+  }
+  else {
+    return StringLiteral<len + 1>(result);
   }
 }
 

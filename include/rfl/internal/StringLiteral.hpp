@@ -14,13 +14,20 @@ namespace internal {
 /// for the parameters names in the NamedTuples.
 template <size_t N>
 struct StringLiteral {
-  constexpr StringLiteral(const auto... _chars) : arr_{_chars..., '\0'} {}
+  constexpr StringLiteral(const auto... _chars)
+    requires (std::is_same_v<decltype(_chars), const char> && ...)
+    : arr_{_chars..., '\0'} {}
 
   constexpr StringLiteral(const std::array<char, N> _arr) : arr_(_arr) {}
 
   constexpr StringLiteral(const char (&_str)[N]) {
     std::copy_n(_str, N, std::data(arr_));
   }
+
+  explicit constexpr StringLiteral(const char* _data) {
+    std::copy_n(_data, N, std::data(arr_));
+  }
+
 
   /// Returns the value as a string.
   std::string str() const { return std::string(string_view()); }
