@@ -367,6 +367,7 @@ struct Person {
       std::vector<Person>>
       children;
   float salary;
+  rfl::Deprecated<"Use Salary Instead", "Wage in dollars", int> wage;
 };
 
 const std::string json_schema = rfl::json::to_schema<Person>();
