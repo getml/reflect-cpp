@@ -102,17 +102,19 @@ class Tuple {
     static_assert(sizeof...(Types) == sizeof...(OtherTypes),
                   "The size of the two tuples must be the same.");
 
-    const auto compare = [&]<int _i>(std::strong_ordering* _ordering,
-                                     std::integral_constant<int, _i>) {
-      if (*_ordering == std::strong_ordering::equivalent &&
-          this->get<_i>() != _other.template get<_i>()) {
-        *_ordering = (this->get<_i>() <=> _other.template get<_i>());
-      }
+    using OrderingType = std::common_comparison_category_t<
+        decltype(std::declval<Types>() <=> std::declval<OtherTypes>())...>;
+
+    auto ordering = OrderingType::equivalent;
+
+    const auto compare = [&]<int _i>(std::integral_constant<int, _i>) {
+      ordering = static_cast<OrderingType>(
+          this->get<_i>() <=> _other.template get<_i>());
+      return ordering != 0;
     };
 
     return [&]<int... _is>(std::integer_sequence<int, _is...>) {
-      auto ordering = std::strong_ordering::equivalent;
-      (compare(&ordering, std::integral_constant<int, _is>{}), ...);
+      (compare(std::integral_constant<int, _is>{}) || ...);
       return ordering;
     }(std::make_integer_sequence<int, sizeof...(Types)>());
   }
