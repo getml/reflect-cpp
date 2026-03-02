@@ -201,7 +201,7 @@ You can mark fields as deprecated in the JSON schema using `rfl::Deprecated`. Th
 
 ```cpp
 struct Person {
-  rfl::Deprecated<"Use 'full_name' instead.", "The person's first name", std::string>
+  rfl::Deprecated<"Use 'full_name' instead.", "The person's first name", std::optional<std::string>>
       first_name;
   rfl::Description<"The person's full name", std::string> full_name;
   float salary;
