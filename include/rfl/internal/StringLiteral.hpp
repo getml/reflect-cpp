@@ -24,10 +24,11 @@ struct StringLiteral {
     std::copy_n(_str, N, std::data(arr_));
   }
 
-  explicit constexpr StringLiteral(const char* _data) {
+  template <class T>
+    requires (std::is_same_v<T, const char*> || std::is_same_v<T, char*>)
+  explicit constexpr StringLiteral(T _data) {
     std::copy_n(_data, N, std::data(arr_));
   }
-
 
   /// Returns the value as a string.
   std::string str() const { return std::string(string_view()); }
