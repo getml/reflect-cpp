@@ -29,6 +29,7 @@ add_test(
   COMMAND ${CMAKE_COMMAND}
     --build ${CMAKE_BINARY_DIR}
     --target capnproto-compile-fail-read-istream-schema
+    --config $<CONFIG>
 )
 set_tests_properties(
   capnproto_regression.read_istream_schema_should_compile

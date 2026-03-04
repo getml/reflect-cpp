@@ -28,6 +28,7 @@ add_test(
   COMMAND ${CMAKE_COMMAND}
     --build ${CMAKE_BINARY_DIR}
     --target generic-compile-fail-flatten-cross-type-move-assign
+    --config $<CONFIG>
 )
 set_tests_properties(
   regression.flatten_cross_type_move_assign_should_compile
