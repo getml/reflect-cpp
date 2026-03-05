@@ -367,6 +367,7 @@ struct Person {
       std::vector<Person>>
       children;
   float salary;
+  rfl::Deprecated<"Use Salary Instead", "Wage in dollars", std::optional<int>> wage;
 };
 
 const std::string json_schema = rfl::json::to_schema<Person>();
@@ -375,7 +376,7 @@ const std::string json_schema = rfl::json::to_schema<Person>();
 The resulting JSON schema looks like this:
 
 ```json
-{"$schema":"https://json-schema.org/draft/2020-12/schema","$ref":"#/$defs/Person","$defs":{"Person":{"type":"object","properties":{"children":{"type":"array","description":"The person's children. Pass an empty array for no children.","items":{"$ref":"#/$defs/Person"}},"email":{"type":"string","description":"Must be a proper email in the form xxx@xxx.xxx.","pattern":"^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$"},"first_name":{"type":"string"},"last_name":{"type":"string"},"salary":{"type":"number"}},"required":["children","email","first_name","last_name","salary"]}}}
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$ref":"#/$defs/Person","$defs":{"Person":{"type":"object","properties":{"children":{"type":"array","description":"The person's children. Pass an empty array for no children.","items":{"$ref":"#/$defs/Person"}},"email":{"type":"string","description":"Must be a proper email in the form xxx@xxx.xxx.","pattern":"^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$"},"first_name":{"type":"string"},"last_name":{"type":"string"},"salary":{"type":"number"},"wage":{"type":"integer","description":"Wage in dollars","deprecated":true,"deprecationMessage":"Use Salary Instead"}},"required":["children","email","first_name","last_name","salary"]}}}
 ```
 
 Note that this is currently supported for JSON only, since most other formats do not support schemata in the first place.
