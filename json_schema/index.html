@@ -1744,6 +1744,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#indicating-deprecated-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Indicating deprecated fields
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2419,6 +2430,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#indicating-deprecated-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Indicating deprecated fields
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2666,6 +2688,48 @@
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
+<h2 id="indicating-deprecated-fields">Indicating deprecated fields<a class="headerlink" href="#indicating-deprecated-fields" title="Permanent link">&para;</a></h2>
+<p>You can mark fields as deprecated in the JSON schema using <code>rfl::Deprecated</code>. This adds <code>"deprecated": true</code> and a <code>"deprecationMessage"</code> to the generated schema, along with a description.</p>
+<p><code>rfl::Deprecated</code> takes three template parameters: a deprecation message, a description, and the underlying type:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Deprecated</span><span class="o">&lt;</span><span class="s">&quot;Use &#39;full_name&#39; instead.&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;The person&#39;s first name&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&gt;</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">first_name</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Description</span><span class="o">&lt;</span><span class="s">&quot;The person&#39;s full name&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">full_name</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">float</span><span class="w"> </span><span class="n">salary</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">json_schema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">to_schema</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">(</span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">pretty</span><span class="p">);</span>
+</code></pre></div>
+<div class="language-json highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;$schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://json-schema.org/draft/2020-12/schema&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;$ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;#/$defs/Person&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;$defs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;Person&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;first_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The person&#39;s first name&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;deprecated&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;deprecationMessage&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Use &#39;full_name&#39; instead.&quot;</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nt">&quot;full_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The person&#39;s full name&quot;</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nt">&quot;salary&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">&quot;full_name&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">&quot;salary&quot;</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><code>rfl::Deprecated</code> behaves like a thin wrapper around the underlying type, just like <code>rfl::Description</code>. You can access the underlying value using <code>.get()</code>, <code>.value()</code>, <code>operator()()</code>, or the assignment operator.</p>
 
 
 
