@@ -46,13 +46,13 @@ Writer::OutputArrayType Writer::add_array_to_object(
 }
 
 Writer::OutputObjectType Writer::add_object_to_array(const size_t _size,
-                                                     OutputArrayType*) const {
+                                                     OutputArrayType* /*_parent*/) const {
   return new_object(_size);
 }
 
 Writer::OutputObjectType Writer::add_object_to_object(
     const std::string_view& _name, const size_t _size,
-    OutputObjectType*) const {
+    OutputObjectType* /*_parent*/) const {
   auto err = msgpack_pack_str(pk_, _name.size());
   if (err) {
     throw std::runtime_error("Could not pack field name: '" +
@@ -66,7 +66,7 @@ Writer::OutputObjectType Writer::add_object_to_object(
   return new_object(_size);
 }
 
-Writer::OutputVarType Writer::add_null_to_array(OutputArrayType*) const {
+Writer::OutputVarType Writer::add_null_to_array(OutputArrayType* /*_parent*/) const {
   const auto err = msgpack_pack_nil(pk_);
   if (err) {
     throw std::runtime_error("Could not add nil to array.");
@@ -110,7 +110,7 @@ Writer::OutputArrayType Writer::new_array(const size_t _size) const {
 Writer::OutputObjectType Writer::new_object(const size_t _size) const {
   const auto err = msgpack_pack_map(pk_, _size);
   if (err) {
-    throw std::runtime_error("Could not pack array.");
+    throw std::runtime_error("Could not pack object.");
   }
   return OutputObjectType{};
 }
