@@ -9,7 +9,6 @@
 #include <type_traits>
 #include <variant>
 
-#include "../Generic.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../parsing/is_view_reader.hpp"
