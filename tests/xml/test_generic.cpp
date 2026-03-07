@@ -14,11 +14,13 @@ TEST(xml, test_generic) {
 
   const auto xml_string = rfl::xml::write<"cat">(cat);
 
-  std::cout << xml_string << std::endl;
-
-  const auto generic_cat =
-      rfl::xml::read<rfl::Object<rfl::Generic>>(xml_string);
-
-  std::cout << rfl::xml::write<"cat">(generic_cat) << std::endl;
+  EXPECT_EQ(xml_string,
+            R"(<?xml version="1.0" encoding="UTF-8"?>
+<cat>
+    <name>Cachou</name>
+    <colour>black</colour>
+    <species>cat</species>
+</cat>
+)");
 }
 }  // namespace test_generic

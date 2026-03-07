@@ -9,12 +9,12 @@
 #include <type_traits>
 #include <variant>
 
+#include "../Generic.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../parsing/is_view_reader.hpp"
 
-namespace rfl {
-namespace xml {
+namespace rfl::xml {
 
 struct Reader {
   struct XMLInputArray {
@@ -185,7 +185,6 @@ struct Reader {
   }
 };
 
-}  // namespace xml
-}  // namespace rfl
+}  // namespace rfl::xml
 
 #endif
