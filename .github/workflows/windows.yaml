@@ -51,9 +51,9 @@ jobs:
           cmake -S . -B build -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release
           cmake --build build --config Release -j4 
       - name: Run tests
-        if: matrix.format != 'benchmarks' 
+        if: matrix.format != 'benchmarks'
         run: |
-          ctest --test-dir build --output-on-failure
+          ctest --test-dir build -C Release --output-on-failure
       - name: Run benchmarks 
         if: matrix.format == 'benchmarks' 
         run: |
@@ -106,6 +106,6 @@ jobs:
           cmake --build build --config Release -j4 
       - name: Run tests
         run: |
-          ctest --test-dir build --output-on-failure
+          ctest --test-dir build -C Release --output-on-failure
  
  
