@@ -13,8 +13,7 @@
 #include "../always_false.hpp"
 #include "../parsing/is_view_reader.hpp"
 
-namespace rfl {
-namespace xml {
+namespace rfl::xml {
 
 struct Reader {
   struct XMLInputArray {
@@ -85,7 +84,14 @@ struct Reader {
       return std::visit(get_value, _var.node_or_attribute_);
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
-      return std::visit(get_value, _var.node_or_attribute_) == "true";
+      const auto val = std::visit(get_value, _var.node_or_attribute_);
+      if (val == "true" || val == "1") {
+        return true;
+      } else if (val == "false" || val == "0") {
+        return false;
+      } else {
+        return error("Could not cast '" + val + "' to boolean.");
+      }
 
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       const auto str = std::visit(get_value, _var.node_or_attribute_);
@@ -178,7 +184,6 @@ struct Reader {
   }
 };
 
-}  // namespace xml
-}  // namespace rfl
+}  // namespace rfl::xml
 
 #endif
