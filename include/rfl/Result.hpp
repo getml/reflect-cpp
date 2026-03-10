@@ -332,7 +332,7 @@ class Result {
 
   bool has_value() const noexcept { return success_; }
 
-  Error& error() && {
+  Error&& error() && {
     if (success_) throw std::runtime_error("Expected does not contain value");
     return std::move(*this).get_err();
   }
