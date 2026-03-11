@@ -130,6 +130,13 @@ class RFL_API Writer {
         throw std::runtime_error("Could not pack double.");
       }
 
+    } else if constexpr (std::is_unsigned<Type>()) {
+      const auto err =
+          msgpack_pack_uint64(pk_, static_cast<std::uint64_t>(_var));
+      if (err) {
+        throw std::runtime_error("Could not pack uint.");
+      }
+
     } else if constexpr (std::is_integral<Type>()) {
       const auto err = msgpack_pack_int64(pk_, static_cast<std::int64_t>(_var));
       if (err) {

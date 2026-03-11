@@ -12,7 +12,7 @@ namespace rfl {
 // https://serde.rs/enum-representations.html
 template <internal::StringLiteral _discriminator, class... Ts>
 struct TaggedUnion {
-  static constexpr internal::StringLiteral discrimininator_ = _discriminator;
+  static constexpr internal::StringLiteral discriminator_ = _discriminator;
 
   /// The type of the underlying variant.
   using VariantType = rfl::Variant<Ts...>;

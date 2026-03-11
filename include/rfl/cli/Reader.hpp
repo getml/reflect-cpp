@@ -1,7 +1,10 @@
 #ifndef RFL_CLI_READER_HPP_
 #define RFL_CLI_READER_HPP_
 
+#include <charconv>
 #include <concepts>
+#include <clocale>
+#include <cstdlib>
 #include <map>
 #include <optional>
 #include <set>
@@ -56,43 +59,43 @@ rfl::Result<T> parse_value(
       "Could not cast '" + _str + "' to boolean for key '" + _path + "'.");
 }
 
+// std::from_chars for float/double is unavailable in Apple libc++.
+// std::strtod depends on the C locale (LC_NUMERIC), so "3.14" can fail
+// under locales that use comma as decimal separator.
+// Use strtod_l with an explicit "C" locale on all platforms for consistency.
 template <class T> requires (std::is_floating_point_v<T>)
 rfl::Result<T> parse_value(
     const std::string& _str, const std::string& _path
 ) noexcept {
-  try {
-    return static_cast<T>(std::stod(_str));
-  }
-  catch (...) {
+  char* end = nullptr;
+#ifdef _WIN32
+  const auto c_locale = _create_locale(LC_NUMERIC, "C");
+  const double value = _strtod_l(_str.c_str(), &end, c_locale);
+  _free_locale(c_locale);
+#else
+  const auto c_locale = newlocale(LC_NUMERIC_MASK, "C", nullptr);
+  const double value = strtod_l(_str.c_str(), &end, c_locale);
+  freelocale(c_locale);
+#endif
+  if (end != _str.c_str() + _str.size()) {
     return error(
         "Could not cast '" + _str + "' to floating point for key '" + _path + "'.");
   }
+  return static_cast<T>(value);
 }
 
-template <class T> requires (std::is_unsigned_v<T> && !std::same_as<T, bool>)
+template <class T> requires (std::is_integral_v<T> && !std::same_as<T, bool>)
 rfl::Result<T> parse_value(
     const std::string& _str, const std::string& _path
 ) noexcept {
-  try {
-    return static_cast<T>(std::stoull(_str));
-  }
-  catch (...) {
-    return error(
-        "Could not cast '" + _str + "' to unsigned integer for key '" + _path + "'.");
-  }
-}
-
-template <class T> requires (std::is_integral_v<T> && std::is_signed_v<T>)
-rfl::Result<T> parse_value(
-    const std::string& _str, const std::string& _path
-) noexcept {
-  try {
-    return static_cast<T>(std::stoll(_str));
-  }
-  catch (...) {
+  T value;
+  const auto [ptr, ec] =
+      std::from_chars(_str.data(), _str.data() + _str.size(), value);
+  if (ec != std::errc() || ptr != _str.data() + _str.size()) {
     return error(
         "Could not cast '" + _str + "' to integer for key '" + _path + "'.");
   }
+  return value;
 }
 
 struct Reader {

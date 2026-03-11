@@ -29,7 +29,7 @@ struct Flatten {
   Flatten(const Flatten<U>& _f) : value_(_f.get()) {}
 
   template <class U>
-  Flatten(Flatten<U>&& _f) : value_(_f.get()) {}
+  Flatten(Flatten<U>&& _f) : value_(std::move(_f.get())) {}
 
   template <class U>
     requires std::is_convertible_v<U, Type>
@@ -37,7 +37,7 @@ struct Flatten {
 
   template <class U>
     requires std::is_convertible_v<U, Type>
-  Flatten(U&& _value) : value_(_value) {}
+  Flatten(U&& _value) : value_(std::forward<U>(_value)) {}
 
   ~Flatten() = default;
 
@@ -101,7 +101,7 @@ struct Flatten {
   /// Assigns the underlying object.
   template <class U>
   Flatten& operator=(Flatten<U>&& _f) {
-    value_ = std::forward<U>(_f);
+    value_ = std::move(_f.get());
     return *this;
   }
 

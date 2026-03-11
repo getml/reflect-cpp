@@ -40,7 +40,7 @@ class Skip {
   Skip(const Skip<U, _skip_s, _skip_d>& _other) : value_(_other.get()) {}
 
   template <class U, bool _skip_s, bool _skip_d>
-  Skip(Skip<U, _skip_s, _skip_d>&& _other) : value_(_other.get()) {}
+  Skip(Skip<U, _skip_s, _skip_d>&& _other) : value_(std::move(_other.get())) {}
   template <class U>
     requires std::is_convertible_v<U, Type>
   Skip(const U& _value) : value_(_value) {}
