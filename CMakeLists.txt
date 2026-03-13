@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.23)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(REFLECTCPP_BUILD_SHARED "Build shared library" ${BUILD_SHARED_LIBS})
+option(REFLECTCPP_STRICT_WARNINGS "Enable strict compiler warnings" OFF)
 option(REFLECTCPP_INSTALL "Install reflect cpp" OFF)
 
 option(REFLECTCPP_ALL_FORMATS "Enable all supported formats" OFF)
@@ -159,28 +160,31 @@ endif()
 add_library(reflectcpp::reflectcpp ALIAS reflectcpp)
 
 if (MSVC)
-    target_compile_options(reflectcpp PRIVATE 
-        $<$<CONFIG:Debug>:
-            -Wall
-        >
-        $<$<CONFIG:Release>:
-            -DNDEBUG
-        >
-    )
+    if (REFLECTCPP_STRICT_WARNINGS)
+        target_compile_options(reflectcpp PRIVATE 
+            $<$<CONFIG:Debug>:
+                -Wall
+            >
+        )
+    endif()
 else()
-    target_compile_options(reflectcpp PRIVATE
-        $<$<CONFIG:Debug>:
-            -Wall -Wextra -Wpedantic -Wshadow -Wconversion
-            #-Wnull-dereference -Wold-style-cast
-            #-g3 -fno-omit-frame-pointer
-            #-fsanitize=address,undefined
-            #-fno-sanitize-recover=undefined
-        >
-        $<$<CONFIG:Release>:
-            -DNDEBUG
-        >
-    )
+    if (REFLECTCPP_STRICT_WARNINGS)
+        target_compile_options(reflectcpp PRIVATE 
+            $<$<CONFIG:Debug>:
+                -Wall -Wextra -Wpedantic -Wshadow -Wconversion
+                #-Wnull-dereference -Wold-style-cast
+                #-g3 -fno-omit-frame-pointer
+                #-fsanitize=address,undefined
+                #-fno-sanitize-recover=undefined
+            >
+        )
+    endif()
 endif()
+target_compile_options(reflectcpp PRIVATE
+    $<$<CONFIG:Release>:
+        -DNDEBUG
+    >
+)
 
 if(REFLECTCPP_BUILD_SHARED AND REFLECTCPP_USE_BUNDLED_DEPENDENCIES AND _REFLECTCPP_NEEDS_JSON_IMPL)
     target_compile_definitions(reflectcpp
