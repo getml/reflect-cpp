@@ -198,6 +198,14 @@ schema::Type type_to_capnproto_schema_type(
       return literal_to_capnproto_schema_type(_t, _definitions, _parent,
                                               _cnp_types);
 
+    } else if constexpr (std::is_same<T, Type::DescribedLiteral>()) {
+      auto values = std::vector<std::string>();
+      for (const auto& v : _t.values_) {
+        values.push_back(v.value_);
+      }
+      return literal_to_capnproto_schema_type(
+          Type::Literal{.values_ = values}, _definitions, _parent, _cnp_types);
+
     } else if constexpr (std::is_same<T, Type::Object>()) {
       return object_to_capnproto_schema_type(_t, _definitions, _parent,
                                              _cnp_types);

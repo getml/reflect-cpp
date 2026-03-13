@@ -9,8 +9,8 @@
 #include "../../Object.hpp"
 #include "../../Ref.hpp"
 #include "../../Variant.hpp"
-#include "ValidationType.hpp"
 #include "../../common.hpp"
+#include "ValidationType.hpp"
 
 namespace rfl::parsing::schema {
 
@@ -61,6 +61,14 @@ struct RFL_API Type {
     std::vector<std::string> values_;
   };
 
+  struct DescribedLiteral {
+    struct ValueWithDescription {
+      std::string value_;
+      std::string description_;
+    };
+    std::vector<ValueWithDescription> values_;
+  };
+
   struct Object {
     rfl::Object<Type> types_;
     std::shared_ptr<Type> additional_properties_;
@@ -97,10 +105,11 @@ struct RFL_API Type {
   };
 
   using VariantType =
-      rfl::Variant<Boolean, Bytestring, Vectorstring, Int32, Int64, UInt32, UInt64, Integer,
-                   Float, Double, String, AnyOf, Deprecated, Description,
-                   FixedSizeTypedArray, Literal, Object, Optional, Reference,
-                   StringMap, Tuple, TypedArray, Validated>;
+      rfl::Variant<Boolean, Bytestring, Vectorstring, Int32, Int64, UInt32,
+                   UInt64, Integer, Float, Double, String, AnyOf, Deprecated,
+                   Description, DescribedLiteral, FixedSizeTypedArray, Literal,
+                   Object, Optional, Reference, StringMap, Tuple, TypedArray,
+                   Validated>;
 
   Type();
 
