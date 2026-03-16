@@ -136,6 +136,7 @@ nav:
       - Composing validators: composing_validators.md
       - Size validation: size_validation.md
       - JSON schema: json_schema.md
+      - Enum descriptions: enum_descriptions.md
     - Generic elements:
       - rfl::Object: object.md
       - rfl::Generic: generic.md
