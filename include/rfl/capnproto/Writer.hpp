@@ -186,10 +186,11 @@ class RFL_API Writer {
   template <class T>
   OutputVarType add_value_to_map(const std::string_view& _name, const T& _var,
                                  OutputMapType* _parent) const {
-    auto entries =
-        OutputArrayType{_parent->val_.get("entries").as<capnp::DynamicList>()};
+    auto entries = OutputArrayType{
+        .val_ = _parent->val_.get("entries").as<capnp::DynamicList>(),
+        .ix_ = _parent->ix_++};
     auto new_entry = add_object_to_array(2, &entries);
-    add_value_to_object("key", _name, &new_entry);
+    add_value_to_object("key", std::string(_name), &new_entry);
     return add_value_to_object("value", _var, &new_entry);
   }
 
