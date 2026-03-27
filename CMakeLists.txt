@@ -21,6 +21,7 @@ option(REFLECTCPP_XML "Enable XML support" ${REFLECTCPP_ALL_FORMATS})
 option(REFLECTCPP_TOML "Enable TOML support" ${REFLECTCPP_ALL_FORMATS})
 option(REFLECTCPP_UBJSON "Enable UBJSON support" ${REFLECTCPP_ALL_FORMATS})
 option(REFLECTCPP_YAML "Enable YAML support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_BOOST_SERIALIZATION "Enable Boost.Serialization support" ${REFLECTCPP_ALL_FORMATS})
 
 option(REFLECTCPP_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
@@ -65,6 +66,7 @@ if (
     REFLECTCPP_CHECK_HEADERS OR
     (REFLECTCPP_JSON AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES) OR
     REFLECTCPP_AVRO OR
+    REFLECTCPP_BOOST_SERIALIZATION OR
     REFLECTCPP_BSON OR
     REFLECTCPP_CAPNPROTO OR
     REFLECTCPP_CBOR OR
@@ -95,6 +97,10 @@ if (REFLECTCPP_USE_VCPKG)
         list(APPEND VCPKG_MANIFEST_FEATURES "avro")
     endif()
     
+    if (REFLECTCPP_BOOST_SERIALIZATION OR REFLECTCPP_CHECK_HEADERS)
+        list(APPEND VCPKG_MANIFEST_FEATURES "boost-serialization")
+    endif()
+
     if (REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "bson")
     endif()
@@ -422,6 +428,13 @@ if (REFLECTCPP_YAML OR REFLECTCPP_CHECK_HEADERS)
         find_package(yaml-cpp CONFIG REQUIRED)
     endif ()
     target_link_libraries(reflectcpp PUBLIC yaml-cpp::yaml-cpp)
+endif ()
+
+if (REFLECTCPP_BOOST_SERIALIZATION OR REFLECTCPP_CHECK_HEADERS)
+    if (NOT TARGET Boost::serialization)
+        find_package(Boost REQUIRED COMPONENTS serialization)
+    endif ()
+    target_link_libraries(reflectcpp PUBLIC Boost::serialization)
 endif ()
 
 set_target_properties(reflectcpp PROPERTIES LINKER_LANGUAGE CXX)
