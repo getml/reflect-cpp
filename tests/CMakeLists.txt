@@ -65,3 +65,7 @@ endif()
 if (REFLECTCPP_YAML)
     add_subdirectory(yaml)
 endif()
+
+if (REFLECTCPP_BOOST_SERIALIZATION)
+    add_subdirectory(boost_serialization)
+endif()
