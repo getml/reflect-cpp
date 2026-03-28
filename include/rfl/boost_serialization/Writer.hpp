@@ -7,6 +7,7 @@
 #include <type_traits>
 
 #include "../always_false.hpp"
+#include "../internal/is_literal.hpp"
 
 namespace rfl::boost_serialization {
 
@@ -235,6 +236,8 @@ class Writer {
       *ar_ << static_cast<std::uint64_t>(_var);
     } else if constexpr (std::is_integral<Type>()) {
       *ar_ << static_cast<std::int64_t>(_var);
+    } else if constexpr (internal::is_literal_v<Type>) {
+      *ar_ << static_cast<std::int64_t>(_var.value());
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }

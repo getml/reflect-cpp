@@ -1,11 +1,10 @@
 #include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 #include <variant>
 
 #include "write_and_read.hpp"
 
-namespace test_variant {
+namespace test_variants {
 
 struct Circle {
   double radius;
@@ -26,9 +25,14 @@ struct Drawing {
   Shapes shape;
 };
 
-TEST(boost_serialization, test_variant) {
+TEST(boost_serialization, test_std_variant) {
   const auto drawing = Drawing{.shape = Circle{.radius = 5.0}};
-
   write_and_read(drawing);
 }
-}  // namespace test_variant
+
+TEST(boost_serialization, test_std_variant_rectangle) {
+  const auto drawing = Drawing{.shape = Rectangle{.height = 10, .width = 5}};
+  write_and_read(drawing);
+}
+
+}  // namespace test_variants

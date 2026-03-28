@@ -9,6 +9,7 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/is_literal.hpp"
 
 namespace rfl::boost_serialization {
 
@@ -71,6 +72,11 @@ struct Reader {
         std::int64_t val = 0;
         *_var.ar >> val;
         return static_cast<T>(val);
+      } else if constexpr (internal::is_literal_v<T>) {
+        std::int64_t val = 0;
+        *_var.ar >> val;
+        return T::from_value(
+            static_cast<typename std::remove_cvref_t<T>::ValueType>(val));
       } else {
         static_assert(rfl::always_false_v<T>, "Unsupported type.");
       }
