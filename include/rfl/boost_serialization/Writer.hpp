@@ -49,13 +49,9 @@ class Writer {
     return OutputObjectType{};
   }
 
-  OutputVarType null_as_root() const {
-    return OutputVarType{};
-  }
+  OutputVarType null_as_root() const { return OutputVarType{}; }
 
-  OutputUnionType union_as_root() const {
-    return OutputUnionType{};
-  }
+  OutputUnionType union_as_root() const { return OutputUnionType{}; }
 
   template <class T>
   OutputVarType value_as_root(const T& _var) const {

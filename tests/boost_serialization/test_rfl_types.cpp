@@ -40,9 +40,8 @@ struct Outer {
 };
 
 TEST(boost_serialization, test_flatten) {
-  const auto employee =
-      Outer{.person = Inner{.first_name = "Homer", .age = 45},
-            .employer = "Mr. Burns"};
+  const auto employee = Outer{.person = Inner{.first_name = "Homer", .age = 45},
+                              .employer = "Mr. Burns"};
   write_and_read_with_json(employee);
 }
 

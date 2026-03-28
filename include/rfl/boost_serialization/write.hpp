@@ -4,7 +4,6 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/serialization/string.hpp>
-
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -35,8 +34,8 @@ std::vector<char> write(const auto& _obj) {
   std::ostringstream stream;
   {
     boost::archive::binary_oarchive ar(stream);
-    write<boost::archive::binary_iarchive,
-          boost::archive::binary_oarchive, Ps...>(ar, _obj);
+    write<boost::archive::binary_iarchive, boost::archive::binary_oarchive,
+          Ps...>(ar, _obj);
   }
   const auto str = stream.str();
   return std::vector<char>(str.begin(), str.end());
@@ -46,8 +45,8 @@ std::vector<char> write(const auto& _obj) {
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) {
   boost::archive::binary_oarchive ar(_stream);
-  write<boost::archive::binary_iarchive,
-        boost::archive::binary_oarchive, Ps...>(ar, _obj);
+  write<boost::archive::binary_iarchive, boost::archive::binary_oarchive,
+        Ps...>(ar, _obj);
   return _stream;
 }
 

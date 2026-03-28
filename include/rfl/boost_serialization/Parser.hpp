@@ -21,8 +21,8 @@ template <class IArchive, class OArchive, class ProcessorsType,
                               boost_serialization::Writer<OArchive>,
                               NamedTuple<FieldTypes...>>
 struct Parser<boost_serialization::Reader<IArchive>,
-              boost_serialization::Writer<OArchive>,
-              NamedTuple<FieldTypes...>, ProcessorsType>
+              boost_serialization::Writer<OArchive>, NamedTuple<FieldTypes...>,
+              ProcessorsType>
     : public NamedTupleParser<
           boost_serialization::Reader<IArchive>,
           boost_serialization::Writer<OArchive>,

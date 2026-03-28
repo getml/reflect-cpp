@@ -4,7 +4,6 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/serialization/string.hpp>
-
 #include <istream>
 #include <sstream>
 #include <string>
@@ -44,8 +43,8 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
     std::istringstream stream(str);
     boost::archive::binary_iarchive ar(stream);
     return detail::read_from_archive<T, boost::archive::binary_iarchive,
-                                     boost::archive::binary_oarchive,
-                                     Ps...>(ar);
+                                     boost::archive::binary_oarchive, Ps...>(
+        ar);
   } catch (std::exception& e) {
     return error(e.what());
   }
@@ -63,8 +62,8 @@ auto read(std::istream& _stream) {
   try {
     boost::archive::binary_iarchive ar(_stream);
     return detail::read_from_archive<T, boost::archive::binary_iarchive,
-                                     boost::archive::binary_oarchive,
-                                     Ps...>(ar);
+                                     boost::archive::binary_oarchive, Ps...>(
+        ar);
   } catch (std::exception& e) {
     return Result<internal::wrap_in_rfl_array_t<T>>(error(e.what()));
   }
