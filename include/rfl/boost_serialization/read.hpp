@@ -29,6 +29,12 @@ auto read_from_archive(IArchive& _ar) {
 
 }  // namespace detail
 
+/// Reads from an existing Boost input archive.
+template <class T, class IArchive, class OArchive, class... Ps>
+auto read_from_archive(IArchive& _ar) {
+  return detail::read_from_archive<T, IArchive, OArchive, Ps...>(_ar);
+}
+
 /// Parses an object from bytes using a binary archive.
 template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(
