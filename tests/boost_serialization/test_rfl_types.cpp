@@ -62,4 +62,31 @@ TEST(boost_serialization, test_tagged_union) {
   write_and_read_with_json(r);
 }
 
+using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
+
+struct PersonValidated {
+  std::string first_name;
+  Age age;
+  rfl::Email email;
+};
+
+TEST(boost_serialization, test_validator) {
+  const auto homer = PersonValidated{
+      .first_name = "Homer", .age = 45, .email = "homer@simpson.com"};
+  write_and_read_with_json(homer);
+}
+
+using TS = rfl::Timestamp<"%Y-%m-%d">;
+
+struct PersonWithTimestamp {
+  std::string first_name;
+  TS birthday;
+};
+
+TEST(boost_serialization, test_timestamp) {
+  const auto bart =
+      PersonWithTimestamp{.first_name = "Bart", .birthday = "1987-04-19"};
+  write_and_read_with_json(bart);
+}
+
 }  // namespace test_rfl_types
