@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "CEREAL", "FLEXBUFFERS", "MSGPACK", "PARQUET", "TOML", "UBJSON", "XML", "YAML", "benchmarks"]
+        format: ["JSON", "AVRO", "BOOST_SERIALIZATION", "CAPNPROTO", "CBOR", "CEREAL", "FLEXBUFFERS", "MSGPACK", "PARQUET", "TOML", "UBJSON", "XML", "YAML", "benchmarks"]
     name: "windows-msvc (${{ matrix.format }})"
     concurrency:
       group: "windows-${{ github.ref }}-${{ github.job }}-${{ matrix.format }}"
@@ -77,7 +77,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        format: ["JSON", "AVRO", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "PARQUET", "TOML", "UBJSON", "XML", "YAML"]
+        format: ["JSON", "AVRO", "BOOST_SERIALIZATION", "CAPNPROTO", "CBOR", "FLEXBUFFERS", "MSGPACK", "PARQUET", "TOML", "UBJSON", "XML", "YAML"]
     name: "windows-msvc-shared (${{ matrix.format }})"
     runs-on: windows-latest
     steps:
