@@ -40,6 +40,8 @@ class ViewReaderWithDefault {
                              std::make_integer_sequence<int, size_>());
   }
 
+  static constexpr size_t size() { return size_; }
+
  private:
   template <int i>
   static void assign_if_field_matches(const R& _r,

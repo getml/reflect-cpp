@@ -50,6 +50,8 @@ class ViewReaderWithStrippedFieldNames {
     return std::nullopt;
   }
 
+  static constexpr size_t size() { return size_; }
+
  private:
   template <int i>
   static void assign_if_field_is_field_i(const R& _r, const auto& _var,

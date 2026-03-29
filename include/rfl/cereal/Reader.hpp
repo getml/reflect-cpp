@@ -122,9 +122,7 @@ struct Reader {
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
     try {
-      ::cereal::size_type size;
-      (*_obj.archive_)(::cereal::make_size_tag(size));
-      for (::cereal::size_type i = 0; i < size; ++i) {
+      for (size_t i = 0; i < ObjectReader::size(); ++i) {
         _object_reader.read(i, InputVarType{_obj.archive_});
       }
       return std::nullopt;

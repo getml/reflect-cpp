@@ -171,7 +171,7 @@ class Writer {
   template <class T>
   OutputVarType add_value_to_object(const std::string_view& _name,
                                     const T& _var, OutputObjectType*) const {
-    (*archive_)(::cereal::make_nvp(_name.data(), _var));
+    (*archive_)(_var);
     return OutputVarType{};
   }
 

@@ -44,6 +44,8 @@ class ViewReader {
                              std::make_integer_sequence<int, size_>());
   }
 
+  static constexpr size_t size() { return size_; }
+
  private:
   template <int i, class FieldType>
   static bool is_matching(const int _current_index) {
@@ -141,8 +143,7 @@ class ViewReader {
           "sense, because schemaful formats cannot have extra fields.");
       if (!already_assigned) {
         std::stringstream stream;
-        stream << "Value named '" << _current_name_or_index
-               << "' not used.";
+        stream << "Value named '" << _current_name_or_index << "' not used.";
         _errors->emplace_back(Error(stream.str()));
       }
     }
