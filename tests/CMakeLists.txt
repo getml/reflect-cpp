@@ -30,6 +30,10 @@ if (REFLECTCPP_CBOR)
     add_subdirectory(cbor)
 endif()
 
+if (REFLECTCPP_CEREAL)
+    add_subdirectory(cereal)
+endif()
+
 if (REFLECTCPP_CSV)
     add_subdirectory(csv)
 endif()

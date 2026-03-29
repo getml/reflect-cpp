@@ -69,6 +69,7 @@ The following table lists the serialization formats currently supported by refle
 | BSON         | [libbson](https://github.com/mongodb/mongo-c-driver) | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
 | Cap'n Proto  | [capnproto](https://capnproto.org)                   | >= 1.0.2     | MIT        | Schemaful binary format                              |
 | CBOR         | [jsoncons](https://github.com/danielaparker/jsoncons)| >= 0.176.0   | BSL 1.0    | JSON-like binary format                              |
+| Cereal       | [Cereal](https://uscilab.github.io/cereal/)          | >= 1.3.2     | BSD        | C++ serialization library with multiple formats      |
 | CSV          | [Apache Arrow](https://arrow.apache.org/)            | >= 21.0.0    | Apache 2.0 | Tabular textual format                               |
 | flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 | Schema-less version of flatbuffers, binary format    |
 | msgpack      | [msgpack-c](https://github.com/msgpack/msgpack-c)    | >= 6.0.0     | BSL 1.0    | JSON-like binary format                              |
@@ -155,6 +156,7 @@ rfl::avro::write(homer);
 rfl::bson::write(homer);
 rfl::capnproto::write(homer);
 rfl::cbor::write(homer);
+rfl::cereal::write(homer);
 rfl::flexbuf::write(homer);
 rfl::msgpack::write(homer);
 rfl::toml::write(homer);
@@ -165,6 +167,7 @@ rfl::avro::read<Person>(avro_bytes);
 rfl::bson::read<Person>(bson_bytes);
 rfl::capnproto::read<Person>(capnproto_bytes);
 rfl::cbor::read<Person>(cbor_bytes);
+rfl::cereal::read<Person>(cereal_bytes);
 rfl::flexbuf::read<Person>(flexbuf_bytes);
 rfl::msgpack::read<Person>(msgpack_bytes);
 rfl::toml::read<Person>(toml_string);
