@@ -10,6 +10,7 @@
 
 #include "../always_false.hpp"
 #include "../common.hpp"
+#include "../parsing/schemaful/IsSchemafulWriter.hpp"
 
 namespace rfl::cereal {
 
@@ -19,12 +20,18 @@ class Writer {
 
   struct CerealOutputArray {};
 
+  struct CerealOutputMap {};
+
   struct CerealOutputObject {};
+
+  struct CerealOutputUnion {};
 
   struct CerealOutputVar {};
 
   using OutputArrayType = CerealOutputArray;
   using OutputObjectType = CerealOutputObject;
+  using OutputMapType = CerealOutputMap;
+  using OutputUnionType = CerealOutputUnion;
   using OutputVarType = CerealOutputVar;
 
   Writer(CerealArchive* _archive) : archive_(_archive) {}
@@ -36,9 +43,16 @@ class Writer {
     return OutputArrayType{};
   }
 
+  OutputMapType map_as_root(const size_t _size) const {
+    (*archive_)(::cereal::make_size_tag(_size));
+    return OutputMapType{};
+  }
+
   OutputObjectType object_as_root(const size_t _size) const {
     return OutputObjectType{};
   }
+
+  OutputUnionType union_as_root() const { return OutputUnionType{}; }
 
   OutputVarType null_as_root() const { return OutputVarType{}; }
 
@@ -54,6 +68,13 @@ class Writer {
     return OutputArrayType{};
   }
 
+  OutputArrayType add_array_to_map(const std::string_view& _name,
+                                   const size_t _size,
+                                   OutputMapType* _parent) const {
+    (*archive_)(::cereal::make_size_tag(_size));
+    return OutputArrayType{};
+  }
+
   OutputArrayType add_array_to_object(const std::string_view& _name,
                                       const size_t _size,
                                       OutputObjectType* _parent) const {
@@ -61,8 +82,46 @@ class Writer {
     return OutputArrayType{};
   }
 
+  OutputArrayType add_array_to_union(const size_t _index, const size_t _size,
+                                     OutputUnionType* _parent) const {
+    (*archive_)(::cereal::make_size_tag(_size));
+    return OutputArrayType{};
+  }
+
+  OutputMapType add_map_to_array(const size_t _size,
+                                 OutputArrayType* _parent) const {
+    (*archive_)(::cereal::make_size_tag(_size));
+    return OutputMapType{};
+  }
+
+  OutputMapType add_map_to_map(const std::string_view& _name,
+                               const size_t _size,
+                               OutputMapType* _parent) const {
+    (*archive_)(::cereal::make_size_tag(_size));
+    return OutputMapType{};
+  }
+
+  OutputMapType add_map_to_object(const std::string_view& _name,
+                                  const size_t _size,
+                                  OutputObjectType* _parent) const {
+    (*archive_)(::cereal::make_size_tag(_size));
+    return OutputMapType{};
+  }
+
+  OutputMapType add_map_to_union(const size_t _index, const size_t _size,
+                                 OutputUnionType* _parent) const {
+    (*archive_)(::cereal::make_size_tag(_size));
+    return OutputMapType{};
+  }
+
   OutputObjectType add_object_to_array(const size_t _size,
                                        OutputArrayType* _parent) const {
+    return OutputObjectType{};
+  }
+
+  OutputObjectType add_object_to_map(const std::string_view& _name,
+                                     const size_t _size,
+                                     OutputMapType* _parent) const {
     return OutputObjectType{};
   }
 
@@ -72,9 +131,40 @@ class Writer {
     return OutputObjectType{};
   }
 
+  OutputObjectType add_object_to_union(const size_t _index, const size_t _size,
+                                       OutputUnionType* _parent) const {
+    return OutputObjectType{};
+  }
+
+  OutputUnionType add_union_to_array(OutputArrayType* _parent) const {
+    return OutputUnionType{};
+  }
+
+  OutputUnionType add_union_to_map(const std::string_view& _name,
+                                   OutputMapType* _parent) const {
+    return OutputUnionType{};
+  }
+
+  OutputUnionType add_union_to_object(const std::string_view& _name,
+                                      OutputObjectType* _parent) const {
+    return OutputUnionType{};
+  }
+
+  OutputUnionType add_union_to_union(const size_t _index,
+                                     OutputUnionType* _parent) const {
+    return OutputUnionType{};
+  }
+
   template <class T>
   OutputVarType add_value_to_array(const T& _var, OutputArrayType*) const {
     (*archive_)(_var);
+    return OutputVarType{};
+  }
+
+  template <class T>
+  OutputVarType add_value_to_map(const std::string_view& _name, const T& _var,
+                                 OutputMapType* _parent) const {
+    (*archive_)(::cereal::make_nvp(_name.data(), _var));
     return OutputVarType{};
   }
 
@@ -85,7 +175,19 @@ class Writer {
     return OutputVarType{};
   }
 
+  template <class T>
+  OutputVarType add_value_to_union(const size_t _index, const T& _var,
+                                   OutputUnionType* _parent) const {
+    (*archive_)(_var);
+    return OutputVarType{};
+  }
+
   OutputVarType add_null_to_array(OutputArrayType* _parent) const {
+    return OutputVarType{};
+  }
+
+  OutputVarType add_null_to_map(const std::string_view& _name,
+                                OutputMapType* _parent) const {
     return OutputVarType{};
   }
 
@@ -94,13 +196,22 @@ class Writer {
     return OutputVarType{};
   }
 
+  OutputVarType add_null_to_union(const size_t _index,
+                                  OutputUnionType* _parent) const {
+    return OutputVarType{};
+  }
+
   void end_array(OutputArrayType* _arr) const noexcept {}
+
+  void end_map(OutputMapType* _map) const noexcept {}
 
   void end_object(OutputObjectType* _obj) const noexcept {}
 
  private:
   CerealArchive* archive_;
 };
+
+static_assert(parsing::schemaful::IsSchemafulWriter<Writer>);
 
 }  // namespace rfl::cereal
 

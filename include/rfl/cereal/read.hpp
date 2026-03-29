@@ -32,7 +32,7 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
     std::stringstream ss(
         std::string(reinterpret_cast<const char*>(_bytes), _size));
     ::cereal::PortableBinaryInputArchive archive(ss);
-    return read<T, decltype(archive), Ps...>(archive);
+    return read<T, Ps...>(archive);
   } catch (std::exception& e) {
     return error(std::string("Cereal read error: ") + e.what());
   }
@@ -49,7 +49,7 @@ template <class T, class... Ps>
 auto read(std::istream& _stream) {
   try {
     ::cereal::BinaryInputArchive archive(_stream);
-    return read<T, decltype(archive), Ps...>(archive);
+    return read<T, Ps...>(archive);
   } catch (std::exception& e) {
     return Result<internal::wrap_in_rfl_array_t<T>>(
         error(std::string("Cereal read error: ") + e.what()));

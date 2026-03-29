@@ -10,6 +10,7 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../parsing/schemaful/IsSchemafulReader.hpp"
 
 namespace rfl::cereal {
 
@@ -29,6 +30,14 @@ struct Reader {
   };
 
   struct InputObjectType {
+    CerealArchive* archive_;
+  };
+
+  struct InputMapType {
+    CerealArchive* archive_;
+  };
+
+  struct InputUnionType {
     CerealArchive* archive_;
   };
 
@@ -61,6 +70,15 @@ struct Reader {
     return InputObjectType{_var.archive_};
   }
 
+  rfl::Result<InputMapType> to_map(const InputVarType& _var) const noexcept {
+    return InputMapType{_var.archive_};
+  }
+
+  rfl::Result<InputUnionType> to_union(
+      const InputVarType& _var) const noexcept {
+    return InputUnionType{_var.archive_};
+  }
+
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
                                   const InputArrayType& _arr) const noexcept {
@@ -79,16 +97,50 @@ struct Reader {
     }
   }
 
+  template <class MapReader>
+  std::optional<Error> read_map(const MapReader& _map_reader,
+                                const InputMapType& _map) const noexcept {
+    try {
+      ::cereal::size_type size;
+      (*_map.archive_)(::cereal::make_size_tag(size));
+      for (::cereal::size_type i = 0; i < size; ++i) {
+        std::string key;
+        (*_map.archive_)(key);
+        const auto err = _map_reader.read(std::string_view(key),
+                                          InputVarType{_map.archive_});
+        if (err) {
+          return err;
+        }
+      }
+      return std::nullopt;
+    } catch (std::exception& e) {
+      return Error(std::string("Cereal map read error: ") + e.what());
+    }
+  }
+
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
     try {
-      _object_reader.read([&](const auto& _field) {
-        (*_obj.archive_)(::cereal::make_nvp(_field.name(), _field.get()));
-      });
+      ::cereal::size_type size;
+      (*_obj.archive_)(::cereal::make_size_tag(size));
+      for (::cereal::size_type i = 0; i < size; ++i) {
+        _object_reader.read(i, InputVarType{_obj.archive_});
+      }
       return std::nullopt;
     } catch (std::exception& e) {
       return Error(std::string("Cereal object read error: ") + e.what());
+    }
+  }
+
+  template <class T, class UnionReader>
+  rfl::Result<T> read_union(const InputUnionType& _union) const noexcept {
+    try {
+      std::int32_t index;
+      (*_union.archive_)(index);
+      return UnionReader::read(*this, index, InputVarType{_union.archive_});
+    } catch (std::exception& e) {
+      return error(std::string("Cereal union read error: ") + e.what());
     }
   }
 
@@ -102,6 +154,8 @@ struct Reader {
     }
   }
 };
+
+static_assert(parsing::schemaful::IsSchemafulReader<Reader>);
 
 }  // namespace rfl::cereal
 
