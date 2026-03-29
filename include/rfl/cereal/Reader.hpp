@@ -3,6 +3,7 @@
 
 #include <cereal/archives/portable_binary.hpp>
 #include <cereal/cereal.hpp>
+#include <cereal/types/string.hpp>
 #include <exception>
 #include <sstream>
 #include <string>
