@@ -49,9 +49,7 @@ struct Reader {
   static constexpr bool has_custom_constructor =
       (requires(InputVarType var) { T::from_cereal_obj(var); });
 
-  bool is_empty(const InputVarType& _var) const noexcept {
-    return _var.archive_ == nullptr;
-  }
+  bool is_empty(const InputVarType& _var) const noexcept;
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
@@ -82,23 +80,15 @@ struct Reader {
   }
 
   rfl::Result<InputArrayType> to_array(
-      const InputVarType& _var) const noexcept {
-    return InputArrayType{_var.archive_};
-  }
+      const InputVarType& _var) const noexcept;
 
   rfl::Result<InputObjectType> to_object(
-      const InputVarType& _var) const noexcept {
-    return InputObjectType{_var.archive_};
-  }
+      const InputVarType& _var) const noexcept;
 
-  rfl::Result<InputMapType> to_map(const InputVarType& _var) const noexcept {
-    return InputMapType{_var.archive_};
-  }
+  rfl::Result<InputMapType> to_map(const InputVarType& _var) const noexcept;
 
   rfl::Result<InputUnionType> to_union(
-      const InputVarType& _var) const noexcept {
-    return InputUnionType{_var.archive_};
-  }
+      const InputVarType& _var) const noexcept;
 
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,

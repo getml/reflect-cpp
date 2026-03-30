@@ -38,27 +38,19 @@ class Writer {
   using OutputUnionType = CerealOutputUnion;
   using OutputVarType = CerealOutputVar;
 
-  Writer(CerealArchive* _archive) : archive_(_archive) {}
+  Writer(CerealArchive* _archive);
 
   ~Writer() = default;
 
-  OutputArrayType array_as_root(const size_t _size) const {
-    (*archive_)(::cereal::make_size_tag(_size));
-    return OutputArrayType{};
-  }
+  OutputArrayType array_as_root(const size_t _size) const;
 
-  OutputMapType map_as_root(const size_t _size) const {
-    (*archive_)(::cereal::make_size_tag(_size));
-    return OutputMapType{};
-  }
+  OutputMapType map_as_root(const size_t _size) const;
 
-  OutputObjectType object_as_root(const size_t _size) const {
-    return OutputObjectType{};
-  }
+  OutputObjectType object_as_root(const size_t _size) const;
 
-  OutputUnionType union_as_root() const { return OutputUnionType{}; }
+  OutputUnionType union_as_root() const;
 
-  OutputVarType null_as_root() const { return OutputVarType{}; }
+  OutputVarType null_as_root() const;
 
   template <class T>
   OutputVarType value_as_root(const T& _var) const {
@@ -67,105 +59,57 @@ class Writer {
   }
 
   OutputArrayType add_array_to_array(const size_t _size,
-                                     OutputArrayType* _parent) const {
-    (*archive_)(::cereal::make_size_tag(_size));
-    return OutputArrayType{};
-  }
+                                     OutputArrayType* _parent) const;
 
   OutputArrayType add_array_to_map(const std::string_view& _name,
                                    const size_t _size,
-                                   OutputMapType* _parent) const {
-    add_string_view(_name);
-    (*archive_)(::cereal::make_size_tag(_size));
-    return OutputArrayType{};
-  }
+                                   OutputMapType* _parent) const;
 
   OutputArrayType add_array_to_object(const std::string_view& _name,
                                       const size_t _size,
-                                      OutputObjectType* _parent) const {
-    (*archive_)(::cereal::make_size_tag(_size));
-    return OutputArrayType{};
-  }
+                                      OutputObjectType* _parent) const;
 
   OutputArrayType add_array_to_union(const size_t _index, const size_t _size,
-                                     OutputUnionType* _parent) const {
-    (*archive_)(_index);
-    (*archive_)(::cereal::make_size_tag(_size));
-    return OutputArrayType{};
-  }
+                                     OutputUnionType* _parent) const;
 
   OutputMapType add_map_to_array(const size_t _size,
-                                 OutputArrayType* _parent) const {
-    (*archive_)(::cereal::make_size_tag(_size));
-    return OutputMapType{};
-  }
+                                 OutputArrayType* _parent) const;
 
   OutputMapType add_map_to_map(const std::string_view& _name,
                                const size_t _size,
-                               OutputMapType* _parent) const {
-    (*archive_)(std::string(_name));
-    (*archive_)(::cereal::make_size_tag(_size));
-    return OutputMapType{};
-  }
+                               OutputMapType* _parent) const;
 
   OutputMapType add_map_to_object(const std::string_view& _name,
                                   const size_t _size,
-                                  OutputObjectType* _parent) const {
-    (*archive_)(::cereal::make_size_tag(_size));
-    return OutputMapType{};
-  }
+                                  OutputObjectType* _parent) const;
 
   OutputMapType add_map_to_union(const size_t _index, const size_t _size,
-                                 OutputUnionType* _parent) const {
-    (*archive_)(_index);
-    (*archive_)(::cereal::make_size_tag(_size));
-    return OutputMapType{};
-  }
+                                 OutputUnionType* _parent) const;
 
   OutputObjectType add_object_to_array(const size_t _size,
-                                       OutputArrayType* _parent) const {
-    return OutputObjectType{};
-  }
+                                       OutputArrayType* _parent) const;
 
   OutputObjectType add_object_to_map(const std::string_view& _name,
                                      const size_t _size,
-                                     OutputMapType* _parent) const {
-    add_string_view(_name);
-    return OutputObjectType{};
-  }
+                                     OutputMapType* _parent) const;
 
   OutputObjectType add_object_to_object(const std::string_view& _name,
                                         const size_t _size,
-                                        OutputObjectType* _parent) const {
-    return OutputObjectType{};
-  }
+                                        OutputObjectType* _parent) const;
 
   OutputObjectType add_object_to_union(const size_t _index, const size_t _size,
-                                       OutputUnionType* _parent) const {
-    (*archive_)(_index);
-    return OutputObjectType{};
-  }
+                                       OutputUnionType* _parent) const;
 
-  OutputUnionType add_union_to_array(OutputArrayType* _parent) const {
-    return OutputUnionType{};
-  }
+  OutputUnionType add_union_to_array(OutputArrayType* _parent) const;
 
   OutputUnionType add_union_to_map(const std::string_view& _name,
-                                   OutputMapType* _parent) const {
-    add_string_view(_name);
-    return OutputUnionType{};
-  }
+                                   OutputMapType* _parent) const;
 
   OutputUnionType add_union_to_object(const std::string_view& _name,
-                                      OutputObjectType* _parent) const {
-    return OutputUnionType{};
-  }
+                                      OutputObjectType* _parent) const;
 
   OutputUnionType add_union_to_union(const size_t _index,
-                                     OutputUnionType* _parent) const {
-    (*archive_)(_index);
-    return OutputUnionType{};
-  }
+                                     OutputUnionType* _parent) const;
 
   template <class T>
   OutputVarType add_value_to_array(const T& _var, OutputArrayType*) const {
@@ -196,38 +140,25 @@ class Writer {
     return OutputVarType{};
   }
 
-  OutputVarType add_null_to_array(OutputArrayType* _parent) const {
-    return OutputVarType{};
-  }
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const;
 
   OutputVarType add_null_to_map(const std::string_view& _name,
-                                OutputMapType* _parent) const {
-    add_string_view(_name);
-    return OutputVarType{};
-  }
+                                OutputMapType* _parent) const;
 
   OutputVarType add_null_to_object(const std::string_view& _name,
-                                   OutputObjectType* _parent) const {
-    return OutputVarType{};
-  }
+                                   OutputObjectType* _parent) const;
 
   OutputVarType add_null_to_union(const size_t _index,
-                                  OutputUnionType* _parent) const {
-    (*archive_)(_index);
-    return OutputVarType{};
-  }
+                                  OutputUnionType* _parent) const;
 
-  void end_array(OutputArrayType* _arr) const noexcept {}
+  void end_array(OutputArrayType* _arr) const noexcept;
 
-  void end_map(OutputMapType* _map) const noexcept {}
+  void end_map(OutputMapType* _map) const noexcept;
 
-  void end_object(OutputObjectType* _obj) const noexcept {}
+  void end_object(OutputObjectType* _obj) const noexcept;
 
  private:
-  void add_string_view(const std::string_view& _str) const {
-    (*archive_)(::cereal::make_size_tag(_str.size()));
-    (*archive_)(::cereal::binary_data(_str.data(), _str.size()));
-  }
+  void add_string_view(const std::string_view& _str) const;
 
   template <class T>
   void add_value(const T& _var) const noexcept {

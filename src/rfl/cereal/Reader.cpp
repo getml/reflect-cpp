@@ -24,10 +24,32 @@ SOFTWARE.
 
 */
 
-// This file include all other source files, so that the user of the library
-// don't need to add multiple source files into their build.
-// Also, this speeds up compile time, compared to multiple separate .cpp files
-// compilation.
+#include "rfl/cereal/Reader.hpp"
 
-#include "rfl/cereal/Reader.cpp"
-#include "rfl/cereal/Writer.cpp"
+namespace rfl::cereal {
+
+bool Reader::is_empty(const InputVarType& _var) const noexcept {
+  return _var.archive_ == nullptr;
+}
+
+rfl::Result<Reader::InputArrayType> Reader::to_array(
+    const InputVarType& _var) const noexcept {
+  return InputArrayType{_var.archive_};
+}
+
+rfl::Result<Reader::InputObjectType> Reader::to_object(
+    const InputVarType& _var) const noexcept {
+  return InputObjectType{_var.archive_};
+}
+
+rfl::Result<Reader::InputMapType> Reader::to_map(
+    const InputVarType& _var) const noexcept {
+  return InputMapType{_var.archive_};
+}
+
+rfl::Result<Reader::InputUnionType> Reader::to_union(
+    const InputVarType& _var) const noexcept {
+  return InputUnionType{_var.archive_};
+}
+
+}  // namespace rfl::cereal
