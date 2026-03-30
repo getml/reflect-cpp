@@ -85,6 +85,7 @@ class Writer {
 
   OutputArrayType add_array_to_union(const size_t _index, const size_t _size,
                                      OutputUnionType* _parent) const {
+    (*archive_)(_index);
     (*archive_)(::cereal::make_size_tag(_size));
     return OutputArrayType{};
   }
@@ -111,6 +112,7 @@ class Writer {
 
   OutputMapType add_map_to_union(const size_t _index, const size_t _size,
                                  OutputUnionType* _parent) const {
+    (*archive_)(_index);
     (*archive_)(::cereal::make_size_tag(_size));
     return OutputMapType{};
   }
@@ -134,6 +136,7 @@ class Writer {
 
   OutputObjectType add_object_to_union(const size_t _index, const size_t _size,
                                        OutputUnionType* _parent) const {
+    (*archive_)(_index);
     return OutputObjectType{};
   }
 
@@ -153,6 +156,7 @@ class Writer {
 
   OutputUnionType add_union_to_union(const size_t _index,
                                      OutputUnionType* _parent) const {
+    (*archive_)(_index);
     return OutputUnionType{};
   }
 
@@ -179,6 +183,7 @@ class Writer {
   template <class T>
   OutputVarType add_value_to_union(const size_t _index, const T& _var,
                                    OutputUnionType* _parent) const {
+    (*archive_)(_index);
     (*archive_)(_var);
     return OutputVarType{};
   }
@@ -199,6 +204,7 @@ class Writer {
 
   OutputVarType add_null_to_union(const size_t _index,
                                   OutputUnionType* _parent) const {
+    (*archive_)(_index);
     return OutputVarType{};
   }
 

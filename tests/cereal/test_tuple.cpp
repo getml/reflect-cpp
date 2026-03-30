@@ -10,7 +10,6 @@
 namespace test_tuple {
 
 TEST(cereal, test_tuple) {
-  using TupleType = std::tuple<int, std::string, bool, double>;
   const auto my_tuple = std::make_tuple(42, std::string("Hello"), true, 3.14);
   write_and_read(my_tuple);
 }

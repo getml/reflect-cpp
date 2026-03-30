@@ -107,11 +107,7 @@ struct Reader {
       for (::cereal::size_type i = 0; i < size; ++i) {
         std::string key;
         (*_map.archive_)(key);
-        const auto err = _map_reader.read(std::string_view(key),
-                                          InputVarType{_map.archive_});
-        if (err) {
-          return err;
-        }
+        _map_reader.read(std::string_view(key), InputVarType{_map.archive_});
       }
       return std::nullopt;
     } catch (std::exception& e) {
@@ -135,7 +131,7 @@ struct Reader {
   template <class T, class UnionReader>
   rfl::Result<T> read_union(const InputUnionType& _union) const noexcept {
     try {
-      std::int32_t index;
+      size_t index;
       (*_union.archive_)(index);
       return UnionReader::read(*this, index, InputVarType{_union.archive_});
     } catch (std::exception& e) {

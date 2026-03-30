@@ -8,6 +8,7 @@
 #include "write_and_read.hpp"
 
 namespace test_map {
+
 struct Person {
   rfl::Rename<"firstName", std::string> first_name;
   rfl::Rename<"lastName", std::string> last_name = "Simpson";
@@ -15,16 +16,11 @@ struct Person {
 };
 
 TEST(cereal, test_map) {
-  auto bart = Person{.first_name = "Bart"};
+  auto children = std::make_unique<std::map<std::string, Person>>();
 
-  auto lisa = Person{.first_name = "Lisa"};
-
-  auto maggie = Person{.first_name = "Maggie"};
-
-  auto children = std::make_unique<std::map<std::string, Person>>(
-      std::map<std::string, Person>({{"Bart", std::move(bart)},
-                                     {"Lisa", std::move(lisa)},
-                                     {"Maggie", std::move(maggie)}}));
+  children->insert(std::make_pair("Bart", Person{.first_name = "Bart"}));
+  children->insert(std::make_pair("Lisa", Person{.first_name = "Lisa"}));
+  children->insert(std::make_pair("Maggie", Person{.first_name = "Maggie"}));
 
   const auto homer =
       Person{.first_name = "Homer", .children = std::move(children)};

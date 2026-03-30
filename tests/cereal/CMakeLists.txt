@@ -1,6 +1,6 @@
 project(reflect-cpp-cereal-tests)
 
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "test_readme_example.cpp")
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "*.cpp")
 
 add_executable(
     reflect-cpp-cereal-tests 

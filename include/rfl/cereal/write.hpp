@@ -35,7 +35,7 @@ std::vector<char> write(const auto& _obj) {
 /// Writes Cereal binary format into an ostream.
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) {
-  ::cereal::BinaryOutputArchive archive(_stream);
+  ::cereal::PortableBinaryOutputArchive archive(_stream);
   write<std::remove_cvref_t<decltype(_obj)>, Ps...>(_obj, archive);
   return _stream;
 }
