@@ -48,7 +48,7 @@ auto read(const concepts::ContiguousByteContainer auto& _bytes) {
 template <class T, class... Ps>
 auto read(std::istream& _stream) {
   try {
-    ::cereal::BinaryInputArchive archive(_stream);
+    ::cereal::PortableBinaryInputArchive archive(_stream);
     return read<T, Ps...>(archive);
   } catch (std::exception& e) {
     return Result<internal::wrap_in_rfl_array_t<T>>(
