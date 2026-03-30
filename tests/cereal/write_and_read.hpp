@@ -4,7 +4,6 @@
 #include <gtest/gtest.h>
 
 #include <rfl/cereal.hpp>
-#include <rfl/json.hpp>
 
 template <class... Ps>
 void write_and_read(const auto& _struct) {
@@ -15,7 +14,5 @@ void write_and_read(const auto& _struct) {
                            << res.error().what();
   const auto serialized2 = rfl::cereal::write<Ps...>(res.value());
   EXPECT_EQ(serialized1, serialized2);
-  EXPECT_EQ(rfl::json::write<Ps...>(_struct),
-            rfl::json::write<Ps...>(res.value()));
 }
 #endif

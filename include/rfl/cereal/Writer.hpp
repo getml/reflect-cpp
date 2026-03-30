@@ -9,6 +9,8 @@
 #include <string_view>
 #include <type_traits>
 
+#include "../Bytestring.hpp"
+#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../common.hpp"
 #include "../internal/is_literal.hpp"
@@ -232,6 +234,12 @@ class Writer {
     using Type = std::remove_cvref_t<T>;
     if constexpr (internal::is_literal_v<Type>) {
       add_value(_var.str());
+
+    } else if constexpr (std::is_same<Type, rfl::Bytestring>() ||
+                         std::is_same<Type, rfl::Vectorstring>()) {
+      (*archive_)(::cereal::make_size_tag(_var.size()));
+      (*archive_)(::cereal::binary_data(_var.data(), _var.size()));
+
     } else {
       (*archive_)(_var);
     }

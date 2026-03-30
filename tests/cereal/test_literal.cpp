@@ -17,8 +17,8 @@ struct Person {
 };
 
 TEST(cereal, test_literal) {
-  /*const auto bart = Person{.first_name = FirstName::make<"Bart">()};
+  const auto bart = Person{.first_name = FirstName::make<"Bart">()};
 
-  write_and_read(bart);*/
+  write_and_read(bart);
 }
 }  // namespace test_literal

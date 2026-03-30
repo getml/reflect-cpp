@@ -36,7 +36,7 @@ struct Monster {
 };
 
 TEST(cereal, test_monster_example) {
-  /*const auto sword = Weapon{.name = "Sword", .damage = 3};
+  const auto sword = Weapon{.name = "Sword", .damage = 3};
   const auto axe = Weapon{.name = "Axe", .damage = 5};
 
   const auto weapons = std::vector<Weapon>({sword, axe});
@@ -54,6 +54,6 @@ TEST(cereal, test_monster_example) {
                            .weapons = weapons,
                            .equipped = rfl::make_field<"weapon">(axe)};
 
-  write_and_read(orc);*/
+  write_and_read(orc);
 }
 }  // namespace test_monster_example

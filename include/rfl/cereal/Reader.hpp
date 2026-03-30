@@ -9,7 +9,9 @@
 #include <string>
 #include <type_traits>
 
+#include "../Bytestring.hpp"
 #include "../Result.hpp"
+#include "../Vectorstring.hpp"
 #include "../always_false.hpp"
 #include "../internal/is_literal.hpp"
 #include "../parsing/schemaful/IsSchemafulReader.hpp"
@@ -58,6 +60,17 @@ struct Reader {
         std::string str;
         (*_var.archive_)(str);
         return std::remove_cvref_t<T>::from_string(str);
+
+      } else if constexpr (std::is_same<std::remove_cvref_t<T>,
+                                        rfl::Bytestring>() ||
+                           std::is_same<std::remove_cvref_t<T>,
+                                        rfl::Vectorstring>()) {
+        size_t size;
+        (*_var.archive_)(::cereal::make_size_tag(size));
+        std::remove_cvref_t<T> result(size);
+        (*_var.archive_)(::cereal::binary_data(result.data(), size));
+        return result;
+
       } else {
         T value;
         (*_var.archive_)(value);

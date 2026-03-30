@@ -9,10 +9,10 @@ struct TestStruct {
 };
 
 TEST(cereal, test_bytestring) {
-  /*const auto test =
+  const auto test =
       TestStruct{.bytestring = rfl::Bytestring({std::byte{13}, std::byte{14},
                                                 std::byte{15}, std::byte{16}})};
 
-  write_and_read(test);*/
+  write_and_read(test);
 }
 }  // namespace test_bytestring
