@@ -72,6 +72,7 @@ class Writer {
   OutputArrayType add_array_to_map(const std::string_view& _name,
                                    const size_t _size,
                                    OutputMapType* _parent) const {
+    add_string_view(_name);
     (*archive_)(::cereal::make_size_tag(_size));
     return OutputArrayType{};
   }
@@ -99,6 +100,7 @@ class Writer {
   OutputMapType add_map_to_map(const std::string_view& _name,
                                const size_t _size,
                                OutputMapType* _parent) const {
+    (*archive_)(std::string(_name));
     (*archive_)(::cereal::make_size_tag(_size));
     return OutputMapType{};
   }
@@ -125,6 +127,7 @@ class Writer {
   OutputObjectType add_object_to_map(const std::string_view& _name,
                                      const size_t _size,
                                      OutputMapType* _parent) const {
+    add_string_view(_name);
     return OutputObjectType{};
   }
 
@@ -146,6 +149,7 @@ class Writer {
 
   OutputUnionType add_union_to_map(const std::string_view& _name,
                                    OutputMapType* _parent) const {
+    add_string_view(_name);
     return OutputUnionType{};
   }
 
@@ -169,7 +173,7 @@ class Writer {
   template <class T>
   OutputVarType add_value_to_map(const std::string_view& _name, const T& _var,
                                  OutputMapType* _parent) const {
-    (*archive_)(::cereal::make_nvp(_name.data(), _var));
+    add_string_view(_name);
     return OutputVarType{};
   }
 
@@ -194,6 +198,7 @@ class Writer {
 
   OutputVarType add_null_to_map(const std::string_view& _name,
                                 OutputMapType* _parent) const {
+    add_string_view(_name);
     return OutputVarType{};
   }
 
@@ -213,6 +218,12 @@ class Writer {
   void end_map(OutputMapType* _map) const noexcept {}
 
   void end_object(OutputObjectType* _obj) const noexcept {}
+
+ private:
+  void add_string_view(const std::string_view& _str) const {
+    (*archive_)(::cereal::make_size_tag(_str.size()));
+    (*archive_)(::cereal::binary_data(_str.data(), _str.size()));
+  }
 
  private:
   CerealArchive* archive_;

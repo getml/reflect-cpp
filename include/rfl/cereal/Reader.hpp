@@ -84,9 +84,9 @@ struct Reader {
   std::optional<Error> read_array(const ArrayReader& _array_reader,
                                   const InputArrayType& _arr) const noexcept {
     try {
-      ::cereal::size_type size;
+      size_t size;
       (*_arr.archive_)(::cereal::make_size_tag(size));
-      for (::cereal::size_type i = 0; i < size; ++i) {
+      for (size_t i = 0; i < size; ++i) {
         const auto err = _array_reader.read(InputVarType{_arr.archive_});
         if (err) {
           return err;
@@ -102,9 +102,9 @@ struct Reader {
   std::optional<Error> read_map(const MapReader& _map_reader,
                                 const InputMapType& _map) const noexcept {
     try {
-      ::cereal::size_type size;
+      size_t size;
       (*_map.archive_)(::cereal::make_size_tag(size));
-      for (::cereal::size_type i = 0; i < size; ++i) {
+      for (size_t i = 0; i < size; ++i) {
         std::string key;
         (*_map.archive_)(key);
         _map_reader.read(std::string_view(key), InputVarType{_map.archive_});
