@@ -11,6 +11,7 @@
 
 #include "../always_false.hpp"
 #include "../common.hpp"
+#include "../internal/is_literal.hpp"
 #include "../parsing/schemaful/IsSchemafulWriter.hpp"
 
 namespace rfl::cereal {
@@ -166,7 +167,7 @@ class Writer {
 
   template <class T>
   OutputVarType add_value_to_array(const T& _var, OutputArrayType*) const {
-    (*archive_)(_var);
+    add_value(_var);
     return OutputVarType{};
   }
 
@@ -174,13 +175,14 @@ class Writer {
   OutputVarType add_value_to_map(const std::string_view& _name, const T& _var,
                                  OutputMapType* _parent) const {
     add_string_view(_name);
+    add_value(_var);
     return OutputVarType{};
   }
 
   template <class T>
   OutputVarType add_value_to_object(const std::string_view& _name,
                                     const T& _var, OutputObjectType*) const {
-    (*archive_)(_var);
+    add_value(_var);
     return OutputVarType{};
   }
 
@@ -188,7 +190,7 @@ class Writer {
   OutputVarType add_value_to_union(const size_t _index, const T& _var,
                                    OutputUnionType* _parent) const {
     (*archive_)(_index);
-    (*archive_)(_var);
+    add_value(_var);
     return OutputVarType{};
   }
 
@@ -223,6 +225,16 @@ class Writer {
   void add_string_view(const std::string_view& _str) const {
     (*archive_)(::cereal::make_size_tag(_str.size()));
     (*archive_)(::cereal::binary_data(_str.data(), _str.size()));
+  }
+
+  template <class T>
+  void add_value(const T& _var) const noexcept {
+    using Type = std::remove_cvref_t<T>;
+    if constexpr (internal::is_literal_v<Type>) {
+      add_value(_var.str());
+    } else {
+      (*archive_)(_var);
+    }
   }
 
  private:

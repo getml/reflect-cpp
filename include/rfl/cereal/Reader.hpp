@@ -11,6 +11,7 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/is_literal.hpp"
 #include "../parsing/schemaful/IsSchemafulReader.hpp"
 
 namespace rfl::cereal {
@@ -53,9 +54,15 @@ struct Reader {
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
     try {
-      T value;
-      (*_var.archive_)(value);
-      return value;
+      if constexpr (internal::is_literal_v<T>) {
+        std::string str;
+        (*_var.archive_)(str);
+        return std::remove_cvref_t<T>::from_string(str);
+      } else {
+        T value;
+        (*_var.archive_)(value);
+        return value;
+      }
     } catch (std::exception& e) {
       return error(std::string("Cereal read error: ") + e.what());
     }

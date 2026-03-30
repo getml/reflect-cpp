@@ -18,7 +18,7 @@ struct Person {
 };
 
 TEST(cereal, test_add_struct_name) {
-  /*const auto bart = Person{.first_name = "Bart",
+  const auto bart = Person{.first_name = "Bart",
                            .birthday = "1987-04-19",
                            .age = 10,
                            .email = "bart@simpson.com"};
@@ -40,6 +40,6 @@ TEST(cereal, test_add_struct_name) {
              .email = "homer@simpson.com",
              .children = std::vector<Person>({bart, lisa, maggie})};
 
-  write_and_read<rfl::AddStructName<"type">>(homer);*/
+  write_and_read<rfl::AddStructName<"type">>(homer);
 }
 }  // namespace test_add_struct_name
