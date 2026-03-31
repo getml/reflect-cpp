@@ -75,7 +75,7 @@ class ViewReader {
       auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
       if (!res) {
         std::stringstream stream;
-        stream << "Failed to parse field '" << std::string(name)
+        stream << "Failed to parse field '" << name
                << "': " << res.error().what();
         _errors->emplace_back(Error(stream.str()));
         return;
