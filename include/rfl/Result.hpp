@@ -12,6 +12,8 @@
 #include <string>
 #include <type_traits>
 
+#include "internal/ptr_cast.hpp"
+
 namespace rfl {
 
 /// Defines the error class to be returned when something went wrong
@@ -398,27 +400,25 @@ class Result {
   }
 
   T&& get_t() && noexcept {
-    return std::move(*std::launder(reinterpret_cast<T*>(t_or_err_.data())));
+    return std::move(*internal::ptr_cast<T*>(t_or_err_.data()));
   }
 
-  T& get_t() & noexcept {
-    return *std::launder(reinterpret_cast<T*>(t_or_err_.data()));
-  }
+  T& get_t() & noexcept { return *internal::ptr_cast<T*>(t_or_err_.data()); }
 
   const T& get_t() const& noexcept {
-    return *std::launder(reinterpret_cast<const T*>(t_or_err_.data()));
+    return *internal::ptr_cast<const T*>(t_or_err_.data());
   }
 
   Error&& get_err() && noexcept {
-    return std::move(*std::launder(reinterpret_cast<Error*>(t_or_err_.data())));
+    return std::move(*internal::ptr_cast<Error*>(t_or_err_.data()));
   }
 
   Error& get_err() & noexcept {
-    return *std::launder(reinterpret_cast<Error*>(t_or_err_.data()));
+    return *internal::ptr_cast<Error*>(t_or_err_.data());
   }
 
   const Error& get_err() const& noexcept {
-    return *std::launder(reinterpret_cast<const Error*>(t_or_err_.data()));
+    return *internal::ptr_cast<const Error*>(t_or_err_.data());
   }
 
   void move_from_other(Result<T>& _other) noexcept {
