@@ -38,7 +38,6 @@ TEST(cereal, test_box) {
 
   const DecisionTree tree = DecisionTree{.leaf_or_node = std::move(node)};
 
-  // TODO
-  // write_and_read(tree);
+  write_and_read(tree);
 }
 }  // namespace test_box

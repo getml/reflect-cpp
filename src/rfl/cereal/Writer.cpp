@@ -48,9 +48,7 @@ Writer::OutputUnionType Writer::union_as_root() const {
   return OutputUnionType{};
 }
 
-Writer::OutputVarType Writer::null_as_root() const {
-  return OutputVarType{};
-}
+Writer::OutputVarType Writer::null_as_root() const { return OutputVarType{}; }
 
 Writer::OutputArrayType Writer::add_array_to_array(
     const size_t _size, OutputArrayType* _parent) const {
@@ -58,9 +56,9 @@ Writer::OutputArrayType Writer::add_array_to_array(
   return OutputArrayType{};
 }
 
-Writer::OutputArrayType Writer::add_array_to_map(
-    const std::string_view& _name, const size_t _size,
-    OutputMapType* _parent) const {
+Writer::OutputArrayType Writer::add_array_to_map(const std::string_view& _name,
+                                                 const size_t _size,
+                                                 OutputMapType* _parent) const {
   add_string_view(_name);
   (*archive_)(::cereal::make_size_tag(_size));
   return OutputArrayType{};
@@ -80,16 +78,16 @@ Writer::OutputArrayType Writer::add_array_to_union(
   return OutputArrayType{};
 }
 
-Writer::OutputMapType Writer::add_map_to_array(
-    const size_t _size, OutputArrayType* _parent) const {
+Writer::OutputMapType Writer::add_map_to_array(const size_t _size,
+                                               OutputArrayType* _parent) const {
   (*archive_)(::cereal::make_size_tag(_size));
   return OutputMapType{};
 }
 
-Writer::OutputMapType Writer::add_map_to_map(
-    const std::string_view& _name, const size_t _size,
-    OutputMapType* _parent) const {
-  (*archive_)(std::string(_name));
+Writer::OutputMapType Writer::add_map_to_map(const std::string_view& _name,
+                                             const size_t _size,
+                                             OutputMapType* _parent) const {
+  add_string_view(_name);
   (*archive_)(::cereal::make_size_tag(_size));
   return OutputMapType{};
 }
@@ -101,8 +99,9 @@ Writer::OutputMapType Writer::add_map_to_object(
   return OutputMapType{};
 }
 
-Writer::OutputMapType Writer::add_map_to_union(
-    const size_t _index, const size_t _size, OutputUnionType* _parent) const {
+Writer::OutputMapType Writer::add_map_to_union(const size_t _index,
+                                               const size_t _size,
+                                               OutputUnionType* _parent) const {
   (*archive_)(_index);
   (*archive_)(::cereal::make_size_tag(_size));
   return OutputMapType{};
@@ -137,8 +136,8 @@ Writer::OutputUnionType Writer::add_union_to_array(
   return OutputUnionType{};
 }
 
-Writer::OutputUnionType Writer::add_union_to_map(
-    const std::string_view& _name, OutputMapType* _parent) const {
+Writer::OutputUnionType Writer::add_union_to_map(const std::string_view& _name,
+                                                 OutputMapType* _parent) const {
   add_string_view(_name);
   return OutputUnionType{};
 }
@@ -159,8 +158,8 @@ Writer::OutputVarType Writer::add_null_to_array(
   return OutputVarType{};
 }
 
-Writer::OutputVarType Writer::add_null_to_map(
-    const std::string_view& _name, OutputMapType* _parent) const {
+Writer::OutputVarType Writer::add_null_to_map(const std::string_view& _name,
+                                              OutputMapType* _parent) const {
   add_string_view(_name);
   return OutputVarType{};
 }
