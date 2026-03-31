@@ -3,7 +3,8 @@
 For Cereal support, you must also include the header `<rfl/cereal.hpp>` and link to the [Cereal](https://uscilab.github.io/cereal/) library.
 Furthermore, when compiling reflect-cpp, you need to pass `-DREFLECTCPP_CEREAL=ON` to cmake.
 
-Cereal is a C++ serialization library that provides multiple archive formats including binary, portable binary, JSON, and XML formats, even though we use the portable binary format by default. 
+Cereal is a C++ serialization library that provides multiple archive formats including binary, portable binary, JSON, and XML formats, even though we use the portable binary format by default.
+
 ## Reading and writing
 
 Suppose you have a struct like this:
@@ -69,7 +70,7 @@ For large and complex systems of structs, it is often a good idea to split up
 your code into smaller compilation units. You can do so using custom constructors.
 
 For the Cereal format, these must be a static function on your struct or class called
-`from_cereal_obj` that take a `rfl::cereal::Reader::InputVarType` as input and return
+`from_cereal_obj` that takes a `rfl::cereal::Reader::InputVarType` as input and return
 the class or the class wrapped in `rfl::Result`.
 
 In your header file you can write something like this:
