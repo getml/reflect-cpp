@@ -22,7 +22,7 @@ TEST(cereal, test_save_load) {
 
   rfl::cereal::save("homer.cereal", homer);
 
-  const auto homer2 = rfl::cereal::load<Person>("/tmp/homer.cereal").value();
+  const auto homer2 = rfl::cereal::load<Person>("homer.cereal").value();
 
   write_and_read(homer2);
 }
