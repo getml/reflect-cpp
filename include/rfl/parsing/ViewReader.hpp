@@ -77,7 +77,8 @@ class ViewReader {
         std::stringstream stream;
         stream << "Failed to parse field '" << name
                << "': " << res.error().what();
-        _errors->emplace_back(Error(stream.str()));
+        auto err = Error{stream.str()};
+        _errors->emplace_back(std::move(err));
         return;
       }
       if constexpr (std::is_pointer_v<OriginalType>) {
@@ -109,7 +110,8 @@ class ViewReader {
       std::stringstream stream;
       stream << "Failed to parse field '" << _current_name
              << "': " << res.error().what();
-      _errors->emplace_back(Error(stream.str()));
+      auto err = Error{stream.str()};
+      _errors->emplace_back(std::move(err));
       return;
     }
     extra_fields->emplace(std::string(_current_name), std::move(*res));
@@ -144,7 +146,8 @@ class ViewReader {
       if (!already_assigned) {
         std::stringstream stream;
         stream << "Value named '" << _current_name_or_index << "' not used.";
-        _errors->emplace_back(Error(stream.str()));
+        auto err = Error{stream.str()};
+        _errors->emplace_back(std::move(err));
       }
     }
   }
