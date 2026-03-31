@@ -15,13 +15,12 @@ struct Person {
 };
 
 TEST(cereal, test_save_load) {
-  const auto homer =
-      Person{.first_name = "Homer",
-             .last_name = "Simpson",
-             .email = "homer@simpson.com",
-             .age = 45};
+  const auto homer = Person{.first_name = "Homer",
+                            .last_name = "Simpson",
+                            .email = "homer@simpson.com",
+                            .age = 45};
 
-  rfl::cereal::save("/tmp/homer.cereal", homer);
+  rfl::cereal::save("homer.cereal", homer);
 
   const auto homer2 = rfl::cereal::load<Person>("/tmp/homer.cereal").value();
 
