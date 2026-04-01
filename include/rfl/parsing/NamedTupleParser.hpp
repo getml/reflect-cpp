@@ -1,6 +1,18 @@
 #ifndef RFL_PARSING_NAMEDTUPLEPARSER_HPP_
 #define RFL_PARSING_NAMEDTUPLEPARSER_HPP_
 
+#ifndef REFLECTCPP_USE_STD_EXPECTED
+
+// Necessary workaround due to a false
+// positive in GCC.
+#if __GNUC__
+#ifndef __clang__
+#pragma GCC system_header
+#endif
+#endif
+
+#endif
+
 #include <array>
 #include <map>
 #include <sstream>
