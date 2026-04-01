@@ -73,7 +73,7 @@ class ViewReader {
       *_already_assigned = true;
       auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
       if (!res) {
-        const auto name = FieldType::name();
+        constexpr auto name = FieldType::name();
         std::stringstream stream;
         stream << "Failed to parse field '" << name
                << "': " << res.error().what();
