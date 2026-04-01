@@ -67,15 +67,16 @@ class ViewReader {
     using OriginalType = typename FieldType::Type;
     using T =
         std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
-    constexpr auto name = FieldType::name();
     if (!(*_already_assigned) && !std::get<i>(*_found) &&
         is_matching<i, FieldType>(_current_name_or_index)) {
       std::get<i>(*_found) = true;
       *_already_assigned = true;
       auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
       if (!res) {
+        const auto name = FieldType::name();
         std::stringstream stream;
-        stream << "Failed to parse field: " << res.error().what();
+        stream << "Failed to parse field '" << name
+               << "': " << res.error().what();
         _errors->emplace_back(stream.str());
         return;
       }
