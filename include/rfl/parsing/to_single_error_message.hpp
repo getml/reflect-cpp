@@ -13,11 +13,11 @@ namespace rfl::parsing {
 
 /// Combines a set of errors to a single, readable error message.
 inline std::string to_single_error_message(
-    std::vector<Error> _errors,
+    std::vector<std::string> _errors,
     std::optional<std::string> _msg_prefix = std::nullopt,
     size_t _err_limit = 10) {
   if (_errors.size() == 1) {
-    return _errors[0].what();
+    return _errors[0];
   } else {
     std::stringstream stream;
     stream << (_msg_prefix
@@ -26,8 +26,7 @@ inline std::string to_single_error_message(
     for (size_t i = 0; i < _errors.size() && i < _err_limit; ++i) {
       stream << "\n"
              << i + 1 << ") "
-             << internal::strings::replace_all(_errors.at(i).what(), "\n",
-                                               "\n    ");
+             << internal::strings::replace_all(_errors.at(i), "\n", "\n    ");
     }
     if (_errors.size() > _err_limit) {
       stream << "\n...\nMore than " << _err_limit

@@ -22,7 +22,7 @@ class ViewReaderWithDefaultAndStrippedFieldNames {
 
  public:
   ViewReaderWithDefaultAndStrippedFieldNames(const R* _r, ViewType* _view,
-                                             std::vector<Error>* _errors)
+                                             std::vector<std::string>* _errors)
       : i_(0), r_(_r), view_(_view), errors_(_errors) {}
 
   ~ViewReaderWithDefaultAndStrippedFieldNames() = default;
@@ -66,7 +66,7 @@ class ViewReaderWithDefaultAndStrippedFieldNames {
         std::stringstream stream;
         stream << "Failed to parse field '" << std::string(name)
                << "': " << res.error().what();
-        _errors->emplace_back(Error(stream.str()));
+        _errors->emplace_back(stream.str());
         return;
       }
       if constexpr (std::is_pointer_v<OriginalType>) {
@@ -116,7 +116,7 @@ class ViewReaderWithDefaultAndStrippedFieldNames {
   ViewType* view_;
 
   /// Collects any errors we may have come across.
-  std::vector<Error>* errors_;
+  std::vector<std::string>* errors_;
 };
 
 }  // namespace rfl::parsing

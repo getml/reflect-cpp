@@ -245,10 +245,10 @@ struct NamedTupleParser {
 
   /// Generates error messages for when fields are missing.
   template <int _i>
-  static void handle_one_missing_field(const std::array<bool, size_>& _found,
-                                       const NamedTupleType& _view,
-                                       std::array<bool, size_>* _set,
-                                       std::vector<Error>* _errors) noexcept {
+  static void handle_one_missing_field(
+      const std::array<bool, size_>& _found, const NamedTupleType& _view,
+      std::array<bool, size_>* _set,
+      std::vector<std::string>* _errors) noexcept {
     using FieldType = internal::nth_element_t<_i, FieldTypes...>;
     using ValueType = std::remove_reference_t<
         std::remove_pointer_t<typename FieldType::Type>>;
@@ -265,7 +265,7 @@ struct NamedTupleParser {
         std::stringstream stream;
         stream << "Field named '" << std::string(current_name)
                << "' not found.";
-        _errors->emplace_back(Error(stream.str()));
+        _errors->emplace_back(stream.str());
 
       } else if constexpr (!internal::has_default_val_v<NamedTupleType>) {
         if constexpr (!std::is_const_v<ValueType>) {
@@ -283,7 +283,7 @@ struct NamedTupleParser {
   template <int... _is>
   static void handle_missing_fields(
       const std::array<bool, size_>& _found, const NamedTupleType& _view,
-      std::array<bool, size_>* _set, std::vector<Error>* _errors,
+      std::array<bool, size_>* _set, std::vector<std::string>* _errors,
       std::integer_sequence<int, _is...>) noexcept {
     (handle_one_missing_field<_is>(_found, _view, _set, _errors), ...);
   }
@@ -305,7 +305,7 @@ struct NamedTupleParser {
     found.fill(false);
     auto set = std::array<bool, NamedTupleType::size()>();
     set.fill(false);
-    std::vector<Error> errors;
+    std::vector<std::string> errors;
     const auto reader = ViewReaderType(&_r, _view, &found, &set, &errors);
     if constexpr (_no_field_names) {
       const auto err = _r.read_array(reader, _obj_or_arr);
@@ -329,7 +329,7 @@ struct NamedTupleParser {
   static std::optional<Error> read_object_or_array_with_default(
       const R& _r, const InputObjectOrArrayType& _obj_or_arr,
       NamedTupleType* _view) noexcept {
-    std::vector<Error> errors;
+    std::vector<std::string> errors;
     const auto reader = ViewReaderWithDefaultType(&_r, _view, &errors);
     if constexpr (_no_field_names) {
       const auto err = _r.read_array(reader, _obj_or_arr);

@@ -61,7 +61,7 @@ struct MapParser {
  private:
   static Result<MapType> make_map(const R& _r, const auto& _obj_or_map) {
     MapType map;
-    std::vector<Error> errors;
+    std::vector<std::string> errors;
     const auto map_reader =
         MapReader<R, W, MapType, ProcessorsType>(&_r, &map, &errors);
     if constexpr (schemaful::IsSchemafulReader<R>) {

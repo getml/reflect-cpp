@@ -24,7 +24,7 @@ class ViewReader {
 
  public:
   ViewReader(const R* _r, ViewType* _view, std::array<bool, size_>* _found,
-             std::array<bool, size_>* _set, std::vector<Error>* _errors)
+             std::array<bool, size_>* _set, std::vector<std::string>* _errors)
       : r_(_r), view_(_view), found_(_found), set_(_set), errors_(_errors) {}
 
   ~ViewReader() = default;
@@ -77,7 +77,7 @@ class ViewReader {
         std::stringstream stream;
         stream << "Failed to parse field '" << name
                << "': " << res.error().what();
-        _errors->emplace_back(Error(stream.str()));
+        _errors->emplace_back(stream.str());
         return;
       }
       if constexpr (std::is_pointer_v<OriginalType>) {
@@ -109,7 +109,7 @@ class ViewReader {
       std::stringstream stream;
       stream << "Failed to parse field '" << _current_name
              << "': " << res.error().what();
-      _errors->emplace_back(Error(stream.str()));
+      _errors->emplace_back(stream.str());
       return;
     }
     extra_fields->emplace(std::string(_current_name), std::move(*res));
@@ -144,7 +144,7 @@ class ViewReader {
       if (!already_assigned) {
         std::stringstream stream;
         stream << "Value named '" << _current_name_or_index << "' not used.";
-        _errors->emplace_back(Error(stream.str()));
+        _errors->emplace_back(stream.str());
       }
     }
   }
@@ -184,7 +184,7 @@ class ViewReader {
   std::array<bool, size_>* set_;
 
   /// Collects any errors we may have come across.
-  std::vector<Error>* errors_;
+  std::vector<std::string>* errors_;
 };
 
 }  // namespace rfl::parsing

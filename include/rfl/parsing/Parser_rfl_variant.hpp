@@ -71,7 +71,7 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
 
     } else {
       std::optional<rfl::Variant<AlternativeTypes...>> result;
-      std::vector<Error> errors;
+      std::vector<std::string> errors;
       errors.reserve(sizeof...(AlternativeTypes));
       read_variant(
           _r, _var, &result, &errors,
@@ -189,7 +189,7 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
   static void read_one_alternative(
       const R& _r, const InputVarType& _var,
       std::optional<rfl::Variant<AlternativeTypes...>>* _result,
-      std::vector<Error>* _errors) noexcept {
+      std::vector<std::string>* _errors) noexcept {
     if (!*_result) {
       using AltType =
           std::remove_cvref_t<internal::nth_element_t<_i, AlternativeTypes...>>;
@@ -197,7 +197,7 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
       if (res) {
         *_result = std::move(*res);
       } else {
-        _errors->emplace_back(std::move(res.error()));
+        _errors->emplace_back(std::move(res.error().what()));
       }
     }
   }
@@ -206,7 +206,7 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
   static void read_variant(
       const R& _r, const InputVarType& _var,
       std::optional<rfl::Variant<AlternativeTypes...>>* _result,
-      std::vector<Error>* _errors,
+      std::vector<std::string>* _errors,
       std::integer_sequence<int, _is...>) noexcept {
     (read_one_alternative<_is>(_r, _var, _result, _errors), ...);
   }
