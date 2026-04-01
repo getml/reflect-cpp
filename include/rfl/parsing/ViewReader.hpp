@@ -14,6 +14,18 @@
 #include "Parser_base.hpp"
 #include "schemaful/IsSchemafulReader.hpp"
 
+#ifndef REFLECTCPP_USE_STD_EXPECTED
+
+// Necessary workaround due to a false
+// positive in GCC.
+#if __GNUC__
+#ifndef __clang__
+#pragma GCC system_header
+#endif
+#endif
+
+#endif
+
 namespace rfl::parsing {
 
 template <class R, class W, class ViewType, class ProcessorsType>

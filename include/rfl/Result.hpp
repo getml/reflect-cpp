@@ -2,18 +2,7 @@
 #define RFL_RESULT_HPP_
 
 #ifdef REFLECTCPP_USE_STD_EXPECTED
-
 #include <expected>
-
-#else
-
-// Necessary workaround due to a false positive warning in GCC 14.
-#if __GNUC__
-#ifndef __clang__
-#pragma GCC system_header
-#endif
-#endif
-
 #endif
 
 #include <array>
