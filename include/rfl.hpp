@@ -10,7 +10,7 @@
 #if __GNUC__
 #ifndef __clang__
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wstringop-overflow"
+#pragma GCC diagnostic ignored "-Wstringop-overflow="
 #endif
 #endif
 
