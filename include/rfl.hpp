@@ -7,6 +7,13 @@
 #pragma warning(disable : 4101)
 #endif
 
+#if __GNUC__
+#ifndef __clang__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-overflow="
+#endif
+#endif
+
 #include "rfl/AddStructName.hpp"
 #include "rfl/AddTagsToVariants.hpp"
 #include "rfl/AllOf.hpp"
@@ -90,6 +97,12 @@
 
 #ifdef _MSC_VER
 #pragma warning(pop)
+#endif
+
+#if __GNUC__
+#ifndef __clang__
+#pragma GCC diagnostic pop
+#endif
 #endif
 
 #endif

@@ -20,11 +20,11 @@ class Error {
   Error() = default;
 
   Error(const std::string& _what) : what_(_what) {}
-  Error(std::string _what) : what_(std::move(_what)) {}
+  Error(std::string&& _what) : what_(std::move(_what)) {}
 
   ~Error() = default;
 
-  Error(const Error& e) noexcept = default;
+  Error(const Error& e) = default;
   Error(Error&& e) noexcept = default;
 
   Error& operator=(const Error& _other) = default;
