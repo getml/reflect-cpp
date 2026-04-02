@@ -1,6 +1,7 @@
 #include <benchmark/benchmark.h>
 
 #include <rfl/avro.hpp>
+#include <rfl/boost_serialization.hpp>
 #include <rfl/bson.hpp>
 #include <rfl/capnproto.hpp>
 #include <rfl/cbor.hpp>
@@ -46,7 +47,7 @@ static FeatureCollection load_data() {
 
 // ----------------------------------------------------------------------------
 
-static void BM_canada_read_reflect_cpp_avro(benchmark::State &state) {
+static void BM_canada_read_reflect_cpp_avro(benchmark::State& state) {
   const auto schema = rfl::avro::to_schema<FeatureCollection>();
   const auto data = rfl::avro::write(load_data(), schema);
   for (auto _ : state) {
@@ -58,7 +59,7 @@ static void BM_canada_read_reflect_cpp_avro(benchmark::State &state) {
 }
 BENCHMARK(BM_canada_read_reflect_cpp_avro);
 
-static void BM_canada_read_reflect_cpp_bson(benchmark::State &state) {
+static void BM_canada_read_reflect_cpp_bson(benchmark::State& state) {
   const auto data = rfl::bson::write(load_data());
   for (auto _ : state) {
     const auto res = rfl::bson::read<FeatureCollection>(data);
@@ -69,7 +70,19 @@ static void BM_canada_read_reflect_cpp_bson(benchmark::State &state) {
 }
 BENCHMARK(BM_canada_read_reflect_cpp_bson);
 
-static void BM_canada_read_reflect_cpp_capnproto(benchmark::State &state) {
+static void BM_canada_read_reflect_cpp_boost_serialization(
+    benchmark::State& state) {
+  const auto data = rfl::boost_serialization::write(load_data());
+  for (auto _ : state) {
+    const auto res = rfl::boost_serialization::read<FeatureCollection>(data);
+    if (!res) {
+      std::cout << res.error().what() << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_canada_read_reflect_cpp_boost_serialization);
+
+static void BM_canada_read_reflect_cpp_capnproto(benchmark::State& state) {
   const auto schema = rfl::capnproto::to_schema<FeatureCollection>();
   const auto data = rfl::capnproto::write(load_data(), schema);
   for (auto _ : state) {
@@ -81,7 +94,7 @@ static void BM_canada_read_reflect_cpp_capnproto(benchmark::State &state) {
 }
 BENCHMARK(BM_canada_read_reflect_cpp_capnproto);
 
-static void BM_canada_read_reflect_cpp_cbor(benchmark::State &state) {
+static void BM_canada_read_reflect_cpp_cbor(benchmark::State& state) {
   const auto data = rfl::cbor::write(load_data());
   for (auto _ : state) {
     const auto res = rfl::cbor::read<FeatureCollection>(data);
@@ -93,7 +106,7 @@ static void BM_canada_read_reflect_cpp_cbor(benchmark::State &state) {
 BENCHMARK(BM_canada_read_reflect_cpp_cbor);
 
 static void BM_canada_read_reflect_cpp_cbor_without_field_names(
-    benchmark::State &state) {
+    benchmark::State& state) {
   const auto data = rfl::cbor::write<rfl::NoFieldNames>(load_data());
   for (auto _ : state) {
     const auto res =
@@ -117,6 +130,7 @@ static void BM_canada_read_reflect_cpp_cereal(benchmark::State &state) {
 BENCHMARK(BM_canada_read_reflect_cpp_cereal);
 
 static void BM_canada_read_reflect_cpp_flexbuf(benchmark::State &state) {
+static void BM_canada_read_reflect_cpp_flexbuf(benchmark::State& state) {
   const auto data = rfl::flexbuf::write(load_data());
   for (auto _ : state) {
     const auto res = rfl::flexbuf::read<FeatureCollection>(data);
@@ -128,7 +142,7 @@ static void BM_canada_read_reflect_cpp_flexbuf(benchmark::State &state) {
 BENCHMARK(BM_canada_read_reflect_cpp_flexbuf);
 
 static void BM_canada_read_reflect_cpp_flexbuf_without_field_names(
-    benchmark::State &state) {
+    benchmark::State& state) {
   const auto data = rfl::flexbuf::write<rfl::NoFieldNames>(load_data());
   for (auto _ : state) {
     const auto res =
@@ -140,7 +154,7 @@ static void BM_canada_read_reflect_cpp_flexbuf_without_field_names(
 }
 BENCHMARK(BM_canada_read_reflect_cpp_flexbuf_without_field_names);
 
-static void BM_canada_read_reflect_cpp_json(benchmark::State &state) {
+static void BM_canada_read_reflect_cpp_json(benchmark::State& state) {
   const auto data = rfl::json::write(load_data());
   for (auto _ : state) {
     const auto res = rfl::json::read<FeatureCollection>(data);
@@ -152,7 +166,7 @@ static void BM_canada_read_reflect_cpp_json(benchmark::State &state) {
 BENCHMARK(BM_canada_read_reflect_cpp_json);
 
 static void BM_canada_read_reflect_cpp_json_without_field_names(
-    benchmark::State &state) {
+    benchmark::State& state) {
   const auto data = rfl::json::write<rfl::NoFieldNames>(load_data());
   for (auto _ : state) {
     const auto res =
@@ -164,7 +178,7 @@ static void BM_canada_read_reflect_cpp_json_without_field_names(
 }
 BENCHMARK(BM_canada_read_reflect_cpp_json_without_field_names);
 
-static void BM_canada_read_reflect_cpp_msgpack(benchmark::State &state) {
+static void BM_canada_read_reflect_cpp_msgpack(benchmark::State& state) {
   const auto data = rfl::msgpack::write(load_data());
   for (auto _ : state) {
     const auto res = rfl::msgpack::read<FeatureCollection>(data);
@@ -176,7 +190,7 @@ static void BM_canada_read_reflect_cpp_msgpack(benchmark::State &state) {
 BENCHMARK(BM_canada_read_reflect_cpp_msgpack);
 
 static void BM_canada_read_reflect_cpp_msgpack_without_field_names(
-    benchmark::State &state) {
+    benchmark::State& state) {
   const auto data = rfl::msgpack::write<rfl::NoFieldNames>(load_data());
   for (auto _ : state) {
     const auto res =
@@ -188,7 +202,7 @@ static void BM_canada_read_reflect_cpp_msgpack_without_field_names(
 }
 BENCHMARK(BM_canada_read_reflect_cpp_msgpack_without_field_names);
 
-static void BM_canada_read_reflect_cpp_toml(benchmark::State &state) {
+static void BM_canada_read_reflect_cpp_toml(benchmark::State& state) {
   const auto data = rfl::toml::write(load_data());
   for (auto _ : state) {
     const auto res = rfl::toml::read<FeatureCollection>(data);
@@ -199,7 +213,7 @@ static void BM_canada_read_reflect_cpp_toml(benchmark::State &state) {
 }
 BENCHMARK(BM_canada_read_reflect_cpp_toml);
 
-static void BM_canada_read_reflect_cpp_ubjson(benchmark::State &state) {
+static void BM_canada_read_reflect_cpp_ubjson(benchmark::State& state) {
   const auto data = rfl::ubjson::write(load_data());
   for (auto _ : state) {
     const auto res = rfl::ubjson::read<FeatureCollection>(data);
@@ -211,7 +225,7 @@ static void BM_canada_read_reflect_cpp_ubjson(benchmark::State &state) {
 BENCHMARK(BM_canada_read_reflect_cpp_ubjson);
 
 static void BM_canada_read_reflect_cpp_ubjson_without_field_names(
-    benchmark::State &state) {
+    benchmark::State& state) {
   const auto data = rfl::ubjson::write<rfl::NoFieldNames>(load_data());
   for (auto _ : state) {
     const auto res =
@@ -223,7 +237,7 @@ static void BM_canada_read_reflect_cpp_ubjson_without_field_names(
 }
 BENCHMARK(BM_canada_read_reflect_cpp_ubjson_without_field_names);
 
-static void BM_canada_read_reflect_cpp_yaml(benchmark::State &state) {
+static void BM_canada_read_reflect_cpp_yaml(benchmark::State& state) {
   const auto data = rfl::yaml::write(load_data());
   for (auto _ : state) {
     const auto res = rfl::yaml::read<FeatureCollection>(data);
@@ -237,4 +251,3 @@ BENCHMARK(BM_canada_read_reflect_cpp_yaml);
 // ----------------------------------------------------------------------------
 
 }  // namespace canada_read
-
