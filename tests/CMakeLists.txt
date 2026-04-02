@@ -1,15 +1,15 @@
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -O2")
 
+# Note: Adding -Wno-stringop-overflow is necessary, because of false positive warnings, see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110498
 if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std:c++20")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -Werror -ggdb -ftemplate-backtrace-limit=0")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -Werror -ggdb -ftemplate-backtrace-limit=0")
 endif()
 
 if (REFLECTCPP_JSON)
     add_subdirectory(generic)
     add_subdirectory(json)
-    # add_subdirectory(alloc)  # Disabled: tests detect known leaks in Parser_string_view/Parser_span, not yet fixed
     add_subdirectory(json_c_arrays_and_inheritance)
     add_subdirectory(cli)
 endif ()
@@ -28,6 +28,10 @@ endif()
 
 if (REFLECTCPP_CBOR)
     add_subdirectory(cbor)
+endif()
+
+if (REFLECTCPP_CEREAL)
+    add_subdirectory(cereal)
 endif()
 
 if (REFLECTCPP_CSV)

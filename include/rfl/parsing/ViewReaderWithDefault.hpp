@@ -24,7 +24,7 @@ class ViewReaderWithDefault {
 
  public:
   ViewReaderWithDefault(const R* _r, ViewType* _view,
-                        std::vector<Error>* _errors)
+                        std::vector<std::string>* _errors)
       : r_(_r), view_(_view), errors_(_errors) {
     found_->fill(false);
   }
@@ -39,6 +39,8 @@ class ViewReaderWithDefault {
     assign_to_matching_field(*r_, _name, _var, view_, errors_, found_.get(),
                              std::make_integer_sequence<int, size_>());
   }
+
+  static constexpr size_t size() { return size_; }
 
  private:
   template <int i>
@@ -61,7 +63,7 @@ class ViewReaderWithDefault {
         std::stringstream stream;
         stream << "Failed to parse field '" << std::string(name)
                << "': " << res.error().what();
-        _errors->emplace_back(Error(stream.str()));
+        _errors->emplace_back(stream.str());
         return;
       }
       if constexpr (std::is_pointer_v<OriginalType>) {
@@ -87,7 +89,7 @@ class ViewReaderWithDefault {
       std::stringstream stream;
       stream << "Failed to parse field '" << _current_name
              << "': " << res.error().what();
-      _errors->emplace_back(Error(stream.str()));
+      _errors->emplace_back(stream.str());
       return;
     }
     extra_fields->emplace(std::string(_current_name), std::move(*res));
@@ -116,7 +118,7 @@ class ViewReaderWithDefault {
         stream << "Value named '" << std::string(_current_name)
                << "' not used. Remove the rfl::NoExtraFields processor or add "
                   "rfl::ExtraFields to avoid this error message.";
-        _errors->emplace_back(Error(stream.str()));
+        _errors->emplace_back(stream.str());
       }
     }
   }
@@ -152,7 +154,7 @@ class ViewReaderWithDefault {
   rfl::Ref<std::array<bool, size_>> found_;
 
   /// Collects any errors we may have come across.
-  std::vector<Error>* errors_;
+  std::vector<std::string>* errors_;
 };
 
 }  // namespace rfl::parsing

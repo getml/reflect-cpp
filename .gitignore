@@ -45,6 +45,7 @@
 *.bson
 *.capnproto
 *.cbor
+*.cereal
 *.csv
 *.json
 *.fb

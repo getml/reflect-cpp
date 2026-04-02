@@ -24,7 +24,7 @@ class ViewReader {
 
  public:
   ViewReader(const R* _r, ViewType* _view, std::array<bool, size_>* _found,
-             std::array<bool, size_>* _set, std::vector<Error>* _errors)
+             std::array<bool, size_>* _set, std::vector<std::string>* _errors)
       : r_(_r), view_(_view), found_(_found), set_(_set), errors_(_errors) {}
 
   ~ViewReader() = default;
@@ -43,6 +43,8 @@ class ViewReader {
     assign_to_matching_field(*r_, _index, _var, view_, errors_, found_, set_,
                              std::make_integer_sequence<int, size_>());
   }
+
+  static constexpr size_t size() { return size_; }
 
  private:
   template <int i, class FieldType>
@@ -65,17 +67,17 @@ class ViewReader {
     using OriginalType = typename FieldType::Type;
     using T =
         std::remove_cvref_t<std::remove_pointer_t<typename FieldType::Type>>;
-    constexpr auto name = FieldType::name();
     if (!(*_already_assigned) && !std::get<i>(*_found) &&
         is_matching<i, FieldType>(_current_name_or_index)) {
       std::get<i>(*_found) = true;
       *_already_assigned = true;
       auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
       if (!res) {
+        constexpr auto name = FieldType::name();
         std::stringstream stream;
-        stream << "Failed to parse field '" << std::string(name)
+        stream << "Failed to parse field '" << name
                << "': " << res.error().what();
-        _errors->emplace_back(Error(stream.str()));
+        _errors->emplace_back(stream.str());
         return;
       }
       if constexpr (std::is_pointer_v<OriginalType>) {
@@ -107,7 +109,7 @@ class ViewReader {
       std::stringstream stream;
       stream << "Failed to parse field '" << _current_name
              << "': " << res.error().what();
-      _errors->emplace_back(Error(stream.str()));
+      _errors->emplace_back(stream.str());
       return;
     }
     extra_fields->emplace(std::string(_current_name), std::move(*res));
@@ -141,9 +143,8 @@ class ViewReader {
           "sense, because schemaful formats cannot have extra fields.");
       if (!already_assigned) {
         std::stringstream stream;
-        stream << "Value named '" << _current_name_or_index
-               << "' not used.";
-        _errors->emplace_back(Error(stream.str()));
+        stream << "Value named '" << _current_name_or_index << "' not used.";
+        _errors->emplace_back(stream.str());
       }
     }
   }
@@ -183,7 +184,7 @@ class ViewReader {
   std::array<bool, size_>* set_;
 
   /// Collects any errors we may have come across.
-  std::vector<Error>* errors_;
+  std::vector<std::string>* errors_;
 };
 
 }  // namespace rfl::parsing

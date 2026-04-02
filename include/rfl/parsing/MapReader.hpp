@@ -23,7 +23,7 @@ class MapReader {
       std::remove_cvref_t<typename MapType::value_type::second_type>;
 
  public:
-  MapReader(const R* _r, MapType* _map, std::vector<Error>* _errors)
+  MapReader(const R* _r, MapType* _map, std::vector<std::string>* _errors)
       : r_(_r), map_(_map), errors_(_errors) {}
 
   ~MapReader() = default;
@@ -34,8 +34,8 @@ class MapReader {
     if (res) {
       map_->emplace(std::move(*res));
     } else {
-      errors_->push_back(Error("Failed to parse field '" + std::string(_name) +
-                               "': " + res.error().what()));
+      errors_->push_back("Failed to parse field '" + std::string(_name) +
+                         "': " + res.error().what());
     }
   }
 
@@ -109,7 +109,7 @@ class MapReader {
   MapType* map_;
 
   /// Collects any errors we may have come across.
-  std::vector<Error>* errors_;
+  std::vector<std::string>* errors_;
 };
 
 }  // namespace rfl::parsing

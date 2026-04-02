@@ -4,6 +4,7 @@
 #include <rfl/bson.hpp>
 #include <rfl/capnproto.hpp>
 #include <rfl/cbor.hpp>
+#include <rfl/cereal.hpp>
 #include <rfl/flexbuf.hpp>
 #include <rfl/json.hpp>
 #include <rfl/msgpack.hpp>
@@ -102,6 +103,17 @@ static void BM_canada_write_reflect_cpp_cbor_without_field_names(
   }
 }
 BENCHMARK(BM_canada_write_reflect_cpp_cbor_without_field_names);
+
+static void BM_canada_write_reflect_cpp_cereal(benchmark::State &state) {
+  const auto data = load_data();
+  for (auto _ : state) {
+    const auto output = rfl::cereal::write(data);
+    if (output.size() == 0) {
+      std::cout << "No output" << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_canada_write_reflect_cpp_cereal);
 
 static void BM_canada_write_reflect_cpp_flexbuf_without_field_names(
     benchmark::State &state) {

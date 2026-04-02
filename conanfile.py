@@ -40,6 +40,7 @@ class ReflectCppConan(ConanFile):
         "fPIC": [True, False],
         "with_capnproto": [True, False],
         "with_cbor": [True, False],
+        "with_cereal": [True, False],
         "with_csv": [True, False],
         "with_flatbuffers": [True, False],
         "with_msgpack": [True, False],
@@ -54,6 +55,7 @@ class ReflectCppConan(ConanFile):
         "fPIC": True,
         "with_capnproto": False,
         "with_cbor": False,
+        "with_cereal": False,
         "with_csv": False,
         "with_flatbuffers": False,
         "with_msgpack": False,
@@ -79,6 +81,8 @@ class ReflectCppConan(ConanFile):
             self.requires("capnproto/1.1.0", transitive_headers=True)
         if self.options.with_cbor or self.options.with_ubjson:
             self.requires("jsoncons/0.176.0", transitive_headers=True)
+        if self.options.with_cereal:
+            self.requires("cereal/1.3.2", transitive_headers=True)
         if self.options.with_csv or self.options.with_parquet:
             self.requires("arrow/21.0.0", transitive_headers=True)
         if self.options.with_flatbuffers:
@@ -116,6 +120,7 @@ class ReflectCppConan(ConanFile):
         tc.cache_variables["REFLECTCPP_USE_VCPKG"] = False
         tc.cache_variables["REFLECTCPP_CAPNPROTO"] = self.options.with_capnproto
         tc.cache_variables["REFLECTCPP_CBOR"] = self.options.with_cbor
+        tc.cache_variables["REFLECTCPP_CEREAL"] = self.options.with_cereal
         tc.cache_variables["REFLECTCPP_CSV"] = self.options.with_csv
         tc.cache_variables["REFLECTCPP_FLEXBUFFERS"] = self.options.with_flatbuffers
         tc.cache_variables["REFLECTCPP_MSGPACK"] = self.options.with_msgpack
