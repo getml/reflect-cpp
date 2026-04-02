@@ -3,7 +3,9 @@
 For Cereal support, you must also include the header `<rfl/cereal.hpp>` and link to the [Cereal](https://uscilab.github.io/cereal/) library.
 Furthermore, when compiling reflect-cpp, you need to pass `-DREFLECTCPP_CEREAL=ON` to cmake.
 
-Cereal is a C++ serialization library that provides multiple archive formats including binary, portable binary, JSON, and XML formats, even though we use the portable binary format by default.
+Cereal is a C++ serialization library that provides multiple archive formats including binary, portable binary, JSON, and XML formats, even though we use the portable binary format.
+
+Note that on some versions of GCC, it is necessary to compile with `-Wno-stringop-overflow`, because of false positive warnings due to a known compiler bug, see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110498.
 
 ## Reading and writing
 
