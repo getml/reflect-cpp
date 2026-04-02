@@ -8,10 +8,6 @@ add_executable(
 )
 target_precompile_headers(reflect-cpp-cereal-tests PRIVATE [["rfl.hpp"]] <iostream> <string> <functional> <gtest/gtest.h>)
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-stringop-overflow")
-endif()
-
 target_link_libraries(reflect-cpp-cereal-tests PRIVATE reflectcpp_tests_crt)
 
 add_custom_command(TARGET reflect-cpp-cereal-tests POST_BUILD

@@ -306,6 +306,7 @@ struct NamedTupleParser {
     auto set = std::array<bool, NamedTupleType::size()>();
     set.fill(false);
     std::vector<std::string> errors;
+    errors.reserve(size_);
     const auto reader = ViewReaderType(&_r, _view, &found, &set, &errors);
     if constexpr (_no_field_names) {
       const auto err = _r.read_array(reader, _obj_or_arr);
@@ -330,6 +331,7 @@ struct NamedTupleParser {
       const R& _r, const InputObjectOrArrayType& _obj_or_arr,
       NamedTupleType* _view) noexcept {
     std::vector<std::string> errors;
+    errors.reserve(size_);
     const auto reader = ViewReaderWithDefaultType(&_r, _view, &errors);
     if constexpr (_no_field_names) {
       const auto err = _r.read_array(reader, _obj_or_arr);
