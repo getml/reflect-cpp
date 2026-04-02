@@ -74,10 +74,8 @@ class ViewReader {
       auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
       if (!res) {
         constexpr auto name = FieldType::name();
-        std::stringstream stream;
-        stream << "Failed to parse field '" << name
-               << "': " << res.error().what();
-        _errors->emplace_back(stream.str());
+        _errors->emplace_back("Failed to parse field '" + std::string(name) +
+                               "': " + res.error().what());
         return;
       }
       if constexpr (std::is_pointer_v<OriginalType>) {
@@ -106,10 +104,9 @@ class ViewReader {
     }
     auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
     if (!res) {
-      std::stringstream stream;
-      stream << "Failed to parse field '" << _current_name
-             << "': " << res.error().what();
-      _errors->emplace_back(stream.str());
+      _errors->emplace_back("Failed to parse field '" +
+                             std::string(_current_name) +
+                             "': " + res.error().what());
       return;
     }
     extra_fields->emplace(std::string(_current_name), std::move(*res));
@@ -142,10 +139,19 @@ class ViewReader {
           "Passing rfl::NoExtraFields to a schemaful format does not make "
           "sense, because schemaful formats cannot have extra fields.");
       if (!already_assigned) {
-        std::stringstream stream;
-        stream << "Value named '" << _current_name_or_index << "' not used.";
-        _errors->emplace_back(stream.str());
+        _errors->emplace_back("Value named '" +
+                               to_string(_current_name_or_index) +
+                               "' not used.");
       }
+    }
+  }
+
+  template <class T>
+  static std::string to_string(const T& _v) {
+    if constexpr (std::is_integral_v<std::remove_cvref_t<T>>) {
+      return std::to_string(_v);
+    } else {
+      return std::string(_v);
     }
   }
 

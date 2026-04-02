@@ -39,10 +39,8 @@ class ViewReaderWithStrippedFieldNames {
   /// used when the field names are stripped.
   std::optional<Error> read(const InputVarType& _var) const {
     if (i_ == size_) {
-      std::stringstream stream;
-      stream << "Expected a maximum of " << std::to_string(size_)
-             << " fields, but got at least one more.";
-      return Error(stream.str());
+      return Error("Expected a maximum of " + std::to_string(size_) +
+                   " fields, but got at least one more.");
     }
     assign_to_field_i(*r_, _var, view_, errors_, found_, set_, i_,
                       std::make_integer_sequence<int, size_>());
@@ -66,13 +64,10 @@ class ViewReaderWithStrippedFieldNames {
       std::get<i>(*_found) = true;
       auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
       if (!res) {
-        std::stringstream stream;
-        stream << "Failed to parse field '" << std::string(name)
-               << "': " << res.error().what();
-        _errors->emplace_back(stream.str());
+        _errors->emplace_back("Failed to parse field '" + std::string(name) +
+                               "': " + res.error().what());
         return;
-      }
-      if constexpr (std::is_pointer_v<OriginalType>) {
+        }      if constexpr (std::is_pointer_v<OriginalType>) {
         move_to(rfl::get<i>(*_view), &(*res));
       } else {
         rfl::get<i>(*_view) = std::move(*res);

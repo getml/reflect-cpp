@@ -262,10 +262,8 @@ struct NamedTupleParser {
       if constexpr (is_required_field) {
         constexpr auto current_name =
             internal::nth_element_t<_i, FieldTypes...>::name();
-        std::stringstream stream;
-        stream << "Field named '" << std::string(current_name)
-               << "' not found.";
-        _errors->emplace_back(stream.str());
+        _errors->emplace_back("Field named '" + std::string(current_name) +
+                               "' not found.");
 
       } else if constexpr (!internal::has_default_val_v<NamedTupleType>) {
         if constexpr (!std::is_const_v<ValueType>) {
@@ -306,6 +304,7 @@ struct NamedTupleParser {
     auto set = std::array<bool, NamedTupleType::size()>();
     set.fill(false);
     std::vector<std::string> errors;
+    errors.reserve(size_);
     const auto reader = ViewReaderType(&_r, _view, &found, &set, &errors);
     if constexpr (_no_field_names) {
       const auto err = _r.read_array(reader, _obj_or_arr);
@@ -330,6 +329,7 @@ struct NamedTupleParser {
       const R& _r, const InputObjectOrArrayType& _obj_or_arr,
       NamedTupleType* _view) noexcept {
     std::vector<std::string> errors;
+    errors.reserve(size_);
     const auto reader = ViewReaderWithDefaultType(&_r, _view, &errors);
     if constexpr (_no_field_names) {
       const auto err = _r.read_array(reader, _obj_or_arr);
