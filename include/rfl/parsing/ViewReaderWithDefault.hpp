@@ -60,8 +60,10 @@ class ViewReaderWithDefault {
       *_already_assigned = true;
       auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
       if (!res) {
-        _errors->emplace_back("Failed to parse field '" + std::string(name) +
-                               "': " + res.error().what());
+        std::stringstream stream;
+        stream << "Failed to parse field '" << std::string(name)
+               << "': " << res.error().what();
+        _errors->emplace_back(stream.str());
         return;
       }
       if constexpr (std::is_pointer_v<OriginalType>) {
@@ -84,9 +86,10 @@ class ViewReaderWithDefault {
         std::remove_pointer_t<typename ExtraFieldsType::Type>>;
     auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
     if (!res) {
-      _errors->emplace_back("Failed to parse field '" +
-                             std::string(_current_name) +
-                             "': " + res.error().what());
+      std::stringstream stream;
+      stream << "Failed to parse field '" << _current_name
+             << "': " << res.error().what();
+      _errors->emplace_back(stream.str());
       return;
     }
     extra_fields->emplace(std::string(_current_name), std::move(*res));
@@ -111,10 +114,11 @@ class ViewReaderWithDefault {
       }
     } else if constexpr (ProcessorsType::no_extra_fields_) {
       if (!already_assigned) {
-        _errors->emplace_back(
-            "Value named '" + std::string(_current_name) +
-            "' not used. Remove the rfl::NoExtraFields processor or add "
-            "rfl::ExtraFields to avoid this error message.");
+        std::stringstream stream;
+        stream << "Value named '" << std::string(_current_name)
+               << "' not used. Remove the rfl::NoExtraFields processor or add "
+                  "rfl::ExtraFields to avoid this error message.";
+        _errors->emplace_back(stream.str());
       }
     }
   }
