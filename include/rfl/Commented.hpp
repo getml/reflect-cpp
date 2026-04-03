@@ -14,6 +14,7 @@ template <class T>
 struct Commented {
  public:
   using Type = std::remove_cvref_t<T>;
+  using ReflectionType = Type;
 
   Commented() : value_(Type()) {}
 
@@ -133,6 +134,9 @@ struct Commented {
     comment_ = std::move(_commented.comment_);
     return *this;
   }
+
+  /// Returns the underlying object.
+  const ReflectionType& reflection() const { return value_; }
 
   /// Assigns the underlying object.
   void set(const Type& _value) { value_ = _value; }
