@@ -179,6 +179,14 @@
         }
       ]
     },
+    "yas": {
+      "description": "Enable yas support",
+      "dependencies": [
+        {
+          "name": "yas"
+        }
+      ]
+    },
     "yaml": {
       "description": "Enable YAML support",
       "dependencies": [

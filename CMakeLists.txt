@@ -21,6 +21,7 @@ option(REFLECTCPP_XML "Enable XML support" ${REFLECTCPP_ALL_FORMATS})
 option(REFLECTCPP_TOML "Enable TOML support" ${REFLECTCPP_ALL_FORMATS})
 option(REFLECTCPP_UBJSON "Enable UBJSON support" ${REFLECTCPP_ALL_FORMATS})
 option(REFLECTCPP_YAML "Enable YAML support" ${REFLECTCPP_ALL_FORMATS})
+option(REFLECTCPP_YAS "Enable yas support" ${REFLECTCPP_ALL_FORMATS})
 option(REFLECTCPP_BOOST_SERIALIZATION "Enable Boost.Serialization support" ${REFLECTCPP_ALL_FORMATS})
 
 option(REFLECTCPP_BUILD_BENCHMARKS "Build benchmarks" OFF)
@@ -58,6 +59,7 @@ if(REFLECTCPP_BUILD_BENCHMARKS)
     set(REFLECTCPP_TOML ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_UBJSON ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_YAML ON CACHE BOOL "" FORCE)
+    set(REFLECTCPP_YAS ON CACHE BOOL "" FORCE)
     set(REFLECTCPP_BOOST_SERIALIZATION ON CACHE BOOL "" FORCE)
 endif()
 
@@ -79,7 +81,8 @@ if (
     REFLECTCPP_XML OR
     REFLECTCPP_TOML OR
     REFLECTCPP_UBJSON OR
-    REFLECTCPP_YAML
+    REFLECTCPP_YAML OR
+    REFLECTCPP_YAS
 )
     # enable vcpkg per default if features other than JSON are required
     set(REFLECTCPP_USE_VCPKG_DEFAULT ON)
@@ -164,6 +167,10 @@ if (REFLECTCPP_USE_VCPKG)
     
     if (REFLECTCPP_YAML OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "yaml")
+    endif()
+    
+    if (REFLECTCPP_YAS OR REFLECTCPP_CHECK_HEADERS)
+        list(APPEND VCPKG_MANIFEST_FEATURES "yas")
     endif()
     
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
@@ -436,6 +443,13 @@ if (REFLECTCPP_BOOST_SERIALIZATION OR REFLECTCPP_CHECK_HEADERS)
         find_package(Boost REQUIRED COMPONENTS serialization)
     endif ()
     target_link_libraries(reflectcpp PUBLIC Boost::serialization)
+endif ()
+
+if (REFLECTCPP_YAS OR REFLECTCPP_CHECK_HEADERS)
+    if (NOT TARGET yas::yas)
+        find_package(yas CONFIG REQUIRED)
+    endif ()
+    target_link_libraries(reflectcpp PUBLIC yas::yas)
 endif ()
 
 set_target_properties(reflectcpp PROPERTIES LINKER_LANGUAGE CXX)
