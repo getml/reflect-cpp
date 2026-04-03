@@ -1,6 +1,7 @@
 #include <benchmark/benchmark.h>
 
 #include <rfl/avro.hpp>
+#include <rfl/boost_serialization.hpp>
 #include <rfl/bson.hpp>
 #include <rfl/capnproto.hpp>
 #include <rfl/cbor.hpp>
@@ -68,6 +69,18 @@ static void BM_canada_write_reflect_cpp_bson(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_canada_write_reflect_cpp_bson);
+
+static void BM_canada_write_reflect_cpp_boost_serialization(
+    benchmark::State &state) {
+  const auto data = load_data();
+  for (auto _ : state) {
+    const auto output = rfl::boost_serialization::write(data);
+    if (output.size() == 0) {
+      std::cout << "No output" << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_canada_write_reflect_cpp_boost_serialization);
 
 static void BM_canada_write_reflect_cpp_capnproto(benchmark::State &state) {
   const auto schema = rfl::capnproto::to_schema<FeatureCollection>();
@@ -221,4 +234,3 @@ BENCHMARK(BM_canada_write_reflect_cpp_yaml);
 // ----------------------------------------------------------------------------
 
 }  // namespace canada_write
-

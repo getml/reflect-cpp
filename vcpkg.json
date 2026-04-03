@@ -52,6 +52,14 @@
         }
       ]
     },
+    "boost-serialization": {
+      "description": "Enable Boost.Serialization support",
+      "dependencies": [
+        {
+          "name": "boost-serialization"
+        }
+      ]
+    },
     "capnproto": {
       "description": "Enable Cap'n Proto support",
       "dependencies": [

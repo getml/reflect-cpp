@@ -2,6 +2,7 @@
 
 #include <optional>
 #include <rfl/avro.hpp>
+#include <rfl/boost_serialization.hpp>
 #include <rfl/bson.hpp>
 #include <rfl/capnproto.hpp>
 #include <rfl/cbor.hpp>
@@ -85,6 +86,18 @@ static void BM_licenses_read_reflect_cpp_bson(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_licenses_read_reflect_cpp_bson);
+
+static void BM_licenses_read_reflect_cpp_boost_serialization(
+    benchmark::State &state) {
+  const auto data = rfl::boost_serialization::write(load_data());
+  for (auto _ : state) {
+    const auto res = rfl::boost_serialization::read<Licenses>(data);
+    if (!res) {
+      std::cout << res.error().what() << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_licenses_read_reflect_cpp_boost_serialization);
 
 static void BM_licenses_read_reflect_cpp_capnproto(benchmark::State &state) {
   const auto schema = rfl::capnproto::to_schema<Licenses>();
@@ -260,4 +273,3 @@ BENCHMARK(BM_licenses_read_reflect_cpp_yaml);
 // ----------------------------------------------------------------------------
 
 }  // namespace licenses_read
-
