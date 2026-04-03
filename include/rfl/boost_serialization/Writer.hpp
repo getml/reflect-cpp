@@ -65,9 +65,10 @@ class Writer {
     return OutputArrayType{};
   }
 
-  OutputArrayType add_array_to_map(const std::string_view& /*_name*/,
+  OutputArrayType add_array_to_map(const std::string_view& _name,
                                    const size_t _size,
                                    OutputMapType* /*_parent*/) const {
+    *ar_ << std::string(_name);
     *ar_ << static_cast<std::uint64_t>(_size);
     return OutputArrayType{};
   }
@@ -92,9 +93,10 @@ class Writer {
     return OutputMapType{};
   }
 
-  OutputMapType add_map_to_map(const std::string_view& /*_name*/,
+  OutputMapType add_map_to_map(const std::string_view& _name,
                                const size_t _size,
                                OutputMapType* /*_parent*/) const {
+    *ar_ << std::string(_name);
     *ar_ << static_cast<std::uint64_t>(_size);
     return OutputMapType{};
   }
@@ -119,9 +121,10 @@ class Writer {
     return OutputObjectType{};
   }
 
-  OutputObjectType add_object_to_map(const std::string_view& /*_name*/,
+  OutputObjectType add_object_to_map(const std::string_view& _name,
                                      const size_t _size,
                                      OutputMapType* /*_parent*/) const {
+    *ar_ << std::string(_name);
     *ar_ << static_cast<std::uint64_t>(_size);
     return OutputObjectType{};
   }
@@ -144,8 +147,9 @@ class Writer {
     return OutputUnionType{};
   }
 
-  OutputUnionType add_union_to_map(const std::string_view& /*_name*/,
+  OutputUnionType add_union_to_map(const std::string_view& _name,
                                    OutputMapType* /*_parent*/) const {
+    *ar_ << std::string(_name);
     return OutputUnionType{};
   }
 
