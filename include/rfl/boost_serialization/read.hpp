@@ -5,7 +5,7 @@
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/serialization/string.hpp>
 #include <istream>
-#include <sstream>
+#include <streambuf>
 #include <string>
 
 #include "../Processors.hpp"
@@ -26,6 +26,15 @@ auto read_from_archive(IArchive& _ar) {
   return Parser<IArchive, OArchive, T, Processors<Ps...>>::read(r, var);
 }
 
+/// A read-only streambuf that wraps an existing memory buffer without copying.
+class MemBuf : public std::streambuf {
+ public:
+  MemBuf(const char* _data, size_t _size) {
+    auto* p = const_cast<char*>(_data);
+    setg(p, p, p + _size);
+  }
+};
+
 }  // namespace detail
 
 /// Reads from an existing Boost input archive.
@@ -39,8 +48,8 @@ template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(
     const concepts::ByteLike auto* _bytes, const size_t _size) {
   try {
-    std::string str(reinterpret_cast<const char*>(_bytes), _size);
-    std::istringstream stream(str);
+    detail::MemBuf buf(reinterpret_cast<const char*>(_bytes), _size);
+    std::istream stream(&buf);
     boost::archive::binary_iarchive ar(
         stream, boost::archive::no_header | boost::archive::no_tracking);
     return detail::read_from_archive<T, boost::archive::binary_iarchive,
