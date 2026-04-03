@@ -66,6 +66,7 @@ The following table lists the serialization formats currently supported by refle
 |--------------|------------------------------------------------------|--------------|------------| -----------------------------------------------------|
 | JSON         | [yyjson](https://github.com/ibireme/yyjson)          | >= 0.8.0     | MIT        | out-of-the-box support, included in this repository  |
 | Avro         | [avro-c](https://avro.apache.org/docs/1.11.1/api/c/) | >= 1.11.3    | Apache 2.0 | Schemaful binary format                              |
+| Boost.Serialization | [Boost.Serialization](https://www.boost.org/doc/libs/release/libs/serialization/) | >= 1.74.0 | BSL 1.0 | Streaming binary format with archive interop |
 | BSON         | [libbson](https://github.com/mongodb/mongo-c-driver) | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
 | Cap'n Proto  | [capnproto](https://capnproto.org)                   | >= 1.0.2     | MIT        | Schemaful binary format                              |
 | CBOR         | [jsoncons](https://github.com/danielaparker/jsoncons)| >= 0.176.0   | BSL 1.0    | JSON-like binary format                              |
