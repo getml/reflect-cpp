@@ -33,7 +33,8 @@ template <class... Ps>
 std::vector<char> write(const auto& _obj) {
   std::ostringstream stream;
   {
-    boost::archive::binary_oarchive ar(stream);
+    boost::archive::binary_oarchive ar(
+        stream, boost::archive::no_header | boost::archive::no_tracking);
     write<boost::archive::binary_iarchive, boost::archive::binary_oarchive,
           Ps...>(ar, _obj);
   }
@@ -44,7 +45,8 @@ std::vector<char> write(const auto& _obj) {
 /// Writes into an ostream using a binary archive.
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) {
-  boost::archive::binary_oarchive ar(_stream);
+  boost::archive::binary_oarchive ar(
+      _stream, boost::archive::no_header | boost::archive::no_tracking);
   write<boost::archive::binary_iarchive, boost::archive::binary_oarchive,
         Ps...>(ar, _obj);
   return _stream;

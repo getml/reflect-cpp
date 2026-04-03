@@ -41,7 +41,8 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
   try {
     std::string str(reinterpret_cast<const char*>(_bytes), _size);
     std::istringstream stream(str);
-    boost::archive::binary_iarchive ar(stream);
+    boost::archive::binary_iarchive ar(
+        stream, boost::archive::no_header | boost::archive::no_tracking);
     return detail::read_from_archive<T, boost::archive::binary_iarchive,
                                      boost::archive::binary_oarchive, Ps...>(
         ar);
@@ -60,7 +61,8 @@ auto read(const concepts::ContiguousByteContainer auto& _bytes) {
 template <class T, class... Ps>
 auto read(std::istream& _stream) {
   try {
-    boost::archive::binary_iarchive ar(_stream);
+    boost::archive::binary_iarchive ar(
+        _stream, boost::archive::no_header | boost::archive::no_tracking);
     return detail::read_from_archive<T, boost::archive::binary_iarchive,
                                      boost::archive::binary_oarchive, Ps...>(
         ar);
