@@ -1,14 +1,14 @@
 #ifndef RFL_ENUMS_HPP_
 #define RFL_ENUMS_HPP_
 
-#include <string>
 #include <sstream>
+#include <string>
 
 #include "Result.hpp"
 #include "internal/enums/get_enum_names.hpp"
 #include "internal/strings/strings.hpp"
-#include "thirdparty/enchantum/enchantum.hpp"
 #include "thirdparty/enchantum/bitflags.hpp"
+#include "thirdparty/enchantum/enchantum.hpp"
 
 namespace rfl {
 
@@ -76,6 +76,9 @@ std::string enum_to_string(const EnumType _enum) {
       }
       ++i;
       val >>= 1;
+    }
+    if (flags.empty()) {
+      return "0";
     }
     return internal::strings::join("|", flags);
   } else {
