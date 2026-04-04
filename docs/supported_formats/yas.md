@@ -5,6 +5,8 @@ Furthermore, when compiling reflect-cpp, you need to pass `-DREFLECTCPP_YAS=ON` 
 
 yas is a very fast and compact serialization library. reflect-cpp implements it as a schemaful binary format.
 
+Note that even though yas is probably the fastest format supported by reflect-cpp, that speed comes at the cost of lack of backwards compatibility. If you change the structure of your data, you will not be able to read old files anymore. If you need backwards compatibility, consider using a different format like flexbuffers or msgpack, which are also supported by reflect-cpp. Both of these are very fast and compact as well, but they are schema-less and therefore more flexible when it comes to changing the structure of your data.
+
 ## Reading and writing
 
 Suppose you have a struct like this:
