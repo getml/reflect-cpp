@@ -23,10 +23,11 @@ TEST(json, test_time_point_round_trip) {
   EXPECT_EQ(result.value().name, "deploy");
 
   // Compare at the system clock's native resolution.
-  const auto expected = std::chrono::time_point_cast<
-      std::chrono::system_clock::duration>(now);
-  const auto actual = std::chrono::time_point_cast<
-      std::chrono::system_clock::duration>(result.value().created_at);
+  const auto expected =
+      std::chrono::time_point_cast<std::chrono::system_clock::duration>(now);
+  const auto actual =
+      std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+          result.value().created_at);
   EXPECT_EQ(expected, actual);
 }
 
