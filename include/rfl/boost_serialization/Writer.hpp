@@ -30,28 +30,19 @@ class Writer {
   using OutputUnionType = BoostOutputUnion;
   using OutputVarType = BoostOutputVar;
 
-  Writer(OArchive* _ar) : ar_(_ar) {}
+  Writer(OArchive* _ar);
 
   ~Writer() = default;
 
-  OutputArrayType array_as_root(const size_t _size) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
-    return OutputArrayType{};
-  }
+  OutputArrayType array_as_root(const size_t _size) const;
 
-  OutputMapType map_as_root(const size_t _size) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
-    return OutputMapType{};
-  }
+  OutputMapType map_as_root(const size_t _size) const;
 
-  OutputObjectType object_as_root(const size_t _size) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
-    return OutputObjectType{};
-  }
+  OutputObjectType object_as_root(const size_t _size) const;
 
-  OutputVarType null_as_root() const { return OutputVarType{}; }
+  OutputVarType null_as_root() const;
 
-  OutputUnionType union_as_root() const { return OutputUnionType{}; }
+  OutputUnionType union_as_root() const;
 
   template <class T>
   OutputVarType value_as_root(const T& _var) const {
@@ -60,109 +51,57 @@ class Writer {
   }
 
   OutputArrayType add_array_to_array(const size_t _size,
-                                     OutputArrayType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
-    return OutputArrayType{};
-  }
+                                     OutputArrayType* _parent) const;
 
   OutputArrayType add_array_to_map(const std::string_view& _name,
                                    const size_t _size,
-                                   OutputMapType* /*_parent*/) const {
-    *ar_ << std::string(_name);
-    *ar_ << static_cast<std::uint64_t>(_size);
-    return OutputArrayType{};
-  }
+                                   OutputMapType* _parent) const;
 
-  OutputArrayType add_array_to_object(const std::string_view& /*_name*/,
+  OutputArrayType add_array_to_object(const std::string_view& _name,
                                       const size_t _size,
-                                      OutputObjectType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
-    return OutputArrayType{};
-  }
+                                      OutputObjectType* _parent) const;
 
   OutputArrayType add_array_to_union(const size_t _index, const size_t _size,
-                                     OutputUnionType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_index);
-    *ar_ << static_cast<std::uint64_t>(_size);
-    return OutputArrayType{};
-  }
+                                     OutputUnionType* _parent) const;
 
   OutputMapType add_map_to_array(const size_t _size,
-                                 OutputArrayType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
-    return OutputMapType{};
-  }
+                                 OutputArrayType* _parent) const;
 
   OutputMapType add_map_to_map(const std::string_view& _name,
                                const size_t _size,
-                               OutputMapType* /*_parent*/) const {
-    *ar_ << std::string(_name);
-    *ar_ << static_cast<std::uint64_t>(_size);
-    return OutputMapType{};
-  }
+                               OutputMapType* _parent) const;
 
-  OutputMapType add_map_to_object(const std::string_view& /*_name*/,
+  OutputMapType add_map_to_object(const std::string_view& _name,
                                   const size_t _size,
-                                  OutputObjectType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
-    return OutputMapType{};
-  }
+                                  OutputObjectType* _parent) const;
 
   OutputMapType add_map_to_union(const size_t _index, const size_t _size,
-                                 OutputUnionType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_index);
-    *ar_ << static_cast<std::uint64_t>(_size);
-    return OutputMapType{};
-  }
+                                 OutputUnionType* _parent) const;
 
   OutputObjectType add_object_to_array(const size_t _size,
-                                       OutputArrayType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
-    return OutputObjectType{};
-  }
+                                       OutputArrayType* _parent) const;
 
   OutputObjectType add_object_to_map(const std::string_view& _name,
                                      const size_t _size,
-                                     OutputMapType* /*_parent*/) const {
-    *ar_ << std::string(_name);
-    *ar_ << static_cast<std::uint64_t>(_size);
-    return OutputObjectType{};
-  }
+                                     OutputMapType* _parent) const;
 
-  OutputObjectType add_object_to_object(const std::string_view& /*_name*/,
+  OutputObjectType add_object_to_object(const std::string_view& _name,
                                         const size_t _size,
-                                        OutputObjectType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
-    return OutputObjectType{};
-  }
+                                        OutputObjectType* _parent) const;
 
   OutputObjectType add_object_to_union(const size_t _index, const size_t _size,
-                                       OutputUnionType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_index);
-    *ar_ << static_cast<std::uint64_t>(_size);
-    return OutputObjectType{};
-  }
+                                       OutputUnionType* _parent) const;
 
-  OutputUnionType add_union_to_array(OutputArrayType* /*_parent*/) const {
-    return OutputUnionType{};
-  }
+  OutputUnionType add_union_to_array(OutputArrayType* _parent) const;
 
   OutputUnionType add_union_to_map(const std::string_view& _name,
-                                   OutputMapType* /*_parent*/) const {
-    *ar_ << std::string(_name);
-    return OutputUnionType{};
-  }
+                                   OutputMapType* _parent) const;
 
-  OutputUnionType add_union_to_object(const std::string_view& /*_name*/,
-                                      OutputObjectType* /*_parent*/) const {
-    return OutputUnionType{};
-  }
+  OutputUnionType add_union_to_object(const std::string_view& _name,
+                                      OutputObjectType* _parent) const;
 
   OutputUnionType add_union_to_union(const size_t _index,
-                                     OutputUnionType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_index);
-    return OutputUnionType{};
-  }
+                                     OutputUnionType* _parent) const;
 
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
@@ -174,7 +113,7 @@ class Writer {
   template <class T>
   OutputVarType add_value_to_map(const std::string_view& _name, const T& _var,
                                  OutputMapType* /*_parent*/) const {
-    *ar_ << std::string(_name);
+    write_key(_name);
     new_value(_var);
     return OutputVarType{};
   }
@@ -190,39 +129,35 @@ class Writer {
   template <class T>
   OutputVarType add_value_to_union(const size_t _index, const T& _var,
                                    OutputUnionType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_index);
+    write_index(_index);
     new_value(_var);
     return OutputVarType{};
   }
 
-  OutputVarType add_null_to_array(OutputArrayType* /*_parent*/) const {
-    return OutputVarType{};
-  }
+  OutputVarType add_null_to_array(OutputArrayType* _parent) const;
 
   OutputVarType add_null_to_map(const std::string_view& _name,
-                                OutputMapType* /*_parent*/) const {
-    *ar_ << std::string(_name);
-    return OutputVarType{};
-  }
+                                OutputMapType* _parent) const;
 
-  OutputVarType add_null_to_object(const std::string_view& /*_name*/,
-                                   OutputObjectType* /*_parent*/) const {
-    return OutputVarType{};
-  }
+  OutputVarType add_null_to_object(const std::string_view& _name,
+                                   OutputObjectType* _parent) const;
 
   OutputVarType add_null_to_union(const size_t _index,
-                                  OutputUnionType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_index);
-    return OutputVarType{};
-  }
+                                  OutputUnionType* _parent) const;
 
-  void end_array(OutputArrayType* /*_arr*/) const {}
+  void end_array(OutputArrayType* _arr) const;
 
-  void end_map(OutputMapType* /*_obj*/) const {}
+  void end_map(OutputMapType* _obj) const;
 
-  void end_object(OutputObjectType* /*_obj*/) const {}
+  void end_object(OutputObjectType* _obj) const;
 
  private:
+  void write_size(const size_t _size) const;
+
+  void write_index(const size_t _index) const;
+
+  void write_key(const std::string_view& _name) const;
+
   template <class T>
   void new_value(const T& _var) const {
     using Type = std::remove_cvref_t<T>;
