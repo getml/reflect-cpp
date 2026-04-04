@@ -446,8 +446,11 @@ if (REFLECTCPP_BOOST_SERIALIZATION OR REFLECTCPP_CHECK_HEADERS)
 endif ()
 
 if (REFLECTCPP_YAS OR REFLECTCPP_CHECK_HEADERS)
-  find_path(YAS_INCLUDE_DIRS "yas/abseil_types.hpp")
-  target_include_directories(reflectcpp PRIVATE ${YAS_INCLUDE_DIRS})
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_yas.cpp
+    )
+    find_path(YAS_INCLUDE_DIRS "yas/abseil_types.hpp")
+    target_include_directories(reflectcpp PRIVATE ${YAS_INCLUDE_DIRS})
 endif ()
 
 set_target_properties(reflectcpp PROPERTIES LINKER_LANGUAGE CXX)

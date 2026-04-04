@@ -58,7 +58,7 @@ struct Writer {
     return OutputMapType{ar_};
   }
 
-  OutputObjectType object_as_root(const size_t _size) const noexcept {
+  OutputObjectType object_as_root(const size_t /*_size*/) const noexcept {
     return OutputObjectType{ar_};
   }
 
@@ -82,25 +82,17 @@ struct Writer {
 
   OutputArrayType add_array_to_map(const std::string_view& _name,
                                    const size_t _size,
-                                   OutputMapType* _parent) const noexcept {
-    (*_parent->ar) & std::string(_name);
-    (*_parent->ar) & _size;
-    return OutputArrayType{_parent->ar};
-  }
+                                   OutputMapType* _parent) const noexcept;
 
   OutputArrayType add_array_to_object(
-      const std::string_view& _name, const size_t _size,
+      const std::string_view& /*_name*/, const size_t _size,
       OutputObjectType* _parent) const noexcept {
     (*_parent->ar) & _size;
     return OutputArrayType{_parent->ar};
   }
 
   OutputArrayType add_array_to_union(const size_t _index, const size_t _size,
-                                     OutputUnionType* _parent) const noexcept {
-    (*_parent->ar) & _index;
-    (*_parent->ar) & _size;
-    return OutputArrayType{_parent->ar};
-  }
+                                     OutputUnionType* _parent) const noexcept;
 
   OutputMapType add_map_to_array(const size_t _size,
                                  OutputArrayType* _parent) const noexcept {
@@ -108,7 +100,7 @@ struct Writer {
     return OutputMapType{_parent->ar};
   }
 
-  OutputMapType add_map_to_object(const std::string_view& _name,
+  OutputMapType add_map_to_object(const std::string_view& /*_name*/,
                                   const size_t _size,
                                   OutputObjectType* _parent) const noexcept {
     (*_parent->ar) & _size;
@@ -117,64 +109,45 @@ struct Writer {
 
   OutputMapType add_map_to_map(const std::string_view& _name,
                                const size_t _size,
-                               OutputMapType* _parent) const noexcept {
-    (*_parent->ar) & std::string(_name);
-    (*_parent->ar) & _size;
-    return OutputMapType{_parent->ar};
-  }
+                               OutputMapType* _parent) const noexcept;
 
   OutputMapType add_map_to_union(const size_t _index, const size_t _size,
-                                 OutputUnionType* _parent) const noexcept {
-    (*_parent->ar) & _index;
-    (*_parent->ar) & _size;
-    return OutputMapType{_parent->ar};
-  }
+                                 OutputUnionType* _parent) const noexcept;
 
   OutputObjectType add_object_to_array(
-      const size_t _size, OutputArrayType* _parent) const noexcept {
+      const size_t /*_size*/, OutputArrayType* _parent) const noexcept {
     return OutputObjectType{_parent->ar};
   }
 
   OutputObjectType add_object_to_map(const std::string_view& _name,
                                      const size_t _size,
-                                     OutputMapType* _parent) const noexcept {
-    (*_parent->ar) & std::string(_name);
-    return OutputObjectType{_parent->ar};
-  }
+                                     OutputMapType* _parent) const noexcept;
 
   OutputObjectType add_object_to_object(
-      const std::string_view& _name, const size_t _size,
+      const std::string_view& /*_name*/, const size_t /*_size*/,
       OutputObjectType* _parent) const noexcept {
     return OutputObjectType{_parent->ar};
   }
 
   OutputObjectType add_object_to_union(
       const size_t _index, const size_t _size,
-      OutputUnionType* _parent) const noexcept {
-    (*_parent->ar) & _index;
-    return OutputObjectType{_parent->ar};
-  }
+      OutputUnionType* _parent) const noexcept;
 
   OutputUnionType add_union_to_array(OutputArrayType* _parent) const noexcept {
     return OutputUnionType{_parent->ar};
   }
 
   OutputUnionType add_union_to_map(const std::string_view& _name,
-                                   OutputMapType* _parent) const noexcept {
-    (*_parent->ar) & std::string(_name);
-    return OutputUnionType{_parent->ar};
-  }
+                                   OutputMapType* _parent) const noexcept;
 
   OutputUnionType add_union_to_object(
-      const std::string_view& _name, OutputObjectType* _parent) const noexcept {
+      const std::string_view& /*_name*/,
+      OutputObjectType* _parent) const noexcept {
     return OutputUnionType{_parent->ar};
   }
 
   OutputUnionType add_union_to_union(const size_t _index,
-                                     OutputUnionType* _parent) const noexcept {
-    (*_parent->ar) & _index;
-    return OutputUnionType{_parent->ar};
-  }
+                                     OutputUnionType* _parent) const noexcept;
 
   template <class T>
   OutputVarType add_value_to_array(const T& _var, OutputArrayType*) const {
@@ -205,31 +178,28 @@ struct Writer {
     return OutputVarType{};
   }
 
-  OutputVarType add_null_to_array(OutputArrayType* _parent) const {
+  OutputVarType add_null_to_array(OutputArrayType* /*_parent*/) const {
     return OutputVarType{};
   }
 
-  OutputVarType add_null_to_map(const std::string_view& _name,
-                                OutputMapType* _parent) const {
+  OutputVarType add_null_to_map(const std::string_view& /*_name*/,
+                                OutputMapType* /*_parent*/) const {
     return OutputVarType{};
   }
 
-  OutputVarType add_null_to_object(const std::string_view& _name,
-                                   OutputObjectType* _parent) const {
+  OutputVarType add_null_to_object(const std::string_view& /*_name*/,
+                                   OutputObjectType* /*_parent*/) const {
     return OutputVarType{};
   }
 
   OutputVarType add_null_to_union(const size_t _index,
-                                  OutputUnionType* _parent) const {
-    (*ar_) & _index;
-    return OutputVarType{};
-  }
+                                  OutputUnionType* _parent) const noexcept;
 
-  void end_array(OutputArrayType* _arr) const noexcept {}
+  void end_array(OutputArrayType* /*_arr*/) const noexcept {}
 
-  void end_map(OutputMapType* _map) const noexcept {}
+  void end_map(OutputMapType* /*_map*/) const noexcept {}
 
-  void end_object(OutputObjectType* _obj) const noexcept {}
+  void end_object(OutputObjectType* /*_obj*/) const noexcept {}
 
   void add_string_view(const std::string_view& _str) const {
     (*ar_) & std::string(_str);
