@@ -13,6 +13,7 @@
 #include <rfl/ubjson.hpp>
 #include <rfl/xml.hpp>
 #include <rfl/yaml.hpp>
+#include <rfl/yas.hpp>
 #include <vector>
 namespace person_read {
 
@@ -247,6 +248,17 @@ static void BM_person_read_reflect_cpp_yaml(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_person_read_reflect_cpp_yaml);
+
+static void BM_person_read_reflect_cpp_yas(benchmark::State &state) {
+  const auto data = rfl::yas::write(load_data());
+  for (auto _ : state) {
+    const auto res = rfl::yas::read<Person>(data);
+    if (!res) {
+      std::cout << res.error().what() << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_person_read_reflect_cpp_yas);
 
 // ----------------------------------------------------------------------------
 

@@ -12,6 +12,7 @@
 #include <rfl/toml.hpp>
 #include <rfl/ubjson.hpp>
 #include <rfl/yaml.hpp>
+#include <rfl/yas.hpp>
 #include <vector>
 
 namespace canada_write {
@@ -230,6 +231,17 @@ static void BM_canada_write_reflect_cpp_yaml(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_canada_write_reflect_cpp_yaml);
+
+static void BM_canada_write_reflect_cpp_yas(benchmark::State &state) {
+  const auto data = load_data();
+  for (auto _ : state) {
+    const auto output = rfl::yas::write(data);
+    if (output.size() == 0) {
+      std::cout << "No output" << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_canada_write_reflect_cpp_yas);
 
 // ----------------------------------------------------------------------------
 
