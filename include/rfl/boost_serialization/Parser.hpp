@@ -57,34 +57,6 @@ struct Parser<boost_serialization::Reader<IArchive>,
                          /*_all_required=*/true, ProcessorsType,
                          std::tuple<Ts...>> {};
 
-template <class IArchive, class OArchive, class ProcessorsType>
-  requires AreReaderAndWriter<boost_serialization::Reader<IArchive>,
-                              boost_serialization::Writer<OArchive>, Generic>
-struct Parser<boost_serialization::Reader<IArchive>,
-              boost_serialization::Writer<OArchive>, Generic, ProcessorsType> {
-  template <class T>
-  static Result<Generic> read(const boost_serialization::Reader<IArchive>&,
-                              const T&) noexcept {
-    static_assert(always_false_v<T>,
-                  "Generics are unsupported in Boost.Serialization.");
-    return error("Unsupported");
-  }
-
-  template <class P>
-  static void write(const boost_serialization::Writer<OArchive>&,
-                    const Generic&, const P&) noexcept {
-    static_assert(always_false_v<P>,
-                  "Generics are unsupported in Boost.Serialization.");
-  }
-
-  template <class T>
-  static schema::Type to_schema(T*) {
-    static_assert(always_false_v<T>,
-                  "Generics are unsupported in Boost.Serialization.");
-    return schema::Type{};
-  }
-};
-
 template <class IArchive, class OArchive, class T, bool _skip_serialization,
           bool _skip_deserialization, class ProcessorsType>
   requires AreReaderAndWriter<
