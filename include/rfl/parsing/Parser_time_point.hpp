@@ -131,7 +131,7 @@ struct Parser<R, W,
   static const char* parse_datetime(const char* _str, std::tm* _tm) {
 #if defined(_MSC_VER) || defined(__MINGW32__)
     std::istringstream input(_str);
-    input.imbue(std::locale(setlocale(LC_ALL, nullptr)));
+    input.imbue(std::locale::classic());
     input >> std::get_time(_tm, "%Y-%m-%dT%H:%M:%S");
     if (input.fail()) {
       return nullptr;
