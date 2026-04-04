@@ -22,11 +22,11 @@ TEST(json, test_time_point_round_trip) {
   ASSERT_TRUE(result && true) << result.error().what();
   EXPECT_EQ(result.value().name, "deploy");
 
-  // Compare with microsecond precision (our serialization format).
-  const auto expected =
-      std::chrono::time_point_cast<std::chrono::microseconds>(now);
-  const auto actual = std::chrono::time_point_cast<std::chrono::microseconds>(
-      result.value().created_at);
+  // Compare at the system clock's native resolution.
+  const auto expected = std::chrono::time_point_cast<
+      std::chrono::system_clock::duration>(now);
+  const auto actual = std::chrono::time_point_cast<
+      std::chrono::system_clock::duration>(result.value().created_at);
   EXPECT_EQ(expected, actual);
 }
 
@@ -65,7 +65,7 @@ TEST(json, test_time_point_parse_various_precisions) {
       R"({"name":"a","created_at":"2024-01-15T10:30:00.123Z"})");
   ASSERT_TRUE(r1 && true) << r1.error().what();
 
-  // Nanoseconds (truncated to microseconds).
+  // Nanoseconds.
   auto r2 = rfl::json::read<Event>(
       R"({"name":"b","created_at":"2024-01-15T10:30:00.123456789Z"})");
   ASSERT_TRUE(r2 && true) << r2.error().what();

@@ -48,11 +48,11 @@ struct Parser<R, W,
  private:
   static std::string to_string(const TimePointType& _tp) {
     const auto sys_time =
-        std::chrono::time_point_cast<std::chrono::microseconds>(_tp);
+        std::chrono::time_point_cast<std::chrono::nanoseconds>(_tp);
     const auto epoch = sys_time.time_since_epoch();
     const auto secs = std::chrono::duration_cast<std::chrono::seconds>(epoch);
-    const auto usecs =
-        std::chrono::duration_cast<std::chrono::microseconds>(epoch - secs);
+    const auto nsecs =
+        std::chrono::duration_cast<std::chrono::nanoseconds>(epoch - secs);
 
     auto t = static_cast<std::time_t>(secs.count());
     std::tm tm{};
@@ -65,12 +65,12 @@ struct Parser<R, W,
     char buf[32];
     strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%S", &tm);
 
-    const auto us = usecs.count();
-    if (us != 0) {
+    const auto ns = nsecs.count();
+    if (ns != 0) {
       char frac[16];
-      // Write microseconds, then strip trailing zeros.
-      snprintf(frac, sizeof(frac), ".%06lld",
-               static_cast<long long>(us < 0 ? -us : us));
+      // Write nanoseconds, then strip trailing zeros.
+      snprintf(frac, sizeof(frac), ".%09lld",
+               static_cast<long long>(ns < 0 ? -ns : ns));
       auto len = strlen(frac);
       while (len > 1 && frac[len - 1] == '0') {
         --len;
@@ -103,17 +103,18 @@ struct Parser<R, W,
           ++rest;
           ++digits;
         }
-        // Pad to microseconds (6 digits).
-        while (digits < 6) {
+        // Pad to nanoseconds (9 digits).
+        while (digits < 9) {
           frac *= 10;
           ++digits;
         }
-        // Truncate beyond microseconds.
-        while (digits > 6) {
+        // Truncate beyond nanoseconds.
+        while (digits > 9) {
           frac /= 10;
           --digits;
         }
-        tp += std::chrono::microseconds(frac);
+        tp += std::chrono::duration_cast<std::chrono::system_clock::duration>(
+            std::chrono::nanoseconds(frac));
       }
 
       return std::chrono::time_point_cast<Duration>(tp);
