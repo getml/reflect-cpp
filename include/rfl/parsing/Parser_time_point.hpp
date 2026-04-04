@@ -14,15 +14,19 @@
 
 namespace rfl::parsing {
 
-template <class R, class W, class Clock, class Duration, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, std::chrono::time_point<Clock, Duration>>
-struct Parser<R, W, std::chrono::time_point<Clock, Duration>, ProcessorsType> {
+template <class R, class W, class Duration, class ProcessorsType>
+  requires AreReaderAndWriter<
+      R, W, std::chrono::time_point<std::chrono::system_clock, Duration>>
+struct Parser<R, W,
+              std::chrono::time_point<std::chrono::system_clock, Duration>,
+              ProcessorsType> {
  public:
   using InputVarType = typename R::InputVarType;
 
   using ParentType = Parent<W>;
 
-  using TimePointType = std::chrono::time_point<Clock, Duration>;
+  using TimePointType =
+      std::chrono::time_point<std::chrono::system_clock, Duration>;
 
   static Result<TimePointType> read(const R& _r,
                                     const InputVarType& _var) noexcept {
