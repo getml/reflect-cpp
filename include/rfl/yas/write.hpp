@@ -37,7 +37,7 @@ std::vector<char> write(const auto& _obj) {
   return std::vector<char>(buf.data, buf.data + buf.size);
 }
 
-/// Writes Cereal binary format into an ostream.
+/// Writes yas binary format into an ostream.
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) {
   ::yas::mem_ostream os;

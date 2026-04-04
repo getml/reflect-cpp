@@ -172,7 +172,7 @@ struct Writer {
   template <class T>
   OutputVarType add_value_to_union(const size_t _index, const T& _var,
                                    OutputUnionType* _parent) const {
-    (*ar_)(_index);
+    (*ar_) & _index;
     add_value(_var);
     return OutputVarType{};
   }

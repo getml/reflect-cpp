@@ -120,7 +120,7 @@ struct Reader {
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
     try {
-      for (size_t i = 0; i < ObjectReader::size(); ++i) {
+      for (std::size_t i = 0; i < ObjectReader::size(); ++i) {
         _object_reader.read(i, InputVarType{_obj.ar});
       }
       return std::nullopt;
