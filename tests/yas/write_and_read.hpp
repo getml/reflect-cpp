@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 
 #include <rfl/json.hpp>
+#include <rfl/yas.hpp>
 
 template <class... Ps>
 void write_and_read(const auto& _struct) {

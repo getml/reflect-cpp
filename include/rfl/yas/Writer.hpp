@@ -69,11 +69,7 @@ struct Writer {
 
   template <class T>
   OutputVarType value_as_root(const T& _var) const noexcept {
-    if constexpr (internal::is_literal_v<T>) {
-      (*ar_) & _var.to_string();
-    } else {
-      (*ar_) & _var;
-    }
+    add_value(_var);
     return OutputVarType{ar_};
   }
 
@@ -142,7 +138,6 @@ struct Writer {
                                      const size_t _size,
                                      OutputMapType* _parent) const noexcept {
     (*_parent->ar) & std::string(_name);
-    (*_parent->ar) & _size;
     return OutputObjectType{_parent->ar};
   }
 
@@ -225,6 +220,7 @@ struct Writer {
 
   OutputVarType add_null_to_union(const size_t _index,
                                   OutputUnionType* _parent) const {
+    (*ar_) & _index;
     return OutputVarType{};
   }
 
@@ -241,7 +237,7 @@ struct Writer {
   template <class T>
   void add_value(const T& _var) const {
     if constexpr (internal::is_literal_v<T>) {
-      (*ar_) & _var.to_string();
+      (*ar_) & _var.str();
     } else {
       (*ar_) & _var;
     }

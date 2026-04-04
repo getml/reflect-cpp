@@ -37,6 +37,17 @@ std::vector<char> write(const auto& _obj) {
   return std::vector<char>(buf.data, buf.data + buf.size);
 }
 
+/// Writes Cereal binary format into an ostream.
+template <class... Ps>
+std::ostream& write(const auto& _obj, std::ostream& _stream) {
+  ::yas::mem_ostream os;
+  ::yas::binary_oarchive<::yas::mem_ostream> ar(os);
+  write_to_archive<Ps...>(ar, _obj);
+  auto buf = os.get_intrusive_buffer();
+  _stream.write(buf.data, buf.size);
+  return _stream;
+}
+
 }  // namespace rfl::yas
 
 #endif
