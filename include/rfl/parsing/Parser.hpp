@@ -34,6 +34,7 @@
 #include "Parser_span.hpp"
 #include "Parser_string_view.hpp"
 #include "Parser_tagged_union.hpp"
+#include "Parser_time_point.hpp"
 #include "Parser_tuple.hpp"
 #include "Parser_unique_ptr.hpp"
 #include "Parser_variant.hpp"
