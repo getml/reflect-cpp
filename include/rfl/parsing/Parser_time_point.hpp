@@ -2,6 +2,7 @@
 #define RFL_PARSING_PARSER_TIME_POINT_HPP_
 
 #include <chrono>
+#include <cstring>
 #include <ctime>
 #include <map>
 #include <sstream>
@@ -136,7 +137,12 @@ struct Parser<R, W,
     if (input.fail()) {
       return nullptr;
     }
-    return _str + static_cast<std::ptrdiff_t>(input.tellg());
+    const auto pos = input.tellg();
+    if (pos == std::streampos(-1)) {
+      // Stream reached EOF after parsing — all input was consumed.
+      return _str + std::strlen(_str);
+    }
+    return _str + static_cast<std::ptrdiff_t>(pos);
 #else
     return strptime(_str, "%Y-%m-%dT%H:%M:%S", _tm);
 #endif
