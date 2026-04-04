@@ -12,63 +12,47 @@
 namespace rfl {
 namespace parsing {
 
-template <class IArchive, class OArchive, class ProcessorsType,
-          class... FieldTypes>
-  requires AreReaderAndWriter<yas::Reader<IArchive>, yas::Writer<OArchive>,
+/// Yas requires us to explicitly set the number of fields in advance.
+/// Because of that, we require all of the fields and then set them to nullptr,
+/// if necessary.
+template <class ProcessorsType, class... FieldTypes>
+  requires AreReaderAndWriter<yas::Reader, yas::Writer,
                               NamedTuple<FieldTypes...>>
-struct Parser<yas::Reader<IArchive>, yas::Writer<OArchive>,
-              NamedTuple<FieldTypes...>, ProcessorsType>
-    : public NamedTupleParser<yas::Reader<IArchive>, yas::Writer<OArchive>,
-                              /*_ignore_empty_containers=*/false,
-                              /*_all_required=*/true,
-                              /*_no_field_names=*/true, ProcessorsType,
-                              FieldTypes...> {};
-
-template <class IArchive, class OArchive, class ProcessorsType, class... Ts>
-  requires AreReaderAndWriter<yas::Reader<IArchive>, yas::Writer<OArchive>,
-                              rfl::Tuple<Ts...>>
-struct Parser<yas::Reader<IArchive>, yas::Writer<OArchive>, rfl::Tuple<Ts...>,
+struct Parser<yas::Reader, yas::Writer, NamedTuple<FieldTypes...>,
               ProcessorsType>
-    : public TupleParser<yas::Reader<IArchive>, yas::Writer<OArchive>,
+    : public NamedTupleParser<
+          yas::Reader, yas::Writer,
+          /*_ignore_empty_containers=*/false,
+          /*_all_required=*/true,
+          /*_no_field_names=*/ProcessorsType::no_field_names_, ProcessorsType,
+          FieldTypes...> {};
+
+template <class ProcessorsType, class... Ts>
+  requires AreReaderAndWriter<yas::Reader, yas::Writer, rfl::Tuple<Ts...>>
+struct Parser<yas::Reader, yas::Writer, rfl::Tuple<Ts...>, ProcessorsType>
+    : public TupleParser<yas::Reader, yas::Writer,
                          /*_ignore_empty_containers=*/false,
                          /*_all_required=*/true, ProcessorsType,
                          rfl::Tuple<Ts...>> {};
 
-template <class IArchive, class OArchive, class ProcessorsType, class... Ts>
-  requires AreReaderAndWriter<yas::Reader<IArchive>, yas::Writer<OArchive>,
-                              std::tuple<Ts...>>
-struct Parser<yas::Reader<IArchive>, yas::Writer<OArchive>, std::tuple<Ts...>,
-              ProcessorsType>
-    : public TupleParser<yas::Reader<IArchive>, yas::Writer<OArchive>,
+template <class ProcessorsType, class... Ts>
+  requires AreReaderAndWriter<yas::Reader, yas::Writer, std::tuple<Ts...>>
+struct Parser<yas::Reader, yas::Writer, std::tuple<Ts...>, ProcessorsType>
+    : public TupleParser<yas::Reader, yas::Writer,
                          /*_ignore_empty_containers=*/false,
                          /*_all_required=*/true, ProcessorsType,
                          std::tuple<Ts...>> {};
 
-template <class IArchive, class OArchive, class ProcessorsType>
-  requires AreReaderAndWriter<yas::Reader<IArchive>, yas::Writer<OArchive>,
-                              Generic>
-struct Parser<yas::Reader<IArchive>, yas::Writer<OArchive>, Generic,
-              ProcessorsType> {
-  template <class T>
-  static Result<Generic> read(const yas::Reader<IArchive>&, const T&) noexcept {
-    static_assert(always_false_v<T>, "Generics are unsupported in yas.");
-    return error("Unsupported");
-  }
-
-  template <class P>
-  static void write(const yas::Writer<OArchive>&, const Generic&,
-                    const P&) noexcept {
-    static_assert(always_false_v<P>, "Generics are unsupported in yas.");
-  }
-
-  template <class T>
-  static schema::Type to_schema(T*) {
-    static_assert(always_false_v<T>, "Generics are unsupported in yas.");
-    return schema::Type{};
-  }
-};
-
 }  // namespace parsing
+}  // namespace rfl
+
+namespace rfl {
+namespace yas {
+
+template <class T, class ProcessorsType>
+using Parser = parsing::Parser<Reader, Writer, T, ProcessorsType>;
+
+}
 }  // namespace rfl
 
 #endif

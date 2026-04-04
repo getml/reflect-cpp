@@ -3,7 +3,7 @@
 
 #include <gtest/gtest.h>
 
-#include <rfl/yas.hpp>
+#include <rfl/json.hpp>
 
 template <class... Ps>
 void write_and_read(const auto& _struct) {

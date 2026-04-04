@@ -6,6 +6,8 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <yas/binary_iarchive.hpp>
+#include <yas/mem_streams.hpp>
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
@@ -14,8 +16,9 @@
 
 namespace rfl::yas {
 
-template <class IArchive>
 struct Reader {
+  using IArchive = ::yas::binary_iarchive<::yas::mem_istream>;
+
   struct InputVarType {
     IArchive* ar;
   };
@@ -142,6 +145,8 @@ struct Reader {
     return rfl::error("Custom constructors are not supported.");
   }
 };
+
+static_assert(parsing::schemaful::IsSchemafulReader<Reader>);
 
 }  // namespace rfl::yas
 

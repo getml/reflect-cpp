@@ -16,23 +16,14 @@
 
 namespace rfl::yas {
 
-namespace detail {
-
-template <class T, class IArchive, class OArchive, class... Ps>
-auto read_from_archive(IArchive& _ar) {
-  using R = Reader<IArchive>;
-  auto r = R();
-  auto var = typename R::InputVarType{&_ar};
-  return Parser<yas::Reader<IArchive>, yas::Writer<OArchive>, T,
-                Processors<Ps...>>::read(r, var);
-}
-
-}  // namespace detail
+using IArchive = Reader::IArchive;
 
 /// Reads from an existing yas input archive.
-template <class T, class IArchive, class OArchive = yas::binary_oarchive<yas::mem_ostream>, class... Ps>
+template <class T, class... Ps>
 auto read_from_archive(IArchive& _ar) {
-  return detail::read_from_archive<T, IArchive, OArchive, Ps...>(_ar);
+  auto r = Reader();
+  auto var = Reader::InputVarType{&_ar};
+  return Parser<T, Processors<Ps...>>::read(r, var);
 }
 
 /// Parses an object from bytes using a binary archive.
@@ -40,11 +31,9 @@ template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(
     const concepts::ByteLike auto* _bytes, const size_t _size) {
   try {
-    yas::mem_istream is(_bytes, _size);
-    yas::binary_iarchive<yas::mem_istream> ar(is);
-    return detail::read_from_archive<T, yas::binary_iarchive<yas::mem_istream>,
-                                     yas::binary_oarchive<yas::mem_ostream>,
-                                     Ps...>(ar);
+    ::yas::mem_istream is(_bytes, _size);
+    ::yas::binary_iarchive<::yas::mem_istream> ar(is);
+    return read_from_archive<T, Ps...>(ar);
   } catch (std::exception& e) {
     return error(std::string("yas read error: ") + e.what());
   }

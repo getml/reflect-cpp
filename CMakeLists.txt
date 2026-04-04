@@ -446,10 +446,8 @@ if (REFLECTCPP_BOOST_SERIALIZATION OR REFLECTCPP_CHECK_HEADERS)
 endif ()
 
 if (REFLECTCPP_YAS OR REFLECTCPP_CHECK_HEADERS)
-    if (NOT TARGET yas::yas)
-        find_package(yas CONFIG REQUIRED)
-    endif ()
-    target_link_libraries(reflectcpp PUBLIC yas::yas)
+  find_path(YAS_INCLUDE_DIRS "yas/abseil_types.hpp")
+  target_include_directories(reflectcpp PRIVATE ${YAS_INCLUDE_DIRS})
 endif ()
 
 set_target_properties(reflectcpp PROPERTIES LINKER_LANGUAGE CXX)
