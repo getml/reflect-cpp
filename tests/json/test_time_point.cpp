@@ -76,4 +76,21 @@ TEST(json, test_time_point_parse_various_precisions) {
   ASSERT_TRUE(r3 && true) << r3.error().what();
 }
 
+TEST(json, test_time_point_reject_invalid_suffix) {
+  // Trailing garbage should fail.
+  auto r1 = rfl::json::read<Event>(
+      R"({"name":"a","created_at":"2024-01-15T10:30:00Invalid"})");
+  EXPECT_FALSE(r1 && true);
+
+  // No fractional part, no Z, but trailing text should fail.
+  auto r2 = rfl::json::read<Event>(
+      R"({"name":"b","created_at":"2024-01-15T10:30:00+01:00"})");
+  EXPECT_FALSE(r2 && true);
+
+  // No Z is accepted (end of string).
+  auto r3 = rfl::json::read<Event>(
+      R"({"name":"c","created_at":"2024-01-15T10:30:00"})");
+  EXPECT_TRUE(r3 && true) << r3.error().what();
+}
+
 }  // namespace test_time_point

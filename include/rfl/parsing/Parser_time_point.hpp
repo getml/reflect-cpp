@@ -117,6 +117,11 @@ struct Parser<R, W,
             std::chrono::nanoseconds(frac));
       }
 
+      if (*rest != 'Z' && *rest != '\0') {
+        return error("Could not parse time point from '" + _str +
+                     "': expected 'Z' or end of string.");
+      }
+
       return std::chrono::time_point_cast<Duration>(tp);
     } catch (std::exception& e) {
       return error(e.what());
