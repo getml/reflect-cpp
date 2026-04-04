@@ -129,9 +129,8 @@ struct Writer {
     return OutputObjectType{_parent->ar};
   }
 
-  OutputObjectType add_object_to_union(
-      const size_t _index, const size_t _size,
-      OutputUnionType* _parent) const noexcept;
+  OutputObjectType add_object_to_union(const size_t _index, const size_t _size,
+                                       OutputUnionType* _parent) const noexcept;
 
   OutputUnionType add_union_to_array(OutputArrayType* _parent) const noexcept {
     return OutputUnionType{_parent->ar};
@@ -202,7 +201,8 @@ struct Writer {
   void end_object(OutputObjectType* /*_obj*/) const noexcept {}
 
   void add_string_view(const std::string_view& _str) const {
-    (*ar_) & std::string(_str);
+    ar_->write_seq_size(_str.length());
+    ar_->write(_str.data(), _str.length());
   }
 
   template <class T>

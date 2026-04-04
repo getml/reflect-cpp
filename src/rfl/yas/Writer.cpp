@@ -28,59 +28,55 @@ SOFTWARE.
 
 namespace rfl::yas {
 
-Writer::OutputArrayType Writer::add_array_to_map(const std::string_view& _name,
-                                                 const size_t _size,
-                                                 OutputMapType* _parent) const
-    noexcept {
-  (*_parent->ar) & std::string(_name);
+Writer::OutputArrayType Writer::add_array_to_map(
+    const std::string_view& _name, const size_t _size,
+    OutputMapType* _parent) const noexcept {
+  add_string_view(_name);
   (*_parent->ar) & _size;
   return OutputArrayType{_parent->ar};
 }
 
 Writer::OutputArrayType Writer::add_array_to_union(
-    const size_t _index, const size_t _size, OutputUnionType* _parent) const
-    noexcept {
+    const size_t _index, const size_t _size,
+    OutputUnionType* _parent) const noexcept {
   (*_parent->ar) & _index;
   (*_parent->ar) & _size;
   return OutputArrayType{_parent->ar};
 }
 
-Writer::OutputMapType Writer::add_map_to_map(const std::string_view& _name,
-                                             const size_t _size,
-                                             OutputMapType* _parent) const
-    noexcept {
-  (*_parent->ar) & std::string(_name);
+Writer::OutputMapType Writer::add_map_to_map(
+    const std::string_view& _name, const size_t _size,
+    OutputMapType* _parent) const noexcept {
+  add_string_view(_name);
   (*_parent->ar) & _size;
   return OutputMapType{_parent->ar};
 }
 
-Writer::OutputMapType Writer::add_map_to_union(const size_t _index,
-                                               const size_t _size,
-                                               OutputUnionType* _parent) const
-    noexcept {
+Writer::OutputMapType Writer::add_map_to_union(
+    const size_t _index, const size_t _size,
+    OutputUnionType* _parent) const noexcept {
   (*_parent->ar) & _index;
   (*_parent->ar) & _size;
   return OutputMapType{_parent->ar};
 }
 
 Writer::OutputObjectType Writer::add_object_to_map(
-    const std::string_view& _name, const size_t, OutputMapType* _parent) const
-    noexcept {
-  (*_parent->ar) & std::string(_name);
+    const std::string_view& _name, const size_t,
+    OutputMapType* _parent) const noexcept {
+  add_string_view(_name);
   return OutputObjectType{_parent->ar};
 }
 
 Writer::OutputObjectType Writer::add_object_to_union(
-    const size_t _index, const size_t, OutputUnionType* _parent) const
-    noexcept {
+    const size_t _index, const size_t,
+    OutputUnionType* _parent) const noexcept {
   (*_parent->ar) & _index;
   return OutputObjectType{_parent->ar};
 }
 
-Writer::OutputUnionType Writer::add_union_to_map(const std::string_view& _name,
-                                                 OutputMapType* _parent) const
-    noexcept {
-  (*_parent->ar) & std::string(_name);
+Writer::OutputUnionType Writer::add_union_to_map(
+    const std::string_view& _name, OutputMapType* _parent) const noexcept {
+  add_string_view(_name);
   return OutputUnionType{_parent->ar};
 }
 
@@ -90,9 +86,8 @@ Writer::OutputUnionType Writer::add_union_to_union(
   return OutputUnionType{_parent->ar};
 }
 
-Writer::OutputVarType Writer::add_null_to_union(const size_t _index,
-                                                OutputUnionType* _parent) const
-    noexcept {
+Writer::OutputVarType Writer::add_null_to_union(
+    const size_t _index, OutputUnionType* _parent) const noexcept {
   (*_parent->ar) & _index;
   return OutputVarType{};
 }
