@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <yas/binary_iarchive.hpp>
 #include <yas/mem_streams.hpp>
+#include <yas/std_types.hpp>
 
 #include "../Result.hpp"
 #include "../always_false.hpp"

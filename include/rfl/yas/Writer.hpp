@@ -9,6 +9,7 @@
 #include <vector>
 #include <yas/binary_oarchive.hpp>
 #include <yas/mem_streams.hpp>
+#include <yas/std_types.hpp>
 
 #include "../Bytestring.hpp"
 #include "../Result.hpp"
