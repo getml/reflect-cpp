@@ -1,4 +1,4 @@
-# `rfl::Timestamp` and `std::chrono::duration`
+# `rfl::Timestamp`, `std::chrono::system_clock::time_point`, and `std::chrono::duration`
 
 ## `rfl::Timestamp`
 
@@ -44,6 +44,41 @@ return an `rfl::Result<Timestamp<...>>` or `rfl::Error`.
 const rfl::Result<rfl::Timestamp<"%Y-%m-%d">> result = rfl::Timestamp<"%Y-%m-%d">::from_string("1970-01-01");
 const rfl::Result<rfl::Timestamp<"%Y-%m-%d">> error = rfl::Timestamp<"%Y-%m-%d">::from_string("not a proper time format");
 ```
+
+## `std::chrono::system_clock::time_point`
+
+`std::chrono::system_clock::time_point` is natively supported. It serializes as an ISO 8601 string with nanosecond precision:
+
+```cpp
+struct Event {
+  std::string name;
+  std::chrono::system_clock::time_point created_at;
+};
+
+rfl::json::write(Event{.name = "deploy", .created_at = std::chrono::system_clock::now()});
+```
+
+This produces:
+
+```json
+{"name":"deploy","created_at":"2024-01-15T12:00:00.123456789Z"}
+```
+
+Trailing fractional zeros are stripped, so microsecond values appear as `.123456Z` and whole seconds appear without a decimal point.
+
+On read, the following formats are accepted:
+
+- `"2024-01-15T12:00:00Z"` — UTC, no fractional seconds
+- `"2024-01-15T12:00:00.123Z"` — milliseconds
+- `"2024-01-15T12:00:00.123456Z"` — microseconds
+- `"2024-01-15T12:00:00.123456789Z"` — nanoseconds
+- `"2024-01-15T12:00:00"` — no timezone suffix (assumed UTC)
+- `"2024-01-15T10:30:00+05:30"` — timezone offset (converted to UTC)
+- `"2024-01-15T02:00:00-08:00"` — negative offset
+
+Timezone offsets are converted to UTC on read. The write path always outputs UTC with the `Z` suffix.
+
+Only `std::chrono::system_clock::time_point` is supported — other clocks like `steady_clock` do not represent calendar time and cannot be serialized as ISO 8601.
 
 ## `std::chrono::duration`
 
