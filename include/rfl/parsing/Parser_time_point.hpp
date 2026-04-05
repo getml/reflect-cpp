@@ -5,6 +5,7 @@
 #include <cstring>
 #include <ctime>
 #include <map>
+#include <optional>
 #include <sstream>
 #include <string>
 
@@ -118,15 +119,52 @@ struct Parser<R, W,
             std::chrono::nanoseconds(frac));
       }
 
-      if (*rest != 'Z' && *rest != '\0') {
+      // Parse timezone: 'Z', '+HH:MM', '-HH:MM', or end of string.
+      if (*rest == '+' || *rest == '-') {
+        const auto offset = parse_tz_offset(rest);
+        if (!offset) {
+          return error("Could not parse timezone offset from '" + _str + "'.");
+        }
+        tp -= *offset;
+      } else if (*rest != 'Z' && *rest != '\0') {
         return error("Could not parse time point from '" + _str +
-                     "': expected 'Z' or end of string.");
+                     "': expected 'Z', timezone offset, or end of string.");
       }
 
       return std::chrono::time_point_cast<Duration>(tp);
     } catch (std::exception& e) {
       return error(e.what());
     }
+  }
+
+  static bool is_digit(char c) { return c >= '0' && c <= '9'; }
+
+  static int two_digits(const char* s) {
+    return (s[0] - '0') * 10 + (s[1] - '0');
+  }
+
+  /// Parses a timezone offset like "+05:30" or "-08:00".
+  /// Returns the offset as a chrono duration, or std::nullopt on failure.
+  static std::optional<std::chrono::minutes> parse_tz_offset(const char* _str) {
+    if (*_str != '+' && *_str != '-') {
+      return std::nullopt;
+    }
+    const int sign = (*_str == '+') ? 1 : -1;
+    ++_str;
+    // Expect HH:MM or HHMM.
+    if (!is_digit(_str[0]) || !is_digit(_str[1])) {
+      return std::nullopt;
+    }
+    const int hours = two_digits(_str);
+    _str += 2;
+    if (*_str == ':') {
+      ++_str;
+    }
+    if (!is_digit(_str[0]) || !is_digit(_str[1])) {
+      return std::nullopt;
+    }
+    const int minutes = two_digits(_str);
+    return std::chrono::minutes(sign * (hours * 60 + minutes));
   }
 
   static const char* parse_datetime(const char* _str, std::tm* _tm) {

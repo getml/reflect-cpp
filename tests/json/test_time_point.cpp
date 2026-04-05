@@ -83,15 +83,45 @@ TEST(json, test_time_point_reject_invalid_suffix) {
       R"({"name":"a","created_at":"2024-01-15T10:30:00Invalid"})");
   EXPECT_FALSE(r1 && true);
 
-  // No fractional part, no Z, but trailing text should fail.
-  auto r2 = rfl::json::read<Event>(
-      R"({"name":"b","created_at":"2024-01-15T10:30:00+01:00"})");
-  EXPECT_FALSE(r2 && true);
-
   // No Z is accepted (end of string).
+  auto r2 = rfl::json::read<Event>(
+      R"({"name":"b","created_at":"2024-01-15T10:30:00"})");
+  EXPECT_TRUE(r2 && true) << r2.error().what();
+}
+
+TEST(json, test_time_point_timezone_offset) {
+  // +05:30 means 5h30m ahead of UTC, so 10:30+05:30 = 05:00Z.
+  auto r1 = rfl::json::read<Event>(
+      R"({"name":"a","created_at":"2024-01-15T10:30:00+05:30"})");
+  ASSERT_TRUE(r1 && true) << r1.error().what();
+
+  auto r_utc = rfl::json::read<Event>(
+      R"({"name":"a","created_at":"2024-01-15T05:00:00Z"})");
+  ASSERT_TRUE(r_utc && true) << r_utc.error().what();
+
+  EXPECT_EQ(
+      std::chrono::time_point_cast<std::chrono::seconds>(r1.value().created_at),
+      std::chrono::time_point_cast<std::chrono::seconds>(
+          r_utc.value().created_at));
+
+  // Negative offset: -08:00 means 8h behind UTC, so 02:00-08:00 = 10:00Z.
+  auto r2 = rfl::json::read<Event>(
+      R"({"name":"b","created_at":"2024-01-15T02:00:00-08:00"})");
+  ASSERT_TRUE(r2 && true) << r2.error().what();
+
+  auto r_utc2 = rfl::json::read<Event>(
+      R"({"name":"b","created_at":"2024-01-15T10:00:00Z"})");
+  ASSERT_TRUE(r_utc2 && true) << r_utc2.error().what();
+
+  EXPECT_EQ(
+      std::chrono::time_point_cast<std::chrono::seconds>(r2.value().created_at),
+      std::chrono::time_point_cast<std::chrono::seconds>(
+          r_utc2.value().created_at));
+
+  // Offset with fractional seconds.
   auto r3 = rfl::json::read<Event>(
-      R"({"name":"c","created_at":"2024-01-15T10:30:00"})");
-  EXPECT_TRUE(r3 && true) << r3.error().what();
+      R"({"name":"c","created_at":"2024-01-15T10:30:00.5+05:30"})");
+  ASSERT_TRUE(r3 && true) << r3.error().what();
 }
 
 }  // namespace test_time_point
