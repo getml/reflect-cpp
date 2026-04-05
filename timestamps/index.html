@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#rfltimestamp-and-stdchronoduration" class="md-skip">
+        <a href="#rfltimestamp-stdchronosystem_clocktime_point-and-stdchronoduration" class="md-skip">
           Skip to content
         </a>
       
@@ -1381,6 +1381,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#stdchronosystem_clocktime_point" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        std::chrono::system_clock::time_point
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stdchronoduration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2490,6 +2501,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#stdchronosystem_clocktime_point" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        std::chrono::system_clock::time_point
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#stdchronoduration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2583,7 +2605,7 @@
   
 
 
-<h1 id="rfltimestamp-and-stdchronoduration"><code>rfl::Timestamp</code> and <code>std::chrono::duration</code><a class="headerlink" href="#rfltimestamp-and-stdchronoduration" title="Permanent link">&para;</a></h1>
+<h1 id="rfltimestamp-stdchronosystem_clocktime_point-and-stdchronoduration"><code>rfl::Timestamp</code>, <code>std::chrono::system_clock::time_point</code>, and <code>std::chrono::duration</code><a class="headerlink" href="#rfltimestamp-stdchronosystem_clocktime_point-and-stdchronoduration" title="Permanent link">&para;</a></h1>
 <h2 id="rfltimestamp"><code>rfl::Timestamp</code><a class="headerlink" href="#rfltimestamp" title="Permanent link">&para;</a></h2>
 <p><code>rfl::Timestamp</code> is a simple wrapper around <code>std::tm</code> (https://en.cppreference.com/w/cpp/chrono/c/tm).</p>
 <p>As its template parameter it includes the time stamp format for serialization and deserialization.</p>
@@ -2610,6 +2632,31 @@ return an <code>rfl::Result&lt;Timestamp&lt;...&gt;&gt;</code> or <code>rfl::Err
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">Timestamp</span><span class="o">&lt;</span><span class="s">&quot;%Y-%m-%d&quot;</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Timestamp</span><span class="o">&lt;</span><span class="s">&quot;%Y-%m-%d&quot;</span><span class="o">&gt;::</span><span class="n">from_string</span><span class="p">(</span><span class="s">&quot;1970-01-01&quot;</span><span class="p">);</span>
 <span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">Timestamp</span><span class="o">&lt;</span><span class="s">&quot;%Y-%m-%d&quot;</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Timestamp</span><span class="o">&lt;</span><span class="s">&quot;%Y-%m-%d&quot;</span><span class="o">&gt;::</span><span class="n">from_string</span><span class="p">(</span><span class="s">&quot;not a proper time format&quot;</span><span class="p">);</span>
 </code></pre></div>
+<h2 id="stdchronosystem_clocktime_point"><code>std::chrono::system_clock::time_point</code><a class="headerlink" href="#stdchronosystem_clocktime_point" title="Permanent link">&para;</a></h2>
+<p><code>std::chrono::system_clock::time_point</code> is natively supported. It serializes as an ISO 8601 string with nanosecond precision:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Event</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">time_point</span><span class="w"> </span><span class="n">created_at</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">Event</span><span class="p">{.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;deploy&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">created_at</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">system_clock</span><span class="o">::</span><span class="n">now</span><span class="p">()});</span>
+</code></pre></div>
+<p>This produces:</p>
+<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;deploy&quot;</span><span class="p">,</span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="s2">&quot;2024-01-15T12:00:00.123456789Z&quot;</span><span class="p">}</span>
+</code></pre></div>
+<p>Trailing fractional zeros are stripped, so microsecond values appear as <code>.123456Z</code> and whole seconds appear without a decimal point.</p>
+<p>On read, the following formats are accepted:</p>
+<ul>
+<li><code>"2024-01-15T12:00:00Z"</code> — UTC, no fractional seconds</li>
+<li><code>"2024-01-15T12:00:00.123Z"</code> — milliseconds</li>
+<li><code>"2024-01-15T12:00:00.123456Z"</code> — microseconds</li>
+<li><code>"2024-01-15T12:00:00.123456789Z"</code> — nanoseconds</li>
+<li><code>"2024-01-15T12:00:00"</code> — no timezone suffix (assumed UTC)</li>
+<li><code>"2024-01-15T10:30:00+05:30"</code> — timezone offset (converted to UTC)</li>
+<li><code>"2024-01-15T02:00:00-08:00"</code> — negative offset</li>
+</ul>
+<p>Timezone offsets are converted to UTC on read. The write path always outputs UTC with the <code>Z</code> suffix.</p>
+<p>Only <code>std::chrono::system_clock::time_point</code> is supported — other clocks like <code>steady_clock</code> do not represent calendar time and cannot be serialized as ISO 8601.</p>
 <h2 id="stdchronoduration"><code>std::chrono::duration</code><a class="headerlink" href="#stdchronoduration" title="Permanent link">&para;</a></h2>
 <p><code>std::chrono::duration</code> types are serialized as an object with the count and unit as fields:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">MyStruct</span><span class="w"> </span><span class="p">{</span>
