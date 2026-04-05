@@ -6,7 +6,7 @@ site_url: https://rfl.getml.com/
 site_author: Code17 GmbH
 site_description: >-
   A C++20 library for fast serialization, deserialization and validation using reflection. 
-  Supports JSON, AVRO, BSON, Cap'n Proto, CBOR, Cereal, CSV, flexbuffers, msgpack, parquet, TOML, UBJSON, XML, YAML 
+  Supports JSON, AVRO, BSON, Boost Serialization, Cap'n Proto, CBOR, Cereal, CSV, flexbuffers, msgpack, parquet, TOML, UBJSON, XML, YAML 
 
 theme:
   name: "material"
@@ -93,6 +93,7 @@ nav:
   #    # - Errors handling: concepts/errors.md
   - Supported Formats:
       - Avro: supported_formats/avro.md
+      - Boost Serialization: supported_formats/boost_serialization.md
       - BSON: supported_formats/bson.md
       - Cap'n Proto: supported_formats/capnproto.md
       - CBOR: supported_formats/cbor.md
