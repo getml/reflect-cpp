@@ -439,6 +439,9 @@ if (REFLECTCPP_YAML OR REFLECTCPP_CHECK_HEADERS)
 endif ()
 
 if (REFLECTCPP_BOOST_SERIALIZATION OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_SOURCES
+        src/reflectcpp_boost_serialization.cpp
+    )
     if (NOT TARGET Boost::serialization)
         find_package(Boost REQUIRED COMPONENTS serialization)
     endif ()

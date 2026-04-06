@@ -35,17 +35,17 @@ class Writer {
   ~Writer() = default;
 
   OutputArrayType array_as_root(const size_t _size) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
+    write_size(_size);
     return OutputArrayType{};
   }
 
   OutputMapType map_as_root(const size_t _size) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
+    write_size(_size);
     return OutputMapType{};
   }
 
   OutputObjectType object_as_root(const size_t _size) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
+    write_size(_size);
     return OutputObjectType{};
   }
 
@@ -61,85 +61,85 @@ class Writer {
 
   OutputArrayType add_array_to_array(const size_t _size,
                                      OutputArrayType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
+    write_size(_size);
     return OutputArrayType{};
   }
 
   OutputArrayType add_array_to_map(const std::string_view& _name,
                                    const size_t _size,
                                    OutputMapType* /*_parent*/) const {
-    *ar_ << std::string(_name);
-    *ar_ << static_cast<std::uint64_t>(_size);
+    write_key(_name);
+    write_size(_size);
     return OutputArrayType{};
   }
 
   OutputArrayType add_array_to_object(const std::string_view& /*_name*/,
                                       const size_t _size,
                                       OutputObjectType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
+    write_size(_size);
     return OutputArrayType{};
   }
 
   OutputArrayType add_array_to_union(const size_t _index, const size_t _size,
                                      OutputUnionType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_index);
-    *ar_ << static_cast<std::uint64_t>(_size);
+    write_index(_index);
+    write_size(_size);
     return OutputArrayType{};
   }
 
   OutputMapType add_map_to_array(const size_t _size,
                                  OutputArrayType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
+    write_size(_size);
     return OutputMapType{};
   }
 
   OutputMapType add_map_to_map(const std::string_view& _name,
                                const size_t _size,
                                OutputMapType* /*_parent*/) const {
-    *ar_ << std::string(_name);
-    *ar_ << static_cast<std::uint64_t>(_size);
+    write_key(_name);
+    write_size(_size);
     return OutputMapType{};
   }
 
   OutputMapType add_map_to_object(const std::string_view& /*_name*/,
                                   const size_t _size,
                                   OutputObjectType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
+    write_size(_size);
     return OutputMapType{};
   }
 
   OutputMapType add_map_to_union(const size_t _index, const size_t _size,
                                  OutputUnionType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_index);
-    *ar_ << static_cast<std::uint64_t>(_size);
+    write_index(_index);
+    write_size(_size);
     return OutputMapType{};
   }
 
   OutputObjectType add_object_to_array(const size_t _size,
                                        OutputArrayType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
+    write_size(_size);
     return OutputObjectType{};
   }
 
   OutputObjectType add_object_to_map(const std::string_view& _name,
                                      const size_t _size,
                                      OutputMapType* /*_parent*/) const {
-    *ar_ << std::string(_name);
-    *ar_ << static_cast<std::uint64_t>(_size);
+    write_key(_name);
+    write_size(_size);
     return OutputObjectType{};
   }
 
   OutputObjectType add_object_to_object(const std::string_view& /*_name*/,
                                         const size_t _size,
                                         OutputObjectType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_size);
+    write_size(_size);
     return OutputObjectType{};
   }
 
   OutputObjectType add_object_to_union(const size_t _index, const size_t _size,
                                        OutputUnionType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_index);
-    *ar_ << static_cast<std::uint64_t>(_size);
+    write_index(_index);
+    write_size(_size);
     return OutputObjectType{};
   }
 
@@ -149,7 +149,7 @@ class Writer {
 
   OutputUnionType add_union_to_map(const std::string_view& _name,
                                    OutputMapType* /*_parent*/) const {
-    *ar_ << std::string(_name);
+    write_key(_name);
     return OutputUnionType{};
   }
 
@@ -160,7 +160,7 @@ class Writer {
 
   OutputUnionType add_union_to_union(const size_t _index,
                                      OutputUnionType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_index);
+    write_index(_index);
     return OutputUnionType{};
   }
 
@@ -174,7 +174,7 @@ class Writer {
   template <class T>
   OutputVarType add_value_to_map(const std::string_view& _name, const T& _var,
                                  OutputMapType* /*_parent*/) const {
-    *ar_ << std::string(_name);
+    write_key(_name);
     new_value(_var);
     return OutputVarType{};
   }
@@ -190,7 +190,7 @@ class Writer {
   template <class T>
   OutputVarType add_value_to_union(const size_t _index, const T& _var,
                                    OutputUnionType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_index);
+    write_index(_index);
     new_value(_var);
     return OutputVarType{};
   }
@@ -201,7 +201,7 @@ class Writer {
 
   OutputVarType add_null_to_map(const std::string_view& _name,
                                 OutputMapType* /*_parent*/) const {
-    *ar_ << std::string(_name);
+    write_key(_name);
     return OutputVarType{};
   }
 
@@ -212,7 +212,7 @@ class Writer {
 
   OutputVarType add_null_to_union(const size_t _index,
                                   OutputUnionType* /*_parent*/) const {
-    *ar_ << static_cast<std::uint64_t>(_index);
+    write_index(_index);
     return OutputVarType{};
   }
 
@@ -223,6 +223,18 @@ class Writer {
   void end_object(OutputObjectType* /*_obj*/) const {}
 
  private:
+  void write_size(const size_t _size) const {
+    *ar_ << static_cast<std::uint64_t>(_size);
+  }
+
+  void write_index(const size_t _index) const {
+    *ar_ << static_cast<std::uint64_t>(_index);
+  }
+
+  void write_key(const std::string_view& _name) const {
+    *ar_ << std::string(_name);
+  }
+
   template <class T>
   void new_value(const T& _var) const {
     using Type = std::remove_cvref_t<T>;
