@@ -58,6 +58,7 @@
 !package.xml
 *.yml
 *.yaml
+*.yas
 
 !vcpkg.json
 !.github/**/*.yml

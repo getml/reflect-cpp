@@ -79,6 +79,7 @@ The following table lists the serialization formats currently supported by refle
 | UBJSON       | [jsoncons](https://github.com/danielaparker/jsoncons)| >= 0.176.0   | BSL 1.0    | JSON-like binary format                              |
 | XML          | [pugixml](https://github.com/zeux/pugixml)           | >= 1.14      | MIT        | Textual format used in many legacy projects          |
 | YAML         | [yaml-cpp](https://github.com/jbeder/yaml-cpp)       | >= 0.8.0     | MIT        | Textual format with an emphasis on readability       |
+| yas          | [yas](https://github.com/niXman/yas)                 | >= 7.1.0     | BSL 1.0    | Very fast and compact serialization library          |
 
 Support for more serialization formats is in development. Refer to the [issues](https://github.com/getml/reflect-cpp/issues) for details.
 
@@ -163,6 +164,7 @@ rfl::msgpack::write(homer);
 rfl::toml::write(homer);
 rfl::ubjson::write(homer);
 rfl::xml::write(homer);
+rfl::yas::write(homer);
 
 rfl::avro::read<Person>(avro_bytes);
 rfl::bson::read<Person>(bson_bytes);
@@ -174,6 +176,7 @@ rfl::msgpack::read<Person>(msgpack_bytes);
 rfl::toml::read<Person>(toml_string);
 rfl::ubjson::read<Person>(ubjson_bytes);
 rfl::xml::read<Person>(xml_string);
+rfl::yas::read<Person>(yas_bytes);
 ```
 
 ### More Comprehensive Example
