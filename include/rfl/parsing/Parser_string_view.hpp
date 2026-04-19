@@ -8,6 +8,7 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/allow_raw_ptrs_v.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
@@ -21,7 +22,7 @@ struct Parser<R, W, std::string_view, ProcessorsType> {
 
   static Result<std::string_view> read(const R& _r,
                                        const InputVarType& _var) noexcept {
-    if constexpr (!ProcessorsType::allow_raw_ptrs_) {
+    if constexpr (!internal::allow_raw_ptrs_v<ProcessorsType>) {
       static_assert(
           always_false_v<R>,
           "Reading into std::string_view is dangerous and "

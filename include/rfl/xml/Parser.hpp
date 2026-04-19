@@ -6,6 +6,7 @@
 #include "../Generic.hpp"
 #include "../always_false.hpp"
 #include "../internal/is_attribute.hpp"
+#include "../internal/no_optionals_v.hpp"
 #include "../parsing/NamedTupleParser.hpp"
 #include "../parsing/Parser.hpp"
 #include "Reader.hpp"
@@ -21,11 +22,11 @@ template <class ProcessorsType, class... FieldTypes>
                               NamedTuple<FieldTypes...>>
 struct Parser<xml::Reader, xml::Writer, NamedTuple<FieldTypes...>,
               ProcessorsType>
-    : public NamedTupleParser<xml::Reader, xml::Writer,
-                              /*_ignore_empty_containers=*/true,
-                              /*_all_required=*/ProcessorsType::all_required_,
-                              /*_no_field_names_=*/false, ProcessorsType,
-                              FieldTypes...> {};
+    : public NamedTupleParser<
+          xml::Reader, xml::Writer,
+          /*_ignore_empty_containers=*/true,
+          /*_all_required=*/internal::no_optionals_v<ProcessorsType>,
+          /*_no_field_names_=*/false, ProcessorsType, FieldTypes...> {};
 
 /// The generic parser is also special, because we need to ignore empty
 /// containers, which means that we need to try to read the value as an array or

@@ -4,13 +4,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "internal/is_add_tags_to_variants_v.hpp"
-#include "internal/is_allow_raw_ptrs_v.hpp"
-#include "internal/is_default_if_missing_v.hpp"
-#include "internal/is_no_extra_fields_v.hpp"
-#include "internal/is_no_field_names_v.hpp"
-#include "internal/is_no_optionals_v.hpp"
-#include "internal/is_underlying_enums_v.hpp"
+#include "Tuple.hpp"
 
 namespace rfl {
 
@@ -19,24 +13,15 @@ struct Processors;
 
 template <>
 struct Processors<> {
-  static constexpr bool add_tags_to_variants_ = false;
-  static constexpr bool add_namespaced_tags_to_variants_ = false;
-  static constexpr bool allow_raw_ptrs_ = false;
-  static constexpr bool all_required_ = false;
-  static constexpr bool default_if_missing_ = false;
-  static constexpr bool no_extra_fields_ = false;
-  static constexpr bool no_field_names_ = false;
-  static constexpr bool underlying_enums_ = false;
-
   template <class T, class NamedTupleType>
   static auto process(NamedTupleType&& _named_tuple) {
-    return _named_tuple;
+    return std::forward<NamedTupleType>(_named_tuple);
   }
 };
 
 template <class Head, class... Tail>
 struct Processors<Head, Tail...> {
-  static constexpr bool add_tags_to_variants_ =
+  /*static constexpr bool add_tags_to_variants_ =
       std::disjunction_v<internal::is_add_tags_to_variants<Head>,
                          internal::is_add_tags_to_variants<Tail>...>;
 
@@ -66,13 +51,10 @@ struct Processors<Head, Tail...> {
 
   static constexpr bool underlying_enums_ =
       std::disjunction_v<internal::is_underlying_enums<Head>,
-                         internal::is_underlying_enums<Tail>...>;
+                         internal::is_underlying_enums<Tail>...>;*/
 
   template <class T, class NamedTupleType>
   static auto process(NamedTupleType&& _named_tuple) {
-    static_assert(!add_tags_to_variants_ || !add_namespaced_tags_to_variants_,
-                  "You cannot add both rfl::AddTagsToVariants and "
-                  "rfl::AddNamespacedTagsToVariants.");
     return Processors<Tail...>::template process<T>(
         Head::template process<T>(std::move(_named_tuple)));
   }
