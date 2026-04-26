@@ -12,6 +12,7 @@
 #include "../Result.hpp"
 #include "../Tuple.hpp"
 #include "../internal/is_array.hpp"
+#include "../internal/no_extra_fields_v.hpp"
 #include "Parser_base.hpp"
 
 namespace rfl::parsing {
