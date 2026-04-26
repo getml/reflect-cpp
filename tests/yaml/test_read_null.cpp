@@ -22,8 +22,8 @@ TEST(yaml, test_read_null) {
       "last_name: null\n"
       "age: ~\n"
       "city: null\n"
-      "weight: null\n"
-      "height: null\n";
+      "weight: .nan\n"
+      "height: .nan\n";
 
   const auto res = rfl::yaml::read<Person>(yaml_str);
 
@@ -32,8 +32,8 @@ TEST(yaml, test_read_null) {
   EXPECT_EQ(res.value().first_name, "Homer");
   EXPECT_FALSE(res.value().last_name.has_value());
   EXPECT_FALSE(res.value().age.has_value());
-  EXPECT_EQ(std::numeric_limits<float>::quiet_NaN(), res.value().weight);
-  EXPECT_EQ(std::numeric_limits<double>::quiet_NaN(), res.value().height);
+  EXPECT_TRUE(std::isnan(res.value().weight));
+  EXPECT_TRUE(std::isnan(res.value().height));
 }
 
 }  // namespace test_read_null
