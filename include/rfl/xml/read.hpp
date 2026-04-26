@@ -8,6 +8,7 @@
 
 #include "../Processors.hpp"
 #include "../internal/get_type_name.hpp"
+#include "../internal/no_field_names_v.hpp"
 #include "../internal/remove_namespaces.hpp"
 #include "Parser.hpp"
 #include "Reader.hpp"
@@ -21,7 +22,7 @@ template <class T, class... Ps>
 auto read(const InputVarType& _var) {
   const auto r = Reader();
   using ProcessorsType = Processors<Ps...>;
-  static_assert(!ProcessorsType::no_field_names_,
+  static_assert(!internal::no_field_names_v<ProcessorsType>,
                 "The NoFieldNames processor is not supported for BSON, XML, "
                 "TOML, or YAML.");
   return Parser<T, ProcessorsType>::read(r, _var);

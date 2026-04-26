@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "../Processors.hpp"
+#include "../internal/no_field_names_v.hpp"
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
 
@@ -21,7 +22,7 @@ std::ostream& write(const auto& _obj, std::ostream& _stream) {
   ::toml::table root;
   auto w = Writer(&root);
   using ProcessorsType = Processors<Ps...>;
-  static_assert(!ProcessorsType::no_field_names_,
+  static_assert(!internal::no_field_names_v<ProcessorsType>,
                 "The NoFieldNames processor is not supported for BSON, XML, "
                 "TOML, or YAML.");
   Parser<T, ProcessorsType>::write(w, _obj, typename ParentType::Root{});
@@ -38,7 +39,7 @@ std::string write(const auto& _obj) {
   ::toml::table root;
   auto w = Writer(&root);
   using ProcessorsType = Processors<Ps...>;
-  static_assert(!ProcessorsType::no_field_names_,
+  static_assert(!internal::no_field_names_v<ProcessorsType>,
                 "The NoFieldNames processor is not supported for BSON, XML, "
                 "TOML, or YAML.");
   Parser<T, ProcessorsType>::write(w, _obj, typename ParentType::Root{});
