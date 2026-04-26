@@ -1,12 +1,12 @@
-#ifndef RFL_INTERNAL_ISNOEXTRAFIELDS_HPP_
-#define RFL_INTERNAL_ISNOEXTRAFIELDS_HPP_
+#ifndef RFL_INTERNAL_NOEXTRAFIELDS_HPP_
+#define RFL_INTERNAL_NOEXTRAFIELDS_HPP_
 
 #include <type_traits>
 
 #include "../NoExtraFields.hpp"
+#include "../Processors.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class T>
 class no_extra_fields;
@@ -27,7 +27,6 @@ template <class T>
 constexpr bool no_extra_fields_v =
     no_extra_fields<std::remove_cvref_t<std::remove_pointer_t<T>>>::value;
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

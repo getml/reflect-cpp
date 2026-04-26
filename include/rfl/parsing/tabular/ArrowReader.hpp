@@ -29,19 +29,19 @@ namespace rfl::parsing::tabular {
 
 template <class VecType, SerializationType _s, class... Ps>
 class ArrowReader {
-  static_assert(!add_tags_to_variants_v<Processors<Ps...>>,
+  static_assert(!internal::add_tags_to_variants_v<Processors<Ps...>>,
                 "rfl::AddTagsToVariants cannot be used for tabular data.");
   static_assert(
-      !add_namespaced_tags_to_variants_v<Processors<Ps...>>,
+      !internal::add_namespaced_tags_to_variants_v<Processors<Ps...>>,
       "rfl::AddNamespacedTagsToVariants cannot be used for tabular data.");
-  static_assert(!no_optionals_v<Processors<Ps...>>,
+  static_assert(!internal::no_optionals_v<Processors<Ps...>>,
                 "rfl::NoOptionals cannot be used for tabular data.");
-  static_assert(!default_if_missing_v<Processors<Ps...>>,
+  static_assert(!internal::default_if_missing_v<Processors<Ps...>>,
                 "rfl::DefaultIfMissing cannot be used for tabular data.");
-  static_assert(!no_extra_fields_v<Processors<Ps...>>,
+  static_assert(!internal::no_extra_fields_v<Processors<Ps...>>,
                 "rfl::NoExtraFields cannot be used for tabular data (neither "
                 "can rfl::ExtraFields).");
-  static_assert(!no_field_names_v<Processors<Ps...>>,
+  static_assert(!internal::no_field_names_v<Processors<Ps...>>,
                 "rfl::NoFieldNames cannot be used for tabular data.");
 
  public:

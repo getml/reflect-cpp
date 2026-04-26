@@ -4,8 +4,9 @@
 #include <type_traits>
 
 #include "../NoOptionals.hpp"
+#include "../Processors.hpp"
 
-namespace rfl ::internal {
+namespace rfl::internal {
 
 template <class T>
 class no_optionals;
