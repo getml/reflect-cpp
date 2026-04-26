@@ -5,6 +5,7 @@
 #include "../NamedTuple.hpp"
 #include "../Tuple.hpp"
 #include "../always_false.hpp"
+#include "../internal/no_field_names_v.hpp"
 #include "../parsing/AreReaderAndWriter.hpp"
 #include "../parsing/Parser.hpp"
 #include "Reader.hpp"
@@ -25,8 +26,8 @@ struct Parser<avro::Reader, avro::Writer, NamedTuple<FieldTypes...>,
           avro::Reader, avro::Writer,
           /*_ignore_empty_containers=*/false,
           /*_all_required=*/true,
-          /*_no_field_names=*/ProcessorsType::no_field_names_, ProcessorsType,
-          FieldTypes...> {};
+          /*_no_field_names=*/internal::no_field_names_v<ProcessorsType>,
+          ProcessorsType, FieldTypes...> {};
 
 template <class ProcessorsType, class... Ts>
   requires AreReaderAndWriter<avro::Reader, avro::Writer, rfl::Tuple<Ts...>>

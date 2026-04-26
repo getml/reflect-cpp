@@ -9,17 +9,23 @@ namespace rfl {
 namespace internal {
 
 template <class T>
-class is_no_extra_fields;
+class no_extra_fields;
 
 template <class T>
-class is_no_extra_fields : public std::false_type {};
+class no_extra_fields : public std::false_type {};
 
 template <>
-class is_no_extra_fields<NoExtraFields> : public std::true_type {};
+class no_extra_fields<NoExtraFields> : public std::true_type {};
+
+template <class Head, class... Tail>
+struct no_extra_fields<Processors<Head, Tail...>> {
+  static constexpr bool value =
+      (no_extra_fields<Head>::value || ... || no_extra_fields<Tail>::value);
+};
 
 template <class T>
-constexpr bool is_no_extra_fields_v =
-    is_no_extra_fields<std::remove_cvref_t<std::remove_pointer_t<T>>>::value;
+constexpr bool no_extra_fields_v =
+    no_extra_fields<std::remove_cvref_t<std::remove_pointer_t<T>>>::value;
 
 }  // namespace internal
 }  // namespace rfl

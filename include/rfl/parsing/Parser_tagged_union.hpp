@@ -8,6 +8,7 @@
 #include "../Result.hpp"
 #include "../TaggedUnion.hpp"
 #include "../always_false.hpp"
+#include "../internal/no_field_names_v.hpp"
 #include "../internal/strings/strings.hpp"
 #include "../named_tuple_t.hpp"
 #include "../visit.hpp"
@@ -33,7 +34,8 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
   using InputObjectType = typename R::InputObjectType;
   using InputVarType = typename R::InputVarType;
 
-  constexpr static bool no_field_names_ = ProcessorsType::no_field_names_;
+  constexpr static bool no_field_names_ =
+      internal::no_field_names_v<ProcessorsType>;
 
   using InputObjectOrArrayType =
       std::conditional_t<no_field_names_, typename R::InputArrayType,

@@ -44,8 +44,8 @@ struct add_namespaced_tags_to_variants<Processors<Head, Tail...>> {
        add_namespaced_tags_to_variants<Tail>::value);
 
   static_assert(
-      !add_tags_to_variants_v<Processors<Head, Tail...>> ||
-          !add_namespaced_tags_to_variants_v<Processors<Head, Tail...>>,
+      !add_tags_to_variants<Processors<Head, Tail...>>::value ||
+          !add_namespaced_tags_to_variants<Processors<Head, Tail...>>::value,
       "Cannot use both AddTagsToVariants and AddNamespacedTagsToVariants in "
       "the same Processors list.");
 };

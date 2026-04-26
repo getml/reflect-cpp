@@ -8,6 +8,7 @@
 #include "../always_false.hpp"
 #include "../enums.hpp"
 #include "../from_named_tuple.hpp"
+#include "../internal/default_if_missing_v.hpp"
 #include "../internal/has_default_val_v.hpp"
 #include "../internal/has_reflection_method_v.hpp"
 #include "../internal/has_reflection_type_v.hpp"
@@ -16,7 +17,6 @@
 #include "../internal/is_deprecated.hpp"
 #include "../internal/is_description.hpp"
 #include "../internal/is_literal.hpp"
-#include "../internal/is_underlying_enums_v.hpp"
 #include "../internal/is_validator.hpp"
 #include "../internal/processed_t.hpp"
 #include "../internal/ptr_cast.hpp"
@@ -80,7 +80,7 @@ struct Parser {
         return Parser<R, W, ReflectionType, ProcessorsType>::read(_r, _var)
             .and_then(wrap_in_t);
 
-      } else if constexpr (ProcessorsType::default_if_missing_ ||
+      } else if constexpr (internal::default_if_missing_v<ProcessorsType> ||
                            internal::has_default_val_v<T>) {
         return read_struct_with_default(_r, _var);
 
