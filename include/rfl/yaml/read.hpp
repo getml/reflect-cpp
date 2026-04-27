@@ -18,8 +18,8 @@ using InputVarType = typename Reader::InputVarType;
 
 /// Parses an object from a YAML var.
 template <class T, class... Ps>
-auto read(const InputVarType& _var) {
-  const auto r = Reader();
+auto read(const InputVarType& _var, const std::string& _yaml_str) {
+  const auto r = Reader(_yaml_str);
   using ProcessorsType = Processors<Ps...>;
   static_assert(!ProcessorsType::no_field_names_,
                 "The NoFieldNames processor is not supported for BSON, XML, "
@@ -32,7 +32,7 @@ template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(const std::string& _yaml_str) {
   try {
     const auto var = InputVarType(YAML::Load(_yaml_str));
-    return read<T, Ps...>(var);
+    return read<T, Ps...>(var, _yaml_str);
   } catch (std::exception& e) {
     return error(e.what());
   }

@@ -11,7 +11,7 @@ struct MultilineTestStruct {
 namespace test_multiline {
 TEST(yaml, test_multiline) {
   const auto test = MultilineTestStruct{.normal_string = "The normal string",
-                               .multiline_string =
+                                        .multiline_string =
 R"(Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
 tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
 quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
@@ -26,9 +26,7 @@ sunt in culpa qui officia deserunt mollit anim id est laborum.)"
 
 TEST(yaml, test_multiline_read) {
   const auto test = MultilineTestStruct{.normal_string = "The normal string",
-                               .multiline_string =
-R"(Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, etc...)"
+                                        .multiline_string = "Foobar\n\n"
   };
 
   const std::string random_yaml(
@@ -37,9 +35,7 @@ normal_string: |
   The normal string
 
 
-multiline_string: |
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, etc...
+multiline_string: "Foobar\n\n"
 
 )"
   );
