@@ -67,7 +67,7 @@ struct Reader {
   }
 
   bool is_empty(const InputVarType& _var) const noexcept {
-    return !_var.node_ && true;
+    return !_var.node_ || _var.node_.IsNull();
   }
 
   template <class T>
