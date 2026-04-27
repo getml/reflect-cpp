@@ -10,6 +10,7 @@
 
 #include "../Processors.hpp"
 #include "../Result.hpp"
+#include "../internal/no_field_names_v.hpp"
 #include "../internal/ptr_cast.hpp"
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
@@ -32,7 +33,7 @@ Result<std::pair<uint8_t*, size_t>> to_buffer(const auto& _obj) noexcept {
   bson_writer_begin(bson_writer.get(), &doc);
   const auto rfl_writer = Writer(doc);
   using ProcessorsType = Processors<Ps...>;
-  static_assert(!ProcessorsType::no_field_names_,
+  static_assert(!internal::no_field_names_v<ProcessorsType>,
                 "The NoFieldNames processor is not supported for BSON, XML, "
                 "TOML, or YAML.");
   const auto nothing = [&]() -> Result<Nothing> {

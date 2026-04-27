@@ -15,7 +15,6 @@
 #include "../internal/is_basic_type.hpp"
 #include "../internal/is_description.hpp"
 #include "../internal/is_literal.hpp"
-#include "../internal/is_underlying_enums_v.hpp"
 #include "../internal/is_validator.hpp"
 #include "../internal/processed_t.hpp"
 #include "../internal/ptr_cast.hpp"

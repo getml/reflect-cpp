@@ -1,6 +1,7 @@
 #ifndef RFL_CEREAL_PARSER_HPP_
 #define RFL_CEREAL_PARSER_HPP_
 
+#include "../internal/no_field_names_v.hpp"
 #include "../parsing/Parser.hpp"
 #include "Reader.hpp"
 #include "Writer.hpp"
@@ -20,8 +21,8 @@ struct Parser<cereal::Reader, cereal::Writer, NamedTuple<FieldTypes...>,
           cereal::Reader, cereal::Writer,
           /*_ignore_empty_containers=*/false,
           /*_all_required=*/true,
-          /*_no_field_names=*/ProcessorsType::no_field_names_, ProcessorsType,
-          FieldTypes...> {};
+          /*_no_field_names=*/internal::no_field_names_v<ProcessorsType>,
+          ProcessorsType, FieldTypes...> {};
 
 template <class ProcessorsType, class... Ts>
   requires AreReaderAndWriter<cereal::Reader, cereal::Writer, rfl::Tuple<Ts...>>

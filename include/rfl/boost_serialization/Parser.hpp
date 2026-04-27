@@ -5,6 +5,7 @@
 #include "../NamedTuple.hpp"
 #include "../Tuple.hpp"
 #include "../always_false.hpp"
+#include "../internal/no_field_names_v.hpp"
 #include "../parsing/Parser.hpp"
 #include "Reader.hpp"
 #include "Writer.hpp"
@@ -28,8 +29,8 @@ struct Parser<boost_serialization::Reader<IArchive>,
           boost_serialization::Writer<OArchive>,
           /*_ignore_empty_containers=*/false,
           /*_all_required=*/true,
-          /*_no_field_names=*/ProcessorsType::no_field_names_, ProcessorsType,
-          FieldTypes...> {};
+          /*_no_field_names=*/internal::no_field_names_v<ProcessorsType>,
+          ProcessorsType, FieldTypes...> {};
 
 template <class IArchive, class OArchive, class ProcessorsType, class... Ts>
   requires AreReaderAndWriter<boost_serialization::Reader<IArchive>,

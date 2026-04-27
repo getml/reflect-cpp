@@ -7,6 +7,7 @@
 
 #include "../Processors.hpp"
 #include "../concepts.hpp"
+#include "../internal/no_field_names_v.hpp"
 #include "../internal/ptr_cast.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
 #include "Parser.hpp"
@@ -23,7 +24,7 @@ template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(const InputVarType& _obj) {
   const auto r = Reader();
   using ProcessorsType = Processors<Ps...>;
-  static_assert(!ProcessorsType::no_field_names_,
+  static_assert(!internal::no_field_names_v<ProcessorsType>,
                 "The NoFieldNames processor is not supported for BSON, XML, "
                 "TOML, or YAML.");
   return Parser<T, ProcessorsType>::read(r, _obj);

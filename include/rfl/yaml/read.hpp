@@ -8,9 +8,11 @@
 #include <string_view>
 
 #include "../Processors.hpp"
+#include "../internal/no_field_names_v.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
 #include "Parser.hpp"
 #include "Reader.hpp"
+
 namespace rfl {
 namespace yaml {
 
@@ -21,7 +23,7 @@ template <class T, class... Ps>
 auto read(const InputVarType& _var) {
   const auto r = Reader();
   using ProcessorsType = Processors<Ps...>;
-  static_assert(!ProcessorsType::no_field_names_,
+  static_assert(!internal::no_field_names_v<ProcessorsType>,
                 "The NoFieldNames processor is not supported for BSON, XML, "
                 "TOML, or YAML.");
   return Parser<T, ProcessorsType>::read(r, _var);

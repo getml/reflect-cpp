@@ -9,18 +9,14 @@
 
 #include <string>
 
-// #include "../Literal.hpp"
 #include "../Processors.hpp"
 #include "../Variant.hpp"
-// #include "../parsing/schema/Type.hpp"
-// #include "../parsing/schema/ValidationType.hpp"
+#include "../common.hpp"
+#include "../internal/default_if_missing_v.hpp"
 #include "../parsing/schema/make.hpp"
 #include "Reader.hpp"
 #include "Writer.hpp"
 #include "schema/JSONSchema.hpp"
-// #include "schema/Type.hpp"
-// #include "write.hpp"
-#include "../common.hpp"
 
 namespace rfl::json {
 
@@ -43,7 +39,7 @@ std::string to_schema(const yyjson_write_flag _flag = 0,
   using P = Processors<Ps...>;
   const auto internal_schema = parsing::schema::make<Reader, Writer, T, P>();
   return to_schema_internal_schema(internal_schema, _flag,
-                                   P::default_if_missing_, comment);
+                                   internal::default_if_missing_v<P>, comment);
 }
 }  // namespace rfl::json
 

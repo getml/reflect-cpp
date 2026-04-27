@@ -14,6 +14,11 @@
 #include "../../Tuple.hpp"
 #include "../../apply.hpp"
 #include "../../get.hpp"
+#include "../../internal/add_tags_to_variants_v.hpp"
+#include "../../internal/default_if_missing_v.hpp"
+#include "../../internal/no_extra_fields_v.hpp"
+#include "../../internal/no_field_names_v.hpp"
+#include "../../internal/no_optionals_v.hpp"
 #include "../../named_tuple_t.hpp"
 #include "../../to_view.hpp"
 #include "../../view_t.hpp"
@@ -24,18 +29,19 @@ namespace rfl::parsing::tabular {
 
 template <class VecType, SerializationType _s, class... Ps>
 class ArrowReader {
-  static_assert(!Processors<Ps...>::add_tags_to_variants_,
+  static_assert(!internal::add_tags_to_variants_v<Processors<Ps...>>,
                 "rfl::AddTagsToVariants cannot be used for tabular data.");
-  static_assert(!Processors<Ps...>::add_namespaced_tags_to_variants_,
-                "rfl::AddNamespacedTagsToVariants cannot be used for tabular data.");
-  static_assert(!Processors<Ps...>::all_required_,
+  static_assert(
+      !internal::add_namespaced_tags_to_variants_v<Processors<Ps...>>,
+      "rfl::AddNamespacedTagsToVariants cannot be used for tabular data.");
+  static_assert(!internal::no_optionals_v<Processors<Ps...>>,
                 "rfl::NoOptionals cannot be used for tabular data.");
-  static_assert(!Processors<Ps...>::default_if_missing_,
+  static_assert(!internal::default_if_missing_v<Processors<Ps...>>,
                 "rfl::DefaultIfMissing cannot be used for tabular data.");
-  static_assert(!Processors<Ps...>::no_extra_fields_,
+  static_assert(!internal::no_extra_fields_v<Processors<Ps...>>,
                 "rfl::NoExtraFields cannot be used for tabular data (neither "
                 "can rfl::ExtraFields).");
-  static_assert(!Processors<Ps...>::no_field_names_,
+  static_assert(!internal::no_field_names_v<Processors<Ps...>>,
                 "rfl::NoFieldNames cannot be used for tabular data.");
 
  public:

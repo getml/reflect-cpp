@@ -10,6 +10,7 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/allow_raw_ptrs_v.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
@@ -24,7 +25,7 @@ struct Parser<R, W, std::span<T>, ProcessorsType> {
 
   static Result<std::span<T>> read(const R& _r,
                                    const InputVarType& _var) noexcept {
-    if constexpr (!ProcessorsType::allow_raw_ptrs_) {
+    if constexpr (!internal::allow_raw_ptrs_v<ProcessorsType>) {
       static_assert(
           always_false_v<R>,
           "Reading into std::span is dangerous and "

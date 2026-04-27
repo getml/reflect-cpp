@@ -2,6 +2,7 @@
 #define RFL_UBJSON_PARSER_HPP_
 
 #include "../Tuple.hpp"
+#include "../internal/no_field_names_v.hpp"
 #include "../parsing/Parser.hpp"
 #include "Reader.hpp"
 #include "Writer.hpp"
@@ -20,8 +21,8 @@ struct Parser<ubjson::Reader, ubjson::Writer, NamedTuple<FieldTypes...>,
           ubjson::Reader, ubjson::Writer,
           /*_ignore_empty_containers=*/false,
           /*_all_required=*/true,
-          /*_no_field_names=*/ProcessorsType::no_field_names_, ProcessorsType,
-          FieldTypes...> {};
+          /*_no_field_names=*/internal::no_field_names_v<ProcessorsType>,
+          ProcessorsType, FieldTypes...> {};
 
 template <class ProcessorsType, class... Ts>
   requires AreReaderAndWriter<ubjson::Reader, ubjson::Writer, rfl::Tuple<Ts...>>

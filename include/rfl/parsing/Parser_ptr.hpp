@@ -7,12 +7,12 @@
 #include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/allow_raw_ptrs_v.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
 template <class R, class W, class T, class ProcessorsType>
   requires AreReaderAndWriter<R, W, T*>
@@ -23,7 +23,7 @@ struct Parser<R, W, T*, ProcessorsType> {
 
   /// Expresses the variables as type T.
   static Result<T*> read(const R& _r, const InputVarType& _var) noexcept {
-    if constexpr (!ProcessorsType::allow_raw_ptrs_) {
+    if constexpr (!internal::allow_raw_ptrs_v<ProcessorsType>) {
       static_assert(
           always_false_v<T>,
           "Reading into raw pointers is dangerous and "
@@ -63,7 +63,6 @@ struct Parser<R, W, T*, ProcessorsType> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif

@@ -10,6 +10,7 @@
 #include "../NamedTuple.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/default_if_missing_v.hpp"
 #include "../internal/has_default_val_v.hpp"
 #include "../internal/is_array.hpp"
 #include "../internal/is_attribute.hpp"
@@ -345,7 +346,7 @@ struct NamedTupleParser {
       }
     }
     if constexpr (internal::has_default_val_v<NamedTupleType> &&
-                  !ProcessorsType::default_if_missing_) {
+                  !internal::default_if_missing_v<ProcessorsType>) {
       handle_missing_fields(reader.found(), *_view, nullptr, &errors,
                             std::make_integer_sequence<int, size_>());
     }

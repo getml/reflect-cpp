@@ -11,6 +11,7 @@
 #include "../Result.hpp"
 #include "../Tuple.hpp"
 #include "../internal/is_array.hpp"
+#include "../internal/no_extra_fields_v.hpp"
 #include "Parser_base.hpp"
 #include "schemaful/IsSchemafulReader.hpp"
 
@@ -136,7 +137,7 @@ class ViewReader {
         assign_to_extra_fields<pos>(_r, _current_name_or_index, _var, _view,
                                     _errors, _found, _set);
       }
-    } else if constexpr (ProcessorsType::no_extra_fields_) {
+    } else if constexpr (internal::no_extra_fields_v<ProcessorsType>) {
       static_assert(
           !schemaful::IsSchemafulReader<R>,
           "Passing rfl::NoExtraFields to a schemaful format does not make "

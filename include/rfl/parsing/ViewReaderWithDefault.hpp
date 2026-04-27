@@ -12,6 +12,7 @@
 #include "../Result.hpp"
 #include "../Tuple.hpp"
 #include "../internal/is_array.hpp"
+#include "../internal/no_extra_fields_v.hpp"
 #include "Parser_base.hpp"
 
 namespace rfl::parsing {
@@ -112,7 +113,7 @@ class ViewReaderWithDefault {
       if (!already_assigned) {
         assign_to_extra_fields<pos>(_r, _current_name, _var, _view, _errors);
       }
-    } else if constexpr (ProcessorsType::no_extra_fields_) {
+    } else if constexpr (internal::no_extra_fields_v<ProcessorsType>) {
       if (!already_assigned) {
         std::stringstream stream;
         stream << "Value named '" << std::string(_current_name)
