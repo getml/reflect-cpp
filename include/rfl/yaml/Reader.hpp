@@ -87,7 +87,9 @@ struct Reader {
           // as a multiline string literal, but unfortunately yaml-cpp doesn't
           // seem to expose that information.
           auto last_non_new_line = result.find_last_not_of("\r\n");
-          result = result.substr(0, last_non_new_line + 1);
+          if (last_non_new_line != std::string::npos) {
+            result = result.substr(0, last_non_new_line + 1);
+          }
         }
         return result;
 
