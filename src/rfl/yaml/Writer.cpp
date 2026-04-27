@@ -2,7 +2,7 @@
 
 namespace rfl::yaml {
 
-Writer::Writer(const Ref<YAML::Emitter>& _out) : out_(_out) {}
+Writer::Writer(const Ref<YAML::Emitter>& _out, Flags _flags) : out_(_out), flags(_flags) {}
 
 Writer::~Writer() = default;
 

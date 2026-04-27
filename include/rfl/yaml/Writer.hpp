@@ -15,6 +15,18 @@ namespace rfl::yaml {
 
 class RFL_API Writer {
  public:
+  enum Flags {
+    no_flags = 0,
+
+    /// A string value which has at least one new-line character will be written
+    /// as multiline YAML literal. It costs one call to std::basic_string::find
+    /// on all string values.
+    string_multiline_literal = 1,
+
+    /// All string values will be written as multiline YAML literal
+    string_all_literal = 2
+  };
+
   struct YAMLArray {};
 
   struct YAMLObject {};
@@ -25,7 +37,7 @@ class RFL_API Writer {
   using OutputObjectType = YAMLObject;
   using OutputVarType = YAMLVar;
 
-  Writer(const Ref<YAML::Emitter>& _out);
+  Writer(const Ref<YAML::Emitter>& _out, Flags _flags = no_flags);
 
   ~Writer();
 
@@ -87,7 +99,7 @@ class RFL_API Writer {
                              const T& _var) const {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       (*out_) << YAML::Key << std::string(_name) << YAML::Value;
-      if (_var.find('\n') != std::string::npos) {
+      if (flags & string_all_literal || (flags & string_multiline_literal && _var.find('\n') != std::string::npos)) {
         (*out_) << YAML::Literal;
       }
       (*out_) << _var;
@@ -112,7 +124,7 @@ class RFL_API Writer {
   template <class T>
   OutputVarType insert_value(const T& _var) const {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      if (_var.find('\n') != std::string::npos) {
+      if (flags & string_all_literal || (flags & string_multiline_literal && _var.find('\n') != std::string::npos)) {
         (*out_) << YAML::Literal;
       }
       (*out_) << _var;
@@ -144,6 +156,7 @@ class RFL_API Writer {
 
  public:
   const Ref<YAML::Emitter> out_;
+  Flags flags;
 };
 
 }  // namespace rfl::yaml
