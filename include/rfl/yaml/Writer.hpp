@@ -85,10 +85,15 @@ class RFL_API Writer {
   template <class T>
   OutputVarType insert_value(const std::string_view& _name,
                              const T& _var) const {
-    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>() ||
-                  std::is_same<std::remove_cvref_t<T>, bool>() ||
-                  std::is_same<std::remove_cvref_t<T>,
-                               std::remove_cvref_t<decltype(YAML::Null)>>()) {
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
+      (*out_) << YAML::Key << std::string(_name) << YAML::Value;
+      if (_var.find('\n') != std::string::npos) {
+        (*out_) << YAML::Literal;
+      }
+      (*out_) << _var;
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>() ||
+                         std::is_same<std::remove_cvref_t<T>,
+                                      std::remove_cvref_t<decltype(YAML::Null)>>()) {
       (*out_) << YAML::Key << std::string(_name) << YAML::Value << _var;
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       // std::to_string is necessary to ensure that floating point values are
@@ -106,10 +111,14 @@ class RFL_API Writer {
 
   template <class T>
   OutputVarType insert_value(const T& _var) const {
-    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>() ||
-                  std::is_same<std::remove_cvref_t<T>, bool>() ||
-                  std::is_same<std::remove_cvref_t<T>,
-                               std::remove_cvref_t<decltype(YAML::Null)>>()) {
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
+      if (_var.find('\n') != std::string::npos) {
+        (*out_) << YAML::Literal;
+      }
+      (*out_) << _var;
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>() ||
+                         std::is_same<std::remove_cvref_t<T>,
+                                      std::remove_cvref_t<decltype(YAML::Null)>>()) {
       (*out_) << _var;
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       // std::to_string is necessary to ensure that floating point values are
