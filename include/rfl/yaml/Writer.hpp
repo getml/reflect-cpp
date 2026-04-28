@@ -94,19 +94,27 @@ class RFL_API Writer {
 
   void end_object(OutputObjectType* _obj) const;
 
+ private:
+  template <class T>
+  void insert_literal_block_if_needed(const T& _var) const {
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
+      if (flags_ & string_all_literal || (flags_ & string_multiline_literal && _var.find('\n') != std::string::npos)) {
+        (*out_) << YAML::Literal;
+      }
+    }
+  }
+
+ public:
   template <class T>
   OutputVarType insert_value(const std::string_view& _name,
                              const T& _var) const {
-    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>() ||
+                  std::is_same<std::remove_cvref_t<T>, bool>() ||
+                  std::is_same<std::remove_cvref_t<T>,
+                               std::remove_cvref_t<decltype(YAML::Null)>>()) {
       (*out_) << YAML::Key << std::string(_name) << YAML::Value;
-      if (flags & string_all_literal || (flags & string_multiline_literal && _var.find('\n') != std::string::npos)) {
-        (*out_) << YAML::Literal;
-      }
+      insert_literal_block_if_needed(_var);
       (*out_) << _var;
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>() ||
-                         std::is_same<std::remove_cvref_t<T>,
-                                      std::remove_cvref_t<decltype(YAML::Null)>>()) {
-      (*out_) << YAML::Key << std::string(_name) << YAML::Value << _var;
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       // std::to_string is necessary to ensure that floating point values are
       // always written as floats.
@@ -123,14 +131,11 @@ class RFL_API Writer {
 
   template <class T>
   OutputVarType insert_value(const T& _var) const {
-    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      if (flags & string_all_literal || (flags & string_multiline_literal && _var.find('\n') != std::string::npos)) {
-        (*out_) << YAML::Literal;
-      }
-      (*out_) << _var;
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>() ||
-                         std::is_same<std::remove_cvref_t<T>,
-                                      std::remove_cvref_t<decltype(YAML::Null)>>()) {
+    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>() ||
+                  std::is_same<std::remove_cvref_t<T>, bool>() ||
+                  std::is_same<std::remove_cvref_t<T>,
+                               std::remove_cvref_t<decltype(YAML::Null)>>()) {
+      insert_literal_block_if_needed(_var);
       (*out_) << _var;
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       // std::to_string is necessary to ensure that floating point values are
@@ -156,7 +161,7 @@ class RFL_API Writer {
 
  public:
   const Ref<YAML::Emitter> out_;
-  Flags flags;
+  Flags flags_;
 };
 
 }  // namespace rfl::yaml

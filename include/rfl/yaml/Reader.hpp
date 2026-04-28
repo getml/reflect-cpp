@@ -49,7 +49,7 @@ struct Reader {
   static constexpr bool has_custom_constructor =
       (requires(InputVarType var) { T::from_yaml_obj(var); });
 
-  Reader(const std::string_view& _yaml_str) noexcept : yaml_str(_yaml_str) {}
+  Reader(const std::string_view& _yaml_str) noexcept : yaml_str_(_yaml_str) {}
 
   rfl::Result<InputVarType> get_field_from_array(
       const size_t _idx, const InputArrayType& _arr) const noexcept {
@@ -86,7 +86,7 @@ struct Reader {
           // new-lines here.
           //
           // This is only done for literal blocks which doesn't have tags or anchors
-          if (_var.node_.Tag() == "!" && yaml_str[_var.node_.Mark().pos] == '|') {
+          if (_var.node_.Tag() == "!" && yaml_str_[_var.node_.Mark().pos] == '|') {
             auto last_non_new_line = result.find_last_not_of("\r\n");
             if (last_non_new_line != std::string::npos) {
               result = result.substr(0, last_non_new_line + 1);
@@ -159,8 +159,8 @@ struct Reader {
     }
   }
 
-private:
-  std::string_view yaml_str;
+ private:
+  std::string_view yaml_str_;
 };
 
 }  // namespace yaml
