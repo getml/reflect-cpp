@@ -18,11 +18,11 @@ namespace yaml {
 
 /// Writes a YAML into an ostream.
 template <class... Ps>
-std::ostream& write(const auto& _obj, std::ostream& _stream) {
+std::ostream& write(const auto& _obj, std::ostream& _stream, Writer::Flags _flags = Writer::Flags::no_flags) {
   using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
   const auto out = Ref<YAML::Emitter>::make();
-  auto w = Writer(out);
+  auto w = Writer(out, _flags);
   using ProcessorsType = Processors<Ps...>;
   static_assert(!internal::no_field_names_v<ProcessorsType>,
                 "The NoFieldNames processor is not supported for BSON, XML, "
@@ -34,11 +34,11 @@ std::ostream& write(const auto& _obj, std::ostream& _stream) {
 
 /// Returns a YAML string.
 template <class... Ps>
-std::string write(const auto& _obj) {
+std::string write(const auto& _obj, Writer::Flags _flags = Writer::Flags::no_flags) {
   using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
   const auto out = Ref<YAML::Emitter>::make();
-  auto w = Writer(out);
+  auto w = Writer(out, _flags);
   using ProcessorsType = Processors<Ps...>;
   static_assert(!internal::no_field_names_v<ProcessorsType>,
                 "The NoFieldNames processor is not supported for BSON, XML, "
