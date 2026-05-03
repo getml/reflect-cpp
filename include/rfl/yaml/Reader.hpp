@@ -49,6 +49,8 @@ struct Reader {
   static constexpr bool has_custom_constructor =
       (requires(InputVarType var) { T::from_yaml_obj(var); });
 
+  Reader(const std::string_view& _yaml_str) noexcept : yaml_str_(_yaml_str) {}
+
   rfl::Result<InputVarType> get_field_from_array(
       const size_t _idx, const InputArrayType& _arr) const noexcept {
     if (_idx >= _arr.node_.size()) {
@@ -76,7 +78,22 @@ struct Reader {
       if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>() ||
                     std::is_same<std::remove_cvref_t<T>, bool>() ||
                     std::is_floating_point<std::remove_cvref_t<T>>()) {
-        return _var.node_.as<std::remove_cvref_t<T>>();
+        auto result = _var.node_.as<std::remove_cvref_t<T>>();
+        if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
+          // In case of multi-line YAML literal strings, yaml-cpp may parse an
+          // extra new line which is not there intentionally. This may break
+          // multiple re-serialization checks, for this reason we trim trailing
+          // new-lines here.
+          //
+          // This is only done for literal blocks which doesn't have tags or anchors
+          if (_var.node_.Tag() == "!" && yaml_str_[_var.node_.Mark().pos] == '|') {
+            auto last_non_new_line = result.find_last_not_of("\r\n");
+            if (last_non_new_line != std::string::npos) {
+              result = result.substr(0, last_non_new_line + 1);
+            }
+          }
+        }
+        return result;
 
       } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
         return static_cast<T>(_var.node_.as<std::remove_cvref_t<int64_t>>());
@@ -141,6 +158,9 @@ struct Reader {
       return error(e.what());
     }
   }
+
+ private:
+  std::string_view yaml_str_;
 };
 
 }  // namespace yaml
