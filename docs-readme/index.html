@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="A C++20 library for fast serialization, deserialization and validation using reflection.  Supports JSON, AVRO, BSON, Cap'n Proto, CBOR, CSV, flexbuffers, msgpack, parquet, TOML, UBJSON, XML, YAML ">
+        <meta name="description" content="A C++20 library for fast serialization, deserialization and validation using reflection.  Supports JSON, AVRO, BSON, Boost Serialization, Cap'n Proto, CBOR, Cereal, CSV, flexbuffers, msgpack, parquet, TOML, UBJSON, XML, YAML, yas ">
       
       
         <meta name="author" content="Code17 GmbH">
@@ -489,6 +489,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../supported_formats/boost_serialization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Boost Serialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../supported_formats/bson/" class="md-nav__link">
         
   
@@ -553,6 +581,34 @@
     
   
     CBOR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported_formats/cereal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cereal
   
 
     
@@ -805,6 +861,34 @@
     
   
     YAML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported_formats/yas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    yas
   
 
     
@@ -1191,6 +1275,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../default_val/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Default values
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../flatten_structs/" class="md-nav__link">
         
   
@@ -1443,6 +1555,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../commented/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rfl::Commented
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../result/" class="md-nav__link">
         
   
@@ -1563,6 +1703,34 @@
     
   
     rfl::Binary, rfl::Hex and rfl::Oct
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../atomic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    std::atomic, std::atomic_flag
   
 
     
@@ -1761,6 +1929,34 @@
     
   
     JSON schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../enum_descriptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enum descriptions
   
 
     
@@ -2587,11 +2783,14 @@
 <p><a href="../rfl_ref/">rfl::Box and rfl::Ref</a> - For defining recursive structures.</p>
 <p><a href="../timestamps/">rfl::Timestamp and std::chrono::duration</a> - For serializing and deserializing timestamps and durations.</p>
 <p><a href="../rfl_skip/">rfl::Skip</a> - For skipping fields during serialization and/or deserialization.</p>
+<p><a href="../commented/">rfl::Commented</a> - For adding comments to your serialized format (only supported by some formats, such as YAML or XML). </p>
 <p><a href="../result/">rfl::Result</a> - For error handling without exceptions.</p>
 <p><a href="../standard_containers/">Standard containers</a> - Describes how reflect-cpp treats containers in the standard library.</p>
 <p><a href="../c_arrays_and_inheritance/">C arrays and inheritance</a> - Describes how reflect-cpp handles C arrays and inheritance.</p>
 <p><a href="../bytestring/">rfl::Bytestring</a> - Describes how reflect-cpp handles binary strings for formats that support them.</p>
 <p><a href="../number_systems/">rfl::Binary, rfl::Hex and rfl::Oct</a>- For expressing numbers in different formats.</p>
+<p><a href="../default_val/">Default values</a> - For defining default values for fields that might be absent during deserialization.</p>
+<p><a href="../atomic/">Atomic types</a> - For serializing and deserializing atomic types.</p>
 <h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
 <p><a href="../patterns/">Regex patterns</a> - For requiring that strings follow used-defined regex patterns.</p>
 <p><a href="../validating_numbers/">Validating numbers</a> - For imposing constraints on numbers.</p>

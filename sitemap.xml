@@ -9,6 +9,10 @@
          <lastmod>2026-05-06</lastmod>
     </url>
     <url>
+         <loc>https://rfl.getml.com/atomic/</loc>
+         <lastmod>2026-05-06</lastmod>
+    </url>
+    <url>
          <loc>https://rfl.getml.com/backwards_compatability/</loc>
          <lastmod>2026-05-06</lastmod>
     </url>
@@ -25,6 +29,14 @@
          <lastmod>2026-05-06</lastmod>
     </url>
     <url>
+         <loc>https://rfl.getml.com/cli/</loc>
+         <lastmod>2026-05-06</lastmod>
+    </url>
+    <url>
+         <loc>https://rfl.getml.com/commented/</loc>
+         <lastmod>2026-05-06</lastmod>
+    </url>
+    <url>
          <loc>https://rfl.getml.com/composing_validators/</loc>
          <lastmod>2026-05-06</lastmod>
     </url>
@@ -37,7 +49,15 @@
          <lastmod>2026-05-06</lastmod>
     </url>
     <url>
+         <loc>https://rfl.getml.com/default_val/</loc>
+         <lastmod>2026-05-06</lastmod>
+    </url>
+    <url>
          <loc>https://rfl.getml.com/docs-readme/</loc>
+         <lastmod>2026-05-06</lastmod>
+    </url>
+    <url>
+         <loc>https://rfl.getml.com/enum_descriptions/</loc>
          <lastmod>2026-05-06</lastmod>
     </url>
     <url>
@@ -153,6 +173,10 @@
          <lastmod>2026-05-06</lastmod>
     </url>
     <url>
+         <loc>https://rfl.getml.com/supported_formats/boost_serialization/</loc>
+         <lastmod>2026-05-06</lastmod>
+    </url>
+    <url>
          <loc>https://rfl.getml.com/supported_formats/bson/</loc>
          <lastmod>2026-05-06</lastmod>
     </url>
@@ -162,6 +186,10 @@
     </url>
     <url>
          <loc>https://rfl.getml.com/supported_formats/cbor/</loc>
+         <lastmod>2026-05-06</lastmod>
+    </url>
+    <url>
+         <loc>https://rfl.getml.com/supported_formats/cereal/</loc>
          <lastmod>2026-05-06</lastmod>
     </url>
     <url>
@@ -202,6 +230,10 @@
     </url>
     <url>
          <loc>https://rfl.getml.com/supported_formats/yaml/</loc>
+         <lastmod>2026-05-06</lastmod>
+    </url>
+    <url>
+         <loc>https://rfl.getml.com/supported_formats/yas/</loc>
          <lastmod>2026-05-06</lastmod>
     </url>
 </urlset>

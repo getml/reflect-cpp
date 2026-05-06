@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="A C++20 library for fast serialization, deserialization and validation using reflection.  Supports JSON, AVRO, BSON, Cap'n Proto, CBOR, CSV, flexbuffers, msgpack, parquet, TOML, UBJSON, XML, YAML ">
+        <meta name="description" content="A C++20 library for fast serialization, deserialization and validation using reflection.  Supports JSON, AVRO, BSON, Boost Serialization, Cap'n Proto, CBOR, Cereal, CSV, flexbuffers, msgpack, parquet, TOML, UBJSON, XML, YAML, yas ">
       
       
         <meta name="author" content="Code17 GmbH">
@@ -18,7 +18,7 @@
         <link rel="prev" href="../bytestring/">
       
       
-        <link rel="next" href="../patterns/">
+        <link rel="next" href="../atomic/">
       
       
         
@@ -489,6 +489,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../supported_formats/boost_serialization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Boost Serialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../supported_formats/bson/" class="md-nav__link">
         
   
@@ -553,6 +581,34 @@
     
   
     CBOR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported_formats/cereal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cereal
   
 
     
@@ -805,6 +861,34 @@
     
   
     YAML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported_formats/yas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    yas
   
 
     
@@ -1078,6 +1162,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../default_val/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Default values
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../flatten_structs/" class="md-nav__link">
         
   
@@ -1330,6 +1442,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../commented/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rfl::Commented
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../result/" class="md-nav__link">
         
   
@@ -1468,6 +1608,34 @@
 
       </a>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../atomic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    std::atomic, std::atomic_flag
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1658,6 +1826,34 @@
     
   
     JSON schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../enum_descriptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enum descriptions
   
 
     
@@ -2434,7 +2630,7 @@ in binary, hex and octal format.</p>
 </code></pre></div>
 <p>Note that the contained type must be integral for <code>rfl::Hex</code> and <code>rfl::Oct</code>. For <code>rfl::Binary</code>, it must be unsigned. Moreover, 
 the number of digits for <code>rfl::Binary</code> will be determined by the bitsize of the type.</p>
-<p>You can access the contained value using <code>.value()</code>, <code>.get()</code> or simply <code>operator()</code>.</p>
+<p>You can access the contained value using <code>.value()</code>, <code>.get()</code>, <code>operator()()</code>, or <code>operator*()</code> (const and non-const overloads).</p>
 <p>You can produce the string representation using <code>.str()</code>.</p>
 
 

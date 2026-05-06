@@ -12,31 +12,31 @@
         <meta name="author" content="Code17 GmbH">
       
       
-        <link rel="canonical" href="https://rfl.getml.com/extra_fields/">
+        <link rel="canonical" href="https://rfl.getml.com/supported_formats/boost_serialization/">
       
       
-        <link rel="prev" href="../generic/">
+        <link rel="prev" href="../avro/">
       
       
-        <link rel="next" href="../concepts/custom_classes/">
+        <link rel="next" href="../bson/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>rfl::ExtraFields - reflect-cpp</title>
+        <title>Boost Serialization - reflect-cpp</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +55,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/tweaks.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/tweaks.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#rflextrafields" class="md-skip">
+        <a href="#boostserialization" class="md-skip">
           Skip to content
         </a>
       
@@ -96,7 +96,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="reflect-cpp" class="md-header__button md-logo" aria-label="reflect-cpp" data-md-component="logo">
+    <a href="../.." title="reflect-cpp" class="md-header__button md-logo" aria-label="reflect-cpp" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              rfl::ExtraFields
+              Boost Serialization
             
           </span>
         </div>
@@ -239,7 +239,7 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -256,11 +256,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../supported_formats/avro/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../avro/" class="md-tabs__link">
           
   
   
@@ -278,7 +280,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../install/" class="md-tabs__link">
+      <a href="../../install/" class="md-tabs__link">
         
   
   
@@ -295,13 +297,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../docs-readme/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../docs-readme/" class="md-tabs__link">
           
   
   
@@ -319,7 +319,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../contributing/" class="md-tabs__link">
+      <a href="../../contributing/" class="md-tabs__link">
         
   
   
@@ -354,7 +354,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="reflect-cpp" class="md-nav__button md-logo" aria-label="reflect-cpp" data-md-component="logo">
+    <a href="../.." title="reflect-cpp" class="md-nav__button md-logo" aria-label="reflect-cpp" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -384,7 +384,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -392,566 +392,6 @@
     
   
     Welcome
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
-        
-          
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Supported Formats
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Supported Formats
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/avro/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Avro
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/boost_serialization/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Boost Serialization
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/bson/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    BSON
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/capnproto/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Cap'n Proto
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/cbor/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    CBOR
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/cereal/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Cereal
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/csv/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    CSV
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/flexbuffers/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    FlexBuffers
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/json/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    JSON
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/msgpack/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    MessagePack
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/parquet/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Parquet
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/toml/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    TOML
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/ubjson/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    UBJSON
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/xml/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    XML
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/yaml/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    YAML
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/yas/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    yas
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../supported_formats/supporting_your_own_format/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Custom Format
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../install/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Installation
   
 
     
@@ -987,10 +427,663 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supported Formats
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supported Formats
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../avro/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Avro
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Boost Serialization
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Boost Serialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reading-and-writing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading and writing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-and-saving" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loading and saving
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-from-and-writing-into-streams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading from and writing into streams
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#archive-interop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archive interop
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bson/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../capnproto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cap'n Proto
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cbor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CBOR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cereal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cereal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../csv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../flexbuffers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FlexBuffers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../json/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    JSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../msgpack/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MessagePack
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../parquet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Parquet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../toml/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TOML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ubjson/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UBJSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xml/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../yaml/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    YAML
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../yas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    yas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supporting_your_own_format/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Format
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -1008,7 +1101,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1026,7 +1119,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../docs-readme/" class="md-nav__link">
+      <a href="../../docs-readme/" class="md-nav__link">
         
   
   
@@ -1104,7 +1197,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/structs/" class="md-nav__link">
+      <a href="../../concepts/structs/" class="md-nav__link">
         
   
   
@@ -1132,7 +1225,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../optional_fields/" class="md-nav__link">
+      <a href="../../optional_fields/" class="md-nav__link">
         
   
   
@@ -1160,7 +1253,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../default_val/" class="md-nav__link">
+      <a href="../../default_val/" class="md-nav__link">
         
   
   
@@ -1188,7 +1281,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../flatten_structs/" class="md-nav__link">
+      <a href="../../flatten_structs/" class="md-nav__link">
         
   
   
@@ -1216,7 +1309,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/processors/" class="md-nav__link">
+      <a href="../../concepts/processors/" class="md-nav__link">
         
   
   
@@ -1244,7 +1337,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/field_syntax/" class="md-nav__link">
+      <a href="../../concepts/field_syntax/" class="md-nav__link">
         
   
   
@@ -1272,7 +1365,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../literals/" class="md-nav__link">
+      <a href="../../literals/" class="md-nav__link">
         
   
   
@@ -1300,7 +1393,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../enums/" class="md-nav__link">
+      <a href="../../enums/" class="md-nav__link">
         
   
   
@@ -1328,7 +1421,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../variants_and_tagged_unions/" class="md-nav__link">
+      <a href="../../variants_and_tagged_unions/" class="md-nav__link">
         
   
   
@@ -1356,7 +1449,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../rfl_ref/" class="md-nav__link">
+      <a href="../../rfl_ref/" class="md-nav__link">
         
   
   
@@ -1384,7 +1477,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../timestamps/" class="md-nav__link">
+      <a href="../../timestamps/" class="md-nav__link">
         
   
   
@@ -1412,7 +1505,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../rfl_skip/" class="md-nav__link">
+      <a href="../../rfl_skip/" class="md-nav__link">
         
   
   
@@ -1440,7 +1533,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../commented/" class="md-nav__link">
+      <a href="../../commented/" class="md-nav__link">
         
   
   
@@ -1468,7 +1561,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../result/" class="md-nav__link">
+      <a href="../../result/" class="md-nav__link">
         
   
   
@@ -1496,7 +1589,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../standard_containers/" class="md-nav__link">
+      <a href="../../standard_containers/" class="md-nav__link">
         
   
   
@@ -1524,7 +1617,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../c_arrays_and_inheritance/" class="md-nav__link">
+      <a href="../../c_arrays_and_inheritance/" class="md-nav__link">
         
   
   
@@ -1552,7 +1645,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../bytestring/" class="md-nav__link">
+      <a href="../../bytestring/" class="md-nav__link">
         
   
   
@@ -1580,7 +1673,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../number_systems/" class="md-nav__link">
+      <a href="../../number_systems/" class="md-nav__link">
         
   
   
@@ -1608,7 +1701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../atomic/" class="md-nav__link">
+      <a href="../../atomic/" class="md-nav__link">
         
   
   
@@ -1694,7 +1787,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../patterns/" class="md-nav__link">
+      <a href="../../patterns/" class="md-nav__link">
         
   
   
@@ -1722,7 +1815,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../validating_numbers/" class="md-nav__link">
+      <a href="../../validating_numbers/" class="md-nav__link">
         
   
   
@@ -1750,7 +1843,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../composing_validators/" class="md-nav__link">
+      <a href="../../composing_validators/" class="md-nav__link">
         
   
   
@@ -1778,7 +1871,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../size_validation/" class="md-nav__link">
+      <a href="../../size_validation/" class="md-nav__link">
         
   
   
@@ -1806,7 +1899,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../json_schema/" class="md-nav__link">
+      <a href="../../json_schema/" class="md-nav__link">
         
   
   
@@ -1834,7 +1927,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../enum_descriptions/" class="md-nav__link">
+      <a href="../../enum_descriptions/" class="md-nav__link">
         
   
   
@@ -1867,8 +1960,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1879,11 +1970,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
         
           
           <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
@@ -1904,7 +1995,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1922,7 +2013,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../object/" class="md-nav__link">
+      <a href="../../object/" class="md-nav__link">
         
   
   
@@ -1950,7 +2041,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../generic/" class="md-nav__link">
+      <a href="../../generic/" class="md-nav__link">
         
   
   
@@ -1975,19 +2066,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../extra_fields/" class="md-nav__link">
         
   
   
@@ -2003,7 +2085,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2074,7 +2155,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../concepts/custom_classes/" class="md-nav__link">
+      <a href="../../concepts/custom_classes/" class="md-nav__link">
         
   
   
@@ -2102,7 +2183,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../custom_parser/" class="md-nav__link">
+      <a href="../../custom_parser/" class="md-nav__link">
         
   
   
@@ -2188,7 +2269,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../replace/" class="md-nav__link">
+      <a href="../../replace/" class="md-nav__link">
         
   
   
@@ -2216,7 +2297,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../as/" class="md-nav__link">
+      <a href="../../as/" class="md-nav__link">
         
   
   
@@ -2244,7 +2325,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../named_tuple/" class="md-nav__link">
+      <a href="../../named_tuple/" class="md-nav__link">
         
   
   
@@ -2272,7 +2353,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../rfl_tuple/" class="md-nav__link">
+      <a href="../../rfl_tuple/" class="md-nav__link">
         
   
   
@@ -2300,7 +2381,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../to_view/" class="md-nav__link">
+      <a href="../../to_view/" class="md-nav__link">
         
   
   
@@ -2386,7 +2467,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../supported_formats/supporting_your_own_format/" class="md-nav__link">
+      <a href="../supporting_your_own_format/" class="md-nav__link">
         
   
   
@@ -2414,7 +2495,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../backwards_compatability/" class="md-nav__link">
+      <a href="../../backwards_compatability/" class="md-nav__link">
         
   
   
@@ -2442,7 +2523,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../benchmarks/" class="md-nav__link">
+      <a href="../../benchmarks/" class="md-nav__link">
         
   
   
@@ -2485,7 +2566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../contributing/" class="md-nav__link">
+      <a href="../../contributing/" class="md-nav__link">
         
   
   
@@ -2527,6 +2608,58 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reading-and-writing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading and writing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#loading-and-saving" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loading and saving
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reading-from-and-writing-into-streams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading from and writing into streams
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#archive-interop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archive interop
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2550,7 +2683,7 @@
   
   
     <li class="md-path__item">
-      <a href=".." class="md-path__link">
+      <a href="../.." class="md-path__link">
         
   <span class="md-ellipsis">
     Welcome
@@ -2568,28 +2701,10 @@
     
     
       <li class="md-path__item">
-        <a href="../docs-readme/" class="md-path__link">
+        <a href="../avro/" class="md-path__link">
           
   <span class="md-ellipsis">
-    Documentation
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-    
-    
-      <li class="md-path__item">
-        <a href="../object/" class="md-path__link">
-          
-  <span class="md-ellipsis">
-    Generic elements
+    Supported Formats
   </span>
 
         </a>
@@ -2611,47 +2726,69 @@
   
 
 
-<h1 id="rflextrafields"><code>rfl::ExtraFields</code><a class="headerlink" href="#rflextrafields" title="Permanent link">&para;</a></h1>
-<p>In some cases, you simply do not know all of the possible field names at compile time. You might know some, but you
-do not know all of them.</p>
-<p>Note that there are many ways of dealing with these kind of uncertainties, such as optional fields or tagged unions.</p>
-<p>But in instance where the field names are absolutely not known in advance, you might want to use <code>rfl::ExtraFields</code>:</p>
+<h1 id="boostserialization">Boost.Serialization<a class="headerlink" href="#boostserialization" title="Permanent link">&para;</a></h1>
+<p>For Boost.Serialization support, you must also include the header <code>&lt;rfl/boost_serialization.hpp&gt;</code> and link to the <a href="https://www.boost.org/doc/libs/release/libs/serialization/">Boost.Serialization</a> library.
+Furthermore, when compiling reflect-cpp, you need to pass <code>-DREFLECTCPP_BOOST_SERIALIZATION=ON</code> to cmake. If you are using vcpkg, there
+should be an appropriate feature that will abstract this away for you.</p>
+<p>Unlike most other formats supported by reflect-cpp, which use document-tree based libraries, Boost.Serialization streams data sequentially through archive objects. reflect-cpp implements this as a schemaful binary format, similar to Avro and Cap'n Proto.</p>
+<h2 id="reading-and-writing">Reading and writing<a class="headerlink" href="#reading-and-writing" title="Permanent link">&para;</a></h2>
+<p>Suppose you have a struct like this:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">;</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">ExtraFields</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">Generic</span><span class="o">&gt;</span><span class="w"> </span><span class="n">extra_fields</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Timestamp</span><span class="o">&lt;</span><span class="s">&quot;%Y-%m-%d&quot;</span><span class="o">&gt;</span><span class="w"> </span><span class="n">birthday</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">children</span><span class="p">;</span>
 <span class="p">};</span>
-
-<span class="k">auto</span><span class="w"> </span><span class="n">homer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Homer&quot;</span><span class="p">};</span>
-
-<span class="n">homer</span><span class="p">.</span><span class="n">extra_fields</span><span class="p">[</span><span class="s">&quot;age&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">45</span><span class="p">;</span>
-<span class="n">homer</span><span class="p">.</span><span class="n">extra_fields</span><span class="p">[</span><span class="s">&quot;email&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;homer@simpson.com&quot;</span><span class="p">;</span>
-<span class="n">homer</span><span class="p">.</span><span class="n">extra_fields</span><span class="p">[</span><span class="s">&quot;town&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Springfield&quot;</span><span class="p">;</span>
 </code></pre></div>
-<p>Note that <code>rfl::ExtraFields</code> inherits from <code>rfl::Object</code> and therefore behaves exactly like it. Refer
-to the relevant section of the documentation on <code>rfl::Object</code>.</p>
-<p>This will result in the following JSON string:</p>
-<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;first_name&quot;</span><span class="p">:</span><span class="s2">&quot;Homer&quot;</span><span class="p">,</span><span class="nt">&quot;last_name&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">,</span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="mi">45</span><span class="p">,</span><span class="nt">&quot;email&quot;</span><span class="p">:</span><span class="s2">&quot;homer@simpson.com&quot;</span><span class="p">,</span><span class="nt">&quot;town&quot;</span><span class="p">:</span><span class="s2">&quot;Springfield&quot;</span><span class="p">}</span>
+<p>A <code>Person</code> can be serialized like this:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{...};</span>
+<span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">char</span><span class="o">&gt;</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">boost_serialization</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">person</span><span class="p">);</span>
 </code></pre></div>
-<p>Likewise, when we parse the JSON string, all of the fields that can't be directly matched to
-a known field will be parsed into <code>extra_fields</code>.</p>
-<p>Note that in this particular instance, we have set the type to <code>rfl::Generic</code>. But if we know in
-advance that all of the extra fields must be strings, we can set it to <code>std::string</code> as well:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">;</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">ExtraFields</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">extra_fields</span><span class="p">;</span>
-<span class="p">};</span>
+<p>You can parse bytes like this:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">boost_serialization</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="loading-and-saving">Loading and saving<a class="headerlink" href="#loading-and-saving" title="Permanent link">&para;</a></h2>
+<p>You can also load and save to disc using a very similar syntax:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">boost_serialization</span><span class="o">::</span><span class="n">load</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;/path/to/file.bin&quot;</span><span class="p">);</span>
 
-<span class="k">auto</span><span class="w"> </span><span class="n">homer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Homer&quot;</span><span class="p">};</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{...};</span>
+<span class="n">rfl</span><span class="o">::</span><span class="n">boost_serialization</span><span class="o">::</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;/path/to/file.bin&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">person</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="reading-from-and-writing-into-streams">Reading from and writing into streams<a class="headerlink" href="#reading-from-and-writing-into-streams" title="Permanent link">&para;</a></h2>
+<p>You can also read from and write into any <code>std::istream</code> and <code>std::ostream</code> respectively.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">boost_serialization</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">(</span><span class="n">my_istream</span><span class="p">);</span>
 
-<span class="n">homer</span><span class="p">.</span><span class="n">extra_fields</span><span class="p">[</span><span class="s">&quot;email&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;homer@simpson.com&quot;</span><span class="p">;</span>
-<span class="n">homer</span><span class="p">.</span><span class="n">extra_fields</span><span class="p">[</span><span class="s">&quot;town&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Springfield&quot;</span><span class="p">;</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">person</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{...};</span>
+<span class="n">rfl</span><span class="o">::</span><span class="n">boost_serialization</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">person</span><span class="p">,</span><span class="w"> </span><span class="n">my_ostream</span><span class="p">);</span>
 </code></pre></div>
-<p>This will result in the following JSON string:</p>
-<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;first_name&quot;</span><span class="p">:</span><span class="s2">&quot;Homer&quot;</span><span class="p">,</span><span class="nt">&quot;last_name&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">,</span><span class="nt">&quot;email&quot;</span><span class="p">:</span><span class="s2">&quot;homer@simpson.com&quot;</span><span class="p">,</span><span class="nt">&quot;town&quot;</span><span class="p">:</span><span class="s2">&quot;Springfield&quot;</span><span class="p">}</span>
+<h2 id="archive-interop">Archive interop<a class="headerlink" href="#archive-interop" title="Permanent link">&para;</a></h2>
+<p>One of the key features of the Boost.Serialization backend is that you can use it with existing Boost archives directly. This allows reflect-cpp types to participate in larger Boost serialization workflows.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;boost/archive/binary_oarchive.hpp&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;boost/archive/binary_iarchive.hpp&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;rfl/boost_serialization.hpp&gt;</span>
+
+<span class="c1">// Writing into an existing Boost archive</span>
+<span class="n">boost</span><span class="o">::</span><span class="n">archive</span><span class="o">::</span><span class="n">binary_oarchive</span><span class="w"> </span><span class="nf">oa</span><span class="p">(</span><span class="n">my_ostream</span><span class="p">);</span>
+<span class="n">rfl</span><span class="o">::</span><span class="n">boost_serialization</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">oa</span><span class="p">,</span><span class="w"> </span><span class="n">person</span><span class="p">);</span>
+
+<span class="c1">// Reading from an existing Boost archive</span>
+<span class="n">boost</span><span class="o">::</span><span class="n">archive</span><span class="o">::</span><span class="n">binary_iarchive</span><span class="w"> </span><span class="nf">ia</span><span class="p">(</span><span class="n">my_istream</span><span class="p">);</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">boost_serialization</span><span class="o">::</span><span class="n">read_from_archive</span><span class="o">&lt;</span>
+<span class="w">    </span><span class="n">Person</span><span class="p">,</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">archive</span><span class="o">::</span><span class="n">binary_iarchive</span><span class="p">,</span>
+<span class="w">    </span><span class="n">boost</span><span class="o">::</span><span class="n">archive</span><span class="o">::</span><span class="n">binary_oarchive</span><span class="o">&gt;</span><span class="p">(</span><span class="n">ia</span><span class="p">);</span>
 </code></pre></div>
-<p>If we add an extra field that is not a string (like <code>"age":45</code>), this will result in a parsing error. </p>
+<p>This also works with text archives:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;boost/archive/text_oarchive.hpp&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;boost/archive/text_iarchive.hpp&gt;</span>
+
+<span class="n">boost</span><span class="o">::</span><span class="n">archive</span><span class="o">::</span><span class="n">text_oarchive</span><span class="w"> </span><span class="nf">oa</span><span class="p">(</span><span class="n">my_ostream</span><span class="p">);</span>
+<span class="n">rfl</span><span class="o">::</span><span class="n">boost_serialization</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">oa</span><span class="p">,</span><span class="w"> </span><span class="n">person</span><span class="p">);</span>
+
+<span class="n">boost</span><span class="o">::</span><span class="n">archive</span><span class="o">::</span><span class="n">text_iarchive</span><span class="w"> </span><span class="nf">ia</span><span class="p">(</span><span class="n">my_istream</span><span class="p">);</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">boost_serialization</span><span class="o">::</span><span class="n">read_from_archive</span><span class="o">&lt;</span>
+<span class="w">    </span><span class="n">Person</span><span class="p">,</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">archive</span><span class="o">::</span><span class="n">text_iarchive</span><span class="p">,</span>
+<span class="w">    </span><span class="n">boost</span><span class="o">::</span><span class="n">archive</span><span class="o">::</span><span class="n">text_oarchive</span><span class="o">&gt;</span><span class="p">(</span><span class="n">ia</span><span class="p">);</span>
+</code></pre></div>
 
 
 
@@ -2749,10 +2886,10 @@ advance that all of the extra fields must be strings, we can set it to <code>std
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "announce.dismiss", "navigation.tabs", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.preview", "navigation.instant.progress", "navigation.path", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "announce.dismiss", "navigation.tabs", "navigation.instant", "navigation.instant.prefetch", "navigation.instant.preview", "navigation.instant.progress", "navigation.path", "navigation.top", "navigation.tracking", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

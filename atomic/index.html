@@ -12,13 +12,13 @@
         <meta name="author" content="Code17 GmbH">
       
       
-        <link rel="canonical" href="https://rfl.getml.com/extra_fields/">
+        <link rel="canonical" href="https://rfl.getml.com/atomic/">
       
       
-        <link rel="prev" href="../generic/">
+        <link rel="prev" href="../number_systems/">
       
       
-        <link rel="next" href="../concepts/custom_classes/">
+        <link rel="next" href="../patterns/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>rfl::ExtraFields - reflect-cpp</title>
+        <title>std::atomic, std::atomic_flag - reflect-cpp</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#rflextrafields" class="md-skip">
+        <a href="#atomic-variables-stdatomic-and-stdatomic_flag" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              rfl::ExtraFields
+              std::atomic, std::atomic_flag
             
           </span>
         </div>
@@ -1051,6 +1051,8 @@
                 
   
   
+    
+  
   
   
     
@@ -1061,11 +1063,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" checked>
         
           
           <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
@@ -1086,7 +1088,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1605,10 +1607,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../atomic/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    std::atomic, std::atomic_flag
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1624,6 +1653,100 @@
   
 
       </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#supported-atomic-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported atomic types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-writing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example (writing)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example (reading)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example (reading)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-wrap-in-rflref-rflbox-stdshared_ptr-or-stdunique_ptr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Wrap in rfl::Ref, rfl::Box, std::shared_ptr or std::unique_ptr
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-read-into-a-non-atomic-representation-and-then-set-atomic-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Read into a non-atomic representation and then set atomic fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-and-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations and notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1867,8 +1990,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1879,11 +2000,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
         
           
           <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
@@ -1904,7 +2025,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1975,19 +2096,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../extra_fields/" class="md-nav__link">
         
   
   
@@ -2003,7 +2115,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2527,6 +2638,86 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#supported-atomic-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported atomic types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-writing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example (writing)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example (reading)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example (reading)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-wrap-in-rflref-rflbox-stdshared_ptr-or-stdunique_ptr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Wrap in rfl::Ref, rfl::Box, std::shared_ptr or std::unique_ptr
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-read-into-a-non-atomic-representation-and-then-set-atomic-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Read into a non-atomic representation and then set atomic fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-and-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations and notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2586,10 +2777,10 @@
     
     
       <li class="md-path__item">
-        <a href="../object/" class="md-path__link">
+        <a href="../concepts/structs/" class="md-path__link">
           
   <span class="md-ellipsis">
-    Generic elements
+    The basics
   </span>
 
         </a>
@@ -2611,47 +2802,59 @@
   
 
 
-<h1 id="rflextrafields"><code>rfl::ExtraFields</code><a class="headerlink" href="#rflextrafields" title="Permanent link">&para;</a></h1>
-<p>In some cases, you simply do not know all of the possible field names at compile time. You might know some, but you
-do not know all of them.</p>
-<p>Note that there are many ways of dealing with these kind of uncertainties, such as optional fields or tagged unions.</p>
-<p>But in instance where the field names are absolutely not known in advance, you might want to use <code>rfl::ExtraFields</code>:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">;</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">ExtraFields</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">Generic</span><span class="o">&gt;</span><span class="w"> </span><span class="n">extra_fields</span><span class="p">;</span>
+<h1 id="atomic-variables-stdatomic-and-stdatomic_flag">Atomic variables (<code>std::atomic</code> and <code>std::atomic_flag</code>)<a class="headerlink" href="#atomic-variables-stdatomic-and-stdatomic_flag" title="Permanent link">&para;</a></h1>
+<p>reflect-cpp supports serializing and deserializing atomic types. The library treats atomic wrappers as containers around an underlying value and provides helpers to read plain (non-atomic) representations from input and to set atomic fields afterwards.</p>
+<h2 id="supported-atomic-types">Supported atomic types<a class="headerlink" href="#supported-atomic-types" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>std::atomic&lt;T&gt;</code></li>
+<li><code>std::atomic_flag</code> (serialized as a boolean)</li>
+<li>Arrays of atomic types (std::array<T, N> and C-style arrays)</li>
+<li>Aggregate types (structs/NamedTuple) containing atomic fields — each atomic field is handled independently</li>
+</ul>
+<h2 id="example-writing">Example (writing)<a class="headerlink" href="#example-writing" title="Permanent link">&para;</a></h2>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Stats</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">bytes_downloaded</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">finished</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">atomic_flag</span><span class="w"> </span><span class="n">atomic_flag</span><span class="p">;</span>
 <span class="p">};</span>
 
-<span class="k">auto</span><span class="w"> </span><span class="n">homer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Homer&quot;</span><span class="p">};</span>
+<span class="n">Stats</span><span class="w"> </span><span class="n">stats</span><span class="p">{.</span><span class="n">bytes_downloaded</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">123456789</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">finished</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">atomic_flag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ATOMIC_FLAG_INIT</span><span class="p">};</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">stats</span><span class="p">);</span>
+<span class="c1">// -&gt; {&quot;bytes_downloaded&quot;:123456789,&quot;finished&quot;:true,&quot;atomic_flag&quot;:false}</span>
+</code></pre></div>
+<p>Note: the exact boolean value for <code>atomic_flag</code> depends on whether it is set or cleared.</p>
+<h2 id="example-reading">Example (reading)<a class="headerlink" href="#example-reading" title="Permanent link">&para;</a></h2>
+<p>Reading atomic variables is not quite trivial, because atomic fields cannot be copied or moved. Consider the following example:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="c1">// const auto res = rfl::json::read&lt;Stats&gt;(json_str); </span>
+<span class="c1">// This will NOT compile because std::atomic&lt;T&gt; is neither copyable nor movable</span>
+</code></pre></div>
+<p>There are two ways around this problem:</p>
+<h3 id="1-wrap-in-rflref-rflbox-stdshared_ptr-or-stdunique_ptr">1. Wrap in <code>rfl::Ref</code>, <code>rfl::Box</code>, <code>std::shared_ptr</code> or <code>std::unique_ptr</code><a class="headerlink" href="#1-wrap-in-rflref-rflbox-stdshared_ptr-or-stdunique_ptr" title="Permanent link">&para;</a></h3>
+<p>The easiest way to read structs with atomic fields is to wrap them in a pointer-like type such as <code>rfl::Ref</code>, <code>rfl::Box</code>, <code>std::shared_ptr</code> or <code>std::unique_ptr</code>. This works because the pointer-like types themselves are copyable/movable, even if the underlying type is not.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">Ref</span><span class="o">&lt;</span><span class="n">Stats</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">json_str</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="2-read-into-a-non-atomic-representation-and-then-set-atomic-fields">2. Read into a non-atomic representation and then set atomic fields<a class="headerlink" href="#2-read-into-a-non-atomic-representation-and-then-set-atomic-fields" title="Permanent link">&para;</a></h3>
+<p>The second way is to read into a non-atomic representation of the struct and then set the atomic fields afterwards using <code>rfl::atomic::set_atomic_fields</code>. The non-atomic representation can be obtained using <code>rfl::atomic::remove_atomic_t</code>.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="n">Stats</span><span class="w"> </span><span class="n">stats</span><span class="p">;</span>
 
-<span class="n">homer</span><span class="p">.</span><span class="n">extra_fields</span><span class="p">[</span><span class="s">&quot;age&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">45</span><span class="p">;</span>
-<span class="n">homer</span><span class="p">.</span><span class="n">extra_fields</span><span class="p">[</span><span class="s">&quot;email&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;homer@simpson.com&quot;</span><span class="p">;</span>
-<span class="n">homer</span><span class="p">.</span><span class="n">extra_fields</span><span class="p">[</span><span class="s">&quot;town&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Springfield&quot;</span><span class="p">;</span>
-</code></pre></div>
-<p>Note that <code>rfl::ExtraFields</code> inherits from <code>rfl::Object</code> and therefore behaves exactly like it. Refer
-to the relevant section of the documentation on <code>rfl::Object</code>.</p>
-<p>This will result in the following JSON string:</p>
-<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;first_name&quot;</span><span class="p">:</span><span class="s2">&quot;Homer&quot;</span><span class="p">,</span><span class="nt">&quot;last_name&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">,</span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="mi">45</span><span class="p">,</span><span class="nt">&quot;email&quot;</span><span class="p">:</span><span class="s2">&quot;homer@simpson.com&quot;</span><span class="p">,</span><span class="nt">&quot;town&quot;</span><span class="p">:</span><span class="s2">&quot;Springfield&quot;</span><span class="p">}</span>
-</code></pre></div>
-<p>Likewise, when we parse the JSON string, all of the fields that can't be directly matched to
-a known field will be parsed into <code>extra_fields</code>.</p>
-<p>Note that in this particular instance, we have set the type to <code>rfl::Generic</code>. But if we know in
-advance that all of the extra fields must be strings, we can set it to <code>std::string</code> as well:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">;</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">ExtraFields</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">extra_fields</span><span class="p">;</span>
-<span class="p">};</span>
+<span class="k">const</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Result</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">Nothing</span><span class="o">&gt;</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">atomic</span><span class="o">::</span><span class="n">remove_atomic_t</span><span class="o">&lt;</span><span class="n">Stats</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="n">transform</span><span class="p">([</span><span class="o">&amp;</span><span class="p">](</span><span class="k">auto</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">non_atomic_stats</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">atomic</span><span class="o">::</span><span class="n">set_atomic_fields</span><span class="p">(</span><span class="n">non_atomic_stats</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">stats</span><span class="p">);</span>
+<span class="w">        </span><span class="p">});</span>
 
-<span class="k">auto</span><span class="w"> </span><span class="n">homer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Homer&quot;</span><span class="p">};</span>
-
-<span class="n">homer</span><span class="p">.</span><span class="n">extra_fields</span><span class="p">[</span><span class="s">&quot;email&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;homer@simpson.com&quot;</span><span class="p">;</span>
-<span class="n">homer</span><span class="p">.</span><span class="n">extra_fields</span><span class="p">[</span><span class="s">&quot;town&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Springfield&quot;</span><span class="p">;</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">res</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// handle error</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Error reading JSON: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">res</span><span class="p">.</span><span class="n">error</span><span class="p">().</span><span class="n">what</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span>
 </code></pre></div>
-<p>This will result in the following JSON string:</p>
-<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;first_name&quot;</span><span class="p">:</span><span class="s2">&quot;Homer&quot;</span><span class="p">,</span><span class="nt">&quot;last_name&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">,</span><span class="nt">&quot;email&quot;</span><span class="p">:</span><span class="s2">&quot;homer@simpson.com&quot;</span><span class="p">,</span><span class="nt">&quot;town&quot;</span><span class="p">:</span><span class="s2">&quot;Springfield&quot;</span><span class="p">}</span>
-</code></pre></div>
-<p>If we add an extra field that is not a string (like <code>"age":45</code>), this will result in a parsing error. </p>
+<h2 id="limitations-and-notes">Limitations and notes<a class="headerlink" href="#limitations-and-notes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Structs containing atomic fields must be default-constructible.</li>
+<li>Atomic types cannot be mixed with <code>rfl::DefaultVal</code> or the <code>rfl::DefaultIfMissing</code> processor; attempting to do so triggers a static assertion at compile-time (see parser implementations).</li>
+<li>The semantics used for setting atomic values use relaxed memory order (<code>std::memory_order_relaxed</code>).</li>
+<li>For complex aggregates, <code>rfl::atomic</code> will recurse into nested fields and arrays to set atomic members.</li>
+</ul>
 
 
 

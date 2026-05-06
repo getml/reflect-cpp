@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="A C++20 library for fast serialization, deserialization and validation using reflection.  Supports JSON, AVRO, BSON, Cap'n Proto, CBOR, CSV, flexbuffers, msgpack, parquet, TOML, UBJSON, XML, YAML ">
+        <meta name="description" content="A C++20 library for fast serialization, deserialization and validation using reflection.  Supports JSON, AVRO, BSON, Boost Serialization, Cap'n Proto, CBOR, Cereal, CSV, flexbuffers, msgpack, parquet, TOML, UBJSON, XML, YAML, yas ">
       
       
         <meta name="author" content="Code17 GmbH">
@@ -489,6 +489,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../supported_formats/boost_serialization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Boost Serialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../supported_formats/bson/" class="md-nav__link">
         
   
@@ -553,6 +581,34 @@
     
   
     CBOR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported_formats/cereal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cereal
   
 
     
@@ -825,6 +881,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../supported_formats/yas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    yas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../supported_formats/supporting_your_own_format/" class="md-nav__link">
         
   
@@ -1056,6 +1140,34 @@
     
   
     Optional fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../default_val/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Default values
   
 
     
@@ -1328,6 +1440,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../commented/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rfl::Commented
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../result/" class="md-nav__link">
         
   
@@ -1448,6 +1588,34 @@
     
   
     rfl::Binary, rfl::Hex and rfl::Oct
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../atomic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    std::atomic, std::atomic_flag
   
 
     
@@ -1658,6 +1826,34 @@
     
   
     JSON schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../enum_descriptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enum descriptions
   
 
     
@@ -2422,7 +2618,7 @@ if you want an integer that is greater or equal to 10, you can do the following:
 </code></pre></div>
 <p>When you then use the type <code>IntGreaterThan10</code> inside you <code>rfl::Field</code>, the condition will be automatically
 validated.</p>
-<p>The underlying value can be retrieved using the <code>.value()</code> method.</p>
+<p>The underlying value can be retrieved using the <code>.get()</code>, <code>.value()</code>, <code>operator()()</code>, or <code>operator*()</code> method (const and non-const overloads).</p>
 <p>The current conditions are currently supported by reflect-cpp:</p>
 <ul>
 <li><code>rfl::EqualTo</code></li>

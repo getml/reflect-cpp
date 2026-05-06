@@ -12,13 +12,9 @@
         <meta name="author" content="Code17 GmbH">
       
       
-        <link rel="canonical" href="https://rfl.getml.com/extra_fields/">
+        <link rel="canonical" href="https://rfl.getml.com/cli/">
       
       
-        <link rel="prev" href="../generic/">
-      
-      
-        <link rel="next" href="../concepts/custom_classes/">
       
       
         
@@ -29,7 +25,7 @@
     
     
       
-        <title>rfl::ExtraFields - reflect-cpp</title>
+        <title>rfl::cli — Command-Line Argument Parser - reflect-cpp</title>
       
     
     
@@ -82,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#rflextrafields" class="md-skip">
+        <a href="#rflcli-command-line-argument-parser" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              rfl::ExtraFields
+              rfl::cli — Command-Line Argument Parser
             
           </span>
         </div>
@@ -295,12 +291,10 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
+      <li class="md-tabs__item">
         <a href="../docs-readme/" class="md-tabs__link">
           
   
@@ -968,29 +962,24 @@
       
   
   
-    
   
   
-  
     
     
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -1008,7 +997,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1867,8 +1856,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1879,11 +1866,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
         
           
           <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
@@ -1904,7 +1891,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1975,19 +1962,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../extra_fields/" class="md-nav__link">
         
   
   
@@ -2003,7 +1981,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -2527,6 +2504,91 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#positional-arguments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Positional arguments
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#short-aliases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Short aliases
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#combining-positional-and-short" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Combining Positional and Short
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2543,64 +2605,6 @@
   
 
 
-  <nav class="md-path" aria-label="Navigation" >
-    <ol class="md-path__list">
-      
-        
-  
-  
-    <li class="md-path__item">
-      <a href=".." class="md-path__link">
-        
-  <span class="md-ellipsis">
-    Welcome
-  </span>
-
-      </a>
-    </li>
-  
-
-      
-      
-        
-  
-  
-    
-    
-      <li class="md-path__item">
-        <a href="../docs-readme/" class="md-path__link">
-          
-  <span class="md-ellipsis">
-    Documentation
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-    
-    
-      <li class="md-path__item">
-        <a href="../object/" class="md-path__link">
-          
-  <span class="md-ellipsis">
-    Generic elements
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-      
-    </ol>
-  </nav>
-
               
               <article class="md-content__inner md-typeset">
                 
@@ -2611,47 +2615,164 @@
   
 
 
-<h1 id="rflextrafields"><code>rfl::ExtraFields</code><a class="headerlink" href="#rflextrafields" title="Permanent link">&para;</a></h1>
-<p>In some cases, you simply do not know all of the possible field names at compile time. You might know some, but you
-do not know all of them.</p>
-<p>Note that there are many ways of dealing with these kind of uncertainties, such as optional fields or tagged unions.</p>
-<p>But in instance where the field names are absolutely not known in advance, you might want to use <code>rfl::ExtraFields</code>:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">;</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">ExtraFields</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">Generic</span><span class="o">&gt;</span><span class="w"> </span><span class="n">extra_fields</span><span class="p">;</span>
+<h1 id="rflcli-command-line-argument-parser">rfl::cli — Command-Line Argument Parser<a class="headerlink" href="#rflcli-command-line-argument-parser" title="Permanent link">&para;</a></h1>
+<p>Parse <code>argc</code>/<code>argv</code> into any reflectable struct via <code>rfl::cli::read&lt;T&gt;(argc, argv)</code>.</p>
+<h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
+<div class="language-cpp highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;rfl/cli.hpp&gt;</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">Config</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">host_name</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">port</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">rate</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">tags</span><span class="p">;</span>
 <span class="p">};</span>
 
-<span class="k">auto</span><span class="w"> </span><span class="n">homer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Homer&quot;</span><span class="p">};</span>
-
-<span class="n">homer</span><span class="p">.</span><span class="n">extra_fields</span><span class="p">[</span><span class="s">&quot;age&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">45</span><span class="p">;</span>
-<span class="n">homer</span><span class="p">.</span><span class="n">extra_fields</span><span class="p">[</span><span class="s">&quot;email&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;homer@simpson.com&quot;</span><span class="p">;</span>
-<span class="n">homer</span><span class="p">.</span><span class="n">extra_fields</span><span class="p">[</span><span class="s">&quot;town&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Springfield&quot;</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">cli</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">Config</span><span class="o">&gt;</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// ./app --host-name=localhost --port=8080 --verbose --tags=a,b,c</span>
+<span class="p">}</span>
 </code></pre></div>
-<p>Note that <code>rfl::ExtraFields</code> inherits from <code>rfl::Object</code> and therefore behaves exactly like it. Refer
-to the relevant section of the documentation on <code>rfl::Object</code>.</p>
-<p>This will result in the following JSON string:</p>
-<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;first_name&quot;</span><span class="p">:</span><span class="s2">&quot;Homer&quot;</span><span class="p">,</span><span class="nt">&quot;last_name&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">,</span><span class="nt">&quot;age&quot;</span><span class="p">:</span><span class="mi">45</span><span class="p">,</span><span class="nt">&quot;email&quot;</span><span class="p">:</span><span class="s2">&quot;homer@simpson.com&quot;</span><span class="p">,</span><span class="nt">&quot;town&quot;</span><span class="p">:</span><span class="s2">&quot;Springfield&quot;</span><span class="p">}</span>
-</code></pre></div>
-<p>Likewise, when we parse the JSON string, all of the fields that can't be directly matched to
-a known field will be parsed into <code>extra_fields</code>.</p>
-<p>Note that in this particular instance, we have set the type to <code>rfl::Generic</code>. But if we know in
-advance that all of the extra fields must be strings, we can set it to <code>std::string</code> as well:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">;</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">ExtraFields</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">extra_fields</span><span class="p">;</span>
+<p>Field names undergo automatic <code>snake_case</code> -&gt; <code>kebab-case</code> conversion:
+<code>host_name</code> matches <code>--host-name</code>.</p>
+<h2 id="positional-arguments">Positional arguments<a class="headerlink" href="#positional-arguments" title="Permanent link">&para;</a></h2>
+<p>Wrap a field with <code>rfl::Positional&lt;T&gt;</code> to accept it as a bare (non-flag) argument:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Config</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Positional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">input_file</span><span class="p">;</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Positional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">output_file</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose</span><span class="p">;</span>
 <span class="p">};</span>
 
-<span class="k">auto</span><span class="w"> </span><span class="n">homer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Homer&quot;</span><span class="p">};</span>
+<span class="c1">// ./app input.txt output.txt --verbose</span>
+</code></pre></div>
+<p>Positional arguments are matched in declaration order. They can also be
+passed as named arguments: <code>--input-file=input.txt</code>.</p>
+<p>The <code>--</code> separator forces all subsequent tokens into positional:</p>
+<div class="language-text highlight"><pre><span></span><code>./app --verbose -- --not-a-flag.txt
+</code></pre></div>
+<h2 id="short-aliases">Short aliases<a class="headerlink" href="#short-aliases" title="Permanent link">&para;</a></h2>
+<p>Wrap a field with <code>rfl::Short&lt;"x", T&gt;</code> to add a single-character alias:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Config</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Short</span><span class="o">&lt;</span><span class="s">&quot;p&quot;</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">port</span><span class="p">;</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Short</span><span class="o">&lt;</span><span class="s">&quot;v&quot;</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">verbose</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">host</span><span class="p">;</span>
+<span class="p">};</span>
 
-<span class="n">homer</span><span class="p">.</span><span class="n">extra_fields</span><span class="p">[</span><span class="s">&quot;email&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;homer@simpson.com&quot;</span><span class="p">;</span>
-<span class="n">homer</span><span class="p">.</span><span class="n">extra_fields</span><span class="p">[</span><span class="s">&quot;town&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Springfield&quot;</span><span class="p">;</span>
+<span class="c1">// ./app -p 8080 -v --host=localhost</span>
+<span class="c1">// ./app -p=8080 -v --host=localhost</span>
+<span class="c1">// ./app --port=8080 --verbose --host=localhost   (long names still work)</span>
 </code></pre></div>
-<p>This will result in the following JSON string:</p>
-<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;first_name&quot;</span><span class="p">:</span><span class="s2">&quot;Homer&quot;</span><span class="p">,</span><span class="nt">&quot;last_name&quot;</span><span class="p">:</span><span class="s2">&quot;Simpson&quot;</span><span class="p">,</span><span class="nt">&quot;email&quot;</span><span class="p">:</span><span class="s2">&quot;homer@simpson.com&quot;</span><span class="p">,</span><span class="nt">&quot;town&quot;</span><span class="p">:</span><span class="s2">&quot;Springfield&quot;</span><span class="p">}</span>
+<p>Short bool flags do not consume the next token as a value — <code>-v somefile</code>
+treats <code>somefile</code> as a positional argument, not as the value of <code>-v</code>.
+To explicitly set a bool short flag, use <code>=</code> syntax: <code>-v=true</code>, <code>-v=false</code>.</p>
+<h2 id="combining-positional-and-short">Combining Positional and Short<a class="headerlink" href="#combining-positional-and-short" title="Permanent link">&para;</a></h2>
+<p><code>Positional</code> and <code>Short</code> can be used together in the same struct, but
+<strong>cannot be nested</strong> (<code>Positional&lt;Short&lt;...&gt;&gt;</code> is a compile-time error):</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Config</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Positional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">input_file</span><span class="p">;</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Short</span><span class="o">&lt;</span><span class="s">&quot;o&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">output_dir</span><span class="p">;</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Short</span><span class="o">&lt;</span><span class="s">&quot;v&quot;</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">verbose</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// ./app data.csv -o /tmp/out -v --count=10</span>
 </code></pre></div>
-<p>If we add an extra field that is not a string (like <code>"age":45</code>), this will result in a parsing error. </p>
+<h2 id="supported-types">Supported types<a class="headerlink" href="#supported-types" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>CLI format</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>std::string</code></td>
+<td><code>--key=value</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>int</code>, <code>long</code>, ...</td>
+<td><code>--key=42</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>float</code>, <code>double</code></td>
+<td><code>--key=1.5</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>bool</code></td>
+<td><code>--flag</code> or <code>--flag=true</code></td>
+<td>No <code>=</code> implies <code>true</code></td>
+</tr>
+<tr>
+<td><code>enum</code></td>
+<td><code>--key=value_name</code></td>
+<td>Via <code>rfl::string_to_enum</code></td>
+</tr>
+<tr>
+<td><code>std::optional&lt;T&gt;</code></td>
+<td>omit for <code>nullopt</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>std::vector&lt;T&gt;</code></td>
+<td><code>--key=a,b,c</code></td>
+<td>Comma-separated; empty elements skipped</td>
+</tr>
+<tr>
+<td>Nested struct</td>
+<td><code>--parent.child=val</code></td>
+<td>Dot-separated path</td>
+</tr>
+<tr>
+<td><code>rfl::Flatten&lt;T&gt;</code></td>
+<td>fields inlined</td>
+<td>No prefix needed</td>
+</tr>
+<tr>
+<td><code>rfl::Rename&lt;"x", T&gt;</code></td>
+<td><code>--x=val</code></td>
+<td>Bypasses kebab conversion</td>
+</tr>
+<tr>
+<td><code>rfl::Positional&lt;T&gt;</code></td>
+<td>bare token</td>
+<td>Matched in declaration order</td>
+</tr>
+<tr>
+<td><code>rfl::Short&lt;"x", T&gt;</code></td>
+<td><code>-x value</code> or <code>-x=value</code></td>
+<td>Single-character alias</td>
+</tr>
+</tbody>
+</table>
+<h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
+<p>Parsing proceeds in three stages:</p>
+<ol>
+<li><strong><code>parse_argv</code></strong> — categorizes raw tokens into <code>named</code>, <code>short_args</code>,
+   and <code>positional</code> buckets (<code>ParsedArgs</code> struct). No type information needed.</li>
+<li><strong><code>resolve_args</code></strong> — uses compile-time metadata from the target struct to
+   map short aliases to long names, reclaim values from bool short flags,
+   and merge positional arguments. Produces a flat <code>map&lt;string, string&gt;</code>.</li>
+<li><strong><code>Reader</code></strong> — implements reflect-cpp's <code>IsReader</code> concept by presenting
+   virtual tree nodes over the flat map. Each node is a <code>{map*, path}</code> pair —
+   no data copying, just prefix-based lookup via <code>lower_bound</code>.</li>
+</ol>
+<h2 id="files">Files<a class="headerlink" href="#files" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>include/rfl/cli/read.hpp</code> — public API</li>
+<li><code>include/rfl/cli/Reader.hpp</code> — Reader + <code>parse_value</code> overloads</li>
+<li><code>include/rfl/cli/Parser.hpp</code> — Parser type alias</li>
+<li><code>include/rfl/cli/parse_argv.hpp</code> — <code>argv</code> -&gt; <code>ParsedArgs</code></li>
+<li><code>include/rfl/cli/resolve_args.hpp</code> — <code>ParsedArgs</code> -&gt; <code>map&lt;string, string&gt;</code></li>
+<li><code>include/rfl/cli.hpp</code> — aggregator header</li>
+<li><code>include/rfl/SnakeCaseToKebabCase.hpp</code> — processor</li>
+<li><code>include/rfl/Positional.hpp</code> — <code>Positional&lt;T&gt;</code> wrapper</li>
+<li><code>include/rfl/Short.hpp</code> — <code>Short&lt;"x", T&gt;</code> wrapper</li>
+</ul>
 
 
 

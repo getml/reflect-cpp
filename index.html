@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="A C++20 library for fast serialization, deserialization and validation using reflection.  Supports JSON, AVRO, BSON, Cap'n Proto, CBOR, CSV, flexbuffers, msgpack, parquet, TOML, UBJSON, XML, YAML ">
+        <meta name="description" content="A C++20 library for fast serialization, deserialization and validation using reflection.  Supports JSON, AVRO, BSON, Boost Serialization, Cap'n Proto, CBOR, Cereal, CSV, flexbuffers, msgpack, parquet, TOML, UBJSON, XML, YAML, yas ">
       
       
         <meta name="author" content="Code17 GmbH">
@@ -599,6 +599,34 @@
   
   
     <li class="md-nav__item">
+      <a href="supported_formats/boost_serialization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Boost Serialization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="supported_formats/bson/" class="md-nav__link">
         
   
@@ -663,6 +691,34 @@
     
   
     CBOR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="supported_formats/cereal/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cereal
   
 
     
@@ -935,6 +991,34 @@
   
   
     <li class="md-nav__item">
+      <a href="supported_formats/yas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    yas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="supported_formats/supporting_your_own_format/" class="md-nav__link">
         
   
@@ -1161,6 +1245,34 @@
     
   
     Optional fields
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="default_val/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Default values
   
 
     
@@ -1433,6 +1545,34 @@
   
   
     <li class="md-nav__item">
+      <a href="commented/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rfl::Commented
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="result/" class="md-nav__link">
         
   
@@ -1553,6 +1693,34 @@
     
   
     rfl::Binary, rfl::Hex and rfl::Oct
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="atomic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    std::atomic, std::atomic_flag
   
 
     
@@ -1751,6 +1919,34 @@
     
   
     JSON schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="enum_descriptions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enum descriptions
   
 
     
@@ -2547,6 +2743,7 @@
 <li>Simple <a href="https://rfl.getml.com/install">installation</a></li>
 <li>Simple extendability to <a href="https://rfl.getml.com/supported_formats/supporting_your_own_format">other serialization formats</a></li>
 <li>Simple extendability to <a href="https://rfl.getml.com/concepts/custom_classes">custom classes</a></li>
+<li>Support for default-valued fields via <code>rfl::DefaultVal</code> (see <a href="default_val/">Default values</a>)</li>
 <li>Being one of the fastest serialization libraries in existence, as demonstrated by our <a href="https://rfl.getml.com/benchmarks">benchmarks</a></li>
 </ul>
 <h2 id="why-do-we-need-this">Why do we need this?<a class="headerlink" href="#why-do-we-need-this" title="Permanent link">&para;</a></h2>
