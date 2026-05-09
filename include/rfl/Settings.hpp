@@ -58,9 +58,7 @@ T settings_with_replaced_by_name(
   constexpr std::size_t I = field_index_by_name_v<T, Name>;
   static_assert(I != static_cast<std::size_t>(-1),
                 "No field with the given name exists in T.");
-  using FieldTypeCv = std::remove_pointer_t<decltype(
-      get_ith_field_from_fake_object<T, static_cast<int>(I)>())>;
-  static_assert(std::is_const_v<FieldTypeCv>,
+  static_assert(ith_field_is_const<T, static_cast<int>(I)>(),
                 "Fields in Settings structs must be const.");
   return rfl::replace(_obj, rfl::make_field<Name>(std::move(_value)));
 }
