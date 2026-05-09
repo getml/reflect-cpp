@@ -12,9 +12,9 @@
 namespace rfl::internal {
 
 template <class T, std::size_t n>
-struct fake_object_helper {
+struct field_extractor {
   template <int _i>
-  static consteval auto get_field() {
+  static consteval auto get_ptr(const std::remove_cvref_t<T>&) {
     static_assert(
         rfl::always_false_v<T>,
         "\n\nThis error occurs for one of two reasons:\n\n"
@@ -33,10 +33,10 @@ struct fake_object_helper {
 #define RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS( \
     n, ...)                                                                              \
   template <class T>                                                                     \
-  struct fake_object_helper<T, n> {                                                      \
+  struct field_extractor<T, n> {                                                         \
     template <int _i>                                                                    \
-    static consteval auto get_field() {                                                  \
-      const auto& [__VA_ARGS__] = get_fake_object<std::remove_cvref_t<T>>();             \
+    static consteval auto get_ptr(const std::remove_cvref_t<T>& _obj) {                  \
+      const auto& [__VA_ARGS__] = _obj;                                                  \
       const auto get_ptrs = [](const auto&... _refs) {                                   \
         return nth_element<_i>(&_refs...);                                               \
       };                                                                                 \
@@ -2816,8 +2816,13 @@ RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS(
 #undef RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS
 
 template <class T, int _i>
+consteval auto get_ith_field_ptr(const std::remove_cvref_t<T>& _obj) {
+  return field_extractor<T, num_fields<T>>::template get_ptr<_i>(_obj);
+}
+
+template <class T, int _i>
 consteval auto get_ith_field_from_fake_object() {
-  return fake_object_helper<T, num_fields<T>>::template get_field<_i>();
+  return get_ith_field_ptr<T, _i>(get_fake_object<std::remove_cvref_t<T>>());
 }
 
 }  // namespace rfl::internal

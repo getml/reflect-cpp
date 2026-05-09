@@ -22,19 +22,14 @@ namespace internal {
 #endif
 
 template <class T>
-struct fake_object_holder {
+struct wrapper {
   const T value;
+  static const wrapper<T> report_if_you_see_a_link_error_with_this_object;
 };
-
-// Declared but never defined. Distinct from rfl::internal::Wrapper
-// (which is a payload wrapper used in name-lookup NTTPs).
-template <class T>
-extern const fake_object_holder<T>
-    report_if_you_see_a_link_error_with_this_object;
 
 template <class T>
 consteval const T& get_fake_object() noexcept {
-  return report_if_you_see_a_link_error_with_this_object<T>.value;
+  return wrapper<T>::report_if_you_see_a_link_error_with_this_object.value;
 }
 
 #ifdef __clang__

@@ -4,7 +4,6 @@
 #include <cstddef>
 #include <utility>
 
-#include "get_fake_object.hpp"
 #include "get_field_names.hpp"
 #include "get_ith_field_from_fake_object.hpp"
 #include "num_fields.hpp"
@@ -12,17 +11,20 @@
 namespace rfl::internal {
 
 /// Finds the index of the data member designated by `FieldPtr` in T by
-/// comparing the address of (fake_object<T>().*FieldPtr) against the
-/// addresses of T's structured-binding fields. All comparisons are between
-/// subobject pointers of the same fake object, which is well-defined in a
-/// constant expression. Returns size_t(-1) if no match is found, in which
-/// case callers must produce a static_assert.
+/// comparing the address of (obj.*FieldPtr) against the addresses of T's
+/// structured-binding fields, where obj is a locally default-constructed T.
+/// All comparisons are between subobject pointers of the same local object,
+/// which is well-defined in a constant expression. T must be
+/// default-constructible in a constant expression.
+/// Returns size_t(-1) if no match is found, in which case callers must
+/// produce a static_assert.
 template <class T, auto FieldPtr, std::size_t... Is>
 consteval std::size_t field_index_from_ptm_impl(std::index_sequence<Is...>) {
-  const void* target =
-      static_cast<const void*>(&(get_fake_object<T>().*FieldPtr));
+  T obj{};
+  const void* target = static_cast<const void*>(&(obj.*FieldPtr));
   std::size_t result = static_cast<std::size_t>(-1);
-  ((static_cast<const void*>(get_ith_field_from_fake_object<T, Is>()) == target
+  ((static_cast<const void*>(get_ith_field_ptr<T, static_cast<int>(Is)>(obj)) ==
+            target
         ? (result = Is, true)
         : false) ||
    ...);
