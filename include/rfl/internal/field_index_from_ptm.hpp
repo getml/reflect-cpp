@@ -2,6 +2,7 @@
 #define RFL_INTERNAL_FIELD_INDEX_FROM_PTM_HPP_
 
 #include <cstddef>
+#include <type_traits>
 #include <utility>
 
 #include "get_field_names.hpp"
@@ -20,6 +21,9 @@ namespace rfl::internal {
 /// produce a static_assert.
 template <class T, auto FieldPtr, std::size_t... Is>
 consteval std::size_t field_index_from_ptm_impl(std::index_sequence<Is...>) {
+  static_assert(std::is_default_constructible_v<T>,
+                "Settings structs used with rfl::Settings::with<&T::field>() "
+                "must be default-constructible.");
   T obj{};
   const void* target = static_cast<const void*>(&(obj.*FieldPtr));
   std::size_t result = static_cast<std::size_t>(-1);

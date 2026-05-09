@@ -82,6 +82,7 @@ T settings_with_replaced_by_name(
 ///   auto b = MySettings{}.with<"some_option">(100);
 #define RFL_SETTINGS_OPS(Derived)                                              \
   template <auto FieldPtr>                                                     \
+    requires ::rfl::internal::const_member_of<FieldPtr, Derived>               \
   Derived with(std::remove_const_t<std::remove_reference_t<                    \
                    decltype(std::declval<Derived>().*FieldPtr)>>               \
                    _value) const {                                             \
