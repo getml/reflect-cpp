@@ -54,7 +54,7 @@ T settings_with_replaced(
 template <class T, StringLiteral Name>
 T settings_with_replaced_by_name(
     const T& _obj,
-    field_type_at_t<T, field_index_by_name_v<T, Name>> _value) {
+    field_value_type_at_t<T, field_index_by_name_v<T, Name>> _value) {
   constexpr std::size_t I = field_index_by_name_v<T, Name>;
   static_assert(I != static_cast<std::size_t>(-1),
                 "No field with the given name exists in T.");
@@ -90,7 +90,7 @@ T settings_with_replaced_by_name(
         *this, std::move(_value));                                             \
   }                                                                            \
   template <::rfl::internal::StringLiteral Name>                               \
-  Derived with(::rfl::internal::field_type_at_t<                               \
+  Derived with(::rfl::internal::field_value_type_at_t<                         \
                Derived,                                                        \
                ::rfl::internal::field_index_by_name_v<Derived, Name>>          \
                    _value) const {                                             \

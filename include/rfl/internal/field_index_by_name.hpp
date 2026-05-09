@@ -38,9 +38,12 @@ inline constexpr std::size_t field_index_by_name_v =
     field_index_by_name_impl<T, Name>(
         std::make_index_sequence<num_fields<T>>{});
 
-/// Helper: extracts the value type the i-th fake-object pointer points to.
+/// Helper: extracts the cv-stripped value type of the i-th field of T,
+/// suitable as a function parameter or local variable type. Use this when
+/// you need to declare an object of the field's type; do not use it to
+/// inspect const-ness of the original field declaration (cv is removed).
 template <class T, std::size_t I>
-struct field_type_at {
+struct field_value_type_at {
   using type = std::remove_cv_t<std::remove_pointer_t<
       decltype(get_ith_field_from_fake_object<T, static_cast<int>(I)>())>>;
 };
@@ -54,12 +57,12 @@ struct unresolved_field_type {};
 /// that a failing field_index_by_name_v lookup does not trip an out-of-range
 /// instantiation before the caller's static_assert can fire.
 template <class T>
-struct field_type_at<T, static_cast<std::size_t>(-1)> {
+struct field_value_type_at<T, static_cast<std::size_t>(-1)> {
   using type = unresolved_field_type;
 };
 
 template <class T, std::size_t I>
-using field_type_at_t = typename field_type_at<T, I>::type;
+using field_value_type_at_t = typename field_value_type_at<T, I>::type;
 
 }  // namespace rfl::internal
 
