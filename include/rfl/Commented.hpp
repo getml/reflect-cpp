@@ -10,10 +10,11 @@
 
 namespace rfl {
 
-/// Wraps a field value with an optional comment for formats that support comments.
-/// The comment is preserved during serialization and deserialization for formats like TOML and YAML
-/// that support inline comments. For formats without comment support, the comment is ignored.
-/// This allows you to maintain documentation/metadata alongside your data.
+/// Wraps a field value with an optional comment for formats that support
+/// comments. The comment is preserved during serialization for formats like
+/// TOML and YAML that support inline comments. For formats without comment
+/// support, the comment is ignored. This allows you to maintain
+/// documentation/metadata alongside your data.
 /// @tparam T The type of the field value
 template <class T>
 struct Commented {
@@ -21,7 +22,8 @@ struct Commented {
   using Type = std::remove_cvref_t<T>;
   using ReflectionType = Type;
 
-  /// Default constructor - initializes with default-constructed value and no comment.
+  /// Default constructor - initializes with default-constructed value and no
+  /// comment.
   Commented() : value_(Type()) {}
 
   /// Constructs from a value without a comment.
@@ -89,7 +91,8 @@ struct Commented {
     requires(std::is_convertible_v<U, Type>)
   Commented(U&& _value) noexcept : value_(std::forward<U>(_value)) {}
 
-  /// Assigns the underlying object to its default value using the Default sentinel.
+  /// Assigns the underlying object to its default value using the Default
+  /// sentinel.
   /// @tparam U The type (must be default constructible)
   /// @param The default sentinel value
   template <class U = Type>
@@ -104,7 +107,8 @@ struct Commented {
   void add_comment(std::string _comment) { comment_ = std::move(_comment); }
 
   /// Returns the comment associated with the field, if any.
-  /// @return An optional containing the comment string, or nullopt if no comment
+  /// @return An optional containing the comment string, or nullopt if no
+  /// comment
   const std::optional<std::string>& comment() const { return comment_; }
 
   /// Returns the underlying value.
