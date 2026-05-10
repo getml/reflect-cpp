@@ -39,7 +39,7 @@ TEST(csv, test_save_load) {
                                   .age = 45,
                                   .email = "homer@simpson.com"}});
 
-  const auto settings = rfl::csv::Settings{}.with_delimiter(';');
+  const auto settings = rfl::csv::Settings{}.with<&rfl::csv::Settings::delimiter>(';');
 
   rfl::csv::save("people.csv", people1, settings);
 
