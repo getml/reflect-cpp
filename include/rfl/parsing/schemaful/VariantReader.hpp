@@ -14,6 +14,14 @@ template <class R, class W, class VariantType, class ProcessorsType,
           class... AlternativeTypes>
 class VariantReader {
  public:
+  /**
+   * @brief Reads a variant from the input.
+   *
+   * @param _r The reader to use.
+   * @param _index The index of the alternative to read.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed variant or an error.
+   */
   static Result<VariantType> read(
       const R& _r, const size_t _index,
       const typename R::InputVarType& _var) noexcept {
@@ -26,6 +34,15 @@ class VariantReader {
   }
 
  private:
+  /**
+   * @brief Tries to read one specific type of the variant.
+   *
+   * @tparam _i The index of the type to try.
+   * @param _r The reader to use.
+   * @param _index The index of the alternative to read.
+   * @param _var The input variable to read from.
+   * @param _result The result pointer to store the parsed variant.
+   */
   template <size_t _i>
   static void try_one_type(const R& _r, const size_t _index,
                            const typename R::InputVarType& _var,

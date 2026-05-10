@@ -41,6 +41,13 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
       std::conditional_t<no_field_names_, typename R::InputArrayType,
                          typename R::InputObjectType>;
 
+  /**
+   * @brief Reads a tagged union from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed tagged union or an error.
+   */
   static ResultType read(const R& _r, const InputVarType& _var) noexcept {
     if constexpr (schemaful::IsSchemafulReader<R>) {
       return Parser<R, W, Variant<AlternativeTypes...>, ProcessorsType>::read(
@@ -71,6 +78,14 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
     }
   }
 
+  /**
+   * @brief Writes a tagged union to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _tagged_union The tagged union to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(
       const W& _w,
@@ -85,6 +100,12 @@ struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
     }
   }
 
+  /**
+   * @brief Generates the schema for the tagged union.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) noexcept {
     if constexpr (schemaful::IsSchemafulReader<R> &&

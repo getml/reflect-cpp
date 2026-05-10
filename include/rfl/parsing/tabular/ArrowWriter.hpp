@@ -44,10 +44,21 @@ class ArrowWriter {
  public:
   using ValueType = typename std::remove_cvref_t<typename VecType::value_type>;
 
+  /**
+   * @brief Constructor.
+   *
+   * @param _chunksize The chunk size.
+   */
   ArrowWriter(const size_t _chunksize) : chunksize_(_chunksize) {}
 
   ~ArrowWriter() = default;
 
+  /**
+   * @brief Converts the data to an Arrow table.
+   *
+   * @param _data The data to convert.
+   * @return The Arrow table.
+   */
   std::shared_ptr<arrow::Table> to_table(const VecType& _data) const {
     return arrow::Table::Make(
         make_arrow_schema<named_tuple_t<ValueType, Ps...>, _s>(),
@@ -55,6 +66,12 @@ class ArrowWriter {
   }
 
  private:
+  /**
+   * @brief Converts the data to chunked arrays.
+   *
+   * @param _data The data to convert.
+   * @return The chunked arrays.
+   */
   std::vector<std::shared_ptr<arrow::ChunkedArray>> to_chunked_arrays(
       const VecType& _data) const;
 

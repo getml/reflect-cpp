@@ -24,27 +24,48 @@ class ViewReader {
   static constexpr size_t size_ = ViewType::size();
 
  public:
+  /**
+   * @brief Constructor.
+   *
+   * @param _r The reader to use.
+   * @param _view The view to read into.
+   * @param _found A boolean array indicating which fields have been found.
+   * @param _set A boolean array indicating which fields have been successfully set.
+   * @param _errors The vector to collect errors in.
+   */
   ViewReader(const R* _r, ViewType* _view, std::array<bool, size_>* _found,
              std::array<bool, size_>* _set, std::vector<std::string>* _errors)
       : r_(_r), view_(_view), found_(_found), set_(_set), errors_(_errors) {}
 
   ~ViewReader() = default;
 
-  /// Assigns the parsed version of _var to the field signified by _name, if
-  /// such a field exists in the underlying view.
+  /**
+   * @brief Reads a single field into the view.
+   *
+   * @param _name The name of the field.
+   * @param _var The input variable to read from.
+   */
   void read(const std::string_view& _name, const InputVarType& _var) const {
     assign_to_matching_field(*r_, _name, _var, view_, errors_, found_, set_,
                              std::make_integer_sequence<int, size_>());
   }
 
-  /// Assigns the parsed version of _var to the field signified by _index, if
-  /// such a field exists in the underlying view.
-  /// Note that schemaful formats can assign by index.
+  /**
+   * @brief Reads a single field into the view.
+   *
+   * @param _index The index of the field.
+   * @param _var The input variable to read from.
+   */
   void read(const int _index, const InputVarType& _var) const {
     assign_to_matching_field(*r_, _index, _var, view_, errors_, found_, set_,
                              std::make_integer_sequence<int, size_>());
   }
 
+  /**
+   * @brief Returns the size of the view.
+   *
+   * @return The size of the view.
+   */
   static constexpr size_t size() { return size_; }
 
  private:

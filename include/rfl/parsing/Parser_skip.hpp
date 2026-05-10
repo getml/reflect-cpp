@@ -24,6 +24,13 @@ struct Parser<R, W,
   using InputVarType = typename R::InputVarType;
   using ParentType = Parent<W>;
 
+  /**
+   * @brief Reads a value and skips it if required.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed value or an error.
+   */
   static Result<internal::Skip<T, _skip_serialization, _skip_deserialization>>
   read(const R& _r, const InputVarType& _var) noexcept {
     if constexpr (_skip_deserialization) {
@@ -40,6 +47,14 @@ struct Parser<R, W,
     }
   }
 
+  /**
+   * @brief Writes a value and skips it if required.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _skip The value to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w,
                     const internal::Skip<T, _skip_serialization,
@@ -53,6 +68,12 @@ struct Parser<R, W,
     }
   }
 
+  /**
+   * @brief Generates the schema for the value.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::to_schema(

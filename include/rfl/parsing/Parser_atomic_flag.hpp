@@ -18,14 +18,26 @@ template <class R, class W, class ProcessorsType>
 struct Parser<R, W, std::atomic_flag, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
-  /// Read is not supported for atomic types - we must used rfl::atomic instead.
-
+  /**
+   * @brief Writes an atomic_flag to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _a The atomic_flag to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const std::atomic_flag& _a, const P& _parent) {
     Parser<R, W, bool, ProcessorsType>::write(
         _w, _a.test(std::memory_order_relaxed), _parent);
   }
 
+  /**
+   * @brief Generates the schema for the atomic_flag.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     return schema::Type{

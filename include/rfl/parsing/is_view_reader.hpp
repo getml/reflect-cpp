@@ -5,6 +5,11 @@
 
 namespace rfl ::parsing {
 
+/**
+ * @brief Trait to check if a type is a view reader.
+ *
+ * @tparam T The type to check.
+ */
 template <class T>
 class is_view_reader;
 

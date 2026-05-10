@@ -9,7 +9,11 @@
 namespace rfl {
 namespace parsing {
 
-/// Determines whether a writer supports attributes.
+/**
+ * @brief Determines whether a writer supports attributes.
+ *
+ * @tparam W The writer type.
+ */
 template <class W>
 concept supports_attributes = requires(W w, std::string_view name,
                                        typename W::OutputObjectType obj,

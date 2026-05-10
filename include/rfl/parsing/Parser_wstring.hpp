@@ -20,6 +20,13 @@ struct Parser<R, W, std::wstring, ProcessorsType> {
 
   using ParentType = Parent<W>;
 
+  /**
+   * @brief Reads a wstring from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed wstring or an error.
+   */
   static Result<std::wstring> read(const R& _r,
                                    const InputVarType& _var) noexcept {
     if (_r.is_empty(_var)) {
@@ -51,6 +58,14 @@ struct Parser<R, W, std::wstring, ProcessorsType> {
     return Result<std::wstring>(outStr);
   }
 
+  /**
+   * @brief Writes a wstring to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _str The wstring to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const std::wstring& _str, const P& _parent) {
     if (_str.empty()) {
@@ -69,6 +84,12 @@ struct Parser<R, W, std::wstring, ProcessorsType> {
     ParentType::add_value(_w, outStr, _parent);
   }
 
+  /**
+   * @brief Generates the schema for the wstring.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     return Parser<R, W, std::string, ProcessorsType>::to_schema(_definitions);

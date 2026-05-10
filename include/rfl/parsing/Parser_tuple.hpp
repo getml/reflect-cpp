@@ -10,6 +10,9 @@
 namespace rfl {
 namespace parsing {
 
+/**
+ * @brief Parser specialization for std::tuple.
+ */
 template <class R, class W, class... Ts, class ProcessorsType>
   requires AreReaderAndWriter<R, W, std::tuple<Ts...>>
 struct Parser<R, W, std::tuple<Ts...>, ProcessorsType>

@@ -26,6 +26,13 @@ struct Parser<R, W, Commented<T>, ProcessorsType> {
 
   using ParentType = Parent<W>;
 
+  /**
+   * @brief Reads a Commented value from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed Commented value or an error.
+   */
   static Result<Commented<T>> read(const R& _r,
                                    const InputVarType& _var) noexcept {
     return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r, _var)
@@ -34,6 +41,14 @@ struct Parser<R, W, Commented<T>, ProcessorsType> {
         });
   }
 
+  /**
+   * @brief Writes a Commented value to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _c The Commented value to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const Commented<T>& _c, const P& _parent) {
     Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, _c.get(),
@@ -45,6 +60,12 @@ struct Parser<R, W, Commented<T>, ProcessorsType> {
     }
   }
 
+  /**
+   * @brief Generates the schema for the Commented value.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::to_schema(

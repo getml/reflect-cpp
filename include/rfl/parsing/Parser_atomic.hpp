@@ -18,14 +18,26 @@ template <class R, class W, class T, class ProcessorsType>
 struct Parser<R, W, std::atomic<T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
-  /// Read is not supported for atomic types - we must used rfl::atomic instead.
-
+  /**
+   * @brief Writes an atomic value to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _a The atomic value to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const std::atomic<T>& _a, const P& _parent) {
     Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(
         _w, _a.load(std::memory_order_relaxed), _parent);
   }
 
+  /**
+   * @brief Generates the schema for the atomic value.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     using U = std::remove_cvref_t<T>;

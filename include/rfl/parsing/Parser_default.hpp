@@ -44,7 +44,13 @@ struct Parser {
 
   using ParentType = Parent<W>;
 
-  /// Expresses the variables as type T.
+  /**
+   * @brief Reads a value from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed value or an error.
+   */
   static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
     if constexpr (internal::has_read_reflector<T>) {
       const auto wrap_in_t = [](auto&& _named_tuple) -> Result<T> {
@@ -90,6 +96,14 @@ struct Parser {
     }
   }
 
+  /**
+   * @brief Writes a value to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _var The value to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const T& _var, const P& _parent) {
     if constexpr (internal::has_write_reflector<T>) {
@@ -119,7 +133,12 @@ struct Parser {
     }
   }
 
-  /// Generates a schema for the underlying type.
+  /**
+   * @brief Generates the schema for the type.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     using U = std::remove_cvref_t<T>;

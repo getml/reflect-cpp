@@ -29,6 +29,13 @@ struct Parser<R, W, std::unique_ptr<T>, ProcessorsType> {
 
   using ParentType = Parent<W>;
 
+  /**
+   * @brief Reads a unique_ptr from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed unique_ptr or an error.
+   */
   static Result<std::unique_ptr<T>> read(const R& _r,
                                          const InputVarType& _var) noexcept {
     if constexpr (atomic::is_atomic_v<T>) {
@@ -67,6 +74,14 @@ struct Parser<R, W, std::unique_ptr<T>, ProcessorsType> {
     }
   }
 
+  /**
+   * @brief Writes a unique_ptr to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _s The unique_ptr to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const std::unique_ptr<T>& _s,
                     const P& _parent) {
@@ -90,6 +105,12 @@ struct Parser<R, W, std::unique_ptr<T>, ProcessorsType> {
     }
   }
 
+  /**
+   * @brief Generates the schema for the unique_ptr.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     using U = std::remove_cvref_t<T>;

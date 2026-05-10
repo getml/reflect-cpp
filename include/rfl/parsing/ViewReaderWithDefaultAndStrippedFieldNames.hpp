@@ -21,12 +21,24 @@ class ViewReaderWithDefaultAndStrippedFieldNames {
   static constexpr size_t size_ = ViewType::size();
 
  public:
+  /**
+   * @brief Constructor.
+   *
+   * @param _r The reader to use.
+   * @param _view The view to read into.
+   * @param _errors The vector to collect errors in.
+   */
   ViewReaderWithDefaultAndStrippedFieldNames(const R* _r, ViewType* _view,
                                              std::vector<std::string>* _errors)
       : i_(0), r_(_r), view_(_view), errors_(_errors) {}
 
   ~ViewReaderWithDefaultAndStrippedFieldNames() = default;
 
+  /**
+   * @brief Returns a boolean array indicating which fields were found.
+   *
+   * @return The boolean array.
+   */
   std::array<bool, size_> found() const {
     std::array<bool, size_> f;
     std::fill(f.begin(), f.begin() + i_, true);
@@ -34,8 +46,12 @@ class ViewReaderWithDefaultAndStrippedFieldNames {
     return f;
   }
 
-  /// Assigns the parsed version of _var to the field signified by i_, to be
-  /// used when the field names are stripped.
+  /**
+   * @brief Reads a single variable from the input.
+   *
+   * @param _var The input variable to read from.
+   * @return An optional error.
+   */
   std::optional<Error> read(const InputVarType& _var) const {
     if (i_ == size_) {
       std::stringstream stream;
@@ -49,6 +65,11 @@ class ViewReaderWithDefaultAndStrippedFieldNames {
     return std::nullopt;
   }
 
+  /**
+   * @brief Returns the size of the view.
+   *
+   * @return The size of the view.
+   */
   static constexpr size_t size() { return size_; }
 
  private:

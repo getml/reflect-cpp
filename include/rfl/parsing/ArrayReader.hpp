@@ -18,11 +18,20 @@ class ArrayReader {
   static constexpr size_t size_ = _size;
 
  public:
+  /**
+   * @brief Constructor.
+   * @param _r The reader to use.
+   * @param _array The array to read into.
+   */
   ArrayReader(const R* _r, std::array<T, _size>* _array)
       : array_(_array), num_set_(0), r_(_r) {}
 
   ~ArrayReader() = default;
 
+  /**
+   * @brief Checks if the correct number of elements has been read.
+   * @return An error if the number of elements is incorrect, std::nullopt otherwise.
+   */
   std::optional<Error> check_size() const {
     if (num_set_ != size_) {
       return Error("Expected " + std::to_string(size_) + " elements, got " +
@@ -31,8 +40,17 @@ class ArrayReader {
     return std::nullopt;
   }
 
+  /**
+   * @brief Returns the number of elements that have been set.
+   * @return The number of elements.
+   */
   size_t num_set() const { return num_set_; }
 
+  /**
+   * @brief Reads a variable from the input and adds it to the array.
+   * @param _var The input variable to read.
+   * @return An error if reading fails or if the array is already full, std::nullopt otherwise.
+   */
   std::optional<Error> read(const InputVarType& _var) const {
     if (num_set_ == size_) {
       return Error("Expected " + std::to_string(size_) +
@@ -52,6 +70,13 @@ class ArrayReader {
   }
 
  private:
+  /**
+   * @brief Moves the value from Source to Target using placement new.
+   * @tparam Target The target type.
+   * @tparam Source The source type.
+   * @param _t The target pointer.
+   * @param _s The source pointer.
+   */
   template <class Target, class Source>
   void move_to(Target* _t, Source* _s) const {
     if constexpr (std::is_const_v<Target>) {

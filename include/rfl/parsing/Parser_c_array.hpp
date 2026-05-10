@@ -26,12 +26,27 @@ struct Parser<R, W, T[_size], ProcessorsType> {
   using ParentType = Parent<W>;
   using CArray = T[_size];
 
+  /**
+   * @brief Reads a C array from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed C array or an error.
+   */
   static Result<internal::Array<CArray>> read(
       const R& _r, const InputVarType& _var) noexcept {
     using StdArray = internal::to_std_array_t<CArray>;
     return Parser<R, W, StdArray, ProcessorsType>::read(_r, _var);
   }
 
+  /**
+   * @brief Writes a C array to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _arr The C array to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const CArray& _arr, const P& _parent) {
     auto arr = ParentType::add_array(_w, _size, _parent);
@@ -43,6 +58,12 @@ struct Parser<R, W, T[_size], ProcessorsType> {
     _w.end_array(&arr);
   }
 
+  /**
+   * @brief Generates the schema for the C array.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     using StdArray = internal::to_std_array_t<CArray>;

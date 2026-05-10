@@ -11,6 +11,14 @@ namespace rfl::parsing::schemaful {
 
 template <class R, class W, class T, class ProcessorsType>
 struct UniquePtrReader {
+  /**
+   * @brief Reads a unique_ptr from the input.
+   *
+   * @param _r The reader to use.
+   * @param _index The index of the alternative to read (0 for value, 1 for null).
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed unique_ptr or an error.
+   */
   static Result<std::unique_ptr<T>> read(
       const R& _r, const size_t _index,
       const typename R::InputVarType& _var) noexcept {

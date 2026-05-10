@@ -30,6 +30,13 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
  public:
   using InputVarType = typename R::InputVarType;
 
+  /**
+   * @brief Reads an rfl::Variant from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed rfl::Variant or an error.
+   */
   static Result<rfl::Variant<AlternativeTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
     if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
@@ -92,6 +99,14 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
     }
   }
 
+  /**
+   * @brief Writes an rfl::Variant to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _variant The rfl::Variant to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w,
                     const rfl::Variant<AlternativeTypes...>& _variant,
@@ -150,6 +165,12 @@ class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
     }
   }
 
+  /**
+   * @brief Generates the schema for the rfl::Variant.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {

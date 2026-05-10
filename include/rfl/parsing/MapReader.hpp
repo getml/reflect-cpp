@@ -23,11 +23,24 @@ class MapReader {
       std::remove_cvref_t<typename MapType::value_type::second_type>;
 
  public:
+  /**
+   * @brief Constructor.
+   *
+   * @param _r The reader to use.
+   * @param _map The map to write to.
+   * @param _errors The vector to collect errors in.
+   */
   MapReader(const R* _r, MapType* _map, std::vector<std::string>* _errors)
       : r_(_r), map_(_map), errors_(_errors) {}
 
   ~MapReader() = default;
 
+  /**
+   * @brief Reads a single field into the map.
+   *
+   * @param _name The name of the field.
+   * @param _var The input variable to read from.
+   */
   void read(const std::string_view& _name,
             const InputVarType& _var) const noexcept {
     auto res = get_pair(_name, _var);

@@ -38,6 +38,13 @@ struct Parser<R, W, std::chrono::duration<Rep, Period>, ProcessorsType> {
     Unit unit;
   };
 
+  /**
+   * @brief Reads a duration from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed duration or an error.
+   */
   static Result<DurationType> read(const R& _r,
                                    const InputVarType& _var) noexcept {
     return Parser<R, W, RType, ProcessorsType>::read(_r, _var)
@@ -49,6 +56,14 @@ struct Parser<R, W, std::chrono::duration<Rep, Period>, ProcessorsType> {
         });
   }
 
+  /**
+   * @brief Writes a duration to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _d The duration to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const DurationType& _d, const P& _parent) {
     const auto r =
@@ -56,6 +71,12 @@ struct Parser<R, W, std::chrono::duration<Rep, Period>, ProcessorsType> {
     return Parser<R, W, RType, ProcessorsType>::write(_w, r, _parent);
   }
 
+  /**
+   * @brief Generates the schema for the duration.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     return Parser<R, W, RType, ProcessorsType>::to_schema(_definitions);

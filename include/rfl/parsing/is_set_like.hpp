@@ -8,6 +8,11 @@
 namespace rfl {
 namespace parsing {
 
+/**
+ * @brief Trait to check if a type is a set-like type.
+ *
+ * @tparam T The type to check.
+ */
 template <class T>
 class is_set_like;
 

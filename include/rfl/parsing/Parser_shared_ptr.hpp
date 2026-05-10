@@ -29,6 +29,13 @@ struct Parser<R, W, std::shared_ptr<T>, ProcessorsType> {
 
   using ParentType = Parent<W>;
 
+  /**
+   * @brief Reads a shared_ptr from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed shared_ptr or an error.
+   */
   static Result<std::shared_ptr<T>> read(const R& _r,
                                          const InputVarType& _var) noexcept {
     if constexpr (atomic::is_atomic_v<T>) {
@@ -67,6 +74,14 @@ struct Parser<R, W, std::shared_ptr<T>, ProcessorsType> {
     }
   }
 
+  /**
+   * @brief Writes a shared_ptr to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _s The shared_ptr to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const std::shared_ptr<T>& _s,
                     const P& _parent) noexcept {
@@ -90,6 +105,12 @@ struct Parser<R, W, std::shared_ptr<T>, ProcessorsType> {
     }
   }
 
+  /**
+   * @brief Generates the schema for the shared_ptr.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     using U = std::remove_cvref_t<T>;

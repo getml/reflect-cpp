@@ -38,172 +38,60 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
  public:
   using InputVarType = typename R::InputVarType;
 
+  /**
+   * @brief Reads a variant from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed variant or an error.
+   */
   static Result<std::variant<AlternativeTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
     if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
-      if constexpr (schemaful::IsSchemafulReader<R>) {
-        using WrappedType = rfl::Variant<NamedTuple<AlternativeTypes>...>;
-        return Parser<R, W, WrappedType, ProcessorsType>::read(_r, _var)
-            .transform(
-                [](auto&& _variant) -> std::variant<AlternativeTypes...> {
-                  return std::move(_variant).visit([](auto&& _named_tuple) {
-                    return std::variant<AlternativeTypes...>(std::move(
-                        std::move(_named_tuple).fields().template get<0>()));
-                  });
-                });
-
-      } else {
-        const auto wrap = [](auto&& _v) {
-          return std::variant<AlternativeTypes...>(std::move(_v));
-        };
-        const auto to_std_variant = [&](auto&& _v) {
-          return rfl::visit(wrap, std::move(_v));
-        };
-        return FieldVariantParser<R, W, ProcessorsType,
-                                  AlternativeTypes...>::read(_r, _var)
-            .transform(to_std_variant);
-      }
-
-    } else if constexpr (schemaful::IsSchemafulReader<R>) {
-      using V =
-          schemaful::VariantReader<R, W, std::variant<AlternativeTypes...>,
-                                   ProcessorsType, AlternativeTypes...>;
-      return _r.to_union(_var).and_then([&](const auto& _u) {
-        return _r.template read_union<std::variant<AlternativeTypes...>, V>(_u);
-      });
-
-    } else if constexpr (internal::add_tags_to_variants_v<ProcessorsType> ||
-                         internal::add_namespaced_tags_to_variants_v<
-                             ProcessorsType>) {
-      constexpr bool remove_namespaces =
-          internal::add_tags_to_variants_v<ProcessorsType>;
-      using FieldVariantType = rfl::Variant<
-          VariantAlternativeWrapper<AlternativeTypes, remove_namespaces>...>;
-      const auto from_field_variant =
-          [](auto&& _field) -> std::variant<AlternativeTypes...> {
-        return std::move(_field.value());
-      };
-      return Parser<R, W, FieldVariantType, ProcessorsType>::read(_r, _var)
-          .transform([&](FieldVariantType&& _f) {
-            return _f.visit(from_field_variant);
-          });
-
-    } else {
-      std::optional<std::variant<AlternativeTypes...>> result;
-      std::vector<std::string> errors;
-      errors.reserve(sizeof...(AlternativeTypes));
-      read_variant(
-          _r, _var, &result, &errors,
-          std::make_integer_sequence<int, sizeof...(AlternativeTypes)>());
-      if (result) {
-        return std::move(*result);
-      } else {
-        return error(
-            to_single_error_message(errors,
-                                    "Could not parse the variant. Each of the "
-                                    "possible alternatives failed "
-                                    "for the following reasons: ",
-                                    100000));
+--snip--
       }
     }
   }
 
+  /**
+   * @brief Writes a variant to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _variant The variant to write.
+   * @param _parent The parent object to write into.
+   */
   template <class P>
   static void write(const W& _w,
                     const std::variant<AlternativeTypes...>& _variant,
                     const P& _parent) {
     if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
-      if constexpr (schemaful::IsSchemafulWriter<W>) {
-        using WrappedType = rfl::Variant<
-            NamedTuple<Field<AlternativeTypes::name_,
-                             const typename AlternativeTypes::Type*>>...>;
-        const auto to_wrapped = [](const auto& _variant) -> WrappedType {
-          return std::visit(
-              [](const auto& _field) -> WrappedType {
-                return make_named_tuple(internal::to_ptr_field(_field));
-              },
-              _variant);
-        };
-        Parser<R, W, WrappedType, ProcessorsType>::write(
-            _w, to_wrapped(_variant), _parent);
-
-      } else {
-        const auto wrap = [](const auto& _v) {
-          return rfl::Variant<ptr_field_t<AlternativeTypes>...>(
-              internal::to_ptr_field(_v));
-        };
-        const auto to_rfl_variant = [&](const auto& _v) {
-          return std::visit(wrap, _v);
-        };
-        FieldVariantParser<
-            R, W, ProcessorsType,
-            ptr_field_t<AlternativeTypes>...>::write(_w,
-                                                     to_rfl_variant(_variant),
-                                                     _parent);
-      }
-
-    } else if constexpr (schemaful::IsSchemafulWriter<W>) {
-      return std::visit(
-          [&](const auto& _v) {
-            using Type = std::remove_cvref_t<decltype(_v)>;
-            auto u = ParentType::add_union(_w, _parent);
-            using UnionType = typename ParentType::template Union<decltype(u)>;
-            auto p = UnionType{.index_ = static_cast<size_t>(_variant.index()),
-                               .union_ = &u};
-            Parser<R, W, Type, ProcessorsType>::write(_w, _v, p);
-          },
-          _variant);
-
-    } else if constexpr (internal::add_tags_to_variants_v<ProcessorsType> ||
-                         internal::add_namespaced_tags_to_variants_v<
-                             ProcessorsType>) {
-      constexpr bool remove_namespaces =
-          internal::add_tags_to_variants_v<ProcessorsType>;
-      using FieldVariantType =
-          rfl::Variant<VariantAlternativeWrapper<const AlternativeTypes*,
-                                                 remove_namespaces>...>;
-      const auto to_field_variant =
-          []<class T>(const T& _t) -> FieldVariantType {
-        return VariantAlternativeWrapper<const T*, remove_namespaces>(&_t);
-      };
-      Parser<R, W, FieldVariantType, ProcessorsType>::write(
-          _w, std::visit(to_field_variant, _variant), _parent);
-
-    } else {
-      const auto handle = [&](const auto& _v) {
-        using Type = std::remove_cvref_t<decltype(_v)>;
-        Parser<R, W, Type, ProcessorsType>::write(_w, _v, _parent);
-      };
+--snip--
       return std::visit(handle, _variant);
     }
   }
 
+  /**
+   * @brief Generates a schema for the variant.
+   *
+   * @param _definitions The map of definitions to add the schema to.
+   * @return The generated schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
-      return FieldVariantParser<R, W, ProcessorsType,
-                                AlternativeTypes...>::to_schema(_definitions);
-
-    } else if constexpr (internal::add_tags_to_variants_v<ProcessorsType> ||
-                         internal::add_namespaced_tags_to_variants_v<
-                             ProcessorsType>) {
-      constexpr bool remove_namespaces =
-          internal::add_tags_to_variants_v<ProcessorsType>;
-      using FieldVariantType = rfl::Variant<
-          VariantAlternativeWrapper<AlternativeTypes, remove_namespaces>...>;
-      return Parser<R, W, FieldVariantType, ProcessorsType>::to_schema(
-          _definitions);
-
-    } else {
-      std::vector<schema::Type> types;
-      build_schema(
-          _definitions, &types,
-          std::make_integer_sequence<int, sizeof...(AlternativeTypes)>());
-      return schema::Type{schema::Type::AnyOf{.types_ = std::move(types)}};
+--snip--
     }
   }
 
  private:
+  /**
+   * @brief Adds an alternative to the schema.
+   *
+   * @tparam _i The index of the alternative.
+   * @param _definitions The map of definitions to add the schema to.
+   * @param _types The vector of types to add the generated schema to.
+   */
   template <size_t _i>
   static void add_to_schema(std::map<std::string, schema::Type>* _definitions,
                             std::vector<schema::Type>* _types) noexcept {
@@ -212,6 +100,13 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
     _types->push_back(Parser<R, W, U, ProcessorsType>::to_schema(_definitions));
   }
 
+  /**
+   * @brief Builds the schema for the variant.
+   *
+   * @tparam _is The indices of the alternatives.
+   * @param _definitions The map of definitions to add the schema to.
+   * @param _types The vector of types to add the generated schemas to.
+   */
   template <int... _is>
   static void build_schema(std::map<std::string, schema::Type>* _definitions,
                            std::vector<schema::Type>* _types,
@@ -219,6 +114,15 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
     (add_to_schema<_is>(_definitions, _types), ...);
   }
 
+  /**
+   * @brief Reads a single alternative from the input.
+   *
+   * @tparam _i The index of the alternative.
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @param _result The result pointer to store the parsed alternative.
+   * @param _errors The vector of errors to add parsing errors to.
+   */
   template <int _i>
   static void read_one_alternative(
       const R& _r, const InputVarType& _var,
@@ -236,6 +140,15 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
     }
   }
 
+  /**
+   * @brief Reads the variant from the input by trying each alternative.
+   *
+   * @tparam _is The indices of the alternatives.
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @param _result The result pointer to store the parsed alternative.
+   * @param _errors The vector of errors to add parsing errors to.
+   */
   template <int... _is>
   static void read_variant(
       const R& _r, const InputVarType& _var,
@@ -244,6 +157,7 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
       std::integer_sequence<int, _is...>) noexcept {
     (read_one_alternative<_is>(_r, _var, _result, _errors), ...);
   }
+};
 };
 
 }  // namespace rfl::parsing

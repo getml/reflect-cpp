@@ -8,9 +8,15 @@
 
 namespace rfl::parsing {
 
-/// Because of the way we have allocated the fields, we need to manually
-/// trigger the destructors.
-
+/**
+ * @brief Calls the destructor on a single element of a tuple, if necessary.
+ *
+ * @tparam TupleType The type of the tuple.
+ * @tparam _size The size of the tuple.
+ * @tparam _i The index of the element.
+ * @param _num_set The number of elements that have been set.
+ * @param _tup The tuple to call the destructor on.
+ */
 template <class TupleType, unsigned long _size, int _i>
 void call_destructor_on_one_tuple_element_if_necessary(const size_t _num_set,
                                                        TupleType* _tup) {
@@ -29,6 +35,13 @@ void call_destructor_on_one_tuple_element_if_necessary(const size_t _num_set,
   }
 }
 
+/**
+ * @brief Calls the destructors on the elements of a tuple, if necessary.
+ *
+ * @tparam TupleType The type of the tuple.
+ * @param _num_set The number of elements that have been set.
+ * @param _tup The tuple to call the destructors on.
+ */
 template <class TupleType>
 void call_destructors_on_tuple_where_necessary(const size_t _num_set,
                                                TupleType* _tup) {

@@ -29,6 +29,13 @@ struct FieldVariantParser {
   using InputObjectType = typename R::InputObjectType;
   using InputVarType = typename R::InputVarType;
 
+  /**
+   * @brief Reads a field variant from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed field variant or an error.
+   */
   static ResultType read(const R& _r, const InputVarType& _var) noexcept {
     static_assert(
         internal::no_duplicate_field_names<rfl::Tuple<FieldTypes...>>(),
@@ -55,6 +62,14 @@ struct FieldVariantParser {
     return _r.to_object(_var).and_then(to_result);
   }
 
+  /**
+   * @brief Writes a field variant to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _v The field variant to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const rfl::Variant<FieldTypes...>& _v,
                     const P& _parent) {
@@ -71,6 +86,12 @@ struct FieldVariantParser {
     });
   }
 
+  /**
+   * @brief Generates the schema for the field variant.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions,
       std::vector<schema::Type> = {}) {

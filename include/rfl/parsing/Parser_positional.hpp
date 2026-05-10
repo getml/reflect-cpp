@@ -17,6 +17,13 @@ template <class R, class W, class T, class ProcessorsType>
 struct Parser<R, W, Positional<T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
+  /**
+   * @brief Reads a Positional value from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed Positional value or an error.
+   */
   static Result<Positional<T>> read(const R& _r,
                                      const InputVarType& _var) noexcept {
     const auto to_positional = [](auto&& _t) {
@@ -26,6 +33,14 @@ struct Parser<R, W, Positional<T>, ProcessorsType> {
         .transform(to_positional);
   }
 
+  /**
+   * @brief Writes a Positional value to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _positional The Positional value to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const Positional<T>& _positional,
                     const P& _parent) {
@@ -33,6 +48,12 @@ struct Parser<R, W, Positional<T>, ProcessorsType> {
         _w, _positional.value(), _parent);
   }
 
+  /**
+   * @brief Generates the schema for the Positional value.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::to_schema(

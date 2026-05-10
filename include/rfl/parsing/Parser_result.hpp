@@ -24,6 +24,13 @@ struct Parser<R, W, Result<T>, ProcessorsType> {
   using ErrorType = NamedTuple<Field<"error", std::string>>;
   using VariantType = std::variant<std::remove_cvref_t<T>, ErrorType>;
 
+  /**
+   * @brief Reads a Result from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed Result or an error.
+   */
   static Result<Result<T>> read(const R& _r,
                                 const InputVarType& _var) noexcept {
     const auto handle = [](auto&& _t) -> Result<T> {
@@ -44,6 +51,14 @@ struct Parser<R, W, Result<T>, ProcessorsType> {
             to_res));
   }
 
+  /**
+   * @brief Writes a Result to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _r The Result to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const Result<T>& _r, const P& _parent) {
     if (_r) {
@@ -55,6 +70,12 @@ struct Parser<R, W, Result<T>, ProcessorsType> {
     }
   }
 
+  /**
+   * @brief Generates the schema for the Result.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::to_schema(

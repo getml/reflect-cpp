@@ -8,6 +8,11 @@
 namespace rfl {
 namespace parsing {
 
+/**
+ * @brief Trait to check if a type is a map-like type, but not a multimap.
+ *
+ * @tparam T The type to check.
+ */
 template <class T>
 class is_map_like_not_multimap;
 
