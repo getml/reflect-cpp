@@ -80,7 +80,7 @@ struct Rename {
 
   /// Assigns the underlying object to its default value using the Default sentinel.
   /// @tparam U The type (must be default constructible)
-  /// @param The default sentinel value
+  /// @param _ The default sentinel value
   template <class U = Type>
     requires std::is_default_constructible_v<U>
   Rename(const Default&) : value_(Type()) {}
