@@ -163,7 +163,7 @@ struct Binary {
   /// @return Reference to this Binary
   template <class U>
   auto& operator=(Binary<U>&& _other) {
-    value_ = std::forward<T>(_other.value_);
+    value_ = std::move(_other.value_);
     return *this;
   }
 
