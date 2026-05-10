@@ -5,6 +5,7 @@
 #include <parquet/arrow/writer.h>
 
 #include "../Settings.hpp"
+#include "../internal/deprecated_with.hpp"
 
 namespace rfl::parquet {
 
@@ -18,6 +19,16 @@ struct Settings {
   const Compression compression = Compression::SNAPPY;
 
   RFL_SETTINGS_OPS(Settings)
+
+  RFL_DEPRECATED_WITH(chunksize)
+  Settings with_chunksize(const size_t _chunksize) const noexcept {
+    return replace(*this, make_field<"chunksize">(_chunksize));
+  }
+
+  RFL_DEPRECATED_WITH(compression)
+  Settings with_compression(const Compression _compression) const noexcept {
+    return replace(*this, make_field<"compression">(_compression));
+  }
 };
 
 }  // namespace rfl::parquet
