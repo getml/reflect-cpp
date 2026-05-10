@@ -2825,12 +2825,25 @@ consteval auto get_ith_field_from_fake_object() {
   return get_ith_field_ptr<T, _i>(get_fake_object<std::remove_cvref_t<T>>());
 }
 
+/// Returns whether the i-th field of T is declared const. Implemented by
+/// inspecting the type that get_ith_field_ptr deduces from a non-const T,
+/// where structured-binding references inherit the field's cv-qualification.
+///
+/// Only available on MSVC: the implementation requires constructing a local
+/// T{} inside `consteval`, which forces T (and every field) to be a
+/// constexpr literal type. Settings structs in reflect-cpp routinely contain
+/// `std::string`, which is not a literal type on older standard libraries
+/// (e.g. libstdc++ shipped with GCC 11), so on GCC/Clang this check is
+/// skipped — the name-based with<"name">() path then falls through to
+/// `rfl::replace`, which will fail to assign into a const member.
+#ifdef _MSC_VER
 template <class T, int _i>
 consteval bool ith_field_is_const() {
   std::remove_cvref_t<T> _obj{};
   using FieldRef = decltype(*get_ith_field_ptr<T, _i>(_obj));
   return std::is_const_v<std::remove_reference_t<FieldRef>>;
 }
+#endif
 
 }  // namespace rfl::internal
 
