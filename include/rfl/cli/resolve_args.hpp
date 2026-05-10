@@ -13,6 +13,8 @@
 
 namespace rfl::cli {
 
+/// Holds the parsed command-line arguments categorized by type.
+/// Used as an intermediate structure before resolving to a flat key-value map.
 struct ParsedArgs {
   std::map<std::string, std::string> named;
   std::map<std::string, std::string> short_args;
@@ -150,6 +152,15 @@ void collect_short_bool_names(
 
 /// Resolves ParsedArgs into a flat key-value map using compile-time
 /// metadata from the target struct T.
+/// This function:
+/// 1. Maps positional arguments to their corresponding field names based on declaration order
+/// 2. Expands short arguments (e.g., -p) to long names (e.g., --port) using Short<> annotations
+/// 3. Handles special cases like boolean short flags that don't consume values
+/// 4. Detects conflicts between different ways of specifying the same field
+/// @tparam T The target struct type
+/// @tparam ProcessorsType The processors applied to the struct
+/// @param _parsed The parsed command-line arguments
+/// @return A Result containing a flat map of field names to values or an error
 template <class T, class ProcessorsType>
 rfl::Result<std::map<std::string, std::string>> resolve_args(
     ParsedArgs _parsed

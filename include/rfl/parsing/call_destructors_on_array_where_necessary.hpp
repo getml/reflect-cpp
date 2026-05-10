@@ -8,9 +8,14 @@
 
 namespace rfl::parsing {
 
-/// Because of the way we have allocated the fields, we need to manually
-/// trigger the destructors.
-
+/**
+ * @brief Calls the destructors on the elements of an array, if necessary.
+ *
+ * @tparam T The type of the elements in the array.
+ * @tparam _size The size of the array.
+ * @param _num_set The number of elements that have been set.
+ * @param _array The array to call the destructors on.
+ */
 template <class T, size_t _size>
 void call_destructors_on_array_where_necessary(const size_t _num_set,
                                                std::array<T, _size>* _array) {

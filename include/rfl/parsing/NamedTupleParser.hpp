@@ -76,10 +76,13 @@ struct NamedTupleParser {
                 "including rfl::ExtraFields.");
 
  public:
-  /// The way this works is that we allocate space on the stack in this size of
-  /// the named tuple in which we then write the individual fields using
-  /// views and placement new. This is how we deal with the fact that some
-  /// fields might not be default-constructible.
+  /**
+   * @brief Reads a named tuple from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed named tuple or an error.
+   */
   static Result<NamedTuple<FieldTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
     static_assert(
@@ -100,7 +103,15 @@ struct NamedTupleParser {
     return res;
   }
 
-  /// Reads the data into a view assuming no default values.
+  /**
+   * @brief Reads the data into a view assuming no default values.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @param _view The view to read into.
+   * @return A pair containing a boolean array indicating which fields were
+   *         found and an optional error.
+   */
   static std::pair<std::array<bool, NamedTupleType::size()>,
                    std::optional<Error>>
   read_view(const R& _r, const InputVarType& _var,
@@ -124,7 +135,14 @@ struct NamedTupleParser {
     }
   }
 
-  /// Reads the data into a view assuming default values.
+  /**
+   * @brief Reads the data into a view assuming default values.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @param _view The view to read into.
+   * @return An optional error.
+   */
   static std::optional<Error> read_view_with_default(
       const R& _r, const InputVarType& _var,
       NamedTuple<FieldTypes...>* _view) noexcept {
@@ -145,6 +163,14 @@ struct NamedTupleParser {
     }
   }
 
+  /**
+   * @brief Writes a named tuple to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _tup The named tuple to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const NamedTuple<FieldTypes...>& _tup,
                     const P& _parent) {
@@ -159,6 +185,12 @@ struct NamedTupleParser {
     }
   }
 
+  /**
+   * @brief Generates the schema for the named tuple.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) noexcept {
     SchemaType schema;

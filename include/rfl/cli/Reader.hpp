@@ -18,26 +18,43 @@
 
 namespace rfl::cli {
 
+/// Character used to separate nested field names in CLI arguments.
+/// Example: `--database.host` for nested field `database::host`.
 static constexpr char path_separator = '.';
+
+/// Character used to delimit array elements in CLI argument values.
+/// Example: `--ports=8080,8081,8082` for an array of ports.
 static constexpr char array_delimiter = ',';
 
+/// Represents a CLI variable that can be a direct value or a path in the argument map.
+/// The `path` represents the hierarchical key (e.g., "database.host").
+/// The `direct_value` is used when parsing array elements directly.
 struct CliVarType {
   const std::map<std::string, std::string>* const args = nullptr;
   const std::string path;
   const std::optional<std::string> direct_value;
 };
 
+/// Represents a CLI object with a prefix path for accessing nested fields.
+/// All child fields will be prefixed with this path.
 struct CliObjectType {
   const std::map<std::string, std::string>* const args = nullptr;
   const std::string prefix;
 };
 
+/// Represents a CLI array containing multiple string values.
+/// Typically created by splitting a comma-delimited argument value.
 struct CliArrayType {
   const std::vector<std::string> values;
 };
 
 // --- Constrained overloads for string-to-type parsing ---
 
+/// Parses a string value to std::string (identity function).
+/// @tparam T Must be std::string
+/// @param _str The string to parse
+/// @param _path The CLI argument path (unused for strings)
+/// @return The string unchanged
 template <class T> requires std::same_as<T, std::string>
 rfl::Result<T> parse_value(
     const std::string& _str, const std::string&
@@ -45,6 +62,12 @@ rfl::Result<T> parse_value(
   return _str;
 }
 
+/// Parses a string value to boolean.
+/// Accepts: empty/"true"/"1" → true, "false"/"0" → false.
+/// @tparam T Must be bool
+/// @param _str The string to parse
+/// @param _path The CLI argument path (for error messages)
+/// @return A Result containing the boolean value or an error
 template <class T> requires std::same_as<T, bool>
 rfl::Result<T> parse_value(
     const std::string& _str, const std::string& _path
@@ -59,6 +82,12 @@ rfl::Result<T> parse_value(
       "Could not cast '" + _str + "' to boolean for key '" + _path + "'.");
 }
 
+/// Parses a string value to a floating-point number.
+/// Uses locale-independent parsing (C locale) to ensure "3.14" works consistently.
+/// @tparam T Must be a floating-point type (float, double, long double)
+/// @param _str The string to parse
+/// @param _path The CLI argument path (for error messages)
+/// @return A Result containing the parsed number or an error
 // std::from_chars for float/double is unavailable in Apple libc++.
 // std::strtod depends on the C locale (LC_NUMERIC), so "3.14" can fail
 // under locales that use comma as decimal separator.
@@ -84,6 +113,12 @@ rfl::Result<T> parse_value(
   return static_cast<T>(value);
 }
 
+/// Parses a string value to an integral type (excluding bool).
+/// Uses std::from_chars for efficient and locale-independent parsing.
+/// @tparam T Must be an integral type other than bool
+/// @param _str The string to parse
+/// @param _path The CLI argument path (for error messages)
+/// @return A Result containing the parsed integer or an error
 template <class T> requires (std::is_integral_v<T> && !std::same_as<T, bool>)
 rfl::Result<T> parse_value(
     const std::string& _str, const std::string& _path
@@ -98,6 +133,9 @@ rfl::Result<T> parse_value(
   return value;
 }
 
+/// Reader for command-line interface arguments.
+/// Parses hierarchical key-value pairs from CLI arguments (e.g., --database.host=localhost).
+/// Supports arrays through comma-delimited values (e.g., --ports=8080,8081).
 struct Reader {
   using InputArrayType = CliArrayType;
   using InputObjectType = CliObjectType;
@@ -106,6 +144,10 @@ struct Reader {
   template <class T>
   static constexpr bool has_custom_constructor = false;
 
+  /// Gets a specific element from a CLI array by index.
+  /// @param _idx The index of the element to retrieve
+  /// @param _arr The CLI array
+  /// @return A Result containing the element as a CliVarType or an error if out of bounds
   rfl::Result<InputVarType> get_field_from_array(
       const size_t _idx, const InputArrayType& _arr) const noexcept {
     if (_idx >= _arr.values.size()) {
@@ -115,6 +157,11 @@ struct Reader {
     return InputVarType{nullptr, "", _arr.values[_idx]};
   }
 
+  /// Gets a specific field from a CLI object by name.
+  /// Constructs a child path by appending the field name to the object's prefix.
+  /// @param _name The field name
+  /// @param _obj The CLI object
+  /// @return A Result containing a CliVarType for accessing the field
   rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType& _obj) const noexcept {
     const auto child_path = _obj.prefix.empty()
@@ -123,6 +170,10 @@ struct Reader {
     return InputVarType{_obj.args, child_path, std::nullopt};
   }
 
+  /// Checks if a CLI variable is empty (has no value).
+  /// A variable is empty if there's no direct value and no matching key in the argument map.
+  /// @param _var The CLI variable to check
+  /// @return true if the variable is empty, false otherwise
   bool is_empty(const InputVarType& _var) const noexcept {
     if (_var.direct_value) {
       return false;
@@ -139,6 +190,11 @@ struct Reader {
            || it->first.substr(0, prefix.size()) != prefix;
   }
 
+  /// Reads all elements from a CLI array using the provided array reader.
+  /// @tparam ArrayReader The type of reader that processes individual array elements
+  /// @param _array_reader The reader object that processes each element
+  /// @param _arr The CLI array to read from
+  /// @return std::nullopt on success, or an Error if reading fails
   template <class ArrayReader>
   std::optional<Error> read_array(
       const ArrayReader& _array_reader,
@@ -154,6 +210,12 @@ struct Reader {
     return std::nullopt;
   }
 
+  /// Reads all fields from a CLI object using the provided object reader.
+  /// Iterates through all arguments with the object's prefix and extracts child field names.
+  /// @tparam ObjectReader The type of reader that processes individual object fields
+  /// @param _object_reader The reader object that processes each field
+  /// @param _obj The CLI object to read from
+  /// @return std::nullopt on success, or an Error if reading fails
   template <class ObjectReader>
   std::optional<Error> read_object(
       const ObjectReader& _object_reader,
@@ -185,6 +247,10 @@ struct Reader {
     return std::nullopt;
   }
 
+  /// Converts a CLI variable to a basic C++ type by parsing the string value.
+  /// @tparam T The target type to convert to
+  /// @param _var The CLI variable containing the string value
+  /// @return A Result containing the converted value or an error
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
     const auto str = get_value(_var);
@@ -194,6 +260,9 @@ struct Reader {
     return parse_value<T>(*str, _var.path);
   }
 
+  /// Converts a CLI variable to an array by splitting the value on commas.
+  /// @param _var The CLI variable containing a comma-delimited string
+  /// @return A Result containing a CliArrayType with the split values
   rfl::Result<InputArrayType> to_array(
       const InputVarType& _var) const noexcept {
     const auto str = get_value(_var);
@@ -203,6 +272,10 @@ struct Reader {
     return InputArrayType{split(*str, array_delimiter)};
   }
 
+  /// Converts a CLI variable to an object for reading nested fields.
+  /// Creates a CliObjectType with an appropriate prefix for child field access.
+  /// @param _var The CLI variable representing the object
+  /// @return A Result containing a CliObjectType or an error
   rfl::Result<InputObjectType> to_object(
       const InputVarType& _var) const noexcept {
     if (!_var.args) {
@@ -217,6 +290,10 @@ struct Reader {
     return InputObjectType{_var.args, prefix};
   }
 
+  /// Custom constructors are not supported for CLI parsing.
+  /// @tparam T The type to construct (unused)
+  /// @param _var The CLI variable (unused)
+  /// @return Always returns an error
   template <class T>
   rfl::Result<T> use_custom_constructor(
       const InputVarType&

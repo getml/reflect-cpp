@@ -18,16 +18,21 @@
 #include "../always_false.hpp"
 
 namespace rfl::toml {
-
 struct Reader {
   using InputArrayType = ::toml::array*;
   using InputObjectType = ::toml::table*;
   using InputVarType = ::toml::node*;
 
+  /// @brief Checks if type T has a custom constructor from a TOML object.
+  /// @tparam T The type to check.
   template <class T>
   static constexpr bool has_custom_constructor =
       (requires(InputVarType var) { T::from_toml_obj(var); });
 
+  /// @brief Retrieves a field from a TOML array by index.
+  /// @param _idx The index of the field.
+  /// @param _arr The TOML array pointer.
+  /// @return The node at the given index or an error if out of bounds.
   rfl::Result<InputVarType> get_field_from_array(
       const size_t _idx, const InputArrayType _arr) const noexcept {
     if (_idx >= _arr->size()) {
@@ -36,6 +41,10 @@ struct Reader {
     return _arr->get(_idx);
   }
 
+  /// @brief Retrieves a field from a TOML object by name.
+  /// @param _name The name of the field.
+  /// @param _obj The TOML object pointer.
+  /// @return The node corresponding to the field name or an error if not found.
   rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType& _obj) const noexcept {
     auto var = (*_obj)[_name];
@@ -45,10 +54,17 @@ struct Reader {
     return var.node();
   }
 
+  /// @brief Checks if a TOML node is empty.
+  /// @param _var The TOML node pointer.
+  /// @return True if the node is empty, false otherwise.
   bool is_empty(const InputVarType& _var) const noexcept {
     return !_var && true;
   }
 
+  /// @brief Converts a TOML node to a basic type.
+  /// @tparam T The target type.
+  /// @param _var The TOML node pointer.
+  /// @return The converted value or an error if conversion fails.
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
@@ -80,6 +96,9 @@ struct Reader {
     }
   }
 
+  /// @brief Converts a TOML node to an array pointer.
+  /// @param _var The TOML node pointer.
+  /// @return The array pointer or an error if conversion fails.
   rfl::Result<InputArrayType> to_array(
       const InputVarType& _var) const noexcept {
     const auto ptr = _var->as_array();
@@ -89,6 +108,11 @@ struct Reader {
     return ptr;
   }
 
+  /// @brief Reads all elements of a TOML array using a provided reader.
+  /// @tparam ArrayReader The reader type.
+  /// @param _array_reader The array reader instance.
+  /// @param _arr The TOML array pointer.
+  /// @return An optional error if reading fails, otherwise std::nullopt.
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
                                   const InputArrayType& _arr) const noexcept {
@@ -101,6 +125,11 @@ struct Reader {
     return std::nullopt;
   }
 
+  /// @brief Reads all fields of a TOML object using a provided reader.
+  /// @tparam ObjectReader The reader type.
+  /// @param _object_reader The object reader instance.
+  /// @param _obj The TOML object pointer.
+  /// @return An optional error if reading fails, otherwise std::nullopt.
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    InputObjectType _obj) const noexcept {
@@ -110,6 +139,9 @@ struct Reader {
     return std::nullopt;
   }
 
+  /// @brief Converts a TOML node to an object pointer.
+  /// @param _var The TOML node pointer.
+  /// @return The object pointer or an error if conversion fails.
   rfl::Result<InputObjectType> to_object(
       const InputVarType& _var) const noexcept {
     const auto ptr = _var->as_table();
@@ -119,6 +151,10 @@ struct Reader {
     return ptr;
   }
 
+  /// @brief Uses a custom constructor to convert a TOML node to type T.
+  /// @tparam T The target type.
+  /// @param _var The TOML node pointer.
+  /// @return The constructed value or an error if construction fails.
   template <class T>
   rfl::Result<T> use_custom_constructor(
       const InputVarType _var) const noexcept {

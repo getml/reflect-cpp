@@ -19,7 +19,13 @@ template <class R, class W, class FirstType, class SecondType,
 struct Parser<R, W, std::pair<FirstType, SecondType>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
-  /// Expresses the variables as type T.
+  /**
+   * @brief Reads a pair from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed pair or an error.
+   */
   static Result<std::pair<FirstType, SecondType>> read(
       const R& _r, const InputVarType& _var) noexcept {
     const auto to_pair = [&](auto&& _t) {
@@ -31,6 +37,14 @@ struct Parser<R, W, std::pair<FirstType, SecondType>, ProcessorsType> {
         .transform(to_pair);
   }
 
+  /**
+   * @brief Writes a pair to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _p The pair to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const std::pair<FirstType, SecondType>& _p,
                     const P& _parent) {
@@ -39,6 +53,12 @@ struct Parser<R, W, std::pair<FirstType, SecondType>, ProcessorsType> {
            ProcessorsType>::write(_w, tup, _parent);
   }
 
+  /**
+   * @brief Generates the schema for the pair.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     return Parser<R, W, std::tuple<FirstType, SecondType>,

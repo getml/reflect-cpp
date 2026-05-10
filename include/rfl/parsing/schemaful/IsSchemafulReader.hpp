@@ -12,16 +12,31 @@ namespace rfl::parsing::schemaful {
 
 using MockVariantType = std::variant<std::string, int>;
 
+/**
+ * @brief A mock reader for maps.
+ *
+ * @tparam R The reader type.
+ */
 template <class R>
 struct MockMapReader {
   void read(const std::string_view&, typename R::InputVarType&) const {}
 };
 
+/**
+ * @brief A mock reader for objects.
+ *
+ * @tparam R The reader type.
+ */
 template <class R>
 struct MockObjectReader {
   void read(const int, typename R::InputVarType&) const {}
 };
 
+/**
+ * @brief A mock reader for unions.
+ *
+ * @tparam R The reader type.
+ */
 template <class R>
 struct MockUnionReader {
   static rfl::Result<MockVariantType> read(const R&, const size_t,
@@ -30,6 +45,11 @@ struct MockUnionReader {
   }
 };
 
+/**
+ * @brief Concept for a schemaful reader.
+ *
+ * @tparam R The reader type.
+ */
 template <class R>
 concept IsSchemafulReader =
     requires(R r, typename R::InputVarType var, typename R::InputObjectType obj,

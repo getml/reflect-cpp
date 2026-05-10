@@ -25,6 +25,13 @@ struct Parser<R, W, std::optional<T>, ProcessorsType> {
 
   using ParentType = Parent<W>;
 
+  /**
+   * @brief Reads an optional value from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed optional value or an error.
+   */
   static Result<std::optional<T>> read(const R& _r,
                                        const InputVarType& _var) noexcept {
     if constexpr (schemaful::IsSchemafulReader<R>) {
@@ -47,6 +54,14 @@ struct Parser<R, W, std::optional<T>, ProcessorsType> {
     }
   }
 
+  /**
+   * @brief Writes an optional value to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _o The optional value to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const std::optional<T>& _o, const P& _parent) {
     if constexpr (schemaful::IsSchemafulWriter<W>) {
@@ -69,6 +84,12 @@ struct Parser<R, W, std::optional<T>, ProcessorsType> {
     }
   }
 
+  /**
+   * @brief Generates the schema for the optional value.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     using U = std::remove_cvref_t<T>;

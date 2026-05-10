@@ -18,6 +18,8 @@
 
 namespace rfl::cereal {
 
+/// Writer for Cereal serialization library integration.
+/// Writes data to Cereal's portable binary archive format for cross-platform serialization.
 class Writer {
  public:
   using CerealArchive = ::cereal::PortableBinaryOutputArchive;
@@ -38,18 +40,35 @@ class Writer {
   using OutputUnionType = CerealOutputUnion;
   using OutputVarType = CerealOutputVar;
 
+  /// Constructs a Writer with a Cereal output archive.
+  /// @param _archive Pointer to the Cereal output archive to write to
   Writer(CerealArchive* _archive);
 
   ~Writer() = default;
 
+  /// Creates an array as the root element.
+  /// Writes the size tag to the archive first.
+  /// @param _size The number of elements in the array
+  /// @return An OutputArrayType
   OutputArrayType array_as_root(const size_t _size) const;
 
+  /// Creates a map as the root element.
+  /// Writes the size tag to the archive first.
+  /// @param _size The number of entries in the map
+  /// @return An OutputMapType
   OutputMapType map_as_root(const size_t _size) const;
 
+  /// Creates an object as the root element.
+  /// @param _size The number of fields in the object
+  /// @return An OutputObjectType
   OutputObjectType object_as_root(const size_t _size) const;
 
+  /// Creates a union as the root element.
+  /// @return An OutputUnionType
   OutputUnionType union_as_root() const;
 
+  /// Creates a null value as the root element.
+  /// @return An OutputVarType
   OutputVarType null_as_root() const;
 
   template <class T>

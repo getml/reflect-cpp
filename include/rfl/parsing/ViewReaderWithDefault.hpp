@@ -24,6 +24,13 @@ class ViewReaderWithDefault {
   static constexpr size_t size_ = ViewType::size();
 
  public:
+  /**
+   * @brief Constructor.
+   *
+   * @param _r The reader to use.
+   * @param _view The view to read into.
+   * @param _errors The vector to collect errors in.
+   */
   ViewReaderWithDefault(const R* _r, ViewType* _view,
                         std::vector<std::string>* _errors)
       : r_(_r), view_(_view), errors_(_errors) {
@@ -32,15 +39,29 @@ class ViewReaderWithDefault {
 
   ~ViewReaderWithDefault() = default;
 
+  /**
+   * @brief Returns a boolean array indicating which fields were found.
+   *
+   * @return The boolean array.
+   */
   const std::array<bool, size_>& found() const { return *found_; }
 
-  /// Assigns the parsed version of _var to the field signified by _name, if
-  /// such a field exists in the underlying view.
+  /**
+   * @brief Reads a single field into the view.
+   *
+   * @param _name The name of the field.
+   * @param _var The input variable to read from.
+   */
   void read(const std::string_view& _name, const InputVarType& _var) const {
     assign_to_matching_field(*r_, _name, _var, view_, errors_, found_.get(),
                              std::make_integer_sequence<int, size_>());
   }
 
+  /**
+   * @brief Returns the size of the view.
+   *
+   * @return The size of the view.
+   */
   static constexpr size_t size() { return size_; }
 
  private:

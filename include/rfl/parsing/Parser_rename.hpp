@@ -20,6 +20,13 @@ template <class R, class W, class T, internal::StringLiteral _name,
 struct Parser<R, W, Rename<_name, T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
+  /**
+   * @brief Reads a renamed value from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed value or an error.
+   */
   static Result<Rename<_name, T>> read(const R& _r,
                                        const InputVarType& _var) noexcept {
     const auto to_rename = [](auto&& _t) {
@@ -29,6 +36,14 @@ struct Parser<R, W, Rename<_name, T>, ProcessorsType> {
         .transform(to_rename);
   }
 
+  /**
+   * @brief Writes a renamed value to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _rename The renamed value to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const Rename<_name, T>& _rename,
                     const P& _parent) {
@@ -36,6 +51,12 @@ struct Parser<R, W, Rename<_name, T>, ProcessorsType> {
         _w, _rename.value(), _parent);
   }
 
+  /**
+   * @brief Generates the schema for the renamed value.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::to_schema(

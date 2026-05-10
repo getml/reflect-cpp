@@ -10,6 +10,11 @@
 
 namespace rfl::parsing {
 
+/**
+ * @brief Determines whether a reader supports tagged unions.
+ *
+ * @tparam R The reader type.
+ */
 template <class R>
 concept SupportsTaggedUnions = requires(
     R r, std::string name, typename R::InputArrayType arr,

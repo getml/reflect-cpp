@@ -22,6 +22,10 @@ template <SerializationType _s, class... FieldTypes>
 struct ArrowBuildersType<NamedTuple<FieldTypes...>, _s> {
   using Type = Tuple<arrow_builder_t<typename FieldTypes::Type, _s>...>;
 
+  /**
+   * @brief Returns the data types for the fields in the named tuple.
+   * @return An array of shared pointers to the data types.
+   */
   static auto data_types() {
     return [&]<size_t... _is>(std::integer_sequence<size_t, _is...>) {
       return std::array<std::shared_ptr<arrow::DataType>,
@@ -30,10 +34,18 @@ struct ArrowBuildersType<NamedTuple<FieldTypes...>, _s> {
     }(std::make_integer_sequence<size_t, sizeof...(FieldTypes)>());
   }
 
+  /**
+   * @brief Creates the builders for the fields in the named tuple.
+   * @return A tuple of arrow builders.
+   */
   static Type make_builders() {
     return Type(ArrowTypes<typename FieldTypes::Type, _s>::make_builder()...);
   }
 
+  /**
+   * @brief Generates the arrow schema for the fields in the named tuple.
+   * @return A shared pointer to the arrow schema.
+   */
   static auto schema() {
     const auto fields =
         std::vector<std::shared_ptr<arrow::Field>>({arrow::field(
@@ -43,6 +55,12 @@ struct ArrowBuildersType<NamedTuple<FieldTypes...>, _s> {
   }
 };
 
+/**
+ * @brief Creates the arrow builders for the fields in the named tuple T.
+ * @tparam T The named tuple type.
+ * @tparam _s The serialization type.
+ * @return A tuple of arrow builders.
+ */
 template <class T, SerializationType _s>
 auto make_arrow_builders() {
   return ArrowBuildersType<std::remove_cvref_t<T>, _s>::make_builders();

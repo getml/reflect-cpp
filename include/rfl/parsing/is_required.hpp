@@ -20,8 +20,11 @@
 namespace rfl {
 namespace parsing {
 
-/// Determines whether a field in a named tuple is required.
-/// General case - most fields are required.
+/**
+ * @brief Trait to check if a type is never required.
+ *
+ * @tparam T The type to check.
+ */
 template <class T>
 class is_never_required;
 
@@ -40,6 +43,13 @@ class is_never_required<std::unique_ptr<T>> : public std::true_type {};
 template <class T>
 constexpr bool is_never_required_v = is_never_required<T>::value;
 
+/**
+ * @brief Checks if a field of type T is required.
+ *
+ * @tparam T The type of the field.
+ * @tparam _ignore_empty_containers Whether to ignore empty containers.
+ * @return True if the field is required, false otherwise.
+ */
 template <class T, bool _ignore_empty_containers>
 consteval bool is_required() {
   using Type = std::remove_cvref_t<std::remove_pointer_t<T>>;

@@ -22,6 +22,13 @@ template <class R, class W, class T, class ProcessorsType>
 struct Parser<R, W, Ref<T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
+  /**
+   * @brief Reads a Ref from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed Ref or an error.
+   */
   static Result<Ref<T>> read(const R& _r, const InputVarType& _var) noexcept {
     if constexpr (atomic::is_atomic_v<T>) {
       using RemoveAtomicT = atomic::remove_atomic_t<T>;
@@ -48,12 +55,26 @@ struct Parser<R, W, Ref<T>, ProcessorsType> {
     }
   }
 
+  /**
+   * @brief Writes a Ref to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _ref The Ref to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const Ref<T>& _ref, const P& _parent) {
     Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(_w, *_ref,
                                                                 _parent);
   }
 
+  /**
+   * @brief Generates the schema for the Ref.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::to_schema(

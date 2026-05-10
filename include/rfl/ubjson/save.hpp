@@ -11,6 +11,13 @@
 
 namespace rfl::ubjson {
 
+/// Saves an object to a UBJSON file.
+/// Serializes a C++ object to UBJSON binary format and writes it to a file using compile-time reflection.
+/// UBJSON (Universal Binary JSON) is a compact binary format that mirrors JSON's data model.
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _fname The filename/path where the UBJSON file will be saved
+/// @param _obj The object to serialize to UBJSON
+/// @return Result containing Nothing on success or an error message on failure
 template <class... Ps>
 Result<Nothing> save(const std::string& _fname, const auto& _obj) {
   const auto write_func = [](const auto& _obj, auto& _stream) -> auto& {

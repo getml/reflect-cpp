@@ -32,6 +32,13 @@ struct MapParser {
 
   using ParentType = Parent<W>;
 
+  /**
+   * @brief Reads a map from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed map or an error.
+   */
   static Result<MapType> read(const R& _r, const InputVarType& _var) noexcept {
     const auto to_map = [&](auto obj) -> Result<MapType> {
       return make_map(_r, obj);
@@ -43,6 +50,14 @@ struct MapParser {
     }
   }
 
+  /**
+   * @brief Writes a map to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _m The map to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const MapType& _m, const P& _parent) {
     if constexpr (schemaful::IsSchemafulWriter<W>) {
@@ -52,6 +67,12 @@ struct MapParser {
     }
   }
 
+  /**
+   * @brief Generates the schema for the map.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     return schema::Type{schema::Type::StringMap{Ref<schema::Type>::make(

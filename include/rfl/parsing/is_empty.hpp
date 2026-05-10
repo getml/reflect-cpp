@@ -13,6 +13,13 @@
 namespace rfl {
 namespace parsing {
 
+/**
+ * @brief Checks if a variable is empty.
+ *
+ * @tparam T The type of the variable.
+ * @param _var The variable to check.
+ * @return True if the variable is empty, false otherwise.
+ */
 template <class T>
 static bool is_empty(const T& _var) {
   using Type = std::remove_cvref_t<T>;

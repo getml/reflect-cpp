@@ -12,7 +12,12 @@
 
 namespace rfl::cereal {
 
-/// Writes an object to a Cereal OutputArchive.
+/// Writes an object directly to a Cereal output archive.
+/// This allows integration with existing Cereal-based code.
+/// @tparam T The type of object to serialize
+/// @tparam Ps Optional processors to apply during serialization
+/// @param _obj The object to serialize
+/// @param _archive The Cereal output archive to write to
 template <class T, class... Ps>
 void write(const T& _obj, Writer::CerealArchive& _archive) {
   using ParentType = parsing::Parent<Writer>;
@@ -20,7 +25,10 @@ void write(const T& _obj, Writer::CerealArchive& _archive) {
   Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
 }
 
-/// Returns Cereal binary bytes.
+/// Serializes an object to bytes using Cereal portable binary format.
+/// @tparam Ps Optional processors to apply during serialization
+/// @param _obj The object to serialize
+/// @return A vector of bytes containing the serialized data
 template <class... Ps>
 std::vector<char> write(const auto& _obj) {
   std::stringstream ss;
@@ -32,7 +40,11 @@ std::vector<char> write(const auto& _obj) {
   return std::vector<char>(str.begin(), str.end());
 }
 
-/// Writes Cereal binary format into an ostream.
+/// Writes an object to an output stream using Cereal portable binary format.
+/// @tparam Ps Optional processors to apply during serialization
+/// @param _obj The object to serialize
+/// @param _stream The output stream to write to
+/// @return The output stream (for chaining)
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) {
   ::cereal::PortableBinaryOutputArchive archive(_stream);

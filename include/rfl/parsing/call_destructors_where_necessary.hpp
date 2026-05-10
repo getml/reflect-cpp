@@ -8,9 +8,13 @@
 
 namespace rfl::parsing {
 
-/// Because of the way we have allocated the fields, we need to manually
-/// trigger the destructors.
-
+/**
+ * @brief Calls the destructors on an array.
+ *
+ * @tparam T The type of the elements in the array.
+ * @param _size The size of the array.
+ * @param _ptr A pointer to the array.
+ */
 template <class T>
 void call_destructor_on_array(const size_t _size, T* _ptr) {
   for (size_t i = 0; i < _size; ++i) {
@@ -22,6 +26,15 @@ void call_destructor_on_array(const size_t _size, T* _ptr) {
   }
 }
 
+/**
+ * @brief Calls the destructor on a single element of a view, if necessary.
+ *
+ * @tparam ViewType The type of the view.
+ * @tparam _size The size of the set array.
+ * @tparam _i The index of the element.
+ * @param _set A boolean array indicating which elements have been set.
+ * @param _view The view to call the destructor on.
+ */
 template <class ViewType, unsigned long _size, int _i>
 void call_destructor_on_one_if_necessary(const std::array<bool, _size>& _set,
                                          ViewType* _view) {
@@ -43,6 +56,14 @@ void call_destructor_on_one_if_necessary(const std::array<bool, _size>& _set,
   }
 }
 
+/**
+ * @brief Calls the destructors on the elements of a view, if necessary.
+ *
+ * @tparam ViewType The type of the view.
+ * @tparam _size The size of the set array.
+ * @param _set A boolean array indicating which elements have been set.
+ * @param _view The view to call the destructors on.
+ */
 template <class ViewType, auto _size>
 void call_destructors_where_necessary(const std::array<bool, _size>& _set,
                                       ViewType* _view) {

@@ -8,14 +8,19 @@
 
 namespace rfl {
 
-/// Requires that all of the contraints C and Cs be true.
+/// Requires that all of the constraints C and Cs be true.
 template <class C, class... Cs>
 struct AllOf {
+  /// Validates that all constraints are satisfied.
+  /// @param _value The value to validate
+  /// @return The value if all constraints pass, otherwise an error
   template <class T>
   static rfl::Result<T> validate(T _value) noexcept {
     return validate_impl<T, C, Cs...>(_value);
   }
 
+  /// Converts the validator to a JSON schema type.
+  /// @return A ValidationType representing all-of schema
   template <class T>
   static parsing::schema::ValidationType to_schema() {
     using ValidationType = parsing::schema::ValidationType;

@@ -18,6 +18,11 @@ template <class R, class W, class T, class ProcessorsType>
 struct Parser<R, W, std::reference_wrapper<T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
+  /**
+   * @brief Reading into a reference wrapper is not supported.
+   *
+   * @return An error.
+   */
   static Result<std::reference_wrapper<T>> read(const R&,
                                                 const InputVarType&) noexcept {
     static_assert(always_false_v<T>,
@@ -29,6 +34,14 @@ struct Parser<R, W, std::reference_wrapper<T>, ProcessorsType> {
     return error("Unsupported.");
   }
 
+  /**
+   * @brief Writes a value from a reference wrapper to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _ref The reference wrapper to write.
+   * @param _p The parent object.
+   */
   template <class P>
   static void write(const W& _w, const std::reference_wrapper<T> _ref,
                     const P& _p) {
@@ -36,6 +49,12 @@ struct Parser<R, W, std::reference_wrapper<T>, ProcessorsType> {
                                                                 _p);
   }
 
+  /**
+   * @brief Generates the schema for the reference wrapper.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::to_schema(

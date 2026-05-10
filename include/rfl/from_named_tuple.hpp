@@ -12,7 +12,15 @@
 
 namespace rfl {
 
-/// Generates the struct T from a named tuple.
+/// Generates the struct T from a named tuple (rvalue reference version).
+/// This converts a named tuple (tuple-like structure with compile-time string names)
+/// back into the original struct type. If the named tuple type doesn't match exactly,
+/// it will be converted first. For structs with rfl::Field members, values are moved/copied
+/// to the fields; for plain structs, values are used for aggregate initialization.
+/// @tparam T The struct type to construct
+/// @tparam NamedTupleType The type of the named tuple
+/// @param _n The named tuple to convert from (will be moved if rvalue)
+/// @return An instance of struct T
 template <class T, class NamedTupleType>
 auto from_named_tuple(NamedTupleType&& _n) {
   using RequiredType = std::remove_cvref_t<rfl::named_tuple_t<T>>;
@@ -34,7 +42,14 @@ auto from_named_tuple(NamedTupleType&& _n) {
   }
 }
 
-/// Generates the struct T from a named tuple.
+/// Generates the struct T from a named tuple (const reference version).
+/// This converts a named tuple (tuple-like structure with compile-time string names)
+/// back into the original struct type. For structs with rfl::Field members, values are copied
+/// to the fields; for plain structs, values are used for aggregate initialization.
+/// @tparam T The struct type to construct
+/// @tparam NamedTupleType The type of the named tuple
+/// @param _n The named tuple to convert from (const reference)
+/// @return An instance of struct T
 template <class T, class NamedTupleType>
 auto from_named_tuple(const NamedTupleType& _n) {
   using RequiredType = std::remove_cvref_t<rfl::named_tuple_t<T>>;

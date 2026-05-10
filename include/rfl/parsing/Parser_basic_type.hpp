@@ -42,17 +42,36 @@ struct Parser<R, W, T, ProcessorsType> {
 
   using ParentType = Parent<W>;
 
-  /// Expresses the variables as type T.
+  /**
+   * @brief Reads a basic type from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed value or an error.
+   */
   static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
     return _r.template to_basic_type<std::remove_cvref_t<T>>(_var);
   }
 
+  /**
+   * @brief Writes a basic type to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _var The value to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const T& _var, const P& _parent) {
     ParentType::add_value(_w, _var, _parent);
   }
 
-  /// Generates a schema for the underlying type.
+  /**
+   * @brief Generates the schema for the basic type.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(std::map<std::string, schema::Type>*) {
     using U = std::remove_cvref_t<T>;
     using Type = schema::Type;

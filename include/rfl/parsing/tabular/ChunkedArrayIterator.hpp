@@ -19,15 +19,28 @@ class ChunkedArrayIterator {
 
   using ArrayType = array_t<T, _s>;
 
+  /**
+   * @brief Creates a new ChunkedArrayIterator.
+   * @param _arr The chunked array to iterate over.
+   * @return A ChunkedArrayIterator.
+   */
   static ChunkedArrayIterator make(const Ref<arrow::ChunkedArray>& _arr) {
     return ChunkedArrayIterator(_arr);
   }
 
+  /**
+   * @brief Constructor.
+   * @param _arr The chunked array to iterate over.
+   */
   ChunkedArrayIterator(const Ref<arrow::ChunkedArray>& _arr)
       : arr_(_arr), chunk_ix_(0), current_chunk_(get_chunk(arr_, 0)), ix_(0) {}
 
   ~ChunkedArrayIterator() = default;
 
+  /**
+   * @brief Returns the value at the current position.
+   * @return A Result containing the value or an error.
+   */
   Result<T> operator*() const noexcept {
     const bool is_null =
         current_chunk_
@@ -46,8 +59,16 @@ class ChunkedArrayIterator {
         [&](const auto& _c) { return ArrowTypes<T, _s>::get_value(_c, ix_); });
   }
 
+  /**
+   * @brief Checks if the iterator has reached the end.
+   * @return true if the end has been reached, false otherwise.
+   */
   bool end() const noexcept { return chunk_ix_ >= arr_->num_chunks(); }
 
+  /**
+   * @brief Advances the iterator to the next position.
+   * @return A reference to the iterator.
+   */
   ChunkedArrayIterator& operator++() noexcept {
     if (!current_chunk_) {
       return *this;
@@ -61,9 +82,18 @@ class ChunkedArrayIterator {
     return *this;
   }
 
+  /**
+   * @brief Advances the iterator to the next position (postfix).
+   */
   void operator++(int) noexcept { ++*this; }
 
  private:
+  /**
+   * @brief Returns the chunk at the specified index.
+   * @param _arr The chunked array.
+   * @param _chunk_ix The index of the chunk.
+   * @return A Result containing the chunk or an error.
+   */
   static Result<Ref<ArrayType>> get_chunk(const Ref<arrow::ChunkedArray>& _arr,
                                           const int _chunk_ix) noexcept {
     if (_chunk_ix < _arr->num_chunks()) {

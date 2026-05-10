@@ -12,7 +12,12 @@
 
 namespace rfl::msgpack {
 
-/// Returns msgpack bytes.
+/// Returns MSGPACK bytes representation of the object.
+/// MessagePack is an efficient binary serialization format similar to JSON but more compact.
+/// Uses compile-time reflection to serialize a C++ object to MSGPACK format.
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _obj The object to serialize to MSGPACK
+/// @return A vector of chars containing the MSGPACK binary representation
 template <class... Ps>
 std::vector<char> write(const auto& _obj) {
   using T = std::remove_cvref_t<decltype(_obj)>;
@@ -34,7 +39,12 @@ std::vector<char> write(const auto& _obj) {
   return bytes.value();
 }
 
-/// Writes a MSGPACK into an ostream.
+/// Writes a MSGPACK representation into an ostream.
+/// Uses compile-time reflection to serialize a C++ object to MSGPACK and write to a stream.
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _obj The object to serialize to MSGPACK
+/// @param _stream The output stream to write MSGPACK binary data to
+/// @return The output stream (for chaining)
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) {
   auto buffer = write<Ps...>(_obj);

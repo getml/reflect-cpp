@@ -11,8 +11,15 @@
 namespace rfl::cli {
 
 /// Parses command-line arguments into a struct using reflection.
-/// Field names are automatically converted from snake_case to kebab-case.
-/// Example: struct field `host_name` matches CLI argument `--host-name`.
+/// Field names are automatically converted from snake_case to kebab-case for CLI arguments.
+/// For example, a struct field named `host_name` will match the CLI argument `--host-name`.
+/// Supports nested objects (e.g., --database.host), arrays (e.g., --ports=8080,8081),
+/// positional arguments, and short flags.
+/// @tparam T The struct type to parse into
+/// @tparam Ps Optional processors to apply during parsing
+/// @param argc Number of command-line arguments
+/// @param argv Array of command-line argument strings
+/// @return A Result containing the parsed struct or an error
 template <class T, class... Ps>
 rfl::Result<T> read(int argc, char* argv[]) {
   using ProcessorsType = Processors<SnakeCaseToKebabCase, Ps...>;

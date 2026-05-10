@@ -111,10 +111,21 @@ struct RFL_API Type {
                    Object, Optional, Reference, StringMap, Tuple, TypedArray,
                    Validated>;
 
+  /**
+   * @brief Default constructor.
+   */
   Type();
 
+  /**
+   * @brief Constructor.
+   *
+   * @param _variant The variant to use.
+   */
   Type(const VariantType& _variant);
 
+  /**
+   * @brief Destructor.
+   */
   ~Type();
 
   /// A type can be determined to be any of the above.

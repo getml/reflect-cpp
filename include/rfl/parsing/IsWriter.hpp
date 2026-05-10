@@ -10,6 +10,12 @@
 namespace rfl {
 namespace parsing {
 
+/**
+ * @brief A writer for a specific format.
+ *
+ * @tparam W The writer type.
+ * @tparam T The type to be written.
+ */
 template <class W, class T>
 concept IsWriter = requires(W w, T t, std::string_view name,
                             std::string basic_value,

@@ -38,6 +38,13 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
  public:
   using InputVarType = typename R::InputVarType;
 
+  /**
+   * @brief Reads a variant from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed variant or an error.
+   */
   static Result<std::variant<AlternativeTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
     if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
@@ -108,6 +115,14 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
     }
   }
 
+  /**
+   * @brief Writes a variant to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _variant The variant to write.
+   * @param _parent The parent object to write into.
+   */
   template <class P>
   static void write(const W& _w,
                     const std::variant<AlternativeTypes...>& _variant,
@@ -178,6 +193,12 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
     }
   }
 
+  /**
+   * @brief Generates a schema for the variant.
+   *
+   * @param _definitions The map of definitions to add the schema to.
+   * @return The generated schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
@@ -204,6 +225,13 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
   }
 
  private:
+  /**
+   * @brief Adds an alternative to the schema.
+   *
+   * @tparam _i The index of the alternative.
+   * @param _definitions The map of definitions to add the schema to.
+   * @param _types The vector of types to add the generated schema to.
+   */
   template <size_t _i>
   static void add_to_schema(std::map<std::string, schema::Type>* _definitions,
                             std::vector<schema::Type>* _types) noexcept {
@@ -212,6 +240,13 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
     _types->push_back(Parser<R, W, U, ProcessorsType>::to_schema(_definitions));
   }
 
+  /**
+   * @brief Builds the schema for the variant.
+   *
+   * @tparam _is The indices of the alternatives.
+   * @param _definitions The map of definitions to add the schema to.
+   * @param _types The vector of types to add the generated schemas to.
+   */
   template <int... _is>
   static void build_schema(std::map<std::string, schema::Type>* _definitions,
                            std::vector<schema::Type>* _types,
@@ -219,6 +254,15 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
     (add_to_schema<_is>(_definitions, _types), ...);
   }
 
+  /**
+   * @brief Reads a single alternative from the input.
+   *
+   * @tparam _i The index of the alternative.
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @param _result The result pointer to store the parsed alternative.
+   * @param _errors The vector of errors to add parsing errors to.
+   */
   template <int _i>
   static void read_one_alternative(
       const R& _r, const InputVarType& _var,
@@ -236,6 +280,15 @@ class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
     }
   }
 
+  /**
+   * @brief Reads the variant from the input by trying each alternative.
+   *
+   * @tparam _is The indices of the alternatives.
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @param _result The result pointer to store the parsed alternative.
+   * @param _errors The vector of errors to add parsing errors to.
+   */
   template <int... _is>
   static void read_variant(
       const R& _r, const InputVarType& _var,

@@ -18,8 +18,12 @@
 namespace rfl {
 namespace bson {
 
-/// Returns BSON bytes. Careful: It is the responsibility of the caller to call
-/// bson_free on the returned pointer.
+/// Converts an object to BSON and returns a buffer pointer.
+/// WARNING: It is the caller's responsibility to call bson_free() on the returned pointer.
+/// This is a low-level function; prefer write() for automatic memory management.
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _obj The object to serialize to BSON
+/// @return Result containing a pair of (buffer pointer, buffer size) or an error
 template <class... Ps>
 Result<std::pair<uint8_t*, size_t>> to_buffer(const auto& _obj) noexcept {
   using T = std::remove_cvref_t<decltype(_obj)>;
@@ -55,7 +59,12 @@ Result<std::pair<uint8_t*, size_t>> to_buffer(const auto& _obj) noexcept {
       });
 }
 
-/// Returns BSON bytes.
+/// Returns BSON bytes representation of the object.
+/// BSON (Binary JSON) is the binary serialization format used by MongoDB.
+/// Uses compile-time reflection to serialize a C++ object to BSON format.
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _obj The object to serialize to BSON
+/// @return A vector of chars containing the BSON binary representation
 template <class... Ps>
 std::vector<char> write(const auto& _obj) {
   return to_buffer<Ps...>(_obj)
@@ -69,7 +78,12 @@ std::vector<char> write(const auto& _obj) {
       .value();
 }
 
-/// Writes a BSON into an ostream.
+/// Writes a BSON representation into an ostream.
+/// Uses compile-time reflection to serialize a C++ object to BSON and write to a stream.
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _obj The object to serialize to BSON
+/// @param _stream The output stream to write BSON binary data to
+/// @return The output stream (for chaining)
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) {
   to_buffer<Ps...>(_obj)

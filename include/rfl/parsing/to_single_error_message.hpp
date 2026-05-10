@@ -11,7 +11,14 @@
 
 namespace rfl::parsing {
 
-/// Combines a set of errors to a single, readable error message.
+/**
+ * @brief Combines a set of errors to a single, readable error message.
+ *
+ * @param _errors The vector of error messages.
+ * @param _msg_prefix An optional prefix for the error message.
+ * @param _err_limit The maximum number of errors to show.
+ * @return The combined error message.
+ */
 inline std::string to_single_error_message(
     std::vector<std::string> _errors,
     std::optional<std::string> _msg_prefix = std::nullopt,

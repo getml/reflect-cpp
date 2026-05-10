@@ -16,7 +16,13 @@
 
 namespace rfl::boost_serialization {
 
-/// Writes into an existing Boost output archive.
+/// Writes an object directly into an existing Boost output archive.
+/// This allows you to use custom archive types and integrate with existing Boost.Serialization code.
+/// @tparam IArchive The corresponding Boost input archive type (for type info)
+/// @tparam OArchive The Boost output archive type
+/// @tparam Ps Optional processors to apply during serialization
+/// @param _ar The Boost output archive to write to
+/// @param _obj The object to serialize
 template <class IArchive = boost::archive::binary_iarchive, class OArchive,
           class... Ps>
 void write(OArchive& _ar, const auto& _obj) {
@@ -28,7 +34,10 @@ void write(OArchive& _ar, const auto& _obj) {
       w, _obj, typename ParentType::Root{});
 }
 
-/// Returns serialized bytes using a binary archive.
+/// Serializes an object to bytes using Boost binary archive format.
+/// @tparam Ps Optional processors to apply during serialization
+/// @param _obj The object to serialize
+/// @return A vector of bytes containing the serialized data
 template <class... Ps>
 std::vector<char> write(const auto& _obj) {
   std::ostringstream stream;
@@ -42,7 +51,11 @@ std::vector<char> write(const auto& _obj) {
   return std::vector<char>(str.begin(), str.end());
 }
 
-/// Writes into an ostream using a binary archive.
+/// Writes an object to an output stream using Boost binary archive format.
+/// @tparam Ps Optional processors to apply during serialization
+/// @param _obj The object to serialize
+/// @param _stream The output stream to write to
+/// @return The output stream (for chaining)
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) {
   boost::archive::binary_oarchive ar(

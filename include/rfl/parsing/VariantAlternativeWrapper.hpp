@@ -22,6 +22,13 @@ struct GetName<Literal<_name>> {
   constexpr static internal::StringLiteral name_ = _name;
 };
 
+/**
+ * @brief Makes a tag for the variant alternative.
+ *
+ * @tparam T The type to make the tag for.
+ * @tparam _remove_namespaces Whether to remove namespaces from the name.
+ * @return The tag for the type.
+ */
 template <class T, bool _remove_namespaces = true>
 consteval auto make_tag() {
   if constexpr (internal::has_tag_v<T>) {

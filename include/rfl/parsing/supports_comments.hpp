@@ -10,7 +10,11 @@
 
 namespace rfl::parsing {
 
-/// Determines whether a writer supports comments.
+/**
+ * @brief Determines whether a writer supports comments.
+ *
+ * @tparam W The writer type.
+ */
 template <class W>
 concept supports_comments =
     requires(W w, typename W::OutputArrayType arr,

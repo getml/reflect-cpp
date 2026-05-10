@@ -30,18 +30,39 @@ struct Parser<R, W,
   using TimePointType =
       std::chrono::time_point<std::chrono::system_clock, Duration>;
 
+  /**
+   * @brief Reads a time point from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed time point or an error.
+   */
   static Result<TimePointType> read(const R& _r,
                                     const InputVarType& _var) noexcept {
     return Parser<R, W, std::string, ProcessorsType>::read(_r, _var).and_then(
         from_string);
   }
 
+  /**
+   * @brief Writes a time point to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _tp The time point to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const TimePointType& _tp, const P& _parent) {
     Parser<R, W, std::string, ProcessorsType>::write(_w, to_string(_tp),
                                                      _parent);
   }
 
+  /**
+   * @brief Generates the schema for the time point.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
     return Parser<R, W, std::string, ProcessorsType>::to_schema(_definitions);

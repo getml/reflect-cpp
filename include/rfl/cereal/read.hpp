@@ -16,7 +16,12 @@ namespace rfl::cereal {
 
 using InputVarType = Reader::InputVarType;
 
-/// Parses an object from a Cereal InputArchive.
+/// Parses an object from a Cereal input archive.
+/// This allows direct integration with existing Cereal-based code.
+/// @tparam T The type to deserialize into
+/// @tparam Ps Optional processors to apply during deserialization
+/// @param _archive The Cereal input archive to read from
+/// @return A Result containing the deserialized object or an error
 template <class T, class... Ps>
 auto read(Reader::CerealArchive& _archive) {
   const auto r = Reader();
@@ -24,7 +29,13 @@ auto read(Reader::CerealArchive& _archive) {
   return Parser<T, Processors<Ps...>>::read(r, var);
 }
 
-/// Parses an object from Cereal binary format using reflection.
+/// Parses an object from raw bytes using Cereal portable binary format.
+/// Creates a memory stream and deserializes using Cereal.
+/// @tparam T The type to deserialize into
+/// @tparam Ps Optional processors to apply during deserialization
+/// @param _bytes Pointer to the binary data
+/// @param _size Size of the binary data in bytes
+/// @return A Result containing the deserialized object or an error
 template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(
     const concepts::ByteLike auto* _bytes, const size_t _size) {
@@ -38,13 +49,21 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
   }
 }
 
-/// Parses an object from Cereal binary format using reflection.
+/// Parses an object from a byte container using Cereal portable binary format.
+/// @tparam T The type to deserialize into
+/// @tparam Ps Optional processors to apply during deserialization
+/// @param _bytes A contiguous container containing the Cereal binary data
+/// @return A Result containing the deserialized object or an error
 template <class T, class... Ps>
 auto read(const concepts::ContiguousByteContainer auto& _bytes) {
   return read<T, Ps...>(_bytes.data(), _bytes.size());
 }
 
-/// Parses an object from a stream using Cereal binary format.
+/// Parses an object from an input stream using Cereal portable binary format.
+/// @tparam T The type to deserialize into
+/// @tparam Ps Optional processors to apply during deserialization
+/// @param _stream The input stream to read from
+/// @return A Result containing the deserialized object or an error
 template <class T, class... Ps>
 auto read(std::istream& _stream) {
   try {

@@ -17,8 +17,11 @@
 namespace rfl {
 
 /// Generates the named tuple that is equivalent to the struct _t.
-/// If _t already is a named tuple, then _t will be returned.
+/// A named tuple is like a std::tuple but with compile-time string names for each field.
+/// If _t is already a named tuple, it will be returned unchanged.
 /// All fields of the struct must be an rfl::Field.
+/// @param _t The struct or named tuple to convert (rvalue reference version)
+/// @return A named tuple representation of the struct
 auto to_named_tuple(auto&& _t) {
   using T = std::remove_cvref_t<decltype(_t)>;
   if constexpr (internal::is_named_tuple_v<std::remove_cvref_t<T>>) {
@@ -34,9 +37,13 @@ auto to_named_tuple(auto&& _t) {
   }
 }
 
-/// Generates the named tuple that is equivalent to the struct _t.
-/// If _t already is a named tuple, then _t will be returned.
+/// Generates the named tuple that is equivalent to the struct _t (const version).
+/// A named tuple is like a std::tuple but with compile-time string names for each field.
+/// If _t is already a named tuple, it will be returned unchanged.
 /// All fields of the struct must be an rfl::Field.
+/// @tparam ProcessorsType The processors type (for template compatibility)
+/// @param _t The struct or named tuple to convert (const reference)
+/// @return A named tuple representation of the struct
 template <class ProcessorsType>
 auto to_named_tuple(const auto& _t) {
   using T = std::remove_cvref_t<decltype(_t)>;

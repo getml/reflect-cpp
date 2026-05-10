@@ -14,7 +14,11 @@
 
 namespace rfl::avro {
 
-/// Returns AVRO bytes.
+/// Serializes an object to Avro binary format with an explicit schema.
+/// @tparam Ps Optional processors to apply during serialization
+/// @param _obj The object to serialize
+/// @param _schema The Avro schema to use (must match the object type)
+/// @return A vector of bytes containing the Avro binary data
 template <class... Ps>
 std::vector<char> write(const auto& _obj, const auto& _schema) {
   using T = std::remove_cvref_t<decltype(_obj)>;
@@ -59,7 +63,11 @@ std::vector<char> write(const auto& _obj, const auto& _schema) {
   return buffer.value();
 }
 
-/// Returns AVRO bytes.
+/// Serializes an object to Avro binary format, inferring the schema from the type.
+/// This automatically generates the Avro schema from the C++ type.
+/// @tparam Ps Optional processors to apply during serialization
+/// @param _obj The object to serialize
+/// @return A vector of bytes containing the Avro binary data
 template <class... Ps>
 std::vector<char> write(const auto& _obj) {
   using T = std::remove_cvref_t<decltype(_obj)>;
@@ -67,7 +75,11 @@ std::vector<char> write(const auto& _obj) {
   return write<Ps...>(_obj, schema);
 }
 
-/// Writes a AVRO into an ostream.
+/// Writes an object in Avro binary format to an output stream.
+/// @tparam Ps Optional processors to apply during serialization
+/// @param _obj The object to serialize
+/// @param _stream The output stream to write to
+/// @return The output stream (for chaining)
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) {
   auto buffer = write<Ps...>(_obj);

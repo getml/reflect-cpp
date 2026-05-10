@@ -48,10 +48,19 @@ struct Reader {
   static constexpr bool has_custom_constructor =
       (requires(InputVarType var) { T::from_avro_obj(var); });
 
+  /// Checks if the given Avro value is empty (null type).
+  /// @param _var The Avro value to check
+  /// @return true if the value is of type AVRO_NULL, false otherwise
   bool is_empty(const InputVarType& _var) const noexcept {
     return avro_value_get_type(_var.val_) == AVRO_NULL;
   }
 
+  /// Converts an Avro value to a basic C++ type.
+  /// Supports strings, byte containers, booleans, floating-point numbers, 
+  /// integers, and literal types (enums).
+  /// @tparam T The target C++ type to convert to
+  /// @param _var The Avro value to convert
+  /// @return A Result containing the converted value or an error
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
     const auto type = avro_value_get_type(_var.val_);
@@ -145,6 +154,9 @@ struct Reader {
     }
   }
 
+  /// Converts an Avro value to an array type.
+  /// @param _var The Avro value to convert
+  /// @return A Result containing an InputArrayType or an error if the value is not an array
   rfl::Result<InputArrayType> to_array(
       const InputVarType& _var) const noexcept {
     if (avro_value_get_type(_var.val_) != AVRO_ARRAY) {
@@ -153,6 +165,10 @@ struct Reader {
     return InputArrayType{_var.val_};
   }
 
+  /// Converts an Avro value to an object (record) type.
+  /// In Avro, objects are represented as records with named fields.
+  /// @param _var The Avro value to convert
+  /// @return A Result containing an InputObjectType or an error if the value is not a record
   rfl::Result<InputObjectType> to_object(
       const InputVarType& _var) const noexcept {
     const auto type = avro_value_get_type(_var.val_);
@@ -162,6 +178,10 @@ struct Reader {
     return InputObjectType{_var.val_};
   }
 
+  /// Converts an Avro value to a map type.
+  /// Avro maps are key-value containers where keys are strings.
+  /// @param _var The Avro value to convert
+  /// @return A Result containing an InputMapType or an error if the value is not a map
   rfl::Result<InputMapType> to_map(const InputVarType& _var) const noexcept {
     const auto type = avro_value_get_type(_var.val_);
     if (type != AVRO_MAP) {
@@ -170,6 +190,10 @@ struct Reader {
     return InputMapType{_var.val_};
   }
 
+  /// Converts an Avro value to a union type.
+  /// Avro unions allow a value to be one of several types.
+  /// @param _var The Avro value to convert
+  /// @return A Result containing an InputUnionType or an error if the value is not a union
   rfl::Result<InputUnionType> to_union(
       const InputVarType& _var) const noexcept {
     const auto type = avro_value_get_type(_var.val_);
@@ -179,6 +203,11 @@ struct Reader {
     return InputUnionType{_var.val_};
   }
 
+  /// Reads all elements from an Avro array using the provided array reader.
+  /// @tparam ArrayReader The type of reader that processes individual array elements
+  /// @param _array_reader The reader object that processes each element
+  /// @param _arr The Avro array to read from
+  /// @return std::nullopt on success, or an Error if reading fails
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
                                   const InputArrayType& _arr) const noexcept {
@@ -203,6 +232,11 @@ struct Reader {
     return std::nullopt;
   }
 
+  /// Reads all key-value pairs from an Avro map using the provided map reader.
+  /// @tparam MapReader The type of reader that processes individual map entries
+  /// @param _map_reader The reader object that processes each key-value pair
+  /// @param _map The Avro map to read from
+  /// @return std::nullopt on success, or an Error if reading fails
   template <class MapReader>
   std::optional<Error> read_map(const MapReader& _map_reader,
                                 const InputMapType& _map) const noexcept {
@@ -225,6 +259,12 @@ struct Reader {
     return std::nullopt;
   }
 
+  /// Reads all fields from an Avro record (object) using the provided object reader.
+  /// Fields are accessed by their index in the schema definition.
+  /// @tparam ObjectReader The type of reader that processes individual object fields
+  /// @param _object_reader The reader object that processes each field
+  /// @param _obj The Avro record to read from
+  /// @return std::nullopt on success, or an Error if reading fails
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
@@ -246,6 +286,12 @@ struct Reader {
     return std::nullopt;
   }
 
+  /// Reads an Avro union value and converts it to the appropriate variant type.
+  /// Determines which branch of the union is active and reads that value.
+  /// @tparam VariantType The C++ variant type to construct
+  /// @tparam UnionReaderType The type of reader that handles union alternatives
+  /// @param _union The Avro union to read from
+  /// @return A Result containing the variant or an error
   template <class VariantType, class UnionReaderType>
   rfl::Result<VariantType> read_union(
       const InputUnionType& _union) const noexcept {
@@ -263,6 +309,11 @@ struct Reader {
                                  InputVarType{&value});
   }
 
+  /// Uses a custom constructor to create an object from an Avro value.
+  /// The type T must provide a static method T::from_avro_obj(InputVarType).
+  /// @tparam T The type to construct
+  /// @param _var The Avro value to construct from
+  /// @return A Result containing the constructed object or an error
   template <class T>
   rfl::Result<T> use_custom_constructor(
       const InputVarType& _var) const noexcept {

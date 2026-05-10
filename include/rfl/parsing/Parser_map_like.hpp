@@ -15,6 +15,9 @@
 namespace rfl {
 namespace parsing {
 
+/**
+ * @brief Parser specialization for std::map<std::string, T>.
+ */
 template <class R, class W, class T, class ProcessorsType, class Compare,
           class Allocator>
   requires AreReaderAndWriter<R, W,
@@ -24,6 +27,9 @@ struct Parser<R, W, std::map<std::string, T, Compare, Allocator>,
     : public MapParser<R, W, std::map<std::string, T, Compare, Allocator>,
                        ProcessorsType> {};
 
+/**
+ * @brief Parser specialization for std::unordered_map<std::string, T>.
+ */
 template <class R, class W, class T, class Hash, class KeyEqual,
           class Allocator, class ProcessorsType>
   requires AreReaderAndWriter<
@@ -35,11 +41,17 @@ struct Parser<R, W,
           R, W, std::unordered_map<std::string, T, Hash, KeyEqual, Allocator>,
           ProcessorsType> {};
 
+/**
+ * @brief Parser specialization for rfl::Object<T>.
+ */
 template <class R, class W, class T, class ProcessorsType>
   requires AreReaderAndWriter<R, W, Object<T>>
 struct Parser<R, W, Object<T>, ProcessorsType>
     : public MapParser<R, W, Object<T>, ProcessorsType> {};
 
+/**
+ * @brief Parser specialization for rfl::ExtraFields<T>.
+ */
 template <class R, class W, class T, class ProcessorsType>
   requires AreReaderAndWriter<R, W, ExtraFields<T>>
 struct Parser<R, W, ExtraFields<T>, ProcessorsType>

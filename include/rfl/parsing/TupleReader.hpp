@@ -21,11 +21,22 @@ class TupleReader {
   static constexpr size_t size_ = rfl::tuple_size_v<TupleType>;
 
  public:
+  /**
+   * @brief Constructor.
+   *
+   * @param _r The reader to use.
+   * @param _tuple The tuple to read into.
+   */
   TupleReader(const R* _r, TupleType* _tuple)
       : num_set_(0), r_(_r), tuple_(_tuple) {}
 
   ~TupleReader() = default;
 
+  /**
+   * @brief Handles any fields that were missing from the input.
+   *
+   * @return An optional error.
+   */
   std::optional<Error> handle_missing_fields() const {
     std::optional<Error> err;
     if (num_set_ < size_) {
@@ -34,8 +45,19 @@ class TupleReader {
     return err;
   }
 
+  /**
+   * @brief Returns the number of fields that have been set.
+   *
+   * @return The number of fields set.
+   */
   size_t num_set() const { return num_set_; }
 
+  /**
+   * @brief Reads a single variable from the input.
+   *
+   * @param _var The input variable to read from.
+   * @return An optional error.
+   */
   std::optional<Error> read(const InputVarType& _var) const {
     std::optional<Error> err;
     read_impl(_var, &err);
