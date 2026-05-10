@@ -23,8 +23,12 @@ class Timestamp {
 
   using ReflectionType = std::string;
 
+  /// Default constructor - initializes with zero time.
   Timestamp() : tm_(std::tm{}) {}
 
+  /// Constructs a timestamp from a C-string matching the format.
+  /// @param _str The string to parse
+  /// @throws std::runtime_error if the string doesn't match the format
   Timestamp(const char* _str) : tm_(std::tm{}) {
     const auto r = strptime(_str, _format.str().c_str(), &tm_);
     if (r == NULL) {
@@ -34,10 +38,17 @@ class Timestamp {
     }
   }
 
+  /// Constructs a timestamp from a std::string matching the format.
+  /// @param _str The string to parse
+  /// @throws std::runtime_error if the string doesn't match the format
   Timestamp(const std::string& _str) : Timestamp(_str.c_str()) {}
 
+  /// Constructs a timestamp from a std::tm structure.
+  /// @param _tm The time structure to wrap
   Timestamp(const std::tm& _tm) : tm_(_tm) {}
 
+  /// Constructs a timestamp from a time_t value.
+  /// @param _t The time_t value representing seconds since epoch
   Timestamp(const time_t _t) : tm_(std::tm{}) {
     auto t = _t;
 #if defined(_MSC_VER) || defined(__MINGW32__)
@@ -47,6 +58,7 @@ class Timestamp {
 #endif
   }
 
+  /// Destructor.
   ~Timestamp() = default;
 
   /// Returns a result containing the timestamp when successful or an Error

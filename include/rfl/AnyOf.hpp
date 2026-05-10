@@ -11,14 +11,19 @@
 
 namespace rfl {
 
-/// Requires that all of the contraints C and Cs be true.
+/// Requires that at least one of the constraints C and Cs be true.
 template <class C, class... Cs>
 struct AnyOf {
+  /// Validates that at least one constraint is satisfied.
+  /// @param _value The value to validate
+  /// @return The value if at least one constraint passes, otherwise an error
   template <class T>
   static rfl::Result<T> validate(const T& _value) noexcept {
     return validate_impl<T, C, Cs...>(_value, {});
   }
 
+  /// Converts the validator to a JSON schema type.
+  /// @return A ValidationType representing any-of schema
   template <class T>
   static parsing::schema::ValidationType to_schema() {
     using ValidationType = parsing::schema::ValidationType;
@@ -28,6 +33,9 @@ struct AnyOf {
   }
 
  private:
+  /// Creates an error message from a list of errors.
+  /// @param _errors The list of errors from failed validations
+  /// @return A formatted error message
   static std::string make_error_message(const std::vector<Error>& _errors) {
     std::stringstream stream;
     stream << "Expected at least one of the following validations to pass, but "

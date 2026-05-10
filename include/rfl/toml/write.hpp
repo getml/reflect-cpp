@@ -14,7 +14,12 @@
 
 namespace rfl::toml {
 
-/// Writes a TOML into an ostream.
+/// Writes a TOML representation into an ostream.
+/// Uses compile-time reflection to serialize a C++ object to TOML and write to a stream.
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _obj The object to serialize to TOML
+/// @param _stream The output stream to write TOML to
+/// @return The output stream (for chaining)
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) {
   using T = std::remove_cvref_t<decltype(_obj)>;
@@ -30,7 +35,11 @@ std::ostream& write(const auto& _obj, std::ostream& _stream) {
   return _stream;
 }
 
-/// Returns a TOML string.
+/// Returns a TOML string representation of the object.
+/// Uses compile-time reflection to serialize a C++ object to TOML format.
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _obj The object to serialize to TOML
+/// @return TOML string representation of the object
 template <class... Ps>
 std::string write(const auto& _obj) {
   using T = std::remove_cvref_t<decltype(_obj)>;

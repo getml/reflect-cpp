@@ -5,7 +5,9 @@
 
 namespace rfl {
 
-/// Returns the number of fields fields.
+/// Returns the number of fields in struct T at compile time.
+/// This uses structured bindings to count the fields.
+/// @tparam T The struct type to count fields for
 template <class T>
 constexpr std::size_t num_fields = internal::num_fields<T>;
 

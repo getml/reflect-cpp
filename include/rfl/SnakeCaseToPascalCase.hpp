@@ -10,6 +10,10 @@ namespace rfl {
 struct SnakeCaseToPascalCase {
  public:
   /// Replaces all instances of snake_case field names with PascalCase.
+  /// A named tuple is a tuple-like structure where each element has a name/key.
+  /// @tparam StructType The type of the struct being processed
+  /// @param _named_tuple The named tuple containing the struct's fields
+  /// @return A new named tuple with field names converted to PascalCase
   template <class StructType>
   static auto process(const auto& _named_tuple) {
     const auto handle_one = []<class FieldType>(const FieldType& _f) {
@@ -24,7 +28,10 @@ struct SnakeCaseToPascalCase {
   }
 
  private:
-  /// Applies the logic to a single field.
+  /// Applies the snake_case to PascalCase transformation to a single field.
+  /// @tparam FieldType The type of the field being transformed
+  /// @param _f The field to transform
+  /// @return A new field with the transformed name and the same value
   template <class FieldType>
   static auto handle_one_field(const FieldType& _f) {
     using NewFieldType =

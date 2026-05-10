@@ -18,11 +18,16 @@
 
 namespace rfl {
 
+/// Helper struct for Literal - stores a compile-time string name.
 template <internal::StringLiteral _name>
 struct LiteralHelper {
   constexpr static internal::StringLiteral name_ = _name;
 };
 
+/// A type-safe representation of a fixed set of string values known at compile time.
+/// Similar to an enum but with string values. Useful for representing discriminators,
+/// status values, or any fixed set of string constants with compile-time validation.
+/// @tparam fields_ The compile-time string literals that this Literal can represent
 template <internal::StringLiteral... fields_>
 class Literal {
   using FieldsType = rfl::Tuple<LiteralHelper<fields_>...>;
@@ -37,31 +42,45 @@ class Literal {
 
   using ReflectionType = std::string;
 
-  /// Constructs a Literal from another literal.
+  /// Copy constructor - constructs a Literal from another literal with the same fields.
+  /// @param _other The literal to copy from
   Literal(const Literal<fields_...>& _other) = default;
 
-  /// Constructs a Literal from another literal.
+  /// Move constructor - constructs a Literal from another literal with the same fields.
+  /// @param _other The literal to move from
   Literal(Literal<fields_...>&& _other) noexcept = default;
 
+  /// Constructs a Literal from a string value.
+  /// @param _str The string representing one of the literal's allowed values
+  /// @throws std::bad_optional_access if the string is not one of the allowed values
   Literal(const std::string& _str) : value_(find_value(_str).value()) {}
 
+  /// Default constructor - initializes to the first value (index 0).
   Literal() : value_(0) {}
 
+  /// Destructor.
   ~Literal() = default;
 
-  /// Constructs a new Literal.
+  /// Constructs a new Literal from a compile-time string name.
+  /// @tparam _name The compile-time string literal to create a Literal for
+  /// @return A Literal representing the specified name
   template <internal::StringLiteral _name>
   static Literal<fields_...> make() {
     return Literal(Literal<fields_...>::template value_of<_name>());
   }
 
-  /// Constructs a new Literal, equivalent to make, for reasons of consistency.
+  /// Constructs a new Literal from a compile-time string name.
+  /// Equivalent to make(), provided for consistency with from_value().
+  /// @tparam _name The compile-time string literal to create a Literal for
+  /// @return A Literal representing the specified name
   template <internal::StringLiteral _name>
   static Literal<fields_...> from_name() {
     return Literal<fields_...>::template make<_name>();
   }
 
-  /// Constructs a new Literal.
+  /// Constructs a new Literal from a compile-time value index.
+  /// @tparam _value The index of the value (must be less than num_fields_)
+  /// @return A Literal representing the value at the specified index
   template <ValueType _value>
   static Literal<fields_...> from_value() {
     static_assert(_value < num_fields_,
@@ -69,7 +88,9 @@ class Literal {
     return Literal<fields_...>(_value);
   }
 
-  /// Constructs a new Literal.
+  /// Constructs a new Literal from a runtime value index.
+  /// @param _value The index of the value
+  /// @return Result containing the Literal or an error if the value is out of range
   static Result<Literal<fields_...>> from_value(ValueType _value) {
     if (_value >= num_fields_) {
       return error("Value cannot exceed number of fields.");
@@ -77,7 +98,9 @@ class Literal {
     return Literal<fields_...>(_value);
   }
 
-  /// Determines whether the literal contains the string.
+  /// Determines whether the literal contains the string (runtime check).
+  /// @param _str The string to check for
+  /// @return true if the string is one of the allowed values, false otherwise
   static bool contains(const std::string& _str) {
     bool found = false;
     has_value(_str, &found);
@@ -85,6 +108,8 @@ class Literal {
   }
 
   /// Determines whether the literal contains the string at compile time.
+  /// @tparam _name The compile-time string literal to check for
+  /// @return true if the string is one of the allowed values, false otherwise
   template <internal::StringLiteral _name>
   static constexpr bool contains() {
     return find_value_of<_name>() != -1;
@@ -92,6 +117,8 @@ class Literal {
 
   /// Determines whether the literal contains any of the strings in the other
   /// literal at compile time.
+  /// @tparam OtherLiteralType Another Literal type to check against
+  /// @return true if there is any overlap between the two literal types
   template <class OtherLiteralType>
   static constexpr bool contains_any() {
     return []<int... _is>(const std::integer_sequence<int, _is...>&) {
@@ -103,6 +130,8 @@ class Literal {
 
   /// Determines whether the literal contains all of the strings in the other
   /// literal at compile time.
+  /// @tparam OtherLiteralType Another Literal type to check against
+  /// @return true if this literal contains all values from the other literal
   template <class OtherLiteralType>
   static constexpr bool contains_all() {
     return []<int... _is>(const std::integer_sequence<int, _is...>&) {
@@ -113,13 +142,16 @@ class Literal {
   }
 
   /// Determines whether the literal has duplicate strings at compile time.
-  /// These is useful for checking collections of strings in other contexts.
+  /// This is useful for checking collections of strings in other contexts.
+  /// @return true if there are duplicate values in the literal
   static constexpr bool has_duplicates() {
     return !internal::no_duplicate_field_names<FieldsType>();
   }
 
   /// Constructs a Literal from a string. Returns an error if the string
   /// cannot be found.
+  /// @param _str The string to convert to a Literal
+  /// @return Result containing the Literal or an error if the string is not recognized
   static Result<Literal> from_string(const std::string& _str) {
     const auto to_literal = [](const auto& _v) {
       return Literal<fields_...>(_v);
@@ -127,46 +159,66 @@ class Literal {
     return find_value(_str).transform(to_literal);
   };
 
-  /// The name defined by the Literal.
+  /// The name defined by the Literal (returns the string representation).
+  /// @return The string value of the current literal
   std::string name() const { return find_name(); }
 
   /// Returns all possible values of the literal as a std::vector<std::string>.
+  /// @return A vector containing all allowed string values
   static std::vector<std::string> names() {
     return allowed_strings_vec(std::make_integer_sequence<int, num_fields_>());
   }
 
   /// Helper function to retrieve a name at compile time.
+  /// @tparam _value The index of the value to retrieve
+  /// @return A Literal containing just the name at the specified index
   template <int _value>
   constexpr static auto name_of() {
     constexpr auto name = find_name_within_own_fields<_value>();
     return Literal<name>();
   }
 
-  /// Assigns from another literal.
+  /// Copy assignment operator - assigns from another literal.
+  /// @param _other The literal to copy from
+  /// @return Reference to this literal
   Literal<fields_...>& operator=(const Literal<fields_...>& _other) = default;
 
-  /// Assigns from another literal.
+  /// Move assignment operator - assigns from another literal.
+  /// @param _other The literal to move from
+  /// @return Reference to this literal
   Literal<fields_...>& operator=(Literal<fields_...>&& _other) noexcept =
       default;
 
-  /// Assigns the literal from a string
+  /// Assigns the literal from a string.
+  /// @param _str The string to assign (must be one of the allowed values)
+  /// @return Reference to this literal
+  /// @throws std::bad_optional_access if the string is not one of the allowed values
   Literal<fields_...>& operator=(const std::string& _str) {
     value_ = find_value(_str).value();
     return *this;
   }
 
-  /// <=> for other Literals with the same fields.
+  /// Three-way comparison operator for other Literals with the same fields.
+  /// Compares by internal value index.
+  /// @param _other The other literal to compare with
+  /// @return The ordering relationship between the two literals
   auto operator<=>(const Literal<fields_...>& _other) const {
     return value() <=> _other.value();
   }
 
-  /// <=> for other Literals with different fields.
+  /// Three-way comparison operator for other Literals with different fields.
+  /// Compares by string name lexicographically.
+  /// @tparam _fields The fields of the other Literal type
+  /// @param _l2 The other literal to compare with
+  /// @return The ordering relationship between the string values
   template <internal::StringLiteral... _fields>
   inline auto operator<=>(const Literal<_fields...>& _l2) const {
     return name() <=> _l2.name();
   }
 
-  /// <=> for strings.
+  /// Three-way comparison operator for strings.
+  /// @param _str The string to compare with
+  /// @return The ordering relationship between the literal's value and the string
   inline auto operator<=>(const std::string& _str) const {
 #if __cpp_lib_three_way_comparison >= 201907L
     return name() <=> _str;
@@ -182,7 +234,10 @@ class Literal {
 #endif
   }
 
-  /// <=> for const char*.
+  /// Three-way comparison operator for const char*.
+  /// @tparam other_fields Template parameter for compatibility
+  /// @param _str The C-string to compare with
+  /// @return The ordering relationship between the literal's value and the string
   template <internal::StringLiteral... other_fields>
   inline auto operator<=>(const char* _str) const {
 #if __cpp_lib_three_way_comparison >= 201907L
@@ -199,30 +254,40 @@ class Literal {
 #endif
   }
 
-  /// Equality operator.
+  /// Equality operator - works with Literals, strings, and other comparable types.
+  /// @tparam Other The type to compare with
+  /// @param _other The value to compare with
+  /// @return true if the values are equal
   template <class Other>
   bool operator==(const Other& _other) const {
     return (*this <=> _other) == 0;
   }
 
-  /// Alias for .name().
+  /// Alias for .name() - returns the string representation for reflection.
+  /// @return The string value of the current literal
   std::string reflection() const { return name(); }
 
   /// Returns the number of fields in the Literal.
+  /// @return The total number of possible values this literal can hold
   static constexpr size_t size() { return num_fields_; }
 
-  /// Alias for .name().
+  /// Alias for .name() - returns the string representation.
+  /// @return The string value of the current literal
   std::string str() const { return name(); }
 
-  /// Alias for .names().
+  /// Alias for .names() - returns all possible string values.
+  /// @return A vector containing all allowed string values
   static std::vector<std::string> strings() {
     return allowed_strings_vec(std::make_integer_sequence<int, num_fields_>());
   }
 
-  /// Returns the value actually contained in the Literal.
+  /// Returns the value actually contained in the Literal (the internal index).
+  /// @return The index representing the current value
   ValueType value() const { return value_; }
 
-  /// Returns the value of the string literal in the template.
+  /// Returns the value index of the string literal in the template at compile time.
+  /// @tparam _name The compile-time string literal to get the index for
+  /// @return The index of the specified name
   template <internal::StringLiteral _name>
   static constexpr ValueType value_of() {
     constexpr auto value = find_value_of<_name>();
@@ -231,7 +296,8 @@ class Literal {
   }
 
  private:
-  /// Only the static methods are allowed to access this.
+  /// Only the static methods are allowed to access this constructor.
+  /// @param _value The internal value index
   Literal(const ValueType _value) : value_(_value) {}
 
   /// Returns all of the allowed fields.

@@ -10,6 +10,10 @@ namespace rfl {
 struct CamelCaseToSnakeCase {
  public:
   /// Replaces all instances of camelCase field names with snake_case.
+  /// A named tuple is a tuple-like structure where each element has a name/key.
+  /// @tparam StructType The type of the struct being processed
+  /// @param _named_tuple The named tuple containing the struct's fields
+  /// @return A new named tuple with field names converted to snake_case
   template <class StructType>
   static auto process(const auto& _named_tuple) {
     return _named_tuple.transform([]<class FieldType>(const FieldType& _f) {
@@ -23,7 +27,10 @@ struct CamelCaseToSnakeCase {
   }
 
  private:
-  /// Applies the logic to a single field.
+  /// Applies the camelCase to snake_case transformation to a single field.
+  /// @tparam FieldType The type of the field being transformed
+  /// @param _f The field to transform
+  /// @return A new field with the transformed name and the same value
   template <class FieldType>
   static auto handle_one_field(const FieldType& _f) {
     using NewFieldType =

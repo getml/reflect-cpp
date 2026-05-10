@@ -27,28 +27,46 @@ class RFL_API Generic {
   using ReflectionType = std::optional<
       std::variant<bool, int64_t, double, std::string, Object, Array>>;
 
+  /// Default constructor - creates a Generic with null value.
   Generic();
 
+  /// Move constructor.
+  /// @param _other The Generic to move from
   Generic(Generic&& _other) noexcept;
 
+  /// Copy constructor.
+  /// @param _other The Generic to copy from
   Generic(const Generic& _other);
 
+  /// Constructs from a variant (copy).
+  /// @param _value The variant value to wrap
   Generic(const VariantType& _value);
 
+  /// Constructs from a variant (move).
+  /// @param _value The variant value to wrap (will be moved)
   Generic(VariantType&& _value) noexcept;
 
+  /// Constructs from a reflection type.
+  /// @param _value The reflection type value (optional variant)
   Generic(const ReflectionType& _value);
 
+  /// Constructs from any type convertible to VariantType (copy).
+  /// @tparam T The type to convert from
+  /// @param _value The value to convert and wrap
   template <class T>
     requires std::is_convertible_v<T, VariantType>
   Generic(const T& _value) {
     value_ = _value;
   }
 
+  /// Constructs from any type convertible to VariantType (move).
+  /// @tparam T The type to convert from
+  /// @param _value The value to convert and wrap (will be moved)
   template <class T>
     requires std::is_convertible_v<T, VariantType>
   Generic(T&& _value) noexcept : value_(std::forward<T>(_value)) {}
 
+  /// Destructor.
   ~Generic();
 
   /// Returns the underlying object.
@@ -79,12 +97,20 @@ class RFL_API Generic {
   bool is_null() const noexcept;
 
   /// Assigns the underlying object.
+  /// @param _value The variant value to assign
+  /// @return Reference to this object
   Generic& operator=(const VariantType& _value);
 
-  /// Assigns the underlying object.
+  /// Assigns the underlying object (move version).
+  /// @param _value The variant value to assign (will be moved)
+  /// @return Reference to this object
   Generic& operator=(VariantType&& _value) noexcept;
 
-  /// Assigns the underlying object.
+  /// Assigns from any type convertible to VariantType.
+  /// Handles special conversions for numeric types to ensure proper variant alternative selection.
+  /// @tparam T The type to convert from
+  /// @param _value The value to assign
+  /// @return Reference to this object
   template <class T>
     requires std::is_convertible_v<T, VariantType>
   auto& operator=(const T& _value) {
@@ -101,10 +127,14 @@ class RFL_API Generic {
     return *this;
   }
 
-  /// Assigns the underlying object.
+  /// Copy assignment operator.
+  /// @param _other The Generic to copy from
+  /// @return Reference to this object
   Generic& operator=(const Generic& _other);
 
-  /// Assigns the underlying object.
+  /// Move assignment operator.
+  /// @param _other The Generic to move from
+  /// @return Reference to this object
   Generic& operator=(Generic&& _other);
 
   /// Returns the underlying object, necessary for the serialization to work.
@@ -268,6 +298,9 @@ class RFL_API Generic {
   const VariantType& variant() const noexcept { return value_; };
 
  private:
+  /// Converts a ReflectionType to a VariantType.
+  /// @param _r The reflection type (optional variant) to convert
+  /// @return The converted variant type
   static VariantType from_reflection_type(const ReflectionType& _r) noexcept;
 
  private:

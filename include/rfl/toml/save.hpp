@@ -12,6 +12,12 @@
 namespace rfl {
 namespace toml {
 
+/// Saves an object to a TOML file.
+/// Serializes a C++ object to TOML and writes it to a file using compile-time reflection.
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _fname The filename/path where the TOML file will be saved
+/// @param _obj The object to serialize to TOML
+/// @return Result containing Nothing on success or an error message on failure
 template <class... Ps>
 Result<Nothing> save(const std::string& _fname, const auto& _obj) {
   const auto write_func = [](const auto& _obj, auto& _stream) -> auto& {

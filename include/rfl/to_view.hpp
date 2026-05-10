@@ -10,6 +10,9 @@
 
 namespace rfl {
 
+/// Converts a struct to a view (named tuple of pointers to fields).
+/// @param _t The struct to convert to a view
+/// @return A named tuple containing pointers to the fields of the struct
 template <class T>
 auto to_view(T& _t) {
   return internal::to_ptr_named_tuple(_t);

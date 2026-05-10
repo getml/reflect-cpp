@@ -13,6 +13,13 @@
 namespace rfl {
 namespace xml {
 
+/// Saves an object to an XML file.
+/// Serializes a C++ object to XML and writes it to a file using compile-time reflection.
+/// @tparam _root The name of the XML root element (defaults to type name if empty)
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _fname The filename/path where the XML file will be saved
+/// @param _obj The object to serialize to XML
+/// @return Result containing Nothing on success or an error message on failure
 template <internal::StringLiteral _root = internal::StringLiteral(""),
           class... Ps>
 Result<Nothing> save(const std::string& _fname, const auto& _obj) {
