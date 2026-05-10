@@ -11,7 +11,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      GH_C17_DEV_TOKEN: ${{ secrets.GH_C17_DEV_TOKEN }}
       ENABLED_HTMLPROOFER: ${{ vars.ENABLED_HTMLPROOFER || 'False' }}
     steps:
       - name: Checkout reflect-cpp repo
@@ -37,7 +36,7 @@ jobs:
           git fetch origin gh-pages --depth=1
 
       - name: Deploy MkDocs documentation
-        run: hatch run insiders:mkdocs gh-deploy
+        run: hatch run default:mkdocs gh-deploy
 
       
         

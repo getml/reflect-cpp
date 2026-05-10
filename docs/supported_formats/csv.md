@@ -40,22 +40,33 @@ const rfl::Result<std::vector<Person>> result = rfl::csv::read<std::vector<Perso
 
 ## Settings
 
-CSV behavior can be configured using `rfl::csv::Settings`:
+CSV behavior can be configured using `rfl::csv::Settings`. Each option is set
+through a single `with<>()` accessor that takes either a pointer-to-member or
+the field name as a template argument and returns a new copy of `Settings`
+with the chosen field replaced:
 
 ```cpp
 const auto settings = rfl::csv::Settings{}
-    .with_delimiter(';')
-    .with_quoting(true)
-    .with_quote_char('"')
-    .with_null_string("n/a")
-    .with_double_quote(true)
-    .with_escaping(false)
-    .with_escape_char('\\')
-    .with_newlines_in_values(false)
-    .with_ignore_empty_lines(true)
-    .with_batch_size(1024);
+    .with<&rfl::csv::Settings::delimiter>(';')
+    .with<&rfl::csv::Settings::quoting>(true)
+    .with<&rfl::csv::Settings::quote_char>('"')
+    .with<&rfl::csv::Settings::null_string>("n/a")
+    .with<&rfl::csv::Settings::double_quote>(true)
+    .with<&rfl::csv::Settings::escaping>(false)
+    .with<&rfl::csv::Settings::escape_char>('\\')
+    .with<&rfl::csv::Settings::newlines_in_values>(false)
+    .with<&rfl::csv::Settings::ignore_empty_lines>(true)
+    .with<&rfl::csv::Settings::batch_size>(1024);
 
 const std::string csv_text = rfl::csv::write(people, settings);
+```
+
+The same call is also available with a string literal naming the field:
+
+```cpp
+const auto settings = rfl::csv::Settings{}
+    .with<"delimiter">(';')
+    .with<"quoting">(true);
 ```
 
 Key options:
@@ -84,7 +95,7 @@ rfl::csv::save("/path/to/file.csv", people);
 With custom settings:
 
 ```cpp
-const auto settings = rfl::csv::Settings{}.with_delimiter(';');
+const auto settings = rfl::csv::Settings{}.with<"delimiter">(';');
 rfl::csv::save("/path/to/file.csv", people, settings);
 ```
 
@@ -102,7 +113,7 @@ rfl::csv::write(people, my_ostream);
 With custom settings:
 
 ```cpp
-const auto settings = rfl::csv::Settings{}.with_delimiter(';');
+const auto settings = rfl::csv::Settings{}.with<"delimiter">(';');
 rfl::csv::write(people, my_ostream, settings);
 ```
 

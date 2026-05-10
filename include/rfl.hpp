@@ -80,6 +80,7 @@
 #include "rfl/patterns.hpp"
 #include "rfl/remove_fields.hpp"
 #include "rfl/replace.hpp"
+#include "rfl/Settings.hpp"
 #include "rfl/to_generic.hpp"
 #include "rfl/to_named_tuple.hpp"
 #include "rfl/to_view.hpp"

@@ -36,7 +36,7 @@ TEST(csv, test_settings) {
                                   .age = 45,
                                   .email = "homer@simpson.com"}});
 
-  const auto settings = rfl::csv::Settings{}.with_delimiter(';');
+  const auto settings = rfl::csv::Settings{}.with<&rfl::csv::Settings::delimiter>(';');
 
   write_and_read(people, settings);
 }

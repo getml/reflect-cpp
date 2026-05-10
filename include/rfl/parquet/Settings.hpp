@@ -4,8 +4,8 @@
 #include <arrow/io/api.h>
 #include <parquet/arrow/writer.h>
 
-#include "../Field.hpp"
-#include "../replace.hpp"
+#include "../Settings.hpp"
+#include "../internal/deprecated_with.hpp"
 
 namespace rfl::parquet {
 
@@ -13,15 +13,19 @@ using Compression = arrow::Compression::type;
 
 struct Settings {
   /// The size of the chunks of the parquet file.
-  size_t chunksize = 2000;
+  const size_t chunksize = 2000;
 
   /// The compression algorithm used to compress the parquet file.
-  Compression compression = Compression::SNAPPY;
+  const Compression compression = Compression::SNAPPY;
 
+  RFL_SETTINGS_OPS(Settings)
+
+  RFL_DEPRECATED_WITH(chunksize)
   Settings with_chunksize(const size_t _chunksize) const noexcept {
     return replace(*this, make_field<"chunksize">(_chunksize));
   }
 
+  RFL_DEPRECATED_WITH(compression)
   Settings with_compression(const Compression _compression) const noexcept {
     return replace(*this, make_field<"compression">(_compression));
   }

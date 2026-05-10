@@ -39,14 +39,25 @@ const rfl::Result<std::vector<Person>> result = rfl::parquet::read<std::vector<P
 
 ## Settings and compression
 
-Parquet supports various compression algorithms and chunk sizes. You can configure these using the `Settings` struct:
+Parquet supports various compression algorithms and chunk sizes. You can
+configure these using the `Settings` struct. Each option is set through a
+single `with<>()` accessor that takes either a pointer-to-member or the
+field name as a template argument and returns a new copy of `Settings` with
+the chosen field replaced:
 
 ```cpp
 const auto settings = rfl::parquet::Settings{}
-    .with_compression(rfl::parquet::Compression::GZIP)
-    .with_chunksize(1000);
+    .with<&rfl::parquet::Settings::compression>(rfl::parquet::Compression::GZIP)
+    .with<&rfl::parquet::Settings::chunksize>(1000);
 
 const std::vector<char> bytes = rfl::parquet::write(people, settings);
+```
+
+The same call is also available with a string literal naming the field:
+
+```cpp
+const auto settings = rfl::parquet::Settings{}
+    .with<"compression">(rfl::parquet::Compression::GZIP);
 ```
 
 Available compression options include:
@@ -65,16 +76,16 @@ Available compression options include:
 ```cpp
 // Examples of different compression settings
 const auto snappy_settings = rfl::parquet::Settings{}
-    .with_compression(rfl::parquet::Compression::SNAPPY);
+    .with<&rfl::parquet::Settings::compression>(rfl::parquet::Compression::SNAPPY);
 
 const auto gzip_settings = rfl::parquet::Settings{}
-    .with_compression(rfl::parquet::Compression::GZIP);
+    .with<&rfl::parquet::Settings::compression>(rfl::parquet::Compression::GZIP);
 
 const auto zstd_settings = rfl::parquet::Settings{}
-    .with_compression(rfl::parquet::Compression::ZSTD);
+    .with<&rfl::parquet::Settings::compression>(rfl::parquet::Compression::ZSTD);
 
 const auto uncompressed_settings = rfl::parquet::Settings{}
-    .with_compression(rfl::parquet::Compression::UNCOMPRESSED);
+    .with<&rfl::parquet::Settings::compression>(rfl::parquet::Compression::UNCOMPRESSED);
 ```
 
 ## Loading and saving
@@ -92,7 +103,7 @@ With custom settings:
 
 ```cpp
 const auto settings = rfl::parquet::Settings{}
-    .with_compression(rfl::parquet::Compression::GZIP);
+    .with<&rfl::parquet::Settings::compression>(rfl::parquet::Compression::GZIP);
 rfl::parquet::save("/path/to/file.parquet", people, settings);
 ```
 
@@ -111,7 +122,7 @@ With custom settings:
 
 ```cpp
 const auto settings = rfl::parquet::Settings{}
-    .with_compression(rfl::parquet::Compression::GZIP);
+    .with<&rfl::parquet::Settings::compression>(rfl::parquet::Compression::GZIP);
 rfl::parquet::write(people, my_ostream, settings);
 ```
 

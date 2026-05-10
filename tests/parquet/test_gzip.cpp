@@ -36,7 +36,7 @@ TEST(parquet, test_gzip) {
                                   .age = 45,
                                   .email = "homer@simpson.com"}});
 
-  const auto settings = rfl::parquet::Settings{}.with_compression(
+  const auto settings = rfl::parquet::Settings{}.with<&rfl::parquet::Settings::compression>(
       rfl::parquet::Compression::GZIP);
 
   write_and_read(people, settings);

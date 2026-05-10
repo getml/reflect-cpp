@@ -12,9 +12,9 @@
 namespace rfl::internal {
 
 template <class T, std::size_t n>
-struct fake_object_helper {
-  template <int _i>
-  static consteval auto get_field() {
+struct field_extractor {
+  template <int _i, class U>
+  static consteval auto get_ptr(U&) {
     static_assert(
         rfl::always_false_v<T>,
         "\n\nThis error occurs for one of two reasons:\n\n"
@@ -33,11 +33,11 @@ struct fake_object_helper {
 #define RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS( \
     n, ...)                                                                              \
   template <class T>                                                                     \
-  struct fake_object_helper<T, n> {                                                      \
-    template <int _i>                                                                    \
-    static consteval auto get_field() {                                                  \
-      const auto& [__VA_ARGS__] = get_fake_object<std::remove_cvref_t<T>>();             \
-      const auto get_ptrs = [](const auto&... _refs) {                                   \
+  struct field_extractor<T, n> {                                                         \
+    template <int _i, class U>                                                           \
+    static consteval auto get_ptr(U& _obj) {                                             \
+      auto& [__VA_ARGS__] = _obj;                                                        \
+      const auto get_ptrs = [](auto&... _refs) {                                         \
         return nth_element<_i>(&_refs...);                                               \
       };                                                                                 \
       return get_ptrs(__VA_ARGS__);                                                      \
@@ -2815,10 +2815,35 @@ RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS(
 
 #undef RFL_INTERNAL_FAKE_OBJECT_IF_YOU_SEE_AN_ERROR_REFER_TO_DOCUMENTATION_ON_C_ARRAYS
 
+template <class T, int _i, class U>
+consteval auto get_ith_field_ptr(U& _obj) {
+  return field_extractor<T, num_fields<T>>::template get_ptr<_i>(_obj);
+}
+
 template <class T, int _i>
 consteval auto get_ith_field_from_fake_object() {
-  return fake_object_helper<T, num_fields<T>>::template get_field<_i>();
+  return get_ith_field_ptr<T, _i>(get_fake_object<std::remove_cvref_t<T>>());
 }
+
+/// Returns whether the i-th field of T is declared const. Implemented by
+/// inspecting the type that get_ith_field_ptr deduces from a non-const T,
+/// where structured-binding references inherit the field's cv-qualification.
+///
+/// Only available on MSVC: the implementation requires constructing a local
+/// T{} inside `consteval`, which forces T (and every field) to be a
+/// constexpr literal type. Settings structs in reflect-cpp routinely contain
+/// `std::string`, which is not a literal type on older standard libraries
+/// (e.g. libstdc++ shipped with GCC 11), so on GCC/Clang this check is
+/// skipped — the name-based with<"name">() path then falls through to
+/// `rfl::replace`, which will fail to assign into a const member.
+#ifdef _MSC_VER
+template <class T, int _i>
+consteval bool ith_field_is_const() {
+  std::remove_cvref_t<T> _obj{};
+  using FieldRef = decltype(*get_ith_field_ptr<T, _i>(_obj));
+  return std::is_const_v<std::remove_reference_t<FieldRef>>;
+}
+#endif
 
 }  // namespace rfl::internal
 
