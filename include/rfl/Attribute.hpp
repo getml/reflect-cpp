@@ -173,7 +173,7 @@ struct Attribute {
   /// @return Reference to this Attribute
   template <class U>
   auto& operator=(Attribute<U>&& _attr) {
-    value_ = std::forward<T>(_attr.value_);
+    value_ = std::move(_attr.value_);
     return *this;
   }
 

@@ -86,7 +86,7 @@ struct Deprecated {
 
   /// Assigns the underlying object to its default value using the Default sentinel.
   /// @tparam U The type (must be default constructible)
-  /// @param The default sentinel value
+  /// @param _ The default sentinel value
   template <class U = Type,
             typename std::enable_if<std::is_default_constructible_v<U>,
                                     bool>::type = true>

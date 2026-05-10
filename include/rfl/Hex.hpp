@@ -162,7 +162,7 @@ struct Hex {
   /// @return Reference to this Hex
   template <class U>
   auto& operator=(Hex<U>&& _other) {
-    value_ = std::forward<T>(_other.value_);
+    value_ = std::move(_other.value_);
     return *this;
   }
 
