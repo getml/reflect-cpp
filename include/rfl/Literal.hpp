@@ -24,10 +24,12 @@ struct LiteralHelper {
   constexpr static internal::StringLiteral name_ = _name;
 };
 
-/// A type-safe representation of a fixed set of string values known at compile time.
-/// Similar to an enum but with string values. Useful for representing discriminators,
-/// status values, or any fixed set of string constants with compile-time validation.
-/// @tparam fields_ The compile-time string literals that this Literal can represent
+/// A type-safe representation of a fixed set of string values known at compile
+/// time. Similar to an enum but with string values. Useful for representing
+/// discriminators, status values, or any fixed set of string constants with
+/// compile-time validation.
+/// @tparam fields_ The compile-time string literals that this Literal can
+/// represent
 template <internal::StringLiteral... fields_>
 class Literal {
   using FieldsType = rfl::Tuple<LiteralHelper<fields_>...>;
@@ -42,17 +44,20 @@ class Literal {
 
   using ReflectionType = std::string;
 
-  /// Copy constructor - constructs a Literal from another literal with the same fields.
+  /// Copy constructor - constructs a Literal from another literal with the same
+  /// fields.
   /// @param _other The literal to copy from
   Literal(const Literal<fields_...>& _other) = default;
 
-  /// Move constructor - constructs a Literal from another literal with the same fields.
+  /// Move constructor - constructs a Literal from another literal with the same
+  /// fields.
   /// @param _other The literal to move from
   Literal(Literal<fields_...>&& _other) noexcept = default;
 
   /// Constructs a Literal from a string value.
   /// @param _str The string representing one of the literal's allowed values
-  /// @throws std::bad_optional_access if the string is not one of the allowed values
+  /// @throws std::bad_optional_access if the string is not one of the allowed
+  /// values
   Literal(const std::string& _str) : value_(find_value(_str).value()) {}
 
   /// Default constructor - initializes to the first value (index 0).
@@ -90,7 +95,8 @@ class Literal {
 
   /// Constructs a new Literal from a runtime value index.
   /// @param _value The index of the value
-  /// @return Result containing the Literal or an error if the value is out of range
+  /// @return Result containing the Literal or an error if the value is out of
+  /// range
   static Result<Literal<fields_...>> from_value(ValueType _value) {
     if (_value >= num_fields_) {
       return error("Value cannot exceed number of fields.");
@@ -151,7 +157,8 @@ class Literal {
   /// Constructs a Literal from a string. Returns an error if the string
   /// cannot be found.
   /// @param _str The string to convert to a Literal
-  /// @return Result containing the Literal or an error if the string is not recognized
+  /// @return Result containing the Literal or an error if the string is not
+  /// recognized
   static Result<Literal> from_string(const std::string& _str) {
     const auto to_literal = [](const auto& _v) {
       return Literal<fields_...>(_v);
@@ -192,7 +199,8 @@ class Literal {
   /// Assigns the literal from a string.
   /// @param _str The string to assign (must be one of the allowed values)
   /// @return Reference to this literal
-  /// @throws std::bad_optional_access if the string is not one of the allowed values
+  /// @throws std::bad_optional_access if the string is not one of the allowed
+  /// values
   Literal<fields_...>& operator=(const std::string& _str) {
     value_ = find_value(_str).value();
     return *this;
@@ -218,7 +226,8 @@ class Literal {
 
   /// Three-way comparison operator for strings.
   /// @param _str The string to compare with
-  /// @return The ordering relationship between the literal's value and the string
+  /// @return The ordering relationship between the literal's value and the
+  /// string
   inline auto operator<=>(const std::string& _str) const {
 #if __cpp_lib_three_way_comparison >= 201907L
     return name() <=> _str;
@@ -237,8 +246,8 @@ class Literal {
   /// Three-way comparison operator for const char*.
   /// @tparam other_fields Template parameter for compatibility
   /// @param _str The C-string to compare with
-  /// @return The ordering relationship between the literal's value and the string
-  template <internal::StringLiteral... other_fields>
+  /// @return The ordering relationship between the literal's value and the
+  /// string
   inline auto operator<=>(const char* _str) const {
 #if __cpp_lib_three_way_comparison >= 201907L
     return name() <=> _str;
@@ -254,7 +263,8 @@ class Literal {
 #endif
   }
 
-  /// Equality operator - works with Literals, strings, and other comparable types.
+  /// Equality operator - works with Literals, strings, and other comparable
+  /// types.
   /// @tparam Other The type to compare with
   /// @param _other The value to compare with
   /// @return true if the values are equal
@@ -285,7 +295,8 @@ class Literal {
   /// @return The index representing the current value
   ValueType value() const { return value_; }
 
-  /// Returns the value index of the string literal in the template at compile time.
+  /// Returns the value index of the string literal in the template at compile
+  /// time.
   /// @tparam _name The compile-time string literal to get the index for
   /// @return The index of the specified name
   template <internal::StringLiteral _name>

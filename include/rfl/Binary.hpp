@@ -12,10 +12,12 @@
 namespace rfl {
 
 /// Wraps an unsigned integer value for binary string serialization.
-/// When serialized, Binary converts the integer to its binary string representation (e.g., "101010").
-/// When deserialized, it parses a binary string back to an integer value.
-/// This is useful for representing flags, bit patterns, or when you need human-readable binary format.
-/// @tparam T The unsigned integer type to wrap (must satisfy std::is_unsigned_v)
+/// When serialized, Binary converts the integer to its binary string
+/// representation (e.g., "101010"). When deserialized, it parses a binary
+/// string back to an integer value. This is useful for representing flags, bit
+/// patterns, or when you need human-readable binary format.
+/// @tparam T The unsigned integer type to wrap (must satisfy
+/// std::is_unsigned_v)
 template <class T>
   requires std::is_unsigned_v<T>
 struct Binary {
@@ -151,7 +153,6 @@ struct Binary {
   /// @tparam U Template parameter for compatibility
   /// @param _str The binary string to parse
   /// @return Reference to this Binary
-  template <class U>
   auto& operator=(const std::string& _str) {
     value_ = static_cast<T>(Bitset{_str}.to_ullong());
     return *this;

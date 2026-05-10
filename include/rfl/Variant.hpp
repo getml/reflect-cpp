@@ -17,7 +17,6 @@
 #include "internal/variant/result_t.hpp"
 
 namespace rfl {
-
 template <class... AlternativeTypes>
 class Variant {
   static constexpr auto max_size_wrapper_ =
@@ -44,34 +43,61 @@ class Variant {
   struct TypeWrapper {};
 
  public:
+  /// @brief Default-constructs the Variant, initializing it with the first
+  /// alternative type.
+  /// @details The first alternative type is default-constructed and stored in
+  /// the variant.
   Variant() : index_(IndexType()), data_(DataType()) {
     using FirstAlternative = internal::nth_element_t<0, AlternativeTypes...>;
     move_from_type(FirstAlternative());
   }
 
+  /// @brief Copy-constructs the Variant from another Variant.
+  /// @param _other The Variant to copy from.
+  /// @details The contained value is copied from the other Variant, preserving
+  /// the alternative type.
   Variant(const Variant& _other) : index_(IndexType()), data_(DataType()) {
     copy_from_other(_other);
   }
 
+  /// @brief Move-constructs the Variant from another Variant.
+  /// @param _other The Variant to move from.
+  /// @details The contained value is moved from the other Variant, preserving
+  /// the alternative type.
   Variant(Variant&& _other) noexcept : index_(IndexType()), data_(DataType()) {
     move_from_other(std::move(_other));
   }
 
+  /// @brief Constructs the Variant from a value of an alternative type (copy).
+  /// @tparam T The type of the value to store.
+  /// @param _t The value to copy into the Variant.
+  /// @details Only enabled if T is one of the alternative types.
   template <class T>
     requires internal::variant::is_alternative_type_v<T, AlternativeTypes...>
   Variant(const T& _t) : index_(IndexType()), data_(DataType()) {
     copy_from_type(_t);
   }
 
+  /// @brief Constructs the Variant from a value of an alternative type (move).
+  /// @tparam T The type of the value to store.
+  /// @param _t The value to move into the Variant.
+  /// @details Only enabled if T is one of the alternative types.
   template <class T>
     requires internal::variant::is_alternative_type_v<T, AlternativeTypes...>
   Variant(T&& _t) noexcept : index_(IndexType()), data_(DataType()) {
     move_from_type(std::forward<T>(_t));
   }
 
+  /// @brief Destroys the contained value if necessary.
+  /// @details Calls the destructor of the contained alternative type if it is
+  /// destructible.
   ~Variant() { destroy_if_necessary(); }
 
-  /// Emplaces a new element into the variant.
+  /// @brief Emplaces a new element of type T into the variant.
+  /// @tparam T The type to emplace.
+  /// @tparam Args The argument types for T's constructor.
+  /// @param _args The arguments to forward to T's constructor.
+  /// @return Reference to the newly emplaced value.
   template <class T, class... Args>
   constexpr T& emplace(Args&&... _args) {
     auto t = T{std::forward<Args>(_args)...};
@@ -80,17 +106,26 @@ class Variant {
     return *internal::ptr_cast<T*>(data_.data());
   }
 
-  /// Emplaces a new element into the variant.
+  /// @brief Emplaces a new element of the N-th alternative type into the
+  /// variant.
+  /// @tparam _i The index of the alternative type.
+  /// @tparam Args The argument types for the constructor.
+  /// @param _args The arguments to forward to the constructor.
+  /// @return Reference to the newly emplaced value.
   template <int _i, class... Args>
   constexpr auto& emplace(Args&&... _args) {
     using T = internal::nth_element_t<_i, AlternativeTypes...>;
     return emplace<T>(std::move(_args)...);
   }
 
-  /// Returns the index of the element currently held.
+  /// @brief Returns the index of the currently held alternative.
+  /// @return The index of the contained alternative type.
   constexpr int index() const noexcept { return index_; }
 
-  /// Assigns the underlying object.
+  /// @brief Assigns a value of an alternative type to the Variant (copy).
+  /// @tparam T The type of the value to assign.
+  /// @param _t The value to assign.
+  /// @return Reference to this Variant.
   template <class T>
     requires internal::variant::is_alternative_type_v<T, AlternativeTypes...>
   Variant& operator=(const T& _t) {
@@ -100,7 +135,10 @@ class Variant {
     return *this;
   }
 
-  /// Assigns the underlying object.
+  /// @brief Assigns a value of an alternative type to the Variant (move).
+  /// @tparam T The type of the value to assign.
+  /// @param _t The value to assign.
+  /// @return Reference to this Variant.
   template <class T>
     requires internal::variant::is_alternative_type_v<T, AlternativeTypes...>
   Variant& operator=(T&& _t) noexcept {
@@ -109,7 +147,9 @@ class Variant {
     return *this;
   }
 
-  /// Assigns the underlying object.
+  /// @brief Copy-assigns from another Variant.
+  /// @param _other The Variant to copy from.
+  /// @return Reference to this Variant.
   Variant& operator=(const Variant& _other) {
     if (this == &_other) {
       return *this;
@@ -120,7 +160,9 @@ class Variant {
     return *this;
   }
 
-  /// Assigns the underlying object.
+  /// @brief Move-assigns from another Variant.
+  /// @param _other The Variant to move from.
+  /// @return Reference to this Variant.
   Variant& operator=(Variant&& _other) noexcept {
     if (this == &_other) {
       return *this;
@@ -130,7 +172,10 @@ class Variant {
     return *this;
   }
 
-  /// Swaps the content with the other variant.
+  /// @brief Swaps the contents of this Variant with another.
+  /// @param _other The Variant to swap with.
+  /// @details Exchanges the contained values and types between the two
+  /// Variants.
   void swap(Variant& _other) noexcept {
     if (this == &_other) {
       return;
@@ -140,6 +185,10 @@ class Variant {
     _other = std::move(temp);
   }
 
+  /// @brief Visits the contained value with a visitor function.
+  /// @tparam F The visitor type.
+  /// @param _f The visitor function or functor.
+  /// @return The result of the visitor, or void.
   template <class F>
   result_t<F> visit(F&& _f) {
     using ResultType = result_t<F>;
@@ -160,6 +209,11 @@ class Variant {
     }
   }
 
+  /// @brief Visits the contained value with a visitor function (const
+  /// overload).
+  /// @tparam F The visitor type.
+  /// @param _f The visitor function or functor.
+  /// @return The result of the visitor, or void.
   template <class F>
   result_t<F> visit(F&& _f) const {
     using ResultType = result_t<F>;
@@ -181,11 +235,19 @@ class Variant {
   }
 
  private:
+  /// @brief Copies the value from another Variant.
+  /// @param _other The Variant to copy from.
   void copy_from_other(const Variant& _other) {
     const auto copy_one = [this](const auto& _t) { this->copy_from_type(_t); };
     _other.visit(copy_one);
   }
 
+  /// @brief Copies a value of type T from another type.
+  /// @tparam T The type to copy from.
+  /// @param _t The value to copy.
+  /// @details Tries to copy the value from T to each alternative type, and if
+  /// successful, stores it in the Variant. Only the first successful copy is
+  /// performed.
   template <class T>
   void copy_from_other_type(const T& _t) {
     bool set = false;
@@ -201,6 +263,9 @@ class Variant {
     (copy_one(_t, TypeWrapper<AlternativeTypes>{}), ...);
   }
 
+  /// @brief Copies a value of type T into the Variant.
+  /// @tparam T The type to copy from.
+  /// @param _t The value to copy.
   template <class T>
   void copy_from_type(const T& _t) noexcept {
     using CurrentType = std::remove_cvref_t<decltype(_t)>;
@@ -210,6 +275,7 @@ class Variant {
     new (data_.data()) CurrentType(_t);
   }
 
+  /// @brief Destroys the contained value if it is destructible.
   void destroy_if_necessary() {
     const auto destroy_one = [](auto& _t) {
       using T = std::remove_cvref_t<decltype(_t)>;
@@ -220,11 +286,15 @@ class Variant {
     visit(destroy_one);
   }
 
+  /// @brief Helper for visiting without result (non-const).
+  /// @tparam F The visitor type.
+  /// @tparam _is Index sequence.
+  /// @param _f The visitor.
+  /// @param _visited Pointer to visitation flag.
   template <class F, IndexType... _is>
   void do_visit_no_result(F& _f, bool* _visited,
                           std::integer_sequence<IndexType, _is...>) {
-    auto visit_one = [this]<IndexType _i>(F& _f, bool* _visited,
-                                          Index<_i>) {
+    auto visit_one = [this]<IndexType _i>(F& _f, bool* _visited, Index<_i>) {
       if (!*_visited && index_ == _i) {
         _f(get_alternative<_i>());
         *_visited = true;
@@ -233,11 +303,15 @@ class Variant {
     (visit_one(_f, _visited, Index<_is>{}), ...);
   }
 
+  /// @brief Helper for visiting without result (const).
+  /// @tparam F The visitor type.
+  /// @tparam _is Index sequence.
+  /// @param _f The visitor.
+  /// @param _visited Pointer to visitation flag.
   template <class F, IndexType... _is>
   void do_visit_no_result(F& _f, bool* _visited,
                           std::integer_sequence<IndexType, _is...>) const {
-    auto visit_one = [this]<IndexType _i>(F& _f, bool* _visited,
-                                          Index<_i>) {
+    auto visit_one = [this]<IndexType _i>(F& _f, bool* _visited, Index<_i>) {
       if (!*_visited && index_ == _i) {
         _f(get_alternative<_i>());
         *_visited = true;
@@ -246,6 +320,11 @@ class Variant {
     (visit_one(_f, _visited, Index<_is>{}), ...);
   }
 
+  /// @brief Helper for visiting without result (non-const, const visitor).
+  /// @tparam F The visitor type.
+  /// @tparam _is Index sequence.
+  /// @param _f The visitor.
+  /// @param _visited Pointer to visitation flag.
   template <class F, IndexType... _is>
   void do_visit_no_result(const F& _f, bool* _visited,
                           std::integer_sequence<IndexType, _is...>) {
@@ -259,6 +338,11 @@ class Variant {
     (visit_one(_f, _visited, Index<_is>{}), ...);
   }
 
+  /// @brief Helper for visiting without result (const, const visitor).
+  /// @tparam F The visitor type.
+  /// @tparam _is Index sequence.
+  /// @param _f The visitor.
+  /// @param _visited Pointer to visitation flag.
   template <class F, IndexType... _is>
   void do_visit_no_result(const F& _f, bool* _visited,
                           std::integer_sequence<IndexType, _is...>) const {
@@ -272,12 +356,17 @@ class Variant {
     (visit_one(_f, _visited, Index<_is>{}), ...);
   }
 
+  /// @brief Helper for visiting with result (non-const).
+  /// @tparam F The visitor type.
+  /// @tparam ResultType The result type.
+  /// @tparam _is Index sequence.
+  /// @param _f The visitor.
+  /// @param _result Pointer to optional result.
   template <class F, class ResultType, IndexType... _is>
   void do_visit_with_result(F& _f, std::optional<ResultType>* _result,
                             std::integer_sequence<IndexType, _is...>) {
-    auto visit_one = [this]<IndexType _i>(F& _f,
-                                          std::optional<ResultType>* _result,
-                                          Index<_i>) {
+    auto visit_one = [this]<IndexType _i>(
+                         F& _f, std::optional<ResultType>* _result, Index<_i>) {
       if (!*_result && index_ == _i) {
         _result->emplace(_f(get_alternative<_i>()));
       }
@@ -285,12 +374,17 @@ class Variant {
     (visit_one(_f, _result, Index<_is>{}), ...);
   }
 
+  /// @brief Helper for visiting with result (const).
+  /// @tparam F The visitor type.
+  /// @tparam ResultType The result type.
+  /// @tparam _is Index sequence.
+  /// @param _f The visitor.
+  /// @param _result Pointer to optional result.
   template <class F, class ResultType, IndexType... _is>
   void do_visit_with_result(F& _f, std::optional<ResultType>* _result,
                             std::integer_sequence<IndexType, _is...>) const {
-    auto visit_one = [this]<IndexType _i>(F& _f,
-                                          std::optional<ResultType>* _result,
-                                          Index<_i>) {
+    auto visit_one = [this]<IndexType _i>(
+                         F& _f, std::optional<ResultType>* _result, Index<_i>) {
       if (!*_result && index_ == _i) {
         _result->emplace(_f(get_alternative<_i>()));
       }
@@ -298,6 +392,12 @@ class Variant {
     (visit_one(_f, _result, Index<_is>{}), ...);
   }
 
+  /// @brief Helper for visiting with result (non-const, const visitor).
+  /// @tparam F The visitor type.
+  /// @tparam ResultType The result type.
+  /// @tparam _is Index sequence.
+  /// @param _f The visitor.
+  /// @param _result Pointer to optional result.
   template <class F, class ResultType, IndexType... _is>
   void do_visit_with_result(const F& _f, std::optional<ResultType>* _result,
                             std::integer_sequence<IndexType, _is...>) {
@@ -311,6 +411,12 @@ class Variant {
     (visit_one(_f, _result, Index<_is>{}), ...);
   }
 
+  /// @brief Helper for visiting with result (const, const visitor).
+  /// @tparam F The visitor type.
+  /// @tparam ResultType The result type.
+  /// @tparam _is Index sequence.
+  /// @param _f The visitor.
+  /// @param _result Pointer to optional result.
   template <class F, class ResultType, IndexType... _is>
   void do_visit_with_result(const F& _f, std::optional<ResultType>* _result,
                             std::integer_sequence<IndexType, _is...>) const {
@@ -324,11 +430,17 @@ class Variant {
     (visit_one(_f, _result, Index<_is>{}), ...);
   }
 
+  /// @brief Helper for visiting with reference result (non-const).
+  /// @tparam F The visitor type.
+  /// @tparam ResultType The result type.
+  /// @tparam _is Index sequence.
+  /// @param _f The visitor.
+  /// @param _result Pointer to result pointer.
   template <class F, class ResultType, IndexType... _is>
   void do_visit_with_reference(F& _f, ResultType** _result,
                                std::integer_sequence<IndexType, _is...>) {
-    const auto visit_one = [this]<IndexType _i>(
-                               F& _f, ResultType** _result, Index<_i>) {
+    const auto visit_one = [this]<IndexType _i>(F& _f, ResultType** _result,
+                                                Index<_i>) {
       if (!*_result && index_ == _i) {
         *_result = &_f(get_alternative<_i>());
       }
@@ -336,11 +448,17 @@ class Variant {
     (visit_one(_f, _result, Index<_is>{}), ...);
   }
 
+  /// @brief Helper for visiting with reference result (const).
+  /// @tparam F The visitor type.
+  /// @tparam ResultType The result type.
+  /// @tparam _is Index sequence.
+  /// @param _f The visitor.
+  /// @param _result Pointer to result pointer.
   template <class F, class ResultType, IndexType... _is>
   void do_visit_with_reference(F& _f, ResultType** _result,
                                std::integer_sequence<IndexType, _is...>) const {
-    const auto visit_one = [this]<IndexType _i>(
-                               F& _f, ResultType** _result, Index<_i>) {
+    const auto visit_one = [this]<IndexType _i>(F& _f, ResultType** _result,
+                                                Index<_i>) {
       if (!*_result && index_ == _i) {
         *_result = &_f(get_alternative<_i>());
       }
@@ -348,6 +466,13 @@ class Variant {
     (visit_one(_f, _result, Index<_is>{}), ...);
   }
 
+  /// @brief Helper for visiting with reference result (non-const, const
+  /// visitor).
+  /// @tparam F The visitor type.
+  /// @tparam ResultType The result type.
+  /// @tparam _is Index sequence.
+  /// @param _f The visitor.
+  /// @param _result Pointer to result pointer.
   template <class F, class ResultType, IndexType... _is>
   void do_visit_with_reference(const F& _f, ResultType** _result,
                                std::integer_sequence<IndexType, _is...>) {
@@ -360,6 +485,12 @@ class Variant {
     (visit_one(_f, _result, Index<_is>{}), ...);
   }
 
+  /// @brief Helper for visiting with reference result (const, const visitor).
+  /// @tparam F The visitor type.
+  /// @tparam ResultType The result type.
+  /// @tparam _is Index sequence.
+  /// @param _f The visitor.
+  /// @param _result Pointer to result pointer.
   template <class F, class ResultType, IndexType... _is>
   void do_visit_with_reference(const F& _f, ResultType** _result,
                                std::integer_sequence<IndexType, _is...>) const {
@@ -372,18 +503,28 @@ class Variant {
     (visit_one(_f, _result, Index<_is>{}), ...);
   }
 
+  /// @brief Returns a reference to the contained value of the _i-th alternative
+  /// type.
+  /// @tparam _i The index of the alternative type.
+  /// @return Reference to the contained value.
   template <IndexType _i>
   auto& get_alternative() noexcept {
     using CurrentType = internal::nth_element_t<_i, AlternativeTypes...>;
     return *internal::ptr_cast<CurrentType*>(data_.data());
   }
 
+  /// @brief Returns a const reference to the contained value of the _i-th
+  /// alternative type.
+  /// @tparam _i The index of the alternative type.
+  /// @return Const reference to the contained value.
   template <IndexType _i>
   const auto& get_alternative() const noexcept {
     using CurrentType = internal::nth_element_t<_i, AlternativeTypes...>;
     return *internal::ptr_cast<const CurrentType*>(data_.data());
   }
 
+  /// @brief Moves the value from another Variant into this Variant.
+  /// @param _other The Variant to move from.
   void move_from_other(Variant&& _other) noexcept {
     const auto move_one = [this](auto&& _t) {
       this->move_from_type(std::forward<std::remove_cvref_t<decltype(_t)>>(_t));
@@ -391,6 +532,9 @@ class Variant {
     std::move(_other).visit(move_one);
   }
 
+  /// @brief Moves a value of type T into the Variant.
+  /// @tparam T The type to move from.
+  /// @param _t The value to move.
   template <class T>
   void move_from_type(T&& _t) noexcept {
     using CurrentType = std::remove_cvref_t<decltype(_t)>;
@@ -409,11 +553,19 @@ class Variant {
   alignas(AlternativeTypes...) DataType data_;
 };
 
+/// @brief Concept to check if a type is Variant-based.
+/// @tparam V The type to check.
 template <typename V>
 concept VariantBased = requires(std::decay_t<V> v) {
   []<typename... Args>(Variant<Args...> const&) {}(v);
 };
 
+/// @brief Returns a pointer to the contained value if it is of type T,
+/// otherwise nullptr.
+/// @tparam T The type to check for.
+/// @tparam Types The alternative types.
+/// @param _v Pointer to the Variant.
+/// @return Pointer to the contained value or nullptr.
 template <class T, class... Types>
 constexpr T* get_if(Variant<Types...>* _v) noexcept {
   const auto get = [](auto& _v) -> T* {
@@ -427,6 +579,12 @@ constexpr T* get_if(Variant<Types...>* _v) noexcept {
   return _v->visit(get);
 }
 
+/// @brief Returns a const pointer to the contained value if it is of type T,
+/// otherwise nullptr.
+/// @tparam T The type to check for.
+/// @tparam Types The alternative types.
+/// @param _v Pointer to the Variant.
+/// @return Const pointer to the contained value or nullptr.
 template <class T, class... Types>
 constexpr const T* get_if(const Variant<Types...>* _v) noexcept {
   const auto get = [](const auto& _v) -> const T* {
@@ -440,18 +598,37 @@ constexpr const T* get_if(const Variant<Types...>* _v) noexcept {
   return _v->visit(get);
 }
 
+/// @brief Returns a pointer to the contained value if it is of the N-th
+/// alternative type, otherwise nullptr.
+/// @tparam _i The index of the alternative type.
+/// @tparam Types The alternative types.
+/// @param _v Pointer to the Variant.
+/// @return Pointer to the contained value or nullptr.
 template <int _i, class... Types>
 constexpr auto* get_if(Variant<Types...>* _v) noexcept {
   using T = internal::nth_element_t<_i, Types...>;
   return get_if<T>(_v);
 }
 
+/// @brief Returns a const pointer to the contained value if it is of the N-th
+/// alternative type, otherwise nullptr.
+/// @tparam _i The index of the alternative type.
+/// @tparam Types The alternative types.
+/// @param _v Pointer to the Variant.
+/// @return Const pointer to the contained value or nullptr.
 template <int _i, class... Types>
 constexpr auto* get_if(const Variant<Types...>* _v) noexcept {
   using T = internal::nth_element_t<_i, Types...>;
   return get_if<T>(_v);
 }
 
+/// @brief Returns a reference to the contained value if it is of type T, throws
+/// otherwise.
+/// @tparam T The type to get.
+/// @tparam Types The alternative types.
+/// @param _v Reference to the Variant.
+/// @return Reference to the contained value.
+/// @throws std::runtime_error if the contained value is not of type T.
 template <class T, class... Types>
 constexpr T& get(Variant<Types...>& _v) {
   auto ptr = get_if<T>(&_v);
@@ -461,6 +638,13 @@ constexpr T& get(Variant<Types...>& _v) {
   return *ptr;
 }
 
+/// @brief Returns an rvalue reference to the contained value if it is of type
+/// T, throws otherwise.
+/// @tparam T The type to get.
+/// @tparam Types The alternative types.
+/// @param _v Rvalue reference to the Variant.
+/// @return Rvalue reference to the contained value.
+/// @throws std::runtime_error if the contained value is not of type T.
 template <class T, class... Types>
 constexpr T&& get(Variant<Types...>&& _v) {
   auto ptr = get_if<T>(&_v);
@@ -470,6 +654,13 @@ constexpr T&& get(Variant<Types...>&& _v) {
   return std::move(*ptr);
 }
 
+/// @brief Returns a const reference to the contained value if it is of type T,
+/// throws otherwise.
+/// @tparam T The type to get.
+/// @tparam Types The alternative types.
+/// @param _v Const reference to the Variant.
+/// @return Const reference to the contained value.
+/// @throws std::runtime_error if the contained value is not of type T.
 template <class T, class... Types>
 constexpr const T& get(const Variant<Types...>& _v) {
   auto ptr = get_if<T>(&_v);
@@ -479,6 +670,13 @@ constexpr const T& get(const Variant<Types...>& _v) {
   return *ptr;
 }
 
+/// @brief Returns a reference to the contained value if it is of the N-th
+/// alternative type, throws otherwise.
+/// @tparam _i The index of the alternative type.
+/// @tparam Types The alternative types.
+/// @param _v Reference to the Variant.
+/// @return Reference to the contained value.
+/// @throws std::runtime_error if the contained value is not of the N-th type.
 template <int _i, class... Types>
 constexpr auto& get(Variant<Types...>& _v) {
   auto ptr = get_if<_i>(&_v);
@@ -488,6 +686,13 @@ constexpr auto& get(Variant<Types...>& _v) {
   return *ptr;
 }
 
+/// @brief Returns an rvalue reference to the contained value if it is of the
+/// N-th alternative type, throws otherwise.
+/// @tparam _i The index of the alternative type.
+/// @tparam Types The alternative types.
+/// @param _v Rvalue reference to the Variant.
+/// @return Rvalue reference to the contained value.
+/// @throws std::runtime_error if the contained value is not of the N-th type.
 template <int _i, class... Types>
 constexpr auto&& get(Variant<Types...>&& _v) {
   auto ptr = get_if<_i>(&_v);
@@ -497,6 +702,13 @@ constexpr auto&& get(Variant<Types...>&& _v) {
   return std::move(*ptr);
 }
 
+/// @brief Returns a const reference to the contained value if it is of the N-th
+/// alternative type, throws otherwise.
+/// @tparam _i The index of the alternative type.
+/// @tparam Types The alternative types.
+/// @param _v Const reference to the Variant.
+/// @return Const reference to the contained value.
+/// @throws std::runtime_error if the contained value is not of the N-th type.
 template <int _i, class... Types>
 constexpr const auto& get(const Variant<Types...>& _v) {
   auto ptr = get_if<_i>(&_v);
@@ -506,6 +718,11 @@ constexpr const auto& get(const Variant<Types...>& _v) {
   return *ptr;
 }
 
+/// @brief Checks if the Variant currently holds a value of type T.
+/// @tparam T The type to check for.
+/// @tparam Types The alternative types.
+/// @param _v Const reference to the Variant.
+/// @return True if the Variant holds T, false otherwise.
 template <class T, class... Types>
 constexpr bool holds_alternative(const Variant<Types...>& _v) noexcept {
   constexpr auto ix = internal::element_index<std::remove_cvref_t<T>,
@@ -514,6 +731,9 @@ constexpr bool holds_alternative(const Variant<Types...>& _v) noexcept {
   return ix == _v.index();
 }
 
+/// @brief Provides the type of the N-th alternative in a Variant.
+/// @tparam N The index of the alternative.
+/// @tparam T The Variant type.
 template <int N, class T>
 struct variant_alternative;
 
@@ -522,10 +742,15 @@ struct variant_alternative<N, Variant<Types...>> {
   using type = internal::nth_element_t<N, Types...>;
 };
 
+/// @brief Alias for the type of the N-th alternative in a Variant.
+/// @tparam N The index of the alternative.
+/// @tparam VariantType The Variant type.
 template <int N, class VariantType>
 using variant_alternative_t =
     typename variant_alternative<N, std::remove_cvref_t<VariantType>>::type;
 
+/// @brief Provides the number of alternatives in a Variant.
+/// @tparam T The Variant type.
 template <class T>
 struct variant_size;
 
@@ -533,6 +758,8 @@ template <class... Types>
 struct variant_size<Variant<Types...>>
     : std::integral_constant<size_t, sizeof...(Types)> {};
 
+/// @brief Alias for the number of alternatives in a Variant.
+/// @tparam VariantType The Variant type.
 template <class VariantType>
 constexpr size_t variant_size_v =
     variant_size<std::remove_cvref_t<VariantType>>();
@@ -540,6 +767,10 @@ constexpr size_t variant_size_v =
 }  // namespace rfl
 
 namespace std {
+/// @brief Swaps two Variants.
+/// @tparam Types The alternative types.
+/// @param _lhs The first Variant.
+/// @param _rhs The second Variant.
 template <class... Types>
 void swap(rfl::Variant<Types...>& _lhs, rfl::Variant<Types...>& _rhs) noexcept {
   _lhs.swap(_rhs);

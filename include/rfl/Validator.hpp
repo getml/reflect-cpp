@@ -14,7 +14,8 @@
 namespace rfl {
 
 /// A wrapper that validates a value against one or more validation rules.
-/// The value is checked on construction and assignment, and will throw if validation fails.
+/// The value is checked on construction and assignment, and will throw if
+/// validation fails.
 /// @tparam T The underlying type to validate
 /// @tparam V The primary validator type
 /// @tparam Vs Additional validator types (combined with AllOf)
@@ -28,7 +29,8 @@ struct Validator {
 
   /// Exception-free validation from a value.
   /// @param _value The value to validate
-  /// @return Result containing a Validator if validation succeeds, or an error if it fails
+  /// @return Result containing a Validator if validation succeeds, or an error
+  /// if it fails
   static Result<Validator> from_value(const T& _value) noexcept {
     try {
       return Validator(_value);
@@ -116,7 +118,7 @@ struct Validator {
   /// @throws std::exception if validation fails
   template <class U>
     requires std::is_convertible_v<U, T>
-  auto& operator=(U&& _value) noexcept {
+  auto& operator=(U&& _value) {
     value_ = ValidationType::validate(T(std::forward<U>(_value))).value();
     return *this;
   }
@@ -191,7 +193,8 @@ inline auto operator<=>(const Validator<T, V, Vs...>& _v1,
 /// @tparam Vs Additional validator types
 /// @param _v The validator to compare
 /// @param _t The raw value to compare with
-/// @return The ordering relationship between the validator's value and the raw value
+/// @return The ordering relationship between the validator's value and the raw
+/// value
 template <class T, class V, class... Vs>
 inline auto operator<=>(const Validator<T, V, Vs...>& _v, const T& _t) {
   return _v.value() <=> _t;
