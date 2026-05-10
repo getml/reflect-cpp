@@ -18,7 +18,13 @@ namespace rfl::yas {
 
 using OArchive = Writer::OArchive;
 
-/// Writes an object to a yas OutputArchive.
+/// Writes an object directly to an existing YAS binary output archive.
+/// YAS (Yet Another Serialization) is a fast binary serialization library.
+/// This function allows you to write to an already-opened YAS archive, useful when working
+/// with YAS archives directly or writing multiple objects to the same archive.
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _archive The YAS binary output archive to write to
+/// @param _obj The object to serialize to the archive
 template <class... Ps>
 void write_to_archive(OArchive& _archive, const auto& _obj) {
   using T = std::remove_cvref_t<decltype(_obj)>;
@@ -27,7 +33,12 @@ void write_to_archive(OArchive& _archive, const auto& _obj) {
   Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
 }
 
-/// Returns yas binary bytes.
+/// Returns YAS binary bytes representation of the object.
+/// YAS (Yet Another Serialization) is a high-performance binary serialization library
+/// designed for speed and efficiency. Uses compile-time reflection to serialize to YAS format.
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _obj The object to serialize to YAS binary format
+/// @return A vector of chars containing the YAS binary representation
 template <class... Ps>
 std::vector<char> write(const auto& _obj) {
   ::yas::mem_ostream os;
@@ -37,7 +48,12 @@ std::vector<char> write(const auto& _obj) {
   return std::vector<char>(buf.data, buf.data + buf.size);
 }
 
-/// Writes yas binary format into an ostream.
+/// Writes a YAS binary representation into an ostream.
+/// Uses compile-time reflection to serialize a C++ object to YAS binary format and write to a stream.
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _obj The object to serialize to YAS binary format
+/// @param _stream The output stream to write YAS binary data to
+/// @return The output stream (for chaining)
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) {
   ::yas::mem_ostream os;

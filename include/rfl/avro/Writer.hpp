@@ -45,18 +45,35 @@ class RFL_API Writer {
   using OutputUnionType = AVROOutputUnion;
   using OutputVarType = AVROOutputVar;
 
+  /// Constructs a Writer with a root Avro value.
+  /// @param _root Pointer to the root avro_value_t that will be written to
   Writer(avro_value_t* _root);
 
   ~Writer();
 
+  /// Creates an array as the root element of the Avro document.
+  /// @param _size The number of elements in the array
+  /// @return An OutputArrayType representing the array
   OutputArrayType array_as_root(const size_t _size) const;
 
+  /// Creates a map as the root element of the Avro document.
+  /// Avro maps are key-value containers where keys are strings.
+  /// @param _size The number of entries in the map
+  /// @return An OutputMapType representing the map
   OutputMapType map_as_root(const size_t _size) const;
 
+  /// Creates an object (record) as the root element of the Avro document.
+  /// @param _size The number of fields in the object
+  /// @return An OutputObjectType representing the object
   OutputObjectType object_as_root(const size_t _size) const;
 
+  /// Creates a null value as the root element of the Avro document.
+  /// @return An OutputVarType representing the null value
   OutputVarType null_as_root() const;
 
+  /// Creates a union as the root element of the Avro document.
+  /// Avro unions allow a value to be one of several types.
+  /// @return An OutputUnionType representing the union
   OutputUnionType union_as_root() const;
 
   template <class T>
@@ -65,67 +82,154 @@ class RFL_API Writer {
     return OutputVarType{*root_};
   }
 
+  /// Adds a nested array to an existing array.
+  /// @param _size The number of elements in the new array
+  /// @param _parent Pointer to the parent array
+  /// @return An OutputArrayType representing the new array
   OutputArrayType add_array_to_array(const size_t _size,
                                      OutputArrayType* _parent) const;
 
+  /// Adds an array to a map with the specified key.
+  /// @param _name The key name for the array in the map
+  /// @param _size The number of elements in the array
+  /// @param _parent Pointer to the parent map
+  /// @return An OutputArrayType representing the new array
   OutputArrayType add_array_to_map(const std::string_view& _name,
                                    const size_t _size,
                                    OutputMapType* _parent) const;
 
+  /// Adds an array to an object (record) field.
+  /// @param _name The field name for the array
+  /// @param _size The number of elements in the array
+  /// @param _parent Pointer to the parent object
+  /// @return An OutputArrayType representing the new array
   OutputArrayType add_array_to_object(const std::string_view& _name,
                                       const size_t _size,
                                       OutputObjectType* _parent) const;
 
+  /// Adds an array to a specific branch of a union.
+  /// @param _index The index of the union branch to use
+  /// @param _size The number of elements in the array
+  /// @param _parent Pointer to the parent union
+  /// @return An OutputArrayType representing the new array
   OutputArrayType add_array_to_union(const size_t _index, const size_t _size,
                                      OutputUnionType* _parent) const;
 
+  /// Adds a nested map to an existing array.
+  /// @param _size The number of entries in the new map
+  /// @param _parent Pointer to the parent array
+  /// @return An OutputMapType representing the new map
   OutputMapType add_map_to_array(const size_t _size,
                                  OutputArrayType* _parent) const;
 
+  /// Adds a map to another map with the specified key.
+  /// @param _name The key name for the map in the parent map
+  /// @param _size The number of entries in the new map
+  /// @param _parent Pointer to the parent map
+  /// @return An OutputMapType representing the new map
   OutputMapType add_map_to_map(const std::string_view& _name,
                                const size_t _size,
                                OutputMapType* _parent) const;
 
+  /// Adds a map to an object (record) field.
+  /// @param _name The field name for the map
+  /// @param _size The number of entries in the map
+  /// @param _parent Pointer to the parent object
+  /// @return An OutputMapType representing the new map
   OutputMapType add_map_to_object(const std::string_view& _name,
                                   const size_t _size,
                                   OutputObjectType* _parent) const;
 
+  /// Adds a map to a specific branch of a union.
+  /// @param _index The index of the union branch to use
+  /// @param _size The number of entries in the map
+  /// @param _parent Pointer to the parent union
+  /// @return An OutputMapType representing the new map
   OutputMapType add_map_to_union(const size_t _index, const size_t _size,
                                  OutputUnionType* _parent) const;
 
+  /// Adds a nested object (record) to an existing array.
+  /// @param _size The number of fields in the new object
+  /// @param _parent Pointer to the parent array
+  /// @return An OutputObjectType representing the new object
   OutputObjectType add_object_to_array(const size_t _size,
                                        OutputArrayType* _parent) const;
 
+  /// Adds an object to a map with the specified key.
+  /// @param _name The key name for the object in the map
+  /// @param _size The number of fields in the object
+  /// @param _parent Pointer to the parent map
+  /// @return An OutputObjectType representing the new object
   OutputObjectType add_object_to_map(const std::string_view& _name,
                                      const size_t _size,
                                      OutputMapType* _parent) const;
 
+  /// Adds an object to another object's field.
+  /// @param _name The field name for the new object
+  /// @param _size The number of fields in the new object
+  /// @param _parent Pointer to the parent object
+  /// @return An OutputObjectType representing the new object
   OutputObjectType add_object_to_object(const std::string_view& _name,
                                         const size_t _size,
                                         OutputObjectType* _parent) const;
 
+  /// Adds an object to a specific branch of a union.
+  /// @param _index The index of the union branch to use
+  /// @param _size The number of fields in the object
+  /// @param _parent Pointer to the parent union
+  /// @return An OutputObjectType representing the new object
   OutputObjectType add_object_to_union(const size_t _index, const size_t _size,
                                        OutputUnionType* _parent) const;
 
+  /// Adds a union to an existing array.
+  /// @param _parent Pointer to the parent array
+  /// @return An OutputUnionType representing the new union
   OutputUnionType add_union_to_array(OutputArrayType* _parent) const;
 
+  /// Adds a union to a map with the specified key.
+  /// @param _name The key name for the union in the map
+  /// @param _parent Pointer to the parent map
+  /// @return An OutputUnionType representing the new union
   OutputUnionType add_union_to_map(const std::string_view& _name,
                                    OutputMapType* _parent) const;
 
+  /// Adds a union to an object (record) field.
+  /// @param _name The field name for the union
+  /// @param _parent Pointer to the parent object
+  /// @return An OutputUnionType representing the new union
   OutputUnionType add_union_to_object(const std::string_view& _name,
                                       OutputObjectType* _parent) const;
 
+  /// Adds a union to a specific branch of another union.
+  /// @param _index The index of the parent union's branch to use
+  /// @param _parent Pointer to the parent union
+  /// @return An OutputUnionType representing the new union
   OutputUnionType add_union_to_union(const size_t _index,
                                      OutputUnionType* _parent) const;
 
+  /// Adds a null value to an array.
+  /// @param _parent Pointer to the parent array
+  /// @return An OutputVarType representing the null value
   OutputVarType add_null_to_array(OutputArrayType* _parent) const;
 
+  /// Adds a null value to a map with the specified key.
+  /// @param _name The key name for the null value
+  /// @param _parent Pointer to the parent map
+  /// @return An OutputVarType representing the null value
   OutputVarType add_null_to_map(const std::string_view& _name,
                                 OutputMapType* _parent) const;
 
+  /// Adds a null value to an object (record) field.
+  /// @param _name The field name for the null value
+  /// @param _parent Pointer to the parent object
+  /// @return An OutputVarType representing the null value
   OutputVarType add_null_to_object(const std::string_view& _name,
                                    OutputObjectType* _parent) const;
 
+  /// Adds a null value to a specific branch of a union.
+  /// @param _index The index of the union branch to use
+  /// @param _parent Pointer to the parent union
+  /// @return An OutputVarType representing the null value
   OutputVarType add_null_to_union(const size_t _index,
                                   OutputUnionType* _parent) const;
 
@@ -194,10 +298,19 @@ class RFL_API Writer {
     return OutputVarType{new_value};
   }
 
+  /// Finalizes an array after all elements have been added.
+  /// This is a no-op for Avro but required by the Writer interface.
+  /// @param _arr Pointer to the array to finalize (unused)
   void end_array(OutputArrayType* /*_arr*/) const noexcept {}
 
+  /// Finalizes a map after all entries have been added.
+  /// This is a no-op for Avro but required by the Writer interface.
+  /// @param _obj Pointer to the map to finalize (unused)
   void end_map(OutputMapType* /*_obj*/) const noexcept {}
 
+  /// Finalizes an object after all fields have been added.
+  /// This is a no-op for Avro but required by the Writer interface.
+  /// @param _obj Pointer to the object to finalize (unused)
   void end_object(OutputObjectType* /*_obj*/) const noexcept {}
 
  private:

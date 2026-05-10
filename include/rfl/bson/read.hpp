@@ -19,7 +19,12 @@ namespace bson {
 using InputObjectType = typename Reader::InputObjectType;
 using InputVarType = typename Reader::InputVarType;
 
-/// Parses an object from a BSON var.
+/// Parses an object from a BSON var (internal BSON value representation).
+/// A BSON var is the internal representation used by the libbson library.
+/// @tparam T The type to parse into
+/// @tparam Ps Processors to apply during parsing (transforms the data)
+/// @param _obj The BSON variant object to parse from
+/// @return Result containing the parsed object of type T
 template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(const InputVarType& _obj) {
   const auto r = Reader();
@@ -30,7 +35,13 @@ Result<internal::wrap_in_rfl_array_t<T>> read(const InputVarType& _obj) {
   return Parser<T, ProcessorsType>::read(r, _obj);
 }
 
-/// Parses an BSON object using reflection.
+/// Parses a BSON object from raw bytes using reflection.
+/// BSON (Binary JSON) is the binary serialization format used by MongoDB.
+/// @tparam T The type to parse into
+/// @tparam Ps Processors to apply during parsing (transforms the data)
+/// @param _bytes Pointer to byte-like data containing BSON
+/// @param _size The size of the byte array
+/// @return Result containing the parsed object (or array of objects)
 template <class T, class... Ps>
 auto read(const concepts::ByteLike auto* _bytes, const size_t _size) {
   bson_value_t val;
@@ -41,13 +52,22 @@ auto read(const concepts::ByteLike auto* _bytes, const size_t _size) {
   return read<T, Ps...>(Reader::InputVarType{&val});
 }
 
-/// Parses an object from BSON using reflection.
+/// Parses an object from BSON using reflection (contiguous container version).
+/// @tparam T The type to parse into
+/// @tparam Ps Processors to apply during parsing (transforms the data)
+/// @param _bytes A contiguous byte container (e.g., std::vector<uint8_t>, std::string) containing BSON data
+/// @return Result containing the parsed object (or array of objects)
 template <class T, class... Ps>
 auto read(const concepts::ContiguousByteContainer auto& _bytes) {
   return read<T, Ps...>(_bytes.data(), _bytes.size());
 }
 
-/// Parses an object from a stream.
+/// Parses an object from a stream containing BSON data.
+/// Reads BSON binary data from the stream and constructs a C++ object.
+/// @tparam T The type to parse into
+/// @tparam Ps Processors to apply during parsing (transforms the data)
+/// @param _stream The input stream containing BSON binary data
+/// @return Result containing the parsed object (or array of objects)
 template <class T, class... Ps>
 auto read(std::istream& _stream) {
   std::istreambuf_iterator<char> begin(_stream), end;

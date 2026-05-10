@@ -16,17 +16,29 @@
 
 namespace rfl::xml {
 
+/// Reader class for deserializing XML (Extensible Markup Language) data.
+/// This class provides the interface for parsing XML format into C++ objects.
+/// Uses the pugixml library for XML parsing. XML has a hierarchical structure
+/// with elements (nodes) and attributes, both of which can be mapped to object fields.
 struct Reader {
+  /// Represents an XML array during deserialization.
+  /// In XML, arrays are represented as multiple sibling elements with the same name.
+  /// Wraps a pugixml node representing the first element in the array.
   struct XMLInputArray {
     XMLInputArray(pugi::xml_node _node) : node_(_node) {}
     pugi::xml_node node_;
   };
 
+  /// Represents an XML object during deserialization.
+  /// Wraps a pugixml node that can contain child elements and attributes.
   struct XMLInputObject {
     XMLInputObject(pugi::xml_node _node) : node_(_node) {}
     pugi::xml_node node_;
   };
 
+  /// Represents a variant XML value during deserialization.
+  /// Can hold either an XML node (element) or an XML attribute.
+  /// This distinction is unique to XML format.
   struct XMLInputVar {
     XMLInputVar() : node_or_attribute_(pugi::xml_node()) {}
     XMLInputVar(pugi::xml_attribute _attr) : node_or_attribute_(_attr) {}
@@ -38,10 +50,16 @@ struct Reader {
   using InputObjectType = XMLInputObject;
   using InputVarType = XMLInputVar;
 
-  // TODO
+  /// Compile-time flag indicating whether type T has a custom constructor from XML.
+  /// Currently not implemented for XML format (always false).
   template <class T>
   static constexpr bool has_custom_constructor = false;
 
+  /// Retrieves an element from an XML array by index.
+  /// In XML, arrays are represented as sibling elements with the same name.
+  /// @param _idx The zero-based index of the element to retrieve
+  /// @param _arr The XML array (first element of same-named siblings) to read from
+  /// @return Result containing the element at the specified index, or an error if out of bounds
   rfl::Result<InputVarType> get_field_from_array(
       const size_t _idx, const InputArrayType& _arr) const noexcept {
     const auto name = _arr.node_.name();
@@ -54,6 +72,11 @@ struct Reader {
     return error("Index " + std::to_string(_idx) + " of of bounds.");
   }
 
+  /// Retrieves a field from an XML object by name.
+  /// Looks for a child element with the specified name.
+  /// @param _name The name of the child element to retrieve
+  /// @param _obj The XML object to read from
+  /// @return Result containing the field value, or an error if field is not found
   rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType _obj) const noexcept {
     const auto node = _obj.node_.child(_name.c_str());
@@ -63,6 +86,9 @@ struct Reader {
     return InputVarType(node);
   }
 
+  /// Checks if an XML value is empty or null.
+  /// @param _var The XML value (node or attribute) to check
+  /// @return true if the value is empty/null, false otherwise
   bool is_empty(const InputVarType _var) const noexcept {
     const auto wrap = [](const auto& _node) { return !_node; };
     return std::visit(cast_as_node, _var.node_or_attribute_)
@@ -70,6 +96,13 @@ struct Reader {
         .value_or(false);
   }
 
+  /// Converts an XML value to a basic C++ type.
+  /// Supports strings, booleans (as "true"/"false" or "1"/"0"), 
+  /// floating-point numbers, and integers. Reads text content from nodes
+  /// or values from attributes.
+  /// @tparam T The target C++ type
+  /// @param _var The XML value (node or attribute) to convert
+  /// @return Result containing the converted value, or an error if conversion fails
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType _var) const noexcept {
     const auto get_value = [](const auto& _n) -> std::string {
@@ -118,11 +151,21 @@ struct Reader {
     }
   }
 
+  /// Converts an XML value to an array.
+  /// The node must be castable (not an attribute).
+  /// @param _var The XML value to convert
+  /// @return Result containing the array, or an error if value is an attribute
   rfl::Result<InputArrayType> to_array(const InputVarType _var) const noexcept {
     const auto wrap = [](const auto& _node) { return InputArrayType(_node); };
     return std::visit(cast_as_node, _var.node_or_attribute_).transform(wrap);
   }
 
+  /// Reads all elements from an XML array using a provided array reader.
+  /// Iterates through all sibling elements with the same name.
+  /// @tparam ArrayReader Type that provides a read() method for processing elements
+  /// @param _array_reader The reader object used to process each array element
+  /// @param _arr The XML array to read from
+  /// @return std::nullopt on success, or an Error if reading fails
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
                                   const InputArrayType& _arr) const noexcept {
@@ -136,6 +179,14 @@ struct Reader {
     return std::nullopt;
   }
 
+  /// Reads all fields from an XML object using a provided object reader.
+  /// Processes child elements, attributes, and optionally the text content.
+  /// The object reader's read() method is called for each child and attribute.
+  /// If the reader is a view reader, also provides access to "xml_content" field.
+  /// @tparam ObjectReader Type that provides a read() method for processing fields
+  /// @param _object_reader The reader object used to process each field
+  /// @param _obj The XML object to read from
+  /// @return std::nullopt on success, or an Error if reading fails
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
@@ -157,12 +208,21 @@ struct Reader {
     return std::nullopt;
   }
 
+  /// Converts an XML value to an object.
+  /// The node must be castable (not an attribute).
+  /// @param _var The XML value to convert
+  /// @return Result containing the object, or an error if value is an attribute
   rfl::Result<InputObjectType> to_object(
       const InputVarType _var) const noexcept {
     const auto wrap = [](const auto& _node) { return InputObjectType(_node); };
     return std::visit(cast_as_node, _var.node_or_attribute_).transform(wrap);
   }
 
+  /// Uses a type's custom constructor to deserialize from XML.
+  /// Currently not implemented for XML format.
+  /// @tparam T The type to construct
+  /// @param _var The XML value to deserialize from
+  /// @return Error indicating this feature is not yet implemented
   template <class T>
   rfl::Result<T> use_custom_constructor(
       const InputVarType _var) const noexcept {

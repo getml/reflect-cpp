@@ -30,29 +30,52 @@ class Writer {
   using OutputUnionType = BoostOutputUnion;
   using OutputVarType = BoostOutputVar;
 
+  /// Constructs a Writer with a Boost output archive.
+  /// @param _ar Pointer to the Boost output archive to write to
   Writer(OArchive* _ar) : ar_(_ar) {}
 
   ~Writer() = default;
 
+  /// Creates an array as the root element.
+  /// Writes the size to the archive first.
+  /// @param _size The number of elements in the array
+  /// @return An OutputArrayType
   OutputArrayType array_as_root(const size_t _size) const {
     write_size(_size);
     return OutputArrayType{};
   }
 
+  /// Creates a map as the root element.
+  /// Writes the size to the archive first.
+  /// @param _size The number of entries in the map
+  /// @return An OutputMapType
   OutputMapType map_as_root(const size_t _size) const {
     write_size(_size);
     return OutputMapType{};
   }
 
+  /// Creates an object as the root element.
+  /// Writes the size to the archive first.
+  /// @param _size The number of fields in the object
+  /// @return An OutputObjectType
   OutputObjectType object_as_root(const size_t _size) const {
     write_size(_size);
     return OutputObjectType{};
   }
 
+  /// Creates a null value as the root element.
+  /// This is a no-op for Boost.Serialization.
+  /// @return An OutputVarType
   OutputVarType null_as_root() const { return OutputVarType{}; }
 
+  /// Creates a union as the root element.
+  /// @return An OutputUnionType
   OutputUnionType union_as_root() const { return OutputUnionType{}; }
 
+  /// Writes a value as the root element.
+  /// @tparam T The type of the value
+  /// @param _var The value to write
+  /// @return An OutputVarType
   template <class T>
   OutputVarType value_as_root(const T& _var) const {
     new_value(_var);
@@ -216,10 +239,19 @@ class Writer {
     return OutputVarType{};
   }
 
+  /// Finalizes an array after all elements have been added.
+  /// This is a no-op for Boost.Serialization.
+  /// @param _arr Pointer to the array (unused)
   void end_array(OutputArrayType* /*_arr*/) const {}
 
+  /// Finalizes a map after all entries have been added.
+  /// This is a no-op for Boost.Serialization.
+  /// @param _obj Pointer to the map (unused)
   void end_map(OutputMapType* /*_obj*/) const {}
 
+  /// Finalizes an object after all fields have been added.
+  /// This is a no-op for Boost.Serialization.
+  /// @param _obj Pointer to the object (unused)
   void end_object(OutputObjectType* /*_obj*/) const {}
 
  private:

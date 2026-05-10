@@ -15,6 +15,9 @@ namespace rfl::cli {
 
 /// Returns true if the token looks like a CLI option (starts with '-'
 /// followed by a letter), as opposed to a negative number like "-42".
+/// This helps distinguish option flags from negative numeric values.
+/// @param _token The command-line token to check
+/// @return true if it looks like an option, false otherwise
 inline bool looks_like_option(std::string_view _token) noexcept {
   return _token.size() >= 2
          && _token[0] == '-'
@@ -22,7 +25,15 @@ inline bool looks_like_option(std::string_view _token) noexcept {
          && _token[1] != '.';
 }
 
-/// Parses command-line arguments into categorized buckets:
+/// Parses command-line arguments into categorized buckets.
+/// Handles three types of arguments:
+/// - Long options: --key=value or --flag (stored in `named`)
+/// - Short options: -x value, -x=value, or -x (stored in `short_args`)  
+/// - Positional arguments: bare arguments not prefixed with dashes (stored in `positional`)
+/// The special argument "--" forces all subsequent arguments to be treated as positional.
+/// @param argc Number of command-line arguments
+/// @param argv Array of command-line argument strings
+/// @return A Result containing ParsedArgs with categorized arguments or an error
 /// --key=value / --flag → named
 /// -x value / -x=value / -x → short_args
 /// bare arguments → positional

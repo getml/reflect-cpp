@@ -10,6 +10,14 @@
 
 namespace rfl::csv {
 
+/// Saves an array of objects to a CSV file.
+/// Serializes an array of C++ objects to CSV text format and writes it to a file using compile-time reflection.
+/// CSV (Comma-Separated Values) is a text format for tabular data, where each row represents an object.
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _fname The filename/path where the CSV file will be saved
+/// @param _obj The array of objects to serialize to CSV
+/// @param _settings Optional CSV writing settings (delimiter, quoting style, etc.)
+/// @return Result containing Nothing on success or an error message on failure
 template <class... Ps>
 Result<Nothing> save(const std::string& _fname, const auto& _obj,
                      const Settings& _settings = Settings{}) {

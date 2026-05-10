@@ -18,7 +18,14 @@ namespace rfl::yas {
 
 using IArchive = Reader::IArchive;
 
-/// Reads from an existing yas input archive.
+/// Reads an object directly from an existing YAS binary input archive.
+/// YAS (Yet Another Serialization) is a fast binary serialization library.
+/// This function allows you to read from an already-opened YAS archive, useful when working
+/// with YAS archives directly or reading multiple objects from the same archive.
+/// @tparam T The type to parse into
+/// @tparam Ps Processors to apply during parsing (transforms the data)
+/// @param _ar The YAS binary input archive to read from
+/// @return The parsed object of type T
 template <class T, class... Ps>
 auto read_from_archive(IArchive& _ar) {
   auto r = Reader();
@@ -26,7 +33,14 @@ auto read_from_archive(IArchive& _ar) {
   return Parser<T, Processors<Ps...>>::read(r, var);
 }
 
-/// Parses an object from bytes using a binary archive.
+/// Parses an object from YAS binary bytes using reflection (with raw pointer and size).
+/// YAS (Yet Another Serialization) is a high-performance binary serialization library
+/// designed for speed and efficiency. It provides compact binary encoding.
+/// @tparam T The type to parse into
+/// @tparam Ps Processors to apply during parsing (transforms the data)
+/// @param _bytes Pointer to byte-like data containing YAS binary format
+/// @param _size The size of the byte array
+/// @return Result containing either the parsed object (or array of objects) or an error message
 template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(
     const concepts::ByteLike auto* _bytes, const size_t _size) {
@@ -39,7 +53,11 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
   }
 }
 
-/// Parses an object from a byte container using a binary archive.
+/// Parses an object from YAS binary format using reflection (contiguous container version).
+/// @tparam T The type to parse into
+/// @tparam Ps Processors to apply during parsing (transforms the data)
+/// @param _bytes A contiguous byte container (e.g., std::vector<char>, std::string) containing YAS binary data
+/// @return Result containing either the parsed object (or array of objects) or an error message
 template <class T, class... Ps>
 auto read(const concepts::ContiguousByteContainer auto& _bytes) {
   return read<T, Ps...>(_bytes.data(), _bytes.size());

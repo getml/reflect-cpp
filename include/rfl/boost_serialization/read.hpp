@@ -37,13 +37,26 @@ class MemBuf : public std::streambuf {
 
 }  // namespace detail
 
-/// Reads from an existing Boost input archive.
+/// Reads an object from an existing Boost input archive.
+/// This allows you to use a custom archive type (e.g., text, XML, binary).
+/// @tparam T The type to deserialize into
+/// @tparam IArchive The Boost input archive type
+/// @tparam OArchive The corresponding Boost output archive type
+/// @tparam Ps Optional processors to apply during deserialization
+/// @param _ar The Boost input archive to read from
+/// @return A Result containing the deserialized object or an error
 template <class T, class IArchive, class OArchive, class... Ps>
 auto read_from_archive(IArchive& _ar) {
   return detail::read_from_archive<T, IArchive, OArchive, Ps...>(_ar);
 }
 
-/// Parses an object from bytes using a binary archive.
+/// Parses an object from raw bytes using Boost binary archive.
+/// Creates a memory stream from the bytes and deserializes using Boost.Serialization.
+/// @tparam T The type to deserialize into
+/// @tparam Ps Optional processors to apply during deserialization
+/// @param _bytes Pointer to the binary data
+/// @param _size Size of the binary data in bytes
+/// @return A Result containing the deserialized object or an error
 template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(
     const concepts::ByteLike auto* _bytes, const size_t _size) {
@@ -60,13 +73,21 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
   }
 }
 
-/// Parses an object from a byte container using a binary archive.
+/// Parses an object from a byte container using Boost binary archive.
+/// @tparam T The type to deserialize into
+/// @tparam Ps Optional processors to apply during deserialization
+/// @param _bytes A contiguous container (e.g., std::vector, std::string) containing the data
+/// @return A Result containing the deserialized object or an error
 template <class T, class... Ps>
 auto read(const concepts::ContiguousByteContainer auto& _bytes) {
   return read<T, Ps...>(_bytes.data(), _bytes.size());
 }
 
-/// Parses an object from a stream using a binary archive.
+/// Parses an object from an input stream using Boost binary archive.
+/// @tparam T The type to deserialize into
+/// @tparam Ps Optional processors to apply during deserialization
+/// @param _stream The input stream to read from
+/// @return A Result containing the deserialized object or an error
 template <class T, class... Ps>
 auto read(std::istream& _stream) {
   try {
