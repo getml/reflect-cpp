@@ -42,7 +42,9 @@ struct Reader {
 
   /// @brief Indicates whether a custom constructor exists for type T.
   /// @tparam T The type to check for a custom constructor.
-  static constexpr bool has_custom_constructor = false;
+  template <class T>
+  static constexpr bool has_custom_constructor =
+      (requires(InputVarType var) { T::from_yas_obj(var); });
 
   /// @brief Checks if the given input variable is empty.
   /// @param _var The input variable to check.

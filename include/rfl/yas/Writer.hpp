@@ -49,12 +49,6 @@ struct Writer {
   Writer(OArchive* _ar) : ar_(_ar) {}
 
   ///
-  /// @brief Indicates whether a custom constructor exists for type T.
-  /// @tparam T The type to check for a custom constructor.
-  template <class T>
-  static constexpr bool has_custom_constructor = false;
-
-  ///
   /// @brief Begins serializing an array as the root object.
   /// @param _size The number of elements in the array.
   /// @return OutputArrayType representing the serialized array context.
