@@ -170,7 +170,7 @@ struct DefaultVal {
   /// @return Reference to this DefaultVal
   template <class U>
   auto& operator=(DefaultVal<U>&& _field) {
-    value_ = std::forward<U>(_field.value_);
+    value_ = std::move(_field.value_);
     return *this;
   }
 
