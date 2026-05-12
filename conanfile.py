@@ -38,6 +38,7 @@ class ReflectCppConan(ConanFile):
     options = {
         "shared": [True, False],
         "fPIC": [True, False],
+        "with_boost_serialization": [True, False],
         "with_capnproto": [True, False],
         "with_cbor": [True, False],
         "with_cereal": [True, False],
@@ -49,10 +50,12 @@ class ReflectCppConan(ConanFile):
         "with_ubjson": [True, False],
         "with_xml": [True, False],
         "with_yaml": [True, False],
+        "with_yas": [True, False],
     }
     default_options = {
         "shared": False,
         "fPIC": True,
+        "with_boost_serialization": False,
         "with_capnproto": False,
         "with_cbor": False,
         "with_cereal": False,
@@ -64,6 +67,7 @@ class ReflectCppConan(ConanFile):
         "with_ubjson": False,
         "with_xml": False,
         "with_yaml": False,
+        "with_yas": False,
     }
 
     def config_options(self):
@@ -77,6 +81,8 @@ class ReflectCppConan(ConanFile):
     def requirements(self):
         self.requires("ctre/3.9.0", transitive_headers=True)
         self.requires("yyjson/0.10.0", transitive_headers=True)
+        if self.options.with_boost_serialization:
+            self.requires("boost/1.90.0", transitive_headers=True)
         if self.options.with_capnproto:
             self.requires("capnproto/1.1.0", transitive_headers=True)
         if self.options.with_cbor or self.options.with_ubjson:
@@ -95,6 +101,8 @@ class ReflectCppConan(ConanFile):
             self.requires("pugixml/1.15", transitive_headers=True)
         if self.options.with_yaml:
             self.requires("yaml-cpp/0.8.0", transitive_headers=True)
+        if self.options.with_yas:
+            self.requires("yas/7.1.0", transitive_headers=True)
 
     def build_requirements(self):
         self.tool_requires("cmake/[>=3.23 <4]")
@@ -118,6 +126,9 @@ class ReflectCppConan(ConanFile):
         tc.cache_variables["REFLECTCPP_BUILD_SHARED"] = self.options.shared
         tc.cache_variables["REFLECTCPP_USE_BUNDLED_DEPENDENCIES"] = False
         tc.cache_variables["REFLECTCPP_USE_VCPKG"] = False
+        tc.cache_variables["REFLECTCPP_BOOST_SERIALIZATION"] = (
+            self.options.with_boost_serialization
+        )
         tc.cache_variables["REFLECTCPP_CAPNPROTO"] = self.options.with_capnproto
         tc.cache_variables["REFLECTCPP_CBOR"] = self.options.with_cbor
         tc.cache_variables["REFLECTCPP_CEREAL"] = self.options.with_cereal
@@ -128,6 +139,7 @@ class ReflectCppConan(ConanFile):
         tc.cache_variables["REFLECTCPP_TOML"] = self.options.with_toml
         tc.cache_variables["REFLECTCPP_XML"] = self.options.with_xml
         tc.cache_variables["REFLECTCPP_YAML"] = self.options.with_yaml
+        tc.cache_variables["REFLECTCPP_YAS"] = self.options.with_yas
         tc.generate()
 
     def build(self):

@@ -179,20 +179,20 @@
         }
       ]
     },
-    "yas": {
-      "description": "Enable yas support",
-      "dependencies": [
-        {
-          "name": "yas"
-        }
-      ]
-    },
     "yaml": {
       "description": "Enable YAML support",
       "dependencies": [
         {
           "name": "yaml-cpp",
           "version>=": "0.8.0#1"
+        }
+      ]
+    },
+    "yas": {
+      "description": "Enable yas support",
+      "dependencies": [
+        {
+          "name": "yas"
         }
       ]
     }
