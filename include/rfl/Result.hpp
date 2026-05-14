@@ -79,8 +79,7 @@ using Result = std::expected<T, rfl::Error>;
 template <class E>
 struct Unexpected {
   /// Constructs an Unexpected object with the given error (perfect forwarding).
-  /// @param _err The error to store in this Unexpected object (can be an lvalue
-  /// or rvalue)
+  /// @param _err The error to store in this Unexpected object.
   Unexpected(E&& _err) : err_{std::forward<E>(_err)} {}
 
   /// Constructs an Unexpected object with the given error (copy).
@@ -173,7 +172,8 @@ class Result {
   /// @param _other The other Result object to move from.
   /// @details Constructs a Result<T> by moving from a Result<U>, where U is
   /// convertible to T. The contained value is transformed and moved into the
-  /// new Result.
+  /// new Result. If the other Result contains an error,
+  /// the error is propagated to this Result.
   template <class U>
     requires std::is_convertible_v<U, T>
   Result(Result<U>&& _other) : success_(_other && true) {
@@ -187,7 +187,8 @@ class Result {
   /// @param _other The other Result object to copy from.
   /// @details Constructs a Result<T> by copying from a Result<U>, where U is
   /// convertible to T. The contained value is transformed and copied into the
-  /// new Result.
+  /// new Result. If the other Result contains an error, the error is propagated
+  /// to this Result.
   template <class U>
     requires std::is_convertible_v<U, T>
   Result(const Result<U>& _other) : success_(_other && true) {
@@ -485,7 +486,7 @@ class Result {
 
   /// @brief Returns the contained value if present, otherwise returns the
   /// provided default value.
-  /// @param _default The value to return if the Expected does not contain a
+  /// @param _default The value to return if the Result does not contain a
   /// value.
   /// @return The contained value if present, otherwise the provided default
   /// value.
