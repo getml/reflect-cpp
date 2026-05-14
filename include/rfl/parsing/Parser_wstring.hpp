@@ -5,6 +5,7 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/strings/utf8_conversions.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
@@ -37,25 +38,17 @@ struct Parser<R, W, std::wstring, ProcessorsType> {
     if (!inStr) {
       return Result<std::wstring>(error(inStr.error()));
     }
-    // if (auto err = inStr.error(); err.has_value()) {
-    //   return Result<std::wstring>(err.value());
-    // }
 
-    std::mbstate_t state = std::mbstate_t();
-    auto val = inStr.value();
+    // JSON strings are UTF-8 (RFC 8259). Convert explicitly rather than via the
+    // locale-dependent std::mbsrtowcs, which returns (size_t)-1 on any input
+    // that is not valid in the current C locale's encoding.
+    auto outStr = internal::strings::utf8_to_wstring(inStr.value());
+    if (!outStr) {
+      return Result<std::wstring>(
+          error("Could not parse the string: it is not valid UTF-8."));
+    }
 
-    std::wstring outStr(val.size() * 2, L'\0');
-
-    // Explicitly set the size so we don't empty it when we truncate
-    outStr.resize(val.size() * 2);
-
-    auto* ptr = val.c_str();
-
-    // Add 1 for null terminator
-    auto len = std::mbsrtowcs(outStr.data(), &ptr, val.size(), &state);
-    outStr.resize(len);  // Truncate the extra bytes
-
-    return Result<std::wstring>(outStr);
+    return Result<std::wstring>(std::move(*outStr));
   }
 
   /**
@@ -68,20 +61,12 @@ struct Parser<R, W, std::wstring, ProcessorsType> {
    */
   template <class P>
   static void write(const W& _w, const std::wstring& _str, const P& _parent) {
-    if (_str.empty()) {
-      ParentType::add_value(_w, std::string(), _parent);
-      return;
-    }
-
-    std::mbstate_t state = std::mbstate_t();
-    std::string outStr(_str.size(), '\0');
-    outStr.resize(_str.size());
-
-    auto* ptr = _str.c_str();
-    auto len = std::wcsrtombs(outStr.data(), &ptr, _str.size(), &state);
-    outStr.resize(len);
-
-    ParentType::add_value(_w, outStr, _parent);
+    // Emit the wstring as UTF-8 (RFC 8259). wstring_to_utf8 only fails on
+    // genuinely malformed input (e.g. unpaired surrogates); Parser<...>::write
+    // returns void and the Writer has no error channel, so emit an empty string
+    // in that case rather than crash.
+    const auto outStr = internal::strings::wstring_to_utf8(_str);
+    ParentType::add_value(_w, outStr.value_or(std::string()), _parent);
   }
 
   /**
