@@ -2,7 +2,10 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -O2")
 
 # Note: Adding -Wno-stringop-overflow is necessary, because of false positive warnings, see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110498
 if (MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std:c++20")
+    # /utf-8 tells MSVC the test sources are UTF-8 (default is the system code
+    # page). Without it, non-ASCII characters in wide / u8 string literals are
+    # mis-decoded, breaking the wstring/filepath round-trip tests. See PR #668.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std:c++20 /utf-8")
 else()
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -Werror -ggdb -ftemplate-backtrace-limit=0")
 endif()

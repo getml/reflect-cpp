@@ -27,7 +27,10 @@ struct Parser<R, W, std::filesystem::path, ProcessorsType> {
     const auto to_path =
         [&](std::string&& _str) -> Result<std::filesystem::path> {
       try {
-        return std::filesystem::path(_str);
+        // JSON strings are UTF-8 (RFC 8259); construct the path from UTF-8
+        // explicitly rather than via the locale-dependent narrow constructor.
+        return std::filesystem::path(std::u8string(
+            reinterpret_cast<const char8_t*>(_str.data()), _str.size()));
       } catch (std::exception& e) {
         return error(e.what());
       }
@@ -46,8 +49,12 @@ struct Parser<R, W, std::filesystem::path, ProcessorsType> {
   template <class P>
   static void write(const W& _w, const std::filesystem::path& _p,
                     const P& _parent) {
-    return Parser<R, W, std::string, ProcessorsType>::write(_w, _p.string(),
-                                                            _parent);
+    // Emit the path as UTF-8 (RFC 8259); _p.string() is locale-dependent and
+    // throws / mangles on Windows for non-representable characters.
+    const auto u8 = _p.u8string();
+    return Parser<R, W, std::string, ProcessorsType>::write(
+        _w, std::string(reinterpret_cast<const char*>(u8.c_str()), u8.size()),
+        _parent);
   }
 
   /**
