@@ -341,7 +341,7 @@ constexpr length_value_t length_and_value_of_utf16_code_point(uint16_t first_uni
 
 struct construct_from_pointer_t { };
 
-constexpr auto construct_from_pointer = construct_from_pointer_t{};
+inline constexpr auto construct_from_pointer = construct_from_pointer_t{};
 
 CTLL_EXPORT template <size_t N> struct fixed_string {
 	char32_t content[N] = {};
@@ -3577,7 +3577,7 @@ template <typename T> concept capture_group = requires(const T & cap) {
 
 struct capture_not_exists_tag { };
 
-constexpr auto capture_not_exists = capture_not_exists_tag{};
+inline constexpr auto capture_not_exists = capture_not_exists_tag{};
 
 template <typename... Captures> struct captures;
 

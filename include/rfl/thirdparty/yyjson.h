@@ -330,7 +330,12 @@
 
 /** inline function export */
 #ifndef yyjson_api_inline
-#define yyjson_api_inline static yyjson_inline
+#define yyjson_api_inline inline
+#endif
+
+/** constant export */
+#ifndef yyjson_api_const
+#define yyjson_api_const inline constexpr
 #endif
 
 /** stdint (C89 compatible) */
@@ -709,7 +714,7 @@ typedef uint32_t yyjson_read_flag;
     - Report error if double number is infinity.
     - Report error if string contains invalid UTF-8 character or BOM.
     - Report error on trailing commas, comments, inf and nan literals. */
-static const yyjson_read_flag YYJSON_READ_NOFLAG = 0;
+yyjson_api_const yyjson_read_flag YYJSON_READ_NOFLAG = 0;
 
 /** Read the input data in-situ.
     This option allows the reader to modify and use input data to store string
@@ -717,27 +722,27 @@ static const yyjson_read_flag YYJSON_READ_NOFLAG = 0;
     The caller should hold the input data before free the document.
     The input data must be padded by at least `YYJSON_PADDING_SIZE` bytes.
     For example: `[1,2]` should be `[1,2]\0\0\0\0`, input length should be 5. */
-static const yyjson_read_flag YYJSON_READ_INSITU = 1 << 0;
+yyjson_api_const yyjson_read_flag YYJSON_READ_INSITU = 1 << 0;
 
 /** Stop when done instead of issuing an error if there's additional content
     after a JSON document. This option may be used to parse small pieces of JSON
     in larger data, such as `NDJSON`. */
-static const yyjson_read_flag YYJSON_READ_STOP_WHEN_DONE = 1 << 1;
+yyjson_api_const yyjson_read_flag YYJSON_READ_STOP_WHEN_DONE = 1 << 1;
 
 /** Allow single trailing comma at the end of an object or array,
     such as `[1,2,3,]`, `{"a":1,"b":2,}` (non-standard). */
-static const yyjson_read_flag YYJSON_READ_ALLOW_TRAILING_COMMAS = 1 << 2;
+yyjson_api_const yyjson_read_flag YYJSON_READ_ALLOW_TRAILING_COMMAS = 1 << 2;
 
 /** Allow C-style single-line and mult-line comments (non-standard). */
-static const yyjson_read_flag YYJSON_READ_ALLOW_COMMENTS = 1 << 3;
+yyjson_api_const yyjson_read_flag YYJSON_READ_ALLOW_COMMENTS = 1 << 3;
 
 /** Allow inf/nan number and literal, case-insensitive,
     such as 1e999, NaN, inf, -Infinity (non-standard). */
-static const yyjson_read_flag YYJSON_READ_ALLOW_INF_AND_NAN = 1 << 4;
+yyjson_api_const yyjson_read_flag YYJSON_READ_ALLOW_INF_AND_NAN = 1 << 4;
 
 /** Read all numbers as raw strings (value with `YYJSON_TYPE_RAW` type),
     inf/nan literal is also read as raw with `ALLOW_INF_AND_NAN` flag. */
-static const yyjson_read_flag YYJSON_READ_NUMBER_AS_RAW = 1 << 5;
+yyjson_api_const yyjson_read_flag YYJSON_READ_NUMBER_AS_RAW = 1 << 5;
 
 /** Allow reading invalid unicode when parsing string values (non-standard).
     Invalid characters will be allowed to appear in the string values, but
@@ -747,22 +752,22 @@ static const yyjson_read_flag YYJSON_READ_NUMBER_AS_RAW = 1 << 5;
     @warning Strings in JSON values may contain incorrect encoding when this
     option is used, you need to handle these strings carefully to avoid security
     risks. */
-static const yyjson_read_flag YYJSON_READ_ALLOW_INVALID_UNICODE = 1 << 6;
+yyjson_api_const yyjson_read_flag YYJSON_READ_ALLOW_INVALID_UNICODE = 1 << 6;
 
 /** Read big numbers as raw strings. These big numbers include integers that
     cannot be represented by `int64_t` and `uint64_t`, and floating-point
     numbers that cannot be represented by finite `double`.
     The flag will be overridden by `YYJSON_READ_NUMBER_AS_RAW` flag. */
-static const yyjson_read_flag YYJSON_READ_BIGNUM_AS_RAW = 1 << 7;
+yyjson_api_const yyjson_read_flag YYJSON_READ_BIGNUM_AS_RAW = 1 << 7;
 
 /** Allow UTF-8 BOM and skip it before parsing if any (non-standard). */
-static const yyjson_read_flag YYJSON_READ_ALLOW_BOM = 1 << 8;
+yyjson_api_const yyjson_read_flag YYJSON_READ_ALLOW_BOM = 1 << 8;
 
 /** Allow extended number formats (non-standard):
     - Hexadecimal numbers, such as `0x7B`.
     - Numbers with leading or trailing decimal point, such as `.123`, `123.`.
     - Numbers with a leading plus sign, such as `+123`. */
-static const yyjson_read_flag YYJSON_READ_ALLOW_EXT_NUMBER = 1 << 9;
+yyjson_api_const yyjson_read_flag YYJSON_READ_ALLOW_EXT_NUMBER = 1 << 9;
 
 /** Allow extended escape sequences in strings (non-standard):
     - Additional escapes: `\a`, `\e`, `\v`, ``\'``, `\?`, `\0`.
@@ -771,7 +776,7 @@ static const yyjson_read_flag YYJSON_READ_ALLOW_EXT_NUMBER = 1 << 9;
     - Unknown escape: if backslash is followed by an unsupported character,
         the backslash will be removed and the character will be kept as-is.
         However, `\1`-`\9` will still trigger an error. */
-static const yyjson_read_flag YYJSON_READ_ALLOW_EXT_ESCAPE = 1 << 10;
+yyjson_api_const yyjson_read_flag YYJSON_READ_ALLOW_EXT_ESCAPE = 1 << 10;
 
 /** Allow extended whitespace characters (non-standard):
     - Vertical tab `\v` and form feed `\f`.
@@ -779,22 +784,22 @@ static const yyjson_read_flag YYJSON_READ_ALLOW_EXT_ESCAPE = 1 << 10;
     - Non-breaking space `\xA0`.
     - Byte order mark: `\uFEFF`.
     - Other Unicode characters in the Zs (Separator, space) category. */
-static const yyjson_read_flag YYJSON_READ_ALLOW_EXT_WHITESPACE = 1 << 11;
+yyjson_api_const yyjson_read_flag YYJSON_READ_ALLOW_EXT_WHITESPACE = 1 << 11;
 
 /** Allow strings enclosed in single quotes (non-standard), such as ``'ab'``. */
-static const yyjson_read_flag YYJSON_READ_ALLOW_SINGLE_QUOTED_STR = 1 << 12;
+yyjson_api_const yyjson_read_flag YYJSON_READ_ALLOW_SINGLE_QUOTED_STR = 1 << 12;
 
 /** Allow object keys without quotes (non-standard), such as `{a:1,b:2}`.
     This extends the ECMAScript IdentifierName rule by allowing any
     non-whitespace character with code point above `U+007F`. */
-static const yyjson_read_flag YYJSON_READ_ALLOW_UNQUOTED_KEY = 1 << 13;
+yyjson_api_const yyjson_read_flag YYJSON_READ_ALLOW_UNQUOTED_KEY = 1 << 13;
 
 /** Allow JSON5 format, see: [https://json5.org].
     This flag supports all JSON5 features with some additional extensions:
     - Accepts more escape sequences than JSON5 (e.g. `\a`, `\e`).
     - Unquoted keys are not limited to ECMAScript IdentifierName.
     - Allow case-insensitive `NaN`, `Inf` and `Infinity` literals. */
-static const yyjson_read_flag YYJSON_READ_JSON5 =
+yyjson_api_const yyjson_read_flag YYJSON_READ_JSON5 =
     (1 << 2) |  /* YYJSON_READ_ALLOW_TRAILING_COMMAS */
     (1 << 3) |  /* YYJSON_READ_ALLOW_COMMENTS */
     (1 << 4) |  /* YYJSON_READ_ALLOW_INF_AND_NAN */
@@ -808,49 +813,49 @@ static const yyjson_read_flag YYJSON_READ_JSON5 =
 typedef uint32_t yyjson_read_code;
 
 /** Success, no error. */
-static const yyjson_read_code YYJSON_READ_SUCCESS = 0;
+yyjson_api_const yyjson_read_code YYJSON_READ_SUCCESS = 0;
 
 /** Invalid parameter, such as NULL input string or 0 input length. */
-static const yyjson_read_code YYJSON_READ_ERROR_INVALID_PARAMETER = 1;
+yyjson_api_const yyjson_read_code YYJSON_READ_ERROR_INVALID_PARAMETER = 1;
 
 /** Memory allocation failed. */
-static const yyjson_read_code YYJSON_READ_ERROR_MEMORY_ALLOCATION = 2;
+yyjson_api_const yyjson_read_code YYJSON_READ_ERROR_MEMORY_ALLOCATION = 2;
 
 /** Input JSON string is empty. */
-static const yyjson_read_code YYJSON_READ_ERROR_EMPTY_CONTENT = 3;
+yyjson_api_const yyjson_read_code YYJSON_READ_ERROR_EMPTY_CONTENT = 3;
 
 /** Unexpected content after document, such as `[123]abc`. */
-static const yyjson_read_code YYJSON_READ_ERROR_UNEXPECTED_CONTENT = 4;
+yyjson_api_const yyjson_read_code YYJSON_READ_ERROR_UNEXPECTED_CONTENT = 4;
 
 /** Unexpected end of input, the parsed part is valid, such as `[123`. */
-static const yyjson_read_code YYJSON_READ_ERROR_UNEXPECTED_END = 5;
+yyjson_api_const yyjson_read_code YYJSON_READ_ERROR_UNEXPECTED_END = 5;
 
 /** Unexpected character inside the document, such as `[abc]`. */
-static const yyjson_read_code YYJSON_READ_ERROR_UNEXPECTED_CHARACTER = 6;
+yyjson_api_const yyjson_read_code YYJSON_READ_ERROR_UNEXPECTED_CHARACTER = 6;
 
 /** Invalid JSON structure, such as `[1,]`. */
-static const yyjson_read_code YYJSON_READ_ERROR_JSON_STRUCTURE = 7;
+yyjson_api_const yyjson_read_code YYJSON_READ_ERROR_JSON_STRUCTURE = 7;
 
 /** Invalid comment, deprecated, use `UNEXPECTED_END` for unclosed comment. */
-static const yyjson_read_code YYJSON_READ_ERROR_INVALID_COMMENT = 8;
+yyjson_api_const yyjson_read_code YYJSON_READ_ERROR_INVALID_COMMENT = 8;
 
 /** Invalid number, such as `123.e12`, `000`. */
-static const yyjson_read_code YYJSON_READ_ERROR_INVALID_NUMBER = 9;
+yyjson_api_const yyjson_read_code YYJSON_READ_ERROR_INVALID_NUMBER = 9;
 
 /** Invalid string, such as invalid escaped character inside a string. */
-static const yyjson_read_code YYJSON_READ_ERROR_INVALID_STRING = 10;
+yyjson_api_const yyjson_read_code YYJSON_READ_ERROR_INVALID_STRING = 10;
 
 /** Invalid JSON literal, such as `truu`. */
-static const yyjson_read_code YYJSON_READ_ERROR_LITERAL = 11;
+yyjson_api_const yyjson_read_code YYJSON_READ_ERROR_LITERAL = 11;
 
 /** Failed to open a file. */
-static const yyjson_read_code YYJSON_READ_ERROR_FILE_OPEN = 12;
+yyjson_api_const yyjson_read_code YYJSON_READ_ERROR_FILE_OPEN = 12;
 
 /** Failed to read a file. */
-static const yyjson_read_code YYJSON_READ_ERROR_FILE_READ = 13;
+yyjson_api_const yyjson_read_code YYJSON_READ_ERROR_FILE_READ = 13;
 
 /** Incomplete input during incremental parsing; parsing state is preserved. */
-static const yyjson_read_code YYJSON_READ_ERROR_MORE = 14;
+yyjson_api_const yyjson_read_code YYJSON_READ_ERROR_MORE = 14;
 
 /** Error information for JSON reader. */
 typedef struct yyjson_read_err {
@@ -1125,38 +1130,38 @@ typedef uint32_t yyjson_write_flag;
     - Report error on inf or nan number.
     - Report error on invalid UTF-8 string.
     - Do not escape unicode or slash. */
-static const yyjson_write_flag YYJSON_WRITE_NOFLAG = 0;
+yyjson_api_const yyjson_write_flag YYJSON_WRITE_NOFLAG = 0;
 
 /** Write JSON pretty with 4 space indent. */
-static const yyjson_write_flag YYJSON_WRITE_PRETTY = 1 << 0;
+yyjson_api_const yyjson_write_flag YYJSON_WRITE_PRETTY = 1 << 0;
 
 /** Escape unicode as `uXXXX`, make the output ASCII only. */
-static const yyjson_write_flag YYJSON_WRITE_ESCAPE_UNICODE = 1 << 1;
+yyjson_api_const yyjson_write_flag YYJSON_WRITE_ESCAPE_UNICODE = 1 << 1;
 
 /** Escape '/' as '\/'. */
-static const yyjson_write_flag YYJSON_WRITE_ESCAPE_SLASHES = 1 << 2;
+yyjson_api_const yyjson_write_flag YYJSON_WRITE_ESCAPE_SLASHES = 1 << 2;
 
 /** Write inf and nan number as 'Infinity' and 'NaN' literal (non-standard). */
-static const yyjson_write_flag YYJSON_WRITE_ALLOW_INF_AND_NAN = 1 << 3;
+yyjson_api_const yyjson_write_flag YYJSON_WRITE_ALLOW_INF_AND_NAN = 1 << 3;
 
 /** Write inf and nan number as null literal.
     This flag will override `YYJSON_WRITE_ALLOW_INF_AND_NAN` flag. */
-static const yyjson_write_flag YYJSON_WRITE_INF_AND_NAN_AS_NULL = 1 << 4;
+yyjson_api_const yyjson_write_flag YYJSON_WRITE_INF_AND_NAN_AS_NULL = 1 << 4;
 
 /** Allow invalid unicode when encoding string values (non-standard).
     Invalid characters in string value will be copied byte by byte.
     If `YYJSON_WRITE_ESCAPE_UNICODE` flag is also set, invalid character will be
     escaped as `U+FFFD` (replacement character).
     This flag does not affect the performance of correctly encoded strings. */
-static const yyjson_write_flag YYJSON_WRITE_ALLOW_INVALID_UNICODE = 1 << 5;
+yyjson_api_const yyjson_write_flag YYJSON_WRITE_ALLOW_INVALID_UNICODE = 1 << 5;
 
 /** Write JSON pretty with 2 space indent.
     This flag will override `YYJSON_WRITE_PRETTY` flag. */
-static const yyjson_write_flag YYJSON_WRITE_PRETTY_TWO_SPACES = 1 << 6;
+yyjson_api_const yyjson_write_flag YYJSON_WRITE_PRETTY_TWO_SPACES = 1 << 6;
 
 /** Adds a newline character `\n` at the end of the JSON.
     This can be helpful for text editors or NDJSON. */
-static const yyjson_write_flag YYJSON_WRITE_NEWLINE_AT_END = 1 << 7;
+yyjson_api_const yyjson_write_flag YYJSON_WRITE_NEWLINE_AT_END = 1 << 7;
 
 /** The highest 8 bits of `yyjson_write_flag` and real number value's `tag`
     are reserved for controlling the output format of floating-point numbers. */
@@ -1182,28 +1187,28 @@ static const yyjson_write_flag YYJSON_WRITE_NEWLINE_AT_END = 1 << 7;
 typedef uint32_t yyjson_write_code;
 
 /** Success, no error. */
-static const yyjson_write_code YYJSON_WRITE_SUCCESS = 0;
+yyjson_api_const yyjson_write_code YYJSON_WRITE_SUCCESS = 0;
 
 /** Invalid parameter, such as NULL document. */
-static const yyjson_write_code YYJSON_WRITE_ERROR_INVALID_PARAMETER = 1;
+yyjson_api_const yyjson_write_code YYJSON_WRITE_ERROR_INVALID_PARAMETER = 1;
 
 /** Memory allocation failure occurs. */
-static const yyjson_write_code YYJSON_WRITE_ERROR_MEMORY_ALLOCATION = 2;
+yyjson_api_const yyjson_write_code YYJSON_WRITE_ERROR_MEMORY_ALLOCATION = 2;
 
 /** Invalid value type in JSON document. */
-static const yyjson_write_code YYJSON_WRITE_ERROR_INVALID_VALUE_TYPE = 3;
+yyjson_api_const yyjson_write_code YYJSON_WRITE_ERROR_INVALID_VALUE_TYPE = 3;
 
 /** NaN or Infinity number occurs. */
-static const yyjson_write_code YYJSON_WRITE_ERROR_NAN_OR_INF = 4;
+yyjson_api_const yyjson_write_code YYJSON_WRITE_ERROR_NAN_OR_INF = 4;
 
 /** Failed to open a file. */
-static const yyjson_write_code YYJSON_WRITE_ERROR_FILE_OPEN = 5;
+yyjson_api_const yyjson_write_code YYJSON_WRITE_ERROR_FILE_OPEN = 5;
 
 /** Failed to write a file. */
-static const yyjson_write_code YYJSON_WRITE_ERROR_FILE_WRITE = 6;
+yyjson_api_const yyjson_write_code YYJSON_WRITE_ERROR_FILE_WRITE = 6;
 
 /** Invalid unicode in string. */
-static const yyjson_write_code YYJSON_WRITE_ERROR_INVALID_STRING = 7;
+yyjson_api_const yyjson_write_code YYJSON_WRITE_ERROR_INVALID_STRING = 7;
 
 /** Error information for JSON writer. */
 typedef struct yyjson_write_err {
@@ -3946,25 +3951,25 @@ yyjson_api_inline bool yyjson_mut_obj_rename_keyn(yyjson_mut_doc *doc,
 typedef uint32_t yyjson_ptr_code;
 
 /** No JSON pointer error. */
-static const yyjson_ptr_code YYJSON_PTR_ERR_NONE = 0;
+yyjson_api_const yyjson_ptr_code YYJSON_PTR_ERR_NONE = 0;
 
 /** Invalid input parameter, such as NULL input. */
-static const yyjson_ptr_code YYJSON_PTR_ERR_PARAMETER = 1;
+yyjson_api_const yyjson_ptr_code YYJSON_PTR_ERR_PARAMETER = 1;
 
 /** JSON pointer syntax error, such as invalid escape, token no prefix. */
-static const yyjson_ptr_code YYJSON_PTR_ERR_SYNTAX = 2;
+yyjson_api_const yyjson_ptr_code YYJSON_PTR_ERR_SYNTAX = 2;
 
 /** JSON pointer resolve failed, such as index out of range, key not found. */
-static const yyjson_ptr_code YYJSON_PTR_ERR_RESOLVE = 3;
+yyjson_api_const yyjson_ptr_code YYJSON_PTR_ERR_RESOLVE = 3;
 
 /** Document's root is NULL, but it is required for the function call. */
-static const yyjson_ptr_code YYJSON_PTR_ERR_NULL_ROOT = 4;
+yyjson_api_const yyjson_ptr_code YYJSON_PTR_ERR_NULL_ROOT = 4;
 
 /** Cannot set root as the target is not a document. */
-static const yyjson_ptr_code YYJSON_PTR_ERR_SET_ROOT = 5;
+yyjson_api_const yyjson_ptr_code YYJSON_PTR_ERR_SET_ROOT = 5;
 
 /** The memory allocation failed and a new value could not be created. */
-static const yyjson_ptr_code YYJSON_PTR_ERR_MEMORY_ALLOCATION = 6;
+yyjson_api_const yyjson_ptr_code YYJSON_PTR_ERR_MEMORY_ALLOCATION = 6;
 
 /** Error information for JSON pointer. */
 typedef struct yyjson_ptr_err {
@@ -4515,28 +4520,28 @@ yyjson_api_inline bool yyjson_ptr_ctx_remove(yyjson_ptr_ctx *ctx);
 typedef uint32_t yyjson_patch_code;
 
 /** Success, no error. */
-static const yyjson_patch_code YYJSON_PATCH_SUCCESS = 0;
+yyjson_api_const yyjson_patch_code YYJSON_PATCH_SUCCESS = 0;
 
 /** Invalid parameter, such as NULL input or non-array patch. */
-static const yyjson_patch_code YYJSON_PATCH_ERROR_INVALID_PARAMETER = 1;
+yyjson_api_const yyjson_patch_code YYJSON_PATCH_ERROR_INVALID_PARAMETER = 1;
 
 /** Memory allocation failure occurs. */
-static const yyjson_patch_code YYJSON_PATCH_ERROR_MEMORY_ALLOCATION = 2;
+yyjson_api_const yyjson_patch_code YYJSON_PATCH_ERROR_MEMORY_ALLOCATION = 2;
 
 /** JSON patch operation is not object type. */
-static const yyjson_patch_code YYJSON_PATCH_ERROR_INVALID_OPERATION = 3;
+yyjson_api_const yyjson_patch_code YYJSON_PATCH_ERROR_INVALID_OPERATION = 3;
 
 /** JSON patch operation is missing a required key. */
-static const yyjson_patch_code YYJSON_PATCH_ERROR_MISSING_KEY = 4;
+yyjson_api_const yyjson_patch_code YYJSON_PATCH_ERROR_MISSING_KEY = 4;
 
 /** JSON patch operation member is invalid. */
-static const yyjson_patch_code YYJSON_PATCH_ERROR_INVALID_MEMBER = 5;
+yyjson_api_const yyjson_patch_code YYJSON_PATCH_ERROR_INVALID_MEMBER = 5;
 
 /** JSON patch operation `test` not equal. */
-static const yyjson_patch_code YYJSON_PATCH_ERROR_EQUAL = 6;
+yyjson_api_const yyjson_patch_code YYJSON_PATCH_ERROR_EQUAL = 6;
 
 /** JSON patch operation failed on JSON pointer. */
-static const yyjson_patch_code YYJSON_PATCH_ERROR_POINTER = 7;
+yyjson_api_const yyjson_patch_code YYJSON_PATCH_ERROR_POINTER = 7;
 
 /** Error information for JSON patch. */
 typedef struct yyjson_patch_err {

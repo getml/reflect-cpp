@@ -8,7 +8,7 @@
 namespace rfl::internal::variant {
 
 template <class T, class... AlternativeTypes>
-static constexpr bool is_alternative_type() {
+inline constexpr bool is_alternative_type() {
   return internal::element_index<std::remove_cvref_t<T>,
                                  std::remove_cvref_t<AlternativeTypes>...>() !=
          -1;

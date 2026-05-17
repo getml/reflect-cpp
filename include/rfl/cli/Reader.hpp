@@ -20,11 +20,11 @@ namespace rfl::cli {
 
 /// Character used to separate nested field names in CLI arguments.
 /// Example: `--database.host` for nested field `database::host`.
-static constexpr char path_separator = '.';
+inline constexpr char path_separator = '.';
 
 /// Character used to delimit array elements in CLI argument values.
 /// Example: `--ports=8080,8081,8082` for an array of ports.
-static constexpr char array_delimiter = ',';
+inline constexpr char array_delimiter = ',';
 
 /// Represents a CLI variable that can be a direct value or a path in the argument map.
 /// The `path` represents the hierarchical key (e.g., "database.host").

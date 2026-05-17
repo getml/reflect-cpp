@@ -21,7 +21,7 @@ namespace parsing {
  * @return True if the variable is empty, false otherwise.
  */
 template <class T>
-static bool is_empty(const T& _var) {
+inline bool is_empty(const T& _var) {
   using Type = std::remove_cvref_t<T>;
   if constexpr (std::is_pointer_v<Type>) {
     return !_var || is_empty(*_var);
