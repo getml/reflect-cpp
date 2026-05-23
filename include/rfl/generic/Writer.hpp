@@ -15,7 +15,7 @@ namespace rfl::generic {
 
 /// Writer for the Generic type - a dynamic, format-agnostic data structure.
 /// Constructs Generic values that can be converted to any serialization format.
-/// The Generic type provides a common intermediate representation useful for 
+/// The Generic type provides a common intermediate representation useful for
 /// format conversions and dynamic data manipulation.
 struct RFL_API Writer {
   struct OutputArray {
@@ -147,7 +147,6 @@ struct RFL_API Writer {
     } else {
       static_assert(always_false_v<T>, "Unsupported type");
     }
-    return OutputVarType{};
   }
 
  private:
