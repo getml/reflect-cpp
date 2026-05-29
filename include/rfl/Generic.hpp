@@ -143,152 +143,85 @@ class RFL_API Generic {
   /// Casts the underlying value to an rfl::Generic::Array or returns an
   /// rfl::Error, if the underlying value is not an rfl::Generic::Array.
   Result<Array> to_array() const noexcept {
-    return std::visit(
-        [](auto _v) -> Result<Array> {
-          using V = std::remove_cvref_t<decltype(_v)>;
-          if constexpr (std::is_same_v<V, Array>) {
-            return _v;
-          } else {
-            return error(
-                "rfl::Generic: Could not cast the underlying value to an "
-                "rfl::Generic::Array.");
-          }
-        },
-        value_);
+    if (auto* ptr = std::get_if<Array>(&value_)) return *ptr;
+    return error(
+        "rfl::Generic: Could not cast the underlying value to an "
+        "rfl::Generic::Array.");
   }
 
   /// Casts the underlying value to a boolean or returns an rfl::Error, if the
   /// underlying value is not a boolean.
   Result<bool> to_bool() const noexcept {
-    return std::visit(
-        [](auto _v) -> Result<bool> {
-          using V = std::remove_cvref_t<decltype(_v)>;
-          if constexpr (std::is_same_v<V, bool>) {
-            return _v;
-          } else {
-            return error(
-                "rfl::Generic: Could not cast the underlying value to a "
-                "boolean.");
-          }
-        },
-        value_);
+    if (auto* ptr = std::get_if<bool>(&value_)) return *ptr;
+    return error(
+        "rfl::Generic: Could not cast the underlying value to a boolean.");
   }
 
   /// Casts the underlying value to a double or returns an rfl::Error, if the
   /// underlying value is not a number or the conversion would result in loss of
   /// precision.
   Result<double> to_double() const noexcept {
-    return std::visit(
-        [](auto _v) -> Result<double> {
-          using V = std::remove_cvref_t<decltype(_v)>;
-          if constexpr (std::is_same_v<V, double>) {
-            return _v;
-          } else if constexpr (std::is_same_v<V, int64_t>) {
-            auto _d = static_cast<double>(_v);
-            if (static_cast<int64_t>(_d) == _v) {
-              return _d;
-            } else {
-              return error(
-                  "rfl::Generic: Could not cast the underlying value to a "
-                  "double without loss of precision.");
-            }
-          } else {
-            return error(
-                "rfl::Generic: Could not cast the underlying value to a "
-                "double.");
-          }
-        },
-        value_);
+    if (auto* ptr = std::get_if<double>(&value_)) return *ptr;
+    if (auto* ptr = std::get_if<int64_t>(&value_)) {
+      auto _d = static_cast<double>(*ptr);
+      if (static_cast<int64_t>(_d) == *ptr) {
+        return _d;
+      }
+      return error(
+          "rfl::Generic: Could not cast the underlying value to a double "
+          "without loss of precision.");
+    }
+    return error(
+        "rfl::Generic: Could not cast the underlying value to a double.");
   }
 
   /// Casts the underlying value to an integer or returns an rfl::Error, if the
   /// underlying value is not an integer.
   Result<int> to_int() const noexcept {
-    return std::visit(
-        [](auto _v) -> Result<int> {
-          using V = std::remove_cvref_t<decltype(_v)>;
-          if constexpr (std::is_same_v<V, int64_t>) {
-            if (_v < static_cast<int64_t>(std::numeric_limits<int>::min()) ||
-                _v > static_cast<int64_t>(std::numeric_limits<int>::max())) {
-              return error(
-                  "rfl::Generic: int64_t value out of range for int.");
-            }
-            return static_cast<int>(_v);
-          } else {
-            return error(
-                "rfl::Generic: Could not cast the underlying value to an "
-                "integer.");
-          }
-        },
-        value_);
+    if (auto* ptr = std::get_if<int64_t>(&value_)) {
+      if (*ptr < static_cast<int64_t>(std::numeric_limits<int>::min()) ||
+          *ptr > static_cast<int64_t>(std::numeric_limits<int>::max())) {
+        return error("rfl::Generic: int64_t value out of range for int.");
+      }
+      return static_cast<int>(*ptr);
+    }
+    return error(
+        "rfl::Generic: Could not cast the underlying value to an integer.");
   }
 
   /// Casts the underlying value to an int64 or returns an rfl::Error, if the
   /// underlying value is not an integer.
   Result<int64_t> to_int64() const noexcept {
-    return std::visit(
-        [](auto _v) -> Result<int64_t> {
-          using V = std::remove_cvref_t<decltype(_v)>;
-          if constexpr (std::is_same_v<V, int64_t>) {
-            return _v;
-          } else {
-            return error(
-                "rfl::Generic: Could not cast the underlying value to an "
-                "int64.");
-          }
-        },
-        value_);
+    if (auto* ptr = std::get_if<int64_t>(&value_)) return *ptr;
+    return error(
+        "rfl::Generic: Could not cast the underlying value to an int64.");
   }
 
   /// Casts the underlying value to an rfl::Generic::Object or returns an
   /// rfl::Error, if the underlying value is not an rfl::Generic::Object.
   Result<Object> to_object() const noexcept {
-    return std::visit(
-        [](auto _v) -> Result<Object> {
-          using V = std::remove_cvref_t<decltype(_v)>;
-          if constexpr (std::is_same_v<V, Object>) {
-            return _v;
-          } else {
-            return error(
-                "rfl::Generic: Could not cast the underlying value to an "
-                "rfl::Generic::Object.");
-          }
-        },
-        value_);
+    if (auto* ptr = std::get_if<Object>(&value_)) return *ptr;
+    return error(
+        "rfl::Generic: Could not cast the underlying value to an "
+        "rfl::Generic::Object.");
   }
 
   /// Casts the underlying value to rfl::Generic::Null or returns an
   /// rfl::Error, if the underlying value is not rfl::Generic::Null.
   Result<std::nullopt_t> to_null() const noexcept {
-    return std::visit(
-        [](auto _v) -> Result<std::nullopt_t> {
-          using V = std::remove_cvref_t<decltype(_v)>;
-          if constexpr (std::is_same_v<V, std::nullopt_t>) {
-            return _v;
-          } else {
-            return error(
-                "rfl::Generic: Could not cast the underlying value to "
-                "rfl::Generic::Null.");
-          }
-        },
-        value_);
+    if (auto* ptr = std::get_if<std::nullopt_t>(&value_)) return *ptr;
+    return error(
+        "rfl::Generic: Could not cast the underlying value to "
+        "rfl::Generic::Null.");
   }
 
   /// Casts the underlying value to a string or returns an rfl::Error, if the
   /// underlying value is not a string.
   Result<std::string> to_string() const noexcept {
-    return std::visit(
-        [](auto _v) -> Result<std::string> {
-          using V = std::remove_cvref_t<decltype(_v)>;
-          if constexpr (std::is_same_v<V, std::string>) {
-            return _v;
-          } else {
-            return error(
-                "rfl::Generic: Could not cast the underlying value to a "
-                "string.");
-          }
-        },
-        value_);
+    if (auto* ptr = std::get_if<std::string>(&value_)) return *ptr;
+    return error(
+        "rfl::Generic: Could not cast the underlying value to a "
+        "string.");
   }
 
   /// Returns the underlying variant.
