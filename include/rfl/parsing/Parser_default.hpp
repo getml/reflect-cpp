@@ -26,12 +26,15 @@
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
 #include "ParserSharedPtr.hpp"
+#include "Parser_array.hpp"
+#include "Parser_base.hpp"
 #include "Parser_box.hpp"
 #include "Parser_optional.hpp"
 #include "Parser_ref.hpp"
 #include "Parser_reference_wrapper.hpp"
+#include "Parser_rfl_tuple.hpp"
+#include "Parser_tuple.hpp"
 #include "Parser_unique_ptr.hpp"
-#include "Parser_base.hpp"
 #include "call_destructors_where_necessary.hpp"
 #include "is_tagged_union_wrapper.hpp"
 #include "make_type_name.hpp"
@@ -64,7 +67,7 @@ struct Parser {
 
     } else if constexpr (is_unique_ptr_v<T>) {
       return ParserUniquePtr<R, W, typename T::element_type,
-                            ProcessorsType>::read(_r, _var);
+                             ProcessorsType>::read(_r, _var);
 
     } else if constexpr (is_optional_v<T>) {
       return ParserOptional<R, W, typename std::remove_cvref_t<T>::value_type,
@@ -83,6 +86,17 @@ struct Parser {
     } else if constexpr (is_reference_wrapper_v<T>) {
       return ParserReferenceWrapper<R, W, typename std::remove_cvref_t<T>::type,
                                     ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_array_v<T>) {
+      using IsArray = is_array<T>;
+      return ParserArray<R, W, typename IsArray::element_type, IsArray::size,
+                         ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_tuple_v<T>) {
+      return ParserTuple<R, W, T, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_rfl_tuple_v<T>) {
+      return ParserRflTuple<R, W, T, ProcessorsType>::read(_r, _var);
 
     } else if constexpr (internal::has_read_reflector<T>) {
       const auto wrap_in_t = [](auto&& _named_tuple) -> Result<T> {
@@ -164,6 +178,17 @@ struct Parser {
       ParserReferenceWrapper<R, W, typename std::remove_cvref_t<T>::type,
                              ProcessorsType>::write(_w, _var, _parent);
 
+    } else if constexpr (is_array_v<T>) {
+      using IsArray = is_array<T>;
+      ParserArray<R, W, typename IsArray::element_type, IsArray::size,
+                  ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_tuple_v<T>) {
+      ParserTuple<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_rfl_tuple_v<T>) {
+      ParserRflTuple<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
     } else if constexpr (internal::has_write_reflector<T>) {
       Parser<R, W, typename Reflector<T>::ReflType, ProcessorsType>::write(
           _w, Reflector<T>::from(_var), _parent);
@@ -227,6 +252,17 @@ struct Parser {
     } else if constexpr (is_reference_wrapper_v<U>) {
       return ParserReferenceWrapper<R, W, typename U::type,
                                     ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_array_v<U>) {
+      using IsArray = is_array<U>;
+      return ParserArray<R, W, typename IsArray::element_type, IsArray::size,
+                         ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_tuple_v<U>) {
+      return ParserTuple<R, W, U, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_rfl_tuple_v<U>) {
+      return ParserRflTuple<R, W, U, ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (rfl::internal::is_description_v<U>) {
       return make_description<U>(_definitions);

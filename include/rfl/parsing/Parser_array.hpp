@@ -15,11 +15,22 @@
 #include "call_destructors_on_array_where_necessary.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
+
+template <class T>
+struct is_array : std::false_type {};
+
+template <class T, size_t _size>
+struct is_array<std::array<T, _size>> : std::true_type {
+  using element_type = T;
+  static constexpr size_t size = _size;
+};
+
+template <class T>
+constexpr bool is_array_v = is_array<std::remove_cvref_t<T>>::value;
+
 template <class R, class W, class T, size_t _size, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, std::array<T, _size>>
-struct Parser<R, W, std::array<T, _size>, ProcessorsType> {
+struct ParserArray {
  public:
   using InputArrayType = typename R::InputArrayType;
   using InputVarType = typename R::InputVarType;
@@ -93,7 +104,6 @@ struct Parser<R, W, std::array<T, _size>, ProcessorsType> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif
