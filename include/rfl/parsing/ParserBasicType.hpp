@@ -35,8 +35,7 @@ namespace rfl::parsing {
 
 /// Default case - anything that cannot be explicitly matched.
 template <class R, class W, class T, class ProcessorsType>
-  requires internal::is_basic_type_v<T> && AreReaderAndWriter<R, W, T>
-struct Parser<R, W, T, ProcessorsType> {
+struct ParserBasicType {
  public:
   using InputVarType = typename R::InputVarType;
 

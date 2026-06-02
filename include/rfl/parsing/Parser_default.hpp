@@ -25,6 +25,7 @@
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
+#include "ParserBasicType.hpp"
 #include "ParserBytestring.hpp"
 #include "ParserDuration.hpp"
 #include "ParserFilepath.hpp"
@@ -68,7 +69,10 @@ struct Parser {
    * @return A Result containing the parsed value or an error.
    */
   static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
-    if constexpr (is_vector_like_v<T>) {
+    if constexpr (internal::is_basic_type_v<T>) {
+      return ParserBasicType<R, W, T, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_vector_like_v<T>) {
       return VectorParser<R, W, T, ProcessorsType>::read(_r, _var);
 
     } else if constexpr (is_shared_ptr_v<T>) {
@@ -187,7 +191,10 @@ struct Parser {
    */
   template <class P>
   static void write(const W& _w, const T& _var, const P& _parent) {
-    if constexpr (is_vector_like_v<T>) {
+    if constexpr (internal::is_basic_type_v<T>) {
+      ParserBasicType<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_vector_like_v<T>) {
       return VectorParser<R, W, T, ProcessorsType>::write(_w, _var, _parent);
 
     } else if constexpr (is_shared_ptr_v<T>) {
@@ -290,7 +297,10 @@ struct Parser {
     using U = std::remove_cvref_t<T>;
     using Type = schema::Type;
 
-    if constexpr (is_vector_like_v<U>) {
+    if constexpr (internal::is_basic_type_v<U>) {
+      return ParserBasicType<R, W, U, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_vector_like_v<U>) {
       return VectorParser<R, W, U, ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (is_shared_ptr_v<U>) {
