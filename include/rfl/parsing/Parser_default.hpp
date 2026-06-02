@@ -25,6 +25,12 @@
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
+#include "ParserSharedPtr.hpp"
+#include "Parser_box.hpp"
+#include "Parser_optional.hpp"
+#include "Parser_ref.hpp"
+#include "Parser_reference_wrapper.hpp"
+#include "Parser_unique_ptr.hpp"
 #include "Parser_base.hpp"
 #include "call_destructors_where_necessary.hpp"
 #include "is_tagged_union_wrapper.hpp"
@@ -52,7 +58,33 @@ struct Parser {
    * @return A Result containing the parsed value or an error.
    */
   static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
-    if constexpr (internal::has_read_reflector<T>) {
+    if constexpr (is_shared_ptr_v<T>) {
+      return ParserSharedPtr<R, W, typename T::element_type,
+                             ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_unique_ptr_v<T>) {
+      return ParserUniquePtr<R, W, typename T::element_type,
+                            ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_optional_v<T>) {
+      return ParserOptional<R, W, typename std::remove_cvref_t<T>::value_type,
+                            ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_box_v<T>) {
+      using IsBox = is_box<std::remove_cvref_t<T>>;
+      return ParserBox<R, W, typename IsBox::element_type, IsBox::copyability,
+                       ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_ref_v<T>) {
+      using IsRef = is_ref<std::remove_cvref_t<T>>;
+      return ParserRef<R, W, typename IsRef::element_type,
+                       ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_reference_wrapper_v<T>) {
+      return ParserReferenceWrapper<R, W, typename std::remove_cvref_t<T>::type,
+                                    ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (internal::has_read_reflector<T>) {
       const auto wrap_in_t = [](auto&& _named_tuple) -> Result<T> {
         try {
           using NT = decltype(_named_tuple);
@@ -106,7 +138,33 @@ struct Parser {
    */
   template <class P>
   static void write(const W& _w, const T& _var, const P& _parent) {
-    if constexpr (internal::has_write_reflector<T>) {
+    if constexpr (is_shared_ptr_v<T>) {
+      ParserSharedPtr<R, W, typename T::element_type, ProcessorsType>::write(
+          _w, _var, _parent);
+
+    } else if constexpr (is_unique_ptr_v<T>) {
+      ParserUniquePtr<R, W, typename T::element_type, ProcessorsType>::write(
+          _w, _var, _parent);
+
+    } else if constexpr (is_optional_v<T>) {
+      ParserOptional<R, W, typename std::remove_cvref_t<T>::value_type,
+                     ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_box_v<T>) {
+      using IsBox = is_box<std::remove_cvref_t<T>>;
+      ParserBox<R, W, typename IsBox::element_type, IsBox::copyability,
+                ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_ref_v<T>) {
+      using IsRef = is_ref<std::remove_cvref_t<T>>;
+      ParserRef<R, W, typename IsRef::element_type, ProcessorsType>::write(
+          _w, _var, _parent);
+
+    } else if constexpr (is_reference_wrapper_v<T>) {
+      ParserReferenceWrapper<R, W, typename std::remove_cvref_t<T>::type,
+                             ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (internal::has_write_reflector<T>) {
       Parser<R, W, typename Reflector<T>::ReflType, ProcessorsType>::write(
           _w, Reflector<T>::from(_var), _parent);
 
@@ -144,7 +202,33 @@ struct Parser {
     using U = std::remove_cvref_t<T>;
     using Type = schema::Type;
 
-    if constexpr (rfl::internal::is_description_v<U>) {
+    if constexpr (is_shared_ptr_v<U>) {
+      return ParserSharedPtr<R, W, typename U::element_type,
+                             ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_unique_ptr_v<U>) {
+      return ParserUniquePtr<R, W, typename U::element_type,
+                             ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_optional_v<U>) {
+      return ParserOptional<R, W, typename U::value_type,
+                            ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_box_v<U>) {
+      using IsBox = is_box<U>;
+      return ParserBox<R, W, typename IsBox::element_type, IsBox::copyability,
+                       ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_ref_v<U>) {
+      using IsRef = is_ref<U>;
+      return ParserRef<R, W, typename IsRef::element_type,
+                       ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_reference_wrapper_v<U>) {
+      return ParserReferenceWrapper<R, W, typename U::type,
+                                    ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (rfl::internal::is_description_v<U>) {
       return make_description<U>(_definitions);
 
     } else if constexpr (rfl::internal::is_deprecated_v<U>) {

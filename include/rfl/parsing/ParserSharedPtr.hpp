@@ -22,9 +22,17 @@
 
 namespace rfl::parsing {
 
+template <class T>
+struct is_shared_ptr : std::false_type {};
+
+template <class T>
+struct is_shared_ptr<std::shared_ptr<T>> : std::true_type {};
+
+template <class T>
+constexpr bool is_shared_ptr_v = is_shared_ptr<std::remove_cvref_t<T>>::value;
+
 template <class R, class W, class T, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, std::shared_ptr<T>>
-struct Parser<R, W, std::shared_ptr<T>, ProcessorsType> {
+struct ParserSharedPtr {
   using InputVarType = typename R::InputVarType;
 
   using ParentType = Parent<W>;

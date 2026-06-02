@@ -20,11 +20,19 @@
 #include "schemaful/IsSchemafulWriter.hpp"
 #include "schemaful/UniquePtrReader.hpp"
 
-namespace rfl ::parsing {
+namespace rfl::parsing {
+
+template <class T>
+struct is_unique_ptr : std::false_type {};
+
+template <class T>
+struct is_unique_ptr<std::unique_ptr<T>> : std::true_type {};
+
+template <class T>
+constexpr bool is_unique_ptr_v = is_unique_ptr<std::remove_cvref_t<T>>::value;
 
 template <class R, class W, class T, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, std::unique_ptr<T>>
-struct Parser<R, W, std::unique_ptr<T>, ProcessorsType> {
+struct ParserUniquePtr {
   using InputVarType = typename R::InputVarType;
 
   using ParentType = Parent<W>;

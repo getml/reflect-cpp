@@ -10,12 +10,20 @@
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
+
+template <class T>
+struct is_reference_wrapper : std::false_type {};
+
+template <class T>
+struct is_reference_wrapper<std::reference_wrapper<T>> : std::true_type {};
+
+template <class T>
+constexpr bool is_reference_wrapper_v =
+    is_reference_wrapper<std::remove_cvref_t<T>>::value;
 
 template <class R, class W, class T, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, std::reference_wrapper<T>>
-struct Parser<R, W, std::reference_wrapper<T>, ProcessorsType> {
+struct ParserReferenceWrapper {
   using InputVarType = typename R::InputVarType;
 
   /**
@@ -62,7 +70,6 @@ struct Parser<R, W, std::reference_wrapper<T>, ProcessorsType> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif

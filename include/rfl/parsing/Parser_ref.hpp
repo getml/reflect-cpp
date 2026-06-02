@@ -17,9 +17,19 @@
 
 namespace rfl::parsing {
 
+template <class T>
+struct is_ref : std::false_type {};
+
+template <class T>
+struct is_ref<Ref<T>> : std::true_type {
+  using element_type = T;
+};
+
+template <class T>
+constexpr bool is_ref_v = is_ref<std::remove_cvref_t<T>>::value;
+
 template <class R, class W, class T, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, Ref<T>>
-struct Parser<R, W, Ref<T>, ProcessorsType> {
+struct ParserRef {
   using InputVarType = typename R::InputVarType;
 
   /**

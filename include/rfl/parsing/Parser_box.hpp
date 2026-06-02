@@ -16,9 +16,20 @@
 
 namespace rfl::parsing {
 
+template <class T>
+struct is_box : std::false_type {};
+
+template <class T, Copyability C>
+struct is_box<Box<T, C>> : std::true_type {
+  using element_type = T;
+  static constexpr Copyability copyability = C;
+};
+
+template <class T>
+constexpr bool is_box_v = is_box<std::remove_cvref_t<T>>::value;
+
 template <class R, class W, class T, Copyability C, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, Box<T, C>>
-struct Parser<R, W, Box<T, C>, ProcessorsType> {
+struct ParserBox {
   using InputVarType = typename R::InputVarType;
 
   /**

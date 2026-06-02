@@ -15,12 +15,19 @@
 #include "schemaful/IsSchemafulWriter.hpp"
 #include "schemaful/OptionalReader.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
+
+template <class T>
+struct is_optional : std::false_type {};
+
+template <class T>
+struct is_optional<std::optional<T>> : std::true_type {};
+
+template <class T>
+constexpr bool is_optional_v = is_optional<std::remove_cvref_t<T>>::value;
 
 template <class R, class W, class T, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, std::optional<T>>
-struct Parser<R, W, std::optional<T>, ProcessorsType> {
+struct ParserOptional {
   using InputVarType = typename R::InputVarType;
 
   using ParentType = Parent<W>;
@@ -98,7 +105,6 @@ struct Parser<R, W, std::optional<T>, ProcessorsType> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif

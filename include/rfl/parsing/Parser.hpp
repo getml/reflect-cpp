@@ -28,7 +28,6 @@
 #include "Parser_rfl_array.hpp"
 #include "Parser_rfl_tuple.hpp"
 #include "Parser_rfl_variant.hpp"
-#include "Parser_shared_ptr.hpp"
 #include "Parser_short.hpp"
 #include "Parser_skip.hpp"
 #include "Parser_span.hpp"
