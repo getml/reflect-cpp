@@ -3,17 +3,26 @@
 
 #include <filesystem>
 #include <map>
+#include <string>
+#include <type_traits>
 
 #include "../Result.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
+
+template <class T>
+struct is_filepath : std::false_type {};
+
+template <>
+struct is_filepath<std::filesystem::path> : std::true_type {};
+
+template <class T>
+constexpr bool is_filepath_v = is_filepath<std::remove_cvref_t<T>>::value;
 
 template <class R, class W, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, std::filesystem::path>
-struct Parser<R, W, std::filesystem::path, ProcessorsType> {
+struct ParserFilepath {
   using InputVarType = typename R::InputVarType;
 
   /**
@@ -68,7 +77,6 @@ struct Parser<R, W, std::filesystem::path, ProcessorsType> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif

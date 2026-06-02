@@ -17,9 +17,17 @@
 
 namespace rfl::parsing {
 
+template <class T>
+struct is_span : std::false_type {};
+
+template <class T, size_t Extent>
+struct is_span<std::span<T, Extent>> : std::true_type {};
+
+template <class T>
+constexpr bool is_span_v = is_span<std::remove_cvref_t<T>>::value;
+
 template <class R, class W, class T, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, std::span<T>>
-struct Parser<R, W, std::span<T>, ProcessorsType> {
+struct ParserSpan {
   using InputVarType = typename R::InputVarType;
   using ParentType = Parent<W>;
 

@@ -12,11 +12,19 @@
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl ::parsing {
+namespace rfl::parsing {
+
+template <class T>
+struct is_duration : std::false_type {};
+
+template <class Rep, class Period>
+struct is_duration<std::chrono::duration<Rep, Period>> : std::true_type {};
+
+template <class T>
+constexpr bool is_duration_v = is_duration<std::remove_cvref_t<T>>::value;
 
 template <class R, class W, class Rep, class Period, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, std::chrono::duration<Rep, Period>>
-struct Parser<R, W, std::chrono::duration<Rep, Period>, ProcessorsType> {
+struct ParserDuration {
  public:
   using InputVarType = typename R::InputVarType;
 

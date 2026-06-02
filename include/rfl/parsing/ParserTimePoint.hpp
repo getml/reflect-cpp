@@ -8,6 +8,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <type_traits>
 
 #include "../Result.hpp"
 #include "Parent.hpp"
@@ -16,12 +17,19 @@
 
 namespace rfl::parsing {
 
+template <class T>
+struct is_time_point : std::false_type {};
+
+template <class Duration>
+struct is_time_point<
+    std::chrono::time_point<std::chrono::system_clock, Duration>>
+    : std::true_type {};
+
+template <class T>
+constexpr bool is_time_point_v = is_time_point<std::remove_cvref_t<T>>::value;
+
 template <class R, class W, class Duration, class ProcessorsType>
-  requires AreReaderAndWriter<
-      R, W, std::chrono::time_point<std::chrono::system_clock, Duration>>
-struct Parser<R, W,
-              std::chrono::time_point<std::chrono::system_clock, Duration>,
-              ProcessorsType> {
+struct ParserTimePoint {
  public:
   using InputVarType = typename R::InputVarType;
 

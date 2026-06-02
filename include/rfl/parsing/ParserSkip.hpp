@@ -11,16 +11,21 @@
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
+
+template <class T>
+struct is_skip : std::false_type {};
+
+template <class T, bool _skip_serialization, bool _skip_deserialization>
+struct is_skip<internal::Skip<T, _skip_serialization, _skip_deserialization>>
+    : std::true_type {};
+
+template <class T>
+constexpr bool is_skip_v = is_skip<std::remove_cvref_t<T>>::value;
 
 template <class R, class W, class T, bool _skip_serialization,
           bool _skip_deserialization, class ProcessorsType>
-  requires AreReaderAndWriter<
-      R, W, internal::Skip<T, _skip_serialization, _skip_deserialization>>
-struct Parser<R, W,
-              internal::Skip<T, _skip_serialization, _skip_deserialization>,
-              ProcessorsType> {
+struct ParserSkip {
   using InputVarType = typename R::InputVarType;
   using ParentType = Parent<W>;
 
@@ -81,7 +86,6 @@ struct Parser<R, W,
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif

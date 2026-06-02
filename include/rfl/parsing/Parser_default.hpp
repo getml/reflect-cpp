@@ -25,7 +25,13 @@
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
+#include "ParserBytestring.hpp"
+#include "ParserDuration.hpp"
+#include "ParserFilepath.hpp"
 #include "ParserSharedPtr.hpp"
+#include "ParserSkip.hpp"
+#include "ParserSpan.hpp"
+#include "ParserTimePoint.hpp"
 #include "Parser_array.hpp"
 #include "Parser_base.hpp"
 #include "Parser_box.hpp"
@@ -35,6 +41,7 @@
 #include "Parser_rfl_tuple.hpp"
 #include "Parser_tuple.hpp"
 #include "Parser_unique_ptr.hpp"
+#include "VectorParser.hpp"
 #include "call_destructors_where_necessary.hpp"
 #include "is_tagged_union_wrapper.hpp"
 #include "make_type_name.hpp"
@@ -61,7 +68,10 @@ struct Parser {
    * @return A Result containing the parsed value or an error.
    */
   static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
-    if constexpr (is_shared_ptr_v<T>) {
+    if constexpr (is_vector_like_v<T>) {
+      return VectorParser<R, W, T, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_shared_ptr_v<T>) {
       return ParserSharedPtr<R, W, typename T::element_type,
                              ProcessorsType>::read(_r, _var);
 
@@ -72,6 +82,31 @@ struct Parser {
     } else if constexpr (is_optional_v<T>) {
       return ParserOptional<R, W, typename std::remove_cvref_t<T>::value_type,
                             ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_bytestring_v<T>) {
+      return ParserBytestring<R, W, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_duration_v<T>) {
+      using U = std::remove_cvref_t<T>;
+      return ParserDuration<R, W, typename U::rep, typename U::period,
+                            ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_filepath_v<T>) {
+      return ParserFilepath<R, W, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_skip_v<T>) {
+      using U = std::remove_cvref_t<T>;
+      return ParserSkip<R, W, typename U::Type, U::skip_serialization_,
+                        U::skip_deserialization_, ProcessorsType>::read(_r,
+                                                                        _var);
+
+    } else if constexpr (is_span_v<T>) {
+      return ParserSpan<R, W, typename std::remove_cvref_t<T>::element_type,
+                        ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_time_point_v<T>) {
+      return ParserTimePoint<R, W, typename std::remove_cvref_t<T>::duration,
+                             ProcessorsType>::read(_r, _var);
 
     } else if constexpr (is_box_v<T>) {
       using IsBox = is_box<std::remove_cvref_t<T>>;
@@ -152,7 +187,10 @@ struct Parser {
    */
   template <class P>
   static void write(const W& _w, const T& _var, const P& _parent) {
-    if constexpr (is_shared_ptr_v<T>) {
+    if constexpr (is_vector_like_v<T>) {
+      return VectorParser<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_shared_ptr_v<T>) {
       ParserSharedPtr<R, W, typename T::element_type, ProcessorsType>::write(
           _w, _var, _parent);
 
@@ -163,6 +201,31 @@ struct Parser {
     } else if constexpr (is_optional_v<T>) {
       ParserOptional<R, W, typename std::remove_cvref_t<T>::value_type,
                      ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_bytestring_v<T>) {
+      ParserBytestring<R, W, ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_duration_v<T>) {
+      using U = std::remove_cvref_t<T>;
+      ParserDuration<R, W, typename U::rep, typename U::period,
+                     ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_filepath_v<T>) {
+      ParserFilepath<R, W, ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_skip_v<T>) {
+      using U = std::remove_cvref_t<T>;
+      ParserSkip<R, W, typename U::Type, U::skip_serialization_,
+                 U::skip_deserialization_, ProcessorsType>::write(_w, _var,
+                                                                  _parent);
+
+    } else if constexpr (is_span_v<T>) {
+      ParserSpan<R, W, typename std::remove_cvref_t<T>::element_type,
+                 ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_time_point_v<T>) {
+      ParserTimePoint<R, W, typename std::remove_cvref_t<T>::duration,
+                      ProcessorsType>::write(_w, _var, _parent);
 
     } else if constexpr (is_box_v<T>) {
       using IsBox = is_box<std::remove_cvref_t<T>>;
@@ -227,7 +290,10 @@ struct Parser {
     using U = std::remove_cvref_t<T>;
     using Type = schema::Type;
 
-    if constexpr (is_shared_ptr_v<U>) {
+    if constexpr (is_vector_like_v<U>) {
+      return VectorParser<R, W, U, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_shared_ptr_v<U>) {
       return ParserSharedPtr<R, W, typename U::element_type,
                              ProcessorsType>::to_schema(_definitions);
 
@@ -238,6 +304,29 @@ struct Parser {
     } else if constexpr (is_optional_v<U>) {
       return ParserOptional<R, W, typename U::value_type,
                             ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_bytestring_v<U>) {
+      return ParserBytestring<R, W, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_duration_v<U>) {
+      return ParserDuration<R, W, typename U::rep, typename U::period,
+                            ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_filepath_v<U>) {
+      return ParserFilepath<R, W, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_skip_v<U>) {
+      return ParserSkip<R, W, typename U::Type, U::skip_serialization_,
+                        U::skip_deserialization_,
+                        ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_span_v<U>) {
+      return ParserSpan<R, W, typename U::element_type,
+                        ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_time_point_v<U>) {
+      return ParserTimePoint<R, W, typename U::duration,
+                             ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (is_box_v<U>) {
       using IsBox = is_box<U>;

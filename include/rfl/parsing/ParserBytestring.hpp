@@ -2,18 +2,28 @@
 #define RFL_PARSING_PARSER_BYTESTRING_HPP_
 
 #include <map>
+#include <type_traits>
 
 #include "../Bytestring.hpp"
 #include "../Result.hpp"
+#include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
 namespace rfl::parsing {
 
+template <class T>
+struct is_bytestring : std::false_type {};
+
+template <>
+struct is_bytestring<Bytestring> : std::true_type {};
+
+template <class T>
+constexpr bool is_bytestring_v = is_bytestring<std::remove_cvref_t<T>>::value;
+
 template <class R, class W, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, Bytestring>
-struct Parser<R, W, Bytestring, ProcessorsType> {
+struct ParserBytestring {
   using InputVarType = typename R::InputVarType;
   using ParentType = Parent<W>;
 
