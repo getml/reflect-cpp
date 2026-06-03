@@ -5,17 +5,27 @@
 #include <type_traits>
 
 #include "../DefaultVal.hpp"
-#include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
 namespace rfl::parsing {
 
-template <class R, class W, class T, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, DefaultVal<T>>
-struct Parser<R, W, DefaultVal<T>, ProcessorsType> {
+template <class T>
+struct is_default_val : std::false_type {};
+
+template <class T>
+struct is_default_val<DefaultVal<T>> : std::true_type {
+  using element_type = T;
+};
+
+template <class T>
+constexpr bool is_default_val_v = is_default_val<std::remove_cvref_t<T>>::value;
+
+template <class R, class W, class DefVal, class ProcessorsType>
+struct ParserDefaultVal {
   using InputVarType = typename R::InputVarType;
+  using T = typename DefVal::Type;
 
   using ParentType = Parent<W>;
 

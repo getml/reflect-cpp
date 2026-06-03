@@ -10,13 +10,26 @@
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
+
+template <class T>
+struct is_short : std::false_type {};
+
+template <class T, internal::StringLiteral _name>
+struct is_short<Short<_name, T>> : std::true_type {
+  using element_type = T;
+  static constexpr auto name = _name;
+};
+
+template <class T>
+constexpr bool is_short_v = is_short<std::remove_cvref_t<T>>::value;
+
+template <class R, class W, class T, class ProcessorsType>
+struct ParserShort;
 
 template <class R, class W, class T, internal::StringLiteral _name,
           class ProcessorsType>
-  requires AreReaderAndWriter<R, W, Short<_name, T>>
-struct Parser<R, W, Short<_name, T>, ProcessorsType> {
+struct ParserShort<R, W, Short<_name, T>, ProcessorsType> {
   using InputVarType = typename R::InputVarType;
 
   /**
@@ -27,7 +40,7 @@ struct Parser<R, W, Short<_name, T>, ProcessorsType> {
    * @return A Result containing the parsed value or an error.
    */
   static Result<Short<_name, T>> read(const R& _r,
-                                       const InputVarType& _var) noexcept {
+                                      const InputVarType& _var) noexcept {
     const auto to_short = [](auto&& _t) {
       return Short<_name, T>(std::move(_t));
     };
@@ -63,7 +76,6 @@ struct Parser<R, W, Short<_name, T>, ProcessorsType> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif

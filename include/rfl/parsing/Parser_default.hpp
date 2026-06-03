@@ -17,6 +17,7 @@
 #include "../internal/is_deprecated.hpp"
 #include "../internal/is_description.hpp"
 #include "../internal/is_literal.hpp"
+#include "../internal/is_named_tuple.hpp"
 #include "../internal/is_validator.hpp"
 #include "../internal/processed_t.hpp"
 #include "../internal/ptr_cast.hpp"
@@ -29,6 +30,7 @@
 #include "ParserBasicType.hpp"
 #include "ParserBox.hpp"
 #include "ParserBytestring.hpp"
+#include "ParserDefaultVal.hpp"
 #include "ParserDuration.hpp"
 #include "ParserFilepath.hpp"
 #include "ParserOptional.hpp"
@@ -36,6 +38,7 @@
 #include "ParserReferenceWrapper.hpp"
 #include "ParserRflTuple.hpp"
 #include "ParserSharedPtr.hpp"
+#include "ParserShort.hpp"
 #include "ParserSkip.hpp"
 #include "ParserSpan.hpp"
 #include "ParserStringView.hpp"
@@ -127,6 +130,12 @@ struct Parser {
       using IsRef = is_ref<std::remove_cvref_t<T>>;
       return ParserRef<R, W, typename IsRef::element_type,
                        ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_default_val_v<T>) {
+      return ParserDefaultVal<R, W, T, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_short_v<T>) {
+      return ParserShort<R, W, T, ProcessorsType>::read(_r, _var);
 
     } else if constexpr (is_reference_wrapper_v<T>) {
       return ParserReferenceWrapper<R, W, typename std::remove_cvref_t<T>::type,
@@ -259,6 +268,12 @@ struct Parser {
       ParserRef<R, W, typename IsRef::element_type, ProcessorsType>::write(
           _w, _var, _parent);
 
+    } else if constexpr (is_default_val_v<T>) {
+      ParserDefaultVal<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_short_v<T>) {
+      ParserShort<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
     } else if constexpr (is_reference_wrapper_v<T>) {
       ParserReferenceWrapper<R, W, typename std::remove_cvref_t<T>::type,
                              ProcessorsType>::write(_w, _var, _parent);
@@ -371,6 +386,12 @@ struct Parser {
       using IsRef = is_ref<U>;
       return ParserRef<R, W, typename IsRef::element_type,
                        ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_default_val_v<U>) {
+      return ParserDefaultVal<R, W, U, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_short_v<U>) {
+      return ParserShort<R, W, U, ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (is_reference_wrapper_v<U>) {
       return ParserReferenceWrapper<R, W, typename U::type,
