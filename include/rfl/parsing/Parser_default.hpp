@@ -38,9 +38,12 @@
 #include "ParserSharedPtr.hpp"
 #include "ParserSkip.hpp"
 #include "ParserSpan.hpp"
+#include "ParserStringView.hpp"
 #include "ParserTimePoint.hpp"
 #include "ParserTuple.hpp"
 #include "ParserUniquePtr.hpp"
+#include "ParserVectorstring.hpp"
+#include "ParserWString.hpp"
 #include "Parser_base.hpp"
 #include "VectorParser.hpp"
 #include "call_destructors_where_necessary.hpp"
@@ -74,6 +77,9 @@ struct Parser {
 
     } else if constexpr (is_bytestring_v<T>) {
       return ParserBytestring<R, W, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_vectorstring_v<T>) {
+      return ParserVectorstring<R, W, ProcessorsType>::read(_r, _var);
 
     } else if constexpr (is_vector_like_v<T>) {
       return VectorParser<R, W, T, ProcessorsType>::read(_r, _var);
@@ -137,6 +143,12 @@ struct Parser {
     } else if constexpr (is_rfl_tuple_v<T>) {
       return ParserRflTuple<R, W, T, ProcessorsType>::read(_r, _var);
 
+    } else if constexpr (is_wstring_v<T>) {
+      return ParserWString<R, W, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_string_view_v<T>) {
+      return ParserStringView<R, W, ProcessorsType>::read(_r, _var);
+
     } else if constexpr (internal::has_read_reflector<T>) {
       const auto wrap_in_t = [](auto&& _named_tuple) -> Result<T> {
         try {
@@ -196,6 +208,9 @@ struct Parser {
 
     } else if constexpr (is_bytestring_v<T>) {
       ParserBytestring<R, W, ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_vectorstring_v<T>) {
+      ParserVectorstring<R, W, ProcessorsType>::write(_w, _var, _parent);
 
     } else if constexpr (is_vector_like_v<T>) {
       return VectorParser<R, W, T, ProcessorsType>::write(_w, _var, _parent);
@@ -259,6 +274,12 @@ struct Parser {
     } else if constexpr (is_rfl_tuple_v<T>) {
       ParserRflTuple<R, W, T, ProcessorsType>::write(_w, _var, _parent);
 
+    } else if constexpr (is_wstring_v<T>) {
+      ParserWString<R, W, ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_string_view_v<T>) {
+      ParserStringView<R, W, ProcessorsType>::write(_w, _var, _parent);
+
     } else if constexpr (internal::has_write_reflector<T>) {
       Parser<R, W, typename Reflector<T>::ReflType, ProcessorsType>::write(
           _w, Reflector<T>::from(_var), _parent);
@@ -302,6 +323,9 @@ struct Parser {
 
     } else if constexpr (is_bytestring_v<U>) {
       return ParserBytestring<R, W, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_vectorstring_v<U>) {
+      return ParserVectorstring<R, W, ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (is_vector_like_v<U>) {
       return VectorParser<R, W, U, ProcessorsType>::to_schema(_definitions);
@@ -362,6 +386,12 @@ struct Parser {
 
     } else if constexpr (is_rfl_tuple_v<U>) {
       return ParserRflTuple<R, W, U, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_wstring_v<U>) {
+      return ParserWString<R, W, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_string_view_v<U>) {
+      return ParserStringView<R, W, ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (rfl::internal::is_description_v<U>) {
       return make_description<U>(_definitions);

@@ -11,9 +11,18 @@
 
 namespace rfl::parsing {
 
+template <class T>
+struct is_vectorstring : std::false_type {};
+
+template <>
+struct is_vectorstring<Vectorstring> : std::true_type {};
+
+template <class T>
+constexpr bool is_vectorstring_v =
+    is_vectorstring<std::remove_cvref_t<T>>::value;
+
 template <class R, class W, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, Vectorstring>
-struct Parser<R, W, Vectorstring, ProcessorsType> {
+struct ParserVectorstring {
   using InputVarType = typename R::InputVarType;
   using ParentType = Parent<W>;
 

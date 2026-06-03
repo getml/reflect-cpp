@@ -10,12 +10,19 @@
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
+
+template <class T>
+struct is_wstring : std::false_type {};
+
+template <>
+struct is_wstring<std::wstring> : std::true_type {};
+
+template <class T>
+constexpr bool is_wstring_v = is_wstring<std::remove_cvref_t<T>>::value;
 
 template <class R, class W, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, std::wstring>
-struct Parser<R, W, std::wstring, ProcessorsType> {
+struct ParserWString {
  public:
   using InputVarType = typename R::InputVarType;
 
@@ -81,7 +88,6 @@ struct Parser<R, W, std::wstring, ProcessorsType> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif
