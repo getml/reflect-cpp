@@ -9,7 +9,6 @@
 #include "../internal/Array.hpp"
 #include "../internal/to_std_array.hpp"
 #include "Parent.hpp"
-#include "Parser_array.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 

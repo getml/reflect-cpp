@@ -25,23 +25,23 @@
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
+#include "ParserArray.hpp"
 #include "ParserBasicType.hpp"
+#include "ParserBox.hpp"
 #include "ParserBytestring.hpp"
 #include "ParserDuration.hpp"
 #include "ParserFilepath.hpp"
+#include "ParserOptional.hpp"
+#include "ParserRef.hpp"
+#include "ParserReferenceWrapper.hpp"
+#include "ParserRflTuple.hpp"
 #include "ParserSharedPtr.hpp"
 #include "ParserSkip.hpp"
 #include "ParserSpan.hpp"
 #include "ParserTimePoint.hpp"
-#include "Parser_array.hpp"
+#include "ParserTuple.hpp"
+#include "ParserUniquePtr.hpp"
 #include "Parser_base.hpp"
-#include "Parser_box.hpp"
-#include "Parser_optional.hpp"
-#include "Parser_ref.hpp"
-#include "Parser_reference_wrapper.hpp"
-#include "Parser_rfl_tuple.hpp"
-#include "Parser_tuple.hpp"
-#include "Parser_unique_ptr.hpp"
 #include "VectorParser.hpp"
 #include "call_destructors_where_necessary.hpp"
 #include "is_tagged_union_wrapper.hpp"
@@ -72,6 +72,9 @@ struct Parser {
     if constexpr (internal::is_basic_type_v<T>) {
       return ParserBasicType<R, W, T, ProcessorsType>::read(_r, _var);
 
+    } else if constexpr (is_bytestring_v<T>) {
+      return ParserBytestring<R, W, ProcessorsType>::read(_r, _var);
+
     } else if constexpr (is_vector_like_v<T>) {
       return VectorParser<R, W, T, ProcessorsType>::read(_r, _var);
 
@@ -86,9 +89,6 @@ struct Parser {
     } else if constexpr (is_optional_v<T>) {
       return ParserOptional<R, W, typename std::remove_cvref_t<T>::value_type,
                             ProcessorsType>::read(_r, _var);
-
-    } else if constexpr (is_bytestring_v<T>) {
-      return ParserBytestring<R, W, ProcessorsType>::read(_r, _var);
 
     } else if constexpr (is_duration_v<T>) {
       using U = std::remove_cvref_t<T>;
@@ -194,6 +194,9 @@ struct Parser {
     if constexpr (internal::is_basic_type_v<T>) {
       ParserBasicType<R, W, T, ProcessorsType>::write(_w, _var, _parent);
 
+    } else if constexpr (is_bytestring_v<T>) {
+      ParserBytestring<R, W, ProcessorsType>::write(_w, _var, _parent);
+
     } else if constexpr (is_vector_like_v<T>) {
       return VectorParser<R, W, T, ProcessorsType>::write(_w, _var, _parent);
 
@@ -208,9 +211,6 @@ struct Parser {
     } else if constexpr (is_optional_v<T>) {
       ParserOptional<R, W, typename std::remove_cvref_t<T>::value_type,
                      ProcessorsType>::write(_w, _var, _parent);
-
-    } else if constexpr (is_bytestring_v<T>) {
-      ParserBytestring<R, W, ProcessorsType>::write(_w, _var, _parent);
 
     } else if constexpr (is_duration_v<T>) {
       using U = std::remove_cvref_t<T>;
@@ -300,6 +300,9 @@ struct Parser {
     if constexpr (internal::is_basic_type_v<U>) {
       return ParserBasicType<R, W, U, ProcessorsType>::to_schema(_definitions);
 
+    } else if constexpr (is_bytestring_v<U>) {
+      return ParserBytestring<R, W, ProcessorsType>::to_schema(_definitions);
+
     } else if constexpr (is_vector_like_v<U>) {
       return VectorParser<R, W, U, ProcessorsType>::to_schema(_definitions);
 
@@ -314,9 +317,6 @@ struct Parser {
     } else if constexpr (is_optional_v<U>) {
       return ParserOptional<R, W, typename U::value_type,
                             ProcessorsType>::to_schema(_definitions);
-
-    } else if constexpr (is_bytestring_v<U>) {
-      return ParserBytestring<R, W, ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (is_duration_v<U>) {
       return ParserDuration<R, W, typename U::rep, typename U::period,

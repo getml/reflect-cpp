@@ -31,17 +31,37 @@ class is_vector_like<std::forward_list<T>> : public std::true_type {};
 template <class T>
 class is_vector_like<std::list<T>> : public std::true_type {};
 
-template <class T>
-class is_vector_like<std::multiset<T>> : public std::true_type {};
+template <class K, class V, class Compare, class Allocator>
+class is_vector_like<std::map<K, V, Compare, Allocator>>
+    : public std::true_type {};
 
-template <class T>
-class is_vector_like<std::set<T>> : public std::true_type {};
+template <class K, class V, class Compare, class Allocator>
+class is_vector_like<std::multimap<K, V, Compare, Allocator>>
+    : public std::true_type {};
 
-template <class T>
-class is_vector_like<std::unordered_multiset<T>> : public std::true_type {};
+template <class T, class Compare, class Allocator>
+class is_vector_like<std::multiset<T, Compare, Allocator>>
+    : public std::true_type {};
 
-template <class T>
-class is_vector_like<std::unordered_set<T>> : public std::true_type {};
+template <class T, class Compare, class Allocator>
+class is_vector_like<std::set<T, Compare, Allocator>> : public std::true_type {
+};
+
+template <class K, class V, class Hash, class KeyEqual, class Allocator>
+class is_vector_like<std::unordered_map<K, V, Hash, KeyEqual, Allocator>>
+    : public std::true_type {};
+
+template <class K, class V, class Hash, class KeyEqual, class Allocator>
+class is_vector_like<std::unordered_multimap<K, V, Hash, KeyEqual, Allocator>>
+    : public std::true_type {};
+
+template <class T, class Hash, class KeyEqual, class Allocator>
+class is_vector_like<std::unordered_multiset<T, Hash, KeyEqual, Allocator>>
+    : public std::true_type {};
+
+template <class T, class Hash, class KeyEqual, class Allocator>
+class is_vector_like<std::unordered_set<T, Hash, KeyEqual, Allocator>>
+    : public std::true_type {};
 
 template <class T>
 class is_vector_like<std::vector<T>> : public std::true_type {};
