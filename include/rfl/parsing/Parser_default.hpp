@@ -34,6 +34,7 @@
 #include "ParserDuration.hpp"
 #include "ParserFilepath.hpp"
 #include "ParserOptional.hpp"
+#include "ParserPositional.hpp"
 #include "ParserPtr.hpp"
 #include "ParserRef.hpp"
 #include "ParserReferenceWrapper.hpp"
@@ -160,6 +161,10 @@ struct Parser {
 
     } else if constexpr (is_short_v<T>) {
       return ParserShort<R, W, T, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_positional_v<T>) {
+      return ParserPositional<R, W, typename std::remove_cvref_t<T>::Type,
+                              ProcessorsType>::read(_r, _var);
 
     } else if constexpr (is_reference_wrapper_v<T>) {
       return ParserReferenceWrapper<R, W, typename std::remove_cvref_t<T>::type,
@@ -323,6 +328,10 @@ struct Parser {
     } else if constexpr (is_short_v<T>) {
       ParserShort<R, W, T, ProcessorsType>::write(_w, _var, _parent);
 
+    } else if constexpr (is_positional_v<T>) {
+      ParserPositional<R, W, typename std::remove_cvref_t<T>::Type,
+                       ProcessorsType>::write(_w, _var, _parent);
+
     } else if constexpr (is_reference_wrapper_v<T>) {
       ParserReferenceWrapper<R, W, typename std::remove_cvref_t<T>::type,
                              ProcessorsType>::write(_w, _var, _parent);
@@ -473,6 +482,10 @@ struct Parser {
 
     } else if constexpr (is_short_v<U>) {
       return ParserShort<R, W, U, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_positional_v<U>) {
+      return ParserPositional<R, W, typename U::Type,
+                              ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (is_reference_wrapper_v<U>) {
       return ParserReferenceWrapper<R, W, typename U::type,

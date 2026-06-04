@@ -9,12 +9,19 @@
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
+
+template <class T>
+struct is_positional : std::false_type {};
+
+template <class T>
+struct is_positional<Positional<T>> : std::true_type {};
+
+template <class T>
+inline constexpr bool is_positional_v = is_positional<T>::value;
 
 template <class R, class W, class T, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, Positional<T>>
-struct Parser<R, W, Positional<T>, ProcessorsType> {
+struct ParserPositional {
   using InputVarType = typename R::InputVarType;
 
   /**
@@ -25,7 +32,7 @@ struct Parser<R, W, Positional<T>, ProcessorsType> {
    * @return A Result containing the parsed Positional value or an error.
    */
   static Result<Positional<T>> read(const R& _r,
-                                     const InputVarType& _var) noexcept {
+                                    const InputVarType& _var) noexcept {
     const auto to_positional = [](auto&& _t) {
       return Positional<T>(std::move(_t));
     };
@@ -61,7 +68,6 @@ struct Parser<R, W, Positional<T>, ProcessorsType> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif
