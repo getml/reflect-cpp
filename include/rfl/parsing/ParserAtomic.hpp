@@ -13,9 +13,19 @@
 
 namespace rfl::parsing {
 
-template <class R, class W, class T, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, std::atomic<T>>
-struct Parser<R, W, std::atomic<T>, ProcessorsType> {
+template <class T>
+struct is_atomic : std::false_type {};
+
+template <class T>
+struct is_atomic<std::atomic<T>> : std::true_type {};
+
+template <class T>
+constexpr bool is_atomic_v = is_atomic<std::remove_cvref_t<T>>::value;
+
+template <class R, class W, class AtomicType, class ProcessorsType>
+struct ParserAtomic {
+  using T = typename std::remove_cvref_t<AtomicType>::value_type;
+
   using InputVarType = typename R::InputVarType;
 
   /**

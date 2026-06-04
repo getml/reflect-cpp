@@ -13,9 +13,17 @@
 
 namespace rfl::parsing {
 
+template <class T>
+struct is_atomic_flag : std::false_type {};
+
+template <>
+struct is_atomic_flag<std::atomic_flag> : std::true_type {};
+
+template <class T>
+constexpr bool is_atomic_flag_v = is_atomic_flag<std::remove_cvref_t<T>>::value;
+
 template <class R, class W, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, std::atomic_flag>
-struct Parser<R, W, std::atomic_flag, ProcessorsType> {
+struct ParserAtomicFlag {
   using InputVarType = typename R::InputVarType;
 
   /**
