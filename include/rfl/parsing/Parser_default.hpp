@@ -29,11 +29,14 @@
 #include "ParserBasicType.hpp"
 #include "ParserBox.hpp"
 #include "ParserBytestring.hpp"
+#include "ParserCArray.hpp"
 #include "ParserCommented.hpp"
 #include "ParserDefaultVal.hpp"
 #include "ParserDuration.hpp"
+#include "ParserEnum.hpp"
 #include "ParserFilepath.hpp"
 #include "ParserOptional.hpp"
+#include "ParserPair.hpp"
 #include "ParserPositional.hpp"
 #include "ParserPtr.hpp"
 #include "ParserRef.hpp"
@@ -81,7 +84,7 @@ struct Parser {
    * @param _var The input variable to read from.
    * @return A Result containing the parsed value or an error.
    */
-  static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
+  static auto read(const R& _r, const InputVarType& _var) noexcept {
     if constexpr (internal::is_basic_type_v<T>) {
       return ParserBasicType<R, W, T, ProcessorsType>::read(_r, _var);
 
@@ -181,6 +184,12 @@ struct Parser {
     } else if constexpr (is_rfl_tuple_v<T>) {
       return ParserRflTuple<R, W, T, ProcessorsType>::read(_r, _var);
 
+    } else if constexpr (is_pair_v<T>) {
+      return ParserPair<R, W, T, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (std::is_enum_v<T>) {
+      return ParserEnum<R, W, T, ProcessorsType>::read(_r, _var);
+
     } else if constexpr (is_wstring_v<T>) {
       return ParserWString<R, W, ProcessorsType>::read(_r, _var);
 
@@ -193,6 +202,11 @@ struct Parser {
     } else if constexpr (std::is_pointer_v<T>) {
       return ParserPtr<R, W, std::remove_cvref_t<std::remove_pointer_t<T>>,
                        ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_c_array_v<T>) {
+      using IsCArray = is_c_array<T>;
+      return ParserCArray<R, W, typename IsCArray::element_type, IsCArray::size,
+                          ProcessorsType>::read(_r, _var);
 
     } else if constexpr (internal::has_read_reflector<T>) {
       const auto wrap_in_t = [](auto&& _named_tuple) -> Result<T> {
@@ -347,6 +361,12 @@ struct Parser {
     } else if constexpr (is_rfl_tuple_v<T>) {
       ParserRflTuple<R, W, T, ProcessorsType>::write(_w, _var, _parent);
 
+    } else if constexpr (is_pair_v<T>) {
+      ParserPair<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (std::is_enum_v<T>) {
+      ParserEnum<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
     } else if constexpr (is_wstring_v<T>) {
       ParserWString<R, W, ProcessorsType>::write(_w, _var, _parent);
 
@@ -359,6 +379,11 @@ struct Parser {
     } else if constexpr (std::is_pointer_v<T>) {
       ParserPtr<R, W, std::remove_cvref_t<std::remove_pointer_t<T>>,
                 ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_c_array_v<T>) {
+      using IsCArray = is_c_array<T>;
+      ParserCArray<R, W, typename IsCArray::element_type, IsCArray::size,
+                   ProcessorsType>::write(_w, _var, _parent);
 
     } else if constexpr (is_atomic_v<T>) {
       ParserAtomic<R, W, T, ProcessorsType>::write(_w, _var, _parent);
@@ -481,8 +506,6 @@ struct Parser {
       return ParserDefaultVal<R, W, U, ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (is_short_v<U>) {
-      return ParserShort<R, W, U, ProcessorsType>::to_schema(_definitions);
-
     } else if constexpr (is_positional_v<U>) {
       return ParserPositional<R, W, typename U::Type,
                               ProcessorsType>::to_schema(_definitions);
@@ -502,6 +525,12 @@ struct Parser {
     } else if constexpr (is_rfl_tuple_v<U>) {
       return ParserRflTuple<R, W, U, ProcessorsType>::to_schema(_definitions);
 
+    } else if constexpr (is_pair_v<U>) {
+      return ParserPair<R, W, U, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (std::is_enum_v<U>) {
+      return ParserEnum<R, W, U, ProcessorsType>::to_schema(_definitions);
+
     } else if constexpr (is_wstring_v<U>) {
       return ParserWString<R, W, ProcessorsType>::to_schema(_definitions);
 
@@ -514,6 +543,11 @@ struct Parser {
     } else if constexpr (std::is_pointer_v<U>) {
       return ParserPtr<R, W, std::remove_cvref_t<std::remove_pointer_t<U>>,
                        ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_c_array_v<U>) {
+      using IsCArray = is_c_array<U>;
+      return ParserCArray<R, W, typename IsCArray::element_type, IsCArray::size,
+                          ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (is_atomic_v<T>) {
       return ParserAtomic<R, W, U, ProcessorsType>::to_schema(_definitions);

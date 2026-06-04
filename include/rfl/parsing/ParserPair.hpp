@@ -4,19 +4,25 @@
 #include <map>
 #include <utility>
 
-#include "../Ref.hpp"
 #include "../Result.hpp"
-#include "../always_false.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
-template <class R, class W, class FirstType, class SecondType,
-          class ProcessorsType>
-  requires AreReaderAndWriter<R, W, std::pair<FirstType, SecondType>>
-struct Parser<R, W, std::pair<FirstType, SecondType>, ProcessorsType> {
+template <class T>
+struct is_pair : std::false_type {};
+
+template <class FirstType, class SecondType>
+struct is_pair<std::pair<FirstType, SecondType>> : std::true_type {};
+
+template <class T>
+inline constexpr bool is_pair_v = is_pair<std::remove_cvref_t<T>>::value;
+
+template <class R, class W, class PairType, class ProcessorsType>
+struct ParserPair {
+  using FirstType = typename PairType::first_type;
+  using SecondType = typename PairType::second_type;
   using InputVarType = typename R::InputVarType;
 
   /**
@@ -66,7 +72,6 @@ struct Parser<R, W, std::pair<FirstType, SecondType>, ProcessorsType> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif

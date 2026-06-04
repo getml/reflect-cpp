@@ -12,12 +12,22 @@
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
+
+template <class T>
+struct is_c_array : std::false_type {};
+
+template <class T, size_t _size>
+struct is_c_array<T[_size]> : std::true_type {
+  using element_type = T;
+  static constexpr size_t size = _size;
+};
+
+template <class T>
+inline constexpr bool is_c_array_v = is_c_array<std::remove_cvref_t<T>>::value;
 
 template <class R, class W, class T, size_t _size, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, T[_size]>
-struct Parser<R, W, T[_size], ProcessorsType> {
+struct ParserCArray {
  public:
   using InputArrayType = typename R::InputArrayType;
   using InputVarType = typename R::InputVarType;
@@ -71,7 +81,6 @@ struct Parser<R, W, T[_size], ProcessorsType> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif

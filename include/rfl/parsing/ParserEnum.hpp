@@ -23,8 +23,7 @@ namespace rfl::parsing {
 
 /// Default case - anything that cannot be explicitly matched.
 template <class R, class W, class T, class ProcessorsType>
-  requires std::is_enum_v<T> && AreReaderAndWriter<R, W, T>
-struct Parser<R, W, T, ProcessorsType> {
+struct ParserEnum {
  public:
   using InputVarType = typename R::InputVarType;
 
