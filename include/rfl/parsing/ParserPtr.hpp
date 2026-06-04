@@ -4,7 +4,6 @@
 #include <map>
 #include <type_traits>
 
-#include "../Ref.hpp"
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../internal/allow_raw_ptrs_v.hpp"
@@ -15,8 +14,7 @@
 namespace rfl::parsing {
 
 template <class R, class W, class T, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, T*>
-struct Parser<R, W, T*, ProcessorsType> {
+struct ParserPtr {
   using InputVarType = typename R::InputVarType;
 
   using ParentType = Parent<W>;

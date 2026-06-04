@@ -2,26 +2,30 @@
 #define RFL_PARSING_PARSER_COMMENTED_HPP_
 
 #include <map>
-#include <optional>
 #include <type_traits>
 
 #include "../Commented.hpp"
-#include "../Ref.hpp"
 #include "../Result.hpp"
-#include "../always_false.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
-#include "schemaful/IsSchemafulReader.hpp"
-#include "schemaful/IsSchemafulWriter.hpp"
-#include "schemaful/OptionalReader.hpp"
 #include "supports_comments.hpp"
 
 namespace rfl::parsing {
 
-template <class R, class W, class T, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, Commented<T>>
-struct Parser<R, W, Commented<T>, ProcessorsType> {
+template <class T>
+struct is_commented : std::false_type {};
+
+template <class T>
+struct is_commented<Commented<T>> : std::true_type {};
+
+template <class T>
+constexpr bool is_commented_v = is_commented<std::remove_cvref_t<T>>::value;
+
+template <class R, class W, class CommentedType, class ProcessorsType>
+struct ParserCommented {
+  using T = typename CommentedType::Type;
+
   using InputVarType = typename R::InputVarType;
 
   using ParentType = Parent<W>;

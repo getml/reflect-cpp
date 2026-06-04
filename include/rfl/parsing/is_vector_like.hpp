@@ -67,8 +67,7 @@ template <class T>
 class is_vector_like<std::vector<T>> : public std::true_type {};
 
 template <class T>
-constexpr bool is_vector_like_v =
-    is_vector_like<std::remove_cvref_t<std::remove_pointer_t<T>>>::value;
+constexpr bool is_vector_like_v = is_vector_like<std::remove_cvref_t<T>>::value;
 
 }  // namespace parsing
 }  // namespace rfl

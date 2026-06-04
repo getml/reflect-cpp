@@ -3,8 +3,7 @@
 
 #include "AreReaderAndWriter.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
 /**
  * @brief The main parser struct, which must be specialized for each type.
@@ -15,10 +14,9 @@ namespace parsing {
  * @tparam ProcessorsType The processors to use.
  */
 template <class R, class W, class T, class ProcessorsType>
-requires AreReaderAndWriter<R, W, T>
+  requires AreReaderAndWriter<R, W, T>
 struct Parser;
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif

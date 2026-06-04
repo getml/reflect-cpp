@@ -29,10 +29,12 @@
 #include "ParserBasicType.hpp"
 #include "ParserBox.hpp"
 #include "ParserBytestring.hpp"
+#include "ParserCommented.hpp"
 #include "ParserDefaultVal.hpp"
 #include "ParserDuration.hpp"
 #include "ParserFilepath.hpp"
 #include "ParserOptional.hpp"
+#include "ParserPtr.hpp"
 #include "ParserRef.hpp"
 #include "ParserReferenceWrapper.hpp"
 #include "ParserRename.hpp"
@@ -179,6 +181,13 @@ struct Parser {
 
     } else if constexpr (is_string_view_v<T>) {
       return ParserStringView<R, W, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_commented_v<T>) {
+      return ParserCommented<R, W, T, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (std::is_pointer_v<T>) {
+      return ParserPtr<R, W, std::remove_cvref_t<std::remove_pointer_t<T>>,
+                       ProcessorsType>::read(_r, _var);
 
     } else if constexpr (internal::has_read_reflector<T>) {
       const auto wrap_in_t = [](auto&& _named_tuple) -> Result<T> {
@@ -335,6 +344,13 @@ struct Parser {
     } else if constexpr (is_string_view_v<T>) {
       ParserStringView<R, W, ProcessorsType>::write(_w, _var, _parent);
 
+    } else if constexpr (is_commented_v<T>) {
+      ParserCommented<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (std::is_pointer_v<T>) {
+      ParserPtr<R, W, std::remove_cvref_t<std::remove_pointer_t<T>>,
+                ProcessorsType>::write(_w, _var, _parent);
+
     } else if constexpr (is_atomic_v<T>) {
       ParserAtomic<R, W, T, ProcessorsType>::write(_w, _var, _parent);
 
@@ -478,6 +494,13 @@ struct Parser {
 
     } else if constexpr (is_string_view_v<U>) {
       return ParserStringView<R, W, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_commented_v<U>) {
+      return ParserCommented<R, W, U, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (std::is_pointer_v<U>) {
+      return ParserPtr<R, W, std::remove_cvref_t<std::remove_pointer_t<U>>,
+                       ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (is_atomic_v<T>) {
       return ParserAtomic<R, W, U, ProcessorsType>::to_schema(_definitions);
