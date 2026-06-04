@@ -24,6 +24,8 @@
 #include "MapParser.hpp"
 #include "Parent.hpp"
 #include "ParserArray.hpp"
+#include "ParserAtomic.hpp"
+#include "ParserAtomicFlag.hpp"
 #include "ParserBasicType.hpp"
 #include "ParserBox.hpp"
 #include "ParserBytestring.hpp"
@@ -33,6 +35,7 @@
 #include "ParserOptional.hpp"
 #include "ParserRef.hpp"
 #include "ParserReferenceWrapper.hpp"
+#include "ParserRename.hpp"
 #include "ParserResult.hpp"
 #include "ParserRflTuple.hpp"
 #include "ParserRflVariant.hpp"
@@ -121,6 +124,9 @@ struct Parser {
 
     } else if constexpr (is_tagged_union_v<T>) {
       return ParserTaggedUnion<R, W, T, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_rename_v<T>) {
+      return ParserRename<R, W, T, ProcessorsType>::read(_r, _var);
 
     } else if constexpr (is_result_v<T>) {
       return ParserResult<R, W, T, ProcessorsType>::read(_r, _var);
@@ -277,6 +283,9 @@ struct Parser {
     } else if constexpr (is_tagged_union_v<T>) {
       ParserTaggedUnion<R, W, T, ProcessorsType>::write(_w, _var, _parent);
 
+    } else if constexpr (is_rename_v<T>) {
+      ParserRename<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
     } else if constexpr (is_duration_v<T>) {
       using U = std::remove_cvref_t<T>;
       ParserDuration<R, W, typename U::rep, typename U::period,
@@ -325,6 +334,12 @@ struct Parser {
 
     } else if constexpr (is_string_view_v<T>) {
       ParserStringView<R, W, ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_atomic_v<T>) {
+      ParserAtomic<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_atomic_flag_v<T>) {
+      ParserAtomicFlag<R, W, ProcessorsType>::write(_w, _var, _parent);
 
     } else if constexpr (internal::has_write_reflector<T>) {
       Parser<R, W, typename Reflector<T>::ReflType, ProcessorsType>::write(
@@ -411,6 +426,9 @@ struct Parser {
       return ParserTaggedUnion<R, W, U, ProcessorsType>::to_schema(
           _definitions);
 
+    } else if constexpr (is_rename_v<U>) {
+      return ParserRename<R, W, U, ProcessorsType>::to_schema(_definitions);
+
     } else if constexpr (is_result_v<U>) {
       return ParserResult<R, W, U, ProcessorsType>::to_schema(_definitions);
 
@@ -460,6 +478,12 @@ struct Parser {
 
     } else if constexpr (is_string_view_v<U>) {
       return ParserStringView<R, W, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_atomic_v<T>) {
+      return ParserAtomic<R, W, U, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_atomic_flag_v<T>) {
+      return ParserAtomicFlag<R, W, ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (rfl::internal::is_description_v<U>) {
       return make_description<U>(_definitions);

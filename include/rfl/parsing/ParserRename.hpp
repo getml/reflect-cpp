@@ -11,13 +11,22 @@
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
-template <class R, class W, class T, internal::StringLiteral _name,
-          class ProcessorsType>
-  requires AreReaderAndWriter<R, W, Rename<_name, T>>
-struct Parser<R, W, Rename<_name, T>, ProcessorsType> {
+template <class T>
+struct is_rename : std::false_type {};
+
+template <internal::StringLiteral _name, class T>
+struct is_rename<Rename<_name, T>> : std::true_type {};
+
+template <class T>
+constexpr bool is_rename_v = is_rename<std::remove_cvref_t<T>>::value;
+
+template <class R, class W, class RenameType, class ProcessorsType>
+struct ParserRename {
+  using T = typename RenameType::Type;
+  constexpr static auto name_ = RenameType::name_;
+
   using InputVarType = typename R::InputVarType;
 
   /**
@@ -27,10 +36,10 @@ struct Parser<R, W, Rename<_name, T>, ProcessorsType> {
    * @param _var The input variable to read from.
    * @return A Result containing the parsed value or an error.
    */
-  static Result<Rename<_name, T>> read(const R& _r,
+  static Result<Rename<name_, T>> read(const R& _r,
                                        const InputVarType& _var) noexcept {
     const auto to_rename = [](auto&& _t) {
-      return Rename<_name, T>(std::move(_t));
+      return Rename<name_, T>(std::move(_t));
     };
     return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(_r, _var)
         .transform(to_rename);
@@ -45,7 +54,7 @@ struct Parser<R, W, Rename<_name, T>, ProcessorsType> {
    * @param _parent The parent object.
    */
   template <class P>
-  static void write(const W& _w, const Rename<_name, T>& _rename,
+  static void write(const W& _w, const Rename<name_, T>& _rename,
                     const P& _parent) {
     Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::write(
         _w, _rename.value(), _parent);
@@ -64,7 +73,6 @@ struct Parser<R, W, Rename<_name, T>, ProcessorsType> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif
