@@ -34,14 +34,17 @@
 #include "ParserRef.hpp"
 #include "ParserReferenceWrapper.hpp"
 #include "ParserRflTuple.hpp"
+#include "ParserRflVariant.hpp"
 #include "ParserSharedPtr.hpp"
 #include "ParserShort.hpp"
 #include "ParserSkip.hpp"
 #include "ParserSpan.hpp"
 #include "ParserStringView.hpp"
+#include "ParserTaggedUnion.hpp"
 #include "ParserTimePoint.hpp"
 #include "ParserTuple.hpp"
 #include "ParserUniquePtr.hpp"
+#include "ParserVariant.hpp"
 #include "ParserVectorstring.hpp"
 #include "ParserWString.hpp"
 #include "Parser_base.hpp"
@@ -99,6 +102,25 @@ struct Parser {
       return ParserOptional<R, W, typename std::remove_cvref_t<T>::value_type,
                             ProcessorsType>::read(_r, _var);
 
+    } else if constexpr (is_box_v<T>) {
+      using IsBox = is_box<std::remove_cvref_t<T>>;
+      return ParserBox<R, W, typename IsBox::element_type, IsBox::copyability,
+                       ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_ref_v<T>) {
+      using IsRef = is_ref<std::remove_cvref_t<T>>;
+      return ParserRef<R, W, typename IsRef::element_type,
+                       ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_variant_v<T>) {
+      return ParserVariant<R, W, T, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_rfl_variant_v<T>) {
+      return ParserRflVariant<R, W, T, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_tagged_union_v<T>) {
+      return ParserTaggedUnion<R, W, T, ProcessorsType>::read(_r, _var);
+
     } else if constexpr (is_duration_v<T>) {
       using U = std::remove_cvref_t<T>;
       return ParserDuration<R, W, typename U::rep, typename U::period,
@@ -120,16 +142,6 @@ struct Parser {
     } else if constexpr (is_time_point_v<T>) {
       return ParserTimePoint<R, W, typename std::remove_cvref_t<T>::duration,
                              ProcessorsType>::read(_r, _var);
-
-    } else if constexpr (is_box_v<T>) {
-      using IsBox = is_box<std::remove_cvref_t<T>>;
-      return ParserBox<R, W, typename IsBox::element_type, IsBox::copyability,
-                       ProcessorsType>::read(_r, _var);
-
-    } else if constexpr (is_ref_v<T>) {
-      using IsRef = is_ref<std::remove_cvref_t<T>>;
-      return ParserRef<R, W, typename IsRef::element_type,
-                       ProcessorsType>::read(_r, _var);
 
     } else if constexpr (is_default_val_v<T>) {
       return ParserDefaultVal<R, W, T, ProcessorsType>::read(_r, _var);
@@ -239,6 +251,25 @@ struct Parser {
       ParserOptional<R, W, typename std::remove_cvref_t<T>::value_type,
                      ProcessorsType>::write(_w, _var, _parent);
 
+    } else if constexpr (is_box_v<T>) {
+      using IsBox = is_box<std::remove_cvref_t<T>>;
+      ParserBox<R, W, typename IsBox::element_type, IsBox::copyability,
+                ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_ref_v<T>) {
+      using IsRef = is_ref<std::remove_cvref_t<T>>;
+      ParserRef<R, W, typename IsRef::element_type, ProcessorsType>::write(
+          _w, _var, _parent);
+
+    } else if constexpr (is_variant_v<T>) {
+      ParserVariant<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_rfl_variant_v<T>) {
+      ParserRflVariant<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
+    } else if constexpr (is_tagged_union_v<T>) {
+      ParserTaggedUnion<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
     } else if constexpr (is_duration_v<T>) {
       using U = std::remove_cvref_t<T>;
       ParserDuration<R, W, typename U::rep, typename U::period,
@@ -260,16 +291,6 @@ struct Parser {
     } else if constexpr (is_time_point_v<T>) {
       ParserTimePoint<R, W, typename std::remove_cvref_t<T>::duration,
                       ProcessorsType>::write(_w, _var, _parent);
-
-    } else if constexpr (is_box_v<T>) {
-      using IsBox = is_box<std::remove_cvref_t<T>>;
-      ParserBox<R, W, typename IsBox::element_type, IsBox::copyability,
-                ProcessorsType>::write(_w, _var, _parent);
-
-    } else if constexpr (is_ref_v<T>) {
-      using IsRef = is_ref<std::remove_cvref_t<T>>;
-      ParserRef<R, W, typename IsRef::element_type, ProcessorsType>::write(
-          _w, _var, _parent);
 
     } else if constexpr (is_default_val_v<T>) {
       ParserDefaultVal<R, W, T, ProcessorsType>::write(_w, _var, _parent);
@@ -363,6 +384,26 @@ struct Parser {
       return ParserOptional<R, W, typename U::value_type,
                             ProcessorsType>::to_schema(_definitions);
 
+    } else if constexpr (is_box_v<U>) {
+      using IsBox = is_box<U>;
+      return ParserBox<R, W, typename IsBox::element_type, IsBox::copyability,
+                       ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_ref_v<U>) {
+      using IsRef = is_ref<U>;
+      return ParserRef<R, W, typename IsRef::element_type,
+                       ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_variant_v<U>) {
+      return ParserVariant<R, W, U, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_rfl_variant_v<U>) {
+      return ParserRflVariant<R, W, U, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_tagged_union_v<U>) {
+      return ParserTaggedUnion<R, W, U, ProcessorsType>::to_schema(
+          _definitions);
+
     } else if constexpr (is_duration_v<U>) {
       return ParserDuration<R, W, typename U::rep, typename U::period,
                             ProcessorsType>::to_schema(_definitions);
@@ -382,16 +423,6 @@ struct Parser {
     } else if constexpr (is_time_point_v<U>) {
       return ParserTimePoint<R, W, typename U::duration,
                              ProcessorsType>::to_schema(_definitions);
-
-    } else if constexpr (is_box_v<U>) {
-      using IsBox = is_box<U>;
-      return ParserBox<R, W, typename IsBox::element_type, IsBox::copyability,
-                       ProcessorsType>::to_schema(_definitions);
-
-    } else if constexpr (is_ref_v<U>) {
-      using IsRef = is_ref<U>;
-      return ParserRef<R, W, typename IsRef::element_type,
-                       ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (is_default_val_v<U>) {
       return ParserDefaultVal<R, W, U, ProcessorsType>::to_schema(_definitions);

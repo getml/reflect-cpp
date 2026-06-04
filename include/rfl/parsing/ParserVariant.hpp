@@ -26,9 +26,28 @@
 
 namespace rfl::parsing {
 
+template <class T>
+struct is_variant : std::false_type {};
+
+template <class... AlternativeTypes>
+struct is_variant<std::variant<AlternativeTypes...>> : std::true_type {};
+
+template <class T>
+constexpr bool is_variant_v = is_variant<std::remove_cvref_t<T>>::value;
+
+template <class R, class W, class T, class ProcessorsType>
+class ParserVariant;
+
+/**
+ * @brief Partial specialization of ParserVariant for std::variant.
+ *
+ * This class handles the parsing and serialization of std::variant types,
+ * dispatching to the appropriate parser logic based on the reader/writer
+ * capabilities and the presence of schema-related processors.
+ */
 template <class R, class W, class... AlternativeTypes, class ProcessorsType>
   requires AreReaderAndWriter<R, W, std::variant<AlternativeTypes...>>
-class Parser<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
+class ParserVariant<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
   template <class T>
   using ptr_field_t =
       decltype(internal::to_ptr_field(std::declval<const T&>()));

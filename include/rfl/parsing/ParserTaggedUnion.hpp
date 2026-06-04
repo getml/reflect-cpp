@@ -22,12 +22,26 @@
 
 namespace rfl::parsing {
 
+template <class T>
+struct is_tagged_union : std::false_type {};
+
+template <internal::StringLiteral _discriminator, class... AlternativeTypes>
+struct is_tagged_union<TaggedUnion<_discriminator, AlternativeTypes...>>
+    : std::true_type {};
+
+template <class T>
+constexpr bool is_tagged_union_v =
+    is_tagged_union<std::remove_cvref_t<T>>::value;
+
+template <class R, class W, class T, class ProcessorsType>
+struct ParserTaggedUnion;
+
 template <class R, class W, internal::StringLiteral _discriminator,
           class... AlternativeTypes, class ProcessorsType>
   requires AreReaderAndWriter<R, W,
                               TaggedUnion<_discriminator, AlternativeTypes...>>
-struct Parser<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
-              ProcessorsType> {
+struct ParserTaggedUnion<R, W, TaggedUnion<_discriminator, AlternativeTypes...>,
+                         ProcessorsType> {
   using ResultType = Result<TaggedUnion<_discriminator, AlternativeTypes...>>;
 
  public:

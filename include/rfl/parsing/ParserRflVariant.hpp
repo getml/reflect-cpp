@@ -22,9 +22,22 @@
 
 namespace rfl::parsing {
 
+template <class T>
+struct is_rfl_variant : std::false_type {};
+
+template <class... T>
+struct is_rfl_variant<rfl::Variant<T...>> : std::true_type {};
+
+template <class T>
+constexpr bool is_rfl_variant_v = is_rfl_variant<std::remove_cvref_t<T>>::value;
+
+template <class R, class W, class T, class ProcessorsType>
+class ParserRflVariant;
+
 template <class R, class W, class... AlternativeTypes, class ProcessorsType>
   requires AreReaderAndWriter<R, W, rfl::Variant<AlternativeTypes...>>
-class Parser<R, W, rfl::Variant<AlternativeTypes...>, ProcessorsType> {
+class ParserRflVariant<R, W, rfl::Variant<AlternativeTypes...>,
+                       ProcessorsType> {
   using ParentType = Parent<W>;
 
  public:

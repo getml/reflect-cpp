@@ -14,8 +14,5 @@
 #include "Parser_ptr.hpp"
 #include "Parser_rename.hpp"
 #include "Parser_result.hpp"
-#include "Parser_rfl_variant.hpp"
-#include "Parser_tagged_union.hpp"
-#include "Parser_variant.hpp"
 
 #endif
