@@ -8,7 +8,6 @@
 #include "Parser_commented.hpp"
 #include "Parser_default.hpp"
 #include "Parser_enum.hpp"
-#include "Parser_map_like.hpp"
 #include "Parser_named_tuple.hpp"
 #include "Parser_pair.hpp"
 #include "Parser_positional.hpp"

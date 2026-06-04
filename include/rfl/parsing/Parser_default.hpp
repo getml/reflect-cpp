@@ -6,8 +6,6 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
-#include "../enums.hpp"
-#include "../from_named_tuple.hpp"
 #include "../internal/default_if_missing_v.hpp"
 #include "../internal/has_default_val_v.hpp"
 #include "../internal/has_reflection_method_v.hpp"
@@ -17,14 +15,13 @@
 #include "../internal/is_deprecated.hpp"
 #include "../internal/is_description.hpp"
 #include "../internal/is_literal.hpp"
-#include "../internal/is_named_tuple.hpp"
 #include "../internal/is_validator.hpp"
 #include "../internal/processed_t.hpp"
 #include "../internal/ptr_cast.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
-#include "../thirdparty/enchantum/enchantum.hpp"
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
+#include "MapParser.hpp"
 #include "Parent.hpp"
 #include "ParserArray.hpp"
 #include "ParserBasicType.hpp"
@@ -50,7 +47,7 @@
 #include "Parser_base.hpp"
 #include "VectorParser.hpp"
 #include "call_destructors_where_necessary.hpp"
-#include "is_tagged_union_wrapper.hpp"
+#include "is_string_map.hpp"
 #include "make_type_name.hpp"
 #include "schema/Type.hpp"
 #include "schemaful/IsSchemafulReader.hpp"
@@ -83,6 +80,9 @@ struct Parser {
 
     } else if constexpr (is_vectorstring_v<T>) {
       return ParserVectorstring<R, W, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_string_map_v<T>) {
+      return MapParser<R, W, T, ProcessorsType>::read(_r, _var);
 
     } else if constexpr (is_vector_like_v<T>) {
       return VectorParser<R, W, T, ProcessorsType>::read(_r, _var);
@@ -221,6 +221,9 @@ struct Parser {
     } else if constexpr (is_vectorstring_v<T>) {
       ParserVectorstring<R, W, ProcessorsType>::write(_w, _var, _parent);
 
+    } else if constexpr (is_string_map_v<T>) {
+      return MapParser<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
     } else if constexpr (is_vector_like_v<T>) {
       return VectorParser<R, W, T, ProcessorsType>::write(_w, _var, _parent);
 
@@ -341,6 +344,9 @@ struct Parser {
 
     } else if constexpr (is_vectorstring_v<U>) {
       return ParserVectorstring<R, W, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_string_map_v<U>) {
+      return MapParser<R, W, U, ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (is_vector_like_v<U>) {
       return VectorParser<R, W, U, ProcessorsType>::to_schema(_definitions);
