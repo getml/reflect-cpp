@@ -51,7 +51,7 @@ struct Parser {
    * @param _var The input variable to read from.
    * @return A Result containing the parsed value or an error.
    */
-  static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
+  static Result<T> read(const R& _r, const InputVarType& _var) {
     if constexpr (internal::has_read_reflector<T>) {
       const auto wrap_in_t = [](auto&& _named_tuple) -> Result<T> {
         try {
