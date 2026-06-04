@@ -413,9 +413,6 @@ class Literal {
   static_assert(sizeof...(fields_) <= std::numeric_limits<ValueType>::max(),
                 "Too many fields.");
 
-  static_assert(sizeof...(fields_) <= 1 || !has_duplicates(),
-                "Duplicate strings are not allowed in a Literal.");
-
  private:
   /// The underlying value.
   ValueType value_;
