@@ -33,6 +33,7 @@
 #include "ParserOptional.hpp"
 #include "ParserRef.hpp"
 #include "ParserReferenceWrapper.hpp"
+#include "ParserResult.hpp"
 #include "ParserRflTuple.hpp"
 #include "ParserRflVariant.hpp"
 #include "ParserSharedPtr.hpp"
@@ -120,6 +121,9 @@ struct Parser {
 
     } else if constexpr (is_tagged_union_v<T>) {
       return ParserTaggedUnion<R, W, T, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_result_v<T>) {
+      return ParserResult<R, W, T, ProcessorsType>::read(_r, _var);
 
     } else if constexpr (is_duration_v<T>) {
       using U = std::remove_cvref_t<T>;
@@ -260,6 +264,9 @@ struct Parser {
       using IsRef = is_ref<std::remove_cvref_t<T>>;
       ParserRef<R, W, typename IsRef::element_type, ProcessorsType>::write(
           _w, _var, _parent);
+
+    } else if constexpr (is_result_v<T>) {
+      ParserResult<R, W, T, ProcessorsType>::write(_w, _var, _parent);
 
     } else if constexpr (is_variant_v<T>) {
       ParserVariant<R, W, T, ProcessorsType>::write(_w, _var, _parent);
@@ -403,6 +410,9 @@ struct Parser {
     } else if constexpr (is_tagged_union_v<U>) {
       return ParserTaggedUnion<R, W, U, ProcessorsType>::to_schema(
           _definitions);
+
+    } else if constexpr (is_result_v<U>) {
+      return ParserResult<R, W, U, ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (is_duration_v<U>) {
       return ParserDuration<R, W, typename U::rep, typename U::period,

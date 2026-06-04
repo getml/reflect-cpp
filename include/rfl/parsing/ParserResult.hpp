@@ -7,18 +7,25 @@
 #include "../Field.hpp"
 #include "../NamedTuple.hpp"
 #include "../Result.hpp"
-#include "../always_false.hpp"
 #include "../internal/StringLiteral.hpp"
-#include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
-template <class R, class W, class T, class ProcessorsType>
-  requires AreReaderAndWriter<R, W, Result<T>>
-struct Parser<R, W, Result<T>, ProcessorsType> {
+template <class T>
+struct is_result : std::false_type {};
+
+template <class T>
+struct is_result<Result<T>> : std::true_type {};
+
+template <class T>
+constexpr bool is_result_v = is_result<std::remove_cvref_t<T>>::value;
+
+template <class R, class W, class ResultType, class ProcessorsType>
+struct ParserResult {
+  using T = typename ResultType::value_type;
+
   using InputVarType = typename R::InputVarType;
 
   using ErrorType = NamedTuple<Field<"error", std::string>>;
@@ -83,7 +90,6 @@ struct Parser<R, W, Result<T>, ProcessorsType> {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif
