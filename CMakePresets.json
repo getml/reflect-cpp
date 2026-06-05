@@ -1,0 +1,16 @@
+{
+	"version": 6,
+	"packagePresets": [
+		{
+			"name": "windows-release-installer",
+			"displayName": "Windows Installer (MSI)",
+			"inherits": "default",
+			"generators": [
+				"WIX"
+			],
+			"variables": {
+				"CPACK_COMPONENTS_ALL": "Development"
+			}
+		}
+	]
+}
