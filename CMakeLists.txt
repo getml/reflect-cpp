@@ -526,6 +526,7 @@ if (REFLECTCPP_INSTALL)
             "${CMAKE_CURRENT_BINARY_DIR}/reflectcpp-config.cmake"
             "${CMAKE_CURRENT_BINARY_DIR}/reflectcpp-version.cmake"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp"
+        COMPONENT Development
     )
 
     file(GLOB_RECURSE RFL_HEADERS RELATIVE ${CMAKE_CURRENT_LIST_DIR} "${CMAKE_CURRENT_LIST_DIR}/include/*" )
@@ -541,13 +542,15 @@ if (REFLECTCPP_INSTALL)
     install(
         TARGETS reflectcpp
         EXPORT reflectcpp-exports
-        FILE_SET reflectcpp_headers DESTINATION ${INCLUDE_INSTALL_DIR}
+        FILE_SET reflectcpp_headers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        COMPONENT Development
     )
 
     install(
         EXPORT reflectcpp-exports
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp
         NAMESPACE reflectcpp::
+        COMPONENT Development
     )
 endif ()
 

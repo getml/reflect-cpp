@@ -1,13 +1,21 @@
 {
 	"version": 6,
+	"configurePresets": [
+		{
+			"name": "default",
+			"binaryDir": "${sourceDir}/build"
+		}
+	],
 	"packagePresets": [
 		{
 			"name": "windows-release-installer",
 			"displayName": "Windows Installer (MSI)",
-			"inherits": "default",
+			"configurePreset": "default",
+			"configuration": "Release",
 			"generators": [
 				"WIX"
 			],
+			"packageDirectory": "${sourceDir}/build",
 			"variables": {
 				"CPACK_COMPONENTS_ALL": "Development"
 			}
