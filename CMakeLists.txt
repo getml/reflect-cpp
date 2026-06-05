@@ -100,7 +100,7 @@ if (REFLECTCPP_USE_VCPKG)
     if (REFLECTCPP_AVRO OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "avro")
     endif()
-    
+
     if (REFLECTCPP_BOOST_SERIALIZATION OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "boost-serialization")
     endif()
@@ -108,7 +108,7 @@ if (REFLECTCPP_USE_VCPKG)
     if (REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "bson")
     endif()
-    
+
     if (REFLECTCPP_BUILD_BENCHMARKS OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "benchmarks")
     endif()
@@ -116,11 +116,11 @@ if (REFLECTCPP_USE_VCPKG)
     if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "tests")
     endif()
-    
+
     if (REFLECTCPP_CAPNPROTO OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "capnproto")
     endif()
-    
+
     if (REFLECTCPP_CBOR OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "cbor")
     endif()
@@ -132,31 +132,31 @@ if (REFLECTCPP_USE_VCPKG)
     if (REFLECTCPP_CSV OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "csv")
     endif()
-    
+
     if (NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
         list(APPEND VCPKG_MANIFEST_FEATURES "ctre")
     endif()
-    
+
     if (REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "flexbuffers")
     endif()
-    
+
     if (_REFLECTCPP_NEEDS_JSON_IMPL AND NOT REFLECTCPP_USE_BUNDLED_DEPENDENCIES)
         list(APPEND VCPKG_MANIFEST_FEATURES "json")
     endif()
-    
+
     if (REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "msgpack")
     endif()
-     
+
     if (REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "parquet")
     endif()
-    
+
     if (REFLECTCPP_TOML OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "toml")
     endif()
-    
+
     if (REFLECTCPP_UBJSON OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "ubjson")
     endif()
@@ -164,15 +164,15 @@ if (REFLECTCPP_USE_VCPKG)
     if (REFLECTCPP_XML OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "xml")
     endif()
-    
+
     if (REFLECTCPP_YAML OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "yaml")
     endif()
-    
+
     if (REFLECTCPP_YAS OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "yas")
     endif()
-    
+
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
 endif ()
 
@@ -195,7 +195,7 @@ add_library(reflectcpp::reflectcpp ALIAS reflectcpp)
 
 if (MSVC)
     if (REFLECTCPP_STRICT_WARNINGS)
-        target_compile_options(reflectcpp PRIVATE 
+        target_compile_options(reflectcpp PRIVATE
             $<$<CONFIG:Debug>:
                 -Wall
             >
@@ -203,7 +203,7 @@ if (MSVC)
     endif()
 else()
     if (REFLECTCPP_STRICT_WARNINGS)
-        target_compile_options(reflectcpp PRIVATE 
+        target_compile_options(reflectcpp PRIVATE
             $<$<CONFIG:Debug>:
                 -Wall -Wextra -Wpedantic -Wshadow -Wconversion
             >
@@ -218,9 +218,9 @@ target_compile_options(reflectcpp PRIVATE
 
 if(REFLECTCPP_BUILD_SHARED AND REFLECTCPP_USE_BUNDLED_DEPENDENCIES AND _REFLECTCPP_NEEDS_JSON_IMPL)
     target_compile_definitions(reflectcpp
-        PRIVATE 
-            YYJSON_EXPORTS 
-        INTERFACE 
+        PRIVATE
+            YYJSON_EXPORTS
+        INTERFACE
             YYJSON_IMPORTS
     )
 endif()
@@ -285,11 +285,11 @@ if (REFLECTCPP_AVRO OR REFLECTCPP_CHECK_HEADERS)
             set(_AVRO_STATIC_LIB "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/avro${CMAKE_STATIC_LIBRARY_SUFFIX}")
             if(REFLECTCPP_BUILD_SHARED)
                 message(STATUS "With whole archive ${_AVRO_STATIC_LIB}")
-                target_link_libraries(reflectcpp 
-                    PUBLIC 
-                        $<LINK_LIBRARY:WHOLE_ARCHIVE,${_AVRO_STATIC_LIB}> 
-                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/snappy${CMAKE_STATIC_LIBRARY_SUFFIX}" 
-                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/lzma${CMAKE_STATIC_LIBRARY_SUFFIX}" 
+                target_link_libraries(reflectcpp
+                    PUBLIC
+                        $<LINK_LIBRARY:WHOLE_ARCHIVE,${_AVRO_STATIC_LIB}>
+                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/snappy${CMAKE_STATIC_LIBRARY_SUFFIX}"
+                        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/lzma${CMAKE_STATIC_LIBRARY_SUFFIX}"
                         "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/jansson${CMAKE_STATIC_LIBRARY_SUFFIX}"
                         "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/zlib${CMAKE_STATIC_LIBRARY_SUFFIX}"
                 )
@@ -497,12 +497,12 @@ if(REFLECTCPP_CHECK_HEADERS)
             )
 
             add_library(check_header_${HEADER_NAME} "${TEST_SOURCE_FILE}")
-            
+
             target_include_directories(check_header_${HEADER_NAME} PRIVATE
                 ${CMAKE_CURRENT_SOURCE_DIR}
                 ${ADDITIONAL_INCLUDE_DIRS}
             )
-            
+
             add_custom_target(check_${HEADER_NAME} ALL DEPENDS check_header_${HEADER_NAME})
         endif()
     endforeach()
@@ -581,9 +581,17 @@ set(CPACK_RPM_PACKAGE_LICENSE "MIT")
 set(CPACK_RPM_PACKAGE_LICENSE "MIT")
 set(CPACK_RPM_PACKAGE_URL "https://rfl.getml.com")
 
+# Windows specific configuration using WiX
+set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
+set(CPACK_WIX_UPGRADE_GUID "46a32877-6b94-4621-9796-fccfbcc95f5b")
+
 include(CPack)
 
 if (ament_cmake_FOUND)
     ament_package()
 endif()
 
+cpack_add_component(Development
+  DISPLAY_NAME "reflectcpp"
+  DESCRIPTION "Development files for reflectcpp"
+)

@@ -39,5 +39,11 @@ jobs:
         if: matrix.format != 'benchmarks'
         run: |
           ctest --test-dir build -C Release --output-on-failure
-
+      - name: Build application installer
+        run: cpack --preset windows-release-installer
+      - name: Upload application installer
+        uses: actions/upload-artifact@v3
+        with:
+          name: reflectcpp-installer
+          path: build/*.msi
 
