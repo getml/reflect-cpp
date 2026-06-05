@@ -11,7 +11,9 @@
 			"name": "windows-release-installer",
 			"displayName": "Windows Installer (MSI)",
 			"configurePreset": "default",
-			"configuration": "Release",
+			"configurations": [
+				"Release"
+			],
 			"generators": [
 				"WIX"
 			],
