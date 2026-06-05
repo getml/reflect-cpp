@@ -42,7 +42,7 @@ jobs:
       - name: Build application installer
         run: cpack --preset windows-release-installer
       - name: Upload application installer
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: reflectcpp-installer
           path: build/*.msi
