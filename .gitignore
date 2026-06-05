@@ -60,6 +60,7 @@
 *.yaml
 *.yas
 
+!CMakePresets.json
 !vcpkg.json
 !.github/**/*.yml
 !.github/**/*.yaml
