@@ -43,6 +43,7 @@
 #include "ParserReferenceWrapper.hpp"
 #include "ParserRename.hpp"
 #include "ParserResult.hpp"
+#include "ParserRflArray.hpp"
 #include "ParserRflTuple.hpp"
 #include "ParserRflVariant.hpp"
 #include "ParserSharedPtr.hpp"
@@ -177,6 +178,9 @@ struct Parser {
       using IsArray = is_array<T>;
       return ParserArray<R, W, typename IsArray::element_type, IsArray::size,
                          ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_rfl_array_v<T>) {
+      return ParserRflArray<R, W, T, ProcessorsType>::read(_r, _var);
 
     } else if constexpr (is_tuple_v<T>) {
       return ParserTuple<R, W, T, ProcessorsType>::read(_r, _var);
@@ -355,6 +359,9 @@ struct Parser {
       ParserArray<R, W, typename IsArray::element_type, IsArray::size,
                   ProcessorsType>::write(_w, _var, _parent);
 
+    } else if constexpr (is_rfl_array_v<T>) {
+      ParserRflArray<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
     } else if constexpr (is_tuple_v<T>) {
       ParserTuple<R, W, T, ProcessorsType>::write(_w, _var, _parent);
 
@@ -518,6 +525,9 @@ struct Parser {
       using IsArray = is_array<U>;
       return ParserArray<R, W, typename IsArray::element_type, IsArray::size,
                          ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_rfl_array_v<U>) {
+      return ParserRflArray<R, W, U, ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (is_tuple_v<U>) {
       return ParserTuple<R, W, U, ProcessorsType>::to_schema(_definitions);
