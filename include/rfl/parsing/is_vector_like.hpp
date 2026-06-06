@@ -4,12 +4,12 @@
 #include <deque>
 #include <forward_list>
 #include <list>
+#include <map>
 #include <set>
 #include <unordered_set>
 #include <vector>
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
 /**
  * @brief Trait to check if a type is a vector-like type.
@@ -69,7 +69,6 @@ class is_vector_like<std::vector<T>> : public std::true_type {};
 template <class T>
 constexpr bool is_vector_like_v = is_vector_like<std::remove_cvref_t<T>>::value;
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif
