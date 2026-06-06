@@ -62,8 +62,8 @@ struct ParserRflArray {
    */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
-    Parser<R, W, typename ArrType::StdArrayType, ProcessorsType>::to_schema(
-        _definitions);
+    return Parser<R, W, typename ArrType::StdArrayType,
+                  ProcessorsType>::to_schema(_definitions);
   }
 };
 
