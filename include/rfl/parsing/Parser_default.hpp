@@ -513,6 +513,8 @@ struct Parser {
       return ParserDefaultVal<R, W, U, ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (is_short_v<U>) {
+      return ParserShort<R, W, U, ProcessorsType>::to_schema(_definitions);
+
     } else if constexpr (is_positional_v<U>) {
       return ParserPositional<R, W, typename U::Type,
                               ProcessorsType>::to_schema(_definitions);
