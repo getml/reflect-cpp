@@ -90,8 +90,7 @@ struct FieldVariantParser {
    * @return The schema type.
    */
   static schema::Type to_schema(
-      std::map<std::string, schema::Type>* _definitions,
-      std::vector<schema::Type> = {}) {
+      std::map<std::string, schema::Type>* _definitions) {
     return schema::Type{schema::Type::AnyOf{
         .types_ = std::vector<schema::Type>(
             {one_field_to_type<FieldTypes>(_definitions)...})}};
