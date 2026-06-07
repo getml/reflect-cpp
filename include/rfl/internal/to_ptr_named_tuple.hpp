@@ -1,7 +1,6 @@
 #ifndef RFL_INTERNAL_TO_PTR_NAMED_TUPLE_HPP_
 #define RFL_INTERNAL_TO_PTR_NAMED_TUPLE_HPP_
 
-
 #include "../Tuple.hpp"
 #include "../always_false.hpp"
 #include "../field_names_t.hpp"
@@ -12,11 +11,12 @@
 #include "is_empty.hpp"
 #include "is_field.hpp"
 #include "is_named_tuple.hpp"
+#include "no_duplicate_field_names.hpp"
 #include "to_flattened_ptr_tuple.hpp"
 #include "to_ptr_field_tuple.hpp"
+#include "to_ptr_tuple.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class PtrFieldTuple>
 auto flatten_ptr_field_tuple(PtrFieldTuple& _t) {
@@ -34,8 +34,7 @@ auto flatten_ptr_field_tuple(PtrFieldTuple& _t) {
 
   return [&]<int... _is>(std::integer_sequence<int, _is...>) {
     return rfl::tuple_cat(get_one(std::integral_constant<int, _is>{})...);
-  }
-  (std::make_integer_sequence<int, size>());
+  }(std::make_integer_sequence<int, size>());
 }
 
 template <class PtrFieldTuple>
@@ -48,7 +47,12 @@ auto field_tuple_to_named_tuple(PtrFieldTuple& _ptr_field_tuple) {
     return rfl::apply(ft_to_nt, std::move(_ptr_field_tuple));
   } else {
     const auto flattened_tuple = flatten_ptr_field_tuple(_ptr_field_tuple);
-    return rfl::apply(ft_to_nt, flattened_tuple);
+    auto named_tuple = rfl::apply(ft_to_nt, flattened_tuple);
+    static_assert(
+        no_duplicate_field_names<
+            typename std::remove_cvref_t<decltype(named_tuple)>::Fields>(),
+        "Flattening created duplicate field names.");
+    return named_tuple;
   }
 }
 
@@ -59,22 +63,40 @@ auto to_ptr_named_tuple(T&& _t) {
   if constexpr (has_fields<std::remove_cvref_t<T>>()) {
     if constexpr (std::is_pointer_v<std::remove_cvref_t<T>>) {
       return to_ptr_named_tuple(*_t);
+
     } else if constexpr (is_named_tuple_v<std::remove_cvref_t<T>>) {
       return nt_to_ptr_named_tuple(_t);
+
     } else {
       auto ptr_field_tuple = to_ptr_field_tuple(_t);
       return field_tuple_to_named_tuple(ptr_field_tuple);
     }
+
   } else if constexpr (is_empty<T>()) {
     return rfl::NamedTuple<>();
+
   } else {
-    using FieldNames = rfl::field_names_t<T>;
-    auto flattened_ptr_tuple = to_flattened_ptr_tuple(_t);
-    return copy_flattened_tuple_to_named_tuple<FieldNames>(flattened_ptr_tuple);
+    auto ptr_tuple = to_ptr_tuple(_t);
+
+    using PtrTuple = std::remove_cvref_t<decltype(ptr_tuple)>;
+
+    if constexpr (!has_flatten_fields<PtrTuple>()) {
+      return copy_flattened_tuple_to_named_tuple<field_names_t<T>>(ptr_tuple);
+
+    } else {
+      using FieldNames = rfl::field_names_t<T>;
+      auto flattened_ptr_tuple = to_flattened_ptr_tuple(_t);
+      auto named_tuple =
+          copy_flattened_tuple_to_named_tuple<FieldNames>(flattened_ptr_tuple);
+      static_assert(
+          no_duplicate_field_names<
+              typename std::remove_cvref_t<decltype(named_tuple)>::Fields>(),
+          "Flattening created duplicate field names.");
+      return named_tuple;
+    }
   }
 }
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

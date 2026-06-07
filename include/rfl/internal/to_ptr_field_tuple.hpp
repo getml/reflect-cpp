@@ -12,19 +12,22 @@
 #include "to_ptr_field.hpp"
 #include "wrap_in_fields.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class T>
 auto to_ptr_field_tuple(T& _t) {
   if constexpr (std::is_pointer_v<std::remove_cvref_t<T>>) {
     return to_ptr_field_tuple(*_t);
+
   } else if constexpr (is_named_tuple_v<T>) {
     return nt_to_ptr_named_tuple(_t).fields();
+
   } else if constexpr (has_fields<T>()) {
     return bind_to_tuple(_t, [](auto* _ptr) { return to_ptr_field(*_ptr); });
+
   } else if constexpr (is_empty<T>()) {
     return rfl::Tuple();
+
   } else {
     using FieldNames = field_names_t<T>;
     auto tup =
@@ -33,7 +36,6 @@ auto to_ptr_field_tuple(T& _t) {
   }
 }
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

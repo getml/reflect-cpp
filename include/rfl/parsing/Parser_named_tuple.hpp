@@ -2,14 +2,12 @@
 #define RFL_PARSING_PARSER_NAMED_TUPLE_HPP_
 
 #include "../NamedTuple.hpp"
-#include "../Processors.hpp"
 #include "../internal/no_field_names_v.hpp"
 #include "../internal/no_optionals_v.hpp"
 #include "NamedTupleParser.hpp"
 #include "Parser_base.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
 /**
  * @brief Parser specialization for rfl::NamedTuple.
@@ -23,7 +21,6 @@ struct Parser<R, W, NamedTuple<FieldTypes...>, ProcessorsType>
           /*_no_field_names=*/internal::no_field_names_v<ProcessorsType>,
           ProcessorsType, FieldTypes...> {};
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif

@@ -5,8 +5,7 @@
 
 #include "../Positional.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class T>
 class is_positional;
@@ -21,7 +20,6 @@ template <class T>
 constexpr bool is_positional_v =
     is_positional<std::remove_cvref_t<std::remove_pointer_t<T>>>::value;
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

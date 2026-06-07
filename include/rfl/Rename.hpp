@@ -14,9 +14,11 @@
 namespace rfl {
 
 /// Used to assign a new name to a field for serialization/deserialization.
-/// This allows the field name in the struct to differ from the name used in serialized formats.
-/// For example, a C++ field 'firstName' can be serialized as 'first_name' in JSON.
-/// @tparam _name The compile-time string literal name to use in serialized formats
+/// This allows the field name in the struct to differ from the name used in
+/// serialized formats. For example, a C++ field 'firstName' can be serialized
+/// as 'first_name' in JSON.
+/// @tparam _name The compile-time string literal name to use in serialized
+/// formats
 /// @tparam T The type of the value stored in the field
 template <internal::StringLiteral _name, class T>
 struct Rename {
@@ -78,7 +80,8 @@ struct Rename {
     requires std::is_convertible_v<U, Type>
   Rename(const Rename<_name, U>& _field) : value_(_field.value()) {}
 
-  /// Assigns the underlying object to its default value using the Default sentinel.
+  /// Assigns the underlying object to its default value using the Default
+  /// sentinel.
   /// @tparam U The type (must be default constructible)
   /// @param _ The default sentinel value
   template <class U = Type>

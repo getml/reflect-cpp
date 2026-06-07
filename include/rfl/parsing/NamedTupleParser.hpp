@@ -9,16 +9,12 @@
 
 #include "../NamedTuple.hpp"
 #include "../Result.hpp"
-#include "../always_false.hpp"
 #include "../internal/default_if_missing_v.hpp"
 #include "../internal/has_default_val_v.hpp"
-#include "../internal/is_array.hpp"
 #include "../internal/is_attribute.hpp"
-#include "../internal/is_basic_type.hpp"
 #include "../internal/is_default_val_v.hpp"
 #include "../internal/is_extra_fields.hpp"
 #include "../internal/is_skip.hpp"
-#include "../internal/no_duplicate_field_names.hpp"
 #include "../internal/nth_element_t.hpp"
 #include "../internal/ptr_cast.hpp"
 #include "../to_view.hpp"
@@ -35,8 +31,7 @@
 #include "schema/Type.hpp"
 #include "to_single_error_message.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
 template <class R, class W, bool _ignore_empty_containers, bool _all_required,
           bool _no_field_names, class ProcessorsType, class... FieldTypes>
@@ -85,8 +80,6 @@ struct NamedTupleParser {
    */
   static Result<NamedTuple<FieldTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
-    static_assert(
-        internal::no_duplicate_field_names<typename NamedTupleType::Fields>());
     alignas(NamedTuple<FieldTypes...>) unsigned char
         buf[sizeof(NamedTuple<FieldTypes...>)];
     auto ptr = internal::ptr_cast<NamedTuple<FieldTypes...>*>(&buf);
@@ -116,8 +109,6 @@ struct NamedTupleParser {
                    std::optional<Error>>
   read_view(const R& _r, const InputVarType& _var,
             NamedTuple<FieldTypes...>* _view) noexcept {
-    static_assert(
-        internal::no_duplicate_field_names<typename NamedTupleType::Fields>());
     if constexpr (_no_field_names) {
       auto arr = _r.to_array(_var);
       if (!arr) [[unlikely]] {
@@ -146,8 +137,6 @@ struct NamedTupleParser {
   static std::optional<Error> read_view_with_default(
       const R& _r, const InputVarType& _var,
       NamedTuple<FieldTypes...>* _view) noexcept {
-    static_assert(
-        internal::no_duplicate_field_names<typename NamedTupleType::Fields>());
     if constexpr (_no_field_names) {
       auto arr = _r.to_array(_var);
       if (!arr) [[unlikely]] {
@@ -390,7 +379,6 @@ struct NamedTupleParser {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif
