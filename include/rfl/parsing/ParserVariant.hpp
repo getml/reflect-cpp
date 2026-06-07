@@ -233,42 +233,18 @@ class ParserVariant<R, W, std::variant<AlternativeTypes...>, ProcessorsType> {
           _definitions);
 
     } else {
-      std::vector<schema::Type> types;
-      build_schema(
-          _definitions, &types,
-          std::make_integer_sequence<int, sizeof...(AlternativeTypes)>());
-      return schema::Type{schema::Type::AnyOf{.types_ = std::move(types)}};
+      return schema::Type{schema::Type::AnyOf{
+          .types_ = std::vector<schema::Type>(
+              {one_field_to_type<AlternativeTypes>(_definitions)...})}};
     }
   }
 
  private:
-  /**
-   * @brief Adds an alternative to the schema.
-   *
-   * @tparam _i The index of the alternative.
-   * @param _definitions The map of definitions to add the schema to.
-   * @param _types The vector of types to add the generated schema to.
-   */
-  template <size_t _i>
-  static void add_to_schema(std::map<std::string, schema::Type>* _definitions,
-                            std::vector<schema::Type>* _types) noexcept {
-    using U = std::remove_cvref_t<
-        std::variant_alternative_t<_i, std::variant<AlternativeTypes...>>>;
-    _types->push_back(Parser<R, W, U, ProcessorsType>::to_schema(_definitions));
-  }
-
-  /**
-   * @brief Builds the schema for the variant.
-   *
-   * @tparam _is The indices of the alternatives.
-   * @param _definitions The map of definitions to add the schema to.
-   * @param _types The vector of types to add the generated schemas to.
-   */
-  template <int... _is>
-  static void build_schema(std::map<std::string, schema::Type>* _definitions,
-                           std::vector<schema::Type>* _types,
-                           std::integer_sequence<int, _is...>) noexcept {
-    (add_to_schema<_is>(_definitions, _types), ...);
+  template <class AltType>
+  static schema::Type one_field_to_type(
+      std::map<std::string, schema::Type>* _definitions) noexcept {
+    return Parser<R, W, std::remove_cvref_t<AltType>,
+                  ProcessorsType>::to_schema(_definitions);
   }
 
   /**
