@@ -6,10 +6,10 @@
 
 #include "../Result.hpp"
 #include "../Variant.hpp"
-#include "../always_false.hpp"
 #include "../internal/add_tags_to_variants_v.hpp"
 #include "../internal/all_fields.hpp"
 #include "../internal/nth_element_t.hpp"
+#include "../visit.hpp"
 #include "FieldVariantParser.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
@@ -52,7 +52,7 @@ class ParserRflVariant<R, W, rfl::Variant<AlternativeTypes...>,
    */
   static Result<rfl::Variant<AlternativeTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
-    if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
+    if constexpr (internal::all_fields_v<AlternativeTypes...>) {
       if constexpr (schemaful::IsSchemafulReader<R>) {
         using WrappedType = rfl::Variant<NamedTuple<AlternativeTypes>...>;
         return Parser<R, W, WrappedType, ProcessorsType>::read(_r, _var)
@@ -124,7 +124,7 @@ class ParserRflVariant<R, W, rfl::Variant<AlternativeTypes...>,
   static void write(const W& _w,
                     const rfl::Variant<AlternativeTypes...>& _variant,
                     const P& _parent) {
-    if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
+    if constexpr (internal::all_fields_v<AlternativeTypes...>) {
       if constexpr (schemaful::IsSchemafulWriter<W>) {
         using WrappedType = rfl::Variant<
             NamedTuple<Field<AlternativeTypes::name_,
@@ -186,7 +186,7 @@ class ParserRflVariant<R, W, rfl::Variant<AlternativeTypes...>,
    */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
-    if constexpr (internal::all_fields<std::tuple<AlternativeTypes...>>()) {
+    if constexpr (internal::all_fields_v<AlternativeTypes...>) {
       return FieldVariantParser<R, W, ProcessorsType,
                                 AlternativeTypes...>::to_schema(_definitions);
 

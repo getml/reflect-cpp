@@ -1,23 +1,13 @@
 #ifndef RFL_INTERNAL_ALLFIELDS_HPP_
 #define RFL_INTERNAL_ALLFIELDS_HPP_
 
-#include "../Tuple.hpp"
 #include "is_field.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
-template <class TupleType, int _i = 0>
-constexpr bool all_fields() {
-  if constexpr (_i == rfl::tuple_size_v<TupleType>) {
-    return true;
-  } else {
-    using T = tuple_element_t<_i, TupleType>;
-    return is_field_v<T> && all_fields<TupleType, _i + 1>();
-  }
-}
+template <class Head, class... Tail>
+constexpr bool all_fields_v = (is_field_v<Head> && ... && is_field_v<Tail>);
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif
