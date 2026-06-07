@@ -18,7 +18,8 @@ template <class T>
 struct is_positional<Positional<T>> : std::true_type {};
 
 template <class T>
-inline constexpr bool is_positional_v = is_positional<T>::value;
+inline constexpr bool is_positional_v =
+    is_positional<std::remove_cvref_t<T>>::value;
 
 template <class R, class W, class T, class ProcessorsType>
 struct ParserPositional {

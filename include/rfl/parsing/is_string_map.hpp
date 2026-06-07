@@ -3,6 +3,7 @@
 
 #include <map>
 #include <string>
+#include <type_traits>
 #include <unordered_map>
 
 #include "../ExtraFields.hpp"
@@ -29,7 +30,7 @@ template <class T>
 struct is_string_map<rfl::ExtraFields<T>> : std::true_type {};
 
 template <class T>
-constexpr bool is_string_map_v = is_string_map<T>::value;
+constexpr bool is_string_map_v = is_string_map<std::remove_cvref_t<T>>::value;
 
 }  // namespace rfl::parsing
 
