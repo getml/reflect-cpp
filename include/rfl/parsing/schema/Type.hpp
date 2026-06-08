@@ -57,8 +57,10 @@ struct RFL_API Type {
     Ref<Type> type_;
   };
 
-  struct Literal {
-    std::vector<std::string> values_;
+  /// All values are assumed to be required unless explicitly stated otherwise
+  /// using this or the Optional wrapper.
+  struct DefaultVal {
+    Ref<Type> type_;
   };
 
   struct DescribedLiteral {
@@ -69,13 +71,17 @@ struct RFL_API Type {
     std::vector<ValueWithDescription> values_;
   };
 
+  struct Literal {
+    std::vector<std::string> values_;
+  };
+
   struct Object {
     rfl::Object<Type> types_;
     std::shared_ptr<Type> additional_properties_;
   };
 
   /// All values are assumed to be required unless explicitly stated otherwise
-  /// using this wrapper.
+  /// using this wrapper or the DefaultVal wrapper.
   struct Optional {
     Ref<Type> type_;
   };
@@ -106,10 +112,10 @@ struct RFL_API Type {
 
   using VariantType =
       rfl::Variant<Boolean, Bytestring, Vectorstring, Int32, Int64, UInt32,
-                   UInt64, Integer, Float, Double, String, AnyOf, Deprecated,
-                   Description, DescribedLiteral, FixedSizeTypedArray, Literal,
-                   Object, Optional, Reference, StringMap, Tuple, TypedArray,
-                   Validated>;
+                   UInt64, Integer, Float, Double, String, AnyOf, DefaultVal,
+                   Deprecated, Description, DescribedLiteral,
+                   FixedSizeTypedArray, Literal, Object, Optional, Reference,
+                   StringMap, Tuple, TypedArray, Validated>;
 
   /**
    * @brief Default constructor.
