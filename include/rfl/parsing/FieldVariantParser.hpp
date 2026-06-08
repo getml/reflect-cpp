@@ -5,10 +5,13 @@
 #include <string>
 #include <type_traits>
 
+#include "../NamedTuple.hpp"
 #include "../Result.hpp"
 #include "../Tuple.hpp"
 #include "../Variant.hpp"
 #include "../internal/no_duplicate_field_names.hpp"
+#include "../internal/to_ptr_field.hpp"
+#include "../make_named_tuple.hpp"
 #include "FieldVariantReader.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
