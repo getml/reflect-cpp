@@ -80,6 +80,11 @@ struct RFL_API Type {
     Ref<Type> type_;
   };
 
+  struct WithDefault {
+    Ref<Type> type_;
+    std::string default_value_;
+  };
+
   /// The is necessary to resolve circular definitions. Refers to something in
   /// Definitions.
   struct Reference {
@@ -108,7 +113,7 @@ struct RFL_API Type {
       rfl::Variant<Boolean, Bytestring, Vectorstring, Int32, Int64, UInt32,
                    UInt64, Integer, Float, Double, String, AnyOf, Deprecated,
                    Description, DescribedLiteral, FixedSizeTypedArray, Literal,
-                   Object, Optional, Reference, StringMap, Tuple, TypedArray,
+                   Object, Optional, WithDefault, Reference, StringMap, Tuple, TypedArray,
                    Validated>;
 
   /**

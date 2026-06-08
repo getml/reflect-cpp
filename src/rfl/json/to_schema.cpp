@@ -34,6 +34,7 @@ namespace rfl::json {
 schema::Type type_to_json_schema_type(const parsing::schema::Type& _type,
                                       const bool _no_required);
 
+template<bool WithDefaultAsOptional = false>
 bool is_optional(const parsing::schema::Type& _t) {
   return _t.variant_.visit([&](const auto& _v) -> bool {
     using T = std::remove_cvref_t<decltype(_v)>;
@@ -46,6 +47,9 @@ bool is_optional(const parsing::schema::Type& _t) {
 
     } else if constexpr (std::is_same_v<T, parsing::schema::Type::Validated>) {
       return is_optional(*_v.type_);
+
+    } else if constexpr (std::is_same_v<T, parsing::schema::Type::WithDefault>) {
+      return WithDefaultAsOptional ? true : is_optional(*_v.type_);
 
     } else {
       return std::is_same_v<T, parsing::schema::Type::Optional>;
@@ -239,6 +243,14 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type,
       };
       return rfl::visit(update_prediction, res.value);
 
+    } else if constexpr (std::is_same<T, Type::WithDefault>()) {
+      auto res = type_to_json_schema_type(*_t.type_, _no_required);
+      const auto update_prediction = [&](auto _v) -> schema::Type {
+        _v.annotations.value_.defaultValue = _t.default_value_;
+        return schema::Type{_v};
+      };
+      return rfl::visit(update_prediction, res.value);
+
     } else if constexpr (std::is_same<T, Type::FixedSizeTypedArray>()) {
       return schema::Type{
           .value = schema::Type::FixedSizeTypedArray{
@@ -272,7 +284,7 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type,
       auto required = std::vector<std::string>();
       for (const auto& [k, v] : _t.types_) {
         properties[k] = type_to_json_schema_type(v, _no_required);
-        if (!is_optional(v) && !_no_required) {
+        if (!is_optional<true>(v) && !_no_required) {
           required.push_back(k);
         }
       }

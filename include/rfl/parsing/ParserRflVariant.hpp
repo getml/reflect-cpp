@@ -216,7 +216,7 @@ class ParserRflVariant<R, W, rfl::Variant<AlternativeTypes...>,
     using AltType =
         std::remove_cvref_t<internal::nth_element_t<_i, AlternativeTypes...>>;
     _types->push_back(
-        Parser<R, W, AltType, ProcessorsType>::to_schema(_definitions));
+        Parser<R, W, AltType, ProcessorsType>::to_schema(_definitions, (void*)nullptr));
   }
 
   template <int... _is>
