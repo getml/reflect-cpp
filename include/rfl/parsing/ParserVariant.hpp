@@ -12,6 +12,7 @@
 #include "../internal/add_tags_to_variants_v.hpp"
 #include "../internal/all_fields.hpp"
 #include "../internal/to_ptr_field.hpp"
+#include "../visit.hpp"
 #include "FieldVariantParser.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
