@@ -21,7 +21,7 @@ struct Type {
     std::optional<std::string> description{};
     std::optional<bool> deprecated{};
     std::optional<std::string> deprecationMessage{};
-    rfl::Rename<"default", std::optional<std::string>> defaultValue{};
+    rfl::Rename<"default", std::optional<rfl::Generic>> defaultValue{};
   };
 
   struct Boolean {

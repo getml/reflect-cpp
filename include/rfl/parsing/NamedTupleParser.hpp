@@ -30,7 +30,14 @@
 #include "is_required.hpp"
 #include "schema/Type.hpp"
 #include "to_single_error_message.hpp"
-#include "../json/write.hpp"
+
+namespace rfl {
+
+/// forward declaration
+template <class... Ps>
+Generic to_generic(const auto& _t);
+
+}  // namespace rfl
 
 namespace rfl::parsing {
 
@@ -246,9 +253,7 @@ struct NamedTupleParser {
           // s.default_value_ = Parser<R, W, U, ProcessorsType>::write(_w, *rfl::get<_i>(_view), new_parent);;
           s.variant_.visit([&](auto& value) {
             if constexpr (std::is_same_v<std::remove_cvref_t< decltype(value)>, schema::Type::WithDefault>) {
-              // TODO we have to pass a writer here for other serialization formats
-              // and we would need something like glaze::raw or make default_value_ a template (or std::any, but then we don't know how to serialize
-              value.default_value_ = rfl::json::write((*rfl::get<_i>(*_view)).get());
+              value.default_value_ = rfl::to_generic((*rfl::get<_i>(*_view)).get());
             }
           });
         }

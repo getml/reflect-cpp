@@ -82,7 +82,7 @@ struct RFL_API Type {
 
   struct WithDefault {
     Ref<Type> type_;
-    std::string default_value_;
+    Generic default_value_;
   };
 
   /// The is necessary to resolve circular definitions. Refers to something in
