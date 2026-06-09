@@ -3,8 +3,6 @@
 #include <rfl/json.hpp>
 #include <string>
 
-#include "write_and_read.hpp"
-
 namespace test_json_schema5 {
 
 using Age = rfl::Validator<std::optional<unsigned int>, rfl::Minimum<0>,
@@ -16,13 +14,14 @@ struct Person {
                    std::optional<std::string>>
       last_name;
   Age age;
+  rfl::DefaultVal<std::string> nickname;
 };
 
 TEST(json, test_json_schema5) {
   const auto json_schema = rfl::json::to_schema<Person>();
 
   const std::string expected =
-      R"({"$schema":"https://json-schema.org/draft/2020-12/schema","$ref":"#/$defs/test_json_schema5__Person","$defs":{"test_json_schema5__Person":{"type":"object","properties":{"first_name":{"type":"string","description":"Given name of this person"},"last_name":{"description":"Optional family name of this person","anyOf":[{"type":"string"},{"type":"null"}]},"age":{"allOf":[{"minimum":0,"type":"number"},{"maximum":130,"type":"number"}]}},"required":["first_name"]}}})";
+      R"({"$schema":"https://json-schema.org/draft/2020-12/schema","$ref":"#/$defs/test_json_schema5__Person","$defs":{"test_json_schema5__Person":{"type":"object","properties":{"first_name":{"type":"string","description":"Given name of this person"},"last_name":{"description":"Optional family name of this person","anyOf":[{"type":"string"},{"type":"null"}]},"age":{"allOf":[{"minimum":0,"type":"number"},{"maximum":130,"type":"number"}]},"nickname":{"type":"string"}},"required":["first_name"]}}})";
 
   EXPECT_EQ(json_schema, expected);
 }
