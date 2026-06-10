@@ -188,10 +188,10 @@ struct NamedTupleParser {
    * @param _definitions The map of definitions to add to.
    * @return The schema type.
    */
-  template<typename View>
+  template <typename View = void>
   static schema::Type to_schema(
-      std::map<std::string, schema::Type>* _definitions, View* _view = (void*) nullptr) noexcept {
-
+      std::map<std::string, schema::Type>* _definitions,
+      View* _view = nullptr) noexcept {
     SchemaType schema;
     build_schema(_definitions, &schema, _view,
                  std::make_integer_sequence<int, size_>());
@@ -246,17 +246,14 @@ struct NamedTupleParser {
     if constexpr (!internal::is_skip_v<U> && !internal::is_extra_fields_v<U>) {
       // Add default value here
       auto s = Parser<R, W, U, ProcessorsType>::to_schema(_definitions);
-      static_assert(std::is_same_v<decltype(s), schema::Type>, "was sonst?");
       if constexpr (!std::is_same_v<View, void>) {
-
-        if constexpr (std::is_same_v<decltype(s), schema::Type>) {
-          // s.default_value_ = Parser<R, W, U, ProcessorsType>::write(_w, *rfl::get<_i>(_view), new_parent);;
-          s.variant_.visit([&](auto& value) {
-            if constexpr (std::is_same_v<std::remove_cvref_t< decltype(value)>, schema::Type::WithDefault>) {
-              value.default_value_ = rfl::to_generic((*rfl::get<_i>(*_view)).get());
-            }
-          });
-        }
+        s.variant_.visit([&](auto& value) {
+          if constexpr (std::is_same_v<std::remove_cvref_t<decltype(value)>,
+                                       schema::Type::DefaultVal>) {
+            value.default_value_ =
+                rfl::to_generic((*rfl::get<_i>(*_view)).get());
+          }
+        });
       }
       if constexpr (_no_field_names) {
         _schema->types_.emplace_back(std::move(s));

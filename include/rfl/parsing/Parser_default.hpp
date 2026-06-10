@@ -641,14 +641,12 @@ struct Parser {
         if constexpr (internal::has_default_val_v<U>) {
           auto t = U{};
           auto view = ProcessorsType::template process<U>(to_view(t));
-          using ViewType = decltype(view);
           (*_definitions)[name] =
               Parser<R, W, NamedTupleType, ProcessorsType>::to_schema(
                   _definitions, &view);
         }else {
           (*_definitions)[name] =
-              Parser<R, W, NamedTupleType, ProcessorsType>::to_schema(
-                  _definitions, (void*)nullptr);
+              Parser<R, W, NamedTupleType, ProcessorsType>::to_schema(_definitions);
         }
       }
     }

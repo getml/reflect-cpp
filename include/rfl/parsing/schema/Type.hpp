@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "../../Generic.hpp"
 #include "../../Object.hpp"
 #include "../../Ref.hpp"
 #include "../../Variant.hpp"
