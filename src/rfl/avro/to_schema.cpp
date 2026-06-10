@@ -122,6 +122,10 @@ schema::Type type_to_avro_schema_type(
       }
       return schema::Type{.value = record};
 
+    } else if constexpr (std::is_same<T, Type::DefaultVal>()) {
+      return type_to_avro_schema_type(*_t.type_, _definitions, _already_known,
+                                      _num_unnamed);
+
     } else if constexpr (std::is_same<T, Type::Optional>()) {
       return schema::Type{
           .value = std::vector<schema::Type>(

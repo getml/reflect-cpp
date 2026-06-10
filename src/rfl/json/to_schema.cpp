@@ -52,7 +52,8 @@ bool is_optional(const parsing::schema::Type& _t) {
       return WithDefaultAsOptional ? true : is_optional(*_v.type_);
 
     } else {
-      return std::is_same_v<T, parsing::schema::Type::Optional>;
+      return std::is_same_v<T, parsing::schema::Type::Optional> ||
+             std::is_same_v<T, parsing::schema::Type::DefaultVal>;
     }
   });
 }
@@ -224,6 +225,9 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type,
         any_of.emplace_back(type_to_json_schema_type(t, _no_required));
       }
       return schema::Type{.value = schema::Type::AnyOf{.anyOf = any_of}};
+
+    } else if constexpr (std::is_same<T, Type::DefaultVal>()) {
+      return type_to_json_schema_type(*_t.type_, _no_required);
 
     } else if constexpr (std::is_same<T, Type::Deprecated>()) {
       auto res = type_to_json_schema_type(*_t.type_, _no_required);

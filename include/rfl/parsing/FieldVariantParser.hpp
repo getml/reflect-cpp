@@ -5,17 +5,18 @@
 #include <string>
 #include <type_traits>
 
+#include "../NamedTuple.hpp"
 #include "../Result.hpp"
 #include "../Tuple.hpp"
 #include "../Variant.hpp"
-#include "../always_false.hpp"
-#include "../visit.hpp"
+#include "../internal/no_duplicate_field_names.hpp"
+#include "../internal/to_ptr_field.hpp"
+#include "../make_named_tuple.hpp"
 #include "FieldVariantReader.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
 /// To be used when all options of the variants are rfl::Field. Essentially,
 /// this is an externally tagged union.
@@ -93,13 +94,21 @@ struct FieldVariantParser {
    * @return The schema type.
    */
   static schema::Type to_schema(
-      std::map<std::string, schema::Type>* _definitions,
-      std::vector<schema::Type> = {}) {
-    using VariantType = rfl::Variant<NamedTuple<FieldTypes>...>;
-    return Parser<R, W, VariantType, ProcessorsType>::to_schema(_definitions);
+      std::map<std::string, schema::Type>* _definitions) {
+    return schema::Type{schema::Type::AnyOf{
+        .types_ = std::vector<schema::Type>(
+            {one_field_to_type<FieldTypes>(_definitions)...})}};
+  }
+
+ private:
+  template <class FieldType>
+  static schema::Type one_field_to_type(
+      std::map<std::string, schema::Type>* _definitions) noexcept {
+    using NamedTupleType = NamedTuple<std::remove_cvref_t<FieldType>>;
+    return Parser<R, W, NamedTupleType, ProcessorsType>::to_schema(
+        _definitions);
   }
 };
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif
