@@ -6,6 +6,7 @@
 #include <string>
 
 #include "../../Flatten.hpp"
+#include "../../Generic.hpp"
 #include "../../Literal.hpp"
 #include "../../Object.hpp"
 #include "../../Ref.hpp"
