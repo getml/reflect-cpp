@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "../../Generic.hpp"
 #include "../../Object.hpp"
 #include "../../Ref.hpp"
 #include "../../Variant.hpp"
@@ -61,6 +62,7 @@ struct RFL_API Type {
   /// using this or the Optional wrapper.
   struct DefaultVal {
     Ref<Type> type_;
+    Generic default_value_;
   };
 
   struct DescribedLiteral {

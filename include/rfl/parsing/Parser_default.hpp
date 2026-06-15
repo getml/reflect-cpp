@@ -572,6 +572,7 @@ struct Parser {
 
     } else if constexpr (rfl::internal::is_deprecated_v<U>) {
       return make_deprecated<U>(_definitions);
+
     } else if constexpr (std::is_class_v<U> && std::is_aggregate_v<U>) {
       return make_reference<U>(_definitions);
 
@@ -637,9 +638,16 @@ struct Parser {
 
       } else {
         using NamedTupleType = internal::processed_t<U, ProcessorsType>;
-        (*_definitions)[name] =
-            Parser<R, W, NamedTupleType, ProcessorsType>::to_schema(
-                _definitions);
+        if constexpr (internal::has_default_val_v<U>) {
+          auto t = U{};
+          auto view = ProcessorsType::template process<U>(to_view(t));
+          (*_definitions)[name] =
+              Parser<R, W, NamedTupleType, ProcessorsType>::to_schema(
+                  _definitions, &view);
+        }else {
+          (*_definitions)[name] =
+              Parser<R, W, NamedTupleType, ProcessorsType>::to_schema(_definitions);
+        }
       }
     }
     return Type{Type::Reference{name}};

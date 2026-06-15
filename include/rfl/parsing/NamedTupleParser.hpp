@@ -31,6 +31,14 @@
 #include "schema/Type.hpp"
 #include "to_single_error_message.hpp"
 
+namespace rfl {
+
+/// forward declaration
+template <class... Ps>
+Generic to_generic(const auto& _t);
+
+}  // namespace rfl
+
 namespace rfl::parsing {
 
 template <class R, class W, bool _ignore_empty_containers, bool _all_required,
@@ -180,10 +188,12 @@ struct NamedTupleParser {
    * @param _definitions The map of definitions to add to.
    * @return The schema type.
    */
+  template <typename View = void>
   static schema::Type to_schema(
-      std::map<std::string, schema::Type>* _definitions) noexcept {
+      std::map<std::string, schema::Type>* _definitions,
+      View* _view = nullptr) noexcept {
     SchemaType schema;
-    build_schema(_definitions, &schema,
+    build_schema(_definitions, &schema, _view,
                  std::make_integer_sequence<int, size_>());
     return schema::Type{schema};
   }
@@ -226,14 +236,25 @@ struct NamedTupleParser {
     }
   }
 
-  template <size_t _i>
+  template <typename View, size_t _i>
   static void add_field_to_schema(
       std::map<std::string, schema::Type>* _definitions,
-      SchemaType* _schema) noexcept {
+      SchemaType* _schema,
+      View* _view) noexcept {
     using F = internal::nth_element_t<_i, FieldTypes...>;
     using U = std::remove_cvref_t<typename F::Type>;
     if constexpr (!internal::is_skip_v<U> && !internal::is_extra_fields_v<U>) {
+      // Add default value here
       auto s = Parser<R, W, U, ProcessorsType>::to_schema(_definitions);
+      if constexpr (!std::is_same_v<View, void>) {
+        s.variant_.visit([&](auto& value) {
+          if constexpr (std::is_same_v<std::remove_cvref_t<decltype(value)>,
+                                       schema::Type::DefaultVal>) {
+            value.default_value_ =
+                rfl::to_generic((*rfl::get<_i>(*_view)).get());
+          }
+        });
+      }
       if constexpr (_no_field_names) {
         _schema->types_.emplace_back(std::move(s));
       } else {
@@ -249,11 +270,12 @@ struct NamedTupleParser {
     (add_field_to_object<_is>(_w, _tup, _ptr), ...);
   }
 
-  template <int... _is>
+  template <typename View,  int... _is>
   static void build_schema(std::map<std::string, schema::Type>* _definitions,
                            SchemaType* _schema,
+                           View* _view,
                            std::integer_sequence<int, _is...>) noexcept {
-    (add_field_to_schema<_is>(_definitions, _schema), ...);
+    (add_field_to_schema<View, _is>(_definitions, _schema, _view), ...);
 
     if constexpr (NamedTupleType::pos_extra_fields() != -1) {
       using F = internal::nth_element_t<NamedTupleType::pos_extra_fields(),
