@@ -85,7 +85,7 @@ struct Parser {
    * @param _var The input variable to read from.
    * @return A Result containing the parsed value or an error.
    */
-  static auto read(const R& _r, const InputVarType& _var) noexcept {
+  static auto read(const R& _r, const InputVarType& _var) {
     if constexpr (internal::is_basic_type_v<T>) {
       return ParserBasicType<R, W, T, ProcessorsType>::read(_r, _var);
 
@@ -644,9 +644,10 @@ struct Parser {
           (*_definitions)[name] =
               Parser<R, W, NamedTupleType, ProcessorsType>::to_schema(
                   _definitions, &view);
-        }else {
+        } else {
           (*_definitions)[name] =
-              Parser<R, W, NamedTupleType, ProcessorsType>::to_schema(_definitions);
+              Parser<R, W, NamedTupleType, ProcessorsType>::to_schema(
+                  _definitions);
         }
       }
     }
@@ -692,16 +693,22 @@ struct Parser {
   /// so we only use it when the DefaultIfMissing preprocessor is added.
   static Result<T> read_struct_with_default(const R& _r,
                                             const InputVarType& _var) {
-    auto t = T{};
-    auto view = ProcessorsType::template process<T>(to_view(t));
-    using ViewType = decltype(view);
-    const auto err =
-        Parser<R, W, ViewType, ProcessorsType>::read_view_with_default(_r, _var,
-                                                                       &view);
-    if (err) [[unlikely]] {
-      return error(*err);
+    try {
+      auto t = T{};  // This might fail, for instance if the default value does
+                     // not satisfy the validator, but in that case we will just
+                     // return the error.
+      auto view = ProcessorsType::template process<T>(to_view(t));
+      using ViewType = decltype(view);
+      const auto err =
+          Parser<R, W, ViewType, ProcessorsType>::read_view_with_default(
+              _r, _var, &view);
+      if (err) [[unlikely]] {
+        return error(*err);
+      }
+      return t;
+    } catch (std::exception& e) {
+      return error(e.what());
     }
-    return t;
   }
 };
 
