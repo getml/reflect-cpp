@@ -36,7 +36,7 @@ constexpr auto wrap_fields(std::integer_sequence<int, _is...>) {
 
 /// Finds the index of the field signified by _field_name
 template <StringLiteral _field_name, class Fields>
-constexpr static int find_index() {
+constexpr int find_index() {
   constexpr int ix = wrap_fields<_field_name, Fields>(
       std::make_integer_sequence<int, rfl::tuple_size_v<Fields>>());
   static_assert(rfl::tuple_element_t<ix, Fields>::name_ == _field_name,
@@ -46,7 +46,7 @@ constexpr static int find_index() {
 
 /// Finds the index of the field signified by _field_name or -1.
 template <StringLiteral _field_name, class Fields>
-constexpr static int find_index_or_minus_one() {
+constexpr int find_index_or_minus_one() {
   if constexpr (rfl::tuple_size_v<Fields> == 0) {
     return -1;
   } else {
