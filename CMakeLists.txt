@@ -27,6 +27,7 @@ option(REFLECTCPP_BOOST_SERIALIZATION "Enable Boost.Serialization support" ${REF
 option(REFLECTCPP_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
 option(REFLECTCPP_CHECK_HEADERS "Make sure that all headers are self-contained" OFF)
+option(REFLECTCPP_BUILD_MODULES "Build experimental C++20 module interfaces" OFF)
 
 option(REFLECTCPP_USE_BUNDLED_DEPENDENCIES "Use the bundled dependencies" ON)
 
@@ -460,6 +461,86 @@ set_target_properties(reflectcpp PROPERTIES LINKER_LANGUAGE CXX)
 target_sources(reflectcpp PRIVATE ${REFLECT_CPP_SOURCES})
 target_precompile_headers(reflectcpp PRIVATE [["rfl.hpp"]] <iostream> <string> <functional>)
 
+if(REFLECTCPP_BUILD_MODULES)
+    if(CMAKE_VERSION VERSION_LESS 3.28)
+        message(FATAL_ERROR "REFLECTCPP_BUILD_MODULES requires CMake 3.28 or newer")
+    endif()
+
+    if(CMAKE_GENERATOR MATCHES "Unix Makefiles")
+        message(FATAL_ERROR "REFLECTCPP_BUILD_MODULES requires a generator with C++ module dependency scanning support, such as Ninja")
+    endif()
+
+    set(REFLECTCPP_MODULE_SOURCES
+        src/modules/rfl.cppm
+        src/modules/rfl.generic.cppm
+        src/modules/rfl.cli.cppm
+    )
+
+    if(REFLECTCPP_JSON)
+        list(APPEND REFLECTCPP_MODULE_SOURCES src/modules/rfl.json.cppm)
+    endif()
+    if(REFLECTCPP_AVRO)
+        list(APPEND REFLECTCPP_MODULE_SOURCES src/modules/rfl.avro.cppm)
+    endif()
+    if(REFLECTCPP_BSON)
+        list(APPEND REFLECTCPP_MODULE_SOURCES src/modules/rfl.bson.cppm)
+    endif()
+    if(REFLECTCPP_CAPNPROTO)
+        list(APPEND REFLECTCPP_MODULE_SOURCES src/modules/rfl.capnproto.cppm)
+    endif()
+    if(REFLECTCPP_CBOR)
+        list(APPEND REFLECTCPP_MODULE_SOURCES src/modules/rfl.cbor.cppm)
+    endif()
+    if(REFLECTCPP_CEREAL)
+        list(APPEND REFLECTCPP_MODULE_SOURCES src/modules/rfl.cereal.cppm)
+    endif()
+    if(REFLECTCPP_CSV)
+        list(APPEND REFLECTCPP_MODULE_SOURCES src/modules/rfl.csv.cppm)
+    endif()
+    if(REFLECTCPP_FLEXBUFFERS)
+        list(APPEND REFLECTCPP_MODULE_SOURCES src/modules/rfl.flexbuf.cppm)
+    endif()
+    if(REFLECTCPP_MSGPACK)
+        list(APPEND REFLECTCPP_MODULE_SOURCES src/modules/rfl.msgpack.cppm)
+    endif()
+    if(REFLECTCPP_PARQUET)
+        list(APPEND REFLECTCPP_MODULE_SOURCES src/modules/rfl.parquet.cppm)
+    endif()
+    if(REFLECTCPP_TOML)
+        list(APPEND REFLECTCPP_MODULE_SOURCES src/modules/rfl.toml.cppm)
+    endif()
+    if(REFLECTCPP_UBJSON)
+        list(APPEND REFLECTCPP_MODULE_SOURCES src/modules/rfl.ubjson.cppm)
+    endif()
+    if(REFLECTCPP_XML)
+        list(APPEND REFLECTCPP_MODULE_SOURCES src/modules/rfl.xml.cppm)
+    endif()
+    if(REFLECTCPP_YAML)
+        list(APPEND REFLECTCPP_MODULE_SOURCES src/modules/rfl.yaml.cppm)
+    endif()
+    if(REFLECTCPP_YAS)
+        list(APPEND REFLECTCPP_MODULE_SOURCES src/modules/rfl.yas.cppm)
+    endif()
+    if(REFLECTCPP_BOOST_SERIALIZATION)
+        list(APPEND REFLECTCPP_MODULE_SOURCES src/modules/rfl.boost_serialization.cppm)
+    endif()
+
+    target_sources(reflectcpp
+        PUBLIC
+            FILE_SET reflectcpp_modules
+            TYPE CXX_MODULES
+            BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src/modules
+            FILES ${REFLECTCPP_MODULE_SOURCES}
+    )
+    set_source_files_properties(${REFLECTCPP_MODULE_SOURCES}
+        PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+    set_target_properties(reflectcpp PROPERTIES CXX_SCAN_FOR_MODULES ON)
+
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        target_compile_options(reflectcpp PUBLIC -fmodules-ts)
+    endif()
+endif()
+
 if (REFLECTCPP_BUILD_TESTS)
     add_library(reflectcpp_tests_crt INTERFACE)
     target_link_libraries(reflectcpp_tests_crt INTERFACE reflectcpp GTest::gtest_main)
@@ -538,10 +619,17 @@ if (REFLECTCPP_INSTALL)
         FILES ${RFL_HEADERS}
     )
 
+    if(REFLECTCPP_BUILD_MODULES)
+        set(_REFLECTCPP_MODULE_FILE_SET_INSTALL
+            FILE_SET reflectcpp_modules DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp/modules
+        )
+    endif()
+
     install(
         TARGETS reflectcpp
         EXPORT reflectcpp-exports
         FILE_SET reflectcpp_headers DESTINATION ${INCLUDE_INSTALL_DIR}
+        ${_REFLECTCPP_MODULE_FILE_SET_INSTALL}
     )
 
     install(
@@ -586,4 +674,3 @@ include(CPack)
 if (ament_cmake_FOUND)
     ament_package()
 endif()
-

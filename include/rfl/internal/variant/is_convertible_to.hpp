@@ -8,7 +8,7 @@
 namespace rfl::internal::variant {
 
 template <class T, class... AlternativeTypes>
-static constexpr bool is_convertible_to() {
+inline constexpr bool is_convertible_to() {
   return std::disjunction_v<std::is_convertible<T, AlternativeTypes>...>;
 }
 

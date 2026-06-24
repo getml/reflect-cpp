@@ -38,7 +38,7 @@ struct SchemaHolder {
 };
 
 template <class T, class... Ps>
-static const SchemaHolder<T, Ps...> schema_holder =
+inline const SchemaHolder<T, Ps...> schema_holder =
     SchemaHolder<T, Ps...>::make();
 
 /// Returns the Cap'n Proto schema for a class.
