@@ -27,7 +27,7 @@ struct ToAllCaps {
   }
 
  private:
-  /// Applies the camelCase to snake_case transformation to a single field.
+  /// Applies the all-uppercase transformation to a single field.
   /// @tparam FieldType The type of the field being transformed
   /// @param _f The field to transform
   /// @return A new field with the transformed name and the same value
