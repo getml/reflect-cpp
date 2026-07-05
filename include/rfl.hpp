@@ -49,6 +49,7 @@
 #include "rfl/SnakeCaseToPascalCase.hpp"
 #include "rfl/TaggedUnion.hpp"
 #include "rfl/Timestamp.hpp"
+#include "rfl/ToAllCaps.hpp"
 #include "rfl/UnderlyingEnums.hpp"
 #include "rfl/Validator.hpp"
 #include "rfl/Variant.hpp"
