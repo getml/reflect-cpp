@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "../Ref.hpp"
-#include "../Result.hpp"
 #include "../Tuple.hpp"
 #include "../internal/is_array.hpp"
 #include "../internal/no_extra_fields_v.hpp"
@@ -17,13 +16,14 @@
 
 namespace rfl::parsing {
 
-template <class R, class W, class ViewType, class ProcessorsType>
+template <class R, class W, class _ViewType, class ProcessorsType>
 class ViewReaderWithDefault {
- private:
+ public:
   using InputVarType = typename R::InputVarType;
+  using ViewType = _ViewType;
+
   static constexpr size_t size_ = ViewType::size();
 
- public:
   /**
    * @brief Constructor.
    *

@@ -20,10 +20,8 @@ namespace rfl::env {
 
 /// Represents a ENV variable that can be a direct value or a path in the
 /// argument map. The `path` represents the hierarchical key (e.g.,
-/// "database.host"). The `direct_value` is used when parsing array elements
-/// directly.
+/// "DATABASE_HOST"). The `direct_value` is used when parsing array directly.
 struct EnvVarType {
-  const std::map<std::string, std::string>* const args = nullptr;
   const std::string path;
   const std::optional<std::string> direct_value;
 };
@@ -31,7 +29,6 @@ struct EnvVarType {
 /// Represents a ENV object with a prefix path for accessing nested fields.
 /// All child fields will be prefixed with this path.
 struct EnvObjectType {
-  const std::map<std::string, std::string>* const args = nullptr;
   const std::string prefix;
 };
 
@@ -149,7 +146,7 @@ struct Reader {
       return error(std::string("Index ") + std::to_string(_idx) +
                    " out of bounds.");
     }
-    return InputVarType{nullptr, "", _arr.values[_idx]};
+    return InputVarType{.path = "", .direct_value = _arr.values[_idx]};
   }
 
   /// Gets a specific field from a ENV object by name.
@@ -161,7 +158,7 @@ struct Reader {
   rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType& _obj) const noexcept {
     const auto child_path = _obj.prefix.empty() ? _name : _obj.prefix + _name;
-    return InputVarType{_obj.args, child_path, std::nullopt};
+    return InputVarType{.path = child_path, .direct_value = std::nullopt};
   }
 
   /// Checks if a ENV variable is empty (has no value).
@@ -173,16 +170,9 @@ struct Reader {
     if (_var.direct_value) {
       return false;
     }
-    if (!_var.args) {
-      return true;
-    }
-    if (_var.args->count(_var.path)) {
+    if (std::getenv(_var.path.c_str()) != nullptr) {
       return false;
     }
-    const auto prefix = _var.path + "_";
-    const auto it = _var.args->lower_bound(prefix);
-    return it == _var.args->end() ||
-           it->first.substr(0, prefix.size()) != prefix;
   }
 
   /// Reads all elements from a ENV array using the provided array reader.
@@ -195,7 +185,8 @@ struct Reader {
   std::optional<Error> read_array(const ArrayReader& _array_reader,
                                   const InputArrayType& _arr) const noexcept {
     for (const auto& val : _arr.values) {
-      const auto err = _array_reader.read(InputVarType{nullptr, "", val});
+      const auto err =
+          _array_reader.read(InputVarType{.path = "", .direct_value = val});
       if (err) {
         return err;
       }
@@ -214,25 +205,18 @@ struct Reader {
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
-    std::set<std::string> seen;
-    auto it = _obj.prefix.empty() ? _obj.args->begin()
-                                  : _obj.args->lower_bound(_obj.prefix);
-    while (it != _obj.args->end()) {
-      if (!_obj.prefix.empty() &&
-          it->first.substr(0, _obj.prefix.size()) != _obj.prefix) {
-        break;
+    using ViewType = typename std::remove_cvref_t<ObjectReader>::ViewType;
+    const auto names = typename ViewType::Names::names();
+    for (const auto& name : names) {
+      const auto child_path = _obj.prefix.empty() ? name : _obj.prefix + name;
+      const auto var =
+          InputVarType{.path = child_path, .direct_value = std::nullopt};
+      if (!is_empty(var)) {
+        const auto err = _object_reader.read(std::string_view(name), var);
+        if (err) {
+          return err;
+        }
       }
-      const auto rest = std::string_view(it->first).substr(_obj.prefix.size());
-      const auto separator_pos = rest.find(path_separator);
-      const auto child = std::string(separator_pos == std::string_view::npos
-                                         ? rest
-                                         : rest.substr(0, separator_pos));
-      if (!child.empty() && seen.insert(child).second) {
-        const auto child_path = _obj.prefix + child;
-        _object_reader.read(std::string_view(child),
-                            InputVarType{_obj.args, child_path, std::nullopt});
-      }
-      ++it;
     }
     return std::nullopt;
   }
@@ -257,24 +241,19 @@ struct Reader {
       const InputVarType& _var) const noexcept {
     const auto str = get_value(_var);
     if (!str) {
-      return InputArrayType{{}};
+      return InputArrayType{.values = {}};
     }
-    return InputArrayType{split(*str, ",")};
+    return InputArrayType{.values = split(*str, ',')};
   }
 
   /// Converts a ENV variable to an object for reading nested fields.
-  /// Creates a CliObjectType with an appropriate prefix for child field access.
+  /// Creates a EnvObjectType with an appropriate prefix for child field access.
   /// @param _var The ENV variable representing the object
   /// @return A Result containing a CliObjectType or an error
   rfl::Result<InputObjectType> to_object(
       const InputVarType& _var) const noexcept {
-    if (!_var.args) {
-      return error("Cannot convert to object: no argument map available" +
-                   (_var.path.empty() ? std::string(".")
-                                      : " for key '" + _var.path + "'."));
-    }
     const auto prefix = _var.path.empty() ? std::string("") : _var.path + "_";
-    return InputObjectType{_var.args, prefix};
+    return InputObjectType{.prefix = prefix};
   }
 
   /// Custom constructors are not supported for ENV parsing.
@@ -292,14 +271,12 @@ struct Reader {
     if (_var.direct_value) {
       return *_var.direct_value;
     }
-    if (!_var.args) {
+    const char* env_value = std::getenv(_var.path.c_str());
+    if (env_value) {
+      return std::string(env_value);
+    } else {
       return std::nullopt;
     }
-    const auto it = _var.args->find(_var.path);
-    if (it == _var.args->end()) {
-      return std::nullopt;
-    }
-    return it->second;
   }
 
   static std::vector<std::string> split(const std::string& _str, char _delim) {

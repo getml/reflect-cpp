@@ -15,20 +15,22 @@
 
 namespace rfl::parsing {
 
-template <class R, class W, class ViewType, class ProcessorsType>
+template <class R, class W, class _ViewType, class ProcessorsType>
 class ViewReaderWithStrippedFieldNames {
- private:
+ public:
   using InputVarType = typename R::InputVarType;
+  using ViewType = _ViewType;
+
   static constexpr size_t size_ = ViewType::size();
 
- public:
   /**
    * @brief Constructor.
    *
    * @param _r The reader to use.
    * @param _view The view to read into.
    * @param _found A boolean array indicating which fields have been found.
-   * @param _set A boolean array indicating which fields have been successfully set.
+   * @param _set A boolean array indicating which fields have been successfully
+   * set.
    * @param _errors The vector to collect errors in.
    */
   ViewReaderWithStrippedFieldNames(const R* _r, ViewType* _view,
