@@ -23,20 +23,20 @@ namespace rfl::env {
 /// Represents a ENV variable that can be a direct value or a path in the
 /// argument map. The `path` represents the hierarchical key (e.g.,
 /// "DATABASE_HOST"). The `direct_value` is used when parsing array directly.
-struct EnvVarType {
+struct InputEnvVarType {
   const std::string path;
   const std::optional<std::string> direct_value;
 };
 
 /// Represents a ENV object with a prefix path for accessing nested fields.
 /// All child fields will be prefixed with this path.
-struct EnvObjectType {
+struct InputEnvObjectType {
   const std::string prefix;
 };
 
 /// Represents a ENV array containing multiple string values.
 /// Typically created by splitting a comma-delimited argument value.
-struct EnvArrayType {
+struct InputEnvArrayType {
   const std::vector<std::string> values;
 };
 
@@ -129,10 +129,10 @@ rfl::Result<T> parse_value(const std::string& _str,
 /// Parser for environment variables. Provides methods to read fields from ENV
 /// arrays and objects, check for empty variables, and convert string values to
 /// basic C++ types.
-struct Reader {
-  using InputArrayType = EnvArrayType;
-  using InputObjectType = EnvObjectType;
-  using InputVarType = EnvVarType;
+struct RFL_API Reader {
+  using InputArrayType = InputEnvArrayType;
+  using InputObjectType = InputEnvObjectType;
+  using InputVarType = InputEnvVarType;
 
   template <class T>
   static constexpr bool has_custom_constructor = false;
@@ -172,8 +172,8 @@ struct Reader {
     if (_var.direct_value) {
       return false;
     }
-    if (std::getenv(_var.path.c_str()) != nullptr) {
-      return false;
+    if (const auto str = std::getenv(_var.path.c_str()) != nullptr) {
+      return str.empty();
     }
     if (_var.path.empty()) {
       return true;

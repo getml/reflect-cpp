@@ -4,6 +4,7 @@
 #include "../rfl.hpp"
 #include "env/Parser.hpp"
 #include "env/Reader.hpp"
+#include "env/Writer.hpp"
 #include "env/read.hpp"
 
 #endif
