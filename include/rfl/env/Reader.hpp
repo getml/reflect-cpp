@@ -16,6 +16,8 @@
 #include "../Result.hpp"
 #include "../always_false.hpp"
 
+extern char** environ;
+
 namespace rfl::env {
 
 /// Represents a ENV variable that can be a direct value or a path in the
@@ -173,6 +175,20 @@ struct Reader {
     if (std::getenv(_var.path.c_str()) != nullptr) {
       return false;
     }
+    if (_var.path.empty()) {
+      return true;
+    }
+    const auto prefix = _var.path.empty() ? std::string("") : _var.path + "_";
+    for (char** env = environ; *env != nullptr; ++env) {
+      const std::string env_entry(*env);
+      if (env_entry.size() <= prefix.size()) {
+        continue;
+      }
+      if (env_entry.compare(0, prefix.size(), prefix) == 0) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /// Reads all elements from a ENV array using the provided array reader.
