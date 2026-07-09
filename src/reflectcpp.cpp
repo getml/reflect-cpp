@@ -30,6 +30,7 @@ SOFTWARE.
 // compilation.
 
 #include "rfl/Generic.cpp"
+#include "rfl/env/Writer.cpp"
 #include "rfl/generic/Writer.cpp"
 #include "rfl/internal/strings/strings.cpp"
 #include "rfl/parsing/schema/Type.cpp"

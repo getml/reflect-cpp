@@ -172,8 +172,9 @@ struct RFL_API Reader {
     if (_var.direct_value) {
       return false;
     }
-    if (const auto str = std::getenv(_var.path.c_str()) != nullptr) {
-      return str.empty();
+    const auto str = std::getenv(_var.path.c_str());
+    if (str != nullptr) {
+      return std::string(str).empty();
     }
     if (_var.path.empty()) {
       return true;
@@ -222,16 +223,14 @@ struct RFL_API Reader {
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
     using ViewType = typename std::remove_cvref_t<ObjectReader>::ViewType;
-    const auto names = typename ViewType::Names::names();
+    using NamesType = typename ViewType::Names;
+    const auto names = NamesType::names();
     for (const auto& name : names) {
       const auto child_path = _obj.prefix.empty() ? name : _obj.prefix + name;
       const auto var =
           InputVarType{.path = child_path, .direct_value = std::nullopt};
       if (!is_empty(var)) {
-        const auto err = _object_reader.read(std::string_view(name), var);
-        if (err) {
-          return err;
-        }
+        _object_reader.read(std::string_view(name), var);
       }
     }
     return std::nullopt;

@@ -6,5 +6,6 @@
 #include "env/Reader.hpp"
 #include "env/Writer.hpp"
 #include "env/read.hpp"
+#include "env/write.hpp"
 
 #endif

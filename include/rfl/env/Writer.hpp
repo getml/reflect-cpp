@@ -133,8 +133,8 @@ class RFL_API Writer {
                                     const T& _var,
                                     OutputObjectType* _parent) const {
     const auto val = from_basic_type(_var);
-    _parent->fields->emplace(std::string(_name), Ref<OutputVarType>(val));
-    return OutputVarType(val);
+    _parent->fields->emplace(std::string(_name), val);
+    return val;
   }
 
   /// Adds a null value to a parent array.

@@ -74,15 +74,15 @@ Writer::OutputVarType Writer::add_null_to_object(
   return var;
 }
 
-void Writer::end_array(OutputArrayType* /*_arr*/) const {}
+void Writer::end_array(OutputArrayType* /*_arr*/) const noexcept {}
 
-void Writer::end_object(OutputObjectType* _obj) const {
+void Writer::end_object(OutputObjectType* _obj) const noexcept {
   const auto& obj = *_obj;
   for (const auto& [key, value] : *obj.fields) {
     value.visit([&](const auto& _v) {
       using T = std::remove_cvref_t<decltype(_v)>;
       if constexpr (std::is_same_v<T, OutputVarType>) {
-        std::setenv((obj.prefix + key).c_str(), _v.value.c_str(), 1);
+        setenv((obj.prefix + key).c_str(), _v.value.c_str(), 1);
 
       } else if constexpr (std::is_same_v<T, OutputArrayType>) {
         const auto arr_str = [&]() {
@@ -95,11 +95,11 @@ void Writer::end_object(OutputObjectType* _obj) const {
           }
           return result;
         }();
-        std::setenv((obj.prefix + key).c_str(), arr_str.c_str(), 1);
+        setenv((obj.prefix + key).c_str(), arr_str.c_str(), 1);
 
       } else if constexpr (std::is_same_v<T, OutputObjectType>) {
-        // Do nothing for objects, as end_object should have already processed
-        // their fields recursively.
+        // Do nothing for objects, as end_object should have already
+        // processed their fields recursively.
 
       } else {
         static_assert(always_false_v<T>,
