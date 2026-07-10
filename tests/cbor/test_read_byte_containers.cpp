@@ -2,7 +2,9 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <rfl/cbor.hpp>
+#include <span>
 
 // Make sure things still compile when
 // rfl.hpp is included after rfl/cbor.hpp.
@@ -31,8 +33,13 @@ TEST(cbor, test_read_from_byte_view) {
   std::transform(rfl_buffer.begin(), rfl_buffer.end(), my_buffer.begin(),
                  [](char c) { return static_cast<std::byte>(c); });
 
-  std::basic_string_view<std::byte> byte_view(my_buffer.data(),
-                                              rfl_buffer.size());
+  // Note: std::span<const std::byte> rather than
+  // std::basic_string_view<std::byte>. libc++ (Xcode 26.5+) deprecates
+  // std::char_traits<std::byte> — the non-standard specialization that a
+  // basic_string_view<std::byte> instantiates — which is a hard error under
+  // -Werror. A span is the idiomatic non-owning byte view and exercises the
+  // same rfl::cbor::read overload (concepts::ContiguousByteContainer).
+  std::span<const std::byte> byte_view(my_buffer.data(), rfl_buffer.size());
 
   auto result = rfl::cbor::read<TestBox>(byte_view);
   EXPECT_TRUE(result);
