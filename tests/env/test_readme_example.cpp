@@ -56,6 +56,22 @@ TEST(env, test_readme_example) {
   ASSERT_EQ(std::getenv("CHILDREN_0_TOWN"), std::string("Springfield"));
   ASSERT_EQ(std::getenv("CHILDREN_0_BIRTHDAY"), std::string("1987-04-19"));
   ASSERT_EQ(std::getenv("CHILDREN_0_AGE"), std::string("10"));
+
+  const auto read_homer = rfl::env::read<Person>();
+
+  if (!read_homer) {
+    std::cout << "Error reading Person from environment: "
+              << read_homer.error().what() << std::endl;
+  }
+
+  ASSERT_TRUE(read_homer);
+
+  ASSERT_EQ(read_homer->first_name, "Homer");
+  ASSERT_EQ(read_homer->last_name, "Simpson");
+  ASSERT_EQ(read_homer->town, "Springfield");
+  ASSERT_EQ(read_homer->birthday.str(), "1987-04-19");
+  ASSERT_EQ(read_homer->age, 45);
+  ASSERT_EQ(read_homer->email, "homer@simpson.com");
 }
 
 }  // namespace test_readme_example
