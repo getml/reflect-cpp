@@ -18,8 +18,13 @@ struct OutputEnvVarType {
   std::string value;
 };
 
+struct OutputEnvObjectType;
+
 struct OutputEnvArrayType {
-  Ref<std::vector<OutputEnvVarType>> values;
+  std::string prefix;
+  Ref<std::vector<
+      Variant<OutputEnvVarType, OutputEnvArrayType, OutputEnvObjectType>>>
+      values;
 };
 
 struct OutputEnvObjectType {
@@ -39,12 +44,7 @@ class RFL_API Writer {
 
   Writer();
 
-  template <class T = int>
-  OutputArrayType array_as_root(const size_t) const noexcept {
-    static_assert(always_false_v<T>,
-                  "Writing arrays to ENV as root variables is not supported.");
-    return OutputArrayType{};
-  }
+  OutputArrayType array_as_root(const size_t) const noexcept;
 
   OutputObjectType object_as_root(const size_t) const noexcept;
 
@@ -67,13 +67,8 @@ class RFL_API Writer {
   /// @param The expected size (unused, reserved for future optimization)
   /// @param _parent Pointer to the parent array to add to
   /// @return An output array that can be populated with elements
-  template <class T = int>
   OutputArrayType add_array_to_array(const size_t,
-                                     OutputArrayType* _parent) const {
-    static_assert(always_false_v<T>,
-                  "Writing nested arrays to ENV is not supported.");
-    return OutputArrayType{};
-  }
+                                     OutputArrayType* _parent) const;
 
   /// Adds a nested array to a parent object with the specified field name.
   /// @param _name The name of the field in the parent object
@@ -88,13 +83,8 @@ class RFL_API Writer {
   /// @param The expected size (unused, reserved for future optimization)
   /// @param _parent Pointer to the parent array to add to
   /// @return An output object that can be populated with key-value pairs
-  template <class T = int>
   OutputObjectType add_object_to_array(const size_t,
-                                       OutputArrayType* _parent) const {
-    static_assert(always_false_v<T>,
-                  "Writing nested objects to ENV is not supported.");
-    return OutputObjectType{};
-  }
+                                       OutputArrayType* _parent) const;
 
   /// Adds a nested object to a parent object with the specified field name.
   /// @param _name The name of the field in the parent object
@@ -117,7 +107,7 @@ class RFL_API Writer {
                                    OutputArrayType* _parent) const {
     const auto val = from_basic_type(_var);
     _parent->values->emplace_back(val);
-    return OutputVarType(val);
+    return val;
   }
 
   /// Adds a value to a parent object with the specified field name.

@@ -2,19 +2,14 @@
 #define RFL_ENV_READER_HPP_
 
 #include <charconv>
-#include <clocale>
 #include <concepts>
 #include <cstdlib>
-#include <map>
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
 #include <type_traits>
-#include <vector>
 
 #include "../Result.hpp"
-#include "../always_false.hpp"
 
 extern char** environ;
 
@@ -22,22 +17,20 @@ namespace rfl::env {
 
 /// Represents a ENV variable that can be a direct value or a path in the
 /// argument map. The `path` represents the hierarchical key (e.g.,
-/// "DATABASE_HOST"). The `direct_value` is used when parsing array directly.
+/// "DATABASE_HOST").
 struct InputEnvVarType {
-  const std::string path;
-  const std::optional<std::string> direct_value;
+  std::string path;
 };
 
 /// Represents a ENV object with a prefix path for accessing nested fields.
 /// All child fields will be prefixed with this path.
 struct InputEnvObjectType {
-  const std::string prefix;
+  std::string prefix;
 };
 
 /// Represents a ENV array containing multiple string values.
-/// Typically created by splitting a comma-delimited argument value.
 struct InputEnvArrayType {
-  const std::vector<std::string> values;
+  std::string prefix;
 };
 
 // --- Constrained overloads for string-to-type parsing ---
@@ -144,11 +137,7 @@ struct RFL_API Reader {
   /// of bounds
   rfl::Result<InputVarType> get_field_from_array(
       const size_t _idx, const InputArrayType& _arr) const noexcept {
-    if (_idx >= _arr.values.size()) {
-      return error(std::string("Index ") + std::to_string(_idx) +
-                   " out of bounds.");
-    }
-    return InputVarType{.path = "", .direct_value = _arr.values[_idx]};
+    return InputVarType{.path = _arr.prefix + std::to_string(_idx)};
   }
 
   /// Gets a specific field from a ENV object by name.
@@ -160,7 +149,7 @@ struct RFL_API Reader {
   rfl::Result<InputVarType> get_field_from_object(
       const std::string& _name, const InputObjectType& _obj) const noexcept {
     const auto child_path = _obj.prefix.empty() ? _name : _obj.prefix + _name;
-    return InputVarType{.path = child_path, .direct_value = std::nullopt};
+    return InputVarType{.path = child_path};
   }
 
   /// Checks if a ENV variable is empty (has no value).
@@ -169,9 +158,6 @@ struct RFL_API Reader {
   /// @param _var The ENV variable to check
   /// @return true if the variable is empty, false otherwise
   bool is_empty(const InputVarType& _var) const noexcept {
-    if (_var.direct_value) {
-      return false;
-    }
     const auto str = std::getenv(_var.path.c_str());
     if (str != nullptr) {
       return std::string(str).empty();
@@ -201,12 +187,17 @@ struct RFL_API Reader {
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
                                   const InputArrayType& _arr) const noexcept {
-    for (const auto& val : _arr.values) {
-      const auto err =
-          _array_reader.read(InputVarType{.path = "", .direct_value = val});
+    size_t idx = 0;
+    while (true) {
+      const auto var = InputVarType{.path = _arr.prefix + std::to_string(idx)};
+      if (is_empty(var)) {
+        break;
+      }
+      const auto err = _array_reader.read(var);
       if (err) {
         return err;
       }
+      ++idx;
     }
     return std::nullopt;
   }
@@ -222,17 +213,39 @@ struct RFL_API Reader {
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
-    using ViewType = typename std::remove_cvref_t<ObjectReader>::ViewType;
-    using NamesType = typename ViewType::Names;
-    const auto names = NamesType::names();
-    for (const auto& name : names) {
-      const auto child_path = _obj.prefix.empty() ? name : _obj.prefix + name;
-      const auto var =
-          InputVarType{.path = child_path, .direct_value = std::nullopt};
-      if (!is_empty(var)) {
-        _object_reader.read(std::string_view(name), var);
+    constexpr bool has_view_type =
+        requires { typename std::remove_cvref_t<ObjectReader>::ViewType; };
+
+    if constexpr (has_view_type) {
+      using ViewType = typename std::remove_cvref_t<ObjectReader>::ViewType;
+      using NamesType = typename ViewType::Names;
+      const auto names = NamesType::names();
+      for (const auto& name : names) {
+        const auto child_path = _obj.prefix.empty() ? name : _obj.prefix + name;
+        const auto var = InputVarType{.path = child_path};
+        if (!is_empty(var)) {
+          _object_reader.read(std::string_view(name), var);
+        }
+      }
+
+    } else {
+      for (char** env = environ; *env != nullptr; ++env) {
+        const std::string env_entry(*env);
+        if (env_entry.size() <= _obj.prefix.size()) {
+          continue;
+        }
+        if (env_entry.compare(0, _obj.prefix.size(), _obj.prefix) == 0) {
+          const auto pos_eq = env_entry.find('=');
+          if (pos_eq == std::string::npos) {
+            continue;
+          }
+          const auto name = env_entry.substr(_obj.prefix.size(), pos_eq);
+          const auto var = InputVarType{.path = env_entry.substr(0, pos_eq)};
+          _object_reader.read(std::string_view(name), var);
+        }
       }
     }
+
     return std::nullopt;
   }
 
@@ -254,11 +267,8 @@ struct RFL_API Reader {
   /// @return A Result containing a CliArrayType with the split values
   rfl::Result<InputArrayType> to_array(
       const InputVarType& _var) const noexcept {
-    const auto str = get_value(_var);
-    if (!str) {
-      return InputArrayType{.values = {}};
-    }
-    return InputArrayType{.values = split(*str, ',')};
+    const auto prefix = _var.path.empty() ? std::string("") : _var.path + "_";
+    return InputArrayType{.prefix = prefix};
   }
 
   /// Converts a ENV variable to an object for reading nested fields.
@@ -283,37 +293,12 @@ struct RFL_API Reader {
  private:
   static std::optional<std::string> get_value(
       const InputVarType& _var) noexcept {
-    if (_var.direct_value) {
-      return *_var.direct_value;
-    }
     const char* env_value = std::getenv(_var.path.c_str());
     if (env_value) {
       return std::string(env_value);
     } else {
       return std::nullopt;
     }
-  }
-
-  static std::vector<std::string> split(const std::string& _str, char _delim) {
-    std::vector<std::string> result;
-    if (_str.empty()) {
-      return result;
-    }
-    size_t start = 0;
-    while (true) {
-      const auto pos = _str.find(_delim, start);
-      if (pos == std::string::npos) {
-        if (start < _str.size()) {
-          result.emplace_back(_str.substr(start));
-        }
-        break;
-      }
-      if (pos > start) {
-        result.emplace_back(_str.substr(start, pos - start));
-      }
-      start = pos + 1;
-    }
-    return result;
   }
 };
 

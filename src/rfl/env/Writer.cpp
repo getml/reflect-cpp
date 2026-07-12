@@ -38,15 +38,30 @@ static constexpr const char* XML_CONTENT = "xml_content";
 
 Writer::Writer() {}
 
+Writer::OutputArrayType Writer::array_as_root(
+    const size_t /*_size*/) const noexcept {
+  return OutputArrayType{.prefix = ""};
+}
+
 Writer::OutputObjectType Writer::object_as_root(
     const size_t /*_size*/) const noexcept {
   return OutputObjectType{.prefix = ""};
 }
 
+Writer::OutputArrayType Writer::add_array_to_array(
+    const size_t /*_size*/, OutputArrayType* _parent) const {
+  const auto arr =
+      OutputArrayType{.prefix = _parent->prefix +
+                                std::to_string(_parent->values->size()) + "_"};
+  _parent->values->emplace_back(arr);
+  return arr;
+}
+
 Writer::OutputArrayType Writer::add_array_to_object(
     const std::string_view& _name, const size_t /*_size*/,
     OutputObjectType* _parent) const {
-  const auto arr = OutputArrayType{};
+  const auto arr =
+      OutputArrayType{.prefix = _parent->prefix + std::string(_name) + "_"};
   _parent->fields->emplace(std::string(_name), arr);
   return arr;
 }
@@ -57,6 +72,15 @@ Writer::OutputObjectType Writer::add_object_to_object(
   const auto obj =
       OutputObjectType{.prefix = _parent->prefix + std::string(_name) + "_"};
   _parent->fields->emplace(std::string(_name), obj);
+  return obj;
+}
+
+Writer::OutputObjectType Writer::add_object_to_array(
+    const size_t /*_size*/, OutputArrayType* _parent) const {
+  const auto obj =
+      OutputObjectType{.prefix = _parent->prefix +
+                                 std::to_string(_parent->values->size()) + "_"};
+  _parent->values->emplace_back(obj);
   return obj;
 }
 
@@ -74,7 +98,30 @@ Writer::OutputVarType Writer::add_null_to_object(
   return var;
 }
 
-void Writer::end_array(OutputArrayType* /*_arr*/) const noexcept {}
+void Writer::end_array(OutputArrayType* _arr) const noexcept {
+  const auto& arr = *_arr;
+  for (size_t i = 0; i < arr.values->size(); ++i) {
+    const auto& value = (*arr.values)[i];
+    value.visit([&](const auto& _v) {
+      using T = std::remove_cvref_t<decltype(_v)>;
+      if constexpr (std::is_same_v<T, OutputVarType>) {
+        setenv((arr.prefix + std::to_string(i)).c_str(), _v.value.c_str(), 1);
+
+      } else if constexpr (std::is_same_v<T, OutputArrayType>) {
+        // Do nothing for arrays, as end_array should have already
+        // processed their fields recursively.
+
+      } else if constexpr (std::is_same_v<T, OutputObjectType>) {
+        // Do nothing for objects, as end_object should have already
+        // processed their fields recursively.
+
+      } else {
+        static_assert(always_false_v<T>,
+                      "Unsupported type in OutputArrayType.");
+      }
+    });
+  }
+}
 
 void Writer::end_object(OutputObjectType* _obj) const noexcept {
   const auto& obj = *_obj;
@@ -85,17 +132,8 @@ void Writer::end_object(OutputObjectType* _obj) const noexcept {
         setenv((obj.prefix + key).c_str(), _v.value.c_str(), 1);
 
       } else if constexpr (std::is_same_v<T, OutputArrayType>) {
-        const auto arr_str = [&]() {
-          std::string result;
-          for (const auto& val : *_v.values) {
-            if (!result.empty()) {
-              result += ",";
-            }
-            result += val.value;
-          }
-          return result;
-        }();
-        setenv((obj.prefix + key).c_str(), arr_str.c_str(), 1);
+        // Do nothing for arrays, as end_array should have already
+        // processed their fields recursively.
 
       } else if constexpr (std::is_same_v<T, OutputObjectType>) {
         // Do nothing for objects, as end_object should have already
