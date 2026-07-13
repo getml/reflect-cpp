@@ -5,6 +5,8 @@
 #include <rfl/env.hpp>
 #include <string>
 
+#include "write_and_read.hpp"
+
 namespace test_custom_class3 {
 
 struct Person {
@@ -56,6 +58,8 @@ namespace test_custom_class3 {
 
 TEST(env, test_custom_class3) {
   const auto bart = Person("Bart", "Simpson", 10);
+
+  write_and_read(bart);
 }
 
 }  // namespace test_custom_class3

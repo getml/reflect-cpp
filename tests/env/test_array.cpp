@@ -6,6 +6,8 @@
 #include <rfl/env.hpp>
 #include <string>
 
+#include "write_and_read.hpp"
+
 namespace test_array {
 
 struct Person {
@@ -25,6 +27,8 @@ TEST(env, test_array) {
       .first_name = "Homer",
       .children = std::make_unique<std::array<Person, 3>>(std::array<Person, 3>{
           std::move(bart), std::move(lisa), std::move(maggie)})};
+
+  write_and_read(homer);
 }
 
 }  // namespace test_array

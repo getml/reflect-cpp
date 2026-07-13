@@ -4,6 +4,8 @@
 #include <rfl/env.hpp>
 #include <string>
 
+#include "write_and_read.hpp"
+
 namespace test_timestamp {
 
 using TS = rfl::Timestamp<"%Y-%m-%d">;
@@ -17,11 +19,10 @@ struct Person {
 TEST(env, test_timestamp) {
   const auto result = TS::from_string("nonsense");
 
-  if (result) {
-    std::cout << "Failed: Expected an error, but got none." << std::endl;
-    return;
-  }
+  ASSERT_FALSE(result);
 
   const auto bart = Person{.first_name = "Bart", .birthday = "1987-04-19"};
+
+  write_and_read(bart);
 }
 }  // namespace test_timestamp

@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "write_and_read.hpp"
+
 namespace test_combined_processors {
 
 using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
@@ -44,5 +46,7 @@ TEST(env, test_combined_processors) {
 
   using Processors =
       rfl::Processors<rfl::SnakeCaseToCamelCase, rfl::AddStructName<"type">>;
+
+  write_and_read<Processors>(homer);
 }
 }  // namespace test_combined_processors

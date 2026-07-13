@@ -5,6 +5,8 @@
 #include <rfl/env.hpp>
 #include <string>
 
+#include "write_and_read.hpp"
+
 namespace test_map_with_key_validation {
 
 struct Person {
@@ -14,6 +16,8 @@ struct Person {
 };
 
 TEST(env, test_map_with_key_validation) {
+  const auto scoped_environment = test_env::ScopedEnvironment();
+
   auto children = std::make_unique<std::map<rfl::AlphaNumeric, Person>>();
 
   children->insert(std::make_pair("Bart", Person{.first_name = "Bart"}));
@@ -22,5 +26,11 @@ TEST(env, test_map_with_key_validation) {
 
   const auto homer =
       Person{.first_name = "Homer", .children = std::move(children)};
+
+  rfl::env::write(homer);
+
+  const auto read_homer = rfl::env::read<Person>();
+
+  ASSERT_FALSE(read_homer);
 }
 }  // namespace test_map_with_key_validation

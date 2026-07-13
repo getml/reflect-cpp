@@ -4,6 +4,8 @@
 #include <rfl.hpp>
 #include <rfl/env.hpp>
 
+#include "write_and_read.hpp"
+
 namespace test_tagged_union {
 
 struct Circle {
@@ -23,5 +25,7 @@ using Shapes = rfl::TaggedUnion<"shape", Circle, Square, Rectangle>;
 
 TEST(env, test_tagged_union) {
   const Shapes r = Rectangle{.height = 10, .width = 5};
+
+  write_and_read(r);
 }
 }  // namespace test_tagged_union

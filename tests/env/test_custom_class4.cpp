@@ -5,6 +5,8 @@
 #include <rfl/env.hpp>
 #include <string>
 
+#include "write_and_read.hpp"
+
 namespace test_custom_class4 {
 
 struct Person {
@@ -55,8 +57,10 @@ struct Parser<ReaderType, WriterType, test_custom_class4::Person,
 
 namespace test_custom_class4 {
 
-TEST(msgpack, test_custom_class4) {
+TEST(env, test_custom_class4) {
   const auto bart = test_custom_class4::Person(
       "Bart", rfl::make_box<std::string>("Simpson"), 10);
+
+  write_and_read(bart);
 }
 }  // namespace test_custom_class4

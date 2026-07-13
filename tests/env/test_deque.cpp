@@ -4,6 +4,8 @@
 #include <rfl/env.hpp>
 #include <string>
 
+#include "write_and_read.hpp"
+
 namespace test_deque {
 
 struct Person {
@@ -20,5 +22,7 @@ TEST(env, test_default_values) {
 
   const auto homer =
       Person{.first_name = "Homer", .children = std::move(children)};
+
+  write_and_read(homer);
 }
 }  // namespace test_deque

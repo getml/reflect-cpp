@@ -5,6 +5,8 @@
 #include <rfl/env.hpp>
 #include <vector>
 
+#include "write_and_read.hpp"
+
 namespace test_literal {
 
 using FirstName = rfl::Literal<"Homer", "Marge", "Bart", "Lisa", "Maggie">;
@@ -18,5 +20,7 @@ struct Person {
 
 TEST(env, test_literal) {
   const auto bart = Person{.first_name = FirstName::make<"Bart">()};
+
+  write_and_read(bart);
 }
 }  // namespace test_literal

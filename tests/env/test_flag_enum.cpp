@@ -4,6 +4,8 @@
 #include <rfl.hpp>
 #include <rfl/env.hpp>
 
+#include "write_and_read.hpp"
+
 namespace test_flag_enum {
 
 enum class Color {
@@ -26,6 +28,8 @@ struct Circle {
 TEST(env, test_flag_enum) {
   const auto circle =
       Circle{.radius = 2.0, .color = Color::blue | Color::orange};
+
+  write_and_read(circle);
 }
 
 }  // namespace test_flag_enum

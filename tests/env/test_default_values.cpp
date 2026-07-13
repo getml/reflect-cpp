@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "write_and_read.hpp"
+
 namespace test_default_values {
 
 struct Person {
@@ -21,5 +23,7 @@ TEST(env, test_default_values) {
   const auto homer =
       Person{.first_name = "Homer",
              .children = std::vector<Person>({bart, lisa, maggie})};
+
+  write_and_read(homer);
 }
 }  // namespace test_default_values

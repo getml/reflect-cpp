@@ -4,6 +4,8 @@
 #include <rfl/env.hpp>
 #include <string>
 
+#include "write_and_read.hpp"
+
 namespace test_set {
 
 struct Person {
@@ -18,5 +20,7 @@ TEST(env, test_set) {
 
   const auto homer =
       Person{.first_name = "Homer", .children = std::move(children)};
+
+  write_and_read(homer);
 }
 }  // namespace test_set

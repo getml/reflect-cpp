@@ -4,6 +4,8 @@
 #include <rfl/env.hpp>
 #include <string>
 
+#include "write_and_read.hpp"
+
 namespace test_skip {
 
 using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
@@ -20,5 +22,7 @@ TEST(env, test_skip) {
                             .first_name = "Homer",
                             .last_name = "Simpson",
                             .age = 45};
+
+  write_and_read(homer);
 }
 }  // namespace test_skip

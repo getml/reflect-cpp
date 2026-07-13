@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "write_and_read.hpp"
+
 namespace test_custom_class1 {
 
 struct Person {
@@ -28,5 +30,9 @@ struct Person {
   PersonImpl impl;
 };
 
-TEST(env, test_custom_class1) { const auto bart = Person("Bart"); }
+TEST(env, test_custom_class1) {
+  const auto bart = Person("Bart");
+
+  write_and_read(bart);
+}
 }  // namespace test_custom_class1

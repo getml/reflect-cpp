@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "write_and_read.hpp"
+
 namespace test_monster_example {
 
 using Color = rfl::Literal<"Red", "Green", "Blue">;
@@ -36,6 +38,8 @@ struct Monster {
 };
 
 TEST(env, test_monster_example) {
+  const auto scoped_environment = test_env::ScopedEnvironment();
+
   const auto sword = Weapon{.name = "Sword", .damage = 3};
   const auto axe = Weapon{.name = "Axe", .damage = 5};
 
@@ -53,5 +57,11 @@ TEST(env, test_monster_example) {
                            .color = Color::make<"Red">(),
                            .weapons = weapons,
                            .equipped = rfl::make_field<"weapon">(axe)};
+
+  rfl::env::write(orc);
+
+  const auto read_orc = rfl::env::read<Monster>();
+
+  ASSERT_FALSE(read_orc);
 }
 }  // namespace test_monster_example

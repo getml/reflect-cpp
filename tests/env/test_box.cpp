@@ -4,6 +4,8 @@
 #include <rfl.hpp>
 #include <rfl/env.hpp>
 
+#include "write_and_read.hpp"
+
 namespace test_box {
 
 struct DecisionTree {
@@ -35,5 +37,7 @@ TEST(env, test_box) {
       .greater = rfl::make_box<DecisionTree>(DecisionTree{leaf2})};
 
   const DecisionTree tree{.leaf_or_node = std::move(node)};
+
+  write_and_read(tree);
 }
 }  // namespace test_box

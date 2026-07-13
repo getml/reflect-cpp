@@ -4,6 +4,8 @@
 #include <rfl/env.hpp>
 #include <string>
 
+#include "write_and_read.hpp"
+
 namespace test_nested {
 
 struct NestedSettings {
@@ -29,24 +31,14 @@ TEST(env, test_nested) {
                                      .database_port = 8080,
                                  }};
 
-  rfl::env::write(settings);
-
-  ASSERT_EQ(std::getenv("HOST"), std::string("localhost"));
-  ASSERT_EQ(std::getenv("PORT"), std::string("8080"));
-  ASSERT_EQ(std::getenv("RATE"), std::string("1.500000"));
-  ASSERT_EQ(std::getenv("VERBOSE"), std::string("true"));
-  ASSERT_EQ(std::getenv("NESTED_DATABASE_HOST"), std::string("localhost"));
-  ASSERT_EQ(std::getenv("NESTED_DATABASE_PORT"), std::string("8080"));
-
-  const auto read_settings = rfl::env::read<Settings>();
-
-  ASSERT_TRUE(read_settings);
-  ASSERT_EQ(read_settings->host, "localhost");
-  ASSERT_EQ(read_settings->port, 8080);
-  ASSERT_DOUBLE_EQ(read_settings->rate, 1.5);
-  ASSERT_EQ(read_settings->verbose, true);
-  ASSERT_EQ(read_settings->nested.database_host, "localhost");
-  ASSERT_EQ(read_settings->nested.database_port, 8080);
+  write_and_read(settings, []() {
+    ASSERT_EQ(std::getenv("HOST"), std::string("localhost"));
+    ASSERT_EQ(std::getenv("PORT"), std::string("8080"));
+    ASSERT_EQ(std::getenv("RATE"), std::string("1.500000"));
+    ASSERT_EQ(std::getenv("VERBOSE"), std::string("true"));
+    ASSERT_EQ(std::getenv("NESTED_DATABASE_HOST"), std::string("localhost"));
+    ASSERT_EQ(std::getenv("NESTED_DATABASE_PORT"), std::string("8080"));
+  });
 }
 
 }  // namespace test_nested

@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "write_and_read.hpp"
+
 namespace test_add_struct_name {
 
 using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
@@ -41,5 +43,7 @@ TEST(env, test_add_struct_name) {
              .age = 45,
              .email = "homer@simpson.com",
              .children = std::vector<Person>({bart, lisa, maggie})};
+
+  write_and_read<rfl::AddStructName<"type">>(homer);
 }
 }  // namespace test_add_struct_name

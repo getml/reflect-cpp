@@ -5,6 +5,8 @@
 #include <rfl/env.hpp>
 #include <string>
 
+#include "write_and_read.hpp"
+
 namespace test_map {
 
 struct Person {
@@ -14,6 +16,8 @@ struct Person {
 };
 
 TEST(env, test_map) {
+  const auto scoped_environment = test_env::ScopedEnvironment();
+
   auto children = std::map<std::string, Person>();
   children.insert(std::make_pair("child1", Person{.first_name = "Bart"}));
   children.insert(std::make_pair("child2", Person{.first_name = "Lisa"}));
@@ -21,5 +25,11 @@ TEST(env, test_map) {
 
   const auto homer =
       Person{.first_name = "Homer", .children = std::move(children)};
+
+  rfl::env::write(homer);
+
+  const auto read_homer = rfl::env::read<Person>();
+
+  ASSERT_FALSE(read_homer);
 }
 }  // namespace test_map

@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "write_and_read.hpp"
+
 namespace test_size {
 
 struct Person {
@@ -31,5 +33,7 @@ TEST(env, test_size) {
              .last_name = "Simpson",
              .birthday = "1987-04-19",
              .children = std::vector<Person>({bart, lisa, maggie})};
+
+  write_and_read(homer);
 }
 }  // namespace test_size

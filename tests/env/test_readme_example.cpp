@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "write_and_read.hpp"
+
 namespace test_readme_example {
 
 using Age = rfl::Validator<unsigned int, rfl::Minimum<0>, rfl::Maximum<130>>;
@@ -42,73 +44,35 @@ TEST(env, test_readme_example) {
              .email = "homer@simpson.com",
              .children = std::vector<Person>({bart, lisa, maggie})};
 
-  rfl::env::write(homer);
+  write_and_read(homer, []() {
+    ASSERT_EQ(std::getenv("FIRST_NAME"), std::string("Homer"));
+    ASSERT_EQ(std::getenv("LAST_NAME"), std::string("Simpson"));
+    ASSERT_EQ(std::getenv("TOWN"), std::string("Springfield"));
+    ASSERT_EQ(std::getenv("BIRTHDAY"), std::string("1987-04-19"));
+    ASSERT_EQ(std::getenv("AGE"), std::string("45"));
+    ASSERT_EQ(std::getenv("EMAIL"), std::string("homer@simpson.com"));
 
-  ASSERT_EQ(std::getenv("FIRST_NAME"), std::string("Homer"));
-  ASSERT_EQ(std::getenv("LAST_NAME"), std::string("Simpson"));
-  ASSERT_EQ(std::getenv("TOWN"), std::string("Springfield"));
-  ASSERT_EQ(std::getenv("BIRTHDAY"), std::string("1987-04-19"));
-  ASSERT_EQ(std::getenv("AGE"), std::string("45"));
-  ASSERT_EQ(std::getenv("EMAIL"), std::string("homer@simpson.com"));
+    ASSERT_EQ(std::getenv("CHILDREN_0_FIRST_NAME"), std::string("Bart"));
+    ASSERT_EQ(std::getenv("CHILDREN_0_LAST_NAME"), std::string("Simpson"));
+    ASSERT_EQ(std::getenv("CHILDREN_0_TOWN"), std::string("Springfield"));
+    ASSERT_EQ(std::getenv("CHILDREN_0_BIRTHDAY"), std::string("1987-04-19"));
+    ASSERT_EQ(std::getenv("CHILDREN_0_AGE"), std::string("10"));
+    ASSERT_EQ(std::getenv("CHILDREN_0_EMAIL"), std::string("bart@simpson.com"));
 
-  ASSERT_EQ(std::getenv("CHILDREN_0_FIRST_NAME"), std::string("Bart"));
-  ASSERT_EQ(std::getenv("CHILDREN_0_LAST_NAME"), std::string("Simpson"));
-  ASSERT_EQ(std::getenv("CHILDREN_0_TOWN"), std::string("Springfield"));
-  ASSERT_EQ(std::getenv("CHILDREN_0_BIRTHDAY"), std::string("1987-04-19"));
-  ASSERT_EQ(std::getenv("CHILDREN_0_AGE"), std::string("10"));
-  ASSERT_EQ(std::getenv("CHILDREN_0_EMAIL"), std::string("bart@simpson.com"));
+    ASSERT_EQ(std::getenv("CHILDREN_1_FIRST_NAME"), std::string("Lisa"));
+    ASSERT_EQ(std::getenv("CHILDREN_1_LAST_NAME"), std::string("Simpson"));
+    ASSERT_EQ(std::getenv("CHILDREN_1_TOWN"), std::string("Springfield"));
+    ASSERT_EQ(std::getenv("CHILDREN_1_BIRTHDAY"), std::string("1987-04-19"));
+    ASSERT_EQ(std::getenv("CHILDREN_1_AGE"), std::string("8"));
+    ASSERT_EQ(std::getenv("CHILDREN_1_EMAIL"), std::string("lisa@simpson.com"));
 
-  ASSERT_EQ(std::getenv("CHILDREN_1_FIRST_NAME"), std::string("Lisa"));
-  ASSERT_EQ(std::getenv("CHILDREN_1_LAST_NAME"), std::string("Simpson"));
-  ASSERT_EQ(std::getenv("CHILDREN_1_TOWN"), std::string("Springfield"));
-  ASSERT_EQ(std::getenv("CHILDREN_1_BIRTHDAY"), std::string("1987-04-19"));
-  ASSERT_EQ(std::getenv("CHILDREN_1_AGE"), std::string("8"));
-  ASSERT_EQ(std::getenv("CHILDREN_1_EMAIL"), std::string("lisa@simpson.com"));
-
-  ASSERT_EQ(std::getenv("CHILDREN_2_FIRST_NAME"), std::string("Maggie"));
-  ASSERT_EQ(std::getenv("CHILDREN_2_LAST_NAME"), std::string("Simpson"));
-  ASSERT_EQ(std::getenv("CHILDREN_2_TOWN"), std::string("Springfield"));
-  ASSERT_EQ(std::getenv("CHILDREN_2_BIRTHDAY"), std::string("1987-04-19"));
-  ASSERT_EQ(std::getenv("CHILDREN_2_AGE"), std::string("0"));
-  ASSERT_EQ(std::getenv("CHILDREN_2_EMAIL"), std::string("maggie@simpson.com"));
-
-  const auto read_homer = rfl::env::read<Person>();
-
-  if (!read_homer) {
-    std::cout << "Error reading Person from environment: "
-              << read_homer.error().what() << std::endl;
-  }
-
-  ASSERT_TRUE(read_homer);
-
-  ASSERT_EQ(read_homer->first_name, "Homer");
-  ASSERT_EQ(read_homer->last_name, "Simpson");
-  ASSERT_EQ(read_homer->town, "Springfield");
-  ASSERT_EQ(read_homer->birthday.str(), "1987-04-19");
-  ASSERT_EQ(read_homer->age, 45);
-  ASSERT_EQ(read_homer->email, "homer@simpson.com");
-  ASSERT_EQ(read_homer->children.size(), 3);
-
-  ASSERT_EQ(read_homer->children[0].first_name, "Bart");
-  ASSERT_EQ(read_homer->children[0].last_name, "Simpson");
-  ASSERT_EQ(read_homer->children[0].town, "Springfield");
-  ASSERT_EQ(read_homer->children[0].birthday.str(), "1987-04-19");
-  ASSERT_EQ(read_homer->children[0].age, 10);
-  ASSERT_EQ(read_homer->children[0].email, "bart@simpson.com");
-
-  ASSERT_EQ(read_homer->children[1].first_name, "Lisa");
-  ASSERT_EQ(read_homer->children[1].last_name, "Simpson");
-  ASSERT_EQ(read_homer->children[1].town, "Springfield");
-  ASSERT_EQ(read_homer->children[1].birthday.str(), "1987-04-19");
-  ASSERT_EQ(read_homer->children[1].age, 8);
-  ASSERT_EQ(read_homer->children[1].email, "lisa@simpson.com");
-
-  ASSERT_EQ(read_homer->children[2].first_name, "Maggie");
-  ASSERT_EQ(read_homer->children[2].last_name, "Simpson");
-  ASSERT_EQ(read_homer->children[2].town, "Springfield");
-  ASSERT_EQ(read_homer->children[2].birthday.str(), "1987-04-19");
-  ASSERT_EQ(read_homer->children[2].age, 0);
-  ASSERT_EQ(read_homer->children[2].email, "maggie@simpson.com");
+    ASSERT_EQ(std::getenv("CHILDREN_2_FIRST_NAME"), std::string("Maggie"));
+    ASSERT_EQ(std::getenv("CHILDREN_2_LAST_NAME"), std::string("Simpson"));
+    ASSERT_EQ(std::getenv("CHILDREN_2_TOWN"), std::string("Springfield"));
+    ASSERT_EQ(std::getenv("CHILDREN_2_BIRTHDAY"), std::string("1987-04-19"));
+    ASSERT_EQ(std::getenv("CHILDREN_2_AGE"), std::string("0"));
+    ASSERT_EQ(std::getenv("CHILDREN_2_EMAIL"), std::string("maggie@simpson.com"));
+  });
 }
 
 }  // namespace test_readme_example

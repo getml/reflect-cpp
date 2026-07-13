@@ -5,6 +5,8 @@
 #include <rfl/env.hpp>
 #include <string>
 
+#include "write_and_read.hpp"
+
 namespace test_flatten_anonymous {
 
 struct Person {
@@ -26,6 +28,8 @@ TEST(env, test_flatten_anonymous) {
                        .age = 45},
       .employer = rfl::make_box<std::string>("Mr. Burns"),
       .salary = 60000.0};
+
+  write_and_read(employee);
 }
 
 }  // namespace test_flatten_anonymous

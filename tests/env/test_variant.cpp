@@ -4,6 +4,8 @@
 #include <rfl.hpp>
 #include <rfl/env.hpp>
 
+#include "write_and_read.hpp"
+
 namespace test_variant {
 
 struct Circle {
@@ -19,9 +21,11 @@ struct Square {
   double width;
 };
 
-using Shapes = std::variant<Circle, Rectangle, std::unique_ptr<Square>>;
+using Shapes = std::variant<Circle, Rectangle, Square>;
 
 TEST(env, test_variant) {
   const Shapes r = Rectangle{.height = 10, .width = 5};
+
+  write_and_read(r);
 }
 }  // namespace test_variant
