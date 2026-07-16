@@ -29,6 +29,11 @@ option(REFLECTCPP_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
 option(REFLECTCPP_CHECK_HEADERS "Make sure that all headers are self-contained" OFF)
 
+set(REFLECTCPP_ENUM_RANGE_MIN "-256" CACHE STRING
+    "Minimum value scanned during enum reflection")
+set(REFLECTCPP_ENUM_RANGE_MAX "256" CACHE STRING
+    "Maximum value scanned during enum reflection")
+
 option(REFLECTCPP_USE_BUNDLED_DEPENDENCIES "Use the bundled dependencies" ON)
 
 option(REFLECTCPP_USE_STD_EXPECTED "Use std::expected instead of the built-in Result type (requires C++-23)" OFF)
@@ -233,6 +238,11 @@ endif()
 if(REFLECTCPP_USE_STD_EXPECTED)
     target_compile_definitions(reflectcpp PUBLIC REFLECTCPP_USE_STD_EXPECTED)
 endif()
+
+target_compile_definitions(reflectcpp PRIVATE
+    RFL_ENUM_RANGE_MIN=${REFLECTCPP_ENUM_RANGE_MIN}
+    RFL_ENUM_RANGE_MAX=${REFLECTCPP_ENUM_RANGE_MAX}
+)
 
 set(REFLECT_CPP_SOURCES
     src/reflectcpp.cpp

@@ -8,6 +8,11 @@ add_executable(
     ${SOURCES}
 )
 
+target_compile_definitions(reflect-cpp-generic-tests PRIVATE
+    REFLECTCPP_TEST_ENUM_RANGE_MIN=${REFLECTCPP_ENUM_RANGE_MIN}
+    REFLECTCPP_TEST_ENUM_RANGE_MAX=${REFLECTCPP_ENUM_RANGE_MAX}
+)
+
 target_include_directories(reflect-cpp-generic-tests SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
 
 target_link_libraries(reflect-cpp-generic-tests PRIVATE reflectcpp_tests_crt)
@@ -38,4 +43,3 @@ add_library(generic-compile-fail-flatten-cross-type-move-assign OBJECT EXCLUDE_F
   compile_fail/flatten_cross_type_move_assign.cpp
 )
 target_link_libraries(generic-compile-fail-flatten-cross-type-move-assign PRIVATE reflectcpp_tests_crt)
-
