@@ -13,4 +13,6 @@ functions.
 You can use the functions `rfl::get`, `rfl::make_tuple`, `rfl::tuple_element_t`, 
 `rfl::tuple_size_v`, `rfl::tuple_cat` or `rfl::apply` to create or access the 
 tuple and they work the same way as their equivalents in the standard library.
-In fact, `std::get` will also work on `rfl::Tuple`.
+
+The legacy `std::get` overload for `rfl::Tuple` is deprecated. Use `rfl::get`
+instead.

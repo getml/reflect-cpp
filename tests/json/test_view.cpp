@@ -19,7 +19,7 @@ TEST(json, test_view) {
   const auto view = rfl::to_view(lisa);
 
   *view.get<0>() = "Maggie";
-  *std::get<1>(view.values()) = "Simpson";
+  *rfl::get<1>(view.values()) = "Simpson";
   *view.get<"age">() = 0;
 
   write_and_read(lisa,

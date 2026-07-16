@@ -56,7 +56,7 @@ auto unflatten_ptr_tuple(PtrTupleType& _t, Args... _args) {
 
     } else {
       return unflatten_ptr_tuple<TargetTupleType, PtrTupleType, _j + 1>(
-          _t, _args..., std::get<_j>(_t));
+          _t, _args..., rfl::get<_j>(_t));
     }
   }
 }
@@ -71,7 +71,7 @@ auto move_from_pointers(Pointers& _ptrs, Args&&... _args) {
 
     if constexpr (std::is_pointer_v<FieldType>) {
       return move_from_pointers<T>(_ptrs, std::move(_args)...,
-                                   std::move(*std::get<i>(_ptrs)));
+                                   std::move(*rfl::get<i>(_ptrs)));
 
     } else {
       using PtrTupleType = ptr_tuple_t<std::remove_cvref_t<T>>;
@@ -80,7 +80,7 @@ auto move_from_pointers(Pointers& _ptrs, Args&&... _args) {
           tuple_element_t<i, PtrTupleType>>::Type>;
 
       return move_from_pointers<T>(_ptrs, std::move(_args)...,
-                                   move_from_pointers<U>(std::get<i>(_ptrs)));
+                                   move_from_pointers<U>(rfl::get<i>(_ptrs)));
     }
   }
 }

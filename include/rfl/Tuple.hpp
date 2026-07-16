@@ -343,6 +343,7 @@ namespace std {
 /// @param _tup The Tuple to access.
 /// @return Reference to the element at the specified index.
 template <int _index, class... Types>
+[[deprecated("Use rfl::get instead.")]]
 constexpr auto& get(rfl::Tuple<Types...>& _tup) {
   return _tup.template get<_index>();
 }
@@ -353,6 +354,7 @@ constexpr auto& get(rfl::Tuple<Types...>& _tup) {
 /// @param _tup The Tuple to access.
 /// @return Const reference to the element at the specified index.
 template <int _index, class... Types>
+[[deprecated("Use rfl::get instead.")]]
 constexpr const auto& get(const rfl::Tuple<Types...>& _tup) {
   return _tup.template get<_index>();
 }

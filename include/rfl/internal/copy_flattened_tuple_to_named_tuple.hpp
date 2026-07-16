@@ -16,7 +16,7 @@ auto copy_one_element(const auto& _flattened_tuple) {
   const auto name_literal = FieldNames::template name_of<_i>();
   return rfl::make_field<
       lit_name_v<std::remove_cvref_t<decltype(name_literal)>>>(
-      std::get<_i>(_flattened_tuple));
+      rfl::get<_i>(_flattened_tuple));
 }
 
 template <class FieldNames, class... Fields>
