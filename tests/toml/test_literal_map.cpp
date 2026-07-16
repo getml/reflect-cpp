@@ -1,9 +1,11 @@
 #include <map>
 #include <memory>
-#include <rfl.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+import rfl.toml;
+import rfl;
+
 
 namespace test_literal_map {
 

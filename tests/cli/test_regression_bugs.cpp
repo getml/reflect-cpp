@@ -3,9 +3,10 @@
 #include <clocale>
 #include <cstdint>
 #include <string>
+import rfl;
+import rfl.cli;
 
-#include <rfl.hpp>
-#include <rfl/cli.hpp>
+
 
 // cli::Reader stoull accepts negative numbers for unsigned types
 // File: include/rfl/cli/Reader.hpp:77

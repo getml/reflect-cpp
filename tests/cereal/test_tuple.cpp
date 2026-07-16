@@ -1,11 +1,12 @@
 #include <iostream>
-#include <rfl.hpp>
-#include <rfl/cereal.hpp>
 #include <string>
 #include <tuple>
 #include <vector>
 
 #include "write_and_read.hpp"
+import rfl;
+import rfl.cereal;
+
 
 namespace test_tuple {
 

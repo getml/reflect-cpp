@@ -1,9 +1,10 @@
 
 #include <array>
-#include <rfl.hpp>
 #include <variant>
 
 #include "write_and_read.hpp"
+import rfl;
+
 
 namespace test_array2 {
 

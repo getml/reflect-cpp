@@ -1,10 +1,11 @@
 #include <functional>
 #include <iostream>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 
 #include <gtest/gtest.h>
+import rfl;
+import rfl.json;
+
 
 namespace test_std_ref {
 

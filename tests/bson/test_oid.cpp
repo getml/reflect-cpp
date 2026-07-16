@@ -1,7 +1,11 @@
-#include <rfl.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+#include <vector>
+
+import rfl.bson;
+import rfl;
+
 
 namespace test_oid {
 

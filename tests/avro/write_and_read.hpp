@@ -3,9 +3,12 @@
 
 #include <gtest/gtest.h>
 
-#include <rfl/avro.hpp>
-#include <rfl/json.hpp>
 #include <string>
+#include <type_traits>
+
+import rfl.json;
+import rfl.avro;
+
 
 template <class... Ps>
 void write_and_read(const auto& _struct) {

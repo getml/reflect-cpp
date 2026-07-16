@@ -6,7 +6,7 @@ add_executable(
     reflect-cpp-xml-tests 
     ${SOURCES}
 )
-target_precompile_headers(reflect-cpp-xml-tests PRIVATE [["rfl.hpp"]] <iostream> <string> <functional> <gtest/gtest.h>)
+target_precompile_headers(reflect-cpp-xml-tests PRIVATE <iostream> <string> <functional> <gtest/gtest.h>)
 
 target_include_directories(reflect-cpp-xml-tests SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
 

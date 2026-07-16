@@ -1,10 +1,11 @@
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <set>
 #include <string>
 #include <vector>
 
 #include "gtest/gtest.h"
+import rfl;
+import rfl.json;
+
 
 namespace test_json_schema_size_validation {
 

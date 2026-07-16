@@ -2,8 +2,9 @@
 
 #include <string>
 #include <type_traits>
+import rfl;
 
-#include <rfl.hpp>
+
 
 namespace test_result_cross_assign {
 

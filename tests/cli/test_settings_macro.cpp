@@ -1,6 +1,10 @@
 #include <gtest/gtest.h>
 #include <rfl/Settings.hpp>
 #include <string>
+#include <utility>
+
+import rfl;
+
 
 namespace test_settings_macro {
 

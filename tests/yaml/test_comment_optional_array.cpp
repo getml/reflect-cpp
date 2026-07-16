@@ -2,10 +2,11 @@
 
 #include <array>
 #include <optional>
-#include <rfl/Commented.hpp>
-#include <rfl/yaml.hpp>
 
 #include "write_and_read.hpp"
+import rfl;
+import rfl.yaml;
+
 
 namespace test_comment_optional_array {
 

@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
 
 #include <cassert>
-#include <rfl.hpp>
-#include <rfl/csv.hpp>
 #include <string>
 #include <vector>
+import rfl;
+import rfl.csv;
+
 
 namespace test_save_load {
 

@@ -1,7 +1,9 @@
 #include <cassert>
-#include <rfl.hpp>
 
 #include "write_and_read.hpp"
+import rfl.xml;
+import rfl;
+
 
 namespace test_enum {
 

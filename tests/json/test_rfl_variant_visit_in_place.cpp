@@ -1,8 +1,11 @@
 #include <cassert>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 
 #include "write_and_read.hpp"
+#include <memory>
+
+import rfl;
+import rfl.json;
+
 
 namespace test_rfl_variant_visit_in_place {
 

@@ -1,9 +1,13 @@
 #include <gtest/gtest.h>
 
 #include <cassert>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
+#include <memory>
+#include <utility>
+
+import rfl;
+import rfl.json;
+
 
 namespace test_box2 {
 

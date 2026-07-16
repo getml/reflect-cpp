@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
 
 #include <cassert>
-#include <rfl.hpp>
-#include <rfl/capnproto.hpp>
 #include <string>
 #include <vector>
+import rfl;
+import rfl.capnproto;
+
 
 namespace test_save_load {
 

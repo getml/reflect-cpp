@@ -1,9 +1,12 @@
 #include <iostream>
-#include <rfl.hpp>
-#include <rfl/cereal.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+#include <optional>
+
+import rfl;
+import rfl.cereal;
+
 
 namespace test_optional_fields {
 

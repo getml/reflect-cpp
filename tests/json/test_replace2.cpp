@@ -1,10 +1,13 @@
 #include <cassert>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
+#include <utility>
+
+import rfl;
+import rfl.json;
+
 
 namespace test_replace2 {
 

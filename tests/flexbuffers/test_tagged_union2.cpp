@@ -1,7 +1,9 @@
 #include <cassert>
-#include <rfl.hpp>
 
 #include "write_and_read.hpp"
+import rfl.flexbuf;
+import rfl;
+
 
 namespace test_tagged_union2 {
 

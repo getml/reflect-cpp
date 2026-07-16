@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
+import rfl;
+import rfl.json;
+
 
 namespace test_positional_and_short_json {
 

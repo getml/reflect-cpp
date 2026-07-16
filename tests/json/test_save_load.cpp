@@ -1,11 +1,12 @@
 #include <cassert>
 #include <iostream>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 #include <vector>
 
 #include <gtest/gtest.h>
+import rfl;
+import rfl.json;
+
 
 namespace test_save_load {
 

@@ -1,8 +1,5 @@
 #include <gtest/gtest.h>
-// Redefine the range of the enums
-#define RFL_ENUM_RANGE_MIN -128
-#define RFL_ENUM_RANGE_MAX 128
-#include <rfl.hpp>
+import rfl;
 
 namespace test_enum_range_size {
 

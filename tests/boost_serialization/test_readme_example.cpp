@@ -1,8 +1,10 @@
-#include <rfl.hpp>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
+import rfl.boost_serialization;
+import rfl;
+
 
 namespace test_readme_example {
 

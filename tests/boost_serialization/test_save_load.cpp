@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
 
 #include <cassert>
-#include <rfl.hpp>
-#include <rfl/boost_serialization.hpp>
 #include <string>
 #include <vector>
+import rfl;
+import rfl.boost_serialization;
+
 
 namespace test_save_load {
 

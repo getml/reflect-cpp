@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "write_and_read.hpp"
+import rfl.toml;
 
 namespace test_combined_processors {
 

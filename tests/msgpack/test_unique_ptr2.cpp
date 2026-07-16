@@ -1,7 +1,12 @@
 #include <cassert>
-#include <rfl.hpp>
 
 #include "write_and_read.hpp"
+#include <memory>
+#include <utility>
+
+import rfl.msgpack;
+import rfl;
+
 
 namespace test_unique_ptr2 {
 

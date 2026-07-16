@@ -1,12 +1,17 @@
 #include <algorithm>
 #include <array>
-#include <rfl/ubjson.hpp>
 
 #include <gtest/gtest.h>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
+
+import rfl;
+import rfl.ubjson;
+
 
 // Make sure things still compile when
 // rfl.hpp is included after rfl/ubjson.hpp.
-#include <rfl.hpp>
 
 namespace test_read_byte_containers
 {

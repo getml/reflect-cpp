@@ -1,7 +1,11 @@
 #include <cassert>
-#include <rfl.hpp>
 
 #include "write_and_read.hpp"
+#include <utility>
+
+import rfl.toml;
+import rfl;
+
 
 namespace test_ref {
 

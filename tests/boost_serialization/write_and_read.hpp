@@ -3,9 +3,12 @@
 
 #include <gtest/gtest.h>
 
-#include <rfl/boost_serialization.hpp>
-#include <rfl/json.hpp>
 #include <string>
+#include <type_traits>
+
+import rfl.json;
+import rfl.boost_serialization;
+
 
 template <class... Ps>
 void write_and_read(const auto& _struct) {

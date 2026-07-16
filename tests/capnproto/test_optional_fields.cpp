@@ -1,9 +1,13 @@
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
+#include <optional>
+
+import rfl.capnproto;
+import rfl;
+import rfl.json;
+
 
 namespace test_optional_fields {
 

@@ -1,9 +1,11 @@
 #include <map>
 #include <memory>
-#include <rfl.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+import rfl.cbor;
+import rfl;
+
 
 namespace test_string_map {
 TEST(cbor, test_string_map) { 

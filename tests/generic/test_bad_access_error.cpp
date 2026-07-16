@@ -2,8 +2,12 @@
 #include <expected>
 #endif
 
-#include <rfl.hpp>
 #include <gtest/gtest.h>
+#include <string>
+
+import rfl;
+
+
 
 namespace test_exceptions {
 

@@ -6,7 +6,7 @@ add_executable(
     reflect-cpp-flexbuffers-tests 
     ${SOURCES}
 )
-target_precompile_headers(reflect-cpp-flexbuffers-tests PRIVATE [["rfl.hpp"]] <iostream> <string> <functional> <gtest/gtest.h>)
+target_precompile_headers(reflect-cpp-flexbuffers-tests PRIVATE <iostream> <string> <functional> <gtest/gtest.h>)
 
 target_include_directories(reflect-cpp-flexbuffers-tests SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
 

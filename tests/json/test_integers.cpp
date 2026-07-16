@@ -1,8 +1,9 @@
 #include <cstdint>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 
 #include "write_and_read.hpp"
+import rfl;
+import rfl.json;
+
 
 namespace test_integers {
 

@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "write_and_read.hpp"
+import rfl.ubjson;
 
 namespace test_snake_case_to_pascal_case {
 

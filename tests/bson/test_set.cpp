@@ -1,7 +1,13 @@
-#include <rfl.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+#include <memory>
+#include <set>
+#include <utility>
+
+import rfl.bson;
+import rfl;
+
 
 namespace test_set {
 

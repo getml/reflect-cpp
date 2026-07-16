@@ -1,7 +1,11 @@
 #include <cassert>
-#include <rfl.hpp>
 
 #include "write_and_read.hpp"
+#include <variant>
+
+import rfl.avro;
+import rfl;
+
 
 namespace test_field_variant_std {
 

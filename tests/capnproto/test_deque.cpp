@@ -1,7 +1,13 @@
-#include <rfl.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+#include <deque>
+#include <memory>
+#include <utility>
+
+import rfl.capnproto;
+import rfl;
+
 
 namespace test_deque {
 

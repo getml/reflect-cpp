@@ -1,7 +1,10 @@
-#include <rfl/parquet.hpp>
 #include <vector>
 
 #include "write_and_read.hpp"
+#include <cstddef>
+
+import rfl.parquet;
+
 
 namespace test_bytestring {
 

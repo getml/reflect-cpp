@@ -6,7 +6,7 @@ add_executable(
     reflect-cpp-csv-tests 
     ${SOURCES}
 )
-target_precompile_headers(reflect-cpp-csv-tests PRIVATE [["rfl.hpp"]] <iostream> <string> <functional> <gtest/gtest.h>)
+target_precompile_headers(reflect-cpp-csv-tests PRIVATE <iostream> <string> <functional> <gtest/gtest.h>)
 
 target_include_directories(reflect-cpp-csv-tests SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
 

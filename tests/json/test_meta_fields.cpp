@@ -1,6 +1,10 @@
-#include <rfl.hpp>
 
 #include <gtest/gtest.h>
+#include <string>
+#include <vector>
+
+import rfl;
+
 
 namespace test_meta_fields {
 

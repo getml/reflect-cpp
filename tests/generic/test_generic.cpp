@@ -2,8 +2,9 @@
 
 #include <climits>
 #include <cstdint>
+import rfl;
 
-#include <rfl.hpp>
+
 
 namespace test_generic_to_int_truncation {
 

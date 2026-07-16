@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "write_and_read.hpp"
+import rfl.avro;
 
 namespace test_float_and_int {
 

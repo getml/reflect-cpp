@@ -1,10 +1,11 @@
 #include <cassert>
 #include <iostream>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+import rfl;
+import rfl.json;
+
 
 namespace test_apply_on_named_tuple {
 

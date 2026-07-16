@@ -2,8 +2,11 @@
 #define WRITE_AND_READ_
 
 #include <gtest/gtest.h>
+#include <type_traits>
 
-#include <rfl/csv.hpp>
+import rfl.csv;
+
+
 
 template <class... Ps>
 void write_and_read(const auto& _vec, const rfl::csv::Settings& _settings =

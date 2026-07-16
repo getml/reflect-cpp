@@ -8,9 +8,10 @@
 
 #include <sstream>
 #include <string>
+import rfl;
+import rfl.capnproto;
 
-#include <rfl.hpp>
-#include <rfl/capnproto.hpp>
+
 
 struct Simple {
   std::string field1;

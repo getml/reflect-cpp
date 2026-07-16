@@ -1,10 +1,9 @@
 #include <cassert>
-// Redefine the range of the enums
-#define RFL_ENUM_RANGE_MIN -128
-#define RFL_ENUM_RANGE_MAX 128
-#include <rfl.hpp>
 
 #include "write_and_read.hpp"
+import rfl;
+
+
 
 namespace test_enum_range {
 

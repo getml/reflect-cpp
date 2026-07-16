@@ -1,13 +1,16 @@
 #include <array>
 #include <memory>
-#include <rfl/avro.hpp>
 #include <string>
 
 // Make sure things still compile when
 // rfl.hpp is included after rfl/avro.hpp.
-#include <rfl.hpp>
 
 #include "write_and_read.hpp"
+#include <utility>
+
+import rfl;
+import rfl.avro;
+
 
 namespace test_array {
 

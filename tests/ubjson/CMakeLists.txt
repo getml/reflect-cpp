@@ -6,7 +6,7 @@ add_executable(
     reflect-cpp-ubjson-tests 
     ${SOURCES}
 )
-target_precompile_headers(reflect-cpp-ubjson-tests PRIVATE [["rfl.hpp"]] <iostream> <string> <functional> <gtest/gtest.h>)
+target_precompile_headers(reflect-cpp-ubjson-tests PRIVATE <iostream> <string> <functional> <gtest/gtest.h>)
 
 target_link_libraries(reflect-cpp-ubjson-tests PRIVATE reflectcpp_tests_crt)
 

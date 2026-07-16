@@ -1,8 +1,6 @@
 #include <gtest/gtest.h>
-// Redefine the range of the enums
-#define RFL_ENUM_RANGE_MIN -128
-#define RFL_ENUM_RANGE_MAX 128
-#include <rfl.hpp>
+
+import rfl;
 
 namespace test_enum_range_min_max {
 
@@ -27,8 +25,8 @@ TEST(generic, test_enum_range_min_max) {
                 "Range should be defined.");
 
   auto [inner_min, inner_max] = rfl::get_enum_range<InnerColor>();
-  EXPECT_EQ(inner_min, RFL_ENUM_RANGE_MIN);
-  EXPECT_EQ(inner_max, RFL_ENUM_RANGE_MAX);
+  EXPECT_EQ(inner_min, REFLECTCPP_TEST_ENUM_RANGE_MIN);
+  EXPECT_EQ(inner_max, REFLECTCPP_TEST_ENUM_RANGE_MAX);
 
   auto [line_min, line_max] = rfl::get_enum_range<LineColor>();
   EXPECT_EQ(line_min, 190);

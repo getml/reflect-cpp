@@ -1,9 +1,10 @@
 #include <gtest/gtest.h>
 
 #include <chrono>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
+import rfl;
+import rfl.json;
+
 
 namespace test_time_point {
 

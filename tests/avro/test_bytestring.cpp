@@ -1,6 +1,10 @@
-#include <rfl.hpp>
 
 #include "write_and_read.hpp"
+#include <cstddef>
+
+import rfl.avro;
+import rfl;
+
 
 namespace test_bytestring {
 
