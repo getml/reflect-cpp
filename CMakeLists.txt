@@ -8,6 +8,7 @@ option(REFLECTCPP_INSTALL "Install reflect cpp" OFF)
 
 option(REFLECTCPP_ALL_FORMATS "Enable all supported formats" OFF)
 option(REFLECTCPP_JSON "Enable JSON support" ON) # enabled by default
+option(REFLECTCPP_CLI "Enable CLI support" ON)
 option(REFLECTCPP_AVRO "Enable AVRO support" ${REFLECTCPP_ALL_FORMATS})
 option(REFLECTCPP_BSON "Enable BSON support" ${REFLECTCPP_ALL_FORMATS})
 option(REFLECTCPP_CAPNPROTO "Enable Cap’n Proto support" ${REFLECTCPP_ALL_FORMATS})
