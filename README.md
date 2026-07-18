@@ -14,7 +14,7 @@
 
 **reflect-cpp** is a C++-20 library for **fast serialization, deserialization and validation** using reflection, similar to [pydantic](https://github.com/pydantic/pydantic) in Python, [serde](https://github.com/serde-rs) in Rust, [encoding](https://github.com/golang/go/tree/master/src/encoding) in Go or [aeson](https://github.com/haskell/aeson/tree/master) in Haskell.
 
-Moreover, reflect-cpp is the basis for [sqlgen](https://github.com/getml/sqlgen), a **modern, type-safe ORM and SQL query generator** for C++20, inspired by Python's SQLAlchemy/SQLModel and Rust's Diesel. It provides a fluent, composable interface for database operations with compile-time type checking and SQL injection protection. 
+Moreover, reflect-cpp is the basis for [sqlgen](https://github.com/getml/sqlgen), a **modern, type-safe ORM and SQL query generator** for C++20, inspired by Python's SQLAlchemy/SQLModel and Rust's Diesel. It provides a fluent, composable interface for database operations with compile-time type checking and SQL injection protection.
 
 reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boilerplate code and increase code safety. Together, they enable reliable and efficient ETL pipelines.
 
@@ -45,14 +45,14 @@ reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boile
     - [Algebraic data types](#algebraic-data-types)
     - [Extra fields](#extra-fields)
     - [Reflective programming](#reflective-programming)
-    - [Standard Library Integration](#support-for-containers) 
+    - [Standard Library Integration](#support-for-containers)
   - [The team behind reflect-cpp](#the-team-behind-reflect-cpp)
   - [License](#license)
 
 ### More in our [documentation](https://rfl.getml.com):
   - [Installation ↗](https://rfl.getml.com/install/#option-2-compilation-using-cmake)
   - [Benchmarks ↗](https://rfl.getml.com/benchmarks)
-  - [How to contribute ↗](https://rfl.getml.com/contributing) 
+  - [How to contribute ↗](https://rfl.getml.com/contributing)
   - [Compiling and running the tests ↗](https://rfl.getml.com/contributing/#compiling-and-running-the-tests)
 
 
@@ -70,6 +70,8 @@ The following table lists the serialization formats currently supported by refle
 | BSON         | [libbson](https://github.com/mongodb/mongo-c-driver) | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
 | Cap'n Proto  | [capnproto](https://capnproto.org)                   | >= 1.0.2     | MIT        | Schemaful binary format                              |
 | CBOR         | [jsoncons](https://github.com/danielaparker/jsoncons)| >= 0.176.0   | BSL 1.0    | JSON-like binary format                              |
+| cli          | *(none)*                                             | *(none)*     | MIT        | Command line interface                               |
+| env          | *(none)*                                             | *(none)*     | MIT        | Environment variables                                |
 | Cereal       | [Cereal](https://uscilab.github.io/cereal/)          | >= 1.3.2     | BSD        | C++ serialization library with multiple formats      |
 | CSV          | [Apache Arrow](https://arrow.apache.org/)            | >= 21.0.0    | Apache 2.0 | Tabular textual format                               |
 | flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 | Schema-less version of flatbuffers, binary format    |
@@ -119,9 +121,9 @@ The resulting JSON string looks like this:
 You can transform the field names from `snake_case` to `camelCase` like this:
 
 ```cpp
-const std::string json_string = 
+const std::string json_string =
   rfl::json::write<rfl::SnakeCaseToCamelCase>(homer);
-auto homer2 = 
+auto homer2 =
   rfl::json::read<Person, rfl::SnakeCaseToCamelCase>(json_string).value();
 ```
 
@@ -150,7 +152,7 @@ last_name: Simpson
 age: 45
 ```
 
-This will work for just about any example in the entire documentation 
+This will work for just about any example in the entire documentation
 and any of the following formats, except where explicitly noted otherwise:
 
 ```cpp
@@ -300,6 +302,32 @@ This will resulting CSV will look like this:
 "Homer","Simpson","Springfield",1987-04-19,45,"homer@simpson.com"
 ```
 
+### Environment variables
+
+reflect-cpp can also read from and write to environment variables using `rfl::env::read` and `rfl::env::write`:
+
+```cpp
+#include <rfl/env.hpp>
+
+struct Config {
+  std::string host;
+  int port;
+  bool verbose;
+};
+
+const auto config = Config{.host = "localhost", .port = 8080, .verbose = true};
+
+rfl::env::write(config);
+// Sets HOST=localhost, PORT=8080, VERBOSE=true
+
+const auto config2 = rfl::env::read<Config>().value();
+```
+
+Nested structs are flattened with `_` as a separator (e.g., `DATABASE_HOST`).
+Arrays use `_INDEX` suffix (e.g., `TAGS_0`, `TAGS_1`).
+Enums are serialized via their enumerator name (e.g., `"green"` for `Color::green`).
+All field names are converted to uppercase by default.
+
 ### CLI argument parsing
 
 reflect-cpp can also parse command-line arguments directly into structs using `rfl::cli::read`:
@@ -404,7 +432,7 @@ struct Item {
   Color color;
 };
 
-const auto item = Item{.pos_x = 2.0,  
+const auto item = Item{.pos_x = 2.0,
                        .pos_y = 3.0,
                        .shape = Shape::square,
                        .color = Color::red | Color::blue};
@@ -616,7 +644,7 @@ In addition, it supports the following custom containers:
 
 - `rfl::Binary`: Used to express numbers in binary format.
 - `rfl::Box`: Similar to `std::unique_ptr`, but (almost) guaranteed to never be null.
-- `rfl::Bytestring`: An alias for `std::vector<std::byte>`. Supported by Avro, BSON, Cap'n Proto, CBOR, flexbuffers, msgpack and UBJSON. 
+- `rfl::Bytestring`: An alias for `std::vector<std::byte>`. Supported by Avro, BSON, Cap'n Proto, CBOR, flexbuffers, msgpack and UBJSON.
 - `rfl::Commented`: Allows you to add comments to fields (supported by YAML and XML).
 - `rfl::Generic`: A catch-all type that can represent (almost) anything.
 - `rfl::Hex`: Used to express numbers in hex format.
