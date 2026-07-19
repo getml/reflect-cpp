@@ -2,7 +2,7 @@ name: macos
 
 on: [ push, pull_request ]
 
-env: 
+env:
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
 jobs:
@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["macos-latest", "macos-15-intel"]
+        os: ["macos-15", "macos-15-intel"]
         format: ["tests", "benchmarks"]
     name: "${{ matrix.os }} (${{ matrix.format }})"
     concurrency:
@@ -31,9 +31,9 @@ jobs:
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
-      - name: Install bison 
+      - name: Install bison
         run: brew install bison openssl@3
-      - name: Install ninja 
+      - name: Install ninja
         run: brew install ninja
         if: matrix.os == 'macos-latest'
       - name: Compile
@@ -53,14 +53,14 @@ jobs:
           fi
           cmake --build build -j 4
       - name: Run tests
-        if: matrix.format != 'benchmarks'  
+        if: matrix.format != 'benchmarks'
         run: |
           ctest --test-dir build --output-on-failure
-      - name: Run benchmarks 
-        if: matrix.format == 'benchmarks' 
+      - name: Run benchmarks
+        if: matrix.format == 'benchmarks'
         run: |
-          echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY 
-          echo '## Benchmarks across different formats' >> $GITHUB_STEP_SUMMARY 
+          echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY
+          echo '## Benchmarks across different formats' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write >> $GITHUB_STEP_SUMMARY
@@ -69,7 +69,7 @@ jobs:
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          echo '## Benchmarks for JSON' >> $GITHUB_STEP_SUMMARY 
+          echo '## Benchmarks for JSON' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada >> $GITHUB_STEP_SUMMARY
