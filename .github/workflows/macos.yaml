@@ -26,16 +26,13 @@ jobs:
         run: brew install bison openssl@3
       - name: Install ninja
         run: brew install ninja
-        if: matrix.os == 'macos-latest'
       - name: Compile
         env:
           CC: clang
           CXX: clang++
         run: |
-          if [[ "${{ matrix.os == 'macos-latest' }}" == "true" ]]; then
-            export VCPKG_FORCE_SYSTEM_BINARIES=arm
-            export CMAKE_GENERATOR=Ninja
-          fi
+          export VCPKG_FORCE_SYSTEM_BINARIES=arm
+          export CMAKE_GENERATOR=Ninja
           $CXX --version
           if [[ "${{ matrix.format }}" == "benchmarks" ]]; then
             cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
