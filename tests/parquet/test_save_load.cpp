@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
 
 #include <cassert>
-#include <rfl.hpp>
-#include <rfl/parquet.hpp>
 #include <string>
 #include <vector>
+import rfl;
+import rfl.parquet;
+
 
 namespace test_save_load {
 

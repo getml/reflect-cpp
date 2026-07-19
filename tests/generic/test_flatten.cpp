@@ -1,10 +1,13 @@
 #include <cassert>
-#include <rfl.hpp>
 #include <string>
 
 #include "test_helpers.hpp"
 
 #include "write_and_read.hpp"
+#include <utility>
+
+import rfl;
+
 
 namespace test_flatten {
 

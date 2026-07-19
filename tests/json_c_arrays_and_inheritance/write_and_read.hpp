@@ -4,9 +4,11 @@
 #include <gtest/gtest.h>
 
 #include <iostream>
-#include <rfl/json.hpp>
 #include <string>
 #include <type_traits>
+import rfl.c_arrays_and_inheritance;
+
+
 
 template <class... Ps>
 auto write(const auto& _struct, const std::string& _expected) {

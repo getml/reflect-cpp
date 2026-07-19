@@ -1,8 +1,10 @@
-#include <rfl.hpp>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
+import rfl.xml;
+import rfl;
+
 
 namespace test_attribute_rename {
 

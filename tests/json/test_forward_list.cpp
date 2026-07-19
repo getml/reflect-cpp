@@ -1,8 +1,13 @@
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+#include <forward_list>
+#include <memory>
+#include <utility>
+
+import rfl;
+import rfl.json;
+
 
 namespace test_forward_list {
 

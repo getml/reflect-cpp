@@ -3,9 +3,10 @@
 #include <cstdint>
 #include <limits>
 #include <string>
+import rfl;
+import rfl.xml;
 
-#include <rfl.hpp>
-#include <rfl/xml.hpp>
+
 
 // xml::Reader::to_basic_type uses std::stoi for all integral types
 // File: include/rfl/xml/Reader.hpp:99-105

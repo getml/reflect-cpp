@@ -1,8 +1,9 @@
-#include <rfl.hpp>
-#include <rfl/boost_serialization.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+import rfl;
+import rfl.boost_serialization;
+
 
 namespace test_generic {
 

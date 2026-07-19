@@ -1,11 +1,12 @@
 #include <cassert>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 #include <variant>
 #include <vector>
 
 #include "write_and_read.hpp"
+import rfl;
+import rfl.json;
+
 
 // NOTE TO MAINTAINERS:
 // These tests are very similar to the others in test_add_*tags_to_*variants.cpp, so please keep them

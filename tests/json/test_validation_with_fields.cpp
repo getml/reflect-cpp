@@ -1,9 +1,12 @@
 #include <cassert>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+#include <vector>
+
+import rfl;
+import rfl.json;
+
 
 namespace test_validation_with_fields {
 

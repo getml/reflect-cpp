@@ -1,9 +1,10 @@
 #include <cassert>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+import rfl;
+import rfl.json;
+
 
 namespace test_view {
 
@@ -19,7 +20,7 @@ TEST(json, test_view) {
   const auto view = rfl::to_view(lisa);
 
   *view.get<0>() = "Maggie";
-  *std::get<1>(view.values()) = "Simpson";
+  *rfl::get<1>(view.values()) = "Simpson";
   *view.get<"age">() = 0;
 
   write_and_read(lisa,

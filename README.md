@@ -36,6 +36,7 @@ reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boile
   - [Serialization formats](#serialization-formats)
   - [Feature Overview](#feature-overview)
     - [Simple Example](#simple-example)
+    - [C++ modules](#c-modules)
     - [More Comprehensive Example](#more-comprehensive-example)
     - [Tabular data](#tabular-data)
     - [CLI argument parsing](#cli-argument-parsing)
@@ -178,6 +179,41 @@ rfl::ubjson::read<Person>(ubjson_bytes);
 rfl::xml::read<Person>(xml_string);
 rfl::yas::read<Person>(yas_bytes);
 ```
+
+### C++ modules
+
+In addition to the classic header-based interface, reflect-cpp ships C++20
+named modules. If your toolchain supports modules, you can replace the
+`#include` directives with `import`:
+
+```cpp
+import rfl;
+import rfl.json;  // one submodule per serialization format, e.g. rfl.yaml, rfl.avro, ...
+
+struct Person {
+  std::string first_name;
+  std::string last_name;
+  int age;
+};
+
+const auto homer =
+    Person{.first_name = "Homer", .last_name = "Simpson", .age = 45};
+
+const std::string json_string = rfl::json::write(homer);
+auto homer2 = rfl::json::read<Person>(json_string).value();
+```
+
+The public API is identical to the header-based interface; only the way you
+bring the names into scope changes. Building the modules requires CMake `>= 3.28`
+and a compiler with C++20 modules support. The module interface units live in
+the [`modules/`](modules) directory and are enabled per format via the same
+`REFLECTCPP_*` CMake options as the headers.
+
+> **Note:** When consuming reflect-cpp as a module, the enum reflection range is
+> baked into the compiled module interface. Configure it with the
+> `REFLECTCPP_ENUM_RANGE_MIN` / `REFLECTCPP_ENUM_RANGE_MAX` CMake variables rather
+> than the `RFL_ENUM_RANGE_MIN` / `RFL_ENUM_RANGE_MAX` macros. See the
+> [enums documentation](https://rfl.getml.com/enums) for details.
 
 ### More Comprehensive Example
 

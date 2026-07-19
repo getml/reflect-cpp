@@ -1,9 +1,13 @@
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
+#include <variant>
+
+import rfl.cereal;
+import rfl;
+import rfl.json;
+
 
 namespace test_variants_in_vectors {
 

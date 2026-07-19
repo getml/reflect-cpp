@@ -1,3 +1,8 @@
+#include <utility>
+
+import rfl;
+
+
 // Flatten::operator=(Flatten<U>&&) uses std::forward<U>(_f) which passes
 // Flatten<U> instead of U — fails to compile for cross-type assignment.
 // File: include/rfl/Flatten.hpp:103-105
@@ -6,7 +11,6 @@
 // This file instantiates the buggy operator. It should FAIL to compile
 // while the bug exists, and succeed after the fix.
 
-#include <rfl.hpp>
 
 struct Base {
   int x = 0;

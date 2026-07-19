@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
 
-#include <rfl.hpp>
-#include <rfl/cbor.hpp>
-#include <rfl/json.hpp>
 #include <string>
 #include <vector>
+import rfl;
+import rfl.json;
+import rfl.cbor;
+
 
 namespace test_error_messages {
 

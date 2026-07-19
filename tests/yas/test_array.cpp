@@ -1,11 +1,14 @@
 #include <array>
 #include <memory>
-#include <rfl/yas.hpp>
 #include <string>
 
-#include <rfl.hpp>
 
 #include "write_and_read.hpp"
+#include <utility>
+
+import rfl;
+import rfl.yas;
+
 
 namespace test_array {
 

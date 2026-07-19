@@ -1,9 +1,12 @@
 #include <gtest/gtest.h>
 
 #include <iostream>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string_view>
+#include <string>
+
+import rfl;
+import rfl.json;
+
 
 namespace test_string_view {
 

@@ -1,9 +1,11 @@
-#include <rfl.hpp>
 #include <cstdint>
 #include <climits>
 #include <string>
 
 #include "write_and_read.hpp"
+import rfl.capnproto;
+import rfl;
+
 
 namespace test_uint64 {
 

@@ -5,9 +5,10 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+import rfl;
+import rfl.bson;
 
-#include <rfl.hpp>
-#include <rfl/bson.hpp>
+
 
 // bson::Reader — float fields reject integer BSON values
 // File: include/rfl/bson/Reader.hpp:127-132

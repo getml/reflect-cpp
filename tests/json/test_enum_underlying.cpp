@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
+import rfl.json;
 
-#include <rfl/json.hpp>
+
 
 namespace test_enum_underlying {
 

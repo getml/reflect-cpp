@@ -2,9 +2,12 @@
 #define WRITE_AND_READ_
 
 #include <gtest/gtest.h>
+#include <type_traits>
 
-#include <rfl/json.hpp>
-#include <rfl/yas.hpp>
+import rfl.json;
+import rfl.yas;
+
+
 
 template <class... Ps>
 void write_and_read(const auto& _struct) {

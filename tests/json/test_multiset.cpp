@@ -1,8 +1,13 @@
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+#include <memory>
+#include <set>
+#include <utility>
+
+import rfl;
+import rfl.json;
+
 
 namespace test_multiset {
 

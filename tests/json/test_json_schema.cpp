@@ -1,11 +1,12 @@
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 #include <tuple>
 #include <variant>
 #include <vector>
 
 #include "write_and_read.hpp"
+import rfl;
+import rfl.json;
+
 
 namespace test_json_schema {
 

@@ -24,10 +24,10 @@ consteval std::string_view field_name_at() {
 template <class T, StringLiteral Name, std::size_t... Is>
 consteval std::size_t field_index_by_name_impl(std::index_sequence<Is...>) {
   std::size_t result = static_cast<std::size_t>(-1);
-  ((field_name_at<T, Is>() == Name.string_view()
-        ? (result = Is, true)
-        : false) ||
-   ...);
+  (void)(((field_name_at<T, Is>() == Name.string_view()
+               ? (result = Is, true)
+               : false) ||
+          ...));
   return result;
 }
 

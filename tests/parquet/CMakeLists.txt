@@ -6,7 +6,7 @@ add_executable(
     reflect-cpp-parquet-tests 
     ${SOURCES}
 )
-target_precompile_headers(reflect-cpp-parquet-tests PRIVATE [["rfl.hpp"]] <iostream> <string> <functional> <gtest/gtest.h>)
+target_precompile_headers(reflect-cpp-parquet-tests PRIVATE <iostream> <string> <functional> <gtest/gtest.h>)
 
 target_include_directories(reflect-cpp-parquet-tests SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
 

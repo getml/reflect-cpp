@@ -1,8 +1,13 @@
 #include <map>
-#include <rfl.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+#include <memory>
+#include <utility>
+
+import rfl.ubjson;
+import rfl;
+
 
 namespace test_map_with_key_validation {
 

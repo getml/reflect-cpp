@@ -1,10 +1,15 @@
 #include <gtest/gtest.h>
+#include <yyjson.h>
 
 #include <cstdlib>
 #include <string>
+#include <string_view>
 
-#include <rfl.hpp>
-#include <rfl/json.hpp>
+import rfl;
+import rfl.json;
+
+
+
 
 // transform_camel_case prepends '_' to names starting with uppercase
 // File: include/rfl/internal/transform_case.hpp:60-73

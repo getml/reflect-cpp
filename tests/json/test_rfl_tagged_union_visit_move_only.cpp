@@ -1,10 +1,10 @@
 #include <cassert>
 #include <memory>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 
-#include "rfl/TaggedUnion.hpp"
 #include "write_and_read.hpp"
+import rfl;
+import rfl.json;
+
 
 namespace test_rfl_tagged_union_visit_move_only {
 

@@ -1,10 +1,11 @@
 #include <memory>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 #include <unordered_map>
 
 #include "write_and_read.hpp"
+import rfl;
+import rfl.json;
+
 
 namespace test_string_unordered_map {
 TEST(json, test_string_unordered_map) {

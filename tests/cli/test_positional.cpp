@@ -1,7 +1,10 @@
 #include <gtest/gtest.h>
-#include <rfl.hpp>
-#include <rfl/cli.hpp>
 #include <string>
+#include <optional>
+
+import rfl;
+import rfl.cli;
+
 
 namespace test_positional {
 

@@ -1,7 +1,13 @@
-#include <rfl.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+#include <forward_list>
+#include <memory>
+#include <utility>
+
+import rfl.capnproto;
+import rfl;
+
 
 namespace test_forward_list {
 

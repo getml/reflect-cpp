@@ -2,11 +2,16 @@
 
 #include <algorithm>
 #include <array>
-#include <rfl/cbor.hpp>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
+
+import rfl;
+import rfl.cbor;
+
 
 // Make sure things still compile when
 // rfl.hpp is included after rfl/cbor.hpp.
-#include <rfl.hpp>
 
 namespace test_read_byte_containers {
 

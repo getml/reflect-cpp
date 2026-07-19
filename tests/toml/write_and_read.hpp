@@ -2,8 +2,12 @@
 #define WRITE_AND_READ_
 
 #include <gtest/gtest.h>
+#include <string_view>
+#include <type_traits>
 
-#include <rfl/toml.hpp>
+import rfl.toml;
+
+
 
 template <class... Ps>
 void write_and_read(const auto& _struct) {

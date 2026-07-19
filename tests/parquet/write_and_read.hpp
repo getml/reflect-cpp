@@ -2,8 +2,11 @@
 #define WRITE_AND_READ_
 
 #include <gtest/gtest.h>
+#include <type_traits>
 
-#include <rfl/parquet.hpp>
+import rfl.parquet;
+
+
 
 template <class... Ps>
 void write_and_read(const auto& _vec, const rfl::parquet::Settings& _settings =

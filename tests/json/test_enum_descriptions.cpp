@@ -1,7 +1,10 @@
 #include <gtest/gtest.h>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
+#include <string_view>
+
+import rfl;
+import rfl.json;
+
 
 namespace test_enum_descriptions {
 

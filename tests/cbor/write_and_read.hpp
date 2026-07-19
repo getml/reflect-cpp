@@ -3,9 +3,16 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
+#include <iomanip>
 #include <iostream>
-#include <rfl/cbor.hpp>
+#include <sstream>
 #include <string>
+#include <type_traits>
+#include <vector>
+
+import rfl.cbor;
+
 
 // Helper function to parse hex bytes from CBOR diagnostic output
 template<typename CharT>

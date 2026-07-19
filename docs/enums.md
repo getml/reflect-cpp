@@ -54,6 +54,17 @@ However, some limitations apply:
         #define RFL_ENUM_RANGE_MAX 128
         #include <rfl.hpp>
         ```
+
+        If you consume reflect-cpp as a C++ module (`import rfl;`), you cannot define these macros in your own
+        translation units, because the range is baked into the compiled module interface. Instead, set the
+        `REFLECTCPP_ENUM_RANGE_MIN` and `REFLECTCPP_ENUM_RANGE_MAX` CMake cache variables when configuring the library:
+
+        ```
+        cmake -DREFLECTCPP_ENUM_RANGE_MIN=-128 -DREFLECTCPP_ENUM_RANGE_MAX=128 ...
+        ```
+
+        Note that these CMake variables only affect the compiled module interface; they have no effect on header-only
+        consumers, who should use the `RFL_ENUM_RANGE_MIN`/`RFL_ENUM_RANGE_MAX` macros shown above.
     - You can specify a custom range for a specific enum by defining the specialization `rfl::config::enum_range` for
       the enum type :
         ```cpp

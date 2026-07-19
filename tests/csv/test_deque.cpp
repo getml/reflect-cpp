@@ -1,8 +1,9 @@
 #include <deque>
-#include <rfl/csv.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+import rfl.csv;
+
 
 namespace test_deque {
 

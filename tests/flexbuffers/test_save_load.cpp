@@ -1,10 +1,11 @@
 #include <cassert>
-#include <rfl.hpp>
-#include <rfl/flexbuf.hpp>
 #include <string>
 #include <vector>
 
 #include <gtest/gtest.h>
+import rfl;
+import rfl.flexbuf;
+
 
 namespace test_save_load {
 

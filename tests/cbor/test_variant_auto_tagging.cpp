@@ -1,9 +1,13 @@
 #include <cassert>
-#include <rfl.hpp>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
+#include <variant>
+
+import rfl.cbor;
+import rfl;
+
 
 // NOTE TO MAINTAINERS:
 // These tests are very similar to the others in

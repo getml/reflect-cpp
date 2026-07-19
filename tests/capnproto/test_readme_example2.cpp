@@ -1,7 +1,9 @@
-#include <rfl.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+import rfl.capnproto;
+import rfl;
+
 
 namespace test_readme_example2 {
 

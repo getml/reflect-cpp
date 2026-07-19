@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.28)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -8,6 +8,7 @@ option(REFLECTCPP_INSTALL "Install reflect cpp" OFF)
 
 option(REFLECTCPP_ALL_FORMATS "Enable all supported formats" OFF)
 option(REFLECTCPP_JSON "Enable JSON support" ON) # enabled by default
+option(REFLECTCPP_CLI "Enable CLI support" ON)
 option(REFLECTCPP_AVRO "Enable AVRO support" ${REFLECTCPP_ALL_FORMATS})
 option(REFLECTCPP_BSON "Enable BSON support" ${REFLECTCPP_ALL_FORMATS})
 option(REFLECTCPP_CAPNPROTO "Enable Cap’n Proto support" ${REFLECTCPP_ALL_FORMATS})
@@ -27,6 +28,11 @@ option(REFLECTCPP_BOOST_SERIALIZATION "Enable Boost.Serialization support" ${REF
 option(REFLECTCPP_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
 option(REFLECTCPP_CHECK_HEADERS "Make sure that all headers are self-contained" OFF)
+
+set(REFLECTCPP_ENUM_RANGE_MIN "-256" CACHE STRING
+    "Minimum value scanned during enum reflection")
+set(REFLECTCPP_ENUM_RANGE_MAX "256" CACHE STRING
+    "Maximum value scanned during enum reflection")
 
 option(REFLECTCPP_USE_BUNDLED_DEPENDENCIES "Use the bundled dependencies" ON)
 
@@ -233,9 +239,25 @@ if(REFLECTCPP_USE_STD_EXPECTED)
     target_compile_definitions(reflectcpp PUBLIC REFLECTCPP_USE_STD_EXPECTED)
 endif()
 
+target_compile_definitions(reflectcpp PRIVATE
+    RFL_ENUM_RANGE_MIN=${REFLECTCPP_ENUM_RANGE_MIN}
+    RFL_ENUM_RANGE_MAX=${REFLECTCPP_ENUM_RANGE_MAX}
+)
+
 set(REFLECT_CPP_SOURCES
     src/reflectcpp.cpp
 )
+
+set(REFLECT_CPP_MODULES
+    modules/rfl.cppm
+)
+
+if (REFLECTCPP_JSON OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES
+        modules/rfl.json.cppm
+        modules/rfl.c_arrays_and_inheritance.cppm
+    )
+endif ()
 
 target_include_directories(
     reflectcpp PUBLIC
@@ -275,13 +297,14 @@ if (_REFLECTCPP_NEEDS_JSON_IMPL)
 endif ()
 
 if (REFLECTCPP_AVRO OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.avro.cppm)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_avro.cpp
     )
     find_package(jansson CONFIG REQUIRED)
     if (REFLECTCPP_USE_VCPKG)
         target_include_directories(reflectcpp SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
-        if (MSVC)
+        if (WIN32)
             set(_AVRO_STATIC_LIB "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/avro${CMAKE_STATIC_LIBRARY_SUFFIX}")
             if(REFLECTCPP_BUILD_SHARED)
                 message(STATUS "With whole archive ${_AVRO_STATIC_LIB}")
@@ -308,6 +331,7 @@ if (REFLECTCPP_AVRO OR REFLECTCPP_CHECK_HEADERS)
 endif ()
 
 if (REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.bson.cppm)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_bson.cpp
     )
@@ -318,6 +342,7 @@ if (REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
 endif ()
 
 if (REFLECTCPP_CAPNPROTO OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.capnproto.cppm)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_capnproto.cpp
     )
@@ -333,6 +358,7 @@ if (REFLECTCPP_CAPNPROTO OR REFLECTCPP_CHECK_HEADERS)
 endif ()
 
 if (REFLECTCPP_CBOR OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.cbor.cppm)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_cbor.cpp
     )
@@ -343,6 +369,7 @@ if (REFLECTCPP_CBOR OR REFLECTCPP_CHECK_HEADERS)
 endif ()
 
 if (REFLECTCPP_CEREAL OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.cereal.cppm)
     list(APPEND REFLECT_CPP_SOURCES
 	src/reflectcpp_cereal.cpp
     )
@@ -353,6 +380,7 @@ if (REFLECTCPP_CEREAL OR REFLECTCPP_CHECK_HEADERS)
 endif()
 
 if (REFLECTCPP_CSV OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.csv.cppm)
     if (NOT TARGET Arrow)
         find_package(Arrow CONFIG REQUIRED)
     endif()
@@ -364,6 +392,7 @@ if (REFLECTCPP_CSV OR REFLECTCPP_CHECK_HEADERS)
 endif ()
 
 if (REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.flexbuf.cppm)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_flexbuf.cpp
     )
@@ -374,6 +403,7 @@ if (REFLECTCPP_FLEXBUFFERS OR REFLECTCPP_CHECK_HEADERS)
 endif ()
 
 if (REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.msgpack.cppm)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_msgpack.cpp
     )
@@ -384,6 +414,7 @@ if (REFLECTCPP_MSGPACK OR REFLECTCPP_CHECK_HEADERS)
 endif ()
 
 if (REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.parquet.cppm)
     if (NOT TARGET Arrow)
         find_package(Arrow CONFIG REQUIRED)
     endif()
@@ -399,6 +430,7 @@ if (REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
 endif ()
 
 if (REFLECTCPP_TOML OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.toml.cppm)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_toml.cpp
     )
@@ -409,6 +441,7 @@ if (REFLECTCPP_TOML OR REFLECTCPP_CHECK_HEADERS)
 endif()
 
 if (REFLECTCPP_UBJSON OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.ubjson.cppm)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_ubjson.cpp
     )
@@ -419,6 +452,7 @@ if (REFLECTCPP_UBJSON OR REFLECTCPP_CHECK_HEADERS)
 endif ()
 
 if (REFLECTCPP_XML OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.xml.cppm)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_xml.cpp
     )
@@ -429,6 +463,7 @@ if (REFLECTCPP_XML OR REFLECTCPP_CHECK_HEADERS)
 endif ()
 
 if (REFLECTCPP_YAML OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.yaml.cppm)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_yaml.cpp
     )
@@ -439,6 +474,7 @@ if (REFLECTCPP_YAML OR REFLECTCPP_CHECK_HEADERS)
 endif ()
 
 if (REFLECTCPP_BOOST_SERIALIZATION OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.boost_serialization.cppm)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_boost_serialization.cpp
     )
@@ -449,6 +485,7 @@ if (REFLECTCPP_BOOST_SERIALIZATION OR REFLECTCPP_CHECK_HEADERS)
 endif ()
 
 if (REFLECTCPP_YAS OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.yas.cppm)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_yas.cpp
     )
@@ -456,8 +493,26 @@ if (REFLECTCPP_YAS OR REFLECTCPP_CHECK_HEADERS)
     target_include_directories(reflectcpp PRIVATE ${YAS_INCLUDE_DIRS})
 endif ()
 
+if (REFLECTCPP_CLI OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.cli.cppm)
+endif ()
+
+set_source_files_properties(
+    ${REFLECT_CPP_MODULES}
+    PROPERTIES
+        LANGUAGE CXX
+        SKIP_PRECOMPILE_HEADERS ON
+)
+
 set_target_properties(reflectcpp PROPERTIES LINKER_LANGUAGE CXX)
 target_sources(reflectcpp PRIVATE ${REFLECT_CPP_SOURCES})
+target_sources(reflectcpp
+    PUBLIC
+    FILE_SET rfl_modules
+    TYPE CXX_MODULES
+    BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/modules
+    FILES ${REFLECT_CPP_MODULES}
+)
 target_precompile_headers(reflectcpp PRIVATE [["rfl.hpp"]] <iostream> <string> <functional>)
 
 if (REFLECTCPP_BUILD_TESTS)
@@ -528,7 +583,7 @@ if (REFLECTCPP_INSTALL)
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/reflectcpp"
     )
 
-    file(GLOB_RECURSE RFL_HEADERS RELATIVE ${CMAKE_CURRENT_LIST_DIR} "${CMAKE_CURRENT_LIST_DIR}/include/*" )
+    file(GLOB_RECURSE RFL_HEADERS RELATIVE ${CMAKE_CURRENT_LIST_DIR} "${CMAKE_CURRENT_LIST_DIR}/include/*.h" "${CMAKE_CURRENT_LIST_DIR}/include/*.hpp")
 
     target_sources(reflectcpp
         PUBLIC
@@ -541,7 +596,8 @@ if (REFLECTCPP_INSTALL)
     install(
         TARGETS reflectcpp
         EXPORT reflectcpp-exports
-        FILE_SET reflectcpp_headers DESTINATION ${INCLUDE_INSTALL_DIR}
+        FILE_SET reflectcpp_headers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        FILE_SET rfl_modules DESTINATION ${CMAKE_INSTALL_DATADIR}/reflectcpp/modules
     )
 
     install(
@@ -586,4 +642,3 @@ include(CPack)
 if (ament_cmake_FOUND)
     ament_package()
 endif()
-

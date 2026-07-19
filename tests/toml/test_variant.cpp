@@ -1,7 +1,12 @@
 #include <cassert>
-#include <rfl.hpp>
 
 #include "write_and_read.hpp"
+#include <memory>
+#include <variant>
+
+import rfl.toml;
+import rfl;
+
 
 namespace test_variant {
 

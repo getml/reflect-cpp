@@ -1,8 +1,10 @@
-#include <rfl.hpp>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
+import rfl.yaml;
+import rfl;
+
 
 namespace test_monster_example {
 

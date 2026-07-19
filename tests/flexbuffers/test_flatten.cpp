@@ -1,8 +1,10 @@
 #include <cassert>
-#include <rfl.hpp>
 #include <string>
 
 #include "write_and_read.hpp"
+import rfl.flexbuf;
+import rfl;
+
 
 namespace test_flatten {
 

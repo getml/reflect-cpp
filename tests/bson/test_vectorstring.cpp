@@ -1,7 +1,9 @@
-#include <rfl.hpp>
 #include <vector>
 
 #include "write_and_read.hpp"
+import rfl.bson;
+import rfl;
+
 
 namespace test_vectorstring {
 

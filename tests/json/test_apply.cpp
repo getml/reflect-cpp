@@ -1,10 +1,11 @@
 #include <cassert>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 #include <type_traits>
 
 #include "write_and_read.hpp"
+import rfl;
+import rfl.json;
+
 
 namespace test_apply {
 
@@ -20,7 +21,7 @@ TEST(json, test_apply) {
   const auto view = rfl::to_view(lisa);
 
   *view.get<0>() = "Maggie";
-  *std::get<1>(view.values()) = "Simpson";
+  *rfl::get<1>(view.values()) = "Simpson";
   *view.get<"age">() = 0;
 
   view.apply([]<typename Field>(const Field& field) {

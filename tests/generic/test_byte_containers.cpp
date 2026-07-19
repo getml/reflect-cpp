@@ -1,10 +1,16 @@
 #include <array>
 #include <cassert>
-#include <rfl/concepts.hpp>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
+#include <cstddef>
+#include <cstdint>
+#include <span>
+#include <string_view>
+
+import rfl;
+
 
 namespace test_byte_container_concepts {
 

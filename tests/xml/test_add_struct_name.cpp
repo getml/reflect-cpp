@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "write_and_read.hpp"
+import rfl.xml;
 
 namespace test_add_struct_name {
 

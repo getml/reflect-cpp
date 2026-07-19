@@ -1,10 +1,11 @@
 #include <cassert>
-#include <rfl.hpp>
-#include <rfl/toml.hpp>
 #include <string>
 #include <vector>
 
 #include <gtest/gtest.h>
+import rfl;
+import rfl.toml;
+
 
 namespace test_save_load {
 

@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "write_and_read.hpp"
+import rfl.cbor;
 
 namespace test_snake_case_to_camel_case {
 

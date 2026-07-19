@@ -1,13 +1,16 @@
 #include <array>
 #include <memory>
-#include <rfl/bson.hpp>
 #include <string>
 
 // Make sure things still compile when
 // rfl.hpp is included after rfl/cbor.hpp.
-#include <rfl.hpp>
 
 #include "write_and_read.hpp"
+#include <utility>
+
+import rfl;
+import rfl.bson;
+
 
 namespace test_array {
 

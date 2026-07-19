@@ -21,7 +21,7 @@ auto wrap_in_fields(auto&& _tuple, Fields&&... _fields) {
   if constexpr (i == size) {
     return rfl::make_tuple(std::move(_fields)...);
   } else {
-    auto value = std::move(std::get<i>(_tuple));
+    auto value = std::move(rfl::get<i>(_tuple));
     using Type = std::remove_cvref_t<std::remove_pointer_t<decltype(value)>>;
     if constexpr (is_flatten_field_v<Type>) {
       // The problem here is that the FieldNames are already flattened, but this

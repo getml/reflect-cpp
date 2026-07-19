@@ -1,9 +1,12 @@
-#include <rfl.hpp>
-#include <rfl/cbor.hpp>
 #include <string>
 #include <vector>
 
 #include "write_and_read.hpp"
+#include <optional>
+
+import rfl;
+import rfl.cbor;
+
 
 namespace test_no_optionals {
 

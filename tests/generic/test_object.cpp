@@ -1,8 +1,9 @@
 #include <gtest/gtest.h>
 
 #include <type_traits>
+import rfl;
 
-#include <rfl.hpp>
+
 
 namespace test_object_difference_type_signed {
 
