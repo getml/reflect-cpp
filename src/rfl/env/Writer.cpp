@@ -34,7 +34,13 @@ SOFTWARE.
 
 namespace rfl::env {
 
-static constexpr const char* XML_CONTENT = "xml_content";
+int portable_setenv(const char* name, const char* value) {
+#ifdef _WIN32
+  return _putenv_s(name, value);
+#else
+  return setenv(name, value, 1);
+#endif
+}
 
 Writer::Writer() {}
 
@@ -105,7 +111,8 @@ void Writer::end_array(OutputArrayType* _arr) const noexcept {
     value.visit([&](const auto& _v) {
       using T = std::remove_cvref_t<decltype(_v)>;
       if constexpr (std::is_same_v<T, OutputVarType>) {
-        setenv((arr.prefix + std::to_string(i)).c_str(), _v.value.c_str(), 1);
+        portable_setenv((arr.prefix + std::to_string(i)).c_str(),
+                        _v.value.c_str());
 
       } else if constexpr (std::is_same_v<T, OutputArrayType>) {
         // Do nothing for arrays, as end_array should have already
@@ -129,7 +136,7 @@ void Writer::end_object(OutputObjectType* _obj) const noexcept {
     value.visit([&](const auto& _v) {
       using T = std::remove_cvref_t<decltype(_v)>;
       if constexpr (std::is_same_v<T, OutputVarType>) {
-        setenv((obj.prefix + key).c_str(), _v.value.c_str(), 1);
+        portable_setenv((obj.prefix + key).c_str(), _v.value.c_str());
 
       } else if constexpr (std::is_same_v<T, OutputArrayType>) {
         // Do nothing for arrays, as end_array should have already

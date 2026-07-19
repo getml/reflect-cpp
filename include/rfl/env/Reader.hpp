@@ -1,7 +1,10 @@
 #ifndef RFL_ENV_READER_HPP_
 #define RFL_ENV_READER_HPP_
 
+#include <locale.h>
+
 #include <charconv>
+#include <clocale>
 #include <concepts>
 #include <cstdlib>
 #include <optional>
@@ -11,7 +14,16 @@
 
 #include "../Result.hpp"
 
+#if defined(__APPLE__)
+#include <crt_externs.h>
+inline char** get_environ() noexcept { return *_NSGetEnviron(); }
+#elif defined(_WIN32)
+#include <stdlib.h>
+inline char** get_environ() noexcept { return _environ; }
+#else
 extern char** environ;
+inline char** get_environ() noexcept { return environ; }
+#endif
 
 namespace rfl::env {
 
@@ -166,7 +178,7 @@ struct RFL_API Reader {
       return true;
     }
     const auto prefix = _var.path.empty() ? std::string("") : _var.path + "_";
-    for (char** env = environ; *env != nullptr; ++env) {
+    for (char** env = get_environ(); *env != nullptr; ++env) {
       const std::string env_entry(*env);
       if (env_entry.size() <= prefix.size()) {
         continue;
@@ -229,7 +241,7 @@ struct RFL_API Reader {
       }
 
     } else {
-      for (char** env = environ; *env != nullptr; ++env) {
+      for (char** env = get_environ(); *env != nullptr; ++env) {
         const std::string env_entry(*env);
         if (env_entry.size() <= _obj.prefix.size()) {
           continue;
@@ -239,7 +251,8 @@ struct RFL_API Reader {
           if (pos_eq == std::string::npos) {
             continue;
           }
-          const auto name = env_entry.substr(_obj.prefix.size(), pos_eq);
+          const auto name =
+              env_entry.substr(_obj.prefix.size(), pos_eq - _obj.prefix.size());
           const auto var = InputVarType{.path = env_entry.substr(0, pos_eq)};
           _object_reader.read(std::string_view(name), var);
         }

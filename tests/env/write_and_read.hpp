@@ -3,17 +3,32 @@
 
 #include <gtest/gtest.h>
 
-#include <cstdlib>
 #include <cstddef>
+#include <cstdlib>
 #include <map>
+#include <rfl/env.hpp>
+#include <rfl/json.hpp>
 #include <string>
 #include <type_traits>
 #include <utility>
 
-#include <rfl/env.hpp>
-#include <rfl/json.hpp>
-
 namespace test_env {
+
+inline void portable_setenv(const std::string& name, const std::string& value) {
+#ifdef _WIN32
+  _putenv_s(name.c_str(), value.c_str());
+#else
+  setenv(name.c_str(), value.c_str(), 1);
+#endif
+}
+
+inline void portable_unsetenv(const std::string& name) {
+#ifdef _WIN32
+  _putenv_s(name.c_str(), "");
+#else
+  unsetenv(name.c_str());
+#endif
+}
 
 class ScopedEnvironment {
  public:
@@ -51,7 +66,7 @@ class ScopedEnvironment {
     }
 
     for (const auto& [name, value] : _snapshot) {
-      setenv(name.c_str(), value.c_str(), 1);
+      portable_setenv(name.c_str(), value.c_str());
     }
   }
 
@@ -59,7 +74,7 @@ class ScopedEnvironment {
     const auto current = capture();
 
     for (const auto& [name, value] : current) {
-      unsetenv(name.c_str());
+      portable_unsetenv(name.c_str());
     }
   }
 
