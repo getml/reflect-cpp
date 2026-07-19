@@ -172,7 +172,7 @@ struct RFL_API Reader {
   bool is_empty(const InputVarType& _var) const noexcept {
     const auto str = std::getenv(_var.path.c_str());
     if (str != nullptr) {
-      return std::string(str).empty();
+      return false;
     }
     if (_var.path.empty()) {
       return true;
