@@ -37,13 +37,13 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
                  arrow_reader.status().message());
   }
 
-  std::shared_ptr<arrow::Table> table;
+  const auto table_or = arrow_reader.ValueOrDie()->ReadTable();
 
-  const auto status = arrow_reader.ValueOrDie()->ReadTable(&table);
-
-  if (!status.ok()) {
-    return error("Could not read table: " + status.message());
+  if (!table_or.ok()) {
+    return error("Could not read table: " + table_or.status().message());
   }
+
+  auto& table = table_or.ValueOrDie();
 
   using ArrowReader = parsing::tabular::ArrowReader<
       T, parsing::tabular::SerializationType::parquet, Ps...>;
