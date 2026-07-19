@@ -61,7 +61,7 @@ class ScopedEnvironment {
 
     for (const auto& [name, value] : current) {
       if (!_snapshot.contains(name)) {
-        unsetenv(name.c_str());
+        portable_unsetenv(name.c_str());
       }
     }
 
