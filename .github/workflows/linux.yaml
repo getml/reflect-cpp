@@ -1,0 +1,113 @@
+name: linux
+
+on: [ push, pull_request ]
+
+env: 
+    VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+
+jobs:
+  linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        format: ["JSON", "AVRO", "BOOST_SERIALIZATION", "CAPNPROTO", "CBOR", "CEREAL", "FLEXBUFFERS", "MSGPACK", "PARQUET", "TOML", "UBJSON", "XML", "YAML", "benchmarks", "headers"]
+        compiler: [llvm, gcc]
+        compiler-version: [11, 12, 13, 14, 16, 17, 18]
+        cxx: [20, 23]
+        exclude:
+          - compiler: gcc 
+            compiler-version: 16
+          - compiler: gcc 
+            compiler-version: 17
+          - compiler: gcc 
+            compiler-version: 18
+          - compiler: llvm
+            compiler-version: 11
+          - compiler: llvm 
+            compiler-version: 12
+          - compiler: llvm 
+            compiler-version: 13
+          - compiler: llvm 
+            compiler-version: 14
+          - compiler: gcc
+            compiler-version: 11
+            cxx: 23 
+          - compiler: gcc
+            compiler-version: 12
+            cxx: 23  
+          - compiler: llvm 
+            compiler-version: 16
+            cxx: 23 
+          - compiler: llvm
+            compiler-version: 17
+            cxx: 23  
+    name: "${{ github.job }} (${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }})"
+    concurrency:
+      group: "linux-${{ github.ref }}-${{ github.job }}-${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}"
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Export GitHub Actions cache environment variables
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      - name: Run vcpkg
+        uses: lukka/run-vcpkg@v11
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          if [[ "${{ matrix.compiler-version }}" == 11 ]]; then
+            sudo apt install -y ninja-build g++-11 
+          else
+            sudo apt install -y ninja-build
+          fi
+      - name: Compile
+        run: |
+          if [[ "${{ matrix.compiler }}" == "llvm" ]]; then
+            export CC=clang-${{ matrix.compiler-version }}
+            export CXX=clang++-${{ matrix.compiler-version }}
+          elif [[ "${{ matrix.compiler }}" == "gcc" ]]; then
+            export CC=gcc-${{ matrix.compiler-version }}
+            export CXX=g++-${{ matrix.compiler-version }}
+          fi
+          $CXX --version
+          if [[ "${{ matrix.format }}" == "JSON" ]]; then
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
+          elif [[ "${{ matrix.format }}" == "benchmarks" ]]; then
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release
+          elif [[ "${{ matrix.format }}" == "headers" ]]; then
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_CHECK_HEADERS=ON -DCMAKE_BUILD_TYPE=Release
+          else
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release
+          fi
+          cmake --build build -j4
+      - name: Run tests
+        if: (matrix.format != 'benchmarks') && (matrix.format != 'headers')
+        run: |
+          ctest --test-dir build --output-on-failure
+      - name: Run benchmarks 
+        if: matrix.format == 'benchmarks' 
+        run: |
+          echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY 
+          echo '## Benchmarks across different formats' >> $GITHUB_STEP_SUMMARY 
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_write >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo '## Benchmarks for JSON' >> $GITHUB_STEP_SUMMARY 
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=licenses >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
