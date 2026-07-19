@@ -19,7 +19,8 @@
         {
           "name": "avro-c",
           "version>=": "1.11.3"
-        }
+        },
+        "zlib"
       ]
     },
     "benchmarks": {
