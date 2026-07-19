@@ -24,6 +24,8 @@ jobs:
         uses: lukka/run-vcpkg@v11
       - name: Install bison
         run: brew install bison openssl@3
+      - name: Install ninka
+        run: brew install ninja
       - name: Compile
         env:
           CC: clang
