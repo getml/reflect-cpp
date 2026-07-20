@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <array>
+#include <concepts>
 #include <string>
 #include <string_view>
 
@@ -14,9 +15,11 @@ namespace internal {
 /// for the parameters names in the NamedTuples.
 template <size_t N>
 struct StringLiteral {
-  constexpr StringLiteral(const auto... _chars)
-    requires (std::is_same_v<decltype(_chars), const char> && ...)
-    : arr_{_chars..., '\0'} {}
+  /// Constrained via template type parameters rather than a requires-fold
+  /// over decltype of the function parameter pack: the latter crashes
+  /// clang 21/22 in C++26 mode (llvm/llvm-project#198052, #205000).
+  template <std::same_as<char>... Chars>
+  constexpr StringLiteral(const Chars... _chars) : arr_{_chars..., '\0'} {}
 
   constexpr StringLiteral(const std::array<char, N> _arr) : arr_(_arr) {}
 
