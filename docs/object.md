@@ -63,3 +63,21 @@ There are three different ways of accessing fields:
 - `.get(...)` returns an `rfl::Result` wrapping the field, or an `rfl::Error` if the field doesn't exist.
 
 Note that it is most efficient, if you access fields in the order that they were placed.
+
+Two objects can be compared for equality using `operator==`. Because `rfl::Object`
+preserves insertion order and may contain duplicate keys, the comparison is
+*positional*: two objects are equal if and only if they contain the same
+key-value pairs in the same order.
+
+```cpp
+auto a = rfl::Object<std::string>();
+a["first_name"] = "Bart";
+a["last_name"] = "Simpson";
+
+auto b = rfl::Object<std::string>();
+b["last_name"] = "Simpson";
+b["first_name"] = "Bart";
+
+// false: a and b contain the same pairs, but in a different order.
+const bool equal = (a == b);
+```

@@ -230,6 +230,29 @@ class RFL_API Generic {
   /// Returns the underlying variant.
   const VariantType& variant() const noexcept { return value_; };
 
+  /// Equality comparison. Two Generics are equal if they hold the same
+  /// alternative and the underlying values compare equal.
+  /// @param _lhs The left-hand side Generic
+  /// @param _rhs The right-hand side Generic
+  /// @return true if both Generics hold equal values
+  friend bool operator==(const Generic& _lhs, const Generic& _rhs) {
+    if (_lhs.value_.index() != _rhs.value_.index()) {
+      return false;
+    }
+    return std::visit(
+        [&](const auto& _val) -> bool {
+          using T = std::remove_cvref_t<decltype(_val)>;
+          if constexpr (std::is_same_v<T, std::nullopt_t>) {
+            // Both alternatives are null, which we consider equal.
+            return true;
+          } else {
+            // The indices are equal, so _rhs holds the same alternative.
+            return _val == std::get<T>(_rhs.value_);
+          }
+        },
+        _lhs.value_);
+  }
+
  private:
   /// Converts a ReflectionType to a VariantType.
   /// @param _r The reflection type (optional variant) to convert
