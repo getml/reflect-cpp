@@ -290,6 +290,18 @@ class Object {
     return data_[i].second;
   }
 
+  /// Equality comparison. Two objects are equal if they contain the same
+  /// key-value pairs in the same order. Note that the comparison is positional
+  /// rather than set-based, because rfl::Object preserves insertion order and
+  /// may contain duplicate keys.
+  /// @param _lhs The left-hand side object
+  /// @param _rhs The right-hand side object
+  /// @return true if both objects contain the same key-value pairs in the same
+  /// order
+  friend bool operator==(const Object<T>& _lhs, const Object<T>& _rhs) {
+    return _lhs.data_ == _rhs.data_;
+  }
+
  private:
   /// Finds the index of a key in the data vector.
   /// Uses a rotating search pattern starting from i_ for better cache locality.
