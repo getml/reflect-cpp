@@ -134,7 +134,7 @@ rfl::Result<T> parse_value(const std::string& _str,
 /// Parser for environment variables. Provides methods to read fields from ENV
 /// arrays and objects, check for empty variables, and convert string values to
 /// basic C++ types.
-struct RFL_API Reader {
+struct Reader {
   using InputArrayType = InputEnvArrayType;
   using InputObjectType = InputEnvObjectType;
   using InputVarType = InputEnvVarType;
