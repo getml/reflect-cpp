@@ -42,7 +42,7 @@ class ScopedEnvironment {
   static Environment capture() {
     auto env = Environment{};
 
-    for (char** current = environ; *current != nullptr; ++current) {
+    for (char** current = get_environ(); *current != nullptr; ++current) {
       const std::string entry(*current);
       const auto pos = entry.find('=');
 
