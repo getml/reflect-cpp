@@ -2660,6 +2660,21 @@ you can iterate through it just like any other map:</p>
 <li><code>.get(...)</code> returns an <code>rfl::Result</code> wrapping the field, or an <code>rfl::Error</code> if the field doesn't exist.</li>
 </ul>
 <p>Note that it is most efficient, if you access fields in the order that they were placed.</p>
+<p>Two objects can be compared for equality using <code>operator==</code>. Because <code>rfl::Object</code>
+preserves insertion order and may contain duplicate keys, the comparison is
+<em>positional</em>: two objects are equal if and only if they contain the same
+key-value pairs in the same order.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">auto</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Object</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">a</span><span class="p">[</span><span class="s">&quot;first_name&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Bart&quot;</span><span class="p">;</span>
+<span class="n">a</span><span class="p">[</span><span class="s">&quot;last_name&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">Object</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">b</span><span class="p">[</span><span class="s">&quot;last_name&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Simpson&quot;</span><span class="p">;</span>
+<span class="n">b</span><span class="p">[</span><span class="s">&quot;first_name&quot;</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Bart&quot;</span><span class="p">;</span>
+
+<span class="c1">// false: a and b contain the same pairs, but in a different order.</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">equal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">b</span><span class="p">);</span>
+</code></pre></div>
 
 
 
