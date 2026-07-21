@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "../Result.hpp"
 #include "../Tuple.hpp"
 #include "../internal/is_array.hpp"
 #include "../internal/no_extra_fields_v.hpp"
@@ -17,20 +16,22 @@
 
 namespace rfl::parsing {
 
-template <class R, class W, class ViewType, class ProcessorsType>
+template <class R, class W, class _ViewType, class ProcessorsType>
 class ViewReader {
- private:
+ public:
   using InputVarType = typename R::InputVarType;
+  using ViewType = _ViewType;
+
   static constexpr size_t size_ = ViewType::size();
 
- public:
   /**
    * @brief Constructor.
    *
    * @param _r The reader to use.
    * @param _view The view to read into.
    * @param _found A boolean array indicating which fields have been found.
-   * @param _set A boolean array indicating which fields have been successfully set.
+   * @param _set A boolean array indicating which fields have been successfully
+   * set.
    * @param _errors The vector to collect errors in.
    */
   ViewReader(const R* _r, ViewType* _view, std::array<bool, size_>* _found,

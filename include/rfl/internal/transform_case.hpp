@@ -10,9 +10,24 @@ namespace rfl::internal {
 
 constexpr bool is_upper(char c) { return c >= 'A' && c <= 'Z'; }
 
-constexpr char to_upper(char c) { return c >= 'a' && c <= 'z' ? c + ('A' - 'a') : c; }
+constexpr char to_upper(char c) {
+  return c >= 'a' && c <= 'z' ? c + ('A' - 'a') : c;
+}
 
 constexpr char to_lower(char c) { return is_upper(c) ? c - ('A' - 'a') : c; }
+
+/// Transforms the field name to all uppercase letters.
+template <internal::StringLiteral _name>
+consteval auto to_all_caps() {
+  constexpr auto src = _name.string_view();
+  constexpr auto len = src.size();
+
+  auto result = std::array<char, len + 1>{};
+  for (size_t i = 0; i < len; ++i) {
+    result[i] = to_upper(src[i]);
+  }
+  return StringLiteral<len + 1>(result);
+}
 
 /// Transforms the field name from snake_case to camelCase or PascalCase.
 template <internal::StringLiteral _name, bool _capitalize>
@@ -47,8 +62,7 @@ consteval auto transform_camel_case() {
 
   if constexpr (!src.empty() && is_upper(src[0])) {
     return StringLiteral<len>(result.data() + 1);
-  }
-  else {
+  } else {
     return StringLiteral<len + 1>(result);
   }
 }

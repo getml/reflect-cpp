@@ -14,13 +14,14 @@
 
 namespace rfl::parsing {
 
-template <class R, class W, class ViewType, class ProcessorsType>
+template <class R, class W, class _ViewType, class ProcessorsType>
 class ViewReaderWithDefaultAndStrippedFieldNames {
- private:
+ public:
   using InputVarType = typename R::InputVarType;
+  using ViewType = _ViewType;
+
   static constexpr size_t size_ = ViewType::size();
 
- public:
   /**
    * @brief Constructor.
    *
