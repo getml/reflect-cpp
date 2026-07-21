@@ -13,6 +13,20 @@
 
 namespace rfl {
 
+/// This is the declaration of the `Generic` class, which serves as a
+/// type-agnostic container for various data types. It wraps a `std::variant`
+/// that can hold primitive types (bool, int, double, string), null, nested
+/// objects, or arrays. This class is typically used in
+/// serialization/deserialization libraries to represent JSON or other formats
+/// where types are not known at compile time. The class provides constructors
+/// to initialize from various types and accessors to retrieve the underlying
+/// variant. It mimics the behavior of a `std::optional` or `std::expected` by
+/// providing methods like `get()`, `value()`, and `is_null()`. The
+/// `VariantType` alias defines the specific set of types this container can
+/// hold. The `ReflectionType` alias allows for optional initialization, useful
+/// when a value might be absent. Public member functions include constructors,
+/// destructor, assignment operators, and accessors. The class is marked with
+/// `RFL_API` for DLL export/import support.
 class RFL_API Generic {
  public:
   constexpr static std::nullopt_t Null = std::nullopt;
