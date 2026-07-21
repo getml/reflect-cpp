@@ -160,6 +160,14 @@ struct Validator {
   /// Returns the underlying object.
   const T& operator()() const noexcept { return value_; }
 
+  /// Pointer to the underlying value.
+  /// @return Pointer to the stored value
+  T* operator->() noexcept { return &value_; }
+
+  /// Pointer to the underlying value (const).
+  /// @return Const pointer to the stored value
+  const T* operator->() const noexcept { return &value_; }
+
   /// Exposes the underlying value.
   T& value() noexcept { return value_; }
 

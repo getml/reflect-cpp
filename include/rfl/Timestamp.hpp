@@ -111,6 +111,14 @@ class Timestamp {
   /// Returns the underlying object.
   const std::tm& operator()() const noexcept { return tm_; }
 
+  /// Pointer to the underlying object.
+  /// @return Pointer to the stored std::tm
+  std::tm* operator->() noexcept { return &tm_; }
+
+  /// Pointer to the underlying object (const).
+  /// @return Const pointer to the stored std::tm
+  const std::tm* operator->() const noexcept { return &tm_; }
+
   /// Returns the underlying object.
   std::tm& value() noexcept { return tm_; }
 

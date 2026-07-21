@@ -78,6 +78,14 @@ class Skip {
   /// Returns the underlying object.
   const Type& operator()() const noexcept { return value_; }
 
+  /// Pointer to the underlying value.
+  /// @return Pointer to the stored value
+  Type* operator->() noexcept { return &value_; }
+
+  /// Pointer to the underlying value (const).
+  /// @return Const pointer to the stored value
+  const Type* operator->() const noexcept { return &value_; }
+
   /// Assigns the underlying object.
   auto& operator=(const Type& _value) {
     value_ = _value;
