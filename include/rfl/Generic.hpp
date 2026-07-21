@@ -1,6 +1,7 @@
 #ifndef RFL_GENERIC_HPP_
 #define RFL_GENERIC_HPP_
 
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <variant>
