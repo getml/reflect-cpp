@@ -139,7 +139,7 @@ const std::string json_schema = rfl::json::to_schema<Person>(rfl::json::pretty);
 }
 ```
 
-`rfl::Description` behaves like a thin wrapper around the underlying type. Much like `rfl::Field`, you can access the underlying value using `.get()`, `.value()`, `operator()()`, or `operator*()` (const and non-const overloads).
+`rfl::Description` behaves like a thin wrapper around the underlying type. Much like `rfl::Field`, you can access the underlying value using `.get()`, `.value()`, `operator()()`, `operator*()`, or `operator->()` (const and non-const overloads).
 
 You also add a description to the entire JSON schema:
 
@@ -243,4 +243,4 @@ const std::string json_schema = rfl::json::to_schema<Person>(rfl::json::pretty);
 }
 ```
 
-`rfl::Deprecated` behaves like a thin wrapper around the underlying type, just like `rfl::Description`. You can access the underlying value using `.get()`, `.value()`, `operator()()`, or the assignment operator.
+`rfl::Deprecated` behaves like a thin wrapper around the underlying type, just like `rfl::Description`. You can access the underlying value using `.get()`, `.value()`, `operator()()`, `operator*()`, `operator->()`, or the assignment operator.
