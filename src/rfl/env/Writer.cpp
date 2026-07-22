@@ -133,7 +133,8 @@ void Writer::end_array(OutputArrayType* _arr) const noexcept {
 void Writer::end_object(OutputObjectType* _obj) const noexcept {
   const auto& obj = *_obj;
   for (const auto& [key, value] : *obj.fields) {
-    value.visit([&](const auto& _v) {
+    // Explicit capture of key necessary, because of issues with Clang 15.
+    value.visit([&, key](const auto& _v) {
       using T = std::remove_cvref_t<decltype(_v)>;
       if constexpr (std::is_same_v<T, OutputVarType>) {
         portable_setenv((obj.prefix + key).c_str(), _v.value.c_str());
