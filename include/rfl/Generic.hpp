@@ -1,9 +1,7 @@
 #ifndef RFL_GENERIC_HPP_
 #define RFL_GENERIC_HPP_
 
-#include <limits>
 #include <optional>
-#include <ostream>
 #include <string>
 #include <type_traits>
 #include <variant>
@@ -11,11 +9,24 @@
 
 #include "Object.hpp"
 #include "Result.hpp"
-#include "Variant.hpp"
 #include "common.hpp"
 
 namespace rfl {
 
+/// This is the declaration of the `Generic` class, which serves as a
+/// type-agnostic container for various data types. It wraps a `std::variant`
+/// that can hold primitive types (bool, int, double, string), null, nested
+/// objects, or arrays. This class is typically used in
+/// serialization/deserialization libraries to represent JSON or other formats
+/// where types are not known at compile time. The class provides constructors
+/// to initialize from various types and accessors to retrieve the underlying
+/// variant. It mimics the behavior of a `std::optional` or `std::expected` by
+/// providing methods like `get()`, `value()`, and `is_null()`. The
+/// `VariantType` alias defines the specific set of types this container can
+/// hold. The `ReflectionType` alias allows for optional initialization, useful
+/// when a value might be absent. Public member functions include constructors,
+/// destructor, assignment operators, and accessors. The class is marked with
+/// `RFL_API` for DLL export/import support.
 class RFL_API Generic {
  public:
   constexpr static std::nullopt_t Null = std::nullopt;
@@ -107,7 +118,8 @@ class RFL_API Generic {
   Generic& operator=(VariantType&& _value) noexcept;
 
   /// Assigns from any type convertible to VariantType.
-  /// Handles special conversions for numeric types to ensure proper variant alternative selection.
+  /// Handles special conversions for numeric types to ensure proper variant
+  /// alternative selection.
   /// @tparam T The type to convert from
   /// @param _value The value to assign
   /// @return Reference to this object
@@ -160,69 +172,27 @@ class RFL_API Generic {
   /// Casts the underlying value to a double or returns an rfl::Error, if the
   /// underlying value is not a number or the conversion would result in loss of
   /// precision.
-  Result<double> to_double() const noexcept {
-    if (auto* ptr = std::get_if<double>(&value_)) return *ptr;
-    if (auto* ptr = std::get_if<int64_t>(&value_)) {
-      auto _d = static_cast<double>(*ptr);
-      if (static_cast<int64_t>(_d) == *ptr) {
-        return _d;
-      }
-      return error(
-          "rfl::Generic: Could not cast the underlying value to a double "
-          "without loss of precision.");
-    }
-    return error(
-        "rfl::Generic: Could not cast the underlying value to a double.");
-  }
+  Result<double> to_double() const noexcept;
 
   /// Casts the underlying value to an integer or returns an rfl::Error, if the
   /// underlying value is not an integer.
-  Result<int> to_int() const noexcept {
-    if (auto* ptr = std::get_if<int64_t>(&value_)) {
-      if (*ptr < static_cast<int64_t>(std::numeric_limits<int>::min()) ||
-          *ptr > static_cast<int64_t>(std::numeric_limits<int>::max())) {
-        return error("rfl::Generic: int64_t value out of range for int.");
-      }
-      return static_cast<int>(*ptr);
-    }
-    return error(
-        "rfl::Generic: Could not cast the underlying value to an integer.");
-  }
+  Result<int> to_int() const noexcept;
 
   /// Casts the underlying value to an int64 or returns an rfl::Error, if the
   /// underlying value is not an integer.
-  Result<int64_t> to_int64() const noexcept {
-    if (auto* ptr = std::get_if<int64_t>(&value_)) return *ptr;
-    return error(
-        "rfl::Generic: Could not cast the underlying value to an int64.");
-  }
+  Result<int64_t> to_int64() const noexcept;
 
   /// Casts the underlying value to an rfl::Generic::Object or returns an
   /// rfl::Error, if the underlying value is not an rfl::Generic::Object.
-  Result<Object> to_object() const noexcept {
-    if (auto* ptr = std::get_if<Object>(&value_)) return *ptr;
-    return error(
-        "rfl::Generic: Could not cast the underlying value to an "
-        "rfl::Generic::Object.");
-  }
+  Result<Object> to_object() const noexcept;
 
   /// Casts the underlying value to rfl::Generic::Null or returns an
   /// rfl::Error, if the underlying value is not rfl::Generic::Null.
-  Result<std::nullopt_t> to_null() const noexcept {
-    if (auto* ptr = std::get_if<std::nullopt_t>(&value_)) return *ptr;
-    return error(
-        "rfl::Generic: Could not cast the underlying value to "
-        "rfl::Generic::Null.");
-  }
+  Result<std::nullopt_t> to_null() const noexcept;
 
   /// Casts the underlying value to a string or returns an rfl::Error, if the
   /// underlying value is not a string.
-  Result<std::string> to_string() const noexcept {
-    if (auto* ptr = std::get_if<std::string>(&value_)) return *ptr;
-    return error(
-        "rfl::Generic: Could not cast the underlying value to a "
-        "string.");
-  }
+  Result<std::string> to_string() const noexcept;
 
   /// Returns the underlying variant.
   VariantType& variant() noexcept { return value_; };
@@ -236,21 +206,7 @@ class RFL_API Generic {
   /// @param _rhs The right-hand side Generic
   /// @return true if both Generics hold equal values
   friend bool operator==(const Generic& _lhs, const Generic& _rhs) {
-    if (_lhs.value_.index() != _rhs.value_.index()) {
-      return false;
-    }
-    return std::visit(
-        [&](const auto& _val) -> bool {
-          using T = std::remove_cvref_t<decltype(_val)>;
-          if constexpr (std::is_same_v<T, std::nullopt_t>) {
-            // Both alternatives are null, which we consider equal.
-            return true;
-          } else {
-            // The indices are equal, so _rhs holds the same alternative.
-            return _val == std::get<T>(_rhs.value_);
-          }
-        },
-        _lhs.value_);
+    return is_same(_lhs, _rhs);
   }
 
  private:
@@ -258,6 +214,15 @@ class RFL_API Generic {
   /// @param _r The reflection type (optional variant) to convert
   /// @return The converted variant type
   static VariantType from_reflection_type(const ReflectionType& _r) noexcept;
+
+  /// Checks if two Generic instances are equal by comparing their type indices
+  /// and their underlying values. This is used to implement the equality
+  /// operator for the Generic class.
+  /// @param _lhs The left-hand side Generic instance to compare
+  /// @param _rhs The right-hand side Generic instance to compare
+  /// @return true if both instances have the same type and equal values, false
+  /// otherwise
+  static bool is_same(const Generic& _lhs, const Generic& _rhs);
 
  private:
   VariantType value_;
