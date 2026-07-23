@@ -70,4 +70,4 @@ This flattens all fields into a single JSON object:
 
 ## API convenience
 
-`rfl::Flatten` behaves like a thin wrapper around the underlying type. You can access the underlying value using `.get()`, `.value()`, `operator()()`, or `operator*()` (const and non-const overloads).
+`rfl::Flatten` behaves like a thin wrapper around the underlying type. You can access the underlying value using `.get()`, `.value()`, `operator()()`, `operator*()`, or `operator->()` (const and non-const overloads).

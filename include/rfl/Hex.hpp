@@ -106,6 +106,14 @@ struct Hex {
   /// @return Const reference to the stored value
   const Type& operator()() const noexcept { return value_; }
 
+  /// Pointer to the underlying value.
+  /// @return Pointer to the stored value
+  Type* operator->() noexcept { return &value_; }
+
+  /// Pointer to the underlying value (const).
+  /// @return Const pointer to the stored value
+  const Type* operator->() const noexcept { return &value_; }
+
   /// Assigns a new integer value.
   /// @param _value The value to assign
   /// @return Reference to this Hex

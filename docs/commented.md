@@ -66,7 +66,7 @@ This will result in the following XML:
 
 `rfl::Commented` provides several ways to access and modify the underlying value and the comment:
 
-- `.get()`, `.value()`, `operator()()` — access the underlying value (const and non-const overloads).
+- `.get()`, `.value()`, `operator()()`, `operator*()`, `operator->()` — access the underlying value (const and non-const overloads).
 - `.comment()` — returns an `std::optional<std::string>` containing the comment.
 - `.add_comment(std::string)` — sets or updates the comment.
 - `.set(...)`, `operator=(...)` — assign the underlying value.

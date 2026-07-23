@@ -108,6 +108,14 @@ struct Short {
   /// @return Const reference to the underlying value.
   const Type& operator()() const noexcept { return value_; }
 
+  /// @brief Pointer to the underlying value.
+  /// @return Pointer to the underlying value.
+  Type* operator->() noexcept { return &value_; }
+
+  /// @brief Pointer to the underlying value (const).
+  /// @return Const pointer to the underlying value.
+  const Type* operator->() const noexcept { return &value_; }
+
   /// @brief Assigns a new value to the underlying object.
   /// @param _value The value to assign.
   /// @return Reference to this Short.

@@ -10,7 +10,7 @@ using IntGreaterThan10 = rfl::Validator<int, rfl::Minimum<10>>;
 When you then use the type `IntGreaterThan10` inside you `rfl::Field`, the condition will be automatically
 validated.
 
-The underlying value can be retrieved using the `.get()`, `.value()`, `operator()()`, or `operator*()` method (const and non-const overloads).
+The underlying value can be retrieved using the `.get()`, `.value()`, `operator()()`, `operator*()`, or `operator->()` method (const and non-const overloads).
 
 The current conditions are currently supported by reflect-cpp:
 
