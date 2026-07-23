@@ -2802,7 +2802,7 @@
 <h2 id="api-convenience">API convenience<a class="headerlink" href="#api-convenience" title="Permanent link">&para;</a></h2>
 <p><code>rfl::Commented</code> provides several ways to access and modify the underlying value and the comment:</p>
 <ul>
-<li><code>.get()</code>, <code>.value()</code>, <code>operator()()</code> — access the underlying value (const and non-const overloads).</li>
+<li><code>.get()</code>, <code>.value()</code>, <code>operator()()</code>, <code>operator*()</code>, <code>operator-&gt;()</code> — access the underlying value (const and non-const overloads).</li>
 <li><code>.comment()</code> — returns an <code>std::optional&lt;std::string&gt;</code> containing the comment.</li>
 <li><code>.add_comment(std::string)</code> — sets or updates the comment.</li>
 <li><code>.set(...)</code>, <code>operator=(...)</code> — assign the underlying value.</li>
