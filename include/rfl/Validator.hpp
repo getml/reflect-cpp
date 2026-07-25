@@ -11,6 +11,13 @@
 #include "Result.hpp"
 #include "internal/HasValidation.hpp"
 
+namespace rfl::internal::parsing {
+// Forward declare this method used to determine if validation is called from
+// the Parser
+constexpr bool called_from_read_struct_with_default(
+    const std::source_location& loc);
+}  // namespace rfl::internal::parsing
+
 namespace rfl {
 
 /// A wrapper that validates a value against one or more validation rules.
@@ -40,8 +47,12 @@ struct Validator {
   }
 
   /// Default constructor - validates a default-constructed T.
-  /// @throws std::exception if validation of the default value fails
-  Validator() : value_(ValidationType::validate(T()).value()) {}
+  /// @throws std::exception if validation of the default value fails, unless
+  ///   the constructor is being called from
+  ///   `rfl::Parser::read_struct_with_default()`. See the documentation of that
+  ///   method for more details.
+  Validator(const std::source_location& loc = std::source_location::current())
+      : value_(validate_from_default_constructor_(T(), loc)) {}
 
   /// Move constructor.
   /// @param _other The validator to move from
@@ -170,6 +181,16 @@ struct Validator {
   const T& reflection() const { return value_; }
 
  private:
+  T&& validate_from_default_constructor_(T&& value,
+                                         const std::source_location& loc) {
+    // If this was originally called from
+    // `rfl::parsing::Parser::read_struct_with_default()`, then skip validation
+    if (internal::parsing::called_from_read_struct_with_default(loc)) {
+      return std::move(value);
+    }
+    return ValidationType::validate(std::move(value)).value();
+  }
+
   /// The underlying value.
   T value_;
 };

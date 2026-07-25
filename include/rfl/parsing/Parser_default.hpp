@@ -67,6 +67,43 @@
 #include "schemaful/IsSchemafulReader.hpp"
 #include "schemaful/IsSchemafulWriter.hpp"
 
+namespace rfl::internal::parsing {
+
+/// This method is meant to be used `rfl::Validator` to check if the caller is
+/// `Parser::read_struct_with_default()` to allow an "escape-hatch" with
+/// validation. See that method and the constructor for `rfl::Validator` for
+/// more details.
+///
+/// This method is implemented in this file so that we can do an extra check
+/// against the file name of the caller (using `std::source_location`), without
+/// hardcoding the file path. However, the Parser class name and the method are
+/// hardcoded here.
+constexpr bool called_from_read_struct_with_default(
+    const std::source_location& loc) {
+  constexpr std::source_location this_loc = std::source_location::current();
+  constexpr std::string_view parser_class_name = "rfl::parsing::Parser";
+  constexpr std::string_view target_fname = "read_struct_with_default(";
+
+  std::string_view caller_function_name{loc.function_name()};
+
+  // Check that the expected class name is present in the full function name
+  if (caller_function_name.find(parser_class_name) == std::string_view::npos) {
+    return false;
+  }
+  // Check that the expected function name is present in the full function name
+  if (caller_function_name.find(target_fname) == std::string_view::npos) {
+    return false;
+  }
+  // Check that the filename matches this one
+  if (loc.file_name() != this_loc.file_name()) {
+    return false;
+  }
+
+  return true;
+}
+
+}  // namespace rfl::internal::parsing
+
 namespace rfl::parsing {
 
 /// Default case - anything that cannot be explicitly matched.
@@ -694,6 +731,19 @@ struct Parser {
   static Result<T> read_struct_with_default(const R& _r,
                                             const InputVarType& _var) {
     try {
+      // `rfl::Validator` has an "escape-hatch" that will skip validation on
+      // construction in the specific case that the caller has an
+      // `std::source_location` that matches this specific function, to help
+      // with this specific case where we want to default initialize the struct
+      // to get the default values of the fields, but for which some of the
+      // defaults do not satisfy the validation (e.g. a field with a min size
+      // constraint that has no default). This should be safe because the final
+      // parser will overwrite these fields again, and errors will be raised for
+      // invalid default values.
+      // We also assert here to be sure `called_from_read_struct_with_default()`
+      // has been implemented correctly.
+      static_assert(internal::parsing::called_from_read_struct_with_default(
+          std::source_location::current()));
       auto t = T{};  // This might fail, for instance if the default value does
                      // not satisfy the validator, but in that case we will just
                      // return the error.
