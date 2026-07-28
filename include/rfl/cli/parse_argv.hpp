@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "../Result.hpp"
+#include "../internal/strings/utf8_conversions.hpp"
 #include "resolve_args.hpp"
 
 namespace rfl::cli {
@@ -118,6 +119,38 @@ inline rfl::Result<ParsedArgs> parse_argv(int argc, char* argv[]) {
     result.positional.emplace_back(arg_raw);
   }
   return result;
+}
+
+/// Parses wide-character command-line arguments into categorized buckets.
+/// Converts each wide string to UTF-8 and delegates to the narrow parse_argv.
+/// @param argc Number of wide-character command-line arguments
+/// @param argv Array of wide-character command-line argument strings
+/// @return A Result containing ParsedArgs with UTF-8 encoded arguments
+inline rfl::Result<ParsedArgs> parse_argv(int argc, wchar_t* argv[]) {
+  if (argc < 0 || (argc > 0 && !argv)) {
+    return error("Invalid argc/argv.");
+  }
+  if (argc <= 1) {
+    return ParsedArgs{};
+  }
+
+  std::vector<std::string> narrow_argv;
+  narrow_argv.reserve(argc);
+  std::vector<char*> narrow_argv_ptrs;
+  narrow_argv_ptrs.reserve(argc);
+
+  for (int i = 0; i < argc; ++i) {
+    const auto str = rfl::internal::strings::wstring_to_utf8(argv[i]);
+    if (!str) {
+      return error(
+          "Could not convert argument " + std::to_string(i)
+          + " from wide to UTF-8.");
+    }
+    narrow_argv.emplace_back(std::move(*str));
+    narrow_argv_ptrs.push_back(narrow_argv.back().data());
+  }
+
+  return parse_argv(argc, narrow_argv_ptrs.data());
 }
 
 }  // namespace rfl::cli
