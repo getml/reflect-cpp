@@ -17,7 +17,7 @@ struct Config {
   uint16_t port;
 };
 
-TEST(regression, cli_rejects_negative_for_unsigned) {
+TEST(cli, cli_rejects_negative_for_unsigned) {
   const char* args[] = {"program", "--port=-1"};
   const auto result = rfl::cli::read<Config>(2, const_cast<char**>(args));
   EXPECT_FALSE(result)
@@ -37,7 +37,7 @@ struct Config {
   uint16_t port;
 };
 
-TEST(regression, cli_rejects_out_of_range_for_narrow_type) {
+TEST(cli, cli_rejects_out_of_range_for_narrow_type) {
   const char* args[] = {"program", "--port=99999"};
   const auto result = rfl::cli::read<Config>(2, const_cast<char**>(args));
   EXPECT_FALSE(result)
@@ -57,7 +57,7 @@ struct SignedConfig {
   int8_t level;
 };
 
-TEST(regression, cli_rejects_out_of_range_for_signed_narrow_type) {
+TEST(cli, cli_rejects_out_of_range_for_signed_narrow_type) {
   const char* args[] = {"program", "--level=200"};
   const auto result =
       rfl::cli::read<SignedConfig>(2, const_cast<char**>(args));
@@ -67,7 +67,7 @@ TEST(regression, cli_rejects_out_of_range_for_signed_narrow_type) {
       << static_cast<int>(result.value().level);
 }
 
-TEST(regression, cli_rejects_large_negative_for_signed_narrow_type) {
+TEST(cli, cli_rejects_large_negative_for_signed_narrow_type) {
   const char* args[] = {"program", "--level=-200"};
   const auto result =
       rfl::cli::read<SignedConfig>(2, const_cast<char**>(args));
@@ -89,7 +89,7 @@ struct FloatConfig {
   double rate;
 };
 
-TEST(regression, cli_float_parsing_ignores_locale) {
+TEST(cli, cli_float_parsing_ignores_locale) {
   // Save current locale
   const char* old_locale = std::setlocale(LC_NUMERIC, nullptr);
   std::string saved_locale = old_locale ? old_locale : "C";
