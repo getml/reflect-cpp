@@ -186,9 +186,19 @@ class Writer {
       add_value(_var.str());
 
     } else if constexpr (std::is_same<Type, rfl::Bytestring>() ||
-                         std::is_same<Type, rfl::Vectorstring>()) {
+                          std::is_same<Type, rfl::Vectorstring>()) {
       (*archive_)(::cereal::make_size_tag(_var.size()));
       (*archive_)(::cereal::binary_data(_var.data(), _var.size()));
+
+    } else if constexpr (std::is_same<Type, float>()) {
+      (*archive_)(_var);
+
+    } else if constexpr (std::is_same<Type, double>()) {
+      (*archive_)(_var);
+
+    } else if constexpr (std::is_floating_point<Type>()) {
+      const auto d = static_cast<double>(_var);
+      (*archive_)(d);
 
     } else {
       (*archive_)(_var);

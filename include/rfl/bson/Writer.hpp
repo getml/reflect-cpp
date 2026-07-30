@@ -117,11 +117,18 @@ class RFL_API Writer {
         throw std::runtime_error("Could not append bool to array.");
       }
 
-    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, float>()) {
       const bool ok = bson_array_builder_append_double(
-          _parent->val_, static_cast<double>(_var));
+          _parent->val_, _var);
       if (!ok) {
         throw std::runtime_error("Could not append float to array.");
+      }
+
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, double>()) {
+      const bool ok = bson_array_builder_append_double(
+          _parent->val_, _var);
+      if (!ok) {
+        throw std::runtime_error("Could not append double to array.");
       }
 
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
@@ -175,12 +182,21 @@ class RFL_API Writer {
                                  std::string(_name) + "' to object.");
       }
 
-    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, float>()) {
       const bool ok = bson_append_double(_parent->val_, _name.data(),
-                                         static_cast<int>(_name.size()),
-                                         static_cast<double>(_var));
+                                          static_cast<int>(_name.size()),
+                                          _var);
       if (!ok) {
-        throw std::runtime_error("Could not floating point field '" +
+        throw std::runtime_error("Could not float field '" +
+                                 std::string(_name) + "' to object.");
+      }
+
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, double>()) {
+      const bool ok = bson_append_double(_parent->val_, _name.data(),
+                                          static_cast<int>(_name.size()),
+                                          _var);
+      if (!ok) {
+        throw std::runtime_error("Could not double field '" +
                                  std::string(_name) + "' to object.");
       }
 
@@ -195,7 +211,7 @@ class RFL_API Writer {
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bson_oid_t>()) {
       const bool ok = bson_append_oid(_parent->val_, _name.data(),
-                                      static_cast<int>(_name.size()), &_var);
+                                       static_cast<int>(_name.size()), &_var);
       if (!ok) {
         throw std::runtime_error("Could not oid field '" + std::string(_name) +
                                  "' to object.");

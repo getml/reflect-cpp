@@ -274,6 +274,10 @@ class Writer {
       *ar_ << _var;
     } else if constexpr (std::is_same<Type, bool>()) {
       *ar_ << _var;
+    } else if constexpr (std::is_same<Type, float>()) {
+      *ar_ << _var;
+    } else if constexpr (std::is_same<Type, double>()) {
+      *ar_ << _var;
     } else if constexpr (std::is_floating_point<Type>()) {
       *ar_ << static_cast<double>(_var);
     } else if constexpr (std::is_unsigned<Type>()) {
