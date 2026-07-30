@@ -95,17 +95,22 @@ class RFL_API Writer {
   OutputVarType new_value(const T& _var) const {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       encoder_->string_value(_var);
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>() ||
                          std::is_same<std::remove_cvref_t<T>,
                                       rfl::Vectorstring>()) {
       encoder_->byte_string_value(_var);
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       encoder_->bool_value(_var);
+
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       encoder_->double_value(static_cast<double>(_var));
+
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       encoder_->int64_value(static_cast<std::int64_t>(_var));
+
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
