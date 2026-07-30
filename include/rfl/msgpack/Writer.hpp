@@ -124,10 +124,24 @@ class RFL_API Writer {
         }
       }
 
-    } else if constexpr (std::is_floating_point<Type>()) {
-      const auto err = msgpack_pack_double(pk_, static_cast<double>(_var));
+    } else if constexpr (std::is_same<Type, float>()) {
+      const auto err = msgpack_pack_float(pk_, _var);
+      if (err) {
+        throw std::runtime_error("Could not pack float.");
+      }
+
+    } else if constexpr (std::is_same<Type, double>()) {
+      const auto err = msgpack_pack_double(pk_, _var);
       if (err) {
         throw std::runtime_error("Could not pack double.");
+      }
+
+    } else if constexpr (std::is_floating_point<Type>()) {
+      // Preserve the existing narrowing behavior for floating-point types
+      // other than float and double.
+      const auto err = msgpack_pack_double(pk_, static_cast<double>(_var));
+      if (err) {
+        throw std::runtime_error("Could not pack floating-point value.");
       }
 
     } else if constexpr (std::is_unsigned<Type>()) {
