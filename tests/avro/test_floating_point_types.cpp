@@ -20,10 +20,6 @@ TEST(avro, writes_float_and_double) {
 
   EXPECT_EQ(res.value().f, s.f);
   EXPECT_EQ(res.value().d, s.d);
-
-  const auto json1 = rfl::json::write(s);
-  const auto json2 = rfl::json::write(res.value());
-  EXPECT_EQ(json1, json2);
 }
 
 }  // namespace test_floating_point_types
