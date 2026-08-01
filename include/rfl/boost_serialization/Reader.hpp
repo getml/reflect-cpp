@@ -48,46 +48,30 @@ struct Reader {
   static constexpr bool has_custom_constructor = false;
 
   /// Checks if the given Boost archive value is empty.
-  /// Always returns false for Boost.Serialization as it doesn't have a null concept.
+  /// Always returns false for Boost.Serialization as it doesn't have a null
+  /// concept.
   /// @param _var The archive variable (unused)
   /// @return Always false
   bool is_empty(const InputVarType& /*_var*/) const noexcept { return false; }
 
   /// Converts a value from the Boost archive to a basic C++ type.
-  /// Supports strings, booleans, floating-point numbers, integers, and literal types.
+  /// Supports strings, booleans, floating-point numbers, integers, and literal
+  /// types.
   /// @tparam T The target C++ type to convert to
   /// @param _var The archive variable containing the value
   /// @return A Result containing the converted value or an error
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
     try {
-      if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-        std::string val;
-        *_var.ar >> val;
-        return val;
-      } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
-        bool val = false;
-        *_var.ar >> val;
-        return val;
-      } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-        double val = 0.0;
-        *_var.ar >> val;
-        return static_cast<T>(val);
-      } else if constexpr (std::is_unsigned<std::remove_cvref_t<T>>()) {
-        std::uint64_t val = 0;
-        *_var.ar >> val;
-        return static_cast<T>(val);
-      } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-        std::int64_t val = 0;
-        *_var.ar >> val;
-        return static_cast<T>(val);
-      } else if constexpr (internal::is_literal_v<T>) {
+      if constexpr (internal::is_literal_v<T>) {
         std::int64_t val = 0;
         *_var.ar >> val;
         return T::from_value(
             static_cast<typename std::remove_cvref_t<T>::ValueType>(val));
       } else {
-        static_assert(rfl::always_false_v<T>, "Unsupported type.");
+        T val;
+        *_var.ar >> val;
+        return val;
       }
     } catch (std::exception& e) {
       return error(e.what());
@@ -147,7 +131,8 @@ struct Reader {
   }
 
   /// Reads all elements from an array using the provided array reader.
-  /// @tparam ArrayReader The type of reader that processes individual array elements
+  /// @tparam ArrayReader The type of reader that processes individual array
+  /// elements
   /// @param _array_reader The reader object that processes each element
   /// @param _arr The array structure containing size information
   /// @return std::nullopt on success, or an Error if reading fails
@@ -188,7 +173,8 @@ struct Reader {
 
   /// Reads all fields from an object using the provided object reader.
   /// Fields are accessed by their index.
-  /// @tparam ObjectReader The type of reader that processes individual object fields
+  /// @tparam ObjectReader The type of reader that processes individual object
+  /// fields
   /// @param _object_reader The reader object that processes each field
   /// @param _obj The object structure containing size information
   /// @return std::nullopt on success, or an Error if reading fails
@@ -202,8 +188,9 @@ struct Reader {
     return std::nullopt;
   }
 
-  /// Reads a union (variant) value and converts it to the appropriate variant type.
-  /// Reads the discriminant first to determine which alternative is active.
+  /// Reads a union (variant) value and converts it to the appropriate variant
+  /// type. Reads the discriminant first to determine which alternative is
+  /// active.
   /// @tparam VariantType The C++ variant type to construct
   /// @tparam UnionReaderType The type of reader that handles union alternatives
   /// @param _union The union structure
