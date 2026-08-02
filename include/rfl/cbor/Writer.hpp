@@ -14,23 +14,27 @@
 
 namespace rfl::cbor {
 
-/// Writer class for serializing C++ objects to CBOR (Concise Binary Object Representation) format.
-/// This class provides the interface for converting C++ objects into compact binary CBOR data.
-/// CBOR is a binary data serialization format designed to be smaller and faster than JSON.
+/// Writer class for serializing C++ objects to CBOR (Concise Binary Object
+/// Representation) format. This class provides the interface for converting C++
+/// objects into compact binary CBOR data. CBOR is a binary data serialization
+/// format designed to be smaller and faster than JSON.
 class RFL_API Writer {
   using Encoder = jsoncons::cbor::cbor_bytes_encoder;
 
  public:
   /// Represents a CBOR array being constructed during serialization.
-  /// This is a placeholder type as the actual array data is managed by the encoder.
+  /// This is a placeholder type as the actual array data is managed by the
+  /// encoder.
   struct CBOROutputArray {};
 
   /// Represents a CBOR object being constructed during serialization.
-  /// This is a placeholder type as the actual object data is managed by the encoder.
+  /// This is a placeholder type as the actual object data is managed by the
+  /// encoder.
   struct CBOROutputObject {};
 
   /// Represents a CBOR value being constructed during serialization.
-  /// This is a placeholder type as the actual value data is managed by the encoder.
+  /// This is a placeholder type as the actual value data is managed by the
+  /// encoder.
   struct CBOROutputVar {};
 
   using OutputArrayType = CBOROutputArray;
@@ -38,7 +42,8 @@ class RFL_API Writer {
   using OutputVarType = CBOROutputVar;
 
   /// Constructs a CBOR Writer with the specified encoder.
-  /// @param _encoder Pointer to the CBOR encoder that will write the binary output
+  /// @param _encoder Pointer to the CBOR encoder that will write the binary
+  /// output
   Writer(Encoder* _encoder);
 
   ~Writer();
@@ -49,7 +54,8 @@ class RFL_API Writer {
   OutputArrayType array_as_root(const size_t _size) const;
 
   /// Creates a CBOR object as the root element of the output.
-  /// @param The expected number of fields (unused, reserved for future optimization)
+  /// @param The expected number of fields (unused, reserved for future
+  /// optimization)
   /// @return An output object that can be populated with key-value pairs
   OutputObjectType object_as_root(const size_t) const;
 
@@ -84,7 +90,8 @@ class RFL_API Writer {
                                       OutputObjectType* _parent) const;
 
   /// Adds a nested object to a parent array.
-  /// @param The expected number of fields (unused, reserved for future optimization)
+  /// @param The expected number of fields (unused, reserved for future
+  /// optimization)
   /// @param _parent Pointer to the parent array to add to
   /// @return An output object that can be populated with key-value pairs
   OutputObjectType add_object_to_array(const size_t,
@@ -92,7 +99,8 @@ class RFL_API Writer {
 
   /// Adds a nested object to a parent object with the specified field name.
   /// @param _name The name of the field in the parent object
-  /// @param The expected number of fields (unused, reserved for future optimization)
+  /// @param The expected number of fields (unused, reserved for future
+  /// optimization)
   /// @param _parent Pointer to the parent object to add to
   /// @return An output object that can be populated with key-value pairs
   OutputObjectType add_object_to_object(const std::string_view& _name,
@@ -103,7 +111,8 @@ class RFL_API Writer {
   /// Supports basic types like strings, numbers, booleans, and byte strings.
   /// @tparam T The type of the value to add
   /// @param _var The value to add to the array
-  /// @param _parent Pointer to the parent array (unused as encoder tracks context)
+  /// @param _parent Pointer to the parent array (unused as encoder tracks
+  /// context)
   /// @return An output variable representing the added value
   template <class T>
   OutputVarType add_value_to_array(const T& _var,
@@ -116,7 +125,8 @@ class RFL_API Writer {
   /// @tparam T The type of the value to add
   /// @param _name The name of the field in the parent object
   /// @param _var The value to add to the object
-  /// @param _parent Pointer to the parent object (unused as encoder tracks context)
+  /// @param _parent Pointer to the parent object (unused as encoder tracks
+  /// context)
   /// @return An output variable representing the added value
   template <class T>
   OutputVarType add_value_to_object(const std::string_view& _name,
@@ -155,19 +165,25 @@ class RFL_API Writer {
   OutputVarType new_value(const T& _var) const {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       encoder_->string_value(_var);
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>() ||
                          std::is_same<std::remove_cvref_t<T>,
                                       rfl::Vectorstring>()) {
       encoder_->byte_string_value(_var);
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       encoder_->bool_value(_var);
+
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       encoder_->double_value(static_cast<double>(_var));
+
     } else if constexpr (std::is_unsigned<std::remove_cvref_t<T>>()) {
       encoder_->uint64_value(static_cast<std::uint64_t>(_var));
+
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       encoder_->int64_value(static_cast<std::int64_t>(_var));
+
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }

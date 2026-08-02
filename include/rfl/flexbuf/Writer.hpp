@@ -14,8 +14,7 @@
 #include "../always_false.hpp"
 #include "../common.hpp"
 
-namespace rfl {
-namespace flexbuf {
+namespace rfl::flexbuf {
 
 struct RFL_API Writer {
   struct OutputArray {
@@ -89,17 +88,28 @@ struct RFL_API Writer {
                              const T& _var) const {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       fbb_->String(_name.data(), _var);
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>() ||
                          std::is_same<std::remove_cvref_t<T>,
                                       rfl::Vectorstring>()) {
       fbb_->Blob(_name.data(), _var.data(), _var.size());
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       fbb_->Bool(_name.data(), _var);
+
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, float>()) {
+      fbb_->Float(_name.data(), _var);
+
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, double>()) {
+      fbb_->Double(_name.data(), _var);
+
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       fbb_->Double(_name.data(), _var);
+
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       fbb_->Int(_name.data(), _var);
+
     } else {
       static_assert(always_false_v<T>, "Unsupported type");
     }
@@ -110,15 +120,26 @@ struct RFL_API Writer {
   OutputVarType insert_value(const T& _var) const {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
       fbb_->String(_var);
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>()) {
       fbb_->Blob(_var.data(), _var.size());
+
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       fbb_->Bool(_var);
+
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, float>()) {
+      fbb_->Float(_var);
+
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, double>()) {
+      fbb_->Double(_var);
+
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       fbb_->Double(_var);
+
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       fbb_->Int(_var);
+
     } else {
       static_assert(always_false_v<T>, "Unsupported type");
     }
@@ -137,7 +158,6 @@ struct RFL_API Writer {
   Ref<flexbuffers::Builder> fbb_;
 };
 
-}  // namespace flexbuf
-}  // namespace rfl
+}  // namespace rfl::flexbuf
 
 #endif

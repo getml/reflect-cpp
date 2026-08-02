@@ -348,10 +348,18 @@ class RFL_API Writer {
       }
 
     } else if constexpr (std::is_same_v<Type, float>) {
-      int result = avro_value_set_float(_val, static_cast<float>(_var));
+      int result = avro_value_set_float(_val, _var);
       if (result != 0) {
         throw std::runtime_error(
             "Error setting float value: " + std::to_string(result) + ": " +
+            avro_strerror());
+      }
+
+    } else if constexpr (std::is_same_v<Type, double>) {
+      int result = avro_value_set_double(_val, _var);
+      if (result != 0) {
+        throw std::runtime_error(
+            "Error setting double value: " + std::to_string(result) + ": " +
             avro_strerror());
       }
 

@@ -19,7 +19,8 @@
 namespace rfl::cereal {
 
 /// Writer for Cereal serialization library integration.
-/// Writes data to Cereal's portable binary archive format for cross-platform serialization.
+/// Writes data to Cereal's portable binary archive format for cross-platform
+/// serialization.
 class Writer {
  public:
   using CerealArchive = ::cereal::PortableBinaryOutputArchive;

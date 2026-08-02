@@ -270,20 +270,10 @@ class Writer {
   template <class T>
   void new_value(const T& _var) const {
     using Type = std::remove_cvref_t<T>;
-    if constexpr (std::is_same<Type, std::string>()) {
-      *ar_ << _var;
-    } else if constexpr (std::is_same<Type, bool>()) {
-      *ar_ << _var;
-    } else if constexpr (std::is_floating_point<Type>()) {
-      *ar_ << static_cast<double>(_var);
-    } else if constexpr (std::is_unsigned<Type>()) {
-      *ar_ << static_cast<std::uint64_t>(_var);
-    } else if constexpr (std::is_integral<Type>()) {
-      *ar_ << static_cast<std::int64_t>(_var);
-    } else if constexpr (internal::is_literal_v<Type>) {
+    if constexpr (internal::is_literal_v<Type>) {
       *ar_ << static_cast<std::int64_t>(_var.value());
     } else {
-      static_assert(rfl::always_false_v<T>, "Unsupported type.");
+      *ar_ << _var;
     }
   }
 
