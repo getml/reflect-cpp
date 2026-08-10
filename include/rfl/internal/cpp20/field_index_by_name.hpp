@@ -1,32 +1,30 @@
-#ifndef RFL_INTERNAL_FIELD_INDEX_BY_NAME_HPP_
-#define RFL_INTERNAL_FIELD_INDEX_BY_NAME_HPP_
+#ifndef RFL_INTERNAL_CPP20_FIELD_INDEX_BY_NAME_HPP_
+#define RFL_INTERNAL_CPP20_FIELD_INDEX_BY_NAME_HPP_
 
 #include <cstddef>
 #include <string_view>
 #include <utility>
 
-#include "StringLiteral.hpp"
+#include "../StringLiteral.hpp"
 #include "field_index_from_ptm.hpp"
 #include "get_field_names.hpp"
 #include "get_ith_field_from_fake_object.hpp"
 #include "num_fields.hpp"
 
-namespace rfl::internal {
+namespace rfl::internal::cpp20 {
 
 /// Returns the name of the i-th field of T as a string_view, using the same
 /// fake-object name-lookup path that to_named_tuple uses.
 template <class T, std::size_t I>
 consteval std::string_view field_name_at() {
-  return get_field_name_str_view<T,
-                                 fake_field_ptr_for_name_lookup<T, I>()>();
+  return get_field_name_str_view<T, fake_field_ptr_for_name_lookup<T, I>()>();
 }
 
 template <class T, StringLiteral Name, std::size_t... Is>
 consteval std::size_t field_index_by_name_impl(std::index_sequence<Is...>) {
   std::size_t result = static_cast<std::size_t>(-1);
-  ((field_name_at<T, Is>() == Name.string_view()
-        ? (result = Is, true)
-        : false) ||
+  ((field_name_at<T, Is>() == Name.string_view() ? (result = Is, true)
+                                                 : false) ||
    ...);
   return result;
 }
@@ -64,6 +62,6 @@ struct field_value_type_at<T, static_cast<std::size_t>(-1)> {
 template <class T, std::size_t I>
 using field_value_type_at_t = typename field_value_type_at<T, I>::type;
 
-}  // namespace rfl::internal
+}  // namespace rfl::internal::cpp20
 
 #endif

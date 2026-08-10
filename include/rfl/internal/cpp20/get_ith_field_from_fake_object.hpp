@@ -1,15 +1,15 @@
-#ifndef RFL_INTERNAL_GET_ITH_FIELD_FROM_FAKE_OBJECT_HPP_
-#define RFL_INTERNAL_GET_ITH_FIELD_FROM_FAKE_OBJECT_HPP_
+#ifndef RFL_INTERNAL_CPP20_GET_ITH_FIELD_FROM_FAKE_OBJECT_HPP_
+#define RFL_INTERNAL_CPP20_GET_ITH_FIELD_FROM_FAKE_OBJECT_HPP_
 
 #include <cstddef>
 #include <type_traits>
 
-#include "../always_false.hpp"
+#include "../../always_false.hpp"
+#include "../nth_element.hpp"
 #include "get_fake_object.hpp"
-#include "nth_element.hpp"
 #include "num_fields.hpp"
 
-namespace rfl::internal {
+namespace rfl::internal::cpp20 {
 
 template <class T, std::size_t n>
 struct field_extractor {
@@ -2845,6 +2845,6 @@ consteval bool ith_field_is_const() {
 }
 #endif
 
-}  // namespace rfl::internal
+}  // namespace rfl::internal::cpp20
 
 #endif

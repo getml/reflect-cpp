@@ -5,8 +5,7 @@
 
 #include "bind_to_tuple.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class T>
 auto to_ptr_tuple(T& _t) {
@@ -17,7 +16,6 @@ auto to_ptr_tuple(T& _t) {
   }
 }
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

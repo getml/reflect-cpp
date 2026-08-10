@@ -1,5 +1,5 @@
-#ifndef RFL_INTERNAL_NUM_FIELDS_HPP_
-#define RFL_INTERNAL_NUM_FIELDS_HPP_
+#ifndef RFL_INTERNAL_CPP20_NUM_FIELDS_HPP_
+#define RFL_INTERNAL_CPP20_NUM_FIELDS_HPP_
 
 /*
 We infer the number of fields using by figuring out how many fields
@@ -45,8 +45,7 @@ This is the purpose of get_nested_array_size().
 #pragma clang diagnostic ignored "-Wundefined-inline"
 #endif
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal::cpp20 {
 
 template <class Derived>
 struct any_empty_base {
@@ -206,8 +205,7 @@ struct CountFieldsHelper {
 template <class T>
 constexpr std::size_t num_fields = CountFieldsHelper<T>::count_fields();
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal::cpp20
 
 #ifdef __clang__
 #pragma clang diagnostic pop

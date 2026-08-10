@@ -8,8 +8,7 @@
 #include "../make_named_tuple.hpp"
 #include "lit_name.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class FieldNames, int _i>
 auto copy_one_element(const auto& _flattened_tuple) {
@@ -26,11 +25,9 @@ auto copy_flattened_tuple_to_named_tuple(const auto& _flattened_tuple) {
   return [&]<int... _i>(std::integer_sequence<int, _i...>) {
     return make_named_tuple(
         copy_one_element<FieldNames, _i>(_flattened_tuple)...);
-  }
-  (std::make_integer_sequence<int, size>());
+  }(std::make_integer_sequence<int, size>());
 }
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

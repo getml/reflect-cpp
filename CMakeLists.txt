@@ -30,9 +30,14 @@ option(REFLECTCPP_CHECK_HEADERS "Make sure that all headers are self-contained" 
 
 option(REFLECTCPP_USE_BUNDLED_DEPENDENCIES "Use the bundled dependencies" ON)
 
-option(REFLECTCPP_USE_STD_EXPECTED "Use std::expected instead of the built-in Result type (requires C++-23)" OFF)
+option(REFLECTCPP_USE_CPP_REFLECTION "Use standard C++ reflection (requires C++-26)" OFF)
+option(REFLECTCPP_USE_STD_EXPECTED "Use std::expected instead of the built-in Result type (requires C++-23)" ${REFLECTCPP_USE_CPP_REFLECTION})
 
-if(REFLECTCPP_USE_STD_EXPECTED)
+if(REFLECTCPP_USE_CPP_REFLECTION)
+    if(NOT DEFINED CMAKE_CXX_STANDARD)
+        set(CMAKE_CXX_STANDARD 26)
+    endif()
+elseif(REFLECTCPP_USE_STD_EXPECTED)
     if(NOT DEFINED CMAKE_CXX_STANDARD)
         set(CMAKE_CXX_STANDARD 23)
     endif()
@@ -227,6 +232,10 @@ endif()
 
 if(REFLECTCPP_BUILD_SHARED)
     target_compile_definitions(reflectcpp PUBLIC RFL_BUILD_SHARED)
+endif()
+
+if(REFLECTCPP_USE_CPP_REFLECTION)
+    target_compile_definitions(reflectcpp PUBLIC REFLECTCPP_USE_CPP_REFLECTION)
 endif()
 
 if(REFLECTCPP_USE_STD_EXPECTED)

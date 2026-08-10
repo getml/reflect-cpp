@@ -1,5 +1,5 @@
-#ifndef RFL_INTERNAL_FIELD_INDEX_FROM_PTM_HPP_
-#define RFL_INTERNAL_FIELD_INDEX_FROM_PTM_HPP_
+#ifndef RFL_INTERNAL_CPP20_FIELD_INDEX_FROM_PTM_HPP_
+#define RFL_INTERNAL_CPP20_FIELD_INDEX_FROM_PTM_HPP_
 
 #include <cstddef>
 #include <utility>
@@ -13,7 +13,7 @@
 #include "get_ith_field_from_fake_object.hpp"
 #include "num_fields.hpp"
 
-namespace rfl::internal {
+namespace rfl::internal::cpp20 {
 
 /// Finds the index of the data member designated by `FieldPtr` in T by
 /// comparing the address of (obj.*FieldPtr) against the addresses of T's
@@ -67,8 +67,9 @@ inline constexpr std::size_t field_index_v =
 
 /// Returns the i-th field pointer of the fake object of T in the form
 /// `get_field_name_str_lit` expects on the current compiler. On clang the
-/// pointer is wrapped in `Wrapper` because clang's parser of __PRETTY_FUNCTION__
-/// extracts the field name from the wrapper's type, not from the value.
+/// pointer is wrapped in `Wrapper` because clang's parser of
+/// __PRETTY_FUNCTION__ extracts the field name from the wrapper's type, not
+/// from the value.
 template <class T, std::size_t I>
 consteval auto fake_field_ptr_for_name_lookup() {
 #if defined(__clang__)
@@ -78,6 +79,6 @@ consteval auto fake_field_ptr_for_name_lookup() {
 #endif
 }
 
-}  // namespace rfl::internal
+}  // namespace rfl::internal::cpp20
 
 #endif

@@ -78,6 +78,7 @@
 #include "rfl/make_named_tuple.hpp"
 #include "rfl/name_t.hpp"
 #include "rfl/named_tuple_t.hpp"
+#include "rfl/num_fields.hpp"
 #include "rfl/parsing/CustomParser.hpp"
 #include "rfl/patterns.hpp"
 #include "rfl/remove_fields.hpp"
