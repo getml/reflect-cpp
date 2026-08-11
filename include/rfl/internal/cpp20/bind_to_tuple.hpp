@@ -4387,14 +4387,6 @@ auto bind_to_tuple(T& _t) {
   return bind_to_tuple_impl<T, num_fields<T>>(_t);
 }
 
-template <class T, typename F>
-auto bind_to_tuple(T& _t, const F& _f) {
-  auto view = bind_to_tuple(_t);
-  return [&]<std::size_t... _is>(std::index_sequence<_is...>) {
-    return rfl::make_tuple(_f(rfl::get<_is>(view))...);
-  }(std::make_index_sequence<rfl::tuple_size_v<decltype(view)>>());
-}
-
 }  // namespace rfl::internal::cpp20
 
 #endif

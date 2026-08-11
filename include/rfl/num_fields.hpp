@@ -4,7 +4,7 @@
 #ifndef REFLECTCPP_USE_CPP_REFLECTION
 #include "internal/cpp20/num_fields.hpp"
 #else
-// TODO
+#include "internal/cpp26/num_fields.hpp"
 #endif
 
 namespace rfl {
@@ -15,7 +15,8 @@ namespace rfl {
 template <class T>
 constexpr std::size_t num_fields = internal::cpp20::num_fields<T>;
 #else
-// TODO
+template <class T>
+constexpr std::size_t num_fields = internal::cpp26::num_fields<T>;
 #endif
 
 }  // namespace rfl

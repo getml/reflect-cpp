@@ -4,7 +4,7 @@
 #ifndef REFLECTCPP_USE_CPP_REFLECTION
 #include "cpp20/bind_to_tuple.hpp"
 #else
-// TODO
+#include "cpp26/bind_to_tuple.hpp"
 #endif
 
 namespace rfl::internal {
@@ -14,17 +14,16 @@ auto bind_to_tuple(T& _t) {
 #ifndef REFLECTCPP_USE_CPP_REFLECTION
   return cpp20::bind_to_tuple(_t);
 #else
-  // TODO
+  return cpp26::bind_to_tuple(_t);
 #endif
 }
 
 template <class T, typename F>
 auto bind_to_tuple(T& _t, const F& _f) {
-#ifndef REFLECTCPP_USE_CPP_REFLECTION
-  return cpp20::bind_to_tuple(_t, _f);
-#else
-  // TODO
-#endif
+  auto view = bind_to_tuple(_t);
+  return [&]<std::size_t... _is>(std::index_sequence<_is...>) {
+    return rfl::make_tuple(_f(rfl::get<_is>(view))...);
+  }(std::make_index_sequence<rfl::tuple_size_v<decltype(view)>>());
 }
 
 }  // namespace rfl::internal
