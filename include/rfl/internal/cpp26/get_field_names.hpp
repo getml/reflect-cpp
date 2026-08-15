@@ -1,6 +1,7 @@
 #ifndef RFL_INTERNAL_CPP26_GETFIELDNAMES_HPP_
 #define RFL_INTERNAL_CPP26_GETFIELDNAMES_HPP_
 
+#include <format>
 #include <functional>
 #include <meta>
 #include <type_traits>
@@ -32,6 +33,12 @@ consteval auto get_field_names_impl() {
   }
 }
 
+template <auto _i, auto _j>
+consteval bool is_same() {
+  static_assert(_i == _j, "Mismatched types");
+  return _i == _j;
+}
+
 template <class T>
 consteval auto get_field_names() {
   using Type = std::remove_cvref_t<T>;
@@ -44,31 +51,17 @@ consteval auto get_field_names() {
 
     using TupleT = decltype(bind_to_tuple(std::declval<Type&>()));
 
-    static_assert(members.size() == tuple_size_v<TupleT>,
+    static_assert(is_same<members.size(), tuple_size_v<TupleT>>(),
                   "Number of members and tuple size mismatch");
 
-    constexpr bool no_flatten_fields = []<size_t... _is>(
-                                           std::index_sequence<_is...>) {
-      return (true && ... && !is_flatten_field_v<tuple_element_t<_is, TupleT>>);
-    }(std::make_index_sequence<members.size()>{});
-
-    if constexpr (no_flatten_fields) {
-      return [&]<size_t... _is>(std::index_sequence<_is...>) {
-        return Literal<
-            StringLiteral<std::meta::identifier_of(members[_is]).size() + 1>(
-                std::meta::identifier_of(members[_is]))...>();
-      }(std::make_index_sequence<members.size()>());
-
-    } else {
-      return [&]<size_t... _is>(std::index_sequence<_is...>) {
-        return concat_literals(
-            get_field_names_impl<
-                tuple_element_t<_is, TupleT>,
-                Literal<StringLiteral<
-                    std::meta::identifier_of(members[_is]).size() + 1>(
-                    std::meta::identifier_of(members[_is]))>>()...);
-      }(std::make_index_sequence<members.size()>());
-    }
+    return [&]<size_t... _is>(std::index_sequence<_is...>) {
+      return concat_literals(
+          get_field_names_impl<
+              tuple_element_t<_is, TupleT>,
+              Literal<StringLiteral<
+                  std::meta::identifier_of(members[_is]).size() + 1>(
+                  std::meta::identifier_of(members[_is]))>>()...);
+    }(std::make_index_sequence<members.size()>());
   }
 }
 
