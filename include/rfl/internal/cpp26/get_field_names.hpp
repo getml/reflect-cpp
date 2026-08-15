@@ -17,10 +17,10 @@
 namespace rfl::internal::cpp26 {
 
 template <class T>
-auto get_field_names();
+consteval auto get_field_names();
 
 template <class T, class FieldName>
-auto get_field_names_impl() {
+consteval auto get_field_names_impl() {
   using Type = std::remove_cvref_t<std::remove_pointer_t<T>>;
   if constexpr (is_rename_v<Type>) {
     using Name = typename Type::Name;
@@ -33,7 +33,7 @@ auto get_field_names_impl() {
 }
 
 template <class T>
-auto get_field_names() {
+consteval auto get_field_names() {
   using Type = std::remove_cvref_t<T>;
   if constexpr (std::is_pointer_v<Type>) {
     return get_field_names<std::remove_pointer_t<Type>>();

@@ -14,31 +14,31 @@ struct LiteralWrapper {
 };
 
 template <StringLiteral... _names>
-auto wrap_literal(const Literal<_names...>& _literal) {
+consteval auto wrap_literal(const Literal<_names...>& _literal) {
   return LiteralWrapper<_names...>{_literal};
 }
 
 template <StringLiteral... _names1, StringLiteral... _names2>
-auto operator+(const LiteralWrapper<_names1...>&,
-               const LiteralWrapper<_names2...>&) {
+consteval auto operator+(const LiteralWrapper<_names1...>&,
+                         const LiteralWrapper<_names2...>&) {
   return LiteralWrapper<_names1..., _names2...>{
-      rfl::Literal<_names1..., _names2...>::template from_value<0>()};
+      rfl::Literal<_names1..., _names2...>()};
 }
 
 template <class Head, class... Tail>
-auto concat_literals(const Head& _head, const Tail&... _tail) {
+consteval auto concat_literals(const Head& _head, const Tail&... _tail) {
   return (wrap_literal(_head) + ... + wrap_literal(_tail)).literal_;
 }
 
 // Special case - every literal contains exactly one value.
 template <StringLiteral _head, StringLiteral... _tail>
-auto concat_literals(const rfl::Literal<_head>&,
-                     const rfl::Literal<_tail>&...) {
-  return rfl::Literal<_head, _tail...>::template from_value<0>();
+consteval auto concat_literals(const rfl::Literal<_head>&,
+                               const rfl::Literal<_tail>&...) {
+  return rfl::Literal<_head, _tail...>();
 }
 
 // Special case - no literals.
-inline auto concat_literals() { return rfl::Literal<>(); }
+consteval inline auto concat_literals() { return rfl::Literal<>(); }
 
 }  // namespace rfl::internal
 

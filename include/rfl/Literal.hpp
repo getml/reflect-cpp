@@ -47,12 +47,12 @@ class Literal {
   /// Copy constructor - constructs a Literal from another literal with the same
   /// fields.
   /// @param _other The literal to copy from
-  Literal(const Literal<fields_...>& _other) = default;
+  constexpr Literal(const Literal<fields_...>& _other) = default;
 
   /// Move constructor - constructs a Literal from another literal with the same
   /// fields.
   /// @param _other The literal to move from
-  Literal(Literal<fields_...>&& _other) noexcept = default;
+  constexpr Literal(Literal<fields_...>&& _other) noexcept = default;
 
   /// Constructs a Literal from a string value.
   /// @param _str The string representing one of the literal's allowed values
@@ -61,7 +61,7 @@ class Literal {
   Literal(const std::string& _str) : value_(find_value(_str).value()) {}
 
   /// Default constructor - initializes to the first value (index 0).
-  Literal() : value_(0) {}
+  constexpr Literal() : value_(0) {}
 
   /// Destructor.
   ~Literal() = default;
@@ -87,7 +87,7 @@ class Literal {
   /// @tparam _value The index of the value (must be less than num_fields_)
   /// @return A Literal representing the value at the specified index
   template <ValueType _value>
-  static Literal<fields_...> from_value() {
+  static constexpr Literal<fields_...> from_value() {
     static_assert(_value < num_fields_,
                   "Value cannot exceed number of fields.");
     return Literal<fields_...>(_value);
