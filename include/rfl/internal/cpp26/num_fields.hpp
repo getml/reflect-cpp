@@ -10,8 +10,8 @@
 namespace rfl::internal::cpp26 {
 
 template <class T>
-constexpr std::size_t num_fields = tuple_size_v<
-    std::invoke_result_t<decltype(bind_to_tuple(std::declval<T&>()))>>;
+constexpr std::size_t num_fields =
+    tuple_size_v<decltype(bind_to_tuple(std::declval<T&>()))>;
 
 }  // namespace rfl::internal::cpp26
 

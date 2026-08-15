@@ -21,7 +21,7 @@ auto get_field_names();
 
 template <class T, class FieldName>
 auto get_field_names_impl() {
-  using Type = std::remove_cvref_t<T>;
+  using Type = std::remove_cvref_t<std::remove_pointer_t<T>>;
   if constexpr (is_rename_v<Type>) {
     using Name = typename Type::Name;
     return Name();
@@ -42,8 +42,7 @@ auto get_field_names() {
         std::define_static_array(std::meta::nonstatic_data_members_of(
             ^^Type, std::meta::access_context::current()));
 
-    using TupleT =
-        std::invoke_result_t<decltype(bind_to_tuple(std::declval<Type&>()))>;
+    using TupleT = decltype(bind_to_tuple(std::declval<Type&>()));
 
     static_assert(members.size() == tuple_size_v<TupleT>,
                   "Number of members and tuple size mismatch");
