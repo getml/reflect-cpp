@@ -35,8 +35,22 @@ consteval auto get_field_names_impl() {
 
 template <auto _i, auto _j>
 consteval bool is_same() {
-  static_assert(_i == _j, "Mismatched types");
+  static_assert(_i == _j, "Mismatched lengths");
   return _i == _j;
+}
+
+template <class Type>
+consteval std::vector<std::meta::info> get_members() {
+  constexpr auto ctx = std::meta::access_context::current();
+
+  std::vector<std::meta::info> members;
+
+  constexpr auto nonstatic_members = std::define_static_array(
+      std::meta::nonstatic_data_members_of(^^Type, ctx));
+
+  template for (auto member : nonstatic_members) { members.push_back(member); }
+
+  return members;
 }
 
 template <class T>
@@ -45,9 +59,7 @@ consteval auto get_field_names() {
   if constexpr (std::is_pointer_v<Type>) {
     return get_field_names<std::remove_pointer_t<Type>>();
   } else {
-    constexpr auto members =
-        std::define_static_array(std::meta::nonstatic_data_members_of(
-            ^^Type, std::meta::access_context::current()));
+    constexpr auto members = std::define_static_array(get_members<Type>());
 
     using TupleT = decltype(bind_to_tuple(std::declval<Type&>()));
 
