@@ -7,8 +7,7 @@
 #include <string>
 #include <string_view>
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 /// Normal strings cannot be used as template
 /// parameters, but this can. This is needed
@@ -65,7 +64,6 @@ constexpr inline bool operator!=(const StringLiteral<N1>& _first,
   return !(_first == _second);
 }
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

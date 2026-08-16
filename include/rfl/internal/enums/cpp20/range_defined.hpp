@@ -1,7 +1,7 @@
 #ifndef RFL_INTERNAL_ENUMS_RANGE_DEFINED_HPP_
 #define RFL_INTERNAL_ENUMS_RANGE_DEFINED_HPP_
 
-#include "../../config.hpp"
+#include "../../../config.hpp"
 
 namespace rfl::internal::enums {
 

@@ -6,6 +6,7 @@
 
 #include "Result.hpp"
 #include "internal/enums/get_enum_names.hpp"
+#include "internal/enums/is_flag_enum.hpp"
 #include "internal/strings/strings.hpp"
 #include "thirdparty/enchantum/bitflags.hpp"
 #include "thirdparty/enchantum/enchantum.hpp"
@@ -61,7 +62,7 @@ std::string enum_to_string(const EnumType _enum) {
                      : std::string(s);
   };
 
-  if constexpr (enchantum::is_bitflag<EnumType>) {
+  if constexpr (internal::enums::is_flag_enum<EnumType>) {
     // Iterates through the enum bit by bit and matches it against the flags.
     using T = std::underlying_type_t<EnumType>;
     auto val = static_cast<T>(_enum);
@@ -110,7 +111,7 @@ Result<EnumType> string_to_enum(const std::string& _str) {
     }
   };
 
-  if constexpr (enchantum::is_bitflag<EnumType>) {
+  if constexpr (internal::enums::is_flag_enum<EnumType>) {
     using T = std::underlying_type_t<EnumType>;
     const auto split = internal::strings::split(_str, "|");
     auto res = static_cast<T>(0);
