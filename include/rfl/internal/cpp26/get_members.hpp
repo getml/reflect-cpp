@@ -15,20 +15,22 @@ consteval std::vector<std::meta::info> get_members() {
   constexpr auto bases =
       std::define_static_array(std::meta::bases_of(^^Type, ctx));
 
-  const auto add_base_members =
-      [&]<size_t _i>(std::integral_constant<size_t, _i>) {
-        using BaseType = [:std::meta::type_of(bases[_i]):];
-        constexpr auto base_members =
-            std::define_static_array(get_members<BaseType>());
-        template for (const size_t j :
-                      std::make_index_sequence<base_members.size()>()) {
-          members.push_back(base_members[j]);
+  if constexpr (bases.size() > 0) {
+    const auto add_base_members =
+        [&]<size_t _i>(std::integral_constant<size_t, _i>) {
+          using BaseType = [:std::meta::type_of(bases[_i]):];
+          constexpr auto base_members =
+              std::define_static_array(get_members<BaseType>());
+          template for (const size_t j :
+                        std::make_index_sequence<base_members.size()>()) {
+            members.push_back(base_members[j]);
+          };
         };
-      };
 
-  [&]<size_t... _is>(std::index_sequence<_is...>) {
-    (add_base_members(std::integral_constant<size_t, _is>()), ...);
-  }(std::make_index_sequence<bases.size()>());
+    constexpr auto [... is] = std::make_index_sequence<bases.size()>();
+
+    (add_base_members(std::integral_constant<size_t, is>()), ...);
+  }
 
   constexpr auto nonstatic_members = std::define_static_array(
       std::meta::nonstatic_data_members_of(^^Type, ctx));

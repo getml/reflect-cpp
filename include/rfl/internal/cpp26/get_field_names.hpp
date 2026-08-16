@@ -53,14 +53,14 @@ consteval auto get_field_names() {
     static_assert(is_same<members.size(), tuple_size_v<TupleT>>(),
                   "Number of members and tuple size mismatch");
 
-    return [&]<size_t... _is>(std::index_sequence<_is...>) {
-      return concat_literals(
-          get_field_names_impl<
-              tuple_element_t<_is, TupleT>,
-              Literal<StringLiteral<
-                  std::meta::identifier_of(members[_is]).size() + 1>(
-                  std::meta::identifier_of(members[_is]))>>()...);
-    }(std::make_index_sequence<members.size()>());
+    constexpr auto [... is] = std::make_index_sequence<members.size()>();
+
+    return concat_literals(
+        get_field_names_impl<
+            tuple_element_t<is, TupleT>,
+            Literal<
+                StringLiteral<std::meta::identifier_of(members[is]).size() + 1>(
+                    std::meta::identifier_of(members[is]))>>()...);
   }
 }
 

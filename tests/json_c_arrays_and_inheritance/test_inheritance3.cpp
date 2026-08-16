@@ -20,6 +20,7 @@ struct Derived : public Base {
 };
 
 TEST(json, test_inheritance3) {
+  // Inheritance does not mix with designated initializers.
   const auto derived = Derived{1, 2};
   write_and_read(derived, R"({"x":1,"y":2})");
 }
