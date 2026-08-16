@@ -38,7 +38,7 @@ consteval std::vector<std::meta::info> get_members() {
   template for (const size_t i :
                 std::make_index_sequence<nonstatic_members.size()>()) {
     members.push_back(nonstatic_members[i]);
-  };
+  }
 
   return members;
 }
