@@ -14,6 +14,7 @@
 #include "../is_flatten_field.hpp"
 #include "../is_rename.hpp"
 #include "bind_to_tuple.hpp"
+#include "get_members.hpp"
 
 namespace rfl::internal::cpp26 {
 
@@ -37,20 +38,6 @@ template <auto _i, auto _j>
 consteval bool is_same() {
   static_assert(_i == _j, "Mismatched lengths");
   return _i == _j;
-}
-
-template <class Type>
-consteval std::vector<std::meta::info> get_members() {
-  constexpr auto ctx = std::meta::access_context::current();
-
-  std::vector<std::meta::info> members;
-
-  constexpr auto nonstatic_members = std::define_static_array(
-      std::meta::nonstatic_data_members_of(^^Type, ctx));
-
-  template for (auto member : nonstatic_members) { members.push_back(member); }
-
-  return members;
 }
 
 template <class T>

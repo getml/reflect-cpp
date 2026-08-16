@@ -7,7 +7,7 @@
 #include <cassert>
 #include <rfl.hpp>
 
-#include "rfl/num_fields.hpp"
+#include "write_and_read.hpp"
 
 namespace test_inheritance3 {
 
@@ -20,18 +20,8 @@ struct Derived : public Base {
 };
 
 TEST(json, test_inheritance3) {
-  Derived derived;
-  const auto derived_view = rfl::to_view(derived);
-
-  constexpr auto name_x =
-      rfl::tuple_element_t<0, typename rfl::named_tuple_t<T>::Fields>::name();
-  constexpr auto name_y =
-      rfl::tuple_element_t<1, typename rfl::named_tuple_t<T>::Fields>::name();
-
-  static_assert(name_x == "x");
-  static_assert(name_y == "y");
-
-  EXPECT_TRUE(true);
+  const auto derived = Derived{1, 2};
+  write_and_read(derived, R"({"x":1,"y":2})");
 }
 
 }  // namespace test_inheritance3
