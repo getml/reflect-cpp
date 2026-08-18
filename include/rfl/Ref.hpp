@@ -8,26 +8,30 @@
 
 namespace rfl {
 
-/// A smart pointer wrapper that is guaranteed to always contain a valid object with shared ownership.
-/// The Ref class behaves very similarly to shared_ptr, but unlike shared_ptr,
-/// it is 100% guaranteed to be filled at all times (unless the user
-/// tries to access it after calling std::move or does something else that is
-/// clearly bad practice).
+/// A smart pointer wrapper that is guaranteed to always contain a valid object
+/// with shared ownership. The Ref class behaves very similarly to shared_ptr,
+/// but unlike shared_ptr, it is 100% guaranteed to be filled at all times
+/// (unless the user tries to access it after calling std::move or does
+/// something else that is clearly bad practice).
 /// @tparam T The type of object to contain
 template <class T>
 class Ref {
  public:
-  /// The default way of creating new references is Ref<T>::make(...) or make_ref<T>(...).
-  /// Constructs a new Ref with the given arguments forwarded to T's constructor.
+  /// The default way of creating new references is Ref<T>::make(...) or
+  /// make_ref<T>(...). Constructs a new Ref with the given arguments forwarded
+  /// to T's constructor.
   /// @tparam Args Types of constructor arguments
   /// @param _args Arguments to forward to T's constructor
   /// @return A new Ref containing the constructed object
   template <class... Args>
   static Ref<T> make(Args&&... _args) {
-    return Ref<T>(std::make_shared<T>(std::forward<Args>(_args)...));
+    // Necessary workaround to avoid false positive warning.
+    auto raw = new T(std::forward<Args>(_args)...);
+    return Ref<T>(std::shared_ptr<T>(raw));
   }
 
-  /// Creates a Ref from a shared_ptr (move version), returns an Error if the shared_ptr is null.
+  /// Creates a Ref from a shared_ptr (move version), returns an Error if the
+  /// shared_ptr is null.
   /// @param _ptr The shared_ptr to convert to a Ref
   /// @return Result containing the Ref or an error if _ptr is nullptr
   static Result<Ref<T>> make(std::shared_ptr<T>&& _ptr) {
@@ -37,7 +41,8 @@ class Ref {
     return Ref<T>(std::move(_ptr));
   }
 
-  /// Creates a Ref from a shared_ptr (copy version), returns an Error if the shared_ptr is null.
+  /// Creates a Ref from a shared_ptr (copy version), returns an Error if the
+  /// shared_ptr is null.
   /// @param _ptr The shared_ptr to convert to a Ref
   /// @return Result containing the Ref or an error if _ptr is nullptr
   static Result<Ref<T>> make(const std::shared_ptr<T>& _ptr) {
@@ -90,7 +95,8 @@ class Ref {
   /// @return Pointer to the contained object
   T* operator->() { return ptr_.get(); }
 
-  /// Arrow operator (const) - provides access to the underlying object's members.
+  /// Arrow operator (const) - provides access to the underlying object's
+  /// members.
   /// @return Const pointer to the contained object
   T* operator->() const { return ptr_.get(); }
 
