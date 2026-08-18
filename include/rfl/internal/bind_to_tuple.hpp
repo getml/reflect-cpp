@@ -1,7 +1,7 @@
 #ifndef RFL_INTERNAL_BIND_TO_TUPLE_HPP_
 #define RFL_INTERNAL_BIND_TO_TUPLE_HPP_
 
-#ifndef REFLECTCPP_USE_CPP_REFLECTION
+#ifndef REFLECTCPP_USE_CPP26_REFLECTION
 #include "cpp20/bind_to_tuple.hpp"
 #else
 #include "cpp26/bind_to_tuple.hpp"
@@ -11,7 +11,7 @@ namespace rfl::internal {
 
 template <class T>
 auto bind_to_tuple(T& _t) {
-#ifndef REFLECTCPP_USE_CPP_REFLECTION
+#ifndef REFLECTCPP_USE_CPP26_REFLECTION
   return cpp20::bind_to_tuple(_t);
 #else
   return cpp26::bind_to_tuple(_t);

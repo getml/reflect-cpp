@@ -1,4 +1,4 @@
-#ifdef REFLECTCPP_USE_CPP_REFLECTION
+#ifdef REFLECTCPP_USE_CPP26_REFLECTION
 
 // Only supported with C++26 reflection
 
