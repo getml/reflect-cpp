@@ -1,11 +1,11 @@
+#include <gtest/gtest.h>
+
 #include <cassert>
 #include <iostream>
 #include <rfl.hpp>
 #include <rfl/json.hpp>
 #include <string>
 #include <vector>
-
-#include <gtest/gtest.h>
 
 namespace test_save_load {
 
@@ -49,14 +49,15 @@ TEST(json, test_save_load) {
              .email = "homer@simpson.com",
              .children = std::vector<Person>({bart, lisa, maggie})};
 
-  rfl::json::save("homer.json", homer1);
+  rfl::json::save("homer.json", homer1).value();
 
   const auto homer2 = rfl::json::load<Person>("homer.json").value();
 
   const auto string1 = rfl::json::write(homer1);
   const auto string2 = rfl::json::write(homer2);
 
-  EXPECT_EQ(string1, string2) << "Test failed. Content was not identical." << std::endl
-              << std::endl;
+  EXPECT_EQ(string1, string2)
+      << "Test failed. Content was not identical." << std::endl
+      << std::endl;
 }
 }  // namespace test_save_load
