@@ -46,6 +46,13 @@ However, some limitations apply:
 2. Enum values must be in the range `[RFL_ENUM_RANGE_MIN, RFL_ENUM_RANGE_MAX]`. If the range is not specified, the
    default range is `[-256, 256]`.
 
+    !!! note "C++-26 reflection"
+
+        This restriction only applies when compiling reflect-cpp with C++-20 or C++-23. When
+        compiling with [C++-26 reflection](cpp26_reflection.md), the enumerators are read
+        directly from the compiler, so there is no restriction on the range of enum values,
+        and `RFL_ENUM_RANGE_MIN` and `RFL_ENUM_RANGE_MAX` are not needed.
+
     - You can specify a custom range for the all enum values by defining `RFL_ENUM_RANGE_MIN` and `RFL_ENUM_RANGE_MAX`
       before including the reflect-cpp header:
 

@@ -53,6 +53,7 @@ reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boile
 
 ### More in our [documentation](https://rfl.getml.com):
   - [Installation ↗](https://rfl.getml.com/install/#option-2-compilation-using-cmake)
+  - [C++26 reflection ↗](https://rfl.getml.com/cpp26_reflection)
   - [Benchmarks ↗](https://rfl.getml.com/benchmarks)
   - [How to contribute ↗](https://rfl.getml.com/contributing)
   - [Compiling and running the tests ↗](https://rfl.getml.com/contributing/#compiling-and-running-the-tests)
@@ -675,6 +676,21 @@ The following compilers are supported for C++-20:
 
 The following compilers are supported for C++-26:
 - GCC 16.2 or higher
+
+### Compiling with C++-26 reflection
+
+To compile reflect-cpp using the standard C++ reflection facilities, pass the CMake option
+`REFLECTCPP_USE_CPP26_REFLECTION` together with the compiler flag that activates reflection
+support in your compiler (`-freflection` for GCC, `-freflection-latest` for Clang):
+
+```bash
+cmake -S . -B build -DCMAKE_CXX_STANDARD=26 -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_USE_CPP26_REFLECTION=ON -DCMAKE_CXX_FLAGS="-freflection"
+cmake --build build -j 4
+```
+
+With C++-26 reflection, fixed-size C arrays and inheritance are supported out of the box (no
+`-DREFLECT_CPP_C_ARRAYS_OR_INHERITANCE` flag needed), and there are no range restrictions for
+enums. Refer to the [documentation](https://rfl.getml.com/cpp26_reflection) for details.
 
 ### Using vcpkg
 
