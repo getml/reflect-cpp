@@ -12,7 +12,9 @@
 
 ![image](banner1.png)
 
-**reflect-cpp** is a C++-20 library for **fast serialization, deserialization and validation** using reflection, similar to [pydantic](https://github.com/pydantic/pydantic) in Python, [serde](https://github.com/serde-rs) in Rust, [encoding](https://github.com/golang/go/tree/master/src/encoding) in Go or [aeson](https://github.com/haskell/aeson/tree/master) in Haskell.
+**reflect-cpp** is a C++-20/C++-26 library for **fast serialization, deserialization and validation** using reflection, similar to [pydantic](https://github.com/pydantic/pydantic) in Python, [serde](https://github.com/serde-rs) in Rust, [encoding](https://github.com/golang/go/tree/master/src/encoding) in Go or [aeson](https://github.com/haskell/aeson/tree/master) in Haskell.
+
+reflect-cpp supports C++-26 reflection, but most of the functionality is also available in C++-20, except where explicitly noted otherwise.
 
 Moreover, reflect-cpp is the basis for [sqlgen](https://github.com/getml/sqlgen), a **modern, type-safe ORM and SQL query generator** for C++20, inspired by Python's SQLAlchemy/SQLModel and Rust's Diesel. It provides a fluent, composable interface for database operations with compile-time type checking and SQL injection protection.
 
@@ -62,17 +64,17 @@ reflect-cpp provides a unified reflection-based interface across different seria
 
 The following table lists the serialization formats currently supported by reflect-cpp and the underlying libraries used:
 
-| Format       | Library                                              | Version      | License    | Remarks                                              |
-|--------------|------------------------------------------------------|--------------|------------| -----------------------------------------------------|
-| JSON         | [yyjson](https://github.com/ibireme/yyjson)          | >= 0.8.0     | MIT        | out-of-the-box support, included in this repository  |
-| Avro         | [avro-c](https://avro.apache.org/docs/1.11.1/api/c/) | >= 1.11.3    | Apache 2.0 | Schemaful binary format                              |
+| Format              | Library                                              | Version      | License    | Remarks                                              |
+|---------------------|------------------------------------------------------|--------------|------------| -----------------------------------------------------|
+| JSON                | [yyjson](https://github.com/ibireme/yyjson)          | >= 0.8.0     | MIT        | out-of-the-box support, included in this repository  |
+| Avro                | [avro-c](https://avro.apache.org/docs/1.11.1/api/c/) | >= 1.11.3    | Apache 2.0 | Schemaful binary format                              |
 | Boost.Serialization | [Boost.Serialization](https://www.boost.org/doc/libs/release/libs/serialization/) | >= 1.74.0 | BSL 1.0 | Streaming binary format with archive interop |
-| BSON         | [libbson](https://github.com/mongodb/mongo-c-driver) | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
-| Cap'n Proto  | [capnproto](https://capnproto.org)                   | >= 1.0.2     | MIT        | Schemaful binary format                              |
-| CBOR         | [jsoncons](https://github.com/danielaparker/jsoncons)| >= 0.176.0   | BSL 1.0    | JSON-like binary format                              |
-| cli          | *(none)*                                             | *(none)*     | MIT        | Command line interface                               |
-| env          | *(none)*                                             | *(none)*     | MIT        | Environment variables                                |
-| Cereal       | [Cereal](https://uscilab.github.io/cereal/)          | >= 1.3.2     | BSD        | C++ serialization library with multiple formats      |
+| BSON                | [libbson](https://github.com/mongodb/mongo-c-driver) | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
+| Cap'n Proto         | [capnproto](https://capnproto.org)                   | >= 1.0.2     | MIT        | Schemaful binary format                              |
+| CBOR                | [jsoncons](https://github.com/danielaparker/jsoncons)| >= 0.176.0   | BSL 1.0    | JSON-like binary format                              |
+| cli                 | *(none)*                                             | *(none)*     | MIT        | Command line interface                               |
+| env                 | *(none)*                                             | *(none)*     | MIT        | Environment variables                                |
+| Cereal              | [Cereal](https://uscilab.github.io/cereal/)          | >= 1.3.2     | BSD        | C++ serialization library with multiple formats      |
 | CSV          | [Apache Arrow](https://arrow.apache.org/)            | >= 21.0.0    | Apache 2.0 | Tabular textual format                               |
 | flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 | Schema-less version of flatbuffers, binary format    |
 | msgpack      | [msgpack-c](https://github.com/msgpack/msgpack-c)    | >= 6.0.0     | BSL 1.0    | JSON-like binary format                              |
@@ -666,10 +668,13 @@ Finally, it is very easy to extend full support to your own classes, refer to th
 
 ## Installation
 
-The following compilers are supported:
+The following compilers are supported for C++-20:
 - GCC 11.4 or higher
 - Clang 14.0 or higher
 - MSVC 17.8 (19.38) or higher
+
+The following compilers are supported for C++-26:
+- GCC 16.2 or higher
 
 ### Using vcpkg
 
