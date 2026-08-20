@@ -71,7 +71,7 @@ constexpr inline bool enchantum::is_bitflag<E> = true;
 namespace enchantum {
 
 template <SignedEnum E>
-  requires rfl::internal::enums::range_defined<E>
+  requires rfl::internal::enums::cpp20::range_defined<E>
 struct enum_traits<E> {
   static constexpr std::size_t prefix_length = 0;
 
@@ -80,7 +80,7 @@ struct enum_traits<E> {
 };
 
 template <UnsignedEnum E>
-  requires rfl::internal::enums::range_defined<E>
+  requires rfl::internal::enums::cpp20::range_defined<E>
 struct enum_traits<E> {
   static constexpr std::size_t prefix_length = 0;
 
@@ -89,16 +89,16 @@ struct enum_traits<E> {
 };
 
 template <UnscopedEnum E>
-  requires SignedEnum<E> &&
-           (!EnumFixedUnderlying<E>) && rfl::internal::enums::range_defined<E>
+  requires SignedEnum<E> && (!EnumFixedUnderlying<E>) &&
+           rfl::internal::enums::cpp20::range_defined<E>
 struct enum_traits<E> {
   static constexpr auto min = rfl::config::enum_range<E>::min;
   static constexpr auto max = rfl::config::enum_range<E>::max;
 };
 
 template <UnscopedEnum E>
-  requires UnsignedEnum<E> &&
-           (!EnumFixedUnderlying<E>) && rfl::internal::enums::range_defined<E>
+  requires UnsignedEnum<E> && (!EnumFixedUnderlying<E>) &&
+           rfl::internal::enums::cpp20::range_defined<E>
 struct enum_traits<E> {
   static constexpr auto min = rfl::config::enum_range<E>::min;
   static constexpr auto max = rfl::config::enum_range<E>::max;

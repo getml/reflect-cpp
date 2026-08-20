@@ -76,10 +76,10 @@ consteval auto get_field_name_str_lit() {
 }
 
 template <class T>
-auto get_field_names();
+consteval auto get_field_names();
 
 template <class T, auto ptr>
-auto get_field_name() {
+consteval auto get_field_name() {
 #if defined(__clang__)
   using Type = std::remove_cvref_t<std::remove_pointer_t<
       typename std::remove_pointer_t<decltype(ptr)>::Type>>;
@@ -108,7 +108,7 @@ template <class T>
 [[gnu::no_sanitize_undefined]]
 #endif
 #endif
-auto get_field_names() {
+consteval auto get_field_names() {
   using Type = std::remove_cvref_t<T>;
   if constexpr (std::is_pointer_v<Type>) {
     return get_field_names<std::remove_pointer_t<T>>();
