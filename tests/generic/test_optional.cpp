@@ -13,6 +13,7 @@ struct Person {
 TEST(generic, test_optional) {
   rfl::Generic generic;
   // This failed to compile due to optional copying rather than moving
-  rfl::from_generic<Person>(generic).value();
+  const auto res = rfl::from_generic<Person>(generic);
+  EXPECT_FALSE(res && true);
 }
 }  // namespace test_optional
