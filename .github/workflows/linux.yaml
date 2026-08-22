@@ -41,6 +41,82 @@ jobs:
           - compiler: llvm
             compiler-version: 17
             cxx: 23  
+        include:
+          - format: JSON
+            compiler: gcc
+            compiler-version: 16
+            cxx: 26
+            reflection: "on"
+          - format: AVRO
+            compiler: gcc
+            compiler-version: 16
+            cxx: 26
+            reflection: "on"
+          - format: BOOST_SERIALIZATION
+            compiler: gcc
+            compiler-version: 16
+            cxx: 26
+            reflection: "on"
+          - format: CAPNPROTO
+            compiler: gcc
+            compiler-version: 16
+            cxx: 26
+            reflection: "on"
+          - format: CBOR
+            compiler: gcc
+            compiler-version: 16
+            cxx: 26
+            reflection: "on"
+          - format: CEREAL
+            compiler: gcc
+            compiler-version: 16
+            cxx: 26
+            reflection: "on"
+          - format: FLEXBUFFERS
+            compiler: gcc
+            compiler-version: 16
+            cxx: 26
+            reflection: "on"
+          - format: MSGPACK
+            compiler: gcc
+            compiler-version: 16
+            cxx: 26
+            reflection: "on"
+          - format: PARQUET
+            compiler: gcc
+            compiler-version: 16
+            cxx: 26
+            reflection: "on"
+          - format: TOML
+            compiler: gcc
+            compiler-version: 16
+            cxx: 26
+            reflection: "on"
+          - format: UBJSON
+            compiler: gcc
+            compiler-version: 16
+            cxx: 26
+            reflection: "on"
+          - format: XML
+            compiler: gcc
+            compiler-version: 16
+            cxx: 26
+            reflection: "on"
+          - format: YAML
+            compiler: gcc
+            compiler-version: 16
+            cxx: 26
+            reflection: "on"
+          - format: benchmarks
+            compiler: gcc
+            compiler-version: 16
+            cxx: 26
+            reflection: "on"
+          - format: headers
+            compiler: gcc
+            compiler-version: 16
+            cxx: 26
+            reflection: "on"
     name: "${{ github.job }} (${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }})"
     concurrency:
       group: "linux-${{ github.ref }}-${{ github.job }}-${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}"
@@ -64,7 +140,11 @@ jobs:
         run: |
           sudo apt update
           if [[ "${{ matrix.compiler-version }}" == 11 ]]; then
-            sudo apt install -y ninja-build g++-11 
+            sudo apt install -y ninja-build g++-11
+          elif [[ "${{ matrix.compiler }}" == "gcc" && "${{ matrix.compiler-version }}" == 16 ]]; then
+            sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+            sudo apt update
+            sudo apt install -y ninja-build g++-16
           else
             sudo apt install -y ninja-build
           fi
@@ -78,14 +158,18 @@ jobs:
             export CXX=g++-${{ matrix.compiler-version }}
           fi
           $CXX --version
+          EXTRA_CMAKE_FLAGS=""
+          if [[ "${{ matrix.reflection }}" == "on" ]]; then
+            EXTRA_CMAKE_FLAGS="-DREFLECTCPP_USE_CPP26_REFLECTION=ON -DCMAKE_CXX_FLAGS=-freflection"
+          fi
           if [[ "${{ matrix.format }}" == "JSON" ]]; then
-            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS
           elif [[ "${{ matrix.format }}" == "benchmarks" ]]; then
-            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS
           elif [[ "${{ matrix.format }}" == "headers" ]]; then
-            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_CHECK_HEADERS=ON -DCMAKE_BUILD_TYPE=Release
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_CHECK_HEADERS=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS
           else
-            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS
           fi
           cmake --build build -j4
       - name: Run tests
