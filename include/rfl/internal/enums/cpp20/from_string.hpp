@@ -4,7 +4,7 @@
 #include <string>
 #include <type_traits>
 
-#include "../../../thirdparty/enchantum/enchantum.hpp"  // NOLINT(unused-includes)
+#include "enchantum.hpp"  // NOLINT(unused-includes)
 
 namespace rfl::internal::enums::cpp20 {
 

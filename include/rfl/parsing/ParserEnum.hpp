@@ -7,9 +7,9 @@
 #include "../Result.hpp"
 #include "../config.hpp"
 #include "../enums.hpp"
+#include "../internal/enums/cpp20/enchantum.hpp"  // TODO: Replace this
 #include "../internal/has_reflector.hpp"
 #include "../internal/underlying_enums_v.hpp"
-#include "../thirdparty/enchantum/enchantum.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"

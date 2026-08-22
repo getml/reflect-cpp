@@ -19,7 +19,6 @@
 #include "../internal/processed_t.hpp"
 #include "../internal/ptr_cast.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
-#include "../thirdparty/enchantum/enchantum.hpp"
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"

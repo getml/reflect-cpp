@@ -3,7 +3,8 @@
 
 #include <utility>
 
-#include "../../../thirdparty/enchantum/enchantum.hpp"  // NOLINT(unused-includes)
+// Necessary to use enchantum::enum_traits
+#include "get_enum_names.hpp"
 
 namespace rfl::internal::enums::cpp20 {
 
