@@ -31,7 +31,7 @@ option(REFLECTCPP_CHECK_HEADERS "Make sure that all headers are self-contained" 
 option(REFLECTCPP_USE_BUNDLED_DEPENDENCIES "Use the bundled dependencies" ON)
 
 option(REFLECTCPP_USE_CPP26_REFLECTION "Use standard C++ reflection (requires C++-26)" OFF)
-option(REFLECTCPP_USE_STD_EXPECTED "Use std::expected instead of the built-in Result type (requires C++-23)" ${REFLECTCPP_USE_CPP26_REFLECTION})
+option(REFLECTCPP_USE_STD_EXPECTED "Use std::expected instead of the built-in Result type (requires C++-23)" OFF)
 
 if(REFLECTCPP_USE_CPP26_REFLECTION)
     if(NOT DEFINED CMAKE_CXX_STANDARD)
