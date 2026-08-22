@@ -7,7 +7,8 @@
 #include "../Result.hpp"
 #include "../config.hpp"
 #include "../enums.hpp"
-#include "../internal/enums/cpp20/enchantum.hpp"  // TODO: Replace this
+#include "../internal/enums/is_flag_enum.hpp"
+#include "../internal/enums/is_scoped_enum.hpp"
 #include "../internal/has_reflector.hpp"
 #include "../internal/underlying_enums_v.hpp"
 #include "AreReaderAndWriter.hpp"
@@ -52,7 +53,7 @@ struct ParserEnum {
 
     } else if constexpr (internal::underlying_enums_v<ProcessorsType> ||
                          schemaful::IsSchemafulReader<R>) {
-      static_assert(enchantum::ScopedEnum<T>,
+      static_assert(internal::enums::is_scoped_enum<T>,
                     "The enum must be a scoped enum in order to retrieve "
                     "the underlying value.");
       return _r.template to_basic_type<std::underlying_type_t<T>>(_var)
@@ -111,7 +112,7 @@ struct ParserEnum {
     if constexpr (internal::underlying_enums_v<ProcessorsType> ||
                   schemaful::IsSchemafulReader<R>) {
       return Type{Type::Integer{}};
-    } else if constexpr (enchantum::is_bitflag<U>) {
+    } else if constexpr (internal::enums::is_flag_enum<U>) {
       return Type{Type::String{}};
     } else if constexpr (config::enum_descriptions<U>::has_descriptions) {
       // Generate DescribedLiteral for enums with descriptions
