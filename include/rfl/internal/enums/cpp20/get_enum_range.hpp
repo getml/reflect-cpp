@@ -1,6 +1,8 @@
 #ifndef RFL_INTERNAL_ENUMS_CPP20_GET_ENUM_RANGE_HPP_
 #define RFL_INTERNAL_ENUMS_CPP20_GET_ENUM_RANGE_HPP_
 
+#ifndef REFLECTCPP_USE_CPP26_REFLECTION
+
 #include <utility>
 
 // Necessary to use enchantum::enum_traits
@@ -17,4 +19,5 @@ constexpr auto get_enum_range() {
 
 }  // namespace rfl::internal::enums::cpp20
 
+#endif
 #endif

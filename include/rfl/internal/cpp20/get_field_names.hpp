@@ -1,6 +1,8 @@
 #ifndef RFL_INTERNAL_CPP20_GETFIELDNAMES_HPP_
 #define RFL_INTERNAL_CPP20_GETFIELDNAMES_HPP_
 
+#ifndef REFLECTCPP_USE_CPP26_REFLECTION
+
 #include <type_traits>
 #include <utility>
 
@@ -135,4 +137,5 @@ consteval auto get_field_names() {
 
 }  // namespace rfl::internal::cpp20
 
+#endif
 #endif

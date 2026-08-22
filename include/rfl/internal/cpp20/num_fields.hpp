@@ -1,6 +1,8 @@
 #ifndef RFL_INTERNAL_CPP20_NUM_FIELDS_HPP_
 #define RFL_INTERNAL_CPP20_NUM_FIELDS_HPP_
 
+#ifndef REFLECTCPP_USE_CPP26_REFLECTION
+
 /*
 We infer the number of fields using by figuring out how many fields
 we need to construct it. This is done by implementing the constructible
@@ -211,4 +213,5 @@ constexpr std::size_t num_fields = CountFieldsHelper<T>::count_fields();
 #pragma clang diagnostic pop
 #endif
 
+#endif
 #endif

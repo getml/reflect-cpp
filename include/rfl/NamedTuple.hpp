@@ -14,6 +14,7 @@
 #include "internal/StringLiteral.hpp"
 #include "internal/find_index.hpp"
 #include "internal/is_extra_fields.hpp"
+#include "make_field.hpp"
 #include "make_from_tuple.hpp"
 #include "tuple_cat.hpp"
 

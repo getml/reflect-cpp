@@ -1,6 +1,8 @@
 #ifndef RFL_INTERNAL_CPP26_NUM_FIELDS_HPP_
 #define RFL_INTERNAL_CPP26_NUM_FIELDS_HPP_
 
+#ifdef REFLECTCPP_USE_CPP26_REFLECTION
+
 #include <functional>
 #include <type_traits>
 
@@ -15,4 +17,5 @@ constexpr std::size_t num_fields =
 
 }  // namespace rfl::internal::cpp26
 
+#endif
 #endif

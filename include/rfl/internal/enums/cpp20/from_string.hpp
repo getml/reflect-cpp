@@ -1,6 +1,8 @@
 #ifndef RFL_INTERNAL_ENUMS_CPP20_FROM_STRING_HPP_
 #define RFL_INTERNAL_ENUMS_CPP20_FROM_STRING_HPP_
 
+#ifndef REFLECTCPP_USE_CPP26_REFLECTION
+
 #include <string>
 #include <type_traits>
 
@@ -15,4 +17,5 @@ auto from_string(const std::string& _str) {
 
 }  // namespace rfl::internal::enums::cpp20
 
+#endif
 #endif

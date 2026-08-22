@@ -1,6 +1,8 @@
 #ifndef RFL_INTERNAL_ENUMS_CPP26_FROM_STRING_HPP_
 #define RFL_INTERNAL_ENUMS_CPP26_FROM_STRING_HPP_
 
+#ifdef REFLECTCPP_USE_CPP26_REFLECTION
+
 #include <meta>
 #include <optional>
 #include <string>
@@ -21,4 +23,5 @@ std::optional<EnumType> from_string(const std::string& _str) {
 
 }  // namespace rfl::internal::enums::cpp26
 
+#endif
 #endif

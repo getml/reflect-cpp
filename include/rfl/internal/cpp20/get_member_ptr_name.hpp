@@ -1,11 +1,15 @@
-#ifndef RFL_INTERNAL_CPP20_GETTYPENAME_HPP_
-#define RFL_INTERNAL_CPP20_GETTYPENAME_HPP_
+#ifndef RFL_INTERNAL_CPP20_GET_MEMBER_PTR_NAME_HPP_
+#define RFL_INTERNAL_CPP20_GET_MEMBER_PTR_NAME_HPP_
 
-#ifndef REFLECTCPP_USE_CPP26_REFLECTION
+// #ifndef REFLECTCPP_USE_CPP26_REFLECTION
 
+#include <type_traits>
 #include <utility>
 
 #include "../StringLiteral.hpp"
+#include "../is_field.hpp"
+#include "../is_rename.hpp"
+#include "../lit_name.hpp"
 
 #if __has_include(<source_location>)
 #include <source_location>
@@ -13,8 +17,8 @@
 
 namespace rfl::internal::cpp20 {
 
-template <class T>
-consteval auto get_type_name_str_view() {
+template <auto ptr>
+consteval auto get_field_ptr_name_str_view() {
 #if __cpp_lib_source_location >= 201907L
   const auto func_name =
       std::string_view{std::source_location::current().function_name()};
@@ -27,10 +31,10 @@ consteval auto get_type_name_str_view() {
 #endif
 #if defined(__clang__)
   const auto split = func_name.substr(0, func_name.size() - 1);
-  return split.substr(split.find("T = ") + 4);
+  return split.substr(split.find_last_of(":.") + 1);
 #elif defined(__GNUC__)
   const auto split = func_name.substr(0, func_name.size() - 1);
-  return split.substr(split.find("T = ") + 4);
+  return split.substr(split.find_last_of(":.") + 1);
 #elif defined(_MSC_VER)
   auto split = func_name.substr(0, func_name.size() - 7);
   split = split.substr(split.find("get_type_name_str_view<") + 23);
@@ -48,17 +52,33 @@ consteval auto get_type_name_str_view() {
 }
 
 template <class T>
-consteval auto get_type_name() {
-  static_assert(get_type_name_str_view<int>() == "int",
-                "Expected 'int', got something else.");
-  constexpr auto name = get_type_name_str_view<T>();
-  const auto to_str_lit = [&]<auto... Ns>(std::index_sequence<Ns...>) {
-    return StringLiteral<sizeof...(Ns) + 1>{name[Ns]...};
-  };
-  return to_str_lit(std::make_index_sequence<name.size()>{});
+struct member_type_helper;
+
+template <class StructType, class PtrType>
+struct member_type_helper<PtrType StructType::*> {
+  using ptr_type = std::remove_cvref_t<PtrType>;
+  using struct_type = std::remove_cvref_t<StructType>;
+};
+
+template <class T>
+using struct_type_t = member_type_helper<T>::struct_type;
+
+template <class T>
+using ptr_type_t = member_type_helper<T>::ptr_type;
+
+template <auto ptr>
+consteval auto get_member_ptr_name() {
+  using Type = ptr_type_t<decltype(ptr)>;
+  if constexpr (is_rename_v<Type> || is_field_v<Type>) {
+    using Name = typename Type::Name;
+    return lit_name_v<Name>;
+  } else {
+    constexpr auto name = get_field_ptr_name_str_view<ptr>();
+    return StringLiteral<name.size() + 1>(name);
+  }
 }
 
 }  // namespace rfl::internal::cpp20
 
 #endif
-#endif
+// #endif

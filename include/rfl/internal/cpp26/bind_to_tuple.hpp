@@ -1,6 +1,8 @@
 #ifndef RFL_INTERNAL_CPP26_BIND_TO_TUPLE_HPP_
 #define RFL_INTERNAL_CPP26_BIND_TO_TUPLE_HPP_
 
+#ifdef REFLECTCPP_USE_CPP26_REFLECTION
+
 #include <array>
 #include <cassert>
 #include <meta>
@@ -22,4 +24,5 @@ auto bind_to_tuple(T& _t) {
 
 }  // namespace rfl::internal::cpp26
 
+#endif
 #endif

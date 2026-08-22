@@ -1,6 +1,8 @@
 #ifndef RFL_INTERNAL_CPP20_GET_ITH_FIELD_FROM_FAKE_OBJECT_HPP_
 #define RFL_INTERNAL_CPP20_GET_ITH_FIELD_FROM_FAKE_OBJECT_HPP_
 
+#ifndef REFLECTCPP_USE_CPP26_REFLECTION
+
 #include <cstddef>
 #include <type_traits>
 
@@ -2847,4 +2849,5 @@ consteval bool ith_field_is_const() {
 
 }  // namespace rfl::internal::cpp20
 
+#endif
 #endif

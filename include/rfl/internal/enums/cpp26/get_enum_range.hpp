@@ -1,6 +1,8 @@
 #ifndef RFL_INTERNAL_ENUMS_CPP26_GET_ENUM_RANGE_HPP_
 #define RFL_INTERNAL_ENUMS_CPP26_GET_ENUM_RANGE_HPP_
 
+#ifdef REFLECTCPP_USE_CPP26_REFLECTION
+
 #include <limits>
 #include <type_traits>
 #include <utility>
@@ -17,4 +19,5 @@ constexpr auto get_enum_range() {
 
 }  // namespace rfl::internal::enums::cpp26
 
+#endif
 #endif

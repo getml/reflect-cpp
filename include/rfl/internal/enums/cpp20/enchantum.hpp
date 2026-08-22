@@ -1,6 +1,8 @@
 #ifndef RFL_INTERNAL_ENUMS_CPP20_ENCHANTUM_HPP_
 #define RFL_INTERNAL_ENUMS_CPP20_ENCHANTUM_HPP_
 
+#ifndef REFLECTCPP_USE_CPP26_REFLECTION
+
 // Enum values must be greater than or equal to RFL_ENUM_RANGE_MIN.
 // By default, RFL_ENUM_RANGE_MIN is set to -256.
 // To change the default minimum range for all enum types, redefine the macro
@@ -29,4 +31,5 @@
 
 #include "../../../thirdparty/enchantum/enchantum.hpp"
 
+#endif
 #endif

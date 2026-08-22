@@ -1,6 +1,8 @@
 #ifndef RFL_INTERNAL_ENUMS_CPP26_TO_STRING_HPP_
 #define RFL_INTERNAL_ENUMS_CPP26_TO_STRING_HPP_
 
+#ifdef REFLECTCPP_USE_CPP26_REFLECTION
+
 #include <meta>
 #include <string>
 #include <type_traits>
@@ -21,4 +23,5 @@ std::string to_string(const EnumType _val) {
 
 }  // namespace rfl::internal::enums::cpp26
 
+#endif
 #endif

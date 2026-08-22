@@ -1,6 +1,8 @@
 #ifndef RFL_INTERNAL_ENUMS_CPP26_GET_ENUM_NAMES_HPP_
 #define RFL_INTERNAL_ENUMS_CPP26_GET_ENUM_NAMES_HPP_
 
+#ifdef REFLECTCPP_USE_CPP26_REFLECTION
+
 #include <concepts>
 #include <meta>
 #include <utility>
@@ -26,4 +28,5 @@ consteval auto get_enum_names() {
 }
 }  // namespace rfl::internal::enums::cpp26
 
+#endif
 #endif

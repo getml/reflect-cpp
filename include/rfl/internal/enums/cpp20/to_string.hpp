@@ -1,6 +1,8 @@
 #ifndef RFL_INTERNAL_ENUMS_CPP20_TO_STRING_HPP_
 #define RFL_INTERNAL_ENUMS_CPP20_TO_STRING_HPP_
 
+#ifndef REFLECTCPP_USE_CPP26_REFLECTION
+
 #include <string>
 #include <type_traits>
 
@@ -18,4 +20,5 @@ auto to_string(const EnumType e) {
 
 }  // namespace rfl::internal::enums::cpp20
 
+#endif
 #endif

@@ -1,6 +1,8 @@
 #ifndef RFL_INTERNAL_CPP26_GETTYPENAME_HPP_
 #define RFL_INTERNAL_CPP26_GETTYPENAME_HPP_
 
+#ifdef REFLECTCPP_USE_CPP26_REFLECTION
+
 #include <meta>
 #include <type_traits>
 
@@ -32,4 +34,5 @@ consteval auto get_type_name() {
 }
 }  // namespace rfl::internal::cpp26
 
+#endif
 #endif

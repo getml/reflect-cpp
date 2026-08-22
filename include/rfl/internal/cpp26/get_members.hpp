@@ -1,6 +1,8 @@
 #ifndef RFL_INTERNAL_CPP26_GETMEMBERS_HPP_
 #define RFL_INTERNAL_CPP26_GETMEMBERS_HPP_
 
+#ifdef REFLECTCPP_USE_CPP26_REFLECTION
+
 #include <meta>
 #include <type_traits>
 
@@ -45,4 +47,5 @@ consteval std::vector<std::meta::info> get_members() {
 
 }  // namespace rfl::internal::cpp26
 
+#endif
 #endif

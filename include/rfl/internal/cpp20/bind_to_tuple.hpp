@@ -1,6 +1,8 @@
 #ifndef RFL_INTERNAL_CPP20_BIND_TO_TUPLE_HPP_
 #define RFL_INTERNAL_CPP20_BIND_TO_TUPLE_HPP_
 
+#ifndef REFLECTCPP_USE_CPP26_REFLECTION
+
 #include <cassert>
 #include <cstddef>
 #include <utility>
@@ -4389,4 +4391,5 @@ auto bind_to_tuple(T& _t) {
 
 }  // namespace rfl::internal::cpp20
 
+#endif
 #endif

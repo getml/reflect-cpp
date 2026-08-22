@@ -74,6 +74,7 @@
 #include "rfl/from_generic.hpp"
 #include "rfl/from_named_tuple.hpp"
 #include "rfl/get.hpp"
+#include "rfl/make_field.hpp"
 #include "rfl/make_from_tuple.hpp"
 #include "rfl/make_named_tuple.hpp"
 #include "rfl/name_t.hpp"
