@@ -2,8 +2,16 @@
 #define RFL_CBOR_READ_HPP_
 
 #include <istream>
+// Silence a -Wmaybe-uninitialized false positive in jsoncons (utility/bigint.hpp).
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 #include <jsoncons/json.hpp>
 #include <jsoncons_ext/cbor/decode_cbor.hpp>
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #include <string>
 
 #include "../Processors.hpp"

@@ -2,7 +2,15 @@
 #define RFL_CBOR_WRITE_HPP_
 
 #include <cstdint>
+// Silence a -Wmaybe-uninitialized false positive in jsoncons (utility/bigint.hpp).
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 #include <jsoncons_ext/cbor/cbor_encoder.hpp>
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #include <ostream>
 
 #include "../internal/ptr_cast.hpp"

@@ -3,7 +3,15 @@
 
 #include <cstddef>
 #include <exception>
+// Silence a -Wmaybe-uninitialized false positive in jsoncons (utility/bigint.hpp).
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 #include <jsoncons/json.hpp>
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #include <string>
 #include <string_view>
 #include <type_traits>

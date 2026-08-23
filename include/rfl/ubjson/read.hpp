@@ -3,8 +3,16 @@
 
 #include <bit>
 #include <istream>
+// Silence a -Wmaybe-uninitialized false positive in jsoncons (utility/bigint.hpp).
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 #include <jsoncons/json.hpp>
 #include <jsoncons_ext/ubjson/decode_ubjson.hpp>
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #include <string>
 
 #include "../Processors.hpp"

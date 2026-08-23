@@ -2,7 +2,15 @@
 #define RFL_UBJSON_WRITER_HPP_
 
 #include <bit>
+// Silence a -Wmaybe-uninitialized false positive in jsoncons (utility/bigint.hpp).
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
 #include <jsoncons_ext/ubjson/ubjson_encoder.hpp>
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #include <map>
 #include <string>
 #include <string_view>
