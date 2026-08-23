@@ -2,7 +2,7 @@ name: linux
 
 on: [ push, pull_request ]
 
-env: 
+env:
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
 jobs:
@@ -15,32 +15,45 @@ jobs:
         compiler-version: [11, 12, 13, 14, 16, 17, 18]
         cxx: [20, 23]
         exclude:
-          - compiler: gcc 
+          - compiler: gcc
             compiler-version: 16
-          - compiler: gcc 
+          - compiler: gcc
             compiler-version: 17
-          - compiler: gcc 
+          - compiler: gcc
             compiler-version: 18
           - compiler: llvm
             compiler-version: 11
-          - compiler: llvm 
+          - compiler: llvm
             compiler-version: 12
-          - compiler: llvm 
+          - compiler: llvm
             compiler-version: 13
-          - compiler: llvm 
+          - compiler: llvm
             compiler-version: 14
           - compiler: gcc
             compiler-version: 11
-            cxx: 23 
+            cxx: 23
           - compiler: gcc
             compiler-version: 12
-            cxx: 23  
-          - compiler: llvm 
+            cxx: 23
+          - compiler: llvm
             compiler-version: 16
-            cxx: 23 
+            cxx: 23
           - compiler: llvm
             compiler-version: 17
-            cxx: 23  
+            cxx: 23
+          - compiler: llvm
+            cxx: 23
+            format: "CBOR"
+          - compiler: llvm
+            cxx: 23
+            format: "UBJSON"
+          - compiler: llvm
+            cxx: 23
+            format: "benchmarks"
+          - compiler: llvm
+            cxx: 23
+            format: "headers"
+          # TODO: Include reflection runners, once gcc-16 is in the repo.
     name: "${{ github.job }} (${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }})"
     concurrency:
       group: "linux-${{ github.ref }}-${{ github.job }}-${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}"
@@ -64,7 +77,11 @@ jobs:
         run: |
           sudo apt update
           if [[ "${{ matrix.compiler-version }}" == 11 ]]; then
-            sudo apt install -y ninja-build g++-11 
+            sudo apt install -y ninja-build g++-11
+          elif [[ "${{ matrix.compiler }}" == "gcc" && "${{ matrix.compiler-version }}" == 16 ]]; then
+            sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+            sudo apt update
+            sudo apt install -y ninja-build g++-16
           else
             sudo apt install -y ninja-build
           fi
@@ -78,25 +95,29 @@ jobs:
             export CXX=g++-${{ matrix.compiler-version }}
           fi
           $CXX --version
+          EXTRA_CMAKE_FLAGS=""
+          if [[ "${{ matrix.reflection }}" == "on" ]]; then
+            EXTRA_CMAKE_FLAGS="-DREFLECTCPP_USE_CPP26_REFLECTION=ON -DCMAKE_CXX_FLAGS=-freflection"
+          fi
           if [[ "${{ matrix.format }}" == "JSON" ]]; then
-            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS
           elif [[ "${{ matrix.format }}" == "benchmarks" ]]; then
-            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS
           elif [[ "${{ matrix.format }}" == "headers" ]]; then
-            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_CHECK_HEADERS=ON -DCMAKE_BUILD_TYPE=Release
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_CHECK_HEADERS=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS
           else
-            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS
           fi
           cmake --build build -j4
       - name: Run tests
         if: (matrix.format != 'benchmarks') && (matrix.format != 'headers')
         run: |
           ctest --test-dir build --output-on-failure
-      - name: Run benchmarks 
-        if: matrix.format == 'benchmarks' 
+      - name: Run benchmarks
+        if: matrix.format == 'benchmarks'
         run: |
-          echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY 
-          echo '## Benchmarks across different formats' >> $GITHUB_STEP_SUMMARY 
+          echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY
+          echo '## Benchmarks across different formats' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write >> $GITHUB_STEP_SUMMARY
@@ -105,7 +126,7 @@ jobs:
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          echo '## Benchmarks for JSON' >> $GITHUB_STEP_SUMMARY 
+          echo '## Benchmarks for JSON' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada >> $GITHUB_STEP_SUMMARY

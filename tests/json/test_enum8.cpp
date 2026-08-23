@@ -27,6 +27,8 @@ struct SomeClass {
 };
 
 TEST(json, test_enum8) {
+  static_assert(rfl::internal::enums::is_flag_enum<TestEnum>);
+
   SomeClass t{
       .e = TestEnum::None, .f = TestEnum::Hello, .g = TestEnum::HelloWorld};
 

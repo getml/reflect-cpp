@@ -12,6 +12,13 @@ inheritance altogether.
 Note that C arrays are not the same thing as `std::array`. `std::array` is always
 supported and is the recommended alternative.
 
+!!! note "C++-26 reflection"
+
+    If you compile reflect-cpp with C++-26 reflection (see [C++26 reflection](cpp26_reflection.md)),
+    then none of the restrictions in this section apply: fixed-size C arrays and inheritance are
+    supported out of the box, no flag is required, and the fields may be spread out over
+    multiple structs.
+
 If you want support for these, you will have to pass the flag `-D REFLECT_CPP_C_ARRAYS_OR_INHERITANCE`
 during compilation.
 
@@ -84,6 +91,10 @@ struct Derived : Base {
   int y;
 };
 ```
+
+Note that this restriction does not apply when compiling with C++-26 reflection: with C++-26,
+the fields of the base class and the fields of the derived class are combined automatically,
+so the example above works as well.
 
 The recommended alternative is to simply use `rfl::Flatten`, which
 has no such limitation:

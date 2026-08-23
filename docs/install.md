@@ -5,12 +5,43 @@ hide:
 
 # Installation
 
-The following compilers are supported:
+The following compilers are supported for C++-20:
 - GCC 11.4 or higher
 - Clang 14.0 or higher
 - MSVC 17.8 (19.38) or higher
 
+The following compilers are supported for C++-26:
+- GCC 16.2 or higher
+
 You can include the source files into your build or compile it using cmake and vcpkg.
+
+## Compiling with C++-26 reflection
+
+By default, reflect-cpp uses a C++-20 compatible reflection implementation, which works
+across a wide range of compilers. If you want to use the standard C++ reflection
+facilities (`<meta>`, [P2996](https://wg21.link/P2996)), you can compile reflect-cpp in
+C++-26 mode instead. This is more powerful: fixed-size C arrays and inheritance are
+supported out of the box, and there are no range restrictions for enums. Refer to
+[C++26 reflection](cpp26_reflection.md) for details.
+
+To enable C++-26 reflection, pass the CMake option `REFLECTCPP_USE_CPP26_REFLECTION` and
+the compiler flag that activates reflection support in your compiler:
+
+* GCC: `-freflection`
+* Clang: `-freflection-latest` (experimental, only available in Clang builds that
+  implement [P2996](https://wg21.link/P2996), such as Bloomberg's
+  [clang-p2996](https://github.com/bloomberg/clang-p2996) fork)
+
+For example, using cmake:
+
+```bash
+cmake -S . -B build -DCMAKE_CXX_STANDARD=26 -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_USE_CPP26_REFLECTION=ON -DCMAKE_CXX_FLAGS="-freflection"
+cmake --build build -j 4
+```
+
+If you include the source files into your own build (see Option 4 below), also add the
+compile definition `-DREFLECTCPP_USE_CPP26_REFLECTION` and the appropriate compiler flag
+to all translation units that include reflect-cpp.
 
 ## Option 1: Using vcpkg
 

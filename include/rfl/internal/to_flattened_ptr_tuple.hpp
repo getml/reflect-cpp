@@ -7,8 +7,7 @@
 #include "is_flatten_field.hpp"
 #include "to_ptr_tuple.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class PtrTuple>
 auto flatten_ptr_tuple(PtrTuple&& _t) {
@@ -28,8 +27,7 @@ auto flatten_ptr_tuple(PtrTuple&& _t) {
 
     return [&]<int... _is>(std::integer_sequence<int, _is...>) {
       return rfl::tuple_cat(get_one(std::integral_constant<int, _is>{})...);
-    }
-    (std::make_integer_sequence<int, size>());
+    }(std::make_integer_sequence<int, size>());
   }
 }
 
@@ -38,7 +36,6 @@ auto to_flattened_ptr_tuple(T&& _t) {
   return flatten_ptr_tuple(to_ptr_tuple(_t));
 }
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

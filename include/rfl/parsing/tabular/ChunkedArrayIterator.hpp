@@ -1,7 +1,20 @@
 #ifndef RFL_PARSING_TABULAR_CHUNKEDARRAYITERATOR_HPP_
 #define RFL_PARSING_TABULAR_CHUNKEDARRAYITERATOR_HPP_
 
+// Silence a -Warray-bounds false positive in Apache Arrow
+// (buffer_builder.h) with GCC 16.
+#ifdef __GNUC__
+#ifndef __clang__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
+#endif
 #include <arrow/api.h>
+#ifdef __GNUC__
+#ifndef __clang__
+#pragma GCC diagnostic pop
+#endif
+#endif
 
 #include "../../Ref.hpp"
 #include "../../Result.hpp"

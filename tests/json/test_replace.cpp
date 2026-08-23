@@ -19,10 +19,17 @@ TEST(json, test_replace) {
                      .last_name = "Simpson",
                      .children = rfl::make_box<std::vector<Person>>()};
 
-  const auto maggie = rfl::replace(
+  auto maggie = rfl::replace(
       std::move(lisa), rfl::make_field<"firstName">(std::string("Maggie")));
 
   write_and_read(
       maggie, R"({"firstName":"Maggie","lastName":"Simpson","children":[]})");
+
+  auto bart =
+      rfl::replace(std::move(maggie),
+                   rfl::make_field<&Person::first_name>(std::string("Bart")));
+
+  write_and_read(bart,
+                 R"({"firstName":"Bart","lastName":"Simpson","children":[]})");
 }
 }  // namespace test_replace

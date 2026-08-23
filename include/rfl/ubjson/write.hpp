@@ -2,7 +2,20 @@
 #define RFL_UBJSON_WRITE_HPP_
 
 #include <cstdint>
+// Silence a -Wmaybe-uninitialized false positive in jsoncons
+// (utility/bigint.hpp).
+#ifdef __GNUC__
+#ifndef __clang__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
+#endif
 #include <jsoncons_ext/ubjson/ubjson_encoder.hpp>
+#ifdef __GNUC__
+#ifndef __clang__
+#pragma GCC diagnostic pop
+#endif
+#endif
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -15,8 +28,9 @@
 namespace rfl::ubjson {
 
 /// Returns UBJSON bytes representation of the object.
-/// UBJSON (Universal Binary JSON) is a compact binary format that mirrors JSON's data model.
-/// Uses compile-time reflection to serialize a C++ object to UBJSON format.
+/// UBJSON (Universal Binary JSON) is a compact binary format that mirrors
+/// JSON's data model. Uses compile-time reflection to serialize a C++ object to
+/// UBJSON format.
 /// @tparam Ps Processors to apply during serialization (transforms the data)
 /// @param _obj The object to serialize to UBJSON
 /// @return A vector of chars containing the UBJSON binary representation
@@ -35,7 +49,8 @@ std::vector<char> write(const auto& _obj) {
 }
 
 /// Writes a UBJSON representation into an ostream.
-/// Uses compile-time reflection to serialize a C++ object to UBJSON and write to a stream.
+/// Uses compile-time reflection to serialize a C++ object to UBJSON and write
+/// to a stream.
 /// @tparam Ps Processors to apply during serialization (transforms the data)
 /// @param _obj The object to serialize to UBJSON
 /// @param _stream The output stream to write UBJSON binary data to

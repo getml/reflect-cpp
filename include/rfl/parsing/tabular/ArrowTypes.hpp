@@ -1,12 +1,26 @@
 #ifndef RFL_PARSING_TABULAR_ARROWTYPES_HPP_
 #define RFL_PARSING_TABULAR_ARROWTYPES_HPP_
 
+// Silence a -Warray-bounds false positive in Apache Arrow
+// (buffer_builder.h) with GCC 16.
+#ifdef __GNUC__
+#ifndef __clang__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
+#endif
 #include <arrow/api.h>
+#ifdef __GNUC__
+#ifndef __clang__
+#pragma GCC diagnostic pop
+#endif
+#endif
 
 #include <memory>
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 
 #include "../../Box.hpp"
 #include "../../NamedTuple.hpp"
@@ -672,7 +686,7 @@ struct ArrowTypes<std::string, _s> {
 };
 
 template <class T, SerializationType _s>
-  requires enchantum::Enum<T>
+  requires std::is_enum_v<T>
 struct ArrowTypes<T, _s> {
   using ArrayType = arrow::StringArray;
   using BuilderType = arrow::StringBuilder;

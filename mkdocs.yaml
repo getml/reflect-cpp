@@ -112,6 +112,7 @@ nav:
       - Custom Format: supported_formats/supporting_your_own_format.md
   # - Reflective Programming: ./reflective_programming.md
   - Installation: install.md
+  - C++26 reflection: cpp26_reflection.md
   - Documentation:
     - docs-readme.md
     - The basics:

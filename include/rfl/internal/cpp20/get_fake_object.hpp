@@ -1,8 +1,9 @@
-#ifndef RFL_INTERNAL_GETFAKEOBJECT_HPP_
-#define RFL_INTERNAL_GETFAKEOBJECT_HPP_
+#ifndef RFL_INTERNAL_CPP20_GETFAKEOBJECT_HPP_
+#define RFL_INTERNAL_CPP20_GETFAKEOBJECT_HPP_
 
-namespace rfl {
-namespace internal {
+#ifndef REFLECTCPP_USE_CPP26_REFLECTION
+
+namespace rfl::internal::cpp20 {
 
 #if __GNUC__
 #ifndef __clang__
@@ -40,7 +41,7 @@ consteval const T& get_fake_object() noexcept {
 #pragma warning(pop)
 #endif
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal::cpp20
 
+#endif
 #endif

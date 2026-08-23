@@ -1,3 +1,5 @@
+#ifndef REFLECTCPP_USE_CPP26_REFLECTION
+
 #include <gtest/gtest.h>
 // Redefine the range of the enums
 #define RFL_ENUM_RANGE_MIN -128
@@ -35,3 +37,5 @@ TEST(generic, test_enum_range_size) {
 }
 
 }  // namespace test_enum_range_size
+
+#endif
