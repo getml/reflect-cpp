@@ -1,8 +1,6 @@
 #ifndef RFL_INTERNAL_CPP20_GET_MEMBER_PTR_NAME_HPP_
 #define RFL_INTERNAL_CPP20_GET_MEMBER_PTR_NAME_HPP_
 
-// #ifndef REFLECTCPP_USE_CPP26_REFLECTION
-
 #include <type_traits>
 #include <utility>
 
@@ -81,4 +79,3 @@ consteval auto get_member_ptr_name() {
 }  // namespace rfl::internal::cpp20
 
 #endif
-// #endif

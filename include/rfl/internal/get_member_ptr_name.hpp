@@ -7,6 +7,8 @@ namespace rfl::internal {
 
 template <auto ptr>
 consteval auto get_member_ptr_name() {
+  // Unfortunately, we cannot use the C++26 reflection API here, as retrieving
+  // the name of a member pointer is apparently not supported by the API.
   return cpp20::get_member_ptr_name<ptr>();
 }
 
