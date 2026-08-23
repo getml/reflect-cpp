@@ -2,7 +2,7 @@ name: linux
 
 on: [ push, pull_request ]
 
-env: 
+env:
     VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
 
 jobs:
@@ -15,32 +15,32 @@ jobs:
         compiler-version: [11, 12, 13, 14, 16, 17, 18]
         cxx: [20, 23]
         exclude:
-          - compiler: gcc 
+          - compiler: gcc
             compiler-version: 16
-          - compiler: gcc 
+          - compiler: gcc
             compiler-version: 17
-          - compiler: gcc 
+          - compiler: gcc
             compiler-version: 18
           - compiler: llvm
             compiler-version: 11
-          - compiler: llvm 
+          - compiler: llvm
             compiler-version: 12
-          - compiler: llvm 
+          - compiler: llvm
             compiler-version: 13
-          - compiler: llvm 
+          - compiler: llvm
             compiler-version: 14
           - compiler: gcc
             compiler-version: 11
-            cxx: 23 
+            cxx: 23
           - compiler: gcc
             compiler-version: 12
-            cxx: 23  
-          - compiler: llvm 
+            cxx: 23
+          - compiler: llvm
             compiler-version: 16
-            cxx: 23 
+            cxx: 23
           - compiler: llvm
             compiler-version: 17
-            cxx: 23  
+            cxx: 23
         include:
           - format: JSON
             compiler: gcc
@@ -162,6 +162,9 @@ jobs:
           if [[ "${{ matrix.reflection }}" == "on" ]]; then
             EXTRA_CMAKE_FLAGS="-DREFLECTCPP_USE_CPP26_REFLECTION=ON -DCMAKE_CXX_FLAGS=-freflection"
           fi
+          if [[ "${{ matrix.compiler }}" == "llvm" && "${{ matrix.cxx }}" == 23 ]]; then
+            EXTRA_CMAKE_FLAGS="-DCMAKE_CXX_FLAGS=-stdlib=libc++"
+          fi
           if [[ "${{ matrix.format }}" == "JSON" ]]; then
             cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS
           elif [[ "${{ matrix.format }}" == "benchmarks" ]]; then
@@ -176,11 +179,11 @@ jobs:
         if: (matrix.format != 'benchmarks') && (matrix.format != 'headers')
         run: |
           ctest --test-dir build --output-on-failure
-      - name: Run benchmarks 
-        if: matrix.format == 'benchmarks' 
+      - name: Run benchmarks
+        if: matrix.format == 'benchmarks'
         run: |
-          echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY 
-          echo '## Benchmarks across different formats' >> $GITHUB_STEP_SUMMARY 
+          echo '# Benchmarks' >> $GITHUB_STEP_SUMMARY
+          echo '## Benchmarks across different formats' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write >> $GITHUB_STEP_SUMMARY
@@ -189,7 +192,7 @@ jobs:
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          echo '## Benchmarks for JSON' >> $GITHUB_STEP_SUMMARY 
+          echo '## Benchmarks for JSON' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/json/reflect-cpp-json-benchmarks --benchmark_filter=canada >> $GITHUB_STEP_SUMMARY
