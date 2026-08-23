@@ -162,9 +162,6 @@ jobs:
           if [[ "${{ matrix.reflection }}" == "on" ]]; then
             EXTRA_CMAKE_FLAGS="-DREFLECTCPP_USE_CPP26_REFLECTION=ON -DCMAKE_CXX_FLAGS=-freflection"
           fi
-          if [[ "${{ matrix.compiler }}" == "llvm" && "${{ matrix.cxx }}" == 23 ]]; then
-            EXTRA_CMAKE_FLAGS="-DCMAKE_CXX_FLAGS=-stdlib=libc++"
-          fi
           if [[ "${{ matrix.format }}" == "JSON" ]]; then
             cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS
           elif [[ "${{ matrix.format }}" == "benchmarks" ]]; then
