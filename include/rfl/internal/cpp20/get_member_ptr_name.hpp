@@ -17,8 +17,8 @@
 
 namespace rfl::internal::cpp20 {
 
-template <auto ptr>
-consteval auto get_field_ptr_name_str_view() {
+template <class T, auto ptr>
+consteval auto get_member_ptr_name_str_view() {
 #if __cpp_lib_source_location >= 201907L
   const auto func_name =
       std::string_view{std::source_location::current().function_name()};
@@ -37,10 +37,12 @@ consteval auto get_field_ptr_name_str_view() {
   return split.substr(split.find_last_of(":.") + 1);
 #elif defined(_MSC_VER)
   auto split = func_name.substr(0, func_name.size() - 7);
-  split = split.substr(split.find("get_type_name_str_view<") + 23);
-  auto pos = split.find(" ");
-  if (pos != std::string_view::npos) {
-    return split.substr(pos + 1);
+  split = split.substr(split.find("get_member_ptr_name_str_view<") + 29);
+  auto pos1 = split.find_last_of(":");
+  auto pos2 = split.find_last_of(">");
+  if (pos1 != std::string_view::npos && pos2 != std::string_view::npos &&
+      pos2 > pos1) {
+    return split.substr(pos1 + 1, pos2);
   }
   return split;
 #else
@@ -73,7 +75,8 @@ consteval auto get_member_ptr_name() {
     using Name = typename Type::Name;
     return lit_name_v<Name>;
   } else {
-    constexpr auto name = get_field_ptr_name_str_view<ptr>();
+    using StructType = struct_type_t<decltype(ptr)>;
+    constexpr auto name = get_member_ptr_name_str_view<StructType, ptr>();
     return StringLiteral<name.size() + 1>(name);
   }
 }
