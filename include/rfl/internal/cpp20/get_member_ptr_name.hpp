@@ -37,12 +37,9 @@ consteval auto get_member_ptr_name_str_view() {
   return split.substr(split.find_last_of(":.") + 1);
 #elif defined(_MSC_VER)
   auto split = func_name.substr(0, func_name.size() - 7);
-  split = split.substr(split.find("get_member_ptr_name_str_view<") + 29);
-  auto pos1 = split.find_last_of(":");
-  auto pos2 = split.find_last_of(">");
-  if (pos1 != std::string_view::npos && pos2 != std::string_view::npos &&
-      pos2 > pos1) {
-    return split.substr(pos1 + 1, pos2);
+  auto pos = split.find_last_of(":");
+  if (pos != std::string_view::npos) {
+    return split.substr(pos + 1);
   }
   return split;
 #else
