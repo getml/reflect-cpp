@@ -12,13 +12,13 @@
         <meta name="author" content="Code17 GmbH">
       
       
-        <link rel="canonical" href="https://rfl.getml.com/c_arrays_and_inheritance/">
+        <link rel="canonical" href="https://rfl.getml.com/cpp26_reflection/">
       
       
-        <link rel="prev" href="../standard_containers/">
+        <link rel="prev" href="../install/">
       
       
-        <link rel="next" href="../bytestring/">
+        <link rel="next" href="../docs-readme/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>C arrays and inheritance - reflect-cpp</title>
+        <title>C++26 reflection - reflect-cpp</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#c-arrays-and-inheritance" class="md-skip">
+        <a href="#c26-reflection" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              C arrays and inheritance
+              C++26 reflection
             
           </span>
         </div>
@@ -295,9 +295,11 @@
   
   
   
+    
   
-    <li class="md-tabs__item">
-      <a href="../cpp26_reflection/" class="md-tabs__link">
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
         
   
   
@@ -314,12 +316,10 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
+      <li class="md-tabs__item">
         <a href="../docs-readme/" class="md-tabs__link">
           
   
@@ -1015,10 +1015,37 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../cpp26_reflection/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C++26 reflection
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1034,6 +1061,100 @@
   
 
       </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#compiling-with-c-26-reflection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compiling with C++-26 reflection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-c-26-reflection-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What C++-26 reflection changes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What C++-26 reflection changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c-arrays-and-inheritance-are-supported-out-of-the-box" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C arrays and inheritance are supported out of the box
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-range-restrictions-for-enums" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No range restrictions for enums
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lower-compile-time-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lower compile-time cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1042,29 +1163,24 @@
       
   
   
-    
   
   
-  
     
     
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -1082,7 +1198,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1125,8 +1241,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1137,11 +1251,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
         
           
           <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
@@ -1162,7 +1276,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1597,37 +1711,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    C arrays and inheritance
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../c_arrays_and_inheritance/" class="md-nav__link">
         
   
   
@@ -1643,50 +1730,6 @@
   
 
       </a>
-      
-        
-
-  
-
-<nav class="md-nav md-nav--secondary" aria-label="Page contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Page contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#c-arrays" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        C arrays
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#inheritance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Inheritance
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2669,10 +2712,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#c-arrays" class="md-nav__link">
+  <a href="#compiling-with-c-26-reflection" class="md-nav__link">
     <span class="md-ellipsis">
       
-        C arrays
+        Compiling with C++-26 reflection
       
     </span>
   </a>
@@ -2680,10 +2723,60 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#inheritance" class="md-nav__link">
+  <a href="#what-c-26-reflection-changes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Inheritance
+        What C++-26 reflection changes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What C++-26 reflection changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c-arrays-and-inheritance-are-supported-out-of-the-box" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C arrays and inheritance are supported out of the box
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-range-restrictions-for-enums" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No range restrictions for enums
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lower-compile-time-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lower compile-time cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
       
     </span>
   </a>
@@ -2708,64 +2801,6 @@
   
 
 
-  <nav class="md-path" aria-label="Navigation" >
-    <ol class="md-path__list">
-      
-        
-  
-  
-    <li class="md-path__item">
-      <a href=".." class="md-path__link">
-        
-  <span class="md-ellipsis">
-    Welcome
-  </span>
-
-      </a>
-    </li>
-  
-
-      
-      
-        
-  
-  
-    
-    
-      <li class="md-path__item">
-        <a href="../docs-readme/" class="md-path__link">
-          
-  <span class="md-ellipsis">
-    Documentation
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-    
-    
-      <li class="md-path__item">
-        <a href="../concepts/structs/" class="md-path__link">
-          
-  <span class="md-ellipsis">
-    The basics
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-      
-    </ol>
-  </nav>
-
               
               <article class="md-content__inner md-typeset">
                 
@@ -2776,94 +2811,150 @@
   
 
 
-<h1 id="c-arrays-and-inheritance">C Arrays and inheritance<a class="headerlink" href="#c-arrays-and-inheritance" title="Permanent link">&para;</a></h1>
-<p>reflect-cpp supports fixed-size C arrays and some forms of inheritance, but only as an opt-in.</p>
-<p>We have made this design decision, because checking for C arrays and inheritance 
-requires a disproportionate amount of compile time and we believe it is
-more important to reduce compile time than to support things out-of-the-box
-that most people won't need anyway. Since there are good alternatives for 
-both of these problems, it is recommended to avoid using C arrays or 
-inheritance altogether.</p>
-<p>Note that C arrays are not the same thing as <code>std::array</code>. <code>std::array</code> is always
-supported and is the recommended alternative.</p>
-<div class="admonition note">
-<p class="admonition-title">C++-26 reflection</p>
-<p>If you compile reflect-cpp with C++-26 reflection (see <a href="../cpp26_reflection/">C++26 reflection</a>),
-then none of the restrictions in this section apply: fixed-size C arrays and inheritance are
-supported out of the box, no flag is required, and the fields may be spread out over
-multiple structs.</p>
-</div>
-<p>If you want support for these, you will have to pass the flag <code>-D REFLECT_CPP_C_ARRAYS_OR_INHERITANCE</code>
-during compilation.</p>
-<h2 id="c-arrays">C arrays<a class="headerlink" href="#c-arrays" title="Permanent link">&para;</a></h2>
-<p>Suppose you have a struct like this:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="p">{</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span><span class="w">  </span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span><span class="w"> </span>
-<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">post_code</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
-<span class="p">};</span>
+<h1 id="c26-reflection">C++26 reflection<a class="headerlink" href="#c26-reflection" title="Permanent link">&para;</a></h1>
+<p>reflect-cpp can be compiled in two modes, which use two different reflection implementations:</p>
+<ul>
+<li><strong>C++-20/23 mode (the default):</strong> reflection is implemented using metaprogramming
+  techniques (structured bindings, aggregate-initialization analysis, and
+  <a href="https://github.com/ZXShady/enchantum">enchantum</a>). This works on a wide range of
+  compilers, but it has some limitations and comes with a higher compile-time cost.</li>
+<li><strong>C++-26 mode:</strong> reflection uses the standard C++ reflection facilities
+  (<code>&lt;meta&gt;</code>, <a href="https://wg21.link/P2996">P2996</a>). This is more powerful, because members
+  and enumerators are queried directly from the compiler instead of being inferred.</li>
+</ul>
+<p>C++-26 mode is opt-in. It requires a compiler that supports the C++ reflection proposal
+and a compiler flag to activate it. The rest of this documentation applies to both modes,
+except where explicitly noted otherwise.</p>
+<h2 id="compiling-with-c-26-reflection">Compiling with C++-26 reflection<a class="headerlink" href="#compiling-with-c-26-reflection" title="Permanent link">&para;</a></h2>
+<p>The following compilers are supported for C++-26:</p>
+<ul>
+<li>GCC 16.2 or higher</li>
+<li>Clang: experimental, only available in Clang builds that implement
+  <a href="https://wg21.link/P2996">P2996</a> (such as Bloomberg's
+  <a href="https://github.com/bloomberg/clang-p2996">clang-p2996</a> fork)</li>
+</ul>
+<p>To compile reflect-cpp with C++-26 reflection, pass the CMake option
+<code>REFLECTCPP_USE_CPP26_REFLECTION</code> and the compiler flag that activates reflection
+support in your compiler:</p>
+<ul>
+<li>GCC: <code>-freflection</code></li>
+<li>Clang: <code>-freflection-latest</code></li>
+</ul>
+<p>For example, using cmake:</p>
+<div class="language-bash highlight"><pre><span></span><code>cmake<span class="w"> </span>-S<span class="w"> </span>.<span class="w"> </span>-B<span class="w"> </span>build<span class="w"> </span>-DCMAKE_CXX_STANDARD<span class="o">=</span><span class="m">26</span><span class="w"> </span>-DCMAKE_BUILD_TYPE<span class="o">=</span>Release<span class="w"> </span>-DREFLECTCPP_USE_CPP26_REFLECTION<span class="o">=</span>ON<span class="w"> </span>-DCMAKE_CXX_FLAGS<span class="o">=</span><span class="s2">"-freflection"</span>
+cmake<span class="w"> </span>--build<span class="w"> </span>build<span class="w"> </span>-j<span class="w"> </span><span class="m">4</span>
 </code></pre></div>
-<p>In this example, <code>post_code</code> is a C array. The best way to handle this
-is to simply replace the C array with <code>std::array</code>, like this:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="p">{</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span><span class="w">  </span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">last_name</span><span class="p">;</span><span class="w"> </span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="o">&gt;</span><span class="w"> </span><span class="n">post_code</span><span class="p">;</span>
-<span class="p">};</span>
-</code></pre></div>
-<p>However, in some cases, using C arrays is unavoidable. For instance <code>bson_oid_t</code> contains
-a C array under-the-hood, so if you want to parse a <code>bson_oid_t</code> you will have
-no choice but to pass the flag mentioned above.</p>
-<h2 id="inheritance">Inheritance<a class="headerlink" href="#inheritance" title="Permanent link">&para;</a></h2>
-<p>reflect-cpp supports some form of inheritance. Because we use structured bindings to
-retrieve the fields of a struct, there are limitations on what we can do when it comes
-to inheritance:</p>
-<p><em>Every non-static data member of E must be a direct member of E or the same base class of E.</em> 
-(<a href="https://en.cppreference.com/w/cpp/language/structured_binding">https://en.cppreference.com/w/cpp/language/structured_binding</a>)</p>
-<p>In other words, all of the fields must be inside the same struct.</p>
-<p>So, this is fine:</p>
+<p>The individual parts:</p>
+<ul>
+<li><code>-DREFLECTCPP_USE_CPP26_REFLECTION=ON</code> switches reflect-cpp to the C++-26 reflection
+  implementation and defines the macro <code>REFLECTCPP_USE_CPP26_REFLECTION</code>. If
+  <code>CMAKE_CXX_STANDARD</code> is not set, it will be set to 26 automatically.</li>
+<li><code>-DCMAKE_CXX_STANDARD=26</code> sets the C++ standard to 26.</li>
+<li><code>-DCMAKE_CXX_FLAGS="-freflection"</code> activates the C++ reflection facilities in the
+  compiler itself. Use <code>-freflection-latest</code> on Clang instead.</li>
+</ul>
+<p>When compiling with C++-26 reflection, the option <code>REFLECTCPP_USE_STD_EXPECTED</code> is
+enabled by default as well, which means that <code>rfl::Result&lt;T&gt;</code> is an alias for
+<code>std::expected&lt;T, rfl::Error&gt;</code>. If you want to keep using the built-in <code>rfl::Result</code>
+type, pass <code>-DREFLECTCPP_USE_STD_EXPECTED=OFF</code>.</p>
+<p>If you include the source files directly into your own build (see
+<a href="../install/#option-4-include-source-files-into-your-own-build">Installation</a>), add the
+compile definition <code>-DREFLECTCPP_USE_CPP26_REFLECTION</code> and the appropriate compiler flag
+to all translation units that include reflect-cpp.</p>
+<h2 id="what-c-26-reflection-changes">What C++-26 reflection changes<a class="headerlink" href="#what-c-26-reflection-changes" title="Permanent link">&para;</a></h2>
+<h3 id="c-arrays-and-inheritance-are-supported-out-of-the-box">C arrays and inheritance are supported out of the box<a class="headerlink" href="#c-arrays-and-inheritance-are-supported-out-of-the-box" title="Permanent link">&para;</a></h3>
+<p>In C++-20/23 mode, fixed-size C arrays and inheritance are only supported when you pass
+the flag <code>-DREFLECT_CPP_C_ARRAYS_OR_INHERITANCE</code>, and inheritance only works when all of
+the fields are inside the same struct. Refer to
+<a href="../c_arrays_and_inheritance/">C arrays and inheritance</a> for details.</p>
+<p>In C++-26 mode, neither restriction applies:</p>
+<ul>
+<li>Fixed-size C arrays are regular fields as far as the compiler's reflection is concerned,
+  so they work without any flag.</li>
+<li>The fields of base classes are combined with the fields of the derived class, so the
+  fields may be spread out over multiple structs.</li>
+</ul>
+<p>For example, this is not supported in C++-20/23 mode, but works as-is in C++-26 mode:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Base</span><span class="w"> </span><span class="p">{</span>
-<span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
-<span class="p">};</span>
-
-<span class="k">struct</span><span class="w"> </span><span class="nc">Derived</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Base</span><span class="w"> </span><span class="p">{};</span>
-</code></pre></div>
-<p>This is fine as well:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Base</span><span class="w"> </span><span class="p">{};</span>
-<span class="k">struct</span><span class="w"> </span><span class="nc">Derived</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Base</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
 <span class="p">};</span>
-</code></pre></div>
-<p>But this is not fine, because the fields
-are spread out over more than one struct:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Base</span><span class="w"> </span><span class="p">{</span>
-<span class="w">   </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
-<span class="p">};</span>
 
 <span class="k">struct</span><span class="w"> </span><span class="nc">Derived</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Base</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
 <span class="p">};</span>
-</code></pre></div>
-<p>Note that this restriction does not apply when compiling with C++-26 reflection: with C++-26,
-the fields of the base class and the fields of the derived class are combined automatically,
-so the example above works as well.</p>
-<p>The recommended alternative is to simply use <code>rfl::Flatten</code>, which
-has no such limitation:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Base</span><span class="w"> </span><span class="p">{</span>
-<span class="w">   </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">;</span>
-<span class="p">};</span>
 
-<span class="k">struct</span><span class="w"> </span><span class="nc">Derived</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Flatten</span><span class="o">&lt;</span><span class="n">Base</span><span class="o">&gt;</span><span class="w"> </span><span class="n">base</span><span class="p">;</span><span class="w"> </span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">;</span>
-<span class="p">};</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">derived</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Derived</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">};</span>
+
+<span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">derived</span><span class="p">);</span>
 </code></pre></div>
-<p>Please refer to the section on <code>rfl::Flatten</code> in this documentation for
-more information.</p>
-<p>If for any reason you want to use inheritance patterns like the ones
-described above, you will make have to make sure that all of the fields
-are inside the same struct and also you will also have to pass the 
-compile time flag mentioned above.</p>
+<p>This results in the following JSON string:</p>
+<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"x"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">"y"</span><span class="p">:</span><span class="mi">2</span><span class="p">}</span>
+</code></pre></div>
+<h3 id="no-range-restrictions-for-enums">No range restrictions for enums<a class="headerlink" href="#no-range-restrictions-for-enums" title="Permanent link">&para;</a></h3>
+<p>In C++-20/23 mode, enum values must be in the range <code>[RFL_ENUM_RANGE_MIN,
+RFL_ENUM_RANGE_MAX]</code>, where the default range is <code>[-256, 256]</code>. Refer to
+<a href="../enums/">Enums</a> for details.</p>
+<p>In C++-26 mode, the enumerators are read directly from the compiler, so there is no
+restriction on the range of enum values, and <code>RFL_ENUM_RANGE_MIN</code> and <code>RFL_ENUM_RANGE_MAX</code>
+are not needed.</p>
+<h3 id="lower-compile-time-cost">Lower compile-time cost<a class="headerlink" href="#lower-compile-time-cost" title="Permanent link">&para;</a></h3>
+<p>In C++-20/23 mode, reflect-cpp infers the fields of a struct by figuring out how the
+struct can be constructed. This requires a lot of compile-time work, especially in the
+presence of C arrays and inheritance. In C++-26 mode, the fields and enumerators are
+queried directly from the compiler's reflection information, which is considerably
+cheaper.</p>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>C++-20/23</th>
+<th>C++-26</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Supported compilers</td>
+<td>GCC 11.4+, Clang 14.0+, MSVC 17.8+</td>
+<td>GCC 16.2+ (Clang: experimental)</td>
+</tr>
+<tr>
+<td>Compiler flag</td>
+<td><em>(none)</em></td>
+<td><code>-freflection</code> (GCC), <code>-freflection-latest</code> (Clang)</td>
+</tr>
+<tr>
+<td>CMake option</td>
+<td><em>(none)</em></td>
+<td><code>-DREFLECTCPP_USE_CPP26_REFLECTION=ON</code></td>
+</tr>
+<tr>
+<td>Fixed-size C arrays</td>
+<td>requires <code>-DREFLECT_CPP_C_ARRAYS_OR_INHERITANCE</code></td>
+<td>supported out of the box</td>
+</tr>
+<tr>
+<td>Inheritance</td>
+<td>requires <code>-DREFLECT_CPP_C_ARRAYS_OR_INHERITANCE</code>, fields must be in a single struct</td>
+<td>supported out of the box, fields may be spread over multiple structs</td>
+</tr>
+<tr>
+<td>Enum value range</td>
+<td>restricted to <code>[RFL_ENUM_RANGE_MIN, RFL_ENUM_RANGE_MAX]</code> (default <code>[-256, 256]</code>)</td>
+<td>no restriction</td>
+</tr>
+<tr>
+<td><code>rfl::Result</code></td>
+<td>built-in type (or <code>std::expected</code> via <code>-DREFLECTCPP_USE_STD_EXPECTED</code>)</td>
+<td><code>std::expected</code> by default</td>
+</tr>
+<tr>
+<td>Compile time</td>
+<td>higher</td>
+<td>lower</td>
+</tr>
+</tbody>
+</table>
 
 
 
