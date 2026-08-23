@@ -7,6 +7,7 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 
 #include "../../Box.hpp"
 #include "../../NamedTuple.hpp"
@@ -672,7 +673,7 @@ struct ArrowTypes<std::string, _s> {
 };
 
 template <class T, SerializationType _s>
-  requires enchantum::Enum<T>
+  requires std::is_enum_v<T>
 struct ArrowTypes<T, _s> {
   using ArrayType = arrow::StringArray;
   using BuilderType = arrow::StringBuilder;
