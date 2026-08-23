@@ -41,6 +41,18 @@ jobs:
           - compiler: llvm
             compiler-version: 17
             cxx: 23
+          - compiler: llvm
+            cxx: 23
+            format: "CBOR"
+          - compiler: llvm
+            cxx: 23
+            format: "UBJSON"
+          - compiler: llvm
+            cxx: 23
+            format: "benchmarks"
+          - compiler: llvm
+            cxx: 23
+            format: "headers"
           # TODO: Include reflection runners, once gcc-16 is in the repo.
     name: "${{ github.job }} (${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }})"
     concurrency:
