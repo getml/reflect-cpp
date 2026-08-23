@@ -1,8 +1,21 @@
 #ifndef RFL_CSV_READ_HPP_
 #define RFL_CSV_READ_HPP_
 
+// Silence a -Warray-bounds false positive in Apache Arrow
+// (buffer_builder.h) with GCC 16.
+#ifdef __GNUC__
+#ifndef __clang__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
+#endif
 #include <arrow/csv/reader.h>
 #include <arrow/io/api.h>
+#ifdef __GNUC__
+#ifndef __clang__
+#pragma GCC diagnostic pop
+#endif
+#endif
 
 #include <istream>
 #include <string>
