@@ -157,7 +157,7 @@ rfl::Result<std::vector<Person>> yyjson_to_children(yyjson_val *_val) {
   while ((val = yyjson_arr_iter_next(&iter))) {
     auto r = yyjson_to_person(val);
     if (!r) {
-      return error(r.error());
+      return rfl::error(r.error());
     }
     children.emplace_back(std::move(*r));
   }
@@ -220,7 +220,7 @@ rfl::Result<Person> yyjson_to_person(yyjson_val *_val) {
     for (const auto &err : errors) {
       std::cout << err.what() << std::endl;
     }
-    return error(errors[0]);
+    return rfl::error(errors[0]);
   }
   return person;
 }
