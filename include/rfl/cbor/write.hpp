@@ -2,14 +2,19 @@
 #define RFL_CBOR_WRITE_HPP_
 
 #include <cstdint>
-// Silence a -Wmaybe-uninitialized false positive in jsoncons (utility/bigint.hpp).
+// Silence a -Wmaybe-uninitialized false positive in jsoncons
+// (utility/bigint.hpp).
 #ifdef __GNUC__
+#ifndef __clang__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
+#endif
 #include <jsoncons_ext/cbor/cbor_encoder.hpp>
 #ifdef __GNUC__
+#ifndef __clang__
 #pragma GCC diagnostic pop
+#endif
 #endif
 #include <ostream>
 
@@ -20,8 +25,9 @@
 namespace rfl::cbor {
 
 /// Returns CBOR bytes representation of the object.
-/// CBOR (Concise Binary Object Representation) is a binary data format similar to JSON but more compact.
-/// Uses compile-time reflection to serialize a C++ object to CBOR format.
+/// CBOR (Concise Binary Object Representation) is a binary data format similar
+/// to JSON but more compact. Uses compile-time reflection to serialize a C++
+/// object to CBOR format.
 /// @tparam Ps Processors to apply during serialization (transforms the data)
 /// @param _obj The object to serialize to CBOR
 /// @return A vector of chars containing the CBOR binary representation
@@ -40,7 +46,8 @@ std::vector<char> write(const auto& _obj) {
 }
 
 /// Writes a CBOR representation into an ostream.
-/// Uses compile-time reflection to serialize a C++ object to CBOR and write to a stream.
+/// Uses compile-time reflection to serialize a C++ object to CBOR and write to
+/// a stream.
 /// @tparam Ps Processors to apply during serialization (transforms the data)
 /// @param _obj The object to serialize to CBOR
 /// @param _stream The output stream to write CBOR binary data to

@@ -3,14 +3,19 @@
 
 #include <cstddef>
 #include <exception>
-// Silence a -Wmaybe-uninitialized false positive in jsoncons (utility/bigint.hpp).
+// Silence a -Wmaybe-uninitialized false positive in jsoncons
+// (utility/bigint.hpp).
 #ifdef __GNUC__
+#ifndef __clang__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
+#endif
 #include <jsoncons/json.hpp>
 #ifdef __GNUC__
+#ifndef __clang__
 #pragma GCC diagnostic pop
+#endif
 #endif
 #include <string>
 #include <string_view>
