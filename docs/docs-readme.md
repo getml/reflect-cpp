@@ -30,6 +30,8 @@
 
 [Standard containers](standard_containers.md) - Describes how reflect-cpp treats containers in the standard library.
 
+[std::expected](expected.md) - For serializing and deserializing `std::expected`, the C++-23 result type.
+
 [C arrays and inheritance](c_arrays_and_inheritance.md) - Describes how reflect-cpp handles C arrays and inheritance.
 
 [rfl::Bytestring](bytestring.md) - Describes how reflect-cpp handles binary strings for formats that support them.

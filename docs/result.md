@@ -152,3 +152,6 @@ const auto embellish_error = [&](const Error& _e) -> rfl::Result<T> {
 return Parser<T>::read(_r, &_var).transform_error(embellish_error);
 ```
 
+## See also
+
+- [`std::expected`](expected.md) - The C++-23 standard result type, which is supported as a serializable data type.

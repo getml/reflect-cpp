@@ -53,10 +53,11 @@ Result<std::pair<uint8_t*, size_t>> to_buffer(const auto& _obj) noexcept {
   const auto len = bson_writer_get_length(bson_writer.get());
   return nothing
       .transform([&](const auto&) { return std::make_pair(buf, len); })
-      .or_else([&](auto&& _err) {
-        bson_free(buf);
-        return error(_err.what());
-      });
+      .or_else(
+          [&](auto&& _err) -> Result<std::pair<uint8_t*, size_t>> {
+            bson_free(buf);
+            return error(_err.what());
+          });
 }
 
 /// Returns BSON bytes representation of the object.
