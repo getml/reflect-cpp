@@ -12,13 +12,13 @@
         <meta name="author" content="Code17 GmbH">
       
       
-        <link rel="canonical" href="https://rfl.getml.com/optional_fields/">
+        <link rel="canonical" href="https://rfl.getml.com/expected/">
       
       
-        <link rel="prev" href="../concepts/structs/">
+        <link rel="prev" href="../standard_containers/">
       
       
-        <link rel="next" href="../default_val/">
+        <link rel="next" href="../c_arrays_and_inheritance/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Optional fields - reflect-cpp</title>
+        <title>std::expected - reflect-cpp</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#optional-fields" class="md-skip">
+        <a href="#stdexpected" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Optional fields
+              std::expected
             
           </span>
         </div>
@@ -1205,19 +1205,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../optional_fields/" class="md-nav__link">
         
   
   
@@ -1233,7 +1224,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -1607,10 +1597,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../expected/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    std::expected
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1626,6 +1643,105 @@
   
 
       </a>
+      
+        
+
+  
+
+<nav class="md-nav md-nav--secondary" aria-label="Page contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#availability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Availability
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-stdexpected-is-serialized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How std::expected is serialized
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inside-structs-and-containers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inside structs and containers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#structs-as-value-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structs as value types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#json-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JSON schema
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#relation-to-rflresult" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Relation to rfl::Result
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2629,6 +2745,91 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#availability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Availability
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-stdexpected-is-serialized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How std::expected is serialized
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inside-structs-and-containers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inside structs and containers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#structs-as-value-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structs as value types
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#json-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JSON schema
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#relation-to-rflresult" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Relation to rfl::Result
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2713,41 +2914,85 @@
   
 
 
-<h1 id="optional-fields">Optional fields<a class="headerlink" href="#optional-fields" title="Permanent link">&para;</a></h1>
-<p>Usually, when you set up a struct, all of the fields are required. For instance, in the previous example,
-we generated a JSON string like this:</p>
-<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"firstName"</span><span class="p">:</span><span class="s2">"Bart"</span><span class="p">,</span><span class="nt">"lastName"</span><span class="p">:</span><span class="s2">"Simpson"</span><span class="p">,</span><span class="nt">"children"</span><span class="p">:[]}</span>
-</code></pre></div>
-<p>Likewise, if we read the JSON string and the field "children" is missing, that will result in a runtime error.</p>
-<p>But Bart doesn't have any children. After all, he's only 10 years old. To indicate to the library that the field "children" is optional,
-we can use either <code>std::optional</code>, <code>std::shared_ptr</code> or <code>std::unique_ptr</code>.</p>
-<p>If <code>std::optional</code> is <code>std::nullopt</code> or any of the smart pointers is a <code>nullptr</code>, 
-then the field will not be written to the JSON string. Likewise, when you read the JSON string, the fields will not be required. If you
-want the fields to be required, you can use the <code>rfl::NoOptionals</code> processor, please refer to the section on processors.</p>
-<p>So this is how we could rewrite the previous example:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">"firstName"</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
-<span class="w">    </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">"lastName"</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Simpson"</span><span class="p">;</span>
+<h1 id="stdexpected"><code>std::expected</code><a class="headerlink" href="#stdexpected" title="Permanent link">&para;</a></h1>
+<p>C++-23 introduced <code>std::expected</code> as the standard way of expressing the result of an operation that might fail. Unlike <code>std::optional</code>, it holds both the value on success (of type <code>T</code>) and the error on failure (of type <code>E</code>). reflect-cpp supports <code>std::expected</code> out of the box: you can use it as a top-level type, as a field of a struct, or inside containers.</p>
+<h2 id="availability">Availability<a class="headerlink" href="#availability" title="Permanent link">&para;</a></h2>
+<p><code>std::expected</code> is a C++-23 feature. reflect-cpp detects it via the feature-test macro <code>__cpp_lib_expected</code>. Note that some standard libraries only expose <code>&lt;expected&gt;</code> when compiled in C++-23 mode — for instance, GCC's libstdc++ requires <code>-std=c++23</code>. If your standard library does not provide <code>std::expected</code>, reflect-cpp will not recognize the type, and attempting to serialize one will result in a compile-time error.</p>
+<h2 id="how-stdexpected-is-serialized">How <code>std::expected</code> is serialized<a class="headerlink" href="#how-stdexpected-is-serialized" title="Permanent link">&para;</a></h2>
+<p>A <code>std::expected&lt;T, E&gt;</code> is serialized as the two alternatives of an untagged variant (an <code>rfl::Variant</code>):</p>
+<ul>
+<li>If it holds a value, the value is written as-is, i.e. exactly the same way as it would be written if it were of type <code>T</code>.</li>
+<li>If it holds an error, an object with a single field named <code>error</code> is written, containing the value of type <code>E</code>.</li>
+</ul>
+<p>Wrapping the error in an object makes sure that the error is always recognized as an object, even if <code>T</code> itself is a struct.</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;expected&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;rfl/json.hpp&gt;</span>
 
-<span class="w">    </span><span class="c1">// Indicates to the library that the field is optional.</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">children</span><span class="p">;</span>
+<span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">expected</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+<span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">ok_json</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">ok</span><span class="p">);</span>
+<span class="c1">// -&gt; 42</span>
+
+<span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">expected</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">err</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unexpected</span><span class="p">(</span><span class="s">"Something went wrong."</span><span class="p">);</span>
+<span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">err_json</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">err</span><span class="p">);</span>
+<span class="c1">// -&gt; {"error":"Something went wrong."}</span>
+</code></pre></div>
+<p>Reading works in the reverse direction:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">ok2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">expected</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">ok_json</span><span class="p">).</span><span class="n">value</span><span class="p">();</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">err2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">expected</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">err_json</span><span class="p">).</span><span class="n">value</span><span class="p">();</span>
+
+<span class="c1">// ok2.value() == 42</span>
+<span class="c1">// err2.error() == "Something went wrong."</span>
+</code></pre></div>
+<h2 id="inside-structs-and-containers">Inside structs and containers<a class="headerlink" href="#inside-structs-and-containers" title="Permanent link">&para;</a></h2>
+<p><code>std::expected</code> can be used as a field type and inside containers, just like any other supported type:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">expected</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">age</span><span class="p">;</span>
 <span class="p">};</span>
 
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">bart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Bart"</span><span class="p">};</span>
+<span class="k">const</span><span class="w"> </span><span class="n">Person</span><span class="w"> </span><span class="n">homer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Homer"</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">};</span>
+<span class="k">const</span><span class="w"> </span><span class="n">Person</span><span class="w"> </span><span class="n">maggie</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{.</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Maggie"</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unexpected</span><span class="p">(</span><span class="s">"too young"</span><span class="p">)};</span>
 
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">lisa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Lisa"</span><span class="p">};</span>
+<span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">homer_json</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">homer</span><span class="p">);</span>
+<span class="c1">// -&gt; {"name":"Homer","age":42}</span>
 
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">maggie</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Maggie"</span><span class="p">};</span>
-
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">homer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Homer"</span><span class="p">,</span>
-<span class="w">                          </span><span class="p">.</span><span class="n">children</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Person</span><span class="o">&gt;</span><span class="p">({</span><span class="n">bart</span><span class="p">,</span><span class="w"> </span><span class="n">lisa</span><span class="p">,</span><span class="w"> </span><span class="n">maggie</span><span class="p">})};</span>
-
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">homer</span><span class="p">);</span>
+<span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">maggie_json</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">maggie</span><span class="p">);</span>
+<span class="c1">// -&gt; {"name":"Maggie","age":{"error":"too young"}}</span>
 </code></pre></div>
-<p>Now, the field "children" is missing for Bart, Lisa and Maggie:</p>
-<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"firstName"</span><span class="p">:</span><span class="s2">"Homer"</span><span class="p">,</span><span class="nt">"lastName"</span><span class="p">:</span><span class="s2">"Simpson"</span><span class="p">,</span><span class="nt">"children"</span><span class="p">:[{</span><span class="nt">"firstName"</span><span class="p">:</span><span class="s2">"Bart"</span><span class="p">,</span><span class="nt">"lastName"</span><span class="p">:</span><span class="s2">"Simpson"</span><span class="p">},{</span><span class="nt">"firstName"</span><span class="p">:</span><span class="s2">"Lisa"</span><span class="p">,</span><span class="nt">"lastName"</span><span class="p">:</span><span class="s2">"Simpson"</span><span class="p">},{</span><span class="nt">"firstName"</span><span class="p">:</span><span class="s2">"Maggie"</span><span class="p">,</span><span class="nt">"lastName"</span><span class="p">:</span><span class="s2">"Simpson"</span><span class="p">}]}</span>
+<p>Vectors of <code>std::expected</code> work as well:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">expected</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">ages</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">homer</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Homer"</span><span class="p">,</span>
+<span class="w">           </span><span class="p">.</span><span class="n">ages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">unexpected</span><span class="p">(</span><span class="s">"unknown age"</span><span class="p">)}};</span>
+
+<span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">json</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">homer</span><span class="p">);</span>
+<span class="c1">// -&gt; {"first_name":"Homer","ages":[42,{"error":"unknown age"}]}</span>
 </code></pre></div>
-<p><strong>NOTE</strong>: If you want to explicitly set default values for your fields and/or you want all fields to be optional, please consider using the <code>rfl::DefaultIfMissing</code> processor. You will find more information in the section on processors in this documentation.</p>
+<h2 id="structs-as-value-types">Structs as value types<a class="headerlink" href="#structs-as-value-types" title="Permanent link">&para;</a></h2>
+<p>If <code>T</code> is a struct, the success case is serialized as the struct itself:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">expected</span><span class="o">&lt;</span><span class="n">Person</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">Person</span><span class="p">{.</span><span class="n">first_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Bart"</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">ages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">10</span><span class="p">}};</span>
+
+<span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">json_string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="p">(</span><span class="n">value</span><span class="p">);</span>
+<span class="c1">// -&gt; {"first_name":"Bart","ages":[10]}</span>
+</code></pre></div>
+<p>The error case is still serialized as an object with an <code>error</code> field, so the two alternatives remain unambiguous.</p>
+<h2 id="json-schema">JSON schema<a class="headerlink" href="#json-schema" title="Permanent link">&para;</a></h2>
+<p>Schemata are generated for <code>std::expected</code> as well. The schema of <code>std::expected&lt;int, std::string&gt;</code> looks like this:</p>
+<div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"$schema"</span><span class="p">:</span><span class="s2">"https://json-schema.org/draft/2020-12/schema"</span><span class="p">,</span><span class="nt">"anyOf"</span><span class="p">:[{</span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"integer"</span><span class="p">},{</span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"object"</span><span class="p">,</span><span class="nt">"properties"</span><span class="p">:{</span><span class="nt">"error"</span><span class="p">:{</span><span class="nt">"type"</span><span class="p">:</span><span class="s2">"string"</span><span class="p">}},</span><span class="nt">"required"</span><span class="p">:[</span><span class="s2">"error"</span><span class="p">]}],</span><span class="nt">"$defs"</span><span class="p">:{}}</span>
+</code></pre></div>
+<h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>std::expected&lt;void, E&gt;</code> is not supported.</li>
+<li>Formats that do not support variants (CSV and Parquet) do not support <code>std::expected</code> either, since it is serialized as a variant under the hood.</li>
+</ul>
+<h2 id="relation-to-rflresult">Relation to <code>rfl::Result</code><a class="headerlink" href="#relation-to-rflresult" title="Permanent link">&para;</a></h2>
+<p>reflect-cpp's own result type, <a href="../result/"><code>rfl::Result</code></a>, is what <code>rfl::json::read</code> and <code>rfl::json::write</code> return and operate on. Supporting <code>std::expected</code> is a separate concern: it means that you can use <code>std::expected&lt;T, E&gt;</code> as a <em>data type</em> in your structs, which is what this section is about.</p>
+<p>Note that there is a CMake option <code>REFLECTCPP_USE_STD_EXPECTED</code> that makes <code>rfl::Result&lt;T&gt;</code> an alias for <code>std::expected&lt;T, rfl::Error&gt;</code>. This is a separate feature from the one described in this section, but the two can be combined.</p>
 
 
 

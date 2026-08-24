@@ -18,7 +18,7 @@
         <link rel="prev" href="../result/">
       
       
-        <link rel="next" href="../c_arrays_and_inheritance/">
+        <link rel="next" href="../expected/">
       
       
         
@@ -1610,6 +1610,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../expected/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    std::expected
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../c_arrays_and_inheritance/" class="md-nav__link">
         
   
@@ -2717,9 +2745,10 @@ a numeric type are treated as objects.</p>
 <div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"1"</span><span class="p">:</span><span class="s2">"Homer"</span><span class="p">,</span><span class="nt">"2"</span><span class="p">:</span><span class="s2">"Simpson"</span><span class="p">}</span>
 </code></pre></div>
 <p>All other supported standard containers 
-(other than <code>std::variant</code>, <code>std::optional</code>, <code>std::unique_ptr</code> and <code>std::shared_ptr</code>) 
+(other than <code>std::variant</code>, <code>std::optional</code>, <code>std::unique_ptr</code>, <code>std::shared_ptr</code> and <code>std::expected</code>) 
 will be represented as arrays. Containers for which the <code>value_type</code>
 is a key-value-pair will be represented as arrays of pairs. </p>
+<p><code>std::expected</code> is an exception to this: it is serialized as its value type, or as an object with a single <code>error</code> field. Refer to the <a href="../expected/">std::expected</a> section for details.</p>
 
 
 
