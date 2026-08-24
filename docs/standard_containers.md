@@ -51,6 +51,8 @@ This will also be represented as follows:
 ```
 
 All other supported standard containers 
-(other than `std::variant`, `std::optional`, `std::unique_ptr` and `std::shared_ptr`) 
+(other than `std::variant`, `std::optional`, `std::unique_ptr`, `std::shared_ptr` and `std::expected`) 
 will be represented as arrays. Containers for which the `value_type`
 is a key-value-pair will be represented as arrays of pairs. 
+
+`std::expected` is an exception to this: it is serialized as its value type, or as an object with a single `error` field. Refer to the [std::expected](expected.md) section for details.

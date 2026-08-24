@@ -45,7 +45,8 @@ reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boile
     - [JSON schema](#json-schema)
     - [Enums](#enums)
     - [Algebraic data types](#algebraic-data-types)
-    - [Extra fields](#extra-fields)
+  - [Extra fields](#extra-fields)
+  - [std::expected](#stdexpected)
     - [Reflective programming](#reflective-programming)
     - [Standard Library Integration](#support-for-containers)
   - [The team behind reflect-cpp](#the-team-behind-reflect-cpp)
@@ -509,6 +510,52 @@ This results in the following JSON string:
 {"firstName":"Homer","lastName":"Simpson","age":45,"email":"homer@simpson.com","town":"Springfield"}
 ```
 
+### std::expected
+
+reflect-cpp also supports C++-23's `std::expected`:
+
+```cpp
+#include <expected>
+#include <rfl/json.hpp>
+
+// A success value is serialized like the value itself:
+const std::expected<int, std::string> age = 45;
+const std::string json_string = rfl::json::write(age);
+// -> 45
+
+// An error is serialized as an object with a single "error" field:
+const std::expected<int, std::string> no_age = std::unexpected("unknown age");
+const std::string json_string2 = rfl::json::write(no_age);
+// -> {"error":"unknown age"}
+
+const auto age2 =
+    rfl::json::read<std::expected<int, std::string>>(json_string).value();
+const auto no_age2 =
+    rfl::json::read<std::expected<int, std::string>>(json_string2).value();
+```
+
+`std::expected` can be used anywhere other types can be used, for example as a
+field of a struct or inside a container:
+
+```cpp
+struct Person {
+  std::string first_name;
+  std::vector<std::expected<int, std::string>> ages;
+};
+
+const auto homer =
+    Person{.first_name = "Homer",
+           .ages = {42, std::unexpected("unknown age")}};
+
+const std::string json_string3 = rfl::json::write(homer);
+// -> {"first_name":"Homer","ages":[42,{"error":"unknown age"}]}
+```
+
+`std::expected` requires a standard library that provides the C++-23 feature
+(feature-test macro `__cpp_lib_expected`). Note that `std::expected<void, E>` and
+`std::expected<T, T>` with an identical value and error type are not supported.
+Refer to the [documentation](https://rfl.getml.com/expected) for details.
+
 ### Reflective programming
 
 Beyond serialization and deserialization, reflect-cpp also supports reflective programming in general.
@@ -617,6 +664,7 @@ reflect-cpp supports the following containers from the C++ standard library:
 - `std::atomic`
 - `std::atomic_flag`
 - `std::deque`
+- `std::expected`
 - `std::chrono::duration`
 - `std::filesystem::path`
 - `std::forward_list`
@@ -677,21 +725,6 @@ The following compilers are supported for C++-20:
 The following compilers are supported for C++-26:
 - GCC 16.2 or higher
 
-### Compiling with C++-26 reflection
-
-To compile reflect-cpp using the standard C++ reflection facilities, pass the CMake option
-`REFLECTCPP_USE_CPP26_REFLECTION` together with the compiler flag that activates reflection
-support in your compiler (`-freflection` for GCC, `-freflection-latest` for Clang):
-
-```bash
-cmake -S . -B build -DCMAKE_CXX_STANDARD=26 -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_USE_CPP26_REFLECTION=ON -DCMAKE_CXX_FLAGS="-freflection"
-cmake --build build -j 4
-```
-
-With C++-26 reflection, fixed-size C arrays and inheritance are supported out of the box (no
-`-DREFLECT_CPP_C_ARRAYS_OR_INHERITANCE` flag needed), and there are no range restrictions for
-enums. Refer to the [documentation](https://rfl.getml.com/cpp26_reflection) for details.
-
 ### Using vcpkg
 
 https://vcpkg.io/en/package/reflectcpp
@@ -728,6 +761,21 @@ cmake --build build --config Release -j 4 # MSVC
 ```
 
 For other installation methods, refer to the [documentation](https://rfl.getml.com/docs-readme).
+
+### Compiling with C++-26 reflection
+
+To compile reflect-cpp using the standard C++ reflection facilities, pass the CMake option
+`REFLECTCPP_USE_CPP26_REFLECTION` together with the compiler flag that activates reflection
+support in your compiler (`-freflection` for GCC, `-freflection-latest` for Clang):
+
+```bash
+cmake -S . -B build -DCMAKE_CXX_STANDARD=26 -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_USE_CPP26_REFLECTION=ON -DCMAKE_CXX_FLAGS="-freflection"
+cmake --build build -j 4
+```
+
+With C++-26 reflection, fixed-size C arrays and inheritance are supported out of the box (no
+`-DREFLECT_CPP_C_ARRAYS_OR_INHERITANCE` flag needed), and there are no range restrictions for
+enums. Refer to the [documentation](https://rfl.getml.com/cpp26_reflection) for details.
 
 ## The team behind reflect-cpp
 
