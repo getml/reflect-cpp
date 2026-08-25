@@ -45,8 +45,7 @@ reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boile
     - [JSON schema](#json-schema)
     - [Enums](#enums)
     - [Algebraic data types](#algebraic-data-types)
-  - [Extra fields](#extra-fields)
-  - [std::expected](#stdexpected)
+    - [Extra fields](#extra-fields)
     - [Reflective programming](#reflective-programming)
     - [Standard Library Integration](#support-for-containers)
   - [The team behind reflect-cpp](#the-team-behind-reflect-cpp)
@@ -509,52 +508,6 @@ This results in the following JSON string:
 ```json
 {"firstName":"Homer","lastName":"Simpson","age":45,"email":"homer@simpson.com","town":"Springfield"}
 ```
-
-### std::expected
-
-reflect-cpp also supports C++-23's `std::expected`:
-
-```cpp
-#include <expected>
-#include <rfl/json.hpp>
-
-// A success value is serialized like the value itself:
-const std::expected<int, std::string> age = 45;
-const std::string json_string = rfl::json::write(age);
-// -> 45
-
-// An error is serialized as an object with a single "error" field:
-const std::expected<int, std::string> no_age = std::unexpected("unknown age");
-const std::string json_string2 = rfl::json::write(no_age);
-// -> {"error":"unknown age"}
-
-const auto age2 =
-    rfl::json::read<std::expected<int, std::string>>(json_string).value();
-const auto no_age2 =
-    rfl::json::read<std::expected<int, std::string>>(json_string2).value();
-```
-
-`std::expected` can be used anywhere other types can be used, for example as a
-field of a struct or inside a container:
-
-```cpp
-struct Person {
-  std::string first_name;
-  std::vector<std::expected<int, std::string>> ages;
-};
-
-const auto homer =
-    Person{.first_name = "Homer",
-           .ages = {42, std::unexpected("unknown age")}};
-
-const std::string json_string3 = rfl::json::write(homer);
-// -> {"first_name":"Homer","ages":[42,{"error":"unknown age"}]}
-```
-
-`std::expected` requires a standard library that provides the C++-23 feature
-(feature-test macro `__cpp_lib_expected`). Note that `std::expected<void, E>` and
-`std::expected<T, T>` with an identical value and error type are not supported.
-Refer to the [documentation](https://rfl.getml.com/expected) for details.
 
 ### Reflective programming
 
