@@ -1,4 +1,4 @@
-# Processors 
+# Processors
 
 Processors can be used to apply transformations to struct serialization and deserialization.
 
@@ -16,10 +16,10 @@ const auto homer =
            .last_name = "Simpson",
            .age = 45};
 
-const auto json_string = 
+const auto json_string =
   rfl::json::write<rfl::SnakeCaseToCamelCase>(homer);
 
-const auto homer2 = 
+const auto homer2 =
   rfl::json::read<Person, rfl::SnakeCaseToCamelCase>(json_string).value();
 ```
 
@@ -33,27 +33,28 @@ The resulting JSON string looks like this:
 
 reflect-cpp currently supports the following processors:
 
-- `rfl::AddStructName` 
-- `rfl::AddTagsToVariants` 
-- `rfl::AddNamespacedTagsToVariants` 
-- `rfl::AllowRawPtrs` 
-- `rfl::DefaultIfMissing` 
-- `rfl::NoExtraFields` 
-- `rfl::NoFieldNames` 
-- `rfl::NoOptionals` 
-- `rfl::UnderlyingEnums` 
-- `rfl::SnakeCaseToCamelCase` 
-- `rfl::SnakeCaseToPascalCase` 
+- `rfl::AddStructName`
+- `rfl::AddTagsToVariants`
+- `rfl::AddNamespacedTagsToVariants`
+- `rfl::AllowRawPtrs`
+- `rfl::DefaultIfMissing`
+- `rfl::EnumNamesOnly`
+- `rfl::NoExtraFields`
+- `rfl::NoFieldNames`
+- `rfl::NoOptionals`
+- `rfl::UnderlyingEnums`
+- `rfl::SnakeCaseToCamelCase`
+- `rfl::SnakeCaseToPascalCase`
 
-### `rfl::AddStructName` 
+### `rfl::AddStructName`
 
 It is also possible to add the struct name as an additional field, like this:
 
 ```cpp
-const auto json_string = 
+const auto json_string =
   rfl::json::write<rfl::AddStructName<"type">>(homer);
 
-const auto homer2 = 
+const auto homer2 =
   rfl::json::read<Person, rfl::AddStructName<"type">>(json_string).value();
 ```
 
@@ -63,7 +64,7 @@ The resulting JSON string looks like this:
 {"type":"Person","first_name":"Homer","last_name":"Simpson","age":45}
 ```
 
-### `rfl::AddTagsToVariants` 
+### `rfl::AddTagsToVariants`
 
 This processor automatically adds tags to variants. Consider the following example:
 
@@ -150,7 +151,7 @@ const auto msgs = std::vector<Messages>{
   Error::Message{.error = "failure", .error_id = 404}
 };
 
-// This would cause problems with rfl::AddTagsToVariants because both 
+// This would cause problems with rfl::AddTagsToVariants because both
 // structs have the same name "Message"
 
 // But this works perfectly:
@@ -203,12 +204,12 @@ This generates:
 
 ### `rfl::AllowRawPtrs`
 
-By default, reflect-cpp does not allow *reading into* raw pointers, `std::string_view` or `std::span`. 
-(*Writing from* raw pointers is never a problem.) This is because reading into raw pointers 
+By default, reflect-cpp does not allow *reading into* raw pointers, `std::string_view` or `std::span`.
+(*Writing from* raw pointers is never a problem.) This is because reading into raw pointers
 means that the library will allocate memory that the user then has to manually delete. This can lead to misunderstandings and memory leaks.
 
-You might want to consider using some alternatives, such as `std::unique_ptr`, `rfl::Box`, 
-`std::shared_ptr`, `rfl::Ref` or `std::optional`. 
+You might want to consider using some alternatives, such as `std::unique_ptr`, `rfl::Box`,
+`std::shared_ptr`, `rfl::Ref` or `std::optional`.
 But if you absolutely have to use raw pointers, you can pass `rfl::AllowRawPtrs` to `read`:
 
 ```cpp
@@ -253,7 +254,7 @@ if(!person.span.empty()) {
 
 The `rfl::DefaultIfMissing` processor is only relevant for reading data. For writing data, it will make no difference.
 
-Usually, when fields are missing in the input data, this will lead to an error 
+Usually, when fields are missing in the input data, this will lead to an error
 (unless they are optional fields).
 But if you pass the `rfl::DefaultIfMissing` processor, then missing fields will be
 replaced by their default value.
@@ -289,13 +290,44 @@ have gotten had you read the following JSON string:
 Because you have not passed a default value to town, the default value
 of the type is used instead.
 
+### `rfl::EnumNamesOnly`
+
+By default, when reading an enum from a string, numeric values are accepted
+in addition to the declared enumerator names, even when they do not
+correspond to a declared enumerator. For instance, given this enum:
+
+```cpp
+enum class Color { red = 1, green = 2, blue = 3 };
+```
+
+reading `{"color":"2"}` will produce `Color::green`, and even
+`{"color":"4"}` will succeed and produce the cast value `4`, although `4`
+is not a declared enumerator.
+
+If you want to reject numeric values and only accept the declared
+enumerator names, pass the `rfl::EnumNamesOnly` processor to `read`:
+
+```cpp
+const auto circle =
+  rfl::json::read<Circle, rfl::EnumNamesOnly>(json_str);
+```
+
+Now, `{"color":"2"}` will lead to an error:
+
+```
+Failed to parse field 'color': Invalid enum value: '2'. Must be one of [red, green, blue].
+```
+
+This processor only affects reading. Enum values that cannot be matched to
+a declared name are still written as their integer representation.
+
 ### `rfl::NoExtraFields`
 
-When reading an object and the object contains a field that cannot be 
+When reading an object and the object contains a field that cannot be
 matched to any of the fields in the struct, that field is simply ignored.
 
 However, when `rfl::NoExtraFields` is added to `read`, then such extra fields
-will lead to an error. 
+will lead to an error.
 
 This can be overriden by adding `rfl::ExtraFields` to the struct.
 
@@ -312,7 +344,7 @@ struct Person {
 {"first_name":"Homer","last_name":"Simpson","extra_field":0}
 ```
 
-If you call `rfl::json::read<Person>(json_string)`, then `extra_field` will 
+If you call `rfl::json::read<Person>(json_string)`, then `extra_field` will
 simply be ignored.
 
 But if you call `rfl::json::read<Person, rfl::NoExtraFields>(json_string)`,
@@ -333,13 +365,13 @@ will not fail, because `extra_field` would be included in `extras`.
 
 ### `rfl::NoFieldNames`
 
-We can also remove the field names altogether: 
+We can also remove the field names altogether:
 
 ```cpp
-const auto json_string = 
+const auto json_string =
   rfl::json::write<rfl::NoFieldNames>(homer);
 
-const auto homer2 = 
+const auto homer2 =
   rfl::json::read<Person, rfl::NoFieldNames>(json_string).value();
 ```
 
@@ -351,19 +383,19 @@ The resulting JSON string looks like this:
 
 This is particularly relevant for binary formats, which do not emphasize readability,
 like msgpack or flexbuffers. Removing the field names can reduce the size of the
-resulting bytestrings and significantly speed up read and write time, 
+resulting bytestrings and significantly speed up read and write time,
 depending on the dataset.
 
 However, it makes it more difficult to maintain backwards compatability.
 
 Note that `rfl::NoFieldNames` is not supported for BSON, TOML, XML, or YAML, due
-to limitations of these formats. 
+to limitations of these formats.
 
 ### `rfl::NoOptionals`
 
 As we have seen in the section on optional fields, when a `std::optional` is
 `std::nullopt`, it is usually not written at all. But if you want them to be explicitly
-written as `null`, you can use this processor. The same thing applies to `std::shared_ptr` and 
+written as `null`, you can use this processor. The same thing applies to `std::shared_ptr` and
 `std::unique_ptr`.
 
 ```cpp
@@ -384,7 +416,7 @@ The resulting JSON string looks like this:
 {"first_name":"Homer","last_name":"Simpson","town":null}
 ```
 
-By default, `rfl::json::read` will accept both `"town":null` and just 
+By default, `rfl::json::read` will accept both `"town":null` and just
 leaving out the field `town`. However, if you want to require the field
 `town` to be included, you can add `rfl::NoOptionals` to `read`:
 
@@ -424,10 +456,10 @@ Please refer to the example above.
 If you want `PascalCase` instead of `camelCase`, you can use the appropriate processor:
 
 ```cpp
-const auto json_string = 
+const auto json_string =
   rfl::json::write<rfl::SnakeCaseToPascalCase>(homer);
 
-const auto homer2 = 
+const auto homer2 =
   rfl::json::read<Person, rfl::SnakeCaseToPascalCase>(json_string).value();
 ```
 
@@ -442,10 +474,10 @@ The resulting JSON string looks like this:
 You can combine several processors:
 
 ```cpp
-const auto json_string = 
+const auto json_string =
   rfl::json::write<rfl::SnakeCaseToCamelCase, rfl::AddStructName<"type">>(homer);
 
-const auto homer2 = 
+const auto homer2 =
   rfl::json::read<Person, rfl::SnakeCaseToCamelCase, rfl::AddStructName<"type">>(json_string).value();
 ```
 

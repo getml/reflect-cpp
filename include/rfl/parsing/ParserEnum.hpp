@@ -7,6 +7,7 @@
 #include "../Result.hpp"
 #include "../config.hpp"
 #include "../enums.hpp"
+#include "../internal/enum_names_only_v.hpp"
 #include "../internal/enums/is_flag_enum.hpp"
 #include "../internal/enums/is_scoped_enum.hpp"
 #include "../internal/has_reflector.hpp"
@@ -60,7 +61,8 @@ struct ParserEnum {
           .transform([](const auto _val) { return static_cast<T>(_val); });
     } else {
       return _r.template to_basic_type<std::string>(_var).and_then(
-          rfl::string_to_enum<T>);
+          rfl::string_to_enum<T, internal::enum_names_only_v<
+              ProcessorsType>>);
     }
   }
 
