@@ -164,6 +164,22 @@ This will be represented as follows:
 
 This works, because 16 + 256 + 512 + 1024 + 8192 = 10000. Flag enums are *always* represented in terms of 2^N-numbers.
 
+## Reading numeric values as enums
+
+When reading, enum values can also be given as numbers. For instance, given this enum:
+
+```cpp
+enum class Color { red = 1, green = 2, blue = 3 };
+```
+
+reading `{"color":"2"}` will produce `Color::green`.
+
+By default, this also works when the number does not correspond to a
+declared enumerator (for instance, `{"color":"4"}` will produce the cast
+value `4`). If you want to reject numeric values and only accept the
+declared enumerator names, pass the
+[`rfl::EnumNamesOnly`](concepts/processors.md) processor to `read`.
+
 ## General-purpose enumeration utilities
 
 reflect-cpp also allows you to directly convert between enumerator values and strings:

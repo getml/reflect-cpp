@@ -81,28 +81,44 @@ std::string enum_to_string(const EnumType _enum) {
 }
 
 // Converts a string to a value of the given enum type.
-template <class EnumType>
+//
+// By default, numeric values are accepted in addition to the declared
+// enumerator names, even when they do not correspond to a declared
+// enumerator (for instance, reading "4" into an enum with values 1, 2 and 3
+// will produce the cast value 4). Pass enum_names_only = true (or use the
+// EnumNamesOnly processor with a parser) to accept only the declared
+// enumerator names instead.
+template <class EnumType, bool enum_names_only = false>
 Result<EnumType> string_to_enum(const std::string& _str) {
+  const auto make_error_msg = [&](const auto& name) {
+    std::string msg = "Invalid enum value: '";
+    msg += name;
+    msg += "'. Must be one of [";
+    const char* sep = "";
+    for (const auto& p : get_enumerator_array<EnumType>()) {
+      msg += sep;
+      msg += p.first;
+      sep = ", ";
+    }
+    msg += "].";
+    return error(msg);
+  };
+
   const auto cast_numbers_or_names =
-      [](const std::string& name) -> Result<EnumType> {
+      [&](const std::string& name) -> Result<EnumType> {
     const auto r = internal::enums::from_string<EnumType>(name);
     if (r) {
       return *r;
     }
-    try {
-      return static_cast<EnumType>(std::stoi(name));
-    } catch (std::exception& exp) {
-      std::string msg = "Invalid enum value: '";
-      msg += name;
-      msg += "'. Must be one of [";
-      const char* sep = "";
-      for (const auto& p : get_enumerator_array<EnumType>()) {
-        msg += sep;
-        msg += p.first;
-        sep = ", ";
+    if constexpr (enum_names_only) {
+      return make_error_msg(name);
+    } else {
+      try {
+        const auto val = std::stoi(name);
+        return static_cast<EnumType>(val);
+      } catch (std::exception& exp) {
+        return make_error_msg(name);
       }
-      msg += "].";
-      return error(msg);
     }
   };
 

@@ -21,6 +21,7 @@
 #include "rfl/DefaultIfMissing.hpp"
 #include "rfl/DefaultVal.hpp"
 #include "rfl/Description.hpp"
+#include "rfl/EnumNamesOnly.hpp"
 #include "rfl/ExtraFields.hpp"
 #include "rfl/Field.hpp"
 #include "rfl/Flatten.hpp"
