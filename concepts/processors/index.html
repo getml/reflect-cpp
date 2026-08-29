@@ -1460,6 +1460,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#rflenumnamesonly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rfl::EnumNamesOnly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#rflnoextrafields" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2980,6 +2991,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#rflenumnamesonly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rfl::EnumNamesOnly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#rflnoextrafields" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3172,10 +3194,10 @@
 <span class="w">           </span><span class="p">.</span><span class="n">last_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Simpson"</span><span class="p">,</span>
 <span class="w">           </span><span class="p">.</span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">45</span><span class="p">};</span>
 
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_string</span><span class="w"> </span><span class="o">=</span>
 <span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">SnakeCaseToCamelCase</span><span class="o">&gt;</span><span class="p">(</span><span class="n">homer</span><span class="p">);</span>
 
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">homer2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">homer2</span><span class="w"> </span><span class="o">=</span>
 <span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">Person</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">SnakeCaseToCamelCase</span><span class="o">&gt;</span><span class="p">(</span><span class="n">json_string</span><span class="p">).</span><span class="n">value</span><span class="p">();</span>
 </code></pre></div>
 <p>The resulting JSON string looks like this:</p>
@@ -3184,24 +3206,25 @@
 <h2 id="supported-processors">Supported processors<a class="headerlink" href="#supported-processors" title="Permanent link">&para;</a></h2>
 <p>reflect-cpp currently supports the following processors:</p>
 <ul>
-<li><code>rfl::AddStructName</code> </li>
-<li><code>rfl::AddTagsToVariants</code> </li>
-<li><code>rfl::AddNamespacedTagsToVariants</code> </li>
-<li><code>rfl::AllowRawPtrs</code> </li>
-<li><code>rfl::DefaultIfMissing</code> </li>
-<li><code>rfl::NoExtraFields</code> </li>
-<li><code>rfl::NoFieldNames</code> </li>
-<li><code>rfl::NoOptionals</code> </li>
-<li><code>rfl::UnderlyingEnums</code> </li>
-<li><code>rfl::SnakeCaseToCamelCase</code> </li>
-<li><code>rfl::SnakeCaseToPascalCase</code> </li>
+<li><code>rfl::AddStructName</code></li>
+<li><code>rfl::AddTagsToVariants</code></li>
+<li><code>rfl::AddNamespacedTagsToVariants</code></li>
+<li><code>rfl::AllowRawPtrs</code></li>
+<li><code>rfl::DefaultIfMissing</code></li>
+<li><code>rfl::EnumNamesOnly</code></li>
+<li><code>rfl::NoExtraFields</code></li>
+<li><code>rfl::NoFieldNames</code></li>
+<li><code>rfl::NoOptionals</code></li>
+<li><code>rfl::UnderlyingEnums</code></li>
+<li><code>rfl::SnakeCaseToCamelCase</code></li>
+<li><code>rfl::SnakeCaseToPascalCase</code></li>
 </ul>
 <h3 id="rfladdstructname"><code>rfl::AddStructName</code><a class="headerlink" href="#rfladdstructname" title="Permanent link">&para;</a></h3>
 <p>It is also possible to add the struct name as an additional field, like this:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_string</span><span class="w"> </span><span class="o">=</span>
 <span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">AddStructName</span><span class="o">&lt;</span><span class="s">"type"</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">homer</span><span class="p">);</span>
 
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">homer2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">homer2</span><span class="w"> </span><span class="o">=</span>
 <span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">Person</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">AddStructName</span><span class="o">&lt;</span><span class="s">"type"</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">json_string</span><span class="p">).</span><span class="n">value</span><span class="p">();</span>
 </code></pre></div>
 <p>The resulting JSON string looks like this:</p>
@@ -3272,7 +3295,7 @@ Please refer to the relevant sections of the documentation.</p>
 <span class="w">  </span><span class="n">Error</span><span class="o">::</span><span class="n">Message</span><span class="p">{.</span><span class="n">error</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"failure"</span><span class="p">,</span><span class="w"> </span><span class="p">.</span><span class="n">error_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">404</span><span class="p">}</span>
 <span class="p">};</span>
 
-<span class="c1">// This would cause problems with rfl::AddTagsToVariants because both </span>
+<span class="c1">// This would cause problems with rfl::AddTagsToVariants because both</span>
 <span class="c1">// structs have the same name "Message"</span>
 
 <span class="c1">// But this works perfectly:</span>
@@ -3313,11 +3336,11 @@ Please refer to the relevant sections of the documentation.</p>
 <li>Custom tags (using <code>Tag = rfl::Literal&lt;"custom_name"&gt;</code>) work with both processors and are not affected by the namespace handling</li>
 </ul>
 <h3 id="rflallowrawptrs"><code>rfl::AllowRawPtrs</code><a class="headerlink" href="#rflallowrawptrs" title="Permanent link">&para;</a></h3>
-<p>By default, reflect-cpp does not allow <em>reading into</em> raw pointers, <code>std::string_view</code> or <code>std::span</code>. 
-(<em>Writing from</em> raw pointers is never a problem.) This is because reading into raw pointers 
+<p>By default, reflect-cpp does not allow <em>reading into</em> raw pointers, <code>std::string_view</code> or <code>std::span</code>.
+(<em>Writing from</em> raw pointers is never a problem.) This is because reading into raw pointers
 means that the library will allocate memory that the user then has to manually delete. This can lead to misunderstandings and memory leaks.</p>
-<p>You might want to consider using some alternatives, such as <code>std::unique_ptr</code>, <code>rfl::Box</code>, 
-<code>std::shared_ptr</code>, <code>rfl::Ref</code> or <code>std::optional</code>. 
+<p>You might want to consider using some alternatives, such as <code>std::unique_ptr</code>, <code>rfl::Box</code>,
+<code>std::shared_ptr</code>, <code>rfl::Ref</code> or <code>std::optional</code>.
 But if you absolutely have to use raw pointers, you can pass <code>rfl::AllowRawPtrs</code> to <code>read</code>:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">Rename</span><span class="o">&lt;</span><span class="s">"firstName"</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
@@ -3351,7 +3374,7 @@ to clean up. Otherwise, there <strong>WILL</strong> be a memory leak.</p>
 </code></pre></div>
 <h3 id="rfldefaultifmissing"><code>rfl::DefaultIfMissing</code><a class="headerlink" href="#rfldefaultifmissing" title="Permanent link">&para;</a></h3>
 <p>The <code>rfl::DefaultIfMissing</code> processor is only relevant for reading data. For writing data, it will make no difference.</p>
-<p>Usually, when fields are missing in the input data, this will lead to an error 
+<p>Usually, when fields are missing in the input data, this will lead to an error
 (unless they are optional fields).
 But if you pass the <code>rfl::DefaultIfMissing</code> processor, then missing fields will be
 replaced by their default value.</p>
@@ -3374,11 +3397,30 @@ have gotten had you read the following JSON string:</p>
 <p><code>last_name</code> and <code>town</code> have been replaced by the default values.
 Because you have not passed a default value to town, the default value
 of the type is used instead.</p>
+<h3 id="rflenumnamesonly"><code>rfl::EnumNamesOnly</code><a class="headerlink" href="#rflenumnamesonly" title="Permanent link">&para;</a></h3>
+<p>By default, when reading an enum from a string, numeric values are accepted
+in addition to the declared enumerator names, even when they do not
+correspond to a declared enumerator. For instance, given this enum:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Color</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">red</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">green</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">blue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">};</span>
+</code></pre></div>
+<p>reading <code>{"color":"2"}</code> will produce <code>Color::green</code>, and even
+<code>{"color":"4"}</code> will succeed and produce the cast value <code>4</code>, although <code>4</code>
+is not a declared enumerator.</p>
+<p>If you want to reject numeric values and only accept the declared
+enumerator names, pass the <code>rfl::EnumNamesOnly</code> processor to <code>read</code>:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">circle</span><span class="w"> </span><span class="o">=</span>
+<span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">Circle</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">EnumNamesOnly</span><span class="o">&gt;</span><span class="p">(</span><span class="n">json_str</span><span class="p">);</span>
+</code></pre></div>
+<p>Now, <code>{"color":"2"}</code> will lead to an error:</p>
+<div class="language-text highlight"><pre><span></span><code>Failed to parse field 'color': Invalid enum value: '2'. Must be one of [red, green, blue].
+</code></pre></div>
+<p>This processor only affects reading. Enum values that cannot be matched to
+a declared name are still written as their integer representation.</p>
 <h3 id="rflnoextrafields"><code>rfl::NoExtraFields</code><a class="headerlink" href="#rflnoextrafields" title="Permanent link">&para;</a></h3>
-<p>When reading an object and the object contains a field that cannot be 
+<p>When reading an object and the object contains a field that cannot be
 matched to any of the fields in the struct, that field is simply ignored.</p>
 <p>However, when <code>rfl::NoExtraFields</code> is added to <code>read</code>, then such extra fields
-will lead to an error. </p>
+will lead to an error.</p>
 <p>This can be overriden by adding <code>rfl::ExtraFields</code> to the struct.</p>
 <p>Example:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
@@ -3388,7 +3430,7 @@ will lead to an error. </p>
 </code></pre></div>
 <div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"first_name"</span><span class="p">:</span><span class="s2">"Homer"</span><span class="p">,</span><span class="nt">"last_name"</span><span class="p">:</span><span class="s2">"Simpson"</span><span class="p">,</span><span class="nt">"extra_field"</span><span class="p">:</span><span class="mi">0</span><span class="p">}</span>
 </code></pre></div>
-<p>If you call <code>rfl::json::read&lt;Person&gt;(json_string)</code>, then <code>extra_field</code> will 
+<p>If you call <code>rfl::json::read&lt;Person&gt;(json_string)</code>, then <code>extra_field</code> will
 simply be ignored.</p>
 <p>But if you call <code>rfl::json::read&lt;Person, rfl::NoExtraFields&gt;(json_string)</code>,
 you will get an error.</p>
@@ -3402,11 +3444,11 @@ you will get an error.</p>
 <p>In this case, <code>rfl::json::read&lt;Person, rfl::NoExtraFields&gt;(json_string)</code>
 will not fail, because <code>extra_field</code> would be included in <code>extras</code>.</p>
 <h3 id="rflnofieldnames"><code>rfl::NoFieldNames</code><a class="headerlink" href="#rflnofieldnames" title="Permanent link">&para;</a></h3>
-<p>We can also remove the field names altogether: </p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<p>We can also remove the field names altogether:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_string</span><span class="w"> </span><span class="o">=</span>
 <span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">NoFieldNames</span><span class="o">&gt;</span><span class="p">(</span><span class="n">homer</span><span class="p">);</span>
 
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">homer2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">homer2</span><span class="w"> </span><span class="o">=</span>
 <span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">Person</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">NoFieldNames</span><span class="o">&gt;</span><span class="p">(</span><span class="n">json_string</span><span class="p">).</span><span class="n">value</span><span class="p">();</span>
 </code></pre></div>
 <p>The resulting JSON string looks like this:</p>
@@ -3414,15 +3456,15 @@ will not fail, because <code>extra_field</code> would be included in <code>extra
 </code></pre></div>
 <p>This is particularly relevant for binary formats, which do not emphasize readability,
 like msgpack or flexbuffers. Removing the field names can reduce the size of the
-resulting bytestrings and significantly speed up read and write time, 
+resulting bytestrings and significantly speed up read and write time,
 depending on the dataset.</p>
 <p>However, it makes it more difficult to maintain backwards compatability.</p>
 <p>Note that <code>rfl::NoFieldNames</code> is not supported for BSON, TOML, XML, or YAML, due
-to limitations of these formats. </p>
+to limitations of these formats.</p>
 <h3 id="rflnooptionals"><code>rfl::NoOptionals</code><a class="headerlink" href="#rflnooptionals" title="Permanent link">&para;</a></h3>
 <p>As we have seen in the section on optional fields, when a <code>std::optional</code> is
 <code>std::nullopt</code>, it is usually not written at all. But if you want them to be explicitly
-written as <code>null</code>, you can use this processor. The same thing applies to <code>std::shared_ptr</code> and 
+written as <code>null</code>, you can use this processor. The same thing applies to <code>std::shared_ptr</code> and
 <code>std::unique_ptr</code>.</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">struct</span><span class="w"> </span><span class="nc">Person</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">first_name</span><span class="p">;</span>
@@ -3437,7 +3479,7 @@ written as <code>null</code>, you can use this processor. The same thing applies
 <p>The resulting JSON string looks like this:</p>
 <div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"first_name"</span><span class="p">:</span><span class="s2">"Homer"</span><span class="p">,</span><span class="nt">"last_name"</span><span class="p">:</span><span class="s2">"Simpson"</span><span class="p">,</span><span class="nt">"town"</span><span class="p">:</span><span class="kc">null</span><span class="p">}</span>
 </code></pre></div>
-<p>By default, <code>rfl::json::read</code> will accept both <code>"town":null</code> and just 
+<p>By default, <code>rfl::json::read</code> will accept both <code>"town":null</code> and just
 leaving out the field <code>town</code>. However, if you want to require the field
 <code>town</code> to be included, you can add <code>rfl::NoOptionals</code> to <code>read</code>:</p>
 <div class="language-text highlight"><pre><span></span><code>rfl::json::read&lt;Person, rfl::NoOptionals&gt;(json_string);
@@ -3462,10 +3504,10 @@ leaving out the field <code>town</code>. However, if you want to require the fie
 <p>Please refer to the example above.</p>
 <h3 id="rflsnakecasetopascalcase"><code>rfl::SnakeCaseToPascalCase</code><a class="headerlink" href="#rflsnakecasetopascalcase" title="Permanent link">&para;</a></h3>
 <p>If you want <code>PascalCase</code> instead of <code>camelCase</code>, you can use the appropriate processor:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_string</span><span class="w"> </span><span class="o">=</span>
 <span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">SnakeCaseToPascalCase</span><span class="o">&gt;</span><span class="p">(</span><span class="n">homer</span><span class="p">);</span>
 
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">homer2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">homer2</span><span class="w"> </span><span class="o">=</span>
 <span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">Person</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">SnakeCaseToPascalCase</span><span class="o">&gt;</span><span class="p">(</span><span class="n">json_string</span><span class="p">).</span><span class="n">value</span><span class="p">();</span>
 </code></pre></div>
 <p>The resulting JSON string looks like this:</p>
@@ -3473,10 +3515,10 @@ leaving out the field <code>town</code>. However, if you want to require the fie
 </code></pre></div>
 <h2 id="combining-several-processors">Combining several processors<a class="headerlink" href="#combining-several-processors" title="Permanent link">&para;</a></h2>
 <p>You can combine several processors:</p>
-<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_string</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">json_string</span><span class="w"> </span><span class="o">=</span>
 <span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">write</span><span class="o">&lt;</span><span class="n">rfl</span><span class="o">::</span><span class="n">SnakeCaseToCamelCase</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">AddStructName</span><span class="o">&lt;</span><span class="s">"type"</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">homer</span><span class="p">);</span>
 
-<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">homer2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">homer2</span><span class="w"> </span><span class="o">=</span>
 <span class="w">  </span><span class="n">rfl</span><span class="o">::</span><span class="n">json</span><span class="o">::</span><span class="n">read</span><span class="o">&lt;</span><span class="n">Person</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">SnakeCaseToCamelCase</span><span class="p">,</span><span class="w"> </span><span class="n">rfl</span><span class="o">::</span><span class="n">AddStructName</span><span class="o">&lt;</span><span class="s">"type"</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">json_string</span><span class="p">).</span><span class="n">value</span><span class="p">();</span>
 </code></pre></div>
 <p>The resulting JSON string looks like this:</p>

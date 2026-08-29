@@ -1471,6 +1471,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#reading-numeric-values-as-enums" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading numeric values as enums
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#general-purpose-enumeration-utilities" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2752,6 +2763,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#reading-numeric-values-as-enums" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading numeric values as enums
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#general-purpose-enumeration-utilities" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2972,6 +2994,16 @@ Other colors are ok as well, if they are expressed as combinations of the 2^N-co
 <div class="language-json highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"radius"</span><span class="p">:</span><span class="mf">2.0</span><span class="p">,</span><span class="nt">"color"</span><span class="p">:</span><span class="s2">"16|red|green|blue|8192"</span><span class="p">}</span>
 </code></pre></div>
 <p>This works, because 16 + 256 + 512 + 1024 + 8192 = 10000. Flag enums are <em>always</em> represented in terms of 2^N-numbers.</p>
+<h2 id="reading-numeric-values-as-enums">Reading numeric values as enums<a class="headerlink" href="#reading-numeric-values-as-enums" title="Permanent link">&para;</a></h2>
+<p>When reading, enum values can also be given as numbers. For instance, given this enum:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Color</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">red</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">green</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">blue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">};</span>
+</code></pre></div>
+<p>reading <code>{"color":"2"}</code> will produce <code>Color::green</code>.</p>
+<p>By default, this also works when the number does not correspond to a
+declared enumerator (for instance, <code>{"color":"4"}</code> will produce the cast
+value <code>4</code>). If you want to reject numeric values and only accept the
+declared enumerator names, pass the
+<a href="../concepts/processors/"><code>rfl::EnumNamesOnly</code></a> processor to <code>read</code>.</p>
 <h2 id="general-purpose-enumeration-utilities">General-purpose enumeration utilities<a class="headerlink" href="#general-purpose-enumeration-utilities" title="Permanent link">&para;</a></h2>
 <p>reflect-cpp also allows you to directly convert between enumerator values and strings:</p>
 <div class="language-cpp highlight"><pre><span></span><code><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Color</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">red</span><span class="p">,</span><span class="w"> </span><span class="n">green</span><span class="p">,</span><span class="w"> </span><span class="n">blue</span><span class="w"> </span><span class="p">};</span>
