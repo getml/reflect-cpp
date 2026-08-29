@@ -64,6 +64,8 @@
 !.github/**/*.yml
 !.github/**/*.yaml
 !benchmarks/**/*.json
+!docs/**/*.yaml
+!docs/**/*.mod
 
 # clangd
 compile_flags.txt
@@ -95,6 +97,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+docs/public/
+*.lock
 
 # Docs
 site/

@@ -1,0 +1,50 @@
+# Hugo configuration file
+title: reflect-cpp
+
+# import hextra as module
+module:
+  imports:
+    - path: github.com/imfing/hextra
+
+markup:
+  # allow raw html
+  goldmark:
+    renderer:
+      unsafe: true
+
+  # enable hextra syntax highlight
+  highlight:
+    noClasses: false
+
+menu:
+  main:
+    - name: Main Page
+      pageRef: /
+      weight: 1
+    - name: Supported Formats
+      pageRef: /supported_formats
+      weight: 2
+    - name: C++-26 reflection
+      pageRef: /cpp26_reflection
+      weight: 3
+    - name: Contributing
+      pageRef: /contributing
+      weight: 4
+    - name: Search
+      weight: 5
+      params:
+        type: search
+    - name: GitHub
+      weight: 6
+      url: "https://github.com/getml/reflect-cpp/"
+      params:
+        icon: github
+
+params:
+  navbar:
+    displayTitle: true
+    displayLogo: false
+
+  footer:
+    displayCopyright: false
+    displayPoweredBy: true
