@@ -72,7 +72,7 @@ std::string enum_to_string(const EnumType _enum) {
       val >>= 1;
     }
     if (flags.empty()) {
-      return "0";
+      return internal::enums::to_string(static_cast<EnumType>(0));
     }
     return internal::strings::join("|", flags);
   } else {
