@@ -64,6 +64,7 @@
 !.github/**/*.yml
 !.github/**/*.yaml
 !benchmarks/**/*.json
+!docs/**/*.yaml
 
 # clangd
 compile_flags.txt
