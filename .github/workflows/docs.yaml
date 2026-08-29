@@ -1,9 +1,8 @@
-name: Deploy Hugo site to Pages
+name: Deploy documentation to Github Pages
 
-on: [ push ]
-#on:
-#  push:
-#    branches: ["main"]
+on:
+  push:
+    branches: ["main"]
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
