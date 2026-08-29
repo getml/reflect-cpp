@@ -177,7 +177,7 @@ By default, this also works when the number does not correspond to a
 declared enumerator (for instance, `{"color":"4"}` will produce the cast
 value `4`). If you want to reject numeric values and only accept the
 declared enumerator names, pass the
-[`rfl::EnumNamesOnly`](concepts/processors.md) processor to `read`.
+[`rfl::EnumNamesOnly`](../concepts/processors) processor to `read`.
 
 ## General-purpose enumeration utilities
 

@@ -63,7 +63,7 @@ to all translation units that include reflect-cpp.
 In C++-20/23 mode, fixed-size C arrays and inheritance are only supported when you pass
 the flag `-DREFLECT_CPP_C_ARRAYS_OR_INHERITANCE`, and inheritance only works when all of
 the fields are inside the same struct. Refer to
-[C arrays and inheritance](c_arrays_and_inheritance.md) for details.
+*[C arrays and inheritance](../c_arrays_and_inheritance) for details.
 
 In C++-26 mode, neither restriction applies:
 
@@ -98,7 +98,7 @@ This results in the following JSON string:
 
 In C++-20/23 mode, enum values must be in the range `[RFL_ENUM_RANGE_MIN,
 RFL_ENUM_RANGE_MAX]`, where the default range is `[-256, 256]`. Refer to
-[Enums](enums.md) for details.
+*[Enums](../enums) for details.
 
 In C++-26 mode, the enumerators are read directly from the compiler, so there is no
 restriction on the range of enum values, and `RFL_ENUM_RANGE_MIN` and `RFL_ENUM_RANGE_MAX`

@@ -2,6 +2,16 @@
 
 reflect-cpp provides a unified reflection-based interface across different serialization formats. They are listed below:
 
+## Comparing formats
+
+When choosing a format for your use case, consider the following factors:
+
+1. **Readability**: JSON, YAML, TOML, and CSV are human-readable. Binary formats (BSON, CBOR, UBJSON, msgpack, Avro, Cap'n Proto, yas, etc.) are not.
+2. **Performance**: For raw speed, yas, msgpack, and flexbuffers are typically the fastest. Note that due to a highly efficient implementation, JSON is a lot faster than you might think.
+3. **Backwards compatibility**: Schemaless formats (JSON, YAML, TOML, BSON, CBOR, UBJSON, msgpack, Flexbuffers) tolerate structural changes better than schemaful formats.
+4. **Data structure**: Nested, hierarchical data works best with JSON, YAML, or XML. Flat, tabular data works best with CSV or Parquet.
+5. **External dependencies**: Some formats require linking to external libraries (Avro, Cap'n Proto, CBOR, msgpack, YAML, TOML, XML, BSON, Boost.Serialization, Cereal, Flexbuffers). JSON and environment variables have no external dependencies.
+
 ## Textual formats
 
 Human-readable formats for configuration, data exchange, and legacy integration.
