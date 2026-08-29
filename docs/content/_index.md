@@ -69,4 +69,11 @@
   {{< card link="backwards_compatability" title="Maintaining backwards compatibility" icon="book-open" subtitle="Instructions for ensuring backwards-compatible APIs.">}}
   {{< card link="benchmarks" title="Benchmarks" icon="book-open" subtitle="Extensive benchmarks of popular serialization libraries.">}}
 {{< /cards >}}
-<br>
+
+## Contributing
+
+{{< cards >}}
+  {{< card link="contributing" title="How to contribute" icon="book-open" subtitle="How to contribute to reflect-cpp.">}}
+  {{< card link="build_docs" title="Build the documentation" icon="book-open" subtitle="How to build the documentation locally.">}}
+{{< /cards >}}
+

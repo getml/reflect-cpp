@@ -1,10 +1,4 @@
----
-hide:
-    - navigation
----
-
 # How to contribute
-
 
 ## Setup
 
@@ -22,13 +16,15 @@ over
 ```
 For further details and reasoning, please refer to [#30](https://github.com/getml/reflect-cpp/issues/30).
 
+Headers should be self-contained. This will be checked by the CI.
+
 ## Compiling and running the tests
 
 reflect-cpp uses vcpkg for dependency management, including
 gtest, which is required for the tests.
 
 ```bash
-# bootstrap vcpkg if you haven't done so already 
+# bootstrap vcpkg if you haven't done so already
 git submodule update --init
 ./vcpkg/bootstrap-vcpkg.sh # Linux, macOS
 ./vcpkg/bootstrap-vcpkg.bat # Windows
@@ -56,7 +52,7 @@ To run the tests, do the following:
 To compile the tests with serialization formats other than JSON, do the following:
 
 ```bash
-cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_BSON=ON -DREFLECTCPP_CBOR=ON -DREFLECTCPP_FLEXBUFFERS=ON -DREFLECTCPP_MSGPACK=ON -DREFLECTCPP_XML=ON -DREFLECTCPP_TOML=ON -DREFLECTCPP_UBJSON=ON -DREFLECTCPP_YAML=ON -DCMAKE_BUILD_TYPE=Release
+cmake -S . -B build -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
 ```
@@ -67,10 +63,7 @@ To run the tests, do the following:
 ./build/tests/bson/reflect-cpp-bson-tests
 ./build/tests/cbor/reflect-cpp-cbor-tests
 ./build/tests/flexbuffers/reflect-cpp-flexbuffers-tests
-./build/tests/msgpack/reflect-cpp-msgpack-tests
-./build/tests/json/reflect-cpp-json-tests
-./build/tests/toml/reflect-cpp-toml-tests
-./build/tests/ubjson/reflect-cpp-ubjson-tests
-./build/tests/xml/reflect-cpp-xml-tests
-./build/tests/yaml/reflect-cpp-yaml-tests
+...
 ```
+
+Please make sure that the tests pass before submitting a pull request. Your changes should be covered by the tests.
