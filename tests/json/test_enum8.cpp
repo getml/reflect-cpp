@@ -32,7 +32,7 @@ TEST(json, test_enum8) {
   SomeClass t{
       .e = TestEnum::None, .f = TestEnum::Hello, .g = TestEnum::HelloWorld};
 
-  write_and_read(t, R"({"e":"0","f":"Hello","g":"Hello|World"})");
+  write_and_read(t, R"({"e":"None","f":"Hello","g":"Hello|World"})");
 }
 
 }  // namespace test_enum8
