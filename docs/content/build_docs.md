@@ -35,3 +35,11 @@ hugo server --disableFastRender -p 1313
 The documentation will be available at [http://localhost:1313](http://localhost:1313).
 
 Hugo watches for file changes and automatically re-renders the site. Simply refresh your browser to see updates.
+
+## Build production version
+
+To build the production version, run the following:
+
+```bash
+hugo --gc --minify --baseURL
+```
