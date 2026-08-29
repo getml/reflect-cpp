@@ -101,3 +101,22 @@ Under `params:` you can control visual aspects:
 - `footer.displayPoweredBy` — show "Powered by Hugo & Hextra" in the footer
 
 All params support `true` or `false` toggles. Refer to the [Hextra documentation](https://imfing.github.io/hextra) for the full list of available options.
+
+## CI/CD: GitHub Pages Deployment
+
+The file `.github/workflows/docs.yaml` automates building and deploying the documentation to [GitHub Pages](https://getml.github.io/reflect-cpp/). It runs on every push to the `main` branch.
+
+### How It Works
+
+The workflow has two jobs:
+
+1. **`build`** — checks out the repo, installs Go and Hugo (v0.156.0), runs `hugo --gc --minify --baseURL` in the `docs/` directory, and uploads the `docs/public/` output as an artifact.
+2. **`deploy`** — takes the uploaded artifact and deploys it to GitHub Pages.
+
+### Concurrency Policy
+
+The workflow uses `concurrency.group: "pages"` to prevent overlapping deployments. In-progress builds are allowed to complete rather than being cancelled, ensuring production pages are never partially deployed.
+
+### Manual Trigger
+
+To trigger a manual deploy, go to **Actions > Deploy documentation to Github Pages** on the repository's GitHub page and click **Run workflow**.
