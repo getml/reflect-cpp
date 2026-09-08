@@ -9,15 +9,12 @@
 
 #include "../NamedTuple.hpp"
 #include "../Result.hpp"
-#include "../always_false.hpp"
+#include "../internal/default_if_missing_v.hpp"
 #include "../internal/has_default_val_v.hpp"
-#include "../internal/is_array.hpp"
 #include "../internal/is_attribute.hpp"
-#include "../internal/is_basic_type.hpp"
 #include "../internal/is_default_val_v.hpp"
 #include "../internal/is_extra_fields.hpp"
 #include "../internal/is_skip.hpp"
-#include "../internal/no_duplicate_field_names.hpp"
 #include "../internal/nth_element_t.hpp"
 #include "../internal/ptr_cast.hpp"
 #include "../to_view.hpp"
@@ -35,7 +32,14 @@
 #include "to_single_error_message.hpp"
 
 namespace rfl {
-namespace parsing {
+
+/// forward declaration
+template <class... Ps>
+Generic to_generic(const auto& _t);
+
+}  // namespace rfl
+
+namespace rfl::parsing {
 
 template <class R, class W, bool _ignore_empty_containers, bool _all_required,
           bool _no_field_names, class ProcessorsType, class... FieldTypes>
@@ -75,14 +79,15 @@ struct NamedTupleParser {
                 "including rfl::ExtraFields.");
 
  public:
-  /// The way this works is that we allocate space on the stack in this size of
-  /// the named tuple in which we then write the individual fields using
-  /// views and placement new. This is how we deal with the fact that some
-  /// fields might not be default-constructible.
+  /**
+   * @brief Reads a named tuple from the input.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @return A Result containing the parsed named tuple or an error.
+   */
   static Result<NamedTuple<FieldTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
-    static_assert(
-        internal::no_duplicate_field_names<typename NamedTupleType::Fields>());
     alignas(NamedTuple<FieldTypes...>) unsigned char
         buf[sizeof(NamedTuple<FieldTypes...>)];
     auto ptr = internal::ptr_cast<NamedTuple<FieldTypes...>*>(&buf);
@@ -99,13 +104,19 @@ struct NamedTupleParser {
     return res;
   }
 
-  /// Reads the data into a view assuming no default values.
+  /**
+   * @brief Reads the data into a view assuming no default values.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @param _view The view to read into.
+   * @return A pair containing a boolean array indicating which fields were
+   *         found and an optional error.
+   */
   static std::pair<std::array<bool, NamedTupleType::size()>,
                    std::optional<Error>>
   read_view(const R& _r, const InputVarType& _var,
             NamedTuple<FieldTypes...>* _view) noexcept {
-    static_assert(
-        internal::no_duplicate_field_names<typename NamedTupleType::Fields>());
     if constexpr (_no_field_names) {
       auto arr = _r.to_array(_var);
       if (!arr) [[unlikely]] {
@@ -123,12 +134,17 @@ struct NamedTupleParser {
     }
   }
 
-  /// Reads the data into a view assuming default values.
+  /**
+   * @brief Reads the data into a view assuming default values.
+   *
+   * @param _r The reader to use.
+   * @param _var The input variable to read from.
+   * @param _view The view to read into.
+   * @return An optional error.
+   */
   static std::optional<Error> read_view_with_default(
       const R& _r, const InputVarType& _var,
       NamedTuple<FieldTypes...>* _view) noexcept {
-    static_assert(
-        internal::no_duplicate_field_names<typename NamedTupleType::Fields>());
     if constexpr (_no_field_names) {
       auto arr = _r.to_array(_var);
       if (!arr) [[unlikely]] {
@@ -144,6 +160,14 @@ struct NamedTupleParser {
     }
   }
 
+  /**
+   * @brief Writes a named tuple to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _tup The named tuple to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write(const W& _w, const NamedTuple<FieldTypes...>& _tup,
                     const P& _parent) {
@@ -158,10 +182,18 @@ struct NamedTupleParser {
     }
   }
 
+  /**
+   * @brief Generates the schema for the named tuple.
+   *
+   * @param _definitions The map of definitions to add to.
+   * @return The schema type.
+   */
+  template <typename View = void>
   static schema::Type to_schema(
-      std::map<std::string, schema::Type>* _definitions) noexcept {
+      std::map<std::string, schema::Type>* _definitions,
+      View* _view = nullptr) noexcept {
     SchemaType schema;
-    build_schema(_definitions, &schema,
+    build_schema(_definitions, &schema, _view,
                  std::make_integer_sequence<int, size_>());
     return schema::Type{schema};
   }
@@ -204,14 +236,25 @@ struct NamedTupleParser {
     }
   }
 
-  template <size_t _i>
+  template <typename View, size_t _i>
   static void add_field_to_schema(
       std::map<std::string, schema::Type>* _definitions,
-      SchemaType* _schema) noexcept {
+      SchemaType* _schema,
+      View* _view) noexcept {
     using F = internal::nth_element_t<_i, FieldTypes...>;
     using U = std::remove_cvref_t<typename F::Type>;
     if constexpr (!internal::is_skip_v<U> && !internal::is_extra_fields_v<U>) {
+      // Add default value here
       auto s = Parser<R, W, U, ProcessorsType>::to_schema(_definitions);
+      if constexpr (!std::is_same_v<View, void>) {
+        s.variant_.visit([&](auto& value) {
+          if constexpr (std::is_same_v<std::remove_cvref_t<decltype(value)>,
+                                       schema::Type::DefaultVal>) {
+            value.default_value_ =
+                rfl::to_generic((*rfl::get<_i>(*_view)).get());
+          }
+        });
+      }
       if constexpr (_no_field_names) {
         _schema->types_.emplace_back(std::move(s));
       } else {
@@ -227,11 +270,12 @@ struct NamedTupleParser {
     (add_field_to_object<_is>(_w, _tup, _ptr), ...);
   }
 
-  template <int... _is>
+  template <typename View,  int... _is>
   static void build_schema(std::map<std::string, schema::Type>* _definitions,
                            SchemaType* _schema,
+                           View* _view,
                            std::integer_sequence<int, _is...>) noexcept {
-    (add_field_to_schema<_is>(_definitions, _schema), ...);
+    (add_field_to_schema<View, _is>(_definitions, _schema, _view), ...);
 
     if constexpr (NamedTupleType::pos_extra_fields() != -1) {
       using F = internal::nth_element_t<NamedTupleType::pos_extra_fields(),
@@ -245,10 +289,10 @@ struct NamedTupleParser {
 
   /// Generates error messages for when fields are missing.
   template <int _i>
-  static void handle_one_missing_field(const std::array<bool, size_>& _found,
-                                       const NamedTupleType& _view,
-                                       std::array<bool, size_>* _set,
-                                       std::vector<Error>* _errors) noexcept {
+  static void handle_one_missing_field(
+      const std::array<bool, size_>& _found, const NamedTupleType& _view,
+      std::array<bool, size_>* _set,
+      std::vector<std::string>* _errors) noexcept {
     using FieldType = internal::nth_element_t<_i, FieldTypes...>;
     using ValueType = std::remove_reference_t<
         std::remove_pointer_t<typename FieldType::Type>>;
@@ -265,7 +309,7 @@ struct NamedTupleParser {
         std::stringstream stream;
         stream << "Field named '" << std::string(current_name)
                << "' not found.";
-        _errors->emplace_back(Error(stream.str()));
+        _errors->emplace_back(stream.str());
 
       } else if constexpr (!internal::has_default_val_v<NamedTupleType>) {
         if constexpr (!std::is_const_v<ValueType>) {
@@ -283,7 +327,7 @@ struct NamedTupleParser {
   template <int... _is>
   static void handle_missing_fields(
       const std::array<bool, size_>& _found, const NamedTupleType& _view,
-      std::array<bool, size_>* _set, std::vector<Error>* _errors,
+      std::array<bool, size_>* _set, std::vector<std::string>* _errors,
       std::integer_sequence<int, _is...>) noexcept {
     (handle_one_missing_field<_is>(_found, _view, _set, _errors), ...);
   }
@@ -305,7 +349,8 @@ struct NamedTupleParser {
     found.fill(false);
     auto set = std::array<bool, NamedTupleType::size()>();
     set.fill(false);
-    std::vector<Error> errors;
+    std::vector<std::string> errors;
+    errors.reserve(size_);
     const auto reader = ViewReaderType(&_r, _view, &found, &set, &errors);
     if constexpr (_no_field_names) {
       const auto err = _r.read_array(reader, _obj_or_arr);
@@ -329,7 +374,8 @@ struct NamedTupleParser {
   static std::optional<Error> read_object_or_array_with_default(
       const R& _r, const InputObjectOrArrayType& _obj_or_arr,
       NamedTupleType* _view) noexcept {
-    std::vector<Error> errors;
+    std::vector<std::string> errors;
+    errors.reserve(size_);
     const auto reader = ViewReaderWithDefaultType(&_r, _view, &errors);
     if constexpr (_no_field_names) {
       const auto err = _r.read_array(reader, _obj_or_arr);
@@ -343,7 +389,7 @@ struct NamedTupleParser {
       }
     }
     if constexpr (internal::has_default_val_v<NamedTupleType> &&
-                  !ProcessorsType::default_if_missing_) {
+                  !internal::default_if_missing_v<ProcessorsType>) {
       handle_missing_fields(reader.found(), *_view, nullptr, &errors,
                             std::make_integer_sequence<int, size_>());
     }
@@ -355,7 +401,6 @@ struct NamedTupleParser {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif

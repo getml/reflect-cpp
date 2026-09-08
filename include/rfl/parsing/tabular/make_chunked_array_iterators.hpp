@@ -1,7 +1,20 @@
 #ifndef RFL_PARSING_TABULAR_MAKECHUNKEDARRAYITERATORS_HPP_
 #define RFL_PARSING_TABULAR_MAKECHUNKEDARRAYITERATORS_HPP_
 
+// Silence a -Warray-bounds false positive in Apache Arrow
+// (buffer_builder.h) with GCC 16.
+#ifdef __GNUC__
+#ifndef __clang__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
+#endif
 #include <arrow/api.h>
+#ifdef __GNUC__
+#ifndef __clang__
+#pragma GCC diagnostic pop
+#endif
+#endif
 
 #include <string>
 
@@ -21,6 +34,11 @@ struct MakeChunkedArrayIterators<NamedTuple<FieldTypes...>, _s> {
   using TupleType =
       Tuple<ChunkedArrayIterator<typename FieldTypes::Type, _s>...>;
 
+  /**
+   * @brief Creates a tuple of chunked array iterators for the fields in the named tuple.
+   * @param _table The arrow table to read from.
+   * @return A Result containing the tuple of iterators or an error.
+   */
   Result<TupleType> operator()(const Ref<arrow::Table>& _table) const {
     const auto get_column =
         [&](const std::string& _colname) -> Result<Ref<arrow::ChunkedArray>> {

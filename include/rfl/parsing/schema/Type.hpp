@@ -6,11 +6,12 @@
 #include <string>
 #include <vector>
 
+#include "../../Generic.hpp"
 #include "../../Object.hpp"
 #include "../../Ref.hpp"
 #include "../../Variant.hpp"
-#include "ValidationType.hpp"
 #include "../../common.hpp"
+#include "ValidationType.hpp"
 
 namespace rfl::parsing::schema {
 
@@ -41,6 +42,12 @@ struct RFL_API Type {
     std::vector<Type> types_;
   };
 
+  struct Deprecated {
+    std::string deprecation_message_;
+    std::string description_;
+    Ref<Type> type_;
+  };
+
   struct Description {
     std::string description_;
     Ref<Type> type_;
@@ -49,6 +56,21 @@ struct RFL_API Type {
   struct FixedSizeTypedArray {
     size_t size_;
     Ref<Type> type_;
+  };
+
+  /// All values are assumed to be required unless explicitly stated otherwise
+  /// using this or the Optional wrapper.
+  struct DefaultVal {
+    Ref<Type> type_;
+    Generic default_value_;
+  };
+
+  struct DescribedLiteral {
+    struct ValueWithDescription {
+      std::string value_;
+      std::string description_;
+    };
+    std::vector<ValueWithDescription> values_;
   };
 
   struct Literal {
@@ -61,7 +83,7 @@ struct RFL_API Type {
   };
 
   /// All values are assumed to be required unless explicitly stated otherwise
-  /// using this wrapper.
+  /// using this wrapper or the DefaultVal wrapper.
   struct Optional {
     Ref<Type> type_;
   };
@@ -91,15 +113,27 @@ struct RFL_API Type {
   };
 
   using VariantType =
-      rfl::Variant<Boolean, Bytestring, Vectorstring, Int32, Int64, UInt32, UInt64, Integer,
-                   Float, Double, String, AnyOf, Description,
+      rfl::Variant<Boolean, Bytestring, Vectorstring, Int32, Int64, UInt32,
+                   UInt64, Integer, Float, Double, String, AnyOf, DefaultVal,
+                   Deprecated, Description, DescribedLiteral,
                    FixedSizeTypedArray, Literal, Object, Optional, Reference,
                    StringMap, Tuple, TypedArray, Validated>;
 
+  /**
+   * @brief Default constructor.
+   */
   Type();
 
+  /**
+   * @brief Constructor.
+   *
+   * @param _variant The variant to use.
+   */
   Type(const VariantType& _variant);
 
+  /**
+   * @brief Destructor.
+   */
   ~Type();
 
   /// A type can be determined to be any of the above.

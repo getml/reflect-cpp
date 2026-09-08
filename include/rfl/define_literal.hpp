@@ -6,7 +6,11 @@
 
 namespace rfl {
 
-/// Allows you to combine several literal types.
+/// Combines several Literal types into a single union Literal type.
+/// This is useful when you want to create a Literal that accepts values from multiple
+/// different Literal types. For example, combining Literal<"A", "B"> and Literal<"C", "D">
+/// results in Literal<"A", "B", "C", "D">.
+/// @tparam LiteralTypes The Literal types to combine into a single union type
 template <class... LiteralTypes>
 using define_literal_t =
     typename internal::define_literal<LiteralTypes...>::type;

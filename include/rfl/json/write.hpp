@@ -22,7 +22,13 @@ namespace json {
 /// Convenient alias for the YYJSON pretty flag
 inline constexpr yyjson_write_flag pretty = YYJSON_WRITE_PRETTY;
 
-/// Returns a JSON string.
+/// Returns a JSON string representation of the object.
+/// Uses compile-time reflection to serialize a C++ object to JSON format.
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _obj The object to serialize to JSON
+/// @param _flag Optional yyjson flags for formatting (use `pretty` for pretty-printing, default: 0)
+/// @return JSON string representation of the object
+/// @throws std::runtime_error if serialization fails
 template <class... Ps>
 std::string write(const auto& _obj, const yyjson_write_flag _flag = 0) {
   using T = std::remove_cvref_t<decltype(_obj)>;
@@ -41,7 +47,14 @@ std::string write(const auto& _obj, const yyjson_write_flag _flag = 0) {
   return json_str;
 }
 
-/// Writes a JSON into an ostream.
+/// Writes a JSON representation into an ostream.
+/// Uses compile-time reflection to serialize a C++ object to JSON and write to a stream.
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _obj The object to serialize to JSON
+/// @param _stream The output stream to write JSON to
+/// @param _flag Optional yyjson flags for formatting (use `pretty` for pretty-printing, default: 0)
+/// @return The output stream (for chaining)
+/// @throws std::runtime_error if serialization fails
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream,
                     const yyjson_write_flag _flag = 0) {

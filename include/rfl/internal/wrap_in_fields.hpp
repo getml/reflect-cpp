@@ -3,14 +3,13 @@
 
 #include <type_traits>
 
-#include "../Field.hpp"
 #include "../Tuple.hpp"
+#include "../make_field.hpp"
 #include "flattened_ptr_tuple_t.hpp"
 #include "is_flatten_field.hpp"
 #include "lit_name.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 // TODO: Non-recursive implementation
 template <class FieldNames, int j = 0, class... Fields>
@@ -41,7 +40,6 @@ auto wrap_in_fields(auto&& _tuple, Fields&&... _fields) {
   }
 }
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

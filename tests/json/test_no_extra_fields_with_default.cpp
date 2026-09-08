@@ -17,5 +17,12 @@ TEST(json, test_no_extra_fields_with_default) {
           R"({"first_name":"Homer","last_name":"Simpson","extra_field":0})");
 
   EXPECT_EQ(homer && true, false);
+
+  using P = rfl::Processors<rfl::NoExtraFields, rfl::DefaultIfMissing>;
+
+  auto homer2 = rfl::json::read<Person, P>(
+      R"({"first_name":"Homer","last_name":"Simpson","extra_field":0})");
+
+  EXPECT_EQ(homer2 && true, false);
 }
 }  // namespace test_no_extra_fields_with_default

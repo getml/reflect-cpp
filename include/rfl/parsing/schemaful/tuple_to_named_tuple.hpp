@@ -12,6 +12,12 @@
 
 namespace rfl::parsing::schemaful {
 
+/**
+ * @brief Generates a field name for a tuple element.
+ *
+ * @tparam _i The index of the element.
+ * @return The generated field name.
+ */
 template <int _i>
 inline consteval auto to_field_name() {
   return internal::StringLiteral<5>('f',
@@ -20,14 +26,26 @@ inline consteval auto to_field_name() {
                                     static_cast<char>('0' + (_i % 10)));
 }
 
+/**
+ * @brief Converts a tuple element to a field.
+ *
+ * @tparam _i The index of the element.
+ * @param _t The element to convert.
+ * @return The generated field.
+ */
 template <int _i>
 inline auto to_field(const auto& _t) {
   using T = std::remove_cvref_t<decltype(_t)>;
   return rfl::Field<to_field_name<_i>(), const T*>(&_t);
 }
 
-/// Schemaful formats often don't have an explicit tuple representation.
-/// This is the required workaround.
+/**
+ * @brief Converts a Tuple to a NamedTuple.
+ *
+ * @tparam Ts The types in the tuple.
+ * @param _tup The tuple to convert.
+ * @return The generated NamedTuple.
+ */
 template <class... Ts>
 auto tuple_to_named_tuple(const Tuple<Ts...>& _tup) {
   static_assert(sizeof...(Ts) <= 1000,
@@ -37,8 +55,13 @@ auto tuple_to_named_tuple(const Tuple<Ts...>& _tup) {
   }(std::make_integer_sequence<int, sizeof...(Ts)>());
 }
 
-/// Schemaful formats often don't have an explicit tuple representation.
-/// This is the required workaround.
+/**
+ * @brief Converts a std::tuple to a NamedTuple.
+ *
+ * @tparam Ts The types in the tuple.
+ * @param _tup The tuple to convert.
+ * @return The generated NamedTuple.
+ */
 template <class... Ts>
 auto tuple_to_named_tuple(const std::tuple<Ts...>& _tup) {
   static_assert(sizeof...(Ts) <= 1000,

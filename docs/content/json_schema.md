@@ -1,0 +1,246 @@
+# JSON schema
+
+JSON schemata are a powerful tool for expressing the expected structure of your input. You can use it to validate your input before you even send it to your C++ backend, which will result in better UX.
+
+It can also be used for code generation. For instance, tools such as https://app.quicktype.io/ allow you to generate code in multiple programming languages from the JSON schema (even though the validations are usually omitted). 
+
+If you are interacting with Python, we warmly recommend https://docs.pydantic.dev/latest/integrations/datamodel_code_generator/. This allows you to generate Pydantic dataclasses, including the validation, from the JSON schema.
+
+Note that this is only supported for JSON, not for other formats.
+
+## Basic idea
+
+Suppose you have a struct like this:
+
+```cpp
+struct Person {
+  std::string first_name;
+  std::string last_name;
+  rfl::Email email;
+  std::vector<Person> children;
+  float salary;
+};
+```
+
+You can generate a JSON schema like this:
+
+```cpp
+const std::string json_schema = rfl::json::to_schema<Person>(rfl::json::pretty);
+```
+
+You do not have to pass `rfl::json::pretty`, but for the purposes of this documentation it is better to do so.
+
+This will result in the following JSON schema:
+
+```json
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/Person",
+    "$defs": {
+        "Person": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/Person"
+                    }
+                },
+                "email": {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "salary": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "children",
+                "email",
+                "first_name",
+                "last_name",
+                "salary"
+            ]
+        }
+    }
+}
+```
+
+You can insert this into the tools mentioned above and see the generated code.
+
+## Adding descriptions
+
+JSON schemata also often contain descriptions. reflect-cpp supports this as well.
+
+```cpp
+struct Person {
+  std::string first_name;
+  std::string last_name;
+  rfl::Description<"Must be a proper email in the form xxx@xxx.xxx.",
+                   rfl::Email>
+      email;
+  rfl::Description<
+      "The person's children. Pass an empty array for no children.",
+      std::vector<Person>>
+      children;
+  float salary;
+};
+```
+
+```cpp
+const std::string json_schema = rfl::json::to_schema<Person>(rfl::json::pretty);
+```
+
+```json
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/Person",
+    "$defs": {
+        "Person": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "description": "The person's children. Pass an empty array for no children.",
+                    "items": {
+                        "$ref": "#/$defs/Person"
+                    }
+                },
+                "email": {
+                    "type": "string",
+                    "description": "Must be a proper email in the form xxx@xxx.xxx.",
+                    "pattern": "^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "salary": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "children",
+                "email",
+                "first_name",
+                "last_name",
+                "salary"
+            ]
+        }
+    }
+}
+```
+
+`rfl::Description` behaves like a thin wrapper around the underlying type. Much like `rfl::Field`, you can access the underlying value using `.get()`, `.value()`, `operator()()`, `operator*()`, or `operator->()` (const and non-const overloads).
+
+You also add a description to the entire JSON schema:
+
+```cpp
+const std::string json_schema = rfl::json::to_schema<
+    rfl::Description<"JSON schema that describes the required "
+                      "attributes for the person class.",
+                      Person>>(rfl::json::pretty);
+```
+
+```json
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/Person",
+    "description": "JSON schema that describes the required attributes for the person class.",
+    "$defs": {
+        "Person": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "description": "The person's children. Pass an empty array for no children.",
+                    "items": {
+                        "$ref": "#/$defs/Person"
+                    }
+                },
+                "email": {
+                    "type": "string",
+                    "description": "Must be a proper email in the form xxx@xxx.xxx.",
+                    "pattern": "^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "last_name": {
+                    "type": "string"
+                },
+                "salary": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "children",
+                "email",
+                "first_name",
+                "last_name",
+                "salary"
+            ]
+        }
+    }
+}
+```
+
+## Indicating deprecated fields
+
+You can mark fields as deprecated in the JSON schema using `rfl::Deprecated`. This adds `"deprecated": true` and a `"deprecationMessage"` to the generated schema, along with a description.
+
+`rfl::Deprecated` takes three template parameters: a deprecation message, a description, and the underlying type:
+
+```cpp
+struct Person {
+  rfl::Deprecated<"Use 'full_name' instead.", "The person's first name", std::optional<std::string>>
+      first_name;
+  rfl::Description<"The person's full name", std::string> full_name;
+  float salary;
+};
+```
+
+```cpp
+const std::string json_schema = rfl::json::to_schema<Person>(rfl::json::pretty);
+```
+
+```json
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/Person",
+    "$defs": {
+        "Person": {
+            "type": "object",
+            "properties": {
+                "first_name": {
+                    "type": "string",
+                    "description": "The person's first name",
+                    "deprecated": true,
+                    "deprecationMessage": "Use 'full_name' instead."
+                },
+                "full_name": {
+                    "type": "string",
+                    "description": "The person's full name"
+                },
+                "salary": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "full_name",
+                "salary"
+            ]
+        }
+    }
+}
+```
+
+`rfl::Deprecated` behaves like a thin wrapper around the underlying type, just like `rfl::Description`. You can access the underlying value using `.get()`, `.value()`, `operator()()`, `operator*()`, `operator->()`, or the assignment operator.

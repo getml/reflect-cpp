@@ -6,8 +6,12 @@
 
 namespace rfl::parsing::schemaful {
 
-/// Schemaful formats often don't have an explicit tuple representation.
-/// This is the required workaround.
+/**
+ * @brief Converts a tuple schema type to an object schema type.
+ *
+ * @param _tup The tuple schema type.
+ * @return The object schema type.
+ */
 RFL_API schema::Type::Object tuple_to_object(const schema::Type::Tuple& _tup);
 
 }  // namespace rfl::parsing::schemaful

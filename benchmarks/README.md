@@ -50,7 +50,7 @@ In summary, it is fair to say that reflect-cpp is among the fastest JSON librari
 
 ### How the different formats supported by reflect-cpp compare to each other
 
-- flexbuffers and msgpack are the fastest two formats supported by reflect-cpp. They are particularly fast on datasets with a lot of numerical data, such as *canada*. flexbuffers is usually the fastest at reading data and msgpack is the fastest at writing.
+- flexbuffers, msgpack and yas are the fastest three formats supported by reflect-cpp. They are particularly fast on datasets with a lot of numerical data, such as *canada*. flexbuffers is usually the fastest at reading data and msgpack is the fastest at writing.
 - JSON is surprisingly fast. This is because reflect-cpp's JSON parser is built on top of yyjson, arguably the fastest JSON library for C or C++.
 - The performance of CBOR is disappointing. We have tried swapping out the underlying library, TinyCBOR, for libcbor, but the results are similar.
 - TOML and YAML are very slow when compared to the other formats. To be fair, these formats emphasize readability rather than speed.

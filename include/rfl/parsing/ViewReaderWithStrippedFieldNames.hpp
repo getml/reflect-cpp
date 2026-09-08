@@ -15,17 +15,28 @@
 
 namespace rfl::parsing {
 
-template <class R, class W, class ViewType, class ProcessorsType>
+template <class R, class W, class _ViewType, class ProcessorsType>
 class ViewReaderWithStrippedFieldNames {
- private:
+ public:
   using InputVarType = typename R::InputVarType;
+  using ViewType = _ViewType;
+
   static constexpr size_t size_ = ViewType::size();
 
- public:
+  /**
+   * @brief Constructor.
+   *
+   * @param _r The reader to use.
+   * @param _view The view to read into.
+   * @param _found A boolean array indicating which fields have been found.
+   * @param _set A boolean array indicating which fields have been successfully
+   * set.
+   * @param _errors The vector to collect errors in.
+   */
   ViewReaderWithStrippedFieldNames(const R* _r, ViewType* _view,
                                    std::array<bool, size_>* _found,
                                    std::array<bool, size_>* _set,
-                                   std::vector<Error>* _errors)
+                                   std::vector<std::string>* _errors)
       : i_(0),
         r_(_r),
         view_(_view),
@@ -35,8 +46,12 @@ class ViewReaderWithStrippedFieldNames {
 
   ~ViewReaderWithStrippedFieldNames() = default;
 
-  /// Assigns the parsed version of _var to the field signified by i_, to be
-  /// used when the field names are stripped.
+  /**
+   * @brief Reads a single variable from the input.
+   *
+   * @param _var The input variable to read from.
+   * @return An optional error.
+   */
   std::optional<Error> read(const InputVarType& _var) const {
     if (i_ == size_) {
       std::stringstream stream;
@@ -49,6 +64,13 @@ class ViewReaderWithStrippedFieldNames {
     ++i_;
     return std::nullopt;
   }
+
+  /**
+   * @brief Returns the size of the view.
+   *
+   * @return The size of the view.
+   */
+  static constexpr size_t size() { return size_; }
 
  private:
   template <int i>
@@ -67,7 +89,7 @@ class ViewReaderWithStrippedFieldNames {
         std::stringstream stream;
         stream << "Failed to parse field '" << std::string(name)
                << "': " << res.error().what();
-        _errors->emplace_back(Error(stream.str()));
+        _errors->emplace_back(stream.str());
         return;
       }
       if constexpr (std::is_pointer_v<OriginalType>) {
@@ -126,7 +148,7 @@ class ViewReaderWithStrippedFieldNames {
   std::array<bool, size_>* set_;
 
   /// Collects any errors we may have come across.
-  std::vector<Error>* errors_;
+  std::vector<std::string>* errors_;
 };
 
 }  // namespace rfl::parsing

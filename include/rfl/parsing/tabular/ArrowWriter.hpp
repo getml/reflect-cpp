@@ -1,7 +1,20 @@
 #ifndef RFL_PARSING_TABULAR_ARROWWRITER_HPP_
 #define RFL_PARSING_TABULAR_ARROWWRITER_HPP_
 
+// Silence a -Warray-bounds false positive in Apache Arrow
+// (buffer_builder.h) with GCC 16.
+#ifdef __GNUC__
+#ifndef __clang__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
+#endif
 #include <arrow/api.h>
+#ifdef __GNUC__
+#ifndef __clang__
+#pragma GCC diagnostic pop
+#endif
+#endif
 
 #include <stdexcept>
 #include <type_traits>
@@ -10,6 +23,11 @@
 #include "../../Processors.hpp"
 #include "../../Tuple.hpp"
 #include "../../get.hpp"
+#include "../../internal/add_tags_to_variants_v.hpp"
+#include "../../internal/default_if_missing_v.hpp"
+#include "../../internal/no_extra_fields_v.hpp"
+#include "../../internal/no_field_names_v.hpp"
+#include "../../internal/no_optionals_v.hpp"
 #include "../../named_tuple_t.hpp"
 #include "../../to_view.hpp"
 #include "add_to_builder.hpp"
@@ -21,27 +39,39 @@ namespace rfl::parsing::tabular {
 
 template <class VecType, SerializationType _s, class... Ps>
 class ArrowWriter {
-  static_assert(!Processors<Ps...>::add_tags_to_variants_,
+  static_assert(!internal::add_tags_to_variants_v<Processors<Ps...>>,
                 "rfl::AddTagsToVariants cannot be used for tabular data.");
-  static_assert(!Processors<Ps...>::add_namespaced_tags_to_variants_,
-                "rfl::AddNamespacedTagsToVariants cannot be used for tabular data.");
-  static_assert(!Processors<Ps...>::all_required_,
+  static_assert(
+      !internal::add_namespaced_tags_to_variants_v<Processors<Ps...>>,
+      "rfl::AddNamespacedTagsToVariants cannot be used for tabular data.");
+  static_assert(!internal::no_optionals_v<Processors<Ps...>>,
                 "rfl::NoOptionals cannot be used for tabular data.");
-  static_assert(!Processors<Ps...>::default_if_missing_,
+  static_assert(!internal::default_if_missing_v<Processors<Ps...>>,
                 "rfl::DefaultIfMissing cannot be used for tabular data.");
-  static_assert(!Processors<Ps...>::no_extra_fields_,
+  static_assert(!internal::no_extra_fields_v<Processors<Ps...>>,
                 "rfl::NoExtraFields cannot be used for tabular data (neither "
                 "can rfl::ExtraFields).");
-  static_assert(!Processors<Ps...>::no_field_names_,
+  static_assert(!internal::no_field_names_v<Processors<Ps...>>,
                 "rfl::NoFieldNames cannot be used for tabular data.");
 
  public:
   using ValueType = typename std::remove_cvref_t<typename VecType::value_type>;
 
+  /**
+   * @brief Constructor.
+   *
+   * @param _chunksize The chunk size.
+   */
   ArrowWriter(const size_t _chunksize) : chunksize_(_chunksize) {}
 
   ~ArrowWriter() = default;
 
+  /**
+   * @brief Converts the data to an Arrow table.
+   *
+   * @param _data The data to convert.
+   * @return The Arrow table.
+   */
   std::shared_ptr<arrow::Table> to_table(const VecType& _data) const {
     return arrow::Table::Make(
         make_arrow_schema<named_tuple_t<ValueType, Ps...>, _s>(),
@@ -49,6 +79,12 @@ class ArrowWriter {
   }
 
  private:
+  /**
+   * @brief Converts the data to chunked arrays.
+   *
+   * @param _data The data to convert.
+   * @return The chunked arrays.
+   */
   std::vector<std::shared_ptr<arrow::ChunkedArray>> to_chunked_arrays(
       const VecType& _data) const;
 

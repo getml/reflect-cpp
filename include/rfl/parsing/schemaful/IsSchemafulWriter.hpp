@@ -7,6 +7,11 @@
 
 namespace rfl::parsing::schemaful {
 
+/**
+ * @brief Concept for a schemaful writer.
+ *
+ * @tparam W The writer type.
+ */
 template <class W>
 concept IsSchemafulWriter = requires(
     W w, typename W::OutputVarType var, typename W::OutputArrayType arr,

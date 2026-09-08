@@ -1,9 +1,11 @@
 #include <benchmark/benchmark.h>
 
 #include <rfl/avro.hpp>
+#include <rfl/boost_serialization.hpp>
 #include <rfl/bson.hpp>
 #include <rfl/capnproto.hpp>
 #include <rfl/cbor.hpp>
+#include <rfl/cereal.hpp>
 #include <rfl/flexbuf.hpp>
 #include <rfl/json.hpp>
 #include <rfl/msgpack.hpp>
@@ -11,6 +13,7 @@
 #include <rfl/ubjson.hpp>
 #include <rfl/xml.hpp>
 #include <rfl/yaml.hpp>
+#include <rfl/yas.hpp>
 #include <vector>
 namespace person_read {
 
@@ -63,6 +66,18 @@ static void BM_person_read_reflect_cpp_bson(benchmark::State &state) {
 }
 BENCHMARK(BM_person_read_reflect_cpp_bson);
 
+static void BM_person_read_reflect_cpp_boost_serialization(
+    benchmark::State &state) {
+  const auto data = rfl::boost_serialization::write(load_data());
+  for (auto _ : state) {
+    const auto res = rfl::boost_serialization::read<Person>(data);
+    if (!res) {
+      std::cout << res.error().what() << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_person_read_reflect_cpp_boost_serialization);
+
 static void BM_person_read_reflect_cpp_capnproto(benchmark::State &state) {
   const auto schema = rfl::capnproto::to_schema<Person>();
   const auto data = rfl::capnproto::write(load_data(), schema);
@@ -97,6 +112,17 @@ static void BM_person_read_reflect_cpp_cbor_without_field_names(
   }
 }
 BENCHMARK(BM_person_read_reflect_cpp_cbor_without_field_names);
+
+static void BM_person_read_reflect_cpp_cereal(benchmark::State &state) {
+  const auto data = rfl::cereal::write(load_data());
+  for (auto _ : state) {
+    const auto res = rfl::cereal::read<Person>(data);
+    if (!res) {
+      std::cout << res.error().what() << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_person_read_reflect_cpp_cereal);
 
 static void BM_person_read_reflect_cpp_flexbuf(benchmark::State &state) {
   const auto data = rfl::flexbuf::write(load_data());
@@ -223,7 +249,17 @@ static void BM_person_read_reflect_cpp_yaml(benchmark::State &state) {
 }
 BENCHMARK(BM_person_read_reflect_cpp_yaml);
 
+static void BM_person_read_reflect_cpp_yas(benchmark::State &state) {
+  const auto data = rfl::yas::write(load_data());
+  for (auto _ : state) {
+    const auto res = rfl::yas::read<Person>(data);
+    if (!res) {
+      std::cout << res.error().what() << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_person_read_reflect_cpp_yas);
+
 // ----------------------------------------------------------------------------
 
 }  // namespace person_read
-

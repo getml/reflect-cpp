@@ -8,6 +8,13 @@
 
 namespace rfl::parsing::tabular {
 
+/**
+ * @brief Returns the Arrow schema for type T.
+ *
+ * @tparam T The type to get the schema for.
+ * @tparam _s The serialization type.
+ * @return The Arrow schema.
+ */
 template <class T, SerializationType _s>
 inline auto make_arrow_schema() {
   return ArrowBuildersType<named_tuple_t<std::remove_cvref_t<T>>, _s>::schema();

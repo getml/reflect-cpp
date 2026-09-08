@@ -1,3 +1,5 @@
+#ifndef REFLECTCPP_USE_CPP26_REFLECTION
+
 #include <gtest/gtest.h>
 // Redefine the range of the enums
 #define RFL_ENUM_RANGE_MIN -128
@@ -21,9 +23,9 @@ struct rfl::config::enum_range<test_enum_range_min_max::LineColor> {
 namespace test_enum_range_min_max {
 
 TEST(generic, test_enum_range_min_max) {
-  static_assert(!rfl::internal::enums::range_defined<InnerColor>,
+  static_assert(!rfl::internal::enums::cpp20::range_defined<InnerColor>,
                 "Range should not be defined.");
-  static_assert(rfl::internal::enums::range_defined<LineColor>,
+  static_assert(rfl::internal::enums::cpp20::range_defined<LineColor>,
                 "Range should be defined.");
 
   auto [inner_min, inner_max] = rfl::get_enum_range<InnerColor>();
@@ -36,3 +38,5 @@ TEST(generic, test_enum_range_min_max) {
 }
 
 }  // namespace test_enum_range_min_max
+
+#endif

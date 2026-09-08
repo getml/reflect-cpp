@@ -8,8 +8,7 @@
 #include "../always_false.hpp"
 #include "StringLiteral.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <internal::StringLiteral _name, class Type>
 inline auto to_ptr_field(Field<_name, Type>& _field) {
@@ -35,7 +34,6 @@ inline auto to_ptr_field(const Flatten<Type>& _field) {
   return Flatten<const T*>(&_field.value_);
 }
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

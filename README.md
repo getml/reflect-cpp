@@ -12,9 +12,11 @@
 
 ![image](banner1.png)
 
-**reflect-cpp** is a C++-20 library for **fast serialization, deserialization and validation** using reflection, similar to [pydantic](https://github.com/pydantic/pydantic) in Python, [serde](https://github.com/serde-rs) in Rust, [encoding](https://github.com/golang/go/tree/master/src/encoding) in Go or [aeson](https://github.com/haskell/aeson/tree/master) in Haskell.
+**reflect-cpp** is a C++-20/C++-26 library for **fast serialization, deserialization and validation** using reflection, similar to [pydantic](https://github.com/pydantic/pydantic) in Python, [serde](https://github.com/serde-rs) in Rust, [encoding](https://github.com/golang/go/tree/master/src/encoding) in Go or [aeson](https://github.com/haskell/aeson/tree/master) in Haskell.
 
-Moreover, reflect-cpp is the basis for [sqlgen](https://github.com/getml/sqlgen), a **modern, type-safe ORM and SQL query generator** for C++20, inspired by Python's SQLAlchemy/SQLModel and Rust's Diesel. It provides a fluent, composable interface for database operations with compile-time type checking and SQL injection protection. 
+reflect-cpp supports C++-26 reflection, but most of the functionality is also available in C++-20, except where explicitly noted otherwise.
+
+Moreover, reflect-cpp is the basis for [sqlgen](https://github.com/getml/sqlgen), a **modern, type-safe ORM and SQL query generator** for C++20, inspired by Python's SQLAlchemy/SQLModel and Rust's Diesel. It provides a fluent, composable interface for database operations with compile-time type checking and SQL injection protection.
 
 reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boilerplate code and increase code safety. Together, they enable reliable and efficient ETL pipelines.
 
@@ -38,20 +40,22 @@ reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boile
     - [Simple Example](#simple-example)
     - [More Comprehensive Example](#more-comprehensive-example)
     - [Tabular data](#tabular-data)
+    - [CLI argument parsing](#cli-argument-parsing)
     - [Error messages](#error-messages)
     - [JSON schema](#json-schema)
     - [Enums](#enums)
     - [Algebraic data types](#algebraic-data-types)
     - [Extra fields](#extra-fields)
     - [Reflective programming](#reflective-programming)
-    - [Standard Library Integration](#support-for-containers) 
+    - [Standard Library Integration](#support-for-containers)
   - [The team behind reflect-cpp](#the-team-behind-reflect-cpp)
   - [License](#license)
 
 ### More in our [documentation](https://rfl.getml.com):
   - [Installation ↗](https://rfl.getml.com/install/#option-2-compilation-using-cmake)
+  - [C++26 reflection ↗](https://rfl.getml.com/cpp26_reflection)
   - [Benchmarks ↗](https://rfl.getml.com/benchmarks)
-  - [How to contribute ↗](https://rfl.getml.com/contributing) 
+  - [How to contribute ↗](https://rfl.getml.com/contributing)
   - [Compiling and running the tests ↗](https://rfl.getml.com/contributing/#compiling-and-running-the-tests)
 
 
@@ -61,13 +65,17 @@ reflect-cpp provides a unified reflection-based interface across different seria
 
 The following table lists the serialization formats currently supported by reflect-cpp and the underlying libraries used:
 
-| Format       | Library                                              | Version      | License    | Remarks                                              |
-|--------------|------------------------------------------------------|--------------|------------| -----------------------------------------------------|
-| JSON         | [yyjson](https://github.com/ibireme/yyjson)          | >= 0.8.0     | MIT        | out-of-the-box support, included in this repository  |
-| Avro         | [avro-c](https://avro.apache.org/docs/1.11.1/api/c/) | >= 1.11.3    | Apache 2.0 | Schemaful binary format                              |
-| BSON         | [libbson](https://github.com/mongodb/mongo-c-driver) | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
-| Cap'n Proto  | [capnproto](https://capnproto.org)                   | >= 1.0.2     | MIT        | Schemaful binary format                              |
-| CBOR         | [jsoncons](https://github.com/danielaparker/jsoncons)| >= 0.176.0   | BSL 1.0    | JSON-like binary format                              |
+| Format              | Library                                              | Version      | License    | Remarks                                              |
+|---------------------|------------------------------------------------------|--------------|------------| -----------------------------------------------------|
+| JSON                | [yyjson](https://github.com/ibireme/yyjson)          | >= 0.8.0     | MIT        | out-of-the-box support, included in this repository  |
+| Avro                | [avro-c](https://avro.apache.org/docs/1.11.1/api/c/) | >= 1.11.3    | Apache 2.0 | Schemaful binary format                              |
+| Boost.Serialization | [Boost.Serialization](https://www.boost.org/doc/libs/release/libs/serialization/) | >= 1.74.0 | BSL 1.0 | Streaming binary format with archive interop |
+| BSON                | [libbson](https://github.com/mongodb/mongo-c-driver) | >= 1.25.1    | Apache 2.0 | JSON-like binary format                              |
+| Cap'n Proto         | [capnproto](https://capnproto.org)                   | >= 1.0.2     | MIT        | Schemaful binary format                              |
+| CBOR                | [jsoncons](https://github.com/danielaparker/jsoncons)| >= 0.176.0   | BSL 1.0    | JSON-like binary format                              |
+| cli                 | *(none)*                                             | *(none)*     | MIT        | Command line interface                               |
+| env                 | *(none)*                                             | *(none)*     | MIT        | Environment variables                                |
+| Cereal              | [Cereal](https://uscilab.github.io/cereal/)          | >= 1.3.2     | BSD        | C++ serialization library with multiple formats      |
 | CSV          | [Apache Arrow](https://arrow.apache.org/)            | >= 21.0.0    | Apache 2.0 | Tabular textual format                               |
 | flexbuffers  | [flatbuffers](https://github.com/google/flatbuffers) | >= 23.5.26   | Apache 2.0 | Schema-less version of flatbuffers, binary format    |
 | msgpack      | [msgpack-c](https://github.com/msgpack/msgpack-c)    | >= 6.0.0     | BSL 1.0    | JSON-like binary format                              |
@@ -76,6 +84,7 @@ The following table lists the serialization formats currently supported by refle
 | UBJSON       | [jsoncons](https://github.com/danielaparker/jsoncons)| >= 0.176.0   | BSL 1.0    | JSON-like binary format                              |
 | XML          | [pugixml](https://github.com/zeux/pugixml)           | >= 1.14      | MIT        | Textual format used in many legacy projects          |
 | YAML         | [yaml-cpp](https://github.com/jbeder/yaml-cpp)       | >= 0.8.0     | MIT        | Textual format with an emphasis on readability       |
+| yas          | [yas](https://github.com/niXman/yas)                 | >= 7.1.0     | BSL 1.0    | Very fast and compact serialization library          |
 
 Support for more serialization formats is in development. Refer to the [issues](https://github.com/getml/reflect-cpp/issues) for details.
 
@@ -115,9 +124,9 @@ The resulting JSON string looks like this:
 You can transform the field names from `snake_case` to `camelCase` like this:
 
 ```cpp
-const std::string json_string = 
+const std::string json_string =
   rfl::json::write<rfl::SnakeCaseToCamelCase>(homer);
-auto homer2 = 
+auto homer2 =
   rfl::json::read<Person, rfl::SnakeCaseToCamelCase>(json_string).value();
 ```
 
@@ -146,7 +155,7 @@ last_name: Simpson
 age: 45
 ```
 
-This will work for just about any example in the entire documentation 
+This will work for just about any example in the entire documentation
 and any of the following formats, except where explicitly noted otherwise:
 
 ```cpp
@@ -154,21 +163,25 @@ rfl::avro::write(homer);
 rfl::bson::write(homer);
 rfl::capnproto::write(homer);
 rfl::cbor::write(homer);
+rfl::cereal::write(homer);
 rfl::flexbuf::write(homer);
 rfl::msgpack::write(homer);
 rfl::toml::write(homer);
 rfl::ubjson::write(homer);
 rfl::xml::write(homer);
+rfl::yas::write(homer);
 
 rfl::avro::read<Person>(avro_bytes);
 rfl::bson::read<Person>(bson_bytes);
 rfl::capnproto::read<Person>(capnproto_bytes);
 rfl::cbor::read<Person>(cbor_bytes);
+rfl::cereal::read<Person>(cereal_bytes);
 rfl::flexbuf::read<Person>(flexbuf_bytes);
 rfl::msgpack::read<Person>(msgpack_bytes);
 rfl::toml::read<Person>(toml_string);
 rfl::ubjson::read<Person>(ubjson_bytes);
 rfl::xml::read<Person>(xml_string);
+rfl::yas::read<Person>(yas_bytes);
 ```
 
 ### More Comprehensive Example
@@ -292,6 +305,69 @@ This will resulting CSV will look like this:
 "Homer","Simpson","Springfield",1987-04-19,45,"homer@simpson.com"
 ```
 
+### Environment variables
+
+reflect-cpp can also read from and write to environment variables using `rfl::env::read` and `rfl::env::write`:
+
+```cpp
+#include <rfl/env.hpp>
+
+struct Config {
+  std::string host;
+  int port;
+  bool verbose;
+};
+
+const auto config = Config{.host = "localhost", .port = 8080, .verbose = true};
+
+rfl::env::write(config);
+// Sets HOST=localhost, PORT=8080, VERBOSE=true
+
+const auto config2 = rfl::env::read<Config>().value();
+```
+
+Nested structs are flattened with `_` as a separator (e.g., `DATABASE_HOST`).
+Arrays use `_INDEX` suffix (e.g., `TAGS_0`, `TAGS_1`).
+Enums are serialized via their enumerator name (e.g., `"green"` for `Color::green`).
+All field names are converted to uppercase by default.
+
+### CLI argument parsing
+
+reflect-cpp can also parse command-line arguments directly into structs using `rfl::cli::read`:
+
+```cpp
+#include <rfl/cli.hpp>
+
+struct Config {
+  std::string host_name;
+  int port;
+  bool verbose;
+  std::vector<std::string> tags;
+};
+
+int main(int argc, char* argv[]) {
+  const auto config = rfl::cli::read<Config>(argc, argv).value();
+  // ./app --host-name=localhost --port=8080 --verbose --tags=a,b,c
+}
+```
+
+Field names are automatically converted from `snake_case` to `kebab-case` (`host_name` matches `--host-name`).
+
+You can mark fields as positional arguments with `rfl::Positional<T>` and add single-character aliases with `rfl::Short<"x", T>`:
+
+```cpp
+struct Config {
+  rfl::Positional<std::string> input_file;
+  rfl::Short<"o", std::string> output_dir;
+  rfl::Short<"v", bool> verbose;
+  int count;
+};
+
+// ./app data.csv -o /tmp/out -v --count=10
+```
+
+Nested structs, `std::optional`, `std::vector`, enums, `rfl::Flatten` and `rfl::Rename` are all supported. Refer to the [documentation](https://rfl.getml.com/cli) for details.
+
 ### Error messages
 
 reflect-cpp returns clear and comprehensive error messages:
@@ -329,6 +405,7 @@ struct Person {
       std::vector<Person>>
       children;
   float salary;
+  rfl::Deprecated<"Use Salary Instead", "Wage in dollars", std::optional<int>> wage;
 };
 
 const std::string json_schema = rfl::json::to_schema<Person>();
@@ -337,7 +414,7 @@ const std::string json_schema = rfl::json::to_schema<Person>();
 The resulting JSON schema looks like this:
 
 ```json
-{"$schema":"https://json-schema.org/draft/2020-12/schema","$ref":"#/$defs/Person","$defs":{"Person":{"type":"object","properties":{"children":{"type":"array","description":"The person's children. Pass an empty array for no children.","items":{"$ref":"#/$defs/Person"}},"email":{"type":"string","description":"Must be a proper email in the form xxx@xxx.xxx.","pattern":"^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$"},"first_name":{"type":"string"},"last_name":{"type":"string"},"salary":{"type":"number"}},"required":["children","email","first_name","last_name","salary"]}}}
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$ref":"#/$defs/Person","$defs":{"Person":{"type":"object","properties":{"children":{"type":"array","description":"The person's children. Pass an empty array for no children.","items":{"$ref":"#/$defs/Person"}},"email":{"type":"string","description":"Must be a proper email in the form xxx@xxx.xxx.","pattern":"^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$"},"first_name":{"type":"string"},"last_name":{"type":"string"},"salary":{"type":"number"},"wage":{"type":"integer","description":"Wage in dollars","deprecated":true,"deprecationMessage":"Use Salary Instead"}},"required":["children","email","first_name","last_name","salary"]}}}
 ```
 
 Note that this is currently supported for JSON only, since most other formats do not support schemata in the first place.
@@ -358,7 +435,7 @@ struct Item {
   Color color;
 };
 
-const auto item = Item{.pos_x = 2.0,  
+const auto item = Item{.pos_x = 2.0,
                        .pos_y = 3.0,
                        .shape = Shape::square,
                        .color = Color::red | Color::blue};
@@ -540,6 +617,7 @@ reflect-cpp supports the following containers from the C++ standard library:
 - `std::atomic`
 - `std::atomic_flag`
 - `std::deque`
+- `std::expected`
 - `std::chrono::duration`
 - `std::filesystem::path`
 - `std::forward_list`
@@ -570,7 +648,8 @@ In addition, it supports the following custom containers:
 
 - `rfl::Binary`: Used to express numbers in binary format.
 - `rfl::Box`: Similar to `std::unique_ptr`, but (almost) guaranteed to never be null.
-- `rfl::Bytestring`: An alias for `std::vector<std::byte>`. Supported by Avro, BSON, Cap'n Proto, CBOR, flexbuffers, msgpack and UBJSON. 
+- `rfl::Bytestring`: An alias for `std::vector<std::byte>`. Supported by Avro, BSON, Cap'n Proto, CBOR, flexbuffers, msgpack and UBJSON.
+- `rfl::Commented`: Allows you to add comments to fields (supported by YAML and XML).
 - `rfl::Generic`: A catch-all type that can represent (almost) anything.
 - `rfl::Hex`: Used to express numbers in hex format.
 - `rfl::Literal`: An explicitly enumerated string.
@@ -618,10 +697,13 @@ auto homer2 = rfl::json::read<Person>(json_string).value();
 
 ## Installation
 
-The following compilers are supported:
+The following compilers are supported for C++-20:
 - GCC 11.4 or higher
 - Clang 14.0 or higher
 - MSVC 17.8 (19.38) or higher
+
+The following compilers are supported for C++-26:
+- GCC 16.2 or higher
 
 ### Using vcpkg
 
@@ -659,6 +741,21 @@ cmake --build build --config Release -j 4 # MSVC
 ```
 
 For other installation methods, refer to the [documentation](https://rfl.getml.com/docs-readme).
+
+### Compiling with C++-26 reflection
+
+To compile reflect-cpp using the standard C++ reflection facilities, pass the CMake option
+`REFLECTCPP_USE_CPP26_REFLECTION` together with the compiler flag that activates reflection
+support in your compiler (`-freflection` for GCC, `-freflection-latest` for Clang):
+
+```bash
+cmake -S . -B build -DCMAKE_CXX_STANDARD=26 -DCMAKE_BUILD_TYPE=Release -DREFLECTCPP_USE_CPP26_REFLECTION=ON -DCMAKE_CXX_FLAGS="-freflection"
+cmake --build build -j 4
+```
+
+With C++-26 reflection, fixed-size C arrays and inheritance are supported out of the box (no
+`-DREFLECT_CPP_C_ARRAYS_OR_INHERITANCE` flag needed), and there are no range restrictions for
+enums. Refer to the [documentation](https://rfl.getml.com/cpp26_reflection) for details.
 
 ## The team behind reflect-cpp
 

@@ -12,8 +12,7 @@
 #include "is_named_tuple.hpp"
 #include "wrap_in_fields.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class OriginalStruct>
 auto move_to_field_tuple(OriginalStruct&& _t) {
@@ -39,7 +38,6 @@ auto move_to_field_tuple(OriginalStruct&& _t) {
   }
 }
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

@@ -4,10 +4,8 @@
 #include <type_traits>
 
 #include "../Validator.hpp"
-#include "StringLiteral.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class T>
 class is_validator;
@@ -22,7 +20,6 @@ template <class T>
 constexpr bool is_validator_v =
     is_validator<std::remove_cvref_t<std::remove_pointer_t<T>>>::value;
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

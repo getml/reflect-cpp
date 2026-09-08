@@ -65,7 +65,7 @@ Writer::OutputArrayType Writer::add_array_to_object(
     OutputObjectType* _parent) const {
   const auto arr = yyjson_mut_arr(doc());
   const bool ok = yyjson_mut_obj_add(
-      _parent->val_, yyjson_mut_strcpy(doc(), _name.data()), arr);
+      _parent->val_, yyjson_mut_strncpy(doc(), _name.data(), _name.size()), arr);
   if (!ok) {
     throw std::runtime_error("Could not add field '" + std::string(_name) +
                              "' to object.");
@@ -88,7 +88,7 @@ Writer::OutputObjectType Writer::add_object_to_object(
     OutputObjectType* _parent) const {
   const auto obj = yyjson_mut_obj(doc());
   const auto ok = yyjson_mut_obj_add(
-      _parent->val_, yyjson_mut_strcpy(doc(), _name.data()), obj);
+      _parent->val_, yyjson_mut_strncpy(doc(), _name.data(), _name.size()), obj);
   if (!ok) {
     throw std::runtime_error("Could not add field '" + std::string(_name) +
                              "' to object.");
@@ -110,7 +110,7 @@ Writer::OutputVarType Writer::add_null_to_object(
     const std::string_view& _name, OutputObjectType* _parent) const {
   const auto null = yyjson_mut_null(doc());
   const bool ok = yyjson_mut_obj_add(
-      _parent->val_, yyjson_mut_strcpy(doc(), _name.data()), null);
+      _parent->val_, yyjson_mut_strncpy(doc(), _name.data(), _name.size()), null);
   if (!ok) {
     throw std::runtime_error("Could not add field '" + std::string(_name) +
                              "' to object.");

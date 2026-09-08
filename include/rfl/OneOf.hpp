@@ -11,14 +11,21 @@
 
 namespace rfl {
 
-/// Requires that all of the contraints C and Cs be true.
+/// Requires that exactly one of the constraints C and Cs be true.
 template <class C, class... Cs>
 struct OneOf {
+  /// Validates that exactly one constraint is satisfied.
+  /// @tparam T The type of the value to validate
+  /// @param _value The value to validate
+  /// @return The value if exactly one constraint passes, otherwise an error
   template <class T>
   static rfl::Result<T> validate(const T& _value) noexcept {
     return validate_impl<T, C, Cs...>(_value, {});
   }
 
+  /// Converts the validator to a JSON schema type.
+  /// @tparam T The type being validated
+  /// @return A ValidationType representing one-of schema
   template <class T>
   static parsing::schema::ValidationType to_schema() {
     using ValidationType = parsing::schema::ValidationType;
@@ -28,6 +35,9 @@ struct OneOf {
   }
 
  private:
+  /// Creates an error message from a list of errors.
+  /// @param _errors The list of errors from failed validations
+  /// @return A formatted error message indicating the validation failure
   static std::string make_error_message(const std::vector<Error>& _errors) {
     std::stringstream stream;
     stream << "Expected exactly 1 out of " << sizeof...(Cs) + 1
@@ -43,7 +53,7 @@ struct OneOf {
   static rfl::Result<T> validate_impl(const T& _value,
                                       std::vector<Error> _errors) {
     return Head::validate(_value)
-        .and_then([&](auto&& _result) -> rfl::Result<T> {
+        .and_then([&](auto&&) -> rfl::Result<T> {
           if constexpr (sizeof...(Tail) == 0) {
             if (_errors.size() == sizeof...(Cs)) {
               return _value;

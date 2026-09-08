@@ -37,14 +37,19 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type,
 bool is_optional(const parsing::schema::Type& _t) {
   return _t.variant_.visit([&](const auto& _v) -> bool {
     using T = std::remove_cvref_t<decltype(_v)>;
-    if constexpr (std::is_same_v<T, parsing::schema::Type::Description>) {
+    if constexpr (std::is_same_v<T, parsing::schema::Type::Deprecated>) {
+      return is_optional(*_v.type_);
+
+    } else if constexpr (std::is_same_v<T,
+                                        parsing::schema::Type::Description>) {
       return is_optional(*_v.type_);
 
     } else if constexpr (std::is_same_v<T, parsing::schema::Type::Validated>) {
       return is_optional(*_v.type_);
 
     } else {
-      return std::is_same_v<T, parsing::schema::Type::Optional>;
+      return std::is_same_v<T, parsing::schema::Type::Optional> ||
+             std::is_same_v<T, parsing::schema::Type::DefaultVal>;
     }
   });
 }
@@ -217,10 +222,28 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type,
       }
       return schema::Type{.value = schema::Type::AnyOf{.anyOf = any_of}};
 
+    } else if constexpr (std::is_same<T, Type::DefaultVal>()) {
+      auto res = type_to_json_schema_type(*_t.type_, _no_required);
+      const auto update_prediction = [&](auto _v) -> schema::Type {
+        _v.annotations.value_.defaultValue = _t.default_value_;
+        return schema::Type{_v};
+      };
+      return rfl::visit(update_prediction, res.value);
+
+    } else if constexpr (std::is_same<T, Type::Deprecated>()) {
+      auto res = type_to_json_schema_type(*_t.type_, _no_required);
+      const auto update_prediction = [&](auto _v) -> schema::Type {
+        _v.annotations.value_.description = _t.description_;
+        _v.annotations.value_.deprecated = true;
+        _v.annotations.value_.deprecationMessage = _t.deprecation_message_;
+        return schema::Type{_v};
+      };
+      return rfl::visit(update_prediction, res.value);
+
     } else if constexpr (std::is_same<T, Type::Description>()) {
       auto res = type_to_json_schema_type(*_t.type_, _no_required);
       const auto update_prediction = [&](auto _v) -> schema::Type {
-        _v.description = _t.description_;
+        _v.annotations.value_.description = _t.description_;
         return schema::Type{_v};
       };
       return rfl::visit(update_prediction, res.value);
@@ -236,6 +259,22 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type,
     } else if constexpr (std::is_same<T, Type::Literal>()) {
       return schema::Type{.value =
                               schema::Type::StringEnum{.values = _t.values_}};
+
+    } else if constexpr (std::is_same<T, Type::DescribedLiteral>()) {
+      // Convert to OneOf with StringConst for each described value
+      auto one_of = std::vector<schema::Type>();
+      for (const auto& v : _t.values_) {
+        one_of.push_back(schema::Type{
+            .value = schema::Type::StringConst{
+                .annotations =
+                    schema::Type::Annotations{
+                        .description =
+                            v.description_.empty()
+                                ? std::nullopt
+                                : std::optional<std::string>(v.description_)},
+                .value = v.value_}});
+      }
+      return schema::Type{.value = schema::Type::OneOf{.oneOf = one_of}};
 
     } else if constexpr (std::is_same<T, Type::Object>()) {
       auto properties = rfl::Object<schema::Type>();

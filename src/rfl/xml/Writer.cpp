@@ -38,27 +38,23 @@ Writer::Writer(const Ref<pugi::xml_node>& _root, const std::string& _root_name)
 Writer::~Writer() = default;
 
 Writer::OutputArrayType Writer::array_as_root(const size_t /*_size*/) const {
-  auto node_child =
-      Ref<pugi::xml_node>::make(root_->append_child(root_name_));
+  auto node_child = Ref<pugi::xml_node>::make(root_->append_child(root_name_));
   return OutputArrayType(root_name_, node_child);
 }
 
 Writer::OutputObjectType Writer::object_as_root(const size_t /*_size*/) const {
-  auto node_child =
-      Ref<pugi::xml_node>::make(root_->append_child(root_name_));
+  auto node_child = Ref<pugi::xml_node>::make(root_->append_child(root_name_));
   return OutputObjectType(node_child);
 }
 
 Writer::OutputVarType Writer::null_as_root() const {
-  auto node_child =
-      Ref<pugi::xml_node>::make(root_->append_child(root_name_));
+  auto node_child = Ref<pugi::xml_node>::make(root_->append_child(root_name_));
   return OutputVarType(node_child);
 }
 
 Writer::OutputVarType Writer::value_as_root_impl(
     const std::string& _str) const {
-  auto node_child =
-      Ref<pugi::xml_node>::make(root_->append_child(root_name_));
+  auto node_child = Ref<pugi::xml_node>::make(root_->append_child(root_name_));
   node_child->append_child(pugi::node_pcdata).set_value(_str);
   return OutputVarType(node_child);
 }
@@ -72,6 +68,16 @@ Writer::OutputArrayType Writer::add_array_to_object(
     const std::string_view& _name, const size_t /*_size*/,
     OutputObjectType* _parent) const {
   return OutputArrayType(_name, _parent->node_);
+}
+
+void Writer::add_comment_to_array(const std::string_view& _comment,
+                                  OutputArrayType* _parent) const {
+  _parent->node_->append_child(pugi::node_comment).set_value(_comment);
+}
+
+void Writer::add_comment_to_object(const std::string_view& _comment,
+                                   OutputObjectType* _parent) const {
+  _parent->node_->append_child(pugi::node_comment).set_value(_comment);
 }
 
 Writer::OutputVarType Writer::add_value_to_array_impl(

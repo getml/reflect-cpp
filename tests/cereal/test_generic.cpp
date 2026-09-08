@@ -1,0 +1,33 @@
+#include <rfl.hpp>
+#include <rfl/cereal.hpp>
+#include <string>
+
+#include "write_and_read.hpp"
+
+namespace test_generic {
+
+TEST(cereal, test_generic) {
+  auto bart = rfl::Generic::Object();
+  bart["first_name"] = "Bart";
+  bart["last_name"] = "Simpson";
+  bart["age"] = 10;
+
+  auto lisa = rfl::Generic::Object();
+  lisa["first_name"] = "Lisa";
+  lisa["last_name"] = "Simpson";
+  lisa["age"] = 8;
+
+  auto maggie = rfl::Generic::Object();
+  maggie["first_name"] = "Lisa";
+  maggie["last_name"] = "Simpson";
+  maggie["age"] = 0;
+
+  auto homer = rfl::Generic::Object();
+  homer["first_name"] = "Lisa";
+  homer["last_name"] = "Simpson";
+  homer["age"] = 45;
+  homer["children"] = rfl::Generic::Array({bart, lisa, maggie});
+
+  write_and_read(homer);
+}
+}  // namespace test_generic

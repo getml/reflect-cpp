@@ -8,6 +8,13 @@
 
 namespace rfl::parsing::tabular {
 
+/**
+ * @brief Returns the Arrow data types for type T.
+ *
+ * @tparam T The type to get data types for.
+ * @tparam _s The serialization type.
+ * @return The Arrow data types.
+ */
 template <class T, SerializationType _s>
 inline auto make_arrow_data_types() {
   return ArrowBuildersType<named_tuple_t<std::remove_cvref_t<T>>,

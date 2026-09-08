@@ -17,11 +17,18 @@
 
 namespace rfl {
 
+/// Validator that checks if a string matches a compile-time regex pattern.
+/// Uses the CTRE library for compile-time regular expression matching.
+/// @tparam _regex The compile-time regular expression pattern
+/// @tparam _name A human-readable name for the pattern (used in error messages)
 template <internal::StringLiteral _regex, internal::StringLiteral _name>
 struct PatternValidator {
   using Name = Literal<_name>;
   using Regex = Literal<_regex>;
 
+  /// Validates that a string matches the regex pattern.
+  /// @param _str The string to validate
+  /// @return Result containing the string if it matches, or an error if it doesn't
   static Result<std::string> validate(const std::string& _str) noexcept {
     if (ctre::match<ctll::fixed_string<_regex.length>{
             ctll::construct_from_pointer, _regex.arr_.data()}>(_str)) {
@@ -34,6 +41,9 @@ struct PatternValidator {
     }
   }
 
+  /// Converts the pattern validator to a JSON schema type.
+  /// @tparam T The type being validated (unused, for template compatibility)
+  /// @return A ValidationType representing the regex constraint
   template <class T>
   static parsing::schema::ValidationType to_schema() {
     using ValidationType = parsing::schema::ValidationType;

@@ -4,11 +4,9 @@
 #include <type_traits>
 
 #include "../Attribute.hpp"
-//#include "../Field.hpp"
 #include "remove_rename.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class T>
 class is_attribute;
@@ -22,7 +20,6 @@ class is_attribute<Attribute<Type>> : public std::true_type {};
 template <class T>
 constexpr bool is_attribute_v = is_attribute<remove_rename_t<T>>::value;
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

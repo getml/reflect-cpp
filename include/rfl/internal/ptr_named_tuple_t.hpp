@@ -3,17 +3,14 @@
 
 #include <type_traits>
 
-//#include "is_named_tuple.hpp"//Not here
 #include "to_ptr_named_tuple.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class T>
 using ptr_named_tuple_t =
     std::invoke_result_t<decltype(to_ptr_named_tuple<T>), T>;
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

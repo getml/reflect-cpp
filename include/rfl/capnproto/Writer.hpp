@@ -167,9 +167,20 @@ class RFL_API Writer {
           internal::ptr_cast<const unsigned char*>(_var.data()), _var.size());
       _parent->val_.set(_parent->ix_++, capnp::Data::Reader(array_ptr));
 
-    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
-                         std::is_same<std::remove_cvref_t<T>, bool>()) {
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       _parent->val_.set(_parent->ix_++, _var);
+
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, float>()) {
+      _parent->val_.set(_parent->ix_++, _var);
+
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, double>()) {
+      _parent->val_.set(_parent->ix_++, _var);
+
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
+      _parent->val_.set(_parent->ix_++, static_cast<double>(_var));
+
+    } else if constexpr (std::is_unsigned<std::remove_cvref_t<T>>()) {
+      _parent->val_.set(_parent->ix_++, static_cast<std::uint64_t>(_var));
 
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       _parent->val_.set(_parent->ix_++, static_cast<std::int64_t>(_var));
@@ -186,10 +197,11 @@ class RFL_API Writer {
   template <class T>
   OutputVarType add_value_to_map(const std::string_view& _name, const T& _var,
                                  OutputMapType* _parent) const {
-    auto entries =
-        OutputArrayType{_parent->val_.get("entries").as<capnp::DynamicList>()};
+    auto entries = OutputArrayType{
+        .val_ = _parent->val_.get("entries").as<capnp::DynamicList>(),
+        .ix_ = _parent->ix_++};
     auto new_entry = add_object_to_array(2, &entries);
-    add_value_to_object("key", _name, &new_entry);
+    add_value_to_object("key", std::string(_name), &new_entry);
     return add_value_to_object("value", _var, &new_entry);
   }
 
@@ -207,9 +219,21 @@ class RFL_API Writer {
       _parent->val_.set(to_kj_string_ptr(_name),
                         capnp::Data::Reader(array_ptr));
 
-    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
-                         std::is_same<std::remove_cvref_t<T>, bool>()) {
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       _parent->val_.set(to_kj_string_ptr(_name), _var);
+
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, float>()) {
+      _parent->val_.set(to_kj_string_ptr(_name), _var);
+
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, double>()) {
+      _parent->val_.set(to_kj_string_ptr(_name), _var);
+
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
+      _parent->val_.set(to_kj_string_ptr(_name), static_cast<double>(_var));
+
+    } else if constexpr (std::is_unsigned<std::remove_cvref_t<T>>()) {
+      _parent->val_.set(to_kj_string_ptr(_name),
+                        static_cast<std::uint64_t>(_var));
 
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       _parent->val_.set(to_kj_string_ptr(_name),
@@ -238,9 +262,20 @@ class RFL_API Writer {
           internal::ptr_cast<const unsigned char*>(_var.data()), _var.size());
       _parent->val_.set(field, capnp::Data::Reader(array_ptr));
 
-    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>() ||
-                         std::is_same<std::remove_cvref_t<T>, bool>()) {
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
       _parent->val_.set(field, _var);
+
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, float>()) {
+      _parent->val_.set(field, _var);
+
+    } else if constexpr (std::is_same<std::remove_cvref_t<T>, double>()) {
+      _parent->val_.set(field, _var);
+
+    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
+      _parent->val_.set(field, static_cast<double>(_var));
+
+    } else if constexpr (std::is_unsigned<std::remove_cvref_t<T>>()) {
+      _parent->val_.set(field, static_cast<std::uint64_t>(_var));
 
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       _parent->val_.set(field, static_cast<std::int64_t>(_var));

@@ -10,6 +10,7 @@ struct Person {
   std::string first_name;
   rfl::DefaultVal<std::string> last_name = "Simpson";
   rfl::DefaultVal<std::string> town;
+  rfl::Rename<"country", rfl::DefaultVal<std::string>> home_country = "USA";
 };
 
 TEST(json, test_default_val) {
@@ -28,9 +29,10 @@ TEST(json, test_default_val) {
   EXPECT_EQ(homer.first_name, "Homer");
   EXPECT_EQ(homer.last_name.value(), "Simpson");
   EXPECT_EQ(homer.town.value(), "");
+  EXPECT_EQ(homer.home_country().value(), "USA");
 
   write_and_read(
       Person{"Waylon", "Smith", "Springfield"},
-      R"({"first_name":"Waylon","last_name":"Smith","town":"Springfield"})");
+      R"({"first_name":"Waylon","last_name":"Smith","town":"Springfield","country":"USA"})");
 }
 }  // namespace test_default_val

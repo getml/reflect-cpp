@@ -7,6 +7,7 @@
 #include "../always_false.hpp"
 #include "schemaful/IsSchemafulWriter.hpp"
 #include "supports_attributes.hpp"
+#include "supports_comments.hpp"
 
 namespace rfl::parsing {
 
@@ -43,6 +44,15 @@ struct Parent {
 
   struct Root {};
 
+  /**
+   * @brief Adds an array to the parent.
+   *
+   * @tparam ParentType The type of the parent.
+   * @param _w The writer to use.
+   * @param _size The size of the array.
+   * @param _parent The parent object.
+   * @return The new array.
+   */
   template <class ParentType>
   static OutputArrayType add_array(const W& _w, const size_t _size,
                                    const ParentType& _parent) {
@@ -71,7 +81,37 @@ struct Parent {
     }
   }
 
-  // For schemaful formats only.
+  /**
+   * @brief Adds a comment to the parent.
+   *
+   * @tparam ParentType The type of the parent.
+   * @param _w The writer to use.
+   * @param _comment The comment to add.
+   * @param _parent The parent object.
+   */
+  template <class ParentType>
+  static void add_comment(const W& _w, std::string_view _comment,
+                          const ParentType& _parent) {
+    using Type = std::remove_cvref_t<ParentType>;
+    if constexpr (supports_comments<W>) {
+      if constexpr (std::is_same<Type, Array>()) {
+        _w.add_comment_to_array(_comment, _parent.arr_);
+
+      } else if constexpr (std::is_same<Type, Object>()) {
+        _w.add_comment_to_object(_comment, _parent.obj_);
+      }
+    }
+  }
+
+  /**
+   * @brief Adds a map to the parent.
+   *
+   * @tparam ParentType The type of the parent.
+   * @param _w The writer to use.
+   * @param _size The size of the map.
+   * @param _parent The parent object.
+   * @return The new map.
+   */
   template <class ParentType>
   static auto add_map(const W& _w, const size_t _size,
                       const ParentType& _parent) {
@@ -97,6 +137,15 @@ struct Parent {
     }
   }
 
+  /**
+   * @brief Adds an object to the parent.
+   *
+   * @tparam ParentType The type of the parent.
+   * @param _w The writer to use.
+   * @param _size The size of the object.
+   * @param _parent The parent object.
+   * @return The new object.
+   */
   template <class ParentType>
   static OutputObjectType add_object(const W& _w, const size_t _size,
                                      const ParentType& _parent) {
@@ -125,6 +174,14 @@ struct Parent {
     }
   }
 
+  /**
+   * @brief Adds a null value to the parent.
+   *
+   * @tparam ParentType The type of the parent.
+   * @param _w The writer to use.
+   * @param _parent The parent object.
+   * @return The new null value.
+   */
   template <class ParentType>
   static OutputVarType add_null(const W& _w, const ParentType& _parent) {
     using Type = std::remove_cvref_t<ParentType>;
@@ -157,7 +214,14 @@ struct Parent {
     }
   }
 
-  // For schemaful formats only.
+  /**
+   * @brief Adds a union to the parent.
+   *
+   * @tparam ParentType The type of the parent.
+   * @param _w The writer to use.
+   * @param _parent The parent object.
+   * @return The new union.
+   */
   template <class ParentType>
   static auto add_union(const W& _w, const ParentType& _parent) {
     using Type = std::remove_cvref_t<ParentType>;
@@ -182,6 +246,16 @@ struct Parent {
     }
   }
 
+  /**
+   * @brief Adds a value to the parent.
+   *
+   * @tparam ParentType The type of the parent.
+   * @tparam T The type of the value.
+   * @param _w The writer to use.
+   * @param _var The value to add.
+   * @param _parent The parent object.
+   * @return The new value.
+   */
   template <class ParentType, class T>
   static OutputVarType add_value(const W& _w, const T& _var,
                                  const ParentType& _parent) {

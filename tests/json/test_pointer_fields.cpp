@@ -47,6 +47,6 @@ TEST(json, test_pointer_fields) {
       rfl::json::read<std::string_view, rfl::AllowRawPtrs>(json_str_view)
           .value();
   EXPECT_EQ(str, str_view_back);
-  delete str_view_back.data();
+  delete[] str_view_back.data();
 }
 }  // namespace test_pointer_fields

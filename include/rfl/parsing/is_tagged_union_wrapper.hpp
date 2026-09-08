@@ -9,6 +9,11 @@
 namespace rfl {
 namespace parsing {
 
+/**
+ * @brief Trait to check if a type is a tagged union wrapper.
+ *
+ * @tparam T The type to check.
+ */
 template <class T>
 class is_tagged_union_wrapper;
 

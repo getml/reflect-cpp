@@ -7,6 +7,11 @@
 namespace rfl {
 namespace parsing {
 
+/**
+ * @brief Trait to check if a type is a std::forward_list.
+ *
+ * @tparam T The type to check.
+ */
 template <class T>
 class is_forward_list;
 

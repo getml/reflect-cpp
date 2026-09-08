@@ -16,6 +16,8 @@ namespace rfl {
 template <internal::StringLiteral field_name_>
 struct AddStructName {
   /// Adds the name of the struct as a new field.
+  /// @param _view The view of the struct
+  /// @return A new named tuple with the struct name added as a field
   template <class StructType>
   static auto process(const auto& _view) {
     using LiteralType = Literal<

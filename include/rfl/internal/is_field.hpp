@@ -6,8 +6,7 @@
 #include "../Field.hpp"
 #include "StringLiteral.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class T>
 class is_field;
@@ -22,7 +21,6 @@ template <class T>
 constexpr bool is_field_v =
     is_field<std::remove_cvref_t<std::remove_pointer_t<T>>>::value;
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

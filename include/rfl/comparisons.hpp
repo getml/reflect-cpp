@@ -11,6 +11,13 @@ namespace rfl {
 
 template <auto _threshold>
 struct EqualTo {
+  /// @brief Validates that the given value is equal to the threshold.
+  /// @tparam T The type of the value to validate.
+  /// @param _value The value to validate.
+  /// @return Result<T> containing the value if valid, or an error if not.
+  /// @details This function checks if the input value is exactly equal to the
+  /// compile-time threshold. If not, it returns an error with a descriptive
+  /// message.
   template <class T>
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
@@ -23,6 +30,12 @@ struct EqualTo {
     return _value;
   }
 
+  /// @brief Converts the validation rule to a schema representation.
+  /// @tparam T The type for which the schema is generated.
+  /// @return parsing::schema::ValidationType representing the EqualTo
+  /// constraint.
+  /// @details This function creates a schema object that encodes the equality
+  /// constraint for serialization or documentation purposes.
   template <class T>
   static parsing::schema::ValidationType to_schema() {
     using ValidationType = parsing::schema::ValidationType;
@@ -36,6 +49,14 @@ struct EqualTo {
 
 template <auto _threshold>
 struct Minimum {
+  /// @brief Validates that the given value is greater than or equal to the
+  /// threshold.
+  /// @tparam T The type of the value to validate.
+  /// @param _value The value to validate.
+  /// @return Result<T> containing the value if valid, or an error if not.
+  /// @details This function checks if the input value is at least the
+  /// compile-time threshold. If not, it returns an error with a descriptive
+  /// message.
   template <class T>
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
@@ -48,6 +69,12 @@ struct Minimum {
     return _value;
   }
 
+  /// @brief Converts the validation rule to a schema representation.
+  /// @tparam T The type for which the schema is generated.
+  /// @return parsing::schema::ValidationType representing the Minimum
+  /// constraint.
+  /// @details This function creates a schema object that encodes the minimum
+  /// value constraint for serialization or documentation purposes.
   template <class T>
   static parsing::schema::ValidationType to_schema() {
     using ValidationType = parsing::schema::ValidationType;
@@ -61,6 +88,14 @@ struct Minimum {
 
 template <auto _threshold>
 struct ExclusiveMinimum {
+  /// @brief Validates that the given value is strictly greater than the
+  /// threshold.
+  /// @tparam T The type of the value to validate.
+  /// @param _value The value to validate.
+  /// @return Result<T> containing the value if valid, or an error if not.
+  /// @details This function checks if the input value is strictly greater than
+  /// the compile-time threshold. If not, it returns an error with a descriptive
+  /// message.
   template <class T>
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
@@ -73,6 +108,12 @@ struct ExclusiveMinimum {
     return _value;
   }
 
+  /// @brief Converts the validation rule to a schema representation.
+  /// @tparam T The type for which the schema is generated.
+  /// @return parsing::schema::ValidationType representing the ExclusiveMinimum
+  /// constraint.
+  /// @details This function creates a schema object that encodes the exclusive
+  /// minimum value constraint for serialization or documentation purposes.
   template <class T>
   static parsing::schema::ValidationType to_schema() {
     using ValidationType = parsing::schema::ValidationType;
@@ -86,6 +127,14 @@ struct ExclusiveMinimum {
 
 template <auto _threshold>
 struct Maximum {
+  /// @brief Validates that the given value is less than or equal to the
+  /// threshold.
+  /// @tparam T The type of the value to validate.
+  /// @param _value The value to validate.
+  /// @return Result<T> containing the value if valid, or an error if not.
+  /// @details This function checks if the input value is at most the
+  /// compile-time threshold. If not, it returns an error with a descriptive
+  /// message.
   template <class T>
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
@@ -98,6 +147,12 @@ struct Maximum {
     return _value;
   }
 
+  /// @brief Converts the validation rule to a schema representation.
+  /// @tparam T The type for which the schema is generated.
+  /// @return parsing::schema::ValidationType representing the Maximum
+  /// constraint.
+  /// @details This function creates a schema object that encodes the maximum
+  /// value constraint for serialization or documentation purposes.
   template <class T>
   static parsing::schema::ValidationType to_schema() {
     using ValidationType = parsing::schema::ValidationType;
@@ -111,6 +166,13 @@ struct Maximum {
 
 template <auto _threshold>
 struct ExclusiveMaximum {
+  /// @brief Validates that the given value is strictly less than the threshold.
+  /// @tparam T The type of the value to validate.
+  /// @param _value The value to validate.
+  /// @return Result<T> containing the value if valid, or an error if not.
+  /// @details This function checks if the input value is strictly less than the
+  /// compile-time threshold. If not, it returns an error with a descriptive
+  /// message.
   template <class T>
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
@@ -123,6 +185,12 @@ struct ExclusiveMaximum {
     return _value;
   }
 
+  /// @brief Converts the validation rule to a schema representation.
+  /// @tparam T The type for which the schema is generated.
+  /// @return parsing::schema::ValidationType representing the ExclusiveMaximum
+  /// constraint.
+  /// @details This function creates a schema object that encodes the exclusive
+  /// maximum value constraint for serialization or documentation purposes.
   template <class T>
   static parsing::schema::ValidationType to_schema() {
     using ValidationType = parsing::schema::ValidationType;
@@ -136,6 +204,13 @@ struct ExclusiveMaximum {
 
 template <auto _threshold>
 struct NotEqualTo {
+  /// @brief Validates that the given value is not equal to the threshold.
+  /// @tparam T The type of the value to validate.
+  /// @param _value The value to validate.
+  /// @return Result<T> containing the value if valid, or an error if not.
+  /// @details This function checks if the input value is not equal to the
+  /// compile-time threshold. If it is, it returns an error with a descriptive
+  /// message.
   template <class T>
   static Result<T> validate(T _value) noexcept {
     constexpr auto threshold = static_cast<T>(_threshold);
@@ -148,6 +223,12 @@ struct NotEqualTo {
     return _value;
   }
 
+  /// @brief Converts the validation rule to a schema representation.
+  /// @tparam T The type for which the schema is generated.
+  /// @return parsing::schema::ValidationType representing the NotEqualTo
+  /// constraint.
+  /// @details This function creates a schema object that encodes the
+  /// not-equal-to constraint for serialization or documentation purposes.
   template <class T>
   static parsing::schema::ValidationType to_schema() {
     using ValidationType = parsing::schema::ValidationType;

@@ -2,9 +2,11 @@
 
 #include <optional>
 #include <rfl/avro.hpp>
+#include <rfl/boost_serialization.hpp>
 #include <rfl/bson.hpp>
 #include <rfl/capnproto.hpp>
 #include <rfl/cbor.hpp>
+#include <rfl/cereal.hpp>
 #include <rfl/flexbuf.hpp>
 #include <rfl/json.hpp>
 #include <rfl/msgpack.hpp>
@@ -12,6 +14,7 @@
 #include <rfl/ubjson.hpp>
 #include <rfl/xml.hpp>
 #include <rfl/yaml.hpp>
+#include <rfl/yas.hpp>
 #include <vector>
 
 namespace licenses_write {
@@ -85,6 +88,18 @@ static void BM_licenses_write_reflect_cpp_bson(benchmark::State &state) {
 }
 BENCHMARK(BM_licenses_write_reflect_cpp_bson);
 
+static void BM_licenses_write_reflect_cpp_boost_serialization(
+    benchmark::State &state) {
+  const auto data = load_data();
+  for (auto _ : state) {
+    const auto output = rfl::boost_serialization::write(data);
+    if (output.size() == 0) {
+      std::cout << "No output" << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_licenses_write_reflect_cpp_boost_serialization);
+
 static void BM_licenses_write_reflect_cpp_capnproto(benchmark::State &state) {
   const auto schema = rfl::capnproto::to_schema<Licenses>();
   const auto data = load_data();
@@ -119,6 +134,17 @@ static void BM_licenses_write_reflect_cpp_cbor_without_field_names(
   }
 }
 BENCHMARK(BM_licenses_write_reflect_cpp_cbor_without_field_names);
+
+static void BM_licenses_write_reflect_cpp_cereal(benchmark::State &state) {
+  const auto data = load_data();
+  for (auto _ : state) {
+    const auto output = rfl::cereal::write(data);
+    if (output.size() == 0) {
+      std::cout << "No output" << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_licenses_write_reflect_cpp_cereal);
 
 static void BM_licenses_write_reflect_cpp_flexbuf(benchmark::State &state) {
   const auto data = load_data();
@@ -245,7 +271,17 @@ static void BM_licenses_write_reflect_cpp_yaml(benchmark::State &state) {
 }
 BENCHMARK(BM_licenses_write_reflect_cpp_yaml);
 
+static void BM_licenses_write_reflect_cpp_yas(benchmark::State &state) {
+  const auto data = load_data();
+  for (auto _ : state) {
+    const auto output = rfl::yas::write(data);
+    if (output.size() == 0) {
+      std::cout << "No output" << std::endl;
+    }
+  }
+}
+BENCHMARK(BM_licenses_write_reflect_cpp_yas);
+
 // ----------------------------------------------------------------------------
 
 }  // namespace licenses_write
-

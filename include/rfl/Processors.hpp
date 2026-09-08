@@ -4,75 +4,39 @@
 #include <type_traits>
 #include <utility>
 
-#include "internal/is_add_tags_to_variants_v.hpp"
-#include "internal/is_allow_raw_ptrs_v.hpp"
-#include "internal/is_default_if_missing_v.hpp"
-#include "internal/is_no_extra_fields_v.hpp"
-#include "internal/is_no_field_names_v.hpp"
-#include "internal/is_no_optionals_v.hpp"
-#include "internal/is_underlying_enums_v.hpp"
+#include "Tuple.hpp"
 
 namespace rfl {
 
+/// Represents a collection of processors that transform named tuples sequentially.
+/// Processors are applied from left to right, each transforming the output of the previous one.
 template <class... Ps>
 struct Processors;
 
+/// Base case: no processors, returns the named tuple unchanged.
 template <>
 struct Processors<> {
-  static constexpr bool add_tags_to_variants_ = false;
-  static constexpr bool add_namespaced_tags_to_variants_ = false;
-  static constexpr bool allow_raw_ptrs_ = false;
-  static constexpr bool all_required_ = false;
-  static constexpr bool default_if_missing_ = false;
-  static constexpr bool no_extra_fields_ = false;
-  static constexpr bool no_field_names_ = false;
-  static constexpr bool underlying_enums_ = false;
-
+  /// Processes a named tuple (a tuple-like structure with named fields) without modification.
+  /// @tparam T The type of the struct being processed
+  /// @tparam NamedTupleType The type of the named tuple
+  /// @param _named_tuple The named tuple to process
+  /// @return The unmodified named tuple
   template <class T, class NamedTupleType>
   static auto process(NamedTupleType&& _named_tuple) {
-    return _named_tuple;
+    return std::forward<NamedTupleType>(_named_tuple);
   }
 };
 
+/// Recursive case: applies Head processor, then recursively applies Tail processors.
 template <class Head, class... Tail>
 struct Processors<Head, Tail...> {
-  static constexpr bool add_tags_to_variants_ =
-      std::disjunction_v<internal::is_add_tags_to_variants<Head>,
-                         internal::is_add_tags_to_variants<Tail>...>;
-
-  static constexpr bool add_namespaced_tags_to_variants_ =
-      std::disjunction_v<internal::is_add_namespaced_tags_to_variants<Head>,
-                         internal::is_add_namespaced_tags_to_variants<Tail>...>;
-
-  static constexpr bool allow_raw_ptrs_ =
-      std::disjunction_v<internal::is_allow_raw_ptrs<Head>,
-                         internal::is_allow_raw_ptrs<Tail>...>;
-
-  static constexpr bool all_required_ =
-      std::disjunction_v<internal::is_no_optionals<Head>,
-                         internal::is_no_optionals<Tail>...>;
-
-  static constexpr bool default_if_missing_ =
-      std::disjunction_v<internal::is_default_if_missing<Head>,
-                         internal::is_default_if_missing<Tail>...>;
-
-  static constexpr bool no_extra_fields_ =
-      std::disjunction_v<internal::is_no_extra_fields<Head>,
-                         internal::is_no_extra_fields<Tail>...>;
-
-  static constexpr bool no_field_names_ =
-      std::disjunction_v<internal::is_no_field_names<Head>,
-                         internal::is_no_field_names<Tail>...>;
-
-  static constexpr bool underlying_enums_ =
-      std::disjunction_v<internal::is_underlying_enums<Head>,
-                         internal::is_underlying_enums<Tail>...>;
-
+  /// Processes a named tuple by applying Head processor then all Tail processors.
+  /// @tparam T The type of the struct being processed
+  /// @tparam NamedTupleType The type of the named tuple
+  /// @param _named_tuple The named tuple to process
+  /// @return The transformed named tuple after all processors have been applied
   template <class T, class NamedTupleType>
   static auto process(NamedTupleType&& _named_tuple) {
-    static_assert(!add_tags_to_variants_ || !add_namespaced_tags_to_variants_,
-                  "You cannot add both rfl::AddTagsToVariants and "
-                  "rfl::AddNamespacedTagsToVariants.");
     return Processors<Tail...>::template process<T>(
         Head::template process<T>(std::move(_named_tuple)));
   }

@@ -35,9 +35,14 @@ SchemaImpl& SchemaImpl::operator=(SchemaImpl&& _other) noexcept {
   if (this == &_other) {
     return *this;
   }
+  if (iface_) {
+    avro_value_iface_decref(iface_);
+    avro_schema_decref(*schema_);
+  }
   json_str_ = std::move(_other.json_str_);
   schema_ = std::move(_other.schema_);
   iface_ = _other.iface_;
+  _other.iface_ = nullptr;
   return *this;
 }
 

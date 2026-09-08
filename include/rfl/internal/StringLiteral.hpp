@@ -3,23 +3,37 @@
 
 #include <algorithm>
 #include <array>
+#include <concepts>
 #include <string>
 #include <string_view>
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 /// Normal strings cannot be used as template
 /// parameters, but this can. This is needed
 /// for the parameters names in the NamedTuples.
 template <size_t N>
 struct StringLiteral {
-  constexpr StringLiteral(const auto... _chars) : arr_{_chars..., '\0'} {}
+  /// Constrained via template type parameters rather than a requires-fold
+  /// over decltype of the function parameter pack: the latter crashes
+  /// clang 21/22 in C++26 mode (llvm/llvm-project#198052, #205000).
+  template <std::same_as<char>... Chars>
+  constexpr StringLiteral(const Chars... _chars) : arr_{_chars..., '\0'} {}
 
   constexpr StringLiteral(const std::array<char, N> _arr) : arr_(_arr) {}
 
   constexpr StringLiteral(const char (&_str)[N]) {
     std::copy_n(_str, N, std::data(arr_));
+  }
+
+  constexpr StringLiteral(const std::string_view _str) {
+    std::copy_n(_str.data(), _str.size(), std::data(arr_));
+  }
+
+  template <class T>
+    requires(std::is_same_v<T, const char*> || std::is_same_v<T, char*>)
+  explicit constexpr StringLiteral(T _data) {
+    std::copy_n(_data, N, std::data(arr_));
   }
 
   /// Returns the value as a string.
@@ -50,7 +64,6 @@ constexpr inline bool operator!=(const StringLiteral<N1>& _first,
   return !(_first == _second);
 }
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

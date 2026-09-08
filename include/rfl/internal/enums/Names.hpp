@@ -7,10 +7,7 @@
 #include <utility>
 
 #include "../../Literal.hpp"
-//#include "../../config.hpp"
-//#include "../../define_literal.hpp"
 #include "../../make_named_tuple.hpp"
-//#include "../../thirdparty/enchantum/enchantum.hpp"
 #include "../StringLiteral.hpp"
 
 namespace rfl::internal::enums {
@@ -66,4 +63,3 @@ names_to_underlying_enumerator_array(
 }  // namespace rfl::internal::enums
 
 #endif
-

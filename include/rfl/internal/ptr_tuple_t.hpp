@@ -3,13 +3,11 @@
 
 #include "to_ptr_tuple.hpp"
 
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class T>
 using ptr_tuple_t = decltype(to_ptr_tuple(std::declval<T&>()));
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

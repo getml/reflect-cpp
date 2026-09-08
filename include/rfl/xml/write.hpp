@@ -10,6 +10,7 @@
 #include "../Processors.hpp"
 #include "../internal/StringLiteral.hpp"
 #include "../internal/get_type_name.hpp"
+#include "../internal/no_field_names_v.hpp"
 #include "../internal/remove_namespaces.hpp"
 #include "../parsing/Parent.hpp"
 #include "Parser.hpp"
@@ -17,6 +18,11 @@
 namespace rfl {
 namespace xml {
 
+/// Helper function to determine the XML root element name at compile time.
+/// Uses explicit root name if provided, otherwise derives it from the type name.
+/// @tparam _root Explicitly specified root name (empty string means auto-derive)
+/// @tparam T The type being serialized
+/// @return The root element name to use
 template <internal::StringLiteral _root, class T>
 consteval auto get_root_name() {
   if constexpr (_root != internal::StringLiteral("")) {
@@ -27,7 +33,14 @@ consteval auto get_root_name() {
   }
 }
 
-/// Writes a XML into an ostream.
+/// Writes an XML representation into an ostream.
+/// Uses compile-time reflection to serialize a C++ object to XML and write to a stream.
+/// @tparam _root The name of the XML root element (defaults to type name if empty)
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _obj The object to serialize to XML
+/// @param _stream The output stream to write XML to
+/// @param _indent The indentation string for formatting (default: 4 spaces)
+/// @return The output stream (for chaining)
 template <internal::StringLiteral _root = internal::StringLiteral(""),
           class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream,
@@ -53,7 +66,7 @@ std::ostream& write(const auto& _obj, std::ostream& _stream,
   auto w = Writer(doc, root_name.str());
 
   using ProcessorsType = Processors<Ps...>;
-  static_assert(!ProcessorsType::no_field_names_,
+  static_assert(!internal::no_field_names_v<ProcessorsType>,
                 "The NoFieldNames processor is not supported for BSON, XML, "
                 "TOML, or YAML.");
   Parser<T, ProcessorsType>::write(w, _obj, typename ParentType::Root{});
@@ -63,7 +76,13 @@ std::ostream& write(const auto& _obj, std::ostream& _stream,
   return _stream;
 }
 
-/// Returns a XML string.
+/// Returns an XML string representation of the object.
+/// Uses compile-time reflection to serialize a C++ object to XML format.
+/// @tparam _root The name of the XML root element (defaults to type name if empty)
+/// @tparam Ps Processors to apply during serialization (transforms the data)
+/// @param _obj The object to serialize to XML
+/// @param _indent The indentation string for formatting (default: 4 spaces)
+/// @return XML string representation of the object
 template <internal::StringLiteral _root = internal::StringLiteral(""),
           class... Ps>
 std::string write(const auto& _obj, const std::string& _indent = "    ") {

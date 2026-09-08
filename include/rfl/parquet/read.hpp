@@ -1,13 +1,25 @@
 #ifndef RFL_PARQUET_READ_HPP_
 #define RFL_PARQUET_READ_HPP_
 
+// Silence a -Warray-bounds false positive in Apache Arrow
+// (buffer_builder.h) with GCC 16.
+#ifdef __GNUC__
+#ifndef __clang__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Warray-bounds"
+#endif
+#endif
 #include <arrow/io/api.h>
 #include <parquet/arrow/reader.h>
+#ifdef __GNUC__
+#ifndef __clang__
+#pragma GCC diagnostic pop
+#endif
+#endif
 
 #include <istream>
 #include <string>
 
-//#include "../Processors.hpp"
 #include "../Result.hpp"
 #include "../concepts.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
@@ -15,7 +27,12 @@
 
 namespace rfl::parquet {
 
-/// Parses an object from PARQUET using reflection.
+/// @brief Parses an object from PARQUET using reflection.
+/// @tparam T The type to parse.
+/// @tparam Ps Additional parameters for parsing.
+/// @param _bytes Pointer to the byte buffer containing the PARQUET data.
+/// @param _size Size of the byte buffer.
+/// @return Result containing the parsed object or an error message.
 template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(
     const concepts::ByteLike auto* _bytes, const size_t _size) {
@@ -33,13 +50,13 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
                  arrow_reader.status().message());
   }
 
-  std::shared_ptr<arrow::Table> table;
+  const auto table_or = arrow_reader.ValueOrDie()->ReadTable();
 
-  const auto status = arrow_reader.ValueOrDie()->ReadTable(&table);
-
-  if (!status.ok()) {
-    return error("Could not read table: " + status.message());
+  if (!table_or.ok()) {
+    return error("Could not read table: " + table_or.status().message());
   }
+
+  auto& table = table_or.ValueOrDie();
 
   using ArrowReader = parsing::tabular::ArrowReader<
       T, parsing::tabular::SerializationType::parquet, Ps...>;
@@ -48,13 +65,21 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
       [](const auto& _r) { return _r.read(); });
 }
 
-/// Parses an object from PARQUET using reflection.
+/// @brief Parses an object from PARQUET using reflection.
+/// @tparam T The type to parse.
+/// @tparam Ps Additional parameters for parsing.
+/// @param _bytes Contiguous byte container holding the PARQUET data.
+/// @return Result containing the parsed object or an error message.
 template <class T, class... Ps>
 auto read(const concepts::ContiguousByteContainer auto& _bytes) {
   return read<T, Ps...>(_bytes.data(), _bytes.size());
 }
 
-/// Parses an object from a stream.
+/// @brief Parses an object from a stream.
+/// @tparam T The type to parse.
+/// @tparam Ps Additional parameters for parsing.
+/// @param _stream Input stream containing the PARQUET data.
+/// @return Result containing the parsed object or an error message.
 template <class T, class... Ps>
 auto read(std::istream& _stream) {
   std::istreambuf_iterator<char> begin(_stream), end;
