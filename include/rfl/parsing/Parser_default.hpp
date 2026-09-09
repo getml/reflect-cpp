@@ -17,7 +17,6 @@
 #include "../internal/is_literal.hpp"
 #include "../internal/is_validator.hpp"
 #include "../internal/processed_t.hpp"
-#include "../internal/ptr_cast.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
@@ -56,6 +55,7 @@
 #include "ParserTimePoint.hpp"
 #include "ParserTuple.hpp"
 #include "ParserUniquePtr.hpp"
+#include "ParserValidator.hpp"
 #include "ParserVariant.hpp"
 #include "ParserVectorstring.hpp"
 #include "ParserWString.hpp"
@@ -196,6 +196,9 @@ struct Parser {
 
     } else if constexpr (std::is_enum_v<T>) {
       return ParserEnum<R, W, T, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_validator_v<T>) {
+      return ParserValidator<R, W, T, ProcessorsType>::read(_r, _var);
 
     } else if constexpr (is_wstring_v<T>) {
       return ParserWString<R, W, ProcessorsType>::read(_r, _var);
@@ -380,6 +383,9 @@ struct Parser {
     } else if constexpr (std::is_enum_v<T>) {
       ParserEnum<R, W, T, ProcessorsType>::write(_w, _var, _parent);
 
+    } else if constexpr (is_validator_v<T>) {
+      ParserValidator<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
     } else if constexpr (is_wstring_v<T>) {
       ParserWString<R, W, ProcessorsType>::write(_w, _var, _parent);
 
@@ -551,6 +557,9 @@ struct Parser {
 
     } else if constexpr (std::is_enum_v<U>) {
       return ParserEnum<R, W, U, ProcessorsType>::to_schema(_definitions);
+
+    } else if constexpr (is_validator_v<U>) {
+      return ParserValidator<R, W, U, ProcessorsType>::to_schema(_definitions);
 
     } else if constexpr (is_wstring_v<U>) {
       return ParserWString<R, W, ProcessorsType>::to_schema(_definitions);
