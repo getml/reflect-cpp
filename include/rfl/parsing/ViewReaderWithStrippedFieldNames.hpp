@@ -116,7 +116,7 @@ class ViewReaderWithStrippedFieldNames {
       return move_to(const_cast<std::remove_const_t<Target>*>(_t), _s);
     } else if constexpr (!rfl::internal::is_array_v<Source> &&
                          !std::is_array_v<Target>) {
-      ::new (_t) Target(std::move(*_s));
+      *_t = Target(std::move(*_s));
     } else if constexpr (rfl::internal::is_array_v<Source>) {
       static_assert(std::is_array_v<Target>,
                     "Expected target to be a c-array.");

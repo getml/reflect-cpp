@@ -8,12 +8,8 @@
 
 #include "../Result.hpp"
 #include "../Tuple.hpp"
-#include "../always_false.hpp"
-#include "../internal/nth_element_t.hpp"
-#include "../internal/ptr_cast.hpp"
 #include "Parent.hpp"
 #include "TupleReader.hpp"
-#include "call_destructors_on_tuple_where_necessary.hpp"
 #include "schema/Type.hpp"
 #include "schemaful/IsSchemafulReader.hpp"
 #include "schemaful/IsSchemafulWriter.hpp"
@@ -53,26 +49,19 @@ struct TupleParser {
 
     } else {
       const auto parse = [&](const InputArrayType& _arr) -> Result<TupleType> {
-        alignas(TupleType) unsigned char buf[sizeof(TupleType)]{};
-        auto ptr = internal::ptr_cast<TupleType*>(&buf);
+        TupleType tup{};
         const auto tuple_reader =
             TupleReader<R, W, TupleType, _ignore_empty_containers,
-                        _all_required, ProcessorsType>(&_r, ptr);
+                        _all_required, ProcessorsType>(&_r, &tup);
         auto err = _r.read_array(tuple_reader, _arr);
         if (err) {
-          call_destructors_on_tuple_where_necessary(tuple_reader.num_set(),
-                                                    ptr);
           return error(*err);
         }
         err = tuple_reader.handle_missing_fields();
         if (err) {
-          call_destructors_on_tuple_where_necessary(tuple_reader.num_set(),
-                                                    ptr);
           return error(*err);
         }
-        auto res = Result<TupleType>(std::move(*ptr));
-        call_destructors_on_tuple_where_necessary(tuple_reader.num_set(), ptr);
-        return res;
+        return tup;
       };
 
       return _r.to_array(_var).and_then(parse);

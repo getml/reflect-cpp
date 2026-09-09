@@ -35,7 +35,6 @@
 #include "../../named_tuple_t.hpp"
 #include "../../to_view.hpp"
 #include "../../view_t.hpp"
-#include "../call_destructors_where_necessary.hpp"
 #include "make_chunked_array_iterators.hpp"
 
 namespace rfl::parsing::tabular {
@@ -134,12 +133,11 @@ class ArrowReader {
             std::remove_pointer_t<typename FieldType::Type>>;
         auto res = *_chunked_array_iterators->template get<_i>();
         if (!res) {
-          destroy_value<_i>(&view);
           throw std::runtime_error(
               std::string("Field '") + typename FieldType::Name().str() +
               std::string("' could not be set: ") + res.error().what());
         }
-        ::new (view.template get<_i>()) T(std::move(*res));
+        *view.template get<_i>() = T(std::move(*res));
         ++_chunked_array_iterators->template get<_i>();
       };
 
@@ -151,25 +149,6 @@ class ArrowReader {
     }
 
     return std::move(*ptr);
-  }
-
-  /**
-   * @brief Destroys the values that have been set in the view so far.
-   * @tparam _i The number of values that have been set.
-   * @tparam ViewType The type of the view.
-   * @param _view The view to destroy.
-   */
-  template <size_t _i, class ViewType>
-  void destroy_value(ViewType* _view) const {
-    static_assert(_i < ViewType::size(), "_i out of bounds.");
-    auto set = std::array<bool, ViewType::size()>();
-    for (size_t i = 0; i < _i; ++i) {
-      set[i] = true;
-    }
-    for (size_t i = _i; i < ViewType::size(); ++i) {
-      set[i] = false;
-    }
-    call_destructors_where_necessary(set, _view);
   }
 
  private:

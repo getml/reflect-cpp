@@ -30,7 +30,8 @@ class ArrayReader {
 
   /**
    * @brief Checks if the correct number of elements has been read.
-   * @return An error if the number of elements is incorrect, std::nullopt otherwise.
+   * @return An error if the number of elements is incorrect, std::nullopt
+   * otherwise.
    */
   std::optional<Error> check_size() const {
     if (num_set_ != size_) {
@@ -49,7 +50,8 @@ class ArrayReader {
   /**
    * @brief Reads a variable from the input and adds it to the array.
    * @param _var The input variable to read.
-   * @return An error if reading fails or if the array is already full, std::nullopt otherwise.
+   * @return An error if reading fails or if the array is already full,
+   * std::nullopt otherwise.
    */
   std::optional<Error> read(const InputVarType& _var) const {
     if (num_set_ == size_) {
@@ -83,7 +85,7 @@ class ArrayReader {
       return move_to(const_cast<std::remove_const_t<Target>*>(_t), _s);
     } else if constexpr (!internal::is_array_v<Source> &&
                          !std::is_array_v<Target>) {
-      ::new (_t) Target(std::move(*_s));
+      *_t = Target(std::move(*_s));
     } else if constexpr (internal::is_array_v<Source>) {
       for (size_t i = 0; i < _s->arr_.size(); ++i) {
         move_to(&((*_t)[i]), &(_s->arr_[i]));

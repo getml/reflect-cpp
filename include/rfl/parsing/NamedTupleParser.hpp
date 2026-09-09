@@ -16,7 +16,6 @@
 #include "../internal/is_extra_fields.hpp"
 #include "../internal/is_skip.hpp"
 #include "../internal/nth_element_t.hpp"
-#include "../internal/ptr_cast.hpp"
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
@@ -25,7 +24,6 @@
 #include "ViewReaderWithDefault.hpp"
 #include "ViewReaderWithDefaultAndStrippedFieldNames.hpp"
 #include "ViewReaderWithStrippedFieldNames.hpp"
-#include "call_destructors_where_necessary.hpp"
 #include "is_empty.hpp"
 #include "is_required.hpp"
 #include "schema/Type.hpp"
@@ -88,20 +86,15 @@ struct NamedTupleParser {
    */
   static Result<NamedTuple<FieldTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
-    alignas(NamedTuple<FieldTypes...>) unsigned char
-        buf[sizeof(NamedTuple<FieldTypes...>)];
-    auto ptr = internal::ptr_cast<NamedTuple<FieldTypes...>*>(&buf);
-    auto view = rfl::to_view(*ptr);
+    NamedTuple<FieldTypes...> nt;
+    auto view = rfl::to_view(nt);
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto [set, err] =
         Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
     if (err) [[unlikely]] {
-      call_destructors_where_necessary(set, &view);
       return error(*err);
     }
-    auto res = Result<NamedTuple<FieldTypes...>>(std::move(*ptr));
-    call_destructors_where_necessary(set, &view);
-    return res;
+    return nt;
   }
 
   /**
@@ -238,8 +231,7 @@ struct NamedTupleParser {
 
   template <typename View, size_t _i>
   static void add_field_to_schema(
-      std::map<std::string, schema::Type>* _definitions,
-      SchemaType* _schema,
+      std::map<std::string, schema::Type>* _definitions, SchemaType* _schema,
       View* _view) noexcept {
     using F = internal::nth_element_t<_i, FieldTypes...>;
     using U = std::remove_cvref_t<typename F::Type>;
@@ -270,10 +262,9 @@ struct NamedTupleParser {
     (add_field_to_object<_is>(_w, _tup, _ptr), ...);
   }
 
-  template <typename View,  int... _is>
+  template <typename View, int... _is>
   static void build_schema(std::map<std::string, schema::Type>* _definitions,
-                           SchemaType* _schema,
-                           View* _view,
+                           SchemaType* _schema, View* _view,
                            std::integer_sequence<int, _is...>) noexcept {
     (add_field_to_schema<View, _is>(_definitions, _schema, _view), ...);
 
@@ -312,12 +303,7 @@ struct NamedTupleParser {
         _errors->emplace_back(stream.str());
 
       } else if constexpr (!internal::has_default_val_v<NamedTupleType>) {
-        if constexpr (!std::is_const_v<ValueType>) {
-          ::new (rfl::get<_i>(_view)) ValueType();
-        } else {
-          using NonConstT = std::remove_const_t<ValueType>;
-          ::new (const_cast<NonConstT*>(rfl::get<_i>(_view))) NonConstT();
-        }
+        *rfl::get<_i>(_view) = ValueType();
         std::get<_i>(*_set) = true;
       }
     }

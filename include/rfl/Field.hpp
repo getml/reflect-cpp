@@ -26,6 +26,9 @@ struct Field {
   /// The name of the field as a Literal type.
   using Name = rfl::Literal<_name>;
 
+  /// Default constructor.
+  Field() = default;
+
   /// Constructs a Field from a const reference to the value.
   /// @param _value The value to store in the field
   Field(const Type& _value) : value_(_value) {}

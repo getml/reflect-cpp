@@ -61,7 +61,6 @@
 #include "ParserWString.hpp"
 #include "Parser_base.hpp"
 #include "VectorParser.hpp"
-#include "call_destructors_where_necessary.hpp"
 #include "is_string_map.hpp"
 #include "make_type_name.hpp"
 #include "schema/Type.hpp"
@@ -682,19 +681,15 @@ struct Parser {
   /// and placement new. This is how we deal with the fact that some fields
   /// might not be default-constructible.
   static Result<T> read_struct(const R& _r, const InputVarType& _var) {
-    alignas(T) unsigned char buf[sizeof(T)]{};
-    auto ptr = internal::ptr_cast<T*>(&buf);
-    auto view = ProcessorsType::template process<T>(to_view(*ptr));
+    T t{};
+    auto view = ProcessorsType::template process<T>(to_view(t));
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto [set, err] =
         Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
     if (err) [[unlikely]] {
-      call_destructors_where_necessary(set, &view);
       return error(err->what());
     }
-    auto res = Result<T>(std::move(*ptr));
-    call_destructors_where_necessary(set, &view);
-    return res;
+    return t;
   }
 
   /// This is actually more straight-forward than the standard case - we
@@ -703,22 +698,16 @@ struct Parser {
   /// so we only use it when the DefaultIfMissing preprocessor is added.
   static Result<T> read_struct_with_default(const R& _r,
                                             const InputVarType& _var) {
-    try {
-      auto t = T{};  // This might fail, for instance if the default value does
-                     // not satisfy the validator, but in that case we will just
-                     // return the error.
-      auto view = ProcessorsType::template process<T>(to_view(t));
-      using ViewType = decltype(view);
-      const auto err =
-          Parser<R, W, ViewType, ProcessorsType>::read_view_with_default(
-              _r, _var, &view);
-      if (err) [[unlikely]] {
-        return error(*err);
-      }
-      return t;
-    } catch (std::exception& e) {
-      return error(e.what());
+    T t{};
+    auto view = ProcessorsType::template process<T>(to_view(t));
+    using ViewType = decltype(view);
+    const auto err =
+        Parser<R, W, ViewType, ProcessorsType>::read_view_with_default(_r, _var,
+                                                                       &view);
+    if (err) [[unlikely]] {
+      return error(*err);
     }
+    return t;
   }
 };
 

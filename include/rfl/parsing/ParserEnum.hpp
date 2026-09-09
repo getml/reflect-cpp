@@ -12,10 +12,8 @@
 #include "../internal/enums/is_scoped_enum.hpp"
 #include "../internal/has_reflector.hpp"
 #include "../internal/underlying_enums_v.hpp"
-#include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
-#include "call_destructors_where_necessary.hpp"
 #include "make_type_name.hpp"
 #include "schema/Type.hpp"
 #include "schemaful/IsSchemafulReader.hpp"
@@ -61,8 +59,7 @@ struct ParserEnum {
           .transform([](const auto _val) { return static_cast<T>(_val); });
     } else {
       return _r.template to_basic_type<std::string>(_var).and_then(
-          rfl::string_to_enum<T, internal::enum_names_only_v<
-              ProcessorsType>>);
+          rfl::string_to_enum<T, internal::enum_names_only_v<ProcessorsType>>);
     }
   }
 
