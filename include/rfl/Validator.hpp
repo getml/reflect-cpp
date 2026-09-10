@@ -4,7 +4,6 @@
 #include <cstddef>
 #include <exception>
 #include <functional>
-#include <optional>
 #include <type_traits>
 #include <utility>
 
@@ -26,7 +25,7 @@ struct Validator {
  public:
   using ValidationType =
       std::conditional_t<sizeof...(Vs) == 0, V, AllOf<V, Vs...>>;
-  using Type = T;
+  using ReflectionType = Result<T>;
 
   /// Exception-free validation from a value.
   /// @param _value The value to validate
@@ -41,13 +40,11 @@ struct Validator {
   }
 
   /// Default constructor - if the default value is legal, assign default value,
-  /// else assign std::nullopt.
-  Validator()
-      : value_(from_value(T())
-                   .transform([](const auto& _v) {
-                     return std::optional<T>(_v.value());
-                   })
-                   .value_or(std::nullopt)) {}
+  /// else assign Error.
+  Validator() : value_(ValidationType::validate(T())) {}
+
+  /// Constructs from a Result<T>.
+  Validator(Result<T> _value) : value_(std::move(_value)) {}
 
   /// Move constructor.
   /// @param _other The validator to move from
@@ -171,6 +168,10 @@ struct Validator {
   /// @return Const pointer to the stored value
   const T* operator->() const noexcept { return &(*value_); }
 
+  /// Returns the underlying result type.
+  /// @return The underlying result type.
+  const Result<T>& reflection() const noexcept { return value_; }
+
   /// Exposes the underlying value.
   T& value() noexcept { return value_.value(); }
 
@@ -179,7 +180,7 @@ struct Validator {
 
  private:
   /// The underlying value.
-  std::optional<T> value_;
+  Result<T> value_;
 };
 
 /// Three-way comparison operator for validators with the same validation rules.
