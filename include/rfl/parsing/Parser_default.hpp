@@ -693,7 +693,7 @@ struct Parser {
     } else {
       T t{};
       auto view = ProcessorsType::template process<T>(to_view(t));
-      const auto [set, err] =
+      const auto err =
           Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
       if (err) [[unlikely]] {
         return error(err->what());

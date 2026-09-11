@@ -29,20 +29,12 @@ class ViewReaderWithStrippedFieldNames {
    * @param _r The reader to use.
    * @param _view The view to read into.
    * @param _found A boolean array indicating which fields have been found.
-   * @param _set A boolean array indicating which fields have been successfully
-   * set.
    * @param _errors The vector to collect errors in.
    */
   ViewReaderWithStrippedFieldNames(const R* _r, ViewType* _view,
                                    std::array<bool, size_>* _found,
-                                   std::array<bool, size_>* _set,
                                    std::vector<std::string>* _errors)
-      : i_(0),
-        r_(_r),
-        view_(_view),
-        found_(_found),
-        set_(_set),
-        errors_(_errors) {}
+      : i_(0), r_(_r), view_(_view), found_(_found), errors_(_errors) {}
 
   ~ViewReaderWithStrippedFieldNames() = default;
 
@@ -59,7 +51,7 @@ class ViewReaderWithStrippedFieldNames {
              << " fields, but got at least one more.";
       return Error(stream.str());
     }
-    assign_to_field_i(*r_, _var, view_, errors_, found_, set_, i_,
+    assign_to_field_i(*r_, _var, view_, errors_, found_, i_,
                       std::make_integer_sequence<int, size_>());
     ++i_;
     return std::nullopt;
@@ -76,7 +68,7 @@ class ViewReaderWithStrippedFieldNames {
   template <int i>
   static void assign_if_field_is_field_i(const R& _r, const auto& _var,
                                          auto* _view, auto* _errors,
-                                         auto* _found, auto* _set, int _i) {
+                                         auto* _found, int _i) {
     using FieldType = tuple_element_t<i, typename ViewType::Fields>;
     using OriginalType = typename FieldType::Type;
     using T =
@@ -97,16 +89,14 @@ class ViewReaderWithStrippedFieldNames {
       } else {
         rfl::get<i>(*_view) = std::move(*res);
       }
-      std::get<i>(*_set) = true;
     }
   }
 
   template <int... is>
   static void assign_to_field_i(const R& _r, const auto& _var, auto* _view,
-                                auto* _errors, auto* _found, auto* _set, int _i,
+                                auto* _errors, auto* _found, int _i,
                                 std::integer_sequence<int, is...>) {
-    (assign_if_field_is_field_i<is>(_r, _var, _view, _errors, _found, _set, _i),
-     ...);
+    (assign_if_field_is_field_i<is>(_r, _var, _view, _errors, _found, _i), ...);
   }
 
   // TODO: Unnecessary code duplication.
@@ -142,10 +132,6 @@ class ViewReaderWithStrippedFieldNames {
 
   /// Indicates that a certain field has been found.
   std::array<bool, size_>* found_;
-
-  /// Indicates that a certain field has been successfully set - necessary,
-  /// because we have to trigger the destructors manually.
-  std::array<bool, size_>* set_;
 
   /// Collects any errors we may have come across.
   std::vector<std::string>* errors_;

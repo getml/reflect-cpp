@@ -30,13 +30,11 @@ class ViewReader {
    * @param _r The reader to use.
    * @param _view The view to read into.
    * @param _found A boolean array indicating which fields have been found.
-   * @param _set A boolean array indicating which fields have been successfully
-   * set.
    * @param _errors The vector to collect errors in.
    */
   ViewReader(const R* _r, ViewType* _view, std::array<bool, size_>* _found,
-             std::array<bool, size_>* _set, std::vector<std::string>* _errors)
-      : r_(_r), view_(_view), found_(_found), set_(_set), errors_(_errors) {}
+             std::vector<std::string>* _errors)
+      : r_(_r), view_(_view), found_(_found), errors_(_errors) {}
 
   ~ViewReader() = default;
 
@@ -47,7 +45,7 @@ class ViewReader {
    * @param _var The input variable to read from.
    */
   void read(const std::string_view& _name, const InputVarType& _var) const {
-    assign_to_matching_field(*r_, _name, _var, view_, errors_, found_, set_,
+    assign_to_matching_field(*r_, _name, _var, view_, errors_, found_,
                              std::make_integer_sequence<int, size_>());
   }
 
@@ -58,7 +56,7 @@ class ViewReader {
    * @param _var The input variable to read from.
    */
   void read(const int _index, const InputVarType& _var) const {
-    assign_to_matching_field(*r_, _index, _var, view_, errors_, found_, set_,
+    assign_to_matching_field(*r_, _index, _var, view_, errors_, found_,
                              std::make_integer_sequence<int, size_>());
   }
 
@@ -84,7 +82,7 @@ class ViewReader {
   static void assign_if_field_matches(const R& _r,
                                       const auto _current_name_or_index,
                                       const auto& _var, auto* _view,
-                                      auto* _errors, auto* _found, auto* _set,
+                                      auto* _errors, auto* _found,
                                       bool* _already_assigned) {
     using FieldType = tuple_element_t<i, typename ViewType::Fields>;
     using OriginalType = typename FieldType::Type;
@@ -108,7 +106,6 @@ class ViewReader {
       } else {
         rfl::get<i>(*_view) = std::move(*res);
       }
-      std::get<i>(*_set) = true;
     }
   }
 
@@ -116,16 +113,13 @@ class ViewReader {
   static void assign_to_extra_fields(const R& _r,
                                      const std::string_view& _current_name,
                                      const auto& _var, auto* _view,
-                                     auto* _errors, auto* _found, auto* _set) {
+                                     auto* _errors, auto* _found) {
     auto* extra_fields = _view->template get<_pos>();
     using ExtraFieldsType =
         std::remove_cvref_t<std::remove_pointer_t<decltype(extra_fields)>>;
     using T = std::remove_cvref_t<
         std::remove_pointer_t<typename ExtraFieldsType::Type>>;
-    if (!std::get<_pos>(*_set)) {
-      std::get<_pos>(*_set) = true;
-      std::get<_pos>(*_found) = true;
-    }
+    std::get<_pos>(*_found) = true;
     auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
     if (!res) {
       std::stringstream stream;
@@ -141,12 +135,12 @@ class ViewReader {
   static void assign_to_matching_field(const R& _r,
                                        const auto _current_name_or_index,
                                        const auto& _var, auto* _view,
-                                       auto* _errors, auto* _found, auto* _set,
+                                       auto* _errors, auto* _found,
                                        std::integer_sequence<int, is...>) {
     bool already_assigned = false;
 
     (assign_if_field_matches<is>(_r, _current_name_or_index, _var, _view,
-                                 _errors, _found, _set, &already_assigned),
+                                 _errors, _found, &already_assigned),
      ...);
 
     if constexpr (ViewType::pos_extra_fields() != -1) {
@@ -156,7 +150,7 @@ class ViewReader {
       constexpr int pos = ViewType::pos_extra_fields();
       if (!already_assigned) {
         assign_to_extra_fields<pos>(_r, _current_name_or_index, _var, _view,
-                                    _errors, _found, _set);
+                                    _errors, _found);
       }
     } else if constexpr (internal::no_extra_fields_v<ProcessorsType>) {
       static_assert(
@@ -200,10 +194,6 @@ class ViewReader {
 
   /// Indicates that a certain field has been found.
   std::array<bool, size_>* found_;
-
-  /// Indicates that a certain field has been successfully set - necessary,
-  /// because we have to trigger the destructors manually.
-  std::array<bool, size_>* set_;
 
   /// Collects any errors we may have come across.
   std::vector<std::string>* errors_;
