@@ -58,10 +58,13 @@ class MapReader {
     try {
       if constexpr (std::is_integral_v<T> && std::is_signed_v<T>) {
         return static_cast<T>(std::stoll(_pair.first));
+
       } else if constexpr (std::is_integral_v<T> && std::is_unsigned_v<T>) {
         return static_cast<T>(std::stoull(_pair.first));
+
       } else if constexpr (std::is_floating_point_v<T>) {
         return static_cast<T>(std::stod(_pair.first));
+
       } else {
         static_assert(always_false_v<T>, "Unsupported type");
       }

@@ -5,15 +5,12 @@
 #include <utility>
 
 #include "../Tuple.hpp"
-//#include "all_fields.hpp"
 #include "is_field.hpp"
 #include "is_flatten_field.hpp"
-#include "ptr_tuple_t.hpp"
 #include "is_named_tuple.hpp"
+#include "ptr_tuple_t.hpp"
 
-
-namespace rfl {
-namespace internal {
+namespace rfl::internal {
 
 template <class TupleType>
 constexpr bool all_fields_or_flatten() {
@@ -30,8 +27,7 @@ constexpr bool all_fields_or_flatten() {
 
   return [&]<int... _is>(std::integer_sequence<int, _is...>) {
     return (true && ... && is_true_for_one(std::integral_constant<int, _is>{}));
-  }
-  (std::make_integer_sequence<int, rfl::tuple_size_v<TupleType>>());
+  }(std::make_integer_sequence<int, rfl::tuple_size_v<TupleType>>());
 }
 
 template <class TupleType>
@@ -50,8 +46,7 @@ constexpr bool some_fields_or_flatten() {
   return [&]<int... _is>(std::integer_sequence<int, _is...>) {
     return (false || ... ||
             is_true_for_one(std::integral_constant<int, _is>{}));
-  }
-  (std::make_integer_sequence<int, rfl::tuple_size_v<TupleType>>());
+  }(std::make_integer_sequence<int, rfl::tuple_size_v<TupleType>>());
 }
 
 template <class T>
@@ -74,7 +69,6 @@ constexpr bool has_fields() {
   }
 }
 
-}  // namespace internal
-}  // namespace rfl
+}  // namespace rfl::internal
 
 #endif

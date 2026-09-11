@@ -7,6 +7,7 @@
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../internal/default_if_missing_v.hpp"
+#include "../internal/has_const_v.hpp"
 #include "../internal/has_default_val_v.hpp"
 #include "../internal/has_reflection_method_v.hpp"
 #include "../internal/has_reflection_type_v.hpp"
@@ -17,6 +18,7 @@
 #include "../internal/is_literal.hpp"
 #include "../internal/is_validator.hpp"
 #include "../internal/processed_t.hpp"
+#include "../internal/remove_cvref_fields_t.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
@@ -680,15 +682,24 @@ struct Parser {
   /// and placement new. This is how we deal with the fact that some fields
   /// might not be default-constructible.
   static Result<T> read_struct(const R& _r, const InputVarType& _var) {
-    T t{};
-    auto view = ProcessorsType::template process<T>(to_view(t));
-    using ViewType = std::remove_cvref_t<decltype(view)>;
-    const auto [set, err] =
-        Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
-    if (err) [[unlikely]] {
-      return error(err->what());
+    using ViewType = std::remove_cvref_t<view_t<T, ProcessorsType>>;
+
+    if constexpr (internal::has_const_v<ViewType>) {
+      using NamedTupleType = internal::remove_cvref_fields_t<named_tuple_t<T>>;
+      return Parser<R, W, NamedTupleType, ProcessorsType>::read(_r, _var)
+          .transform(
+              [](auto&& _nt) { return from_named_tuple<T>(std::move(_nt)); });
+
+    } else {
+      T t{};
+      auto view = ProcessorsType::template process<T>(to_view(t));
+      const auto [set, err] =
+          Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
+      if (err) [[unlikely]] {
+        return error(err->what());
+      }
+      return t;
     }
-    return t;
   }
 
   /// This is actually more straight-forward than the standard case - we

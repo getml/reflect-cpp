@@ -16,8 +16,7 @@
 #include "schemaful/IsSchemafulWriter.hpp"
 #include "to_single_error_message.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
 template <class R, class W, class MapType, class ProcessorsType>
   requires AreReaderAndWriter<R, W, MapType>
@@ -177,7 +176,6 @@ struct MapParser {
   }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif
