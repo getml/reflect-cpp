@@ -6,13 +6,15 @@
 #include "write_and_read.hpp"
 
 namespace test_leak_tup {
-/*
+
 class TestLeak {
  public:
   inline static int create_count = 0;
   inline static int delete_count = 0;
 
   using ReflectionType = std::string;
+
+  TestLeak() : moved_(false), str_("") { ++create_count; }
 
   TestLeak(const std::string& _str) : moved_(false), str_(_str) {
     ++create_count;
@@ -61,5 +63,5 @@ TEST(json, test_leak_tup) {
             R"(["Homer","Simpson","test"])");
   }
   EXPECT_EQ(TestLeak::delete_count, TestLeak::create_count);
-}*/
+}
 }  // namespace test_leak_tup

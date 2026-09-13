@@ -7,7 +7,6 @@
 #include "../Result.hpp"
 #include "../Tuple.hpp"
 #include "../internal/is_array.hpp"
-#include "AreReaderAndWriter.hpp"
 #include "Parser_base.hpp"
 #include "is_required.hpp"
 
@@ -117,10 +116,7 @@ class TupleReader {
 
   template <class Target, class Source>
   void move_to(Target* _t, Source* _s) const {
-    if constexpr (std::is_const_v<Target>) {
-      return move_to(const_cast<std::remove_const_t<Target>*>(_t), _s);
-    } else if constexpr (!internal::is_array_v<Source> &&
-                         !std::is_array_v<Target>) {
+    if constexpr (!internal::is_array_v<Source> && !std::is_array_v<Target>) {
       *_t = Target(std::move(*_s));
     } else if constexpr (internal::is_array_v<Source>) {
       for (size_t i = 0; i < _s->arr_.size(); ++i) {

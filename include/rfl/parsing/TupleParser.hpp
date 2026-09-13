@@ -8,12 +8,11 @@
 
 #include "../Result.hpp"
 #include "../Tuple.hpp"
+#include "../internal/has_const_v.hpp"
+#include "../internal/remove_cvref_fields_t.hpp"
 #include "Parent.hpp"
 #include "TupleReader.hpp"
-#include "schema/Type.hpp"
 #include "schemaful/IsSchemafulReader.hpp"
-#include "schemaful/IsSchemafulWriter.hpp"
-#include "schemaful/tuple_to_named_tuple.hpp"
 #include "schemaful/tuple_to_named_tuple_t.hpp"
 
 namespace rfl::parsing {
@@ -40,19 +39,20 @@ struct TupleParser {
     if constexpr (schemaful::IsSchemafulReader<R>) {
       using NamedTupleType = schemaful::tuple_to_named_tuple_t<TupleType>;
       const auto to_tuple = [](auto&& _named_tuple) {
-        return [&]<int... _is>(std::integer_sequence<int, _is...>) {
+        return [&]<size_t... _is>(std::index_sequence<_is...>) {
           return TupleType(std::move(rfl::get<_is>(_named_tuple))...);
-        }(std::make_integer_sequence<int, NamedTupleType::size()>());
+        }(std::make_index_sequence<NamedTupleType::size()>());
       };
       return Parser<R, W, NamedTupleType, ProcessorsType>::read(_r, _var)
           .transform(to_tuple);
 
     } else {
       const auto parse = [&](const InputArrayType& _arr) -> Result<TupleType> {
-        TupleType tup{};
+        internal::remove_cvref_fields_t<TupleType> tup{};
         const auto tuple_reader =
-            TupleReader<R, W, TupleType, _ignore_empty_containers,
-                        _all_required, ProcessorsType>(&_r, &tup);
+            TupleReader<R, W, internal::remove_cvref_fields_t<TupleType>,
+                        _ignore_empty_containers, _all_required,
+                        ProcessorsType>(&_r, &tup);
         auto err = _r.read_array(tuple_reader, _arr);
         if (err) {
           return error(*err);
@@ -61,7 +61,13 @@ struct TupleParser {
         if (err) {
           return error(*err);
         }
-        return tup;
+        if constexpr (!internal::has_const_v<TupleType>) {
+          return tup;
+        } else {
+          return [&]<size_t... _is>(std::index_sequence<_is...>) {
+            return TupleType(std::move(rfl::get<_is>(tup))...);
+          }(std::make_index_sequence<tuple_size_v<TupleType>>());
+        }
       };
 
       return _r.to_array(_var).and_then(parse);
