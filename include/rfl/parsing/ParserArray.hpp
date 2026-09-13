@@ -2,6 +2,7 @@
 #define RFL_PARSING_PARSER_ARRAY_HPP_
 
 #include <array>
+#include <exception>
 #include <map>
 #include <type_traits>
 
@@ -46,9 +47,10 @@ struct ParserArray {
                                            const InputVarType& _var) noexcept {
     const auto parse =
         [&](const InputArrayType& _arr) -> Result<std::array<T, _size>> {
-      std::array<T, _size> arr{};
+      std::array<std::remove_cvref_t<T>, _size> arr{};
       const auto array_reader =
-          ArrayReader<R, W, ProcessorsType, T, _size>(&_r, &arr);
+          ArrayReader<R, W, ProcessorsType, std::remove_cvref_t<T>, _size>(
+              &_r, &arr);
       auto err = _r.read_array(array_reader, _arr);
       if (err) {
         return error(*err);
@@ -57,7 +59,13 @@ struct ParserArray {
       if (err) {
         return error(*err);
       }
-      return arr;
+      if constexpr (std::is_same_v<T, std::remove_cvref_t<T>>) {
+        return arr;
+      } else {
+        return [&]<size_t... _is>(std::index_sequence<_is...>) {
+          return std::array<T, _size>{std::move(std::get<_is>(arr))...};
+        }(std::make_index_sequence<_size>{});
+      }
     };
 
     return _r.to_array(_var).and_then(parse);

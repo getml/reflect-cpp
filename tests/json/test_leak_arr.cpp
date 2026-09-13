@@ -3,7 +3,7 @@
 #include <string>
 
 namespace test_leak_arr {
-/*
+
 class TestLeak {
  public:
   inline static int create_count = 0;
@@ -11,7 +11,7 @@ class TestLeak {
 
   using ReflectionType = std::string;
 
-  TestLeak() : moved_(false) {}
+  TestLeak() : moved_(false), str_("") { ++create_count; }
 
   TestLeak(const std::string& _str) : moved_(false), str_(_str) {
     ++create_count;
@@ -40,6 +40,9 @@ class TestLeak {
   }
 
   TestLeak& operator=(TestLeak&& _other) noexcept {
+    if (this == &_other) {
+      return *this;
+    }
     str_ = std::move(_other.str_);
     _other.moved_ = true;
     ++delete_count;
@@ -59,5 +62,5 @@ TEST(json, test_leak_arr) {
         R"(["Homer","Simpson","test"])");
   }
   EXPECT_EQ(TestLeak::delete_count, TestLeak::create_count);
-}*/
+}
 }  // namespace test_leak_arr
