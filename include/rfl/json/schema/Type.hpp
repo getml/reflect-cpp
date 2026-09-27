@@ -101,7 +101,8 @@ struct Type {
     rfl::Flatten<Annotations> annotations{};
     rfl::Object<Type> properties{};
     std::vector<std::string> required{};
-    rfl::Variant<bool, std::shared_ptr<Type>> additionalProperties{};
+    std::optional<rfl::Variant<std::shared_ptr<Type>, bool>>
+        additionalProperties{};
   };
 
   struct OneOf {

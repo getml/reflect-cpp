@@ -287,14 +287,17 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type,
       }
       auto additional_properties = rfl::visit(
           [&](const auto& _a)
-              -> rfl::Variant<bool, std::shared_ptr<schema::Type>> {
+              -> std::optional<
+                  rfl::Variant<std::shared_ptr<schema::Type>, bool>> {
             using A = std::remove_cvref_t<decltype(_a)>;
             if constexpr (std::is_same<A, bool>()) {
               return _a;
             } else {
-              return _a ? std::make_shared<schema::Type>(
-                              type_to_json_schema_type(*_a, _no_required))
-                        : std::shared_ptr<schema::Type>();
+              if (!_a) {
+                return std::nullopt;
+              }
+              return std::make_shared<schema::Type>(
+                  type_to_json_schema_type(*_a, _no_required));
             }
           },
           _t.additional_properties_);

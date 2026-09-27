@@ -79,7 +79,7 @@ struct RFL_API Type {
 
   struct Object {
     rfl::Object<Type> types_;
-    rfl::Variant<bool, std::shared_ptr<Type>> additional_properties_;
+    rfl::Variant<std::shared_ptr<Type>, bool> additional_properties_;
   };
 
   /// All values are assumed to be required unless explicitly stated otherwise
