@@ -6,6 +6,7 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/HasFromReflectionMethod.hpp"
 #include "../internal/default_if_missing_v.hpp"
 #include "../internal/has_default_val_v.hpp"
 #include "../internal/has_reflection_method_v.hpp"
@@ -242,7 +243,11 @@ struct Parser {
         const auto wrap_in_t = [](auto&& _named_tuple) -> Result<T> {
           try {
             using NT = decltype(_named_tuple);
-            return T{std::forward<NT>(_named_tuple)};
+            if constexpr (internal::HasFromReflectionMethod<T>) {
+              return T::from_reflection(std::forward<NT>(_named_tuple));
+            } else {
+              return T{std::forward<NT>(_named_tuple)};
+            }
           } catch (std::exception& e) {
             return error(e.what());
           }
