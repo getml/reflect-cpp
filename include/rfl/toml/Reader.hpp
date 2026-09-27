@@ -82,7 +82,11 @@ struct Reader {
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       const auto ptr = _var->as<double>();
       if (!ptr) {
-        return error("Could not cast the node to double!");
+        const auto int_ptr = _var->as<int64_t>();
+        if (!int_ptr) {
+          return error("Could not cast the node to double!");
+        }
+        return static_cast<std::remove_cvref_t<T>>(**int_ptr);
       }
       return static_cast<std::remove_cvref_t<T>>(**ptr);
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
