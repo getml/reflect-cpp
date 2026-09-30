@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -62,7 +63,8 @@ struct RFL_API Type {
   /// using this or the Optional wrapper.
   struct DefaultVal {
     Ref<Type> type_;
-    Generic default_value_;
+    /// Empty when no default could be produced (distinct from "null").
+    std::optional<Generic> default_value_;
   };
 
   struct DescribedLiteral {

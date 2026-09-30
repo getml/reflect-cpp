@@ -224,8 +224,11 @@ schema::Type type_to_json_schema_type(const parsing::schema::Type& _type,
 
     } else if constexpr (std::is_same<T, Type::DefaultVal>()) {
       auto res = type_to_json_schema_type(*_t.type_, _no_required);
+      if (!_t.default_value_.has_value()) {
+        return res;
+      }
       const auto update_prediction = [&](auto _v) -> schema::Type {
-        _v.annotations.value_.defaultValue = _t.default_value_;
+        _v.annotations.value_.defaultValue = *_t.default_value_;
         return schema::Type{_v};
       };
       return rfl::visit(update_prediction, res.value);
