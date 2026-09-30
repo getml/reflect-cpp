@@ -26,6 +26,11 @@ SOFTWARE.
 
 #include "rfl/Generic.hpp"
 
+#include <cstdint>
+#include <limits>
+#include <optional>
+#include <variant>
+
 namespace rfl {
 
 Generic::Generic() : value_(std::nullopt) {}
