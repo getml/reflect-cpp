@@ -77,6 +77,8 @@ class ReflectCppConan(ConanFile):
     def configure(self):
         if self.options.shared:
             self.options.rm_safe("fPIC")
+        if self.options.with_csv:
+            self.options["arrow"].with_csv = True
 
     def requirements(self):
         self.requires("ctre/3.9.0", transitive_headers=True)

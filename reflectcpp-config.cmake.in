@@ -36,7 +36,7 @@ if (REFLECTCPP_BOOST_SERIALIZATION)
 endif ()
 
 if (REFLECTCPP_BSON)  
-  find_dependency(bson-1.0)
+  find_dependency(bson NAMES bson bson-1.0)
 endif ()
 
 if (REFLECTCPP_CAPNPROTO)  
@@ -60,7 +60,7 @@ if (REFLECTCPP_FLEXBUFFERS)
 endif ()
 
 if (REFLECTCPP_MSGPACK)
-  find_dependency(msgpack-c)
+  find_dependency(msgpack-c NAMES msgpack msgpack-c msgpackc)
 endif()
 
 if (REFLECTCPP_PARQUET)
