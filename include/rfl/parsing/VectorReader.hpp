@@ -2,10 +2,12 @@
 #define RFL_PARSING_VECTORREADER_HPP_
 
 #include <optional>
+#include <string>
 #include <type_traits>
 
 #include "../Result.hpp"
 #include "Parser_base.hpp"
+#include "is_inplace_vector.hpp"
 #include "is_map_like.hpp"
 #include "is_set_like.hpp"
 
@@ -47,6 +49,11 @@ class VectorReader {
     const auto insert = [this](auto&& _var) -> std::optional<Error> {
       if constexpr (is_map_like_v<VecType> || is_set_like_v<VecType>) {
         vec_->insert(std::move(_var));
+      } else if constexpr (is_inplace_vector_v<VecType>) {
+        if (!vec_->try_emplace_back(std::move(_var))) {
+          return Error("Too many elements, capacity is " +
+                       std::to_string(vec_->capacity()) + ".");
+        }
       } else {
         vec_->emplace_back(std::move(_var));
       }
@@ -54,7 +61,7 @@ class VectorReader {
     };
     auto res = parse(_var).transform(insert);
     if (res) {
-      return std::nullopt;
+      return *res;
     } else {
       return res.error();
     }
