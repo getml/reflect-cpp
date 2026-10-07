@@ -116,3 +116,7 @@ The following units are supported: `std::chrono::nanoseconds`, `std::chrono::mic
 `std::chrono::milliseconds`, `std::chrono::seconds`, 
 `std::chrono::minutes`, `std::chrono::hours`, `std::chrono::days`,
 `std::chrono::weeks`, `std::chrono::months`, and `std::chrono::years`.
+
+To write and read durations as a plain count in the unit of the C++ type
+(e.g. `{"duration":10}`), pass the `rfl::DurationsAsCount` processor
+(see [processors](../processors)).
