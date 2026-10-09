@@ -6,6 +6,7 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../internal/HasFromReflectionMethod.hpp"
 #include "../internal/default_if_missing_v.hpp"
 #include "../internal/has_const_v.hpp"
 #include "../internal/has_default_val_v.hpp"
@@ -241,7 +242,12 @@ struct Parser {
         using ReflectionType = std::remove_cvref_t<typename T::ReflectionType>;
         const auto wrap_in_t = [](auto&& _named_tuple) -> Result<T> {
           try {
-            return T{std::move(_named_tuple)};
+            using NT = decltype(_named_tuple);
+            if constexpr (internal::HasFromReflectionMethod<T>) {
+              return T::from_reflection(std::forward<NT>(_named_tuple));
+            } else {
+              return T{std::forward<NT>(_named_tuple)};
+            }
           } catch (std::exception& e) {
             return error(e.what());
           }

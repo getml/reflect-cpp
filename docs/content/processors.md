@@ -38,6 +38,7 @@ reflect-cpp currently supports the following processors:
 - `rfl::AddNamespacedTagsToVariants`
 - `rfl::AllowRawPtrs`
 - `rfl::DefaultIfMissing`
+- `rfl::DurationsAsCount`
 - `rfl::EnumNamesOnly`
 - `rfl::NoExtraFields`
 - `rfl::NoFieldNames`
@@ -289,6 +290,27 @@ have gotten had you read the following JSON string:
 `last_name` and `town` have been replaced by the default values.
 Because you have not passed a default value to town, the default value
 of the type is used instead.
+
+### `rfl::DurationsAsCount`
+
+By default, `std::chrono::duration` types are written as an object containing
+the count and the unit. By passing the processor `rfl::DurationsAsCount`,
+they will be written and read as a plain count in the unit of the C++ type:
+
+```cpp
+struct MyStruct {
+  std::chrono::milliseconds timeout;
+};
+
+rfl::json::write<rfl::DurationsAsCount>(
+    MyStruct{.timeout = std::chrono::milliseconds(1500)});
+```
+
+The resulting JSON string looks like this:
+
+```json
+{"timeout":1500}
+```
 
 ### `rfl::EnumNamesOnly`
 

@@ -621,6 +621,7 @@ reflect-cpp supports the following containers from the C++ standard library:
 - `std::chrono::duration`
 - `std::filesystem::path`
 - `std::forward_list`
+- `std::inplace_vector` (C++26)
 - `std::map`
 - `std::multimap`
 - `std::multiset`
