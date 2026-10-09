@@ -10,6 +10,8 @@
 #include <unordered_set>
 #include <vector>
 
+#include "is_inplace_vector.hpp"
+
 namespace rfl::parsing {
 
 /**
@@ -66,6 +68,11 @@ class is_vector_like<std::unordered_set<T, Hash, KeyEqual, Allocator>>
 
 template <class T>
 class is_vector_like<std::vector<T>> : public std::true_type {};
+
+#if defined(__cpp_lib_inplace_vector)
+template <class T, std::size_t N>
+class is_vector_like<std::inplace_vector<T, N>> : public std::true_type {};
+#endif  // __cpp_lib_inplace_vector
 
 template <class T>
 constexpr bool is_vector_like_v = is_vector_like<std::remove_cvref_t<T>>::value;
