@@ -8,6 +8,7 @@
 #include "../Literal.hpp"
 #include "../Variant.hpp"
 #include "../always_false.hpp"
+#include "../internal/durations_as_count_v.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
@@ -55,13 +56,18 @@ struct ParserDuration {
    */
   static Result<DurationType> read(const R& _r,
                                    const InputVarType& _var) noexcept {
-    return Parser<R, W, RType, ProcessorsType>::read(_r, _var)
-        .and_then(to_duration)
-        .transform([](auto&& _duration) {
-          return _duration.visit([](auto&& _d) -> DurationType {
-            return std::chrono::duration_cast<DurationType>(std::move(_d));
+    if constexpr (internal::durations_as_count_v<ProcessorsType>) {
+      return Parser<R, W, Rep, ProcessorsType>::read(_r, _var).transform(
+          [](const Rep _count) { return DurationType(_count); });
+    } else {
+      return Parser<R, W, RType, ProcessorsType>::read(_r, _var)
+          .and_then(to_duration)
+          .transform([](auto&& _duration) {
+            return _duration.visit([](auto&& _d) -> DurationType {
+              return std::chrono::duration_cast<DurationType>(std::move(_d));
+            });
           });
-        });
+    }
   }
 
   /**
@@ -74,9 +80,13 @@ struct ParserDuration {
    */
   template <class P>
   static void write(const W& _w, const DurationType& _d, const P& _parent) {
-    const auto r =
-        RType{.count = static_cast<int64_t>(_d.count()), .unit = make_unit()};
-    return Parser<R, W, RType, ProcessorsType>::write(_w, r, _parent);
+    if constexpr (internal::durations_as_count_v<ProcessorsType>) {
+      Parser<R, W, Rep, ProcessorsType>::write(_w, _d.count(), _parent);
+    } else {
+      const auto r = RType{.count = static_cast<int64_t>(_d.count()),
+                           .unit = make_unit()};
+      Parser<R, W, RType, ProcessorsType>::write(_w, r, _parent);
+    }
   }
 
   /**
@@ -87,7 +97,11 @@ struct ParserDuration {
    */
   static schema::Type to_schema(
       std::map<std::string, schema::Type>* _definitions) {
-    return Parser<R, W, RType, ProcessorsType>::to_schema(_definitions);
+    if constexpr (internal::durations_as_count_v<ProcessorsType>) {
+      return Parser<R, W, Rep, ProcessorsType>::to_schema(_definitions);
+    } else {
+      return Parser<R, W, RType, ProcessorsType>::to_schema(_definitions);
+    }
   }
 
  private:
