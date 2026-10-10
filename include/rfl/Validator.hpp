@@ -44,7 +44,8 @@ struct Validator {
   Validator() : value_(ValidationType::validate(T())) {}
 
   /// Constructs from a Result<T>.
-  Validator(Result<T> _value) : value_(std::move(_value)) {}
+  Validator(Result<T> _value)
+      : value_(ValidationType::validate(std::move(_value).value()).value()) {}
 
   /// Move constructor.
   /// @param _other The validator to move from
