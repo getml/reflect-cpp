@@ -1,6 +1,7 @@
 #ifndef RFL_TIMESTAMP_HPP_
 #define RFL_TIMESTAMP_HPP_
 
+#include <cstring>
 #include <ctime>
 #include <iomanip>
 #include <sstream>
@@ -35,7 +36,7 @@ class Timestamp {
   /// @throws std::runtime_error if the string doesn't match the format
   Timestamp(const char* _str) : tm_(std::tm{}) {
     const auto r = strptime(_str, _format.str().c_str(), &tm_);
-    if (r == NULL) {
+    if (r == NULL || *r != '\0') {
       throw std::runtime_error("String '" + std::string(_str) +
                                "' did not match format '" + Format().str() +
                                "'.");
@@ -169,7 +170,12 @@ class Timestamp {
     if (input.fail()) {
       return NULL;
     }
-    return (char*)(_s + input.tellg());
+    const auto pos = input.tellg();
+    if (pos == std::streampos(-1)) {
+      // The stream reached EOF, so all of the input was consumed.
+      return (char*)(_s + std::strlen(_s));
+    }
+    return (char*)(_s + static_cast<std::ptrdiff_t>(pos));
   }
 #endif
 
