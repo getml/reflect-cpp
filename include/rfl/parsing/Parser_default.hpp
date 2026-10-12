@@ -17,7 +17,6 @@
 #include "../internal/is_deprecated.hpp"
 #include "../internal/is_description.hpp"
 #include "../internal/is_literal.hpp"
-#include "../internal/is_validator.hpp"
 #include "../internal/processed_t.hpp"
 #include "../internal/remove_cvref_fields_t.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
@@ -58,6 +57,7 @@
 #include "ParserTimePoint.hpp"
 #include "ParserTuple.hpp"
 #include "ParserUniquePtr.hpp"
+#include "ParserValidator.hpp"
 #include "ParserVariant.hpp"
 #include "ParserVectorstring.hpp"
 #include "ParserWString.hpp"
@@ -136,6 +136,9 @@ struct Parser {
 
     } else if constexpr (is_rename_v<T>) {
       return ParserRename<R, W, T, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_validator_v<T>) {
+      return ParserValidator<R, W, T, ProcessorsType>::read(_r, _var);
 
     } else if constexpr (is_result_v<T>) {
       return ParserResult<R, W, T, ProcessorsType>::read(_r, _var);
@@ -330,6 +333,9 @@ struct Parser {
     } else if constexpr (is_rename_v<T>) {
       ParserRename<R, W, T, ProcessorsType>::write(_w, _var, _parent);
 
+    } else if constexpr (is_validator_v<T>) {
+      ParserValidator<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
     } else if constexpr (is_duration_v<T>) {
       using U = std::remove_cvref_t<T>;
       ParserDuration<R, W, typename U::rep, typename U::period,
@@ -498,6 +504,9 @@ struct Parser {
     } else if constexpr (is_rename_v<U>) {
       return ParserRename<R, W, U, ProcessorsType>::to_schema(_definitions);
 
+    } else if constexpr (is_validator_v<U>) {
+      return ParserValidator<R, W, U, ProcessorsType>::to_schema(_definitions);
+
     } else if constexpr (is_result_v<U>) {
       return ParserResult<R, W, U, ProcessorsType>::to_schema(_definitions);
 
@@ -594,9 +603,6 @@ struct Parser {
     } else if constexpr (internal::is_literal_v<U>) {
       return Type{Type::Literal{.values_ = U::strings()}};
 
-    } else if constexpr (internal::is_validator_v<U>) {
-      return make_validated<U>(_definitions);
-
     } else if constexpr (internal::has_reflection_type_v<U> ||
                          internal::has_read_reflector<U> ||
                          internal::has_write_reflector<U>) {
@@ -667,19 +673,6 @@ struct Parser {
       }
     }
     return Type{Type::Reference{name}};
-  }
-
-  template <class U>
-  static schema::Type make_validated(
-      std::map<std::string, schema::Type>* _definitions) {
-    using Type = schema::Type;
-    using ReflectionType = std::remove_cvref_t<typename U::ReflectionType>;
-    using ValidationType = std::remove_cvref_t<typename U::ValidationType>;
-    return Type{Type::Validated{
-        .type_ = Ref<Type>::make(
-            Parser<R, W, ReflectionType, ProcessorsType>::to_schema(
-                _definitions)),
-        .validation_ = ValidationType::template to_schema<ReflectionType>()}};
   }
 
   /// The way this works is that we allocate space on the stack in this size

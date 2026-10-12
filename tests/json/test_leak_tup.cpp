@@ -3,8 +3,6 @@
 #include <string>
 #include <tuple>
 
-#include "write_and_read.hpp"
-
 namespace test_leak_tup {
 
 class TestLeak {

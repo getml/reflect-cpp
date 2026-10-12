@@ -26,6 +26,7 @@ struct Validator {
   using ValidationType =
       std::conditional_t<sizeof...(Vs) == 0, V, AllOf<V, Vs...>>;
   using ReflectionType = Result<T>;
+  using ValueType = T;
 
   /// Exception-free validation from a value.
   /// @param _value The value to validate

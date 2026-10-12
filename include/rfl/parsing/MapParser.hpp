@@ -130,7 +130,7 @@ struct MapParser {
       write_map_elem<ParentMapType>(_w, _key.reflection(), _value, _m);
 
     } else if constexpr (is_result_v<KeyType>) {
-      write_object_elem<ParentMapType>(_w, _key.value(), _value, _m);
+      write_map_elem<ParentMapType>(_w, _key.value(), _value, _m);
 
     } else {
       const auto new_parent = ParentMapType{_key, _m};
