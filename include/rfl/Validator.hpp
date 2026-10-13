@@ -25,7 +25,6 @@ struct Validator {
  public:
   using ValidationType =
       std::conditional_t<sizeof...(Vs) == 0, V, AllOf<V, Vs...>>;
-  using ReflectionType = Result<T>;
   using ValueType = T;
 
   /// Exception-free validation from a value.
@@ -44,10 +43,6 @@ struct Validator {
   /// else assign Error.
   Validator() : value_(ValidationType::validate(T())) {}
 
-  /// Constructs from a Result<T>.
-  Validator(Result<T> _value)
-      : value_(ValidationType::validate(std::move(_value).value()).value()) {}
-
   /// Move constructor.
   /// @param _other The validator to move from
   Validator(Validator&& _other) noexcept = default;
@@ -59,7 +54,8 @@ struct Validator {
   /// Constructs from an rvalue of T (validates the value).
   /// @param _value The value to validate and wrap
   /// @throws std::exception if validation fails
-  Validator(T&& _value) : value_(ValidationType::validate(_value).value()) {}
+  Validator(T&& _value)
+      : value_(ValidationType::validate(std::forward<T>(_value)).value()) {}
 
   /// Constructs from a const reference to T (validates the value).
   /// @param _value The value to validate and wrap
@@ -169,10 +165,6 @@ struct Validator {
   /// Pointer to the underlying value (const).
   /// @return Const pointer to the stored value
   const T* operator->() const noexcept { return &(*value_); }
-
-  /// Returns the underlying result type.
-  /// @return The underlying result type.
-  const Result<T>& reflection() const noexcept { return value_; }
 
   /// Exposes the underlying value.
   T& value() noexcept { return value_.value(); }

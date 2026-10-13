@@ -10,6 +10,7 @@
 #include "MapReader.hpp"
 #include "Parent.hpp"
 #include "ParserResult.hpp"
+#include "ParserValidator.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 #include "schemaful/IsSchemafulReader.hpp"
@@ -132,6 +133,9 @@ struct MapParser {
     } else if constexpr (is_result_v<KeyType>) {
       write_map_elem<ParentMapType>(_w, _key.value(), _value, _m);
 
+    } else if constexpr (is_validator_v<KeyType>) {
+      write_map_elem<ParentMapType>(_w, _key.value(), _value, _m);
+
     } else {
       const auto new_parent = ParentMapType{_key, _m};
       Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
@@ -163,6 +167,9 @@ struct MapParser {
       write_object_elem(_w, _key.reflection(), _value, _obj);
 
     } else if constexpr (is_result_v<KeyType>) {
+      write_object_elem(_w, _key.value(), _value, _obj);
+
+    } else if constexpr (is_validator_v<KeyType>) {
       write_object_elem(_w, _key.value(), _value, _obj);
 
     } else {

@@ -11,6 +11,7 @@
 #include "../always_false.hpp"
 #include "../internal/has_reflection_type_v.hpp"
 #include "ParserResult.hpp"
+#include "ParserValidator.hpp"
 #include "Parser_base.hpp"
 
 namespace rfl::parsing {
@@ -106,6 +107,14 @@ class MapReader {
 
     } else if constexpr (is_result_v<KeyT>) {
       using ValT = typename KeyT::value_type;
+      return make_key<ValT>(std::move(_pair))
+          .transform([](auto&& _p) -> std::pair<KeyT, ValueType> {
+            return std::make_pair(KeyT(std::move(_p.first)),
+                                  std::move(_p.second));
+          });
+
+    } else if constexpr (is_validator_v<KeyT>) {
+      using ValT = typename KeyT::ValueType;
       return make_key<ValT>(std::move(_pair))
           .transform([](auto&& _p) -> std::pair<KeyT, ValueType> {
             return std::make_pair(KeyT(std::move(_p.first)),
