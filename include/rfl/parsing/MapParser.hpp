@@ -102,6 +102,14 @@ struct MapParser {
     return map;
   }
 
+  /**
+   * @brief Writes a map to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _m The map to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write_map(const W& _w, const MapType& _m, const P& _parent) {
     auto m = ParentType::add_map(_w, _m.size(), _parent);
@@ -115,6 +123,13 @@ struct MapParser {
     _w.end_map(&m);
   }
 
+  /** @brief Writes a map element to the output.
+   * @tparam ParentMapType The type of the parent map.
+   * @param _w The writer to use.
+   * @param _key The key of the map element.
+   * @param _value The value of the map element.
+   * @param _m The parent map.
+   * */
   template <class ParentMapType>
   static void write_map_elem(const W& _w, const auto& _key, const auto& _value,
                              auto* _m) {
@@ -143,6 +158,13 @@ struct MapParser {
     }
   }
 
+  /** @brief Writes an object to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _m The map to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write_object(const W& _w, const MapType& _m, const P& _parent) {
     auto obj = ParentType::add_object(_w, _m.size(), _parent);
@@ -152,6 +174,14 @@ struct MapParser {
     _w.end_object(&obj);
   }
 
+  /** @brief Writes an object element to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _key The key of the object element.
+   * @param _value The value of the object element.
+   * @param _obj The parent object.
+   */
   static void write_object_elem(const W& _w, const auto& _key,
                                 const auto& _value, auto* _obj) {
     using KeyType = std::remove_cvref_t<decltype(_key)>;
