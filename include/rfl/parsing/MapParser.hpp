@@ -7,17 +7,17 @@
 
 #include "../Ref.hpp"
 #include "../Result.hpp"
-#include "../always_false.hpp"
 #include "MapReader.hpp"
 #include "Parent.hpp"
+#include "ParserResult.hpp"
+#include "ParserValidator.hpp"
 #include "Parser_base.hpp"
 #include "schema/Type.hpp"
 #include "schemaful/IsSchemafulReader.hpp"
 #include "schemaful/IsSchemafulWriter.hpp"
 #include "to_single_error_message.hpp"
 
-namespace rfl {
-namespace parsing {
+namespace rfl::parsing {
 
 template <class R, class W, class MapType, class ProcessorsType>
   requires AreReaderAndWriter<R, W, MapType>
@@ -102,6 +102,14 @@ struct MapParser {
     return map;
   }
 
+  /**
+   * @brief Writes a map to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _m The map to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write_map(const W& _w, const MapType& _m, const P& _parent) {
     auto m = ParentType::add_map(_w, _m.size(), _parent);
@@ -110,74 +118,98 @@ struct MapParser {
         typename ParentType::template Map<typename W::OutputMapType>;
 
     for (const auto& [k, v] : _m) {
-      if constexpr (internal::has_reflection_type_v<KeyType>) {
-        using ReflT = typename KeyType::ReflectionType;
-
-        if constexpr (std::is_integral_v<ReflT> ||
-                      std::is_floating_point_v<ReflT>) {
-          const auto name = std::to_string(k.reflection());
-          const auto new_parent = ParentMapType{name, &m};
-          Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
-              _w, v, new_parent);
-        } else {
-          const auto name = k.reflection();
-          const auto new_parent = ParentMapType{name, &m};
-          Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
-              _w, v, new_parent);
-        }
-
-      } else if constexpr (std::is_integral_v<KeyType> ||
-                           std::is_floating_point_v<KeyType>) {
-        const auto name = std::to_string(k);
-        const auto new_parent = ParentMapType{name, &m};
-        Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
-            _w, v, new_parent);
-      } else {
-        const auto new_parent = ParentMapType{k, &m};
-        Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
-            _w, v, new_parent);
-      }
+      write_map_elem<ParentMapType>(_w, k, v, &m);
     }
     _w.end_map(&m);
   }
 
+  /** @brief Writes a map element to the output.
+   * @tparam ParentMapType The type of the parent map.
+   * @param _w The writer to use.
+   * @param _key The key of the map element.
+   * @param _value The value of the map element.
+   * @param _m The parent map.
+   * */
+  template <class ParentMapType>
+  static void write_map_elem(const W& _w, const auto& _key, const auto& _value,
+                             auto* _m) {
+    using KeyType = std::remove_cvref_t<decltype(_key)>;
+
+    if constexpr (std::is_integral_v<KeyType> ||
+                  std::is_floating_point_v<KeyType>) {
+      const auto name = std::to_string(_key);
+      const auto new_parent = ParentMapType{name, _m};
+      Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
+          _w, _value, new_parent);
+
+    } else if constexpr (internal::has_reflection_type_v<KeyType>) {
+      write_map_elem<ParentMapType>(_w, _key.reflection(), _value, _m);
+
+    } else if constexpr (is_result_v<KeyType>) {
+      write_map_elem<ParentMapType>(_w, _key.value(), _value, _m);
+
+    } else if constexpr (is_validator_v<KeyType>) {
+      write_map_elem<ParentMapType>(_w, _key.value(), _value, _m);
+
+    } else {
+      const auto new_parent = ParentMapType{_key, _m};
+      Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
+          _w, _value, new_parent);
+    }
+  }
+
+  /** @brief Writes an object to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _m The map to write.
+   * @param _parent The parent object.
+   */
   template <class P>
   static void write_object(const W& _w, const MapType& _m, const P& _parent) {
     auto obj = ParentType::add_object(_w, _m.size(), _parent);
     for (const auto& [k, v] : _m) {
-      if constexpr (internal::has_reflection_type_v<KeyType>) {
-        using ReflT = typename KeyType::ReflectionType;
-
-        if constexpr (std::is_integral_v<ReflT> ||
-                      std::is_floating_point_v<ReflT>) {
-          const auto name = std::to_string(k.reflection());
-          const auto new_parent = typename ParentType::Object{name, &obj};
-          Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
-              _w, v, new_parent);
-        } else {
-          const auto name = k.reflection();
-          const auto new_parent = typename ParentType::Object{name, &obj};
-          Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
-              _w, v, new_parent);
-        }
-
-      } else if constexpr (std::is_integral_v<KeyType> ||
-                           std::is_floating_point_v<KeyType>) {
-        const auto name = std::to_string(k);
-        const auto new_parent = typename ParentType::Object{name, &obj};
-        Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
-            _w, v, new_parent);
-      } else {
-        const auto new_parent = typename ParentType::Object{k, &obj};
-        Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
-            _w, v, new_parent);
-      }
+      write_object_elem(_w, k, v, &obj);
     }
     _w.end_object(&obj);
   }
+
+  /** @brief Writes an object element to the output.
+   *
+   * @tparam P The type of the parent.
+   * @param _w The writer to use.
+   * @param _key The key of the object element.
+   * @param _value The value of the object element.
+   * @param _obj The parent object.
+   */
+  static void write_object_elem(const W& _w, const auto& _key,
+                                const auto& _value, auto* _obj) {
+    using KeyType = std::remove_cvref_t<decltype(_key)>;
+
+    if constexpr (std::is_integral_v<KeyType> ||
+                  std::is_floating_point_v<KeyType>) {
+      const auto name = std::to_string(_key);
+      const auto new_parent = typename ParentType::Object{name, _obj};
+      Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
+          _w, _value, new_parent);
+
+    } else if constexpr (internal::has_reflection_type_v<KeyType>) {
+      write_object_elem(_w, _key.reflection(), _value, _obj);
+
+    } else if constexpr (is_result_v<KeyType>) {
+      write_object_elem(_w, _key.value(), _value, _obj);
+
+    } else if constexpr (is_validator_v<KeyType>) {
+      write_object_elem(_w, _key.value(), _value, _obj);
+
+    } else {
+      const auto new_parent = typename ParentType::Object{_key, _obj};
+      Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::write(
+          _w, _value, new_parent);
+    }
+  }
 };
 
-}  // namespace parsing
-}  // namespace rfl
+}  // namespace rfl::parsing
 
 #endif
