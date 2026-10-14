@@ -217,6 +217,11 @@ struct Reader {
       return Error(std::string(__FUNCTION__) + " error(" + std::to_string(res) +
                    "): " + avro_strerror());
     }
+    if constexpr (requires { _array_reader.reserve(size); }) {
+      if (const auto err = _array_reader.reserve(size)) {
+        return err;
+      }
+    }
     for (size_t ix = 0; ix < size; ++ix) {
       avro_value_t element;
       res = avro_value_get_by_index(_arr.val_, ix, &element, nullptr);

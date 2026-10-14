@@ -126,6 +126,11 @@ struct Reader {
     try {
       size_t size;
       (*_arr.archive_)(::cereal::make_size_tag(size));
+      if constexpr (requires { _array_reader.reserve(size); }) {
+        if (const auto err = _array_reader.reserve(size)) {
+          return err;
+        }
+      }
       for (size_t i = 0; i < size; ++i) {
         const auto err = _array_reader.read(InputVarType{_arr.archive_});
         if (err) {

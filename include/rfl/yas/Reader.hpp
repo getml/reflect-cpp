@@ -120,6 +120,11 @@ struct Reader {
     try {
       std::size_t size;
       (*_arr.ar) & size;
+      if constexpr (requires { _array_reader.reserve(size); }) {
+        if (const auto err = _array_reader.reserve(size)) {
+          return err;
+        }
+      }
       for (std::size_t i = 0; i < size; ++i) {
         const auto err = _array_reader.read(InputVarType{_arr.ar});
         if (err) {
