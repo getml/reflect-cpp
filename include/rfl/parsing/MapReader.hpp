@@ -115,11 +115,12 @@ class MapReader {
 
     } else if constexpr (is_validator_v<KeyT>) {
       using ValT = typename KeyT::ValueType;
-      return make_key<ValT>(std::move(_pair))
-          .transform([](auto&& _p) -> std::pair<KeyT, ValueType> {
-            return std::make_pair(KeyT(std::move(_p.first)),
-                                  std::move(_p.second));
-          });
+      return make_key<ValT>(std::move(_pair)).and_then([](auto&& _p) {
+        return KeyT::from_value(std::move(_p.first))
+            .transform([&](auto&& _k) -> std::pair<KeyT, ValueType> {
+              return std::make_pair(std::move(_k), std::move(_p.second));
+            });
+      });
 
     } else {
       return std::move(_pair);
