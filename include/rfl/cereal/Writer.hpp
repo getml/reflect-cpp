@@ -4,6 +4,7 @@
 #include <cereal/archives/portable_binary.hpp>
 #include <cereal/cereal.hpp>
 #include <cereal/types/string.hpp>
+#include <cstddef>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -176,6 +177,15 @@ class Writer {
   void end_map(OutputMapType* _map) const noexcept;
 
   void end_object(OutputObjectType* _obj) const noexcept;
+
+  template <class T>
+  void write_array_data(const T* _data, const std::size_t _size) const {
+    if (_size != 0) {
+      // A pointer value preserves the element width in Cereal BinaryData.
+      (*archive_)(::cereal::binary_data(static_cast<const T*>(_data),
+                                        _size * sizeof(T)));
+    }
+  }
 
  private:
   void add_string_view(const std::string_view& _str) const;
