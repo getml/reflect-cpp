@@ -100,6 +100,9 @@ class ViewReader {
         std::stringstream stream;
         stream << "Failed to parse field '" << name
                << "': " << res.error().what();
+        // Reserve lazily to avoid error-vector reallocations while keeping
+        // successful reads allocation-free.
+        _errors->reserve(size_);
         _errors->emplace_back(stream.str());
         return;
       }
