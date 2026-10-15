@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "../Error.hpp"
+#include "../always_inline.hpp"
 
 namespace rfl::internal::cpp20 {
 
@@ -331,7 +332,7 @@ class Result {
   /// @note This overload is for rvalue references (&&), so the contained value
   /// is moved.
   template <class F>
-  auto transform(const F& _f) && {
+  RFL_ALWAYS_INLINE auto transform(const F& _f) && {
     /// Result_U is expected to be of type Result<U>.
     using U = std::invoke_result_t<F, T>;
     if (success_) {

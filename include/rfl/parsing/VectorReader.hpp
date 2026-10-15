@@ -6,6 +6,7 @@
 #include <type_traits>
 
 #include "../Result.hpp"
+#include "../internal/always_inline.hpp"
 #include "Parser_base.hpp"
 #include "is_inplace_vector.hpp"
 #include "is_map_like.hpp"
@@ -36,7 +37,7 @@ class VectorReader {
    * @param _var The input variable to read from.
    * @return An optional error.
    */
-  std::optional<Error> read(const InputVarType& _var) const {
+  RFL_ALWAYS_INLINE std::optional<Error> read(const InputVarType& _var) const {
     const auto parse = [this](const InputVarType& _var) {
       if constexpr (is_map_like_v<VecType>) {
         return get_pair(_var);

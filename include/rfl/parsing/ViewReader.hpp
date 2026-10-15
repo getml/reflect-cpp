@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "../Tuple.hpp"
+#include "../internal/always_inline.hpp"
 #include "../internal/is_array.hpp"
 #include "../internal/no_extra_fields_v.hpp"
 #include "Parser_base.hpp"
@@ -81,11 +82,10 @@ class ViewReader {
   }
 
   template <int i>
-  static void assign_if_field_matches(const R& _r,
-                                      const auto _current_name_or_index,
-                                      const auto& _var, auto* _view,
-                                      auto* _errors, auto* _found, auto* _set,
-                                      bool* _already_assigned) {
+  static RFL_ALWAYS_INLINE void assign_if_field_matches(
+      const R& _r, const auto _current_name_or_index, const auto& _var,
+      auto* _view, auto* _errors, auto* _found, auto* _set,
+      bool* _already_assigned) {
     using FieldType = tuple_element_t<i, typename ViewType::Fields>;
     using OriginalType = typename FieldType::Type;
     using T =
