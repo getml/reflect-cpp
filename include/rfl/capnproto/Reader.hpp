@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 #include "../Bytestring.hpp"
 #include "../Result.hpp"
@@ -178,8 +179,21 @@ class RFL_API Reader {
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
+    const auto fields = _obj.val_.getSchema().getFields();
+    if constexpr (requires {
+                    std::make_integer_sequence<int, ObjectReader::size()>{};
+                  }) {
+      if (fields.size() == ObjectReader::size()) {
+        [&]<int... Is>(std::integer_sequence<int, Is...>) {
+          (_object_reader.read(std::integral_constant<int, Is>{},
+                               InputVarType{_obj.val_.get(fields[Is])}),
+           ...);
+        }(std::make_integer_sequence<int, ObjectReader::size()>{});
+        return std::nullopt;
+      }
+    }
     int i = 0;
-    for (auto field : _obj.val_.getSchema().getFields()) {
+    for (auto field : fields) {
       _object_reader.read(i++, InputVarType{_obj.val_.get(field)});
     }
     return std::nullopt;
