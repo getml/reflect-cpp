@@ -691,7 +691,8 @@ struct Parser {
                                                  const InputVarType& _var) {
     alignas(T) unsigned char buf[sizeof(T)]{};
     auto ptr = internal::ptr_cast<T*>(&buf);
-    auto view = ProcessorsType::template process<T>(to_view(*ptr));
+    auto raw_view = to_view(*ptr);
+    auto view = ProcessorsType::template process<T>(std::move(raw_view));
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto [set, err] =
         Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
