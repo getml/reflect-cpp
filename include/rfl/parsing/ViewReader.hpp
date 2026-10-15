@@ -62,6 +62,13 @@ class ViewReader {
                              std::make_integer_sequence<int, size_>());
   }
 
+  // Positional readers already know the field at compile time.
+  template <int i>
+  void read(std::integral_constant<int, i>, const InputVarType& _var) const {
+    assign_to_matching_field(*r_, i, _var, view_, errors_, found_, set_,
+                             std::integer_sequence<int, i>());
+  }
+
   /**
    * @brief Returns the size of the view.
    *
