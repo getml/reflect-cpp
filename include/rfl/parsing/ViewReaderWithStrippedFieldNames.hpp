@@ -59,8 +59,7 @@ class ViewReaderWithStrippedFieldNames {
              << " fields, but got at least one more.";
       return Error(stream.str());
     }
-    assign_to_field_i(*r_, _var, view_, errors_, found_, set_, i_,
-                      std::make_integer_sequence<int, size_>());
+    assign_to_field_i(_var, std::make_integer_sequence<int, size_>());
     ++i_;
     return std::nullopt;
   }
@@ -102,11 +101,18 @@ class ViewReaderWithStrippedFieldNames {
   }
 
   template <int... is>
-  static void assign_to_field_i(const R& _r, const auto& _var, auto* _view,
-                                auto* _errors, auto* _found, auto* _set, int _i,
-                                std::integer_sequence<int, is...>) {
-    (assign_if_field_is_field_i<is>(_r, _var, _view, _errors, _found, _set, _i),
-     ...);
+  void assign_to_field_i(const InputVarType& _var,
+                         std::integer_sequence<int, is...>) const {
+    using ReadField =
+        void (*)(const ViewReaderWithStrippedFieldNames*, const InputVarType&);
+    static constexpr std::array<ReadField, sizeof...(is)> readers{
+        +[](const ViewReaderWithStrippedFieldNames* self,
+            const InputVarType& var) {
+          assign_if_field_is_field_i<is>(*self->r_, var, self->view_,
+                                         self->errors_, self->found_,
+                                         self->set_, is);
+        }...};
+    readers[i_](this, _var);
   }
 
   // TODO: Unnecessary code duplication.
