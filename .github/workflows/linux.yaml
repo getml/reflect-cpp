@@ -121,6 +121,7 @@ jobs:
           echo '```' >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_write >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=field_dispatch >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_read >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=licenses_write >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_read >> $GITHUB_STEP_SUMMARY

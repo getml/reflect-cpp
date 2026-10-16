@@ -1,6 +1,7 @@
 #ifndef RFL_PARSING_VIEWREADERWITHDEFAULTANDSTRIPPEDFIELDNAMES_HPP_
 #define RFL_PARSING_VIEWREADERWITHDEFAULTANDSTRIPPEDFIELDNAMES_HPP_
 
+#include <array>
 #include <optional>
 #include <sstream>
 #include <type_traits>
@@ -60,8 +61,7 @@ class ViewReaderWithDefaultAndStrippedFieldNames {
              << " fields, but got at least one more.";
       return Error(stream.str());
     }
-    assign_to_field_i(*r_, _var, view_, errors_, i_,
-                      std::make_integer_sequence<int, size_>());
+    assign_to_field_i(_var, std::make_integer_sequence<int, size_>());
     ++i_;
     return std::nullopt;
   }
@@ -100,10 +100,17 @@ class ViewReaderWithDefaultAndStrippedFieldNames {
   }
 
   template <int... is>
-  static void assign_to_field_i(const R& _r, const auto& _var, auto* _view,
-                                auto* _errors, int _i,
-                                std::integer_sequence<int, is...>) {
-    (assign_if_field_is_field_i<is>(_r, _var, _view, _errors, _i), ...);
+  void assign_to_field_i(const InputVarType& _var,
+                         std::integer_sequence<int, is...>) const {
+    using ReadField = void (*)(
+        const ViewReaderWithDefaultAndStrippedFieldNames*, const InputVarType&);
+    static constexpr std::array<ReadField, sizeof...(is)> readers{
+        +[](const ViewReaderWithDefaultAndStrippedFieldNames* self,
+            const InputVarType& var) {
+          assign_if_field_is_field_i<is>(*self->r_, var, self->view_,
+                                         self->errors_, is);
+        }...};
+    readers[i_](this, _var);
   }
 
   // TODO: Unnecessary code duplication.

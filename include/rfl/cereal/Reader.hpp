@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 #include "../Bytestring.hpp"
 #include "../Result.hpp"
@@ -176,9 +177,10 @@ struct Reader {
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
     try {
-      for (size_t i = 0; i < ObjectReader::size(); ++i) {
-        _object_reader.read(i, InputVarType{_obj.archive_});
-      }
+      [&]<int... Is>(std::integer_sequence<int, Is...>) {
+        (_object_reader.read(std::integral_constant<int, Is>{},
+                             InputVarType{_obj.archive_}), ...);
+      }(std::make_integer_sequence<int, ObjectReader::size()>{});
       return std::nullopt;
     } catch (std::exception& e) {
       return Error(std::string("Cereal object read error: ") + e.what());

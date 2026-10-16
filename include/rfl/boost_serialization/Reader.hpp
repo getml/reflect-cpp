@@ -6,6 +6,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
@@ -186,6 +187,18 @@ struct Reader {
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
+    if constexpr (requires {
+                    std::make_integer_sequence<int, ObjectReader::size()>{};
+                  }) {
+      if (_obj.size == ObjectReader::size()) {
+        [&]<int... Is>(std::integer_sequence<int, Is...>) {
+          (_object_reader.read(std::integral_constant<int, Is>{},
+                               InputVarType{_obj.ar}),
+           ...);
+        }(std::make_integer_sequence<int, ObjectReader::size()>{});
+        return std::nullopt;
+      }
+    }
     for (size_t i = 0; i < _obj.size; ++i) {
       auto var = InputVarType{_obj.ar};
       _object_reader.read(static_cast<int>(i), var);
