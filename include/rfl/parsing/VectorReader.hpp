@@ -1,6 +1,8 @@
 #ifndef RFL_PARSING_VECTORREADER_HPP_
 #define RFL_PARSING_VECTORREADER_HPP_
 
+#include <cstddef>
+#include <exception>
 #include <optional>
 #include <string>
 #include <type_traits>
@@ -29,6 +31,19 @@ class VectorReader {
   VectorReader(const R* _r, VecType* _vec) : r_(_r), vec_(_vec) {}
 
   ~VectorReader() = default;
+
+  std::optional<Error> reserve(const std::size_t _size) const noexcept {
+    if constexpr (requires { vec_->reserve(_size); } &&
+                  !is_inplace_vector_v<VecType> && !is_set_like_v<VecType> &&
+                  !is_map_like_v<VecType>) {
+      try {
+        vec_->reserve(_size);
+      } catch (const std::exception& e) {
+        return Error(e.what());
+      }
+    }
+    return std::nullopt;
+  }
 
   /**
    * @brief Reads a single variable from the input.

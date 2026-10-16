@@ -159,6 +159,11 @@ struct Reader {
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
                                   const InputArrayType& _arr) const noexcept {
+    if constexpr (requires { _array_reader.reserve(_arr.node_.size()); }) {
+      if (const auto err = _array_reader.reserve(_arr.node_.size())) {
+        return err;
+      }
+    }
     for (size_t i = 0; i < _arr.node_.size(); ++i) {
       const auto err = _array_reader.read(_arr.node_[i]);
       if (err) {

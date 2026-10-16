@@ -98,6 +98,12 @@ struct Reader {
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
                                   const InputArrayType& _arr) const noexcept {
+    const auto size = yyjson_arr_size(_arr.val_);
+    if constexpr (requires { _array_reader.reserve(size); }) {
+      if (const auto err = _array_reader.reserve(size)) {
+        return err;
+      }
+    }
     yyjson_val* val;
     yyjson_arr_iter iter;
     yyjson_arr_iter_init(_arr.val_, &iter);
