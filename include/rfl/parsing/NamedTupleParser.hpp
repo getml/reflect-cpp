@@ -9,6 +9,7 @@
 
 #include "../NamedTuple.hpp"
 #include "../Result.hpp"
+#include "../internal/always_inline.hpp"
 #include "../internal/default_if_missing_v.hpp"
 #include "../internal/has_default_val_v.hpp"
 #include "../internal/has_reflection_method_v.hpp"
@@ -145,10 +146,10 @@ struct NamedTupleParser {
    * @return A pair containing a boolean array indicating which fields were
    *         found and an optional error.
    */
-  static std::pair<std::array<bool, NamedTupleType::size()>,
-                   std::optional<Error>>
-  read_view(const R& _r, const InputVarType& _var,
-            NamedTuple<FieldTypes...>* _view) noexcept {
+  static RFL_ALWAYS_INLINE
+      std::pair<std::array<bool, NamedTupleType::size()>, std::optional<Error>>
+      read_view(const R& _r, const InputVarType& _var,
+                NamedTuple<FieldTypes...>* _view) noexcept {
     if constexpr (_no_field_names) {
       auto arr = _r.to_array(_var);
       if (!arr) [[unlikely]] {
@@ -321,7 +322,7 @@ struct NamedTupleParser {
 
   /// Generates error messages for when fields are missing.
   template <int _i>
-  static void handle_one_missing_field(
+  static RFL_ALWAYS_INLINE void handle_one_missing_field(
       const std::array<bool, size_>& _found, const NamedTupleType& _view,
       std::array<bool, size_>* _set,
       std::vector<std::string>* _errors) noexcept {
@@ -357,7 +358,7 @@ struct NamedTupleParser {
 
   /// Generates error messages for when fields are missing.
   template <int... _is>
-  static void handle_missing_fields(
+  static RFL_ALWAYS_INLINE void handle_missing_fields(
       const std::array<bool, size_>& _found, const NamedTupleType& _view,
       std::array<bool, size_>* _set, std::vector<std::string>* _errors,
       std::integer_sequence<int, _is...>) noexcept {
@@ -373,10 +374,11 @@ struct NamedTupleParser {
     }
   }
 
-  static std::pair<std::array<bool, NamedTupleType::size()>,
-                   std::optional<Error>>
-  read_object_or_array(const R& _r, const InputObjectOrArrayType& _obj_or_arr,
-                       NamedTupleType* _view) noexcept {
+  static RFL_ALWAYS_INLINE
+      std::pair<std::array<bool, NamedTupleType::size()>, std::optional<Error>>
+      read_object_or_array(const R& _r,
+                           const InputObjectOrArrayType& _obj_or_arr,
+                           NamedTupleType* _view) noexcept {
     auto found = std::array<bool, NamedTupleType::size()>();
     found.fill(false);
     auto set = std::array<bool, NamedTupleType::size()>();

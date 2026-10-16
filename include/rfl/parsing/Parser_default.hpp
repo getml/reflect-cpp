@@ -7,6 +7,7 @@
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../internal/HasFromReflectionMethod.hpp"
+#include "../internal/always_inline.hpp"
 #include "../internal/default_if_missing_v.hpp"
 #include "../internal/has_default_val_v.hpp"
 #include "../internal/has_reflection_method_v.hpp"
@@ -87,7 +88,7 @@ struct Parser {
    * @param _var The input variable to read from.
    * @return A Result containing the parsed value or an error.
    */
-  static auto read(const R& _r, const InputVarType& _var) {
+  static RFL_ALWAYS_INLINE auto read(const R& _r, const InputVarType& _var) {
     if constexpr (internal::is_basic_type_v<T>) {
       return ParserBasicType<R, W, T, ProcessorsType>::read(_r, _var);
 
@@ -686,10 +687,12 @@ struct Parser {
   /// of the struct in which we then write the individual fields using views
   /// and placement new. This is how we deal with the fact that some fields
   /// might not be default-constructible.
-  static Result<T> read_struct(const R& _r, const InputVarType& _var) {
+  static RFL_ALWAYS_INLINE Result<T> read_struct(const R& _r,
+                                                 const InputVarType& _var) {
     alignas(T) unsigned char buf[sizeof(T)]{};
     auto ptr = internal::ptr_cast<T*>(&buf);
-    auto view = ProcessorsType::template process<T>(to_view(*ptr));
+    auto raw_view = to_view(*ptr);
+    auto view = ProcessorsType::template process<T>(std::move(raw_view));
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto [set, err] =
         Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);

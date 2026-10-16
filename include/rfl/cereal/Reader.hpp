@@ -14,6 +14,7 @@
 #include "../Result.hpp"
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
+#include "../internal/always_inline.hpp"
 #include "../internal/is_literal.hpp"
 #include "../parsing/schemaful/IsSchemafulReader.hpp"
 
@@ -64,7 +65,8 @@ struct Reader {
   /// @param _var The Cereal archive variable containing the value
   /// @return A Result containing the converted value or an error
   template <class T>
-  rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
+  RFL_ALWAYS_INLINE rfl::Result<T> to_basic_type(
+      const InputVarType& _var) const noexcept {
     try {
       if constexpr (internal::is_literal_v<T>) {
         std::string str;
@@ -174,8 +176,9 @@ struct Reader {
   /// @param _obj The Cereal object structure
   /// @return std::nullopt on success, or an Error if reading fails
   template <class ObjectReader>
-  std::optional<Error> read_object(const ObjectReader& _object_reader,
-                                   const InputObjectType& _obj) const noexcept {
+  RFL_ALWAYS_INLINE std::optional<Error> read_object(
+      const ObjectReader& _object_reader,
+      const InputObjectType& _obj) const noexcept {
     try {
       [&]<int... Is>(std::integer_sequence<int, Is...>) {
         (_object_reader.read(std::integral_constant<int, Is>{},
