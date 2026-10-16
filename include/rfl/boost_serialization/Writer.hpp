@@ -1,6 +1,7 @@
 #ifndef RFL_BOOST_SERIALIZATION_WRITER_HPP_
 #define RFL_BOOST_SERIALIZATION_WRITER_HPP_
 
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <string_view>
@@ -253,6 +254,13 @@ class Writer {
   /// This is a no-op for Boost.Serialization.
   /// @param _obj Pointer to the object (unused)
   void end_object(OutputObjectType* /*_obj*/) const {}
+
+  template <class T>
+  void write_array_data(const T* _data, const std::size_t _size) const {
+    if (_size != 0) {
+      ar_->save_binary(_data, _size * sizeof(T));
+    }
+  }
 
  private:
   void write_size(const size_t _size) const {

@@ -1,6 +1,12 @@
 #ifndef RFL_CEREAL_PARSER_HPP_
 #define RFL_CEREAL_PARSER_HPP_
 
+#include <cstddef>
+#include <exception>
+#include <string>
+#include <type_traits>
+#include <vector>
+
 #include "../internal/no_field_names_v.hpp"
 #include "../parsing/Parser.hpp"
 #include "Reader.hpp"
@@ -8,6 +14,42 @@
 
 namespace rfl {
 namespace parsing {
+
+template <class T, class ProcessorsType>
+  requires(std::is_arithmetic_v<T> && !std::is_same_v<T, bool> &&
+           !std::is_same_v<T, char>)
+struct Parser<cereal::Reader, cereal::Writer, std::vector<T>, ProcessorsType>
+    : VectorParser<cereal::Reader, cereal::Writer, std::vector<T>,
+                   ProcessorsType> {
+  using R = cereal::Reader;
+  using W = cereal::Writer;
+  using Type = std::vector<T>;
+
+  static Result<Type> read(const R&,
+                           const typename R::InputVarType& _var) noexcept {
+    try {
+      std::size_t size;
+      (*_var.archive_)(::cereal::make_size_tag(size));
+      Type values(size);
+      if (!values.empty()) {
+        (*_var.archive_)(
+            ::cereal::binary_data(values.data(), values.size() * sizeof(T)));
+      }
+      return values;
+    } catch (const std::exception& e) {
+      return error(std::string("Cereal array read error: ") + e.what());
+    }
+  }
+
+  template <class ParentType>
+  static void write(const W& _w, const Type& _values,
+                    const ParentType& _parent) {
+    // Keep the adapter's array prefix and parent metadata unchanged.
+    auto arr = Parent<W>::add_array(_w, _values.size(), _parent);
+    _w.write_array_data(_values.data(), _values.size());
+    _w.end_array(&arr);
+  }
+};
 
 /// Cereal requires us to explicitly set the number of fields in advance.
 /// Because of that, we require all of the fields and then set them to nullptr,

@@ -68,6 +68,7 @@ jobs:
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=person_write >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=vectors_read >> $GITHUB_STEP_SUMMARY
           ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=points_read >> $GITHUB_STEP_SUMMARY
+          ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=bulk_numeric_vectors >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo '## Benchmarks for JSON' >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
