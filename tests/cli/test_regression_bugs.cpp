@@ -3,8 +3,8 @@
 #include <clocale>
 #include <cstdint>
 #include <string>
-import rfl;
-import rfl.cli;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.cli.hpp>
 
 
 

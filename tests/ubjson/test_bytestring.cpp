@@ -1,9 +1,10 @@
 
-#include "write_and_read.hpp"
 #include <cstddef>
 
-import rfl.ubjson;
-import rfl;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.ubjson.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_bytestring {

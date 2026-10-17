@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <vector>
 
-import rfl.cbor;
+#include <test_rfl/rfl.cbor.hpp>
 
 
 // Helper function to parse hex bytes from CBOR diagnostic output

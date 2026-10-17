@@ -1,10 +1,11 @@
 #include <cassert>
 
-#include "write_and_read.hpp"
 #include <variant>
 
-import rfl.cereal;
-import rfl;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.cereal.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_field_variant_std {

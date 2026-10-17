@@ -1,11 +1,12 @@
 #include <map>
 #include <string>
 
-#include "write_and_read.hpp"
 #include <utility>
 
-import rfl.msgpack;
-import rfl;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.msgpack.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_map {

@@ -1,7 +1,7 @@
 
 #include "write_and_read.hpp"
-import rfl.msgpack;
-import rfl;
+#include <test_rfl/rfl.msgpack.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_vectorstring {

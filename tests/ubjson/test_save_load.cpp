@@ -3,8 +3,8 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-import rfl;
-import rfl.ubjson;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.ubjson.hpp>
 
 
 namespace test_save_load {

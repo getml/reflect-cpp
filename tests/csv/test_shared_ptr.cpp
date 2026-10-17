@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "write_and_read.hpp"
-import rfl.csv;
+#include <test_rfl/rfl.csv.hpp>
 
 
 namespace test_shared_ptr {

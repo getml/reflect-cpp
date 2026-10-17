@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include <optional>
 
-import rfl;
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_optional {

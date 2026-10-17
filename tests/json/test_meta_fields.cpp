@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-import rfl;
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_meta_fields {

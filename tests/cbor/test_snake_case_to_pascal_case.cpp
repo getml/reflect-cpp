@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "write_and_read.hpp"
-import rfl.cbor;
+#include <test_rfl/rfl.cbor.hpp>
 
 namespace test_snake_case_to_pascal_case {
 

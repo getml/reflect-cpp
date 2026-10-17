@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-import rfl.json;
+#include <test_rfl/rfl.json.hpp>
 
 
 

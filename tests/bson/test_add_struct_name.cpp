@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "write_and_read.hpp"
-import rfl.bson;
+#include <test_rfl/rfl.bson.hpp>
 
 namespace test_add_struct_name {
 

@@ -2,8 +2,8 @@
 #include <string>
 
 #include "write_and_read.hpp"
-import rfl.cbor;
-import rfl;
+#include <test_rfl/rfl.cbor.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 struct TestStruct {

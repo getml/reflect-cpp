@@ -26,7 +26,7 @@ inline std::string replace_non_alphanumeric(std::string _str) {
  * @return The type name.
  */
 template <class U>
-static std::string make_type_name() {
+inline std::string make_type_name() {
   if constexpr (is_tagged_union_wrapper_v<U>) {
     return replace_non_alphanumeric(type_name_t<typename U::Type>().str() +
                                     "__tagged");

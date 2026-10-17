@@ -1,11 +1,7 @@
 #ifndef RFL_JSON_WRITER_HPP_
 #define RFL_JSON_WRITER_HPP_
 
-#if __has_include(<yyjson.h>)
-#include <yyjson.h>
-#else
-#include "../thirdparty/yyjson.h"
-#endif
+#include "yyjson_helpers.hpp"
 
 #include <memory>
 #include <stdexcept>
@@ -88,7 +84,7 @@ class RFL_API Writer {
   template <class T>
   OutputVarType value_as_root(const T& _var) const noexcept {
     const auto val = from_basic_type(_var);
-    yyjson_mut_doc_set_root(doc(), val.val_);
+    yyjson_detail::yyjson_mut_doc_set_root(doc(), val.val_);
     return OutputVarType(val);
   }
 
@@ -135,7 +131,7 @@ class RFL_API Writer {
   OutputVarType add_value_to_array(const T& _var,
                                    OutputArrayType* _parent) const {
     const auto val = from_basic_type(_var);
-    const bool ok = yyjson_mut_arr_add_val(_parent->val_, val.val_);
+    const bool ok = yyjson_detail::yyjson_mut_arr_add_val(_parent->val_, val.val_);
     if (!ok) {
       throw std::runtime_error("Could not add value to array.");
     }
@@ -155,8 +151,8 @@ class RFL_API Writer {
                                     const T& _var,
                                     OutputObjectType* _parent) const {
     const auto val = from_basic_type(_var);
-    const bool ok = yyjson_mut_obj_add(
-        _parent->val_, yyjson_mut_strncpy(doc(), _name.data(), _name.size()), val.val_);
+    const bool ok = yyjson_detail::yyjson_mut_obj_add(
+        _parent->val_, yyjson_detail::yyjson_mut_strncpy(doc(), _name.data(), _name.size()), val.val_);
     if (!ok) {
       throw std::runtime_error("Could not add field '" + std::string(_name) +
                                "' to object.");
@@ -190,19 +186,19 @@ class RFL_API Writer {
   template <class T>
   OutputVarType from_basic_type(const T& _var) const noexcept {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      return OutputVarType(yyjson_mut_strncpy(doc(), _var.c_str(), _var.size()));
+      return OutputVarType(yyjson_detail::yyjson_mut_strncpy(doc(), _var.c_str(), _var.size()));
 
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
-      return OutputVarType(yyjson_mut_bool(doc(), _var));
+      return OutputVarType(yyjson_detail::yyjson_mut_bool(doc(), _var));
 
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-      return OutputVarType(yyjson_mut_real(doc(), static_cast<double>(_var)));
+      return OutputVarType(yyjson_detail::yyjson_mut_real(doc(), static_cast<double>(_var)));
 
     } else if constexpr (std::is_unsigned<std::remove_cvref_t<T>>()) {
-      return OutputVarType(yyjson_mut_uint(doc(), static_cast<uint64_t>(_var)));
+      return OutputVarType(yyjson_detail::yyjson_mut_uint(doc(), static_cast<uint64_t>(_var)));
 
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      return OutputVarType(yyjson_mut_int(doc(), static_cast<int64_t>(_var)));
+      return OutputVarType(yyjson_detail::yyjson_mut_int(doc(), static_cast<int64_t>(_var)));
 
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");

@@ -2,8 +2,8 @@
 #include <vector>
 
 #include "write_and_read.hpp"
-import rfl.yaml;
-import rfl;
+#include <test_rfl/rfl.yaml.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_comment {

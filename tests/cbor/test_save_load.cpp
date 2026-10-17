@@ -3,8 +3,8 @@
 #include <vector>
 
 #include <gtest/gtest.h>
-import rfl;
-import rfl.cbor;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.cbor.hpp>
 
 
 namespace test_save_load {

@@ -5,7 +5,7 @@
 #include <string_view>
 #include <type_traits>
 
-import rfl.yaml;
+#include <test_rfl/rfl.yaml.hpp>
 
 
 

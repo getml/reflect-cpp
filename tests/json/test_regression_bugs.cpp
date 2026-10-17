@@ -5,8 +5,8 @@
 #include <string>
 #include <string_view>
 
-import rfl;
-import rfl.json;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.json.hpp>
 
 
 

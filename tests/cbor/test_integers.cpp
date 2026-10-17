@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "write_and_read.hpp"
-import rfl.cbor;
+#include <test_rfl/rfl.cbor.hpp>
 
 
 namespace test_integers {

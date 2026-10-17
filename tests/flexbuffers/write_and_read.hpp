@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <type_traits>
 
-import rfl.flexbuf;
+#include <test_rfl/rfl.flexbuf.hpp>
 
 
 

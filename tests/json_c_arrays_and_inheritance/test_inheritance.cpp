@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <cassert>
-import rfl.c_arrays_and_inheritance;
+#include <test_rfl/rfl.c_arrays_and_inheritance.hpp>
 
 
 namespace test_inheritance {

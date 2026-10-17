@@ -28,6 +28,7 @@ option(REFLECTCPP_BOOST_SERIALIZATION "Enable Boost.Serialization support" ${REF
 option(REFLECTCPP_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(REFLECTCPP_BUILD_TESTS "Build tests" OFF)
 option(REFLECTCPP_CHECK_HEADERS "Make sure that all headers are self-contained" OFF)
+option(REFLECTCPP_BUILD_MODULES "Build experimental C++20 module interfaces" OFF)
 
 set(REFLECTCPP_ENUM_RANGE_MIN "-256" CACHE STRING
     "Minimum value scanned during enum reflection")
@@ -184,6 +185,19 @@ endif ()
 
 project(reflectcpp VERSION 0.25.0 LANGUAGES CXX)
 
+if(REFLECTCPP_BUILD_MODULES)
+    if(NOT CMAKE_GENERATOR MATCHES "Ninja|Visual Studio")
+        message(FATAL_ERROR "REFLECTCPP_BUILD_MODULES requires Ninja or Visual Studio")
+    endif()
+    if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 14)
+       OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19))
+        message(FATAL_ERROR "REFLECTCPP_BUILD_MODULES requires GCC 14+ or Clang 19+; use headers with older compilers")
+    endif()
+else()
+    # Keep ordinary header builds working with older compilers and generators.
+    set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+endif()
+
 find_package(ament_cmake QUIET)
 
 if (PROJECT_IS_TOP_LEVEL)
@@ -249,6 +263,7 @@ set(REFLECT_CPP_SOURCES
 )
 
 set(REFLECT_CPP_MODULES
+    modules/rfl.ctre.cppm
     modules/rfl.cppm
 )
 
@@ -276,6 +291,9 @@ else ()
 endif ()
 
 if (_REFLECTCPP_NEEDS_JSON_IMPL)
+    if(REFLECTCPP_BUILD_MODULES)
+        list(APPEND REFLECT_CPP_SOURCES src/reflectcpp_yyjson_helpers.cpp)
+    endif()
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_json.cpp
     )
@@ -497,27 +515,38 @@ if (REFLECTCPP_CLI OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_MODULES modules/rfl.cli.cppm)
 endif ()
 
-set_source_files_properties(
-    ${REFLECT_CPP_MODULES}
-    PROPERTIES
-        LANGUAGE CXX
-        SKIP_PRECOMPILE_HEADERS ON
-)
-
-set_target_properties(reflectcpp PROPERTIES LINKER_LANGUAGE CXX)
 target_sources(reflectcpp PRIVATE ${REFLECT_CPP_SOURCES})
-target_sources(reflectcpp
-    PUBLIC
-    FILE_SET rfl_modules
-    TYPE CXX_MODULES
-    BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/modules
-    FILES ${REFLECT_CPP_MODULES}
-)
-target_precompile_headers(reflectcpp PRIVATE [["rfl.hpp"]] <iostream> <string> <functional>)
+if(REFLECTCPP_BUILD_MODULES)
+    target_compile_definitions(reflectcpp PUBLIC REFLECTCPP_BUILD_MODULES)
+    # Older Clang BMIs do not preserve enchantum's diagnostic suppression when
+    # its enum-probing templates are instantiated by an importing translation unit.
+    if(CMAKE_CXX_COMPILER_ID MATCHES "^(Clang|AppleClang)$"
+       AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 20)
+        target_compile_options(reflectcpp PUBLIC -Wno-enum-constexpr-conversion)
+    endif()
+    set_source_files_properties(
+        ${REFLECT_CPP_MODULES}
+        PROPERTIES
+            LANGUAGE CXX
+            SKIP_PRECOMPILE_HEADERS ON
+    )
+    target_sources(reflectcpp
+        PUBLIC
+        FILE_SET rfl_modules
+        TYPE CXX_MODULES
+        BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/modules
+        FILES ${REFLECT_CPP_MODULES}
+    )
+endif()
+target_precompile_headers(reflectcpp PRIVATE <iostream> <string> <functional>)
+if(NOT REFLECTCPP_BUILD_MODULES)
+    target_precompile_headers(reflectcpp PRIVATE [["rfl.hpp"]])
+endif()
 
 if (REFLECTCPP_BUILD_TESTS)
     add_library(reflectcpp_tests_crt INTERFACE)
     target_link_libraries(reflectcpp_tests_crt INTERFACE reflectcpp GTest::gtest_main)
+    target_include_directories(reflectcpp_tests_crt INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/tests)
 
     enable_testing()
     find_package(GTest CONFIG REQUIRED)

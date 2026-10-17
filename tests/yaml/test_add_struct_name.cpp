@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "write_and_read.hpp"
-import rfl.yaml;
+#include <test_rfl/rfl.yaml.hpp>
 
 namespace test_add_struct_name {
 

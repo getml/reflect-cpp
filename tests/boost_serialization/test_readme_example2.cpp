@@ -1,8 +1,8 @@
 #include <string>
 
 #include "write_and_read.hpp"
-import rfl.boost_serialization;
-import rfl;
+#include <test_rfl/rfl.boost_serialization.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_readme_example2 {

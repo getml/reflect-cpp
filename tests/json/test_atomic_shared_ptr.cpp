@@ -1,12 +1,13 @@
 #include <atomic>
 #include <string>
 
-#include "write_and_read.hpp"
 #include <cstdint>
 #include <memory>
 
-import rfl;
-import rfl.json;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.json.hpp>
 
 
 namespace test_atomic_shared_ptr {

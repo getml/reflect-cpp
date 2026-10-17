@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
 
 
-#include "test_helpers.hpp"
 #include <utility>
 
-import rfl;
+#include "test_helpers.hpp"
+
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_field_cross_move {

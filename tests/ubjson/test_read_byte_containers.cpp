@@ -6,8 +6,8 @@
 #include <cstdint>
 #include <vector>
 
-import rfl;
-import rfl.ubjson;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.ubjson.hpp>
 
 
 // Make sure things still compile when

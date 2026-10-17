@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 #include <type_traits>
-import rfl.json;
+#include <test_rfl/rfl.json.hpp>
 
 
 

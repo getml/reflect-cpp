@@ -6,8 +6,8 @@
 #include <cstdint>
 #include <vector>
 
-import rfl;
-import rfl.cbor;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.cbor.hpp>
 
 
 // Make sure things still compile when

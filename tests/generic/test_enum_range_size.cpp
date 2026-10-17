@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-import rfl;
+#include <test_rfl/rfl.hpp>
 
 namespace test_enum_range_size {
 

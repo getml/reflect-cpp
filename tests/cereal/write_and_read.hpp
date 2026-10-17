@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <type_traits>
 
-import rfl.cereal;
+#include <test_rfl/rfl.cereal.hpp>
 
 
 

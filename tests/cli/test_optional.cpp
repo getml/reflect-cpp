@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <optional>
 #include <string>
-import rfl;
-import rfl.cli;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.cli.hpp>
 
 
 namespace test_optional {

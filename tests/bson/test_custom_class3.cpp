@@ -2,8 +2,8 @@
 #include <string>
 
 #include "write_and_read.hpp"
-import rfl.bson;
-import rfl;
+#include <test_rfl/rfl.bson.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_custom_class3 {

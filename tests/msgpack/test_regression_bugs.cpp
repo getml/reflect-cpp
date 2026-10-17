@@ -6,8 +6,8 @@
 #include <limits>
 #include <string>
 #include <vector>
-import rfl;
-import rfl.msgpack;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.msgpack.hpp>
 
 
 

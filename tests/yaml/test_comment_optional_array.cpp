@@ -4,8 +4,8 @@
 #include <optional>
 
 #include "write_and_read.hpp"
-import rfl;
-import rfl.yaml;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.yaml.hpp>
 
 
 namespace test_comment_optional_array {

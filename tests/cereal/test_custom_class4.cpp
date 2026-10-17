@@ -1,11 +1,12 @@
 #include <cassert>
 #include <string>
 
-#include "write_and_read.hpp"
 #include <utility>
 
-import rfl.cereal;
-import rfl;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.cereal.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_custom_class4 {

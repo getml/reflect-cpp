@@ -4,8 +4,8 @@
 #include <string_view>
 #include <string>
 
-import rfl;
-import rfl.json;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.json.hpp>
 
 
 namespace test_string_view {

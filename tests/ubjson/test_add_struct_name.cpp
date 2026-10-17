@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "write_and_read.hpp"
-import rfl.ubjson;
+#include <test_rfl/rfl.ubjson.hpp>
 
 namespace test_add_struct_name {
 

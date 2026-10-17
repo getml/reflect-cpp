@@ -3,8 +3,8 @@
 #include <vector>
 
 #include "write_and_read.hpp"
-import rfl.flexbuf;
-import rfl;
+#include <test_rfl/rfl.flexbuf.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_custom_class1 {

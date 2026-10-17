@@ -1,7 +1,7 @@
 
 #include "write_and_read.hpp"
-import rfl.ubjson;
-import rfl;
+#include <test_rfl/rfl.ubjson.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_vectorstring {

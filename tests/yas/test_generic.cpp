@@ -1,8 +1,8 @@
 #include <string>
 
 #include "write_and_read.hpp"
-import rfl;
-import rfl.yas;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.yas.hpp>
 
 
 namespace test_generic {

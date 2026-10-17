@@ -1,12 +1,13 @@
 #include <string>
 
-#include "write_and_read.hpp"
 #include <memory>
 #include <set>
 #include <utility>
 
-import rfl.flexbuf;
-import rfl;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.flexbuf.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_set {

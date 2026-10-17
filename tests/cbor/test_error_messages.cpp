@@ -2,9 +2,9 @@
 
 #include <string>
 #include <vector>
-import rfl;
-import rfl.json;
-import rfl.cbor;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.json.hpp>
+#include <test_rfl/rfl.cbor.hpp>
 
 
 namespace test_error_messages {

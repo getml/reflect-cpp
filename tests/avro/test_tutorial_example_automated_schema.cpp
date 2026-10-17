@@ -3,8 +3,8 @@
 #include <string>
 
 #include "write_and_read.hpp"
-import rfl;
-import rfl.avro;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.avro.hpp>
 
 
 /// The basic example from the Avro C tutorial.

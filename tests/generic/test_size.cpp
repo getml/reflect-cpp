@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "write_and_read.hpp"
-import rfl;
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_size {

@@ -2,7 +2,7 @@
 
 #include <climits>
 #include <cstdint>
-import rfl;
+#include <test_rfl/rfl.hpp>
 
 
 

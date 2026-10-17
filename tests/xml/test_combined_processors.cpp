@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "write_and_read.hpp"
-import rfl.xml;
+#include <test_rfl/rfl.xml.hpp>
 
 namespace test_combined_processors {
 

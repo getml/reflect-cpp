@@ -1,5 +1,24 @@
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -O2")
 
+# Generate one adapter for each enabled module. The same test sources can then
+# exercise either headers or module imports without preprocessor switches.
+foreach(MODULE_FILE IN LISTS REFLECT_CPP_MODULES)
+    get_filename_component(MODULE_NAME "${MODULE_FILE}" NAME_WLE)
+    if(REFLECTCPP_BUILD_MODULES)
+        set(REFLECTCPP_TEST_DEPENDENCY "import ${MODULE_NAME};")
+    elseif(MODULE_NAME STREQUAL "rfl")
+        set(REFLECTCPP_TEST_DEPENDENCY "#include <rfl.hpp>\n#include <rfl/Deprecated.hpp>\n#include <rfl/num_fields.hpp>")
+    elseif(MODULE_NAME STREQUAL "rfl.c_arrays_and_inheritance")
+        set(REFLECTCPP_TEST_DEPENDENCY "#define REFLECT_CPP_C_ARRAYS_OR_INHERITANCE\n#include <rfl.hpp>\n#include <rfl/json.hpp>\n#include <rfl/num_fields.hpp>")
+    elseif(MODULE_NAME STREQUAL "rfl.ctre")
+        continue()
+    else()
+        string(REPLACE "." "/" HEADER_NAME "${MODULE_NAME}")
+        set(REFLECTCPP_TEST_DEPENDENCY "#include <${HEADER_NAME}.hpp>")
+    endif()
+    configure_file(test_rfl.hpp.in "test_rfl/${MODULE_NAME}.hpp" @ONLY)
+endforeach()
+
 # Note: Adding -Wno-stringop-overflow is necessary, because of false positive warnings, see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=110498
 if (MSVC)
     # /utf-8 tells MSVC the test sources are UTF-8 (default is the system code

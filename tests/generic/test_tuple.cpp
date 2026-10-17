@@ -3,7 +3,7 @@
 #include <compare>
 #include <limits>
 #include <string>
-import rfl;
+#include <test_rfl/rfl.hpp>
 
 
 

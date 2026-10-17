@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <type_traits>
 
-import rfl.csv;
+#include <test_rfl/rfl.csv.hpp>
 
 
 

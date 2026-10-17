@@ -2,8 +2,8 @@
 #include <string>
 #include <optional>
 
-import rfl;
-import rfl.cli;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.cli.hpp>
 
 
 namespace test_positional {

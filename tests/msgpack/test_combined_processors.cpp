@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "write_and_read.hpp"
-import rfl.msgpack;
+#include <test_rfl/rfl.msgpack.hpp>
 
 namespace test_combined_processors {
 

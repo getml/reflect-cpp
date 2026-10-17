@@ -2,11 +2,12 @@
 #include <string>
 #include <vector>
 
-#include "write_and_read.hpp"
 #include <utility>
 
-import rfl.bson;
-import rfl;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.bson.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_unique_ptr {

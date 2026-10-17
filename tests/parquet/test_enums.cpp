@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "write_and_read.hpp"
-import rfl.parquet;
+#include <test_rfl/rfl.parquet.hpp>
 
 
 namespace test_enums {

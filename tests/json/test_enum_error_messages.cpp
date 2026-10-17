@@ -3,8 +3,8 @@
 #include <gtest/gtest.h>
 #include <string>
 
-import rfl;
-import rfl.json;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.json.hpp>
 
 
 namespace test_enum_error_messages {

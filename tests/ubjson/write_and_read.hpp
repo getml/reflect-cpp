@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <type_traits>
 
-import rfl.ubjson;
+#include <test_rfl/rfl.ubjson.hpp>
 
 
 

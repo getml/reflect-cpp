@@ -1,9 +1,10 @@
 
-#include "write_and_read.hpp"
 #include <cstddef>
 
-import rfl.msgpack;
-import rfl;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.msgpack.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_bytestring {

@@ -12,6 +12,10 @@ target_precompile_headers(reflect-cpp-json-c-arrays-and-inheritance-tests PRIVAT
 target_include_directories(reflect-cpp-json-c-arrays-and-inheritance-tests SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
 
 target_link_libraries(reflect-cpp-json-c-arrays-and-inheritance-tests PRIVATE reflectcpp_tests_crt)
+# Reflection reconstructs nested C arrays using valid aggregate brace elision.
+target_compile_options(reflect-cpp-json-c-arrays-and-inheritance-tests PRIVATE
+    $<$<CXX_COMPILER_ID:Clang>:-Wno-missing-braces>
+)
 
 add_custom_command(TARGET reflect-cpp-json-c-arrays-and-inheritance-tests POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:reflect-cpp-json-c-arrays-and-inheritance-tests> $<TARGET_RUNTIME_DLLS:reflect-cpp-json-c-arrays-and-inheritance-tests>

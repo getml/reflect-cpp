@@ -2,11 +2,12 @@
 #include <string>
 #include <vector>
 
-#include "write_and_read.hpp"
 #include <utility>
 
-import rfl;
-import rfl.json;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.json.hpp>
 
 
 namespace test_move_replace {

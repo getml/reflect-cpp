@@ -1,9 +1,8 @@
 #include <string>
 
 #include "write_and_read.hpp"
-import rfl.yaml;
-import rfl;
-import rfl.json;
+#include <test_rfl/rfl.yaml.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_skip {

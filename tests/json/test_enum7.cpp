@@ -1,8 +1,8 @@
 #include <cassert>
 
 #include <gtest/gtest.h>
-import rfl;
-import rfl.json;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.json.hpp>
 
 
 namespace test_enum7 {

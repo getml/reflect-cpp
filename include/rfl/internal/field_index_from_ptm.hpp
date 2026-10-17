@@ -52,7 +52,7 @@ consteval std::size_t field_index_from_ptm_impl(std::index_sequence<Is...>) {
   const void* target =
       static_cast<const void*>(&(get_fake_object<T>().*FieldPtr));
   std::size_t result = static_cast<std::size_t>(-1);
-  ((static_cast<const void*>(get_ith_field_from_fake_object<T, Is>()) == target
+  (void)((static_cast<const void*>(get_ith_field_from_fake_object<T, Is>()) == target
         ? (result = Is, true)
         : false) ||
    ...);

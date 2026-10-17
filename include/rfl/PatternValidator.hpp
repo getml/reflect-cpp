@@ -4,7 +4,10 @@
 #include <sstream>
 #include <string>
 
-#if __has_include(<ctre.hpp>)
+#ifdef REFLECTCPP_BUILD_MODULES
+#include "internal/ctre_std.hpp"
+import rfl.ctre;
+#elif __has_include(<ctre.hpp>)
 #include <ctre.hpp>
 #else
 #include "thirdparty/ctre.hpp"
@@ -30,8 +33,12 @@ struct PatternValidator {
   /// @param _str The string to validate
   /// @return Result containing the string if it matches, or an error if it doesn't
   static Result<std::string> validate(const std::string& _str) noexcept {
+#ifdef REFLECTCPP_BUILD_MODULES
+    if (internal::ctre_match<_regex>(_str)) {
+#else
     if (ctre::match<ctll::fixed_string<_regex.length>{
-            ctll::construct_from_pointer, _regex.arr_.data()}>(_str)) {
+            ctll::construct_from_pointer_t{}, _regex.arr_.data()}>(_str)) {
+#endif
       return _str;
     } else {
       std::stringstream stream;

@@ -2,8 +2,8 @@
 
 #include <string>
 #include <vector>
-import rfl;
-import rfl.capnproto;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.capnproto.hpp>
 
 
 // #include "write_and_read.hpp"

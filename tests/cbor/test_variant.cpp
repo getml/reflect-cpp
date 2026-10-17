@@ -1,12 +1,13 @@
 #include <cassert>
 #include <string>
 
-#include "write_and_read.hpp"
 #include <memory>
 #include <variant>
 
-import rfl.cbor;
-import rfl;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.cbor.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_variant {

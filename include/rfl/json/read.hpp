@@ -1,11 +1,7 @@
 #ifndef RFL_JSON_READ_HPP_
 #define RFL_JSON_READ_HPP_
 
-#if __has_include(<yyjson.h>)
-#include <yyjson.h>
-#else
-#include "../thirdparty/yyjson.h"
-#endif
+#include "yyjson_helpers.hpp"
 
 #include <istream>
 #include <string_view>
@@ -43,7 +39,7 @@ auto read(const InputVarType& _obj) {
 template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(
     const std::string_view _json_str, const yyjson_read_flag _flag = 0) {
-  if (_flag & YYJSON_READ_INSITU) {
+  if (_flag & yyjson_detail::read_insitu) {
     return error("YYJSON_READ_INSITU is not supported");
   }
   yyjson_read_err err;
@@ -54,10 +50,10 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
   if (!doc) {
     return error("Could not parse document: " + std::string(err.msg));
   }
-  yyjson_val* root = yyjson_doc_get_root(doc);
+  yyjson_val* root = yyjson_detail::yyjson_doc_get_root(doc);
   const auto r = Reader();
   auto res = Parser<T, Processors<Ps...>>::read(r, InputVarType(root));
-  yyjson_doc_free(doc);
+  yyjson_detail::yyjson_doc_free(doc);
   return res;
 }
 

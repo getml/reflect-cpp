@@ -1,5 +1,7 @@
-import rfl;
-import rfl.json;
+#include <gtest/gtest.h>
+
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.json.hpp>
 
 
 namespace test_json_schema7 {

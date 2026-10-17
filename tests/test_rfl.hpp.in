@@ -1,0 +1,3 @@
+#pragma once
+
+@REFLECTCPP_TEST_DEPENDENCY@

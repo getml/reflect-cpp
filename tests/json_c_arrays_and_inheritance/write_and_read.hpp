@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 #include <type_traits>
-import rfl.c_arrays_and_inheritance;
+#include <test_rfl/rfl.c_arrays_and_inheritance.hpp>
 
 
 

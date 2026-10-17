@@ -40,6 +40,8 @@ This is the purpose of get_nested_array_size().
 #endif
 
 #ifdef __clang__
+// Preserve suppression for the declaration-only probes after module import.
+#pragma clang system_header
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundefined-var-template"
 #pragma clang diagnostic ignored "-Wundefined-inline"

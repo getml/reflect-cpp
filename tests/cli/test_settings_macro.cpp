@@ -3,7 +3,7 @@
 #include <string>
 #include <utility>
 
-import rfl;
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_settings_macro {

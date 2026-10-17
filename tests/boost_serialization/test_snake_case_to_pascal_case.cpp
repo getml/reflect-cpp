@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "write_and_read.hpp"
-import rfl.boost_serialization;
+#include <test_rfl/rfl.boost_serialization.hpp>
 
 namespace test_snake_case_to_pascal_case {
 

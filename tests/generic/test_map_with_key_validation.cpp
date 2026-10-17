@@ -1,11 +1,12 @@
 #include <map>
 #include <string>
 
-#include "write_and_read.hpp"
 #include <memory>
 #include <utility>
 
-import rfl;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_map_with_key_validation {

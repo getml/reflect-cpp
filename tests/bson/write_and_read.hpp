@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <type_traits>
 
-import rfl.bson;
+#include <test_rfl/rfl.bson.hpp>
 
 
 

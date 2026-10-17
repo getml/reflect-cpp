@@ -4,8 +4,8 @@
 #include <vector>
 #include <string_view>
 
-import rfl;
-import rfl.toml;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.toml.hpp>
 
 
 

@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <type_traits>
-import rfl;
+#include <test_rfl/rfl.hpp>
 
 
 

@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "write_and_read.hpp"
-import rfl.flexbuf;
+#include <test_rfl/rfl.flexbuf.hpp>
 
 namespace test_snake_case_to_camel_case {
 

@@ -2,8 +2,8 @@
 
 #include <string>
 #include <utility>
-import rfl;
-import rfl.avro;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.avro.hpp>
 
 
 

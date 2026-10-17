@@ -1,11 +1,12 @@
 #include <string>
 
-#include "write_and_read.hpp"
 #include <forward_list>
 #include <memory>
 #include <utility>
 
-import rfl;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_forward_list {

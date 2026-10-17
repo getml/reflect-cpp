@@ -1,12 +1,13 @@
 #include <string>
 
-#include "write_and_read.hpp"
 #include <deque>
 #include <memory>
 #include <utility>
 
-import rfl.boost_serialization;
-import rfl;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.boost_serialization.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_deque {

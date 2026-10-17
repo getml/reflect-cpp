@@ -5,11 +5,12 @@
 // Make sure things still compile when
 // rfl.hpp is included after rfl/ubjson.hpp.
 
-#include "write_and_read.hpp"
 #include <utility>
 
-import rfl;
-import rfl.ubjson;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.ubjson.hpp>
 
 
 namespace test_array {

@@ -5,11 +5,12 @@
 // Make sure things still compile when
 // rfl.hpp is included after rfl/cbor.hpp.
 
-#include "write_and_read.hpp"
 #include <utility>
 
-import rfl;
-import rfl.boost_serialization;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.boost_serialization.hpp>
 
 
 namespace test_array {

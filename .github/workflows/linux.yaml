@@ -12,15 +12,36 @@ jobs:
       matrix:
         format: ["JSON", "AVRO", "BOOST_SERIALIZATION", "CAPNPROTO", "CBOR", "CEREAL", "FLEXBUFFERS", "MSGPACK", "PARQUET", "TOML", "UBJSON", "XML", "YAML", "benchmarks", "headers"]
         compiler: [llvm, gcc]
-        compiler-version: [11, 12, 13, 14, 16, 17, 18]
+        compiler-version: [11, 12, 13, 14, 16, 17, 18, 19]
         cxx: [20, 23]
+        modules: ["OFF", "ON"]
         exclude:
+          - compiler: llvm
+            compiler-version: 16
+            modules: "ON"
+          - compiler: llvm
+            compiler-version: 17
+            modules: "ON"
+          - compiler: llvm
+            compiler-version: 18
+            modules: "ON"
+          - compiler: gcc
+            compiler-version: 11
+            modules: "ON"
+          - compiler: gcc
+            compiler-version: 12
+            modules: "ON"
+          - compiler: gcc
+            compiler-version: 13
+            modules: "ON"
           - compiler: gcc 
             compiler-version: 16
           - compiler: gcc 
             compiler-version: 17
           - compiler: gcc 
             compiler-version: 18
+          - compiler: gcc
+            compiler-version: 19
           - compiler: llvm
             compiler-version: 11
           - compiler: llvm 
@@ -41,9 +62,9 @@ jobs:
           - compiler: llvm
             compiler-version: 17
             cxx: 23  
-    name: "${{ github.job }} (${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }})"
+    name: "${{ github.job }} (${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}-modules-${{ matrix.modules }})"
     concurrency:
-      group: "linux-${{ github.ref }}-${{ github.job }}-${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}"
+      group: "linux-${{ github.ref }}-${{ github.job }}-${{ matrix.format }}-C++${{ matrix.cxx }}-${{ matrix.compiler }}-${{ matrix.compiler-version }}-modules-${{ matrix.modules }}"
       cancel-in-progress: true
     runs-on: ubuntu-24.04
     steps:
@@ -65,6 +86,8 @@ jobs:
           sudo apt update
           if [[ "${{ matrix.compiler-version }}" == 11 ]]; then
             sudo apt install -y ninja-build g++-11 
+          elif [[ "${{ matrix.compiler }}" == "llvm" && "${{ matrix.compiler-version }}" == 19 ]]; then
+            sudo apt install -y ninja-build clang-19 clang-tools-19
           else
             sudo apt install -y ninja-build
           fi
@@ -79,13 +102,13 @@ jobs:
           fi
           $CXX --version
           if [[ "${{ matrix.format }}" == "JSON" ]]; then
-            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_MODULES=${{ matrix.modules }} -DREFLECTCPP_BUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
           elif [[ "${{ matrix.format }}" == "benchmarks" ]]; then
-            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_MODULES=${{ matrix.modules }} -DREFLECTCPP_BUILD_BENCHMARKS=ON -DREFLECTCPP_ALL_FORMATS=ON -DCMAKE_BUILD_TYPE=Release
           elif [[ "${{ matrix.format }}" == "headers" ]]; then
-            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_CHECK_HEADERS=ON -DCMAKE_BUILD_TYPE=Release
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_MODULES=${{ matrix.modules }} -DREFLECTCPP_CHECK_HEADERS=ON -DCMAKE_BUILD_TYPE=Release
           else
-            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DCMAKE_CXX_STANDARD=20 -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release
+            cmake -S . -B build -G Ninja -DCMAKE_CXX_STANDARD=${{ matrix.cxx }} -DREFLECTCPP_BUILD_MODULES=${{ matrix.modules }} -DREFLECTCPP_BUILD_TESTS=ON -DREFLECTCPP_JSON=OFF -DREFLECTCPP_${{ matrix.format }}=ON -DCMAKE_BUILD_TYPE=Release
           fi
           cmake --build build -j4
       - name: Run tests

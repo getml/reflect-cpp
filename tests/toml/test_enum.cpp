@@ -1,8 +1,8 @@
 #include <cassert>
 
 #include "write_and_read.hpp"
-import rfl.toml;
-import rfl;
+#include <test_rfl/rfl.toml.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_enum {

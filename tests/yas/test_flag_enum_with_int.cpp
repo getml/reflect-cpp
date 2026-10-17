@@ -1,8 +1,8 @@
 #include <cassert>
 
 #include "write_and_read.hpp"
-import rfl.yas;
-import rfl;
+#include <test_rfl/rfl.yas.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_flag_enum_with_int {

@@ -5,7 +5,7 @@
 #include <string_view>
 #include <type_traits>
 
-import rfl.toml;
+#include <test_rfl/rfl.toml.hpp>
 
 
 

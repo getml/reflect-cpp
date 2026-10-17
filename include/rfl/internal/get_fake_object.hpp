@@ -11,6 +11,7 @@ namespace internal {
 #endif
 
 #ifdef __clang__
+#pragma clang system_header
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundefined-var-template"
 #pragma clang diagnostic ignored "-Wundefined-internal"

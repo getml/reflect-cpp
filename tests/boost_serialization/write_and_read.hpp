@@ -6,8 +6,8 @@
 #include <string>
 #include <type_traits>
 
-import rfl.json;
-import rfl.boost_serialization;
+#include <test_rfl/rfl.json.hpp>
+#include <test_rfl/rfl.boost_serialization.hpp>
 
 
 template <class... Ps>

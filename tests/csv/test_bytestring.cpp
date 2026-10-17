@@ -1,9 +1,10 @@
 #include <vector>
 
-#include "write_and_read.hpp"
 #include <cstddef>
 
-import rfl.csv;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.csv.hpp>
 
 
 namespace test_bytestring {

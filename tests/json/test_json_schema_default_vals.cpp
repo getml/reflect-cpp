@@ -1,8 +1,11 @@
+#include <gtest/gtest.h>
+
 #include <optional>
-#include <rfl.hpp>
-#include <rfl/json.hpp>
 #include <string>
 #include <vector>
+
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.json.hpp>
 
 namespace test_schema_default {
 

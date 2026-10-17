@@ -1,6 +1,6 @@
 #include <utility>
 
-import rfl;
+#include <test_rfl/rfl.hpp>
 
 
 // Flatten::operator=(Flatten<U>&&) uses std::forward<U>(_f) which passes

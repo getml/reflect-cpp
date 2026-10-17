@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include <string>
 
-import rfl;
+#include <test_rfl/rfl.hpp>
 
 
 

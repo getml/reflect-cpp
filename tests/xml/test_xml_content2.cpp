@@ -2,9 +2,8 @@
 #include <vector>
 
 #include "write_and_read.hpp"
-import rfl.xml;
-import rfl;
-import rfl.json;
+#include <test_rfl/rfl.xml.hpp>
+#include <test_rfl/rfl.hpp>
 
 
 namespace test_xml_content2 {

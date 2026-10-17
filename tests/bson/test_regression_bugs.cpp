@@ -5,8 +5,8 @@
 #include <cstdint>
 #include <string>
 #include <vector>
-import rfl;
-import rfl.bson;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.bson.hpp>
 
 
 

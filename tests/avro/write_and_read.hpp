@@ -6,8 +6,8 @@
 #include <string>
 #include <type_traits>
 
-import rfl.json;
-import rfl.avro;
+#include <test_rfl/rfl.json.hpp>
+#include <test_rfl/rfl.avro.hpp>
 
 
 template <class... Ps>

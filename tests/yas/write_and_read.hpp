@@ -4,8 +4,8 @@
 #include <gtest/gtest.h>
 #include <type_traits>
 
-import rfl.json;
-import rfl.yas;
+#include <test_rfl/rfl.json.hpp>
+#include <test_rfl/rfl.yas.hpp>
 
 
 

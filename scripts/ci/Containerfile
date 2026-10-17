@@ -1,0 +1,29 @@
+FROM ubuntu:24.04
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates curl git zip unzip tar pkg-config python3 python3-yaml \
+    python3-venv ninja-build build-essential \
+    g++-11 g++-12 g++-13 g++-14 \
+    clang-16 clang-tools-16 clang-17 clang-tools-17 clang-18 clang-tools-18 \
+    clang-19 clang-tools-19 \
+    libgtest-dev libyaml-cpp-dev libtomlplusplus-dev libpugixml-dev \
+    libboost-serialization-dev libmsgpack-dev libflatbuffers-dev libcereal-dev \
+    && rm -rf /var/lib/apt/lists/*
+ARG EXTRA_CLANG_VERSIONS=""
+RUN if [ -n "$EXTRA_CLANG_VERSIONS" ]; then \
+      mkdir -p /etc/apt/keyrings && \
+      curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key -o /etc/apt/keyrings/llvm.asc && \
+      for version in $EXTRA_CLANG_VERSIONS; do \
+        if [ "$version" -ge 20 ]; then \
+          printf 'deb [signed-by=/etc/apt/keyrings/llvm.asc] https://apt.llvm.org/noble/ llvm-toolchain-noble-%s main\n' "$version" >> /etc/apt/sources.list.d/llvm.list; \
+        fi; \
+      done && \
+      apt-get update && \
+      for version in $EXTRA_CLANG_VERSIONS; do \
+        apt-get install -y --no-install-recommends "clang-$version" "clang-tools-$version" || exit 1; \
+      done && \
+      rm -rf /var/lib/apt/lists/*; \
+    fi
+RUN python3 -m venv --system-site-packages /opt/ci && /opt/ci/bin/pip install --no-cache-dir cmake==3.31.6
+ENV PATH="/opt/ci/bin:${PATH}"
+WORKDIR /work

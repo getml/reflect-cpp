@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 #include <type_traits>
 
-import rfl.parquet;
+#include <test_rfl/rfl.parquet.hpp>
 
 
 

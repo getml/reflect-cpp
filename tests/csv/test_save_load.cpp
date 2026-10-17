@@ -3,8 +3,8 @@
 #include <cassert>
 #include <string>
 #include <vector>
-import rfl;
-import rfl.csv;
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.csv.hpp>
 
 
 namespace test_save_load {

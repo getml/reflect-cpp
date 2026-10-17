@@ -2,11 +2,12 @@
 #include <string>
 #include <vector>
 
-#include "write_and_read.hpp"
 #include <utility>
 
-import rfl;
-import rfl.cereal;
+#include "write_and_read.hpp"
+
+#include <test_rfl/rfl.hpp>
+#include <test_rfl/rfl.cereal.hpp>
 
 
 namespace test_box {
