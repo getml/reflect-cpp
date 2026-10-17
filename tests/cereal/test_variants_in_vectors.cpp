@@ -7,7 +7,6 @@
 
 #include <test_rfl/rfl.cereal.hpp>
 #include <test_rfl/rfl.hpp>
-#include <test_rfl/rfl.json.hpp>
 
 
 namespace test_variants_in_vectors {

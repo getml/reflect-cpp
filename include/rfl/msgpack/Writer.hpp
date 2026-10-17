@@ -63,14 +63,7 @@ class RFL_API Writer {
   template <class T>
   OutputVarType add_value_to_object(const std::string_view& _name,
                                     const T& _var, OutputObjectType*) const {
-    auto err = msgpack_pack_str(pk_, _name.size());
-    if (err) {
-      throw std::runtime_error("Could not pack string.");
-    }
-    err = msgpack_pack_str_body(pk_, _name.data(), _name.size());
-    if (err) {
-      throw std::runtime_error("Could not pack string body.");
-    }
+    write_name(_name);
     return new_value(_var);
   }
 
@@ -92,62 +85,31 @@ class RFL_API Writer {
   OutputVarType new_value(const T& _var) const {
     using Type = std::remove_cvref_t<T>;
     if constexpr (std::is_same<Type, std::string>()) {
-      auto err = msgpack_pack_str(pk_, _var.size());
-      if (err) {
-        throw std::runtime_error("Could not pack string.");
-      }
-      err = msgpack_pack_str_body(pk_, _var.c_str(), _var.size());
-      if (err) {
-        throw std::runtime_error("Could not pack string body.");
-      }
-
+      return new_string(_var);
     } else if constexpr (concepts::MutableContiguousByteContainer<Type>) {
-      auto err = msgpack_pack_bin(pk_, _var.size());
-      if (err) {
-        throw std::runtime_error("Could not pack binary string.");
-      }
-      err = msgpack_pack_bin_body(pk_, _var.data(), _var.size());
-      if (err) {
-        throw std::runtime_error("Could not pack binary string.");
-      }
-
+      return new_binary(_var.data(), _var.size());
     } else if constexpr (std::is_same<Type, bool>()) {
-      if (_var) {
-        const auto err = msgpack_pack_true(pk_);
-        if (err) {
-          throw std::runtime_error("Could not pack boolean.");
-        }
-      } else {
-        const auto err = msgpack_pack_false(pk_);
-        if (err) {
-          throw std::runtime_error("Could not pack boolean.");
-        }
-      }
-
+      return new_bool(_var);
     } else if constexpr (std::is_floating_point<Type>()) {
-      const auto err = msgpack_pack_double(pk_, static_cast<double>(_var));
-      if (err) {
-        throw std::runtime_error("Could not pack double.");
-      }
-
+      return new_double(static_cast<double>(_var));
     } else if constexpr (std::is_unsigned<Type>()) {
-      const auto err =
-          msgpack_pack_uint64(pk_, static_cast<std::uint64_t>(_var));
-      if (err) {
-        throw std::runtime_error("Could not pack uint.");
-      }
-
+      return new_uint64(static_cast<std::uint64_t>(_var));
     } else if constexpr (std::is_integral<Type>()) {
-      const auto err = msgpack_pack_int64(pk_, static_cast<std::int64_t>(_var));
-      if (err) {
-        throw std::runtime_error("Could not pack int.");
-      }
-
+      return new_int64(static_cast<std::int64_t>(_var));
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
-    return OutputVarType{};
   }
+
+  // Keep calls to MessagePack's static inline functions out of exported templates.
+  void write_name(const std::string_view& _name) const;
+
+  OutputVarType new_string(const std::string_view& _value) const;
+  OutputVarType new_binary(const void* _data, size_t _size) const;
+  OutputVarType new_bool(bool _value) const;
+  OutputVarType new_double(double _value) const;
+  OutputVarType new_uint64(std::uint64_t _value) const;
+  OutputVarType new_int64(std::int64_t _value) const;
 
  private:
   /// The underlying packer.

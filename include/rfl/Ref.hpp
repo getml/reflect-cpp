@@ -48,6 +48,8 @@ class Ref {
   }
 
   /// Default constructor - creates a Ref containing a default-constructed T.
+  // Delay checking T's constructor so recursive, incomplete T remains valid.
+  template <class U = T, class = decltype(U())>
   Ref() : ptr_(std::make_shared<T>()) {}
 
   /// Copy constructor.

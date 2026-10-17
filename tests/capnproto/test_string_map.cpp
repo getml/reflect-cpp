@@ -5,7 +5,6 @@
 #include "write_and_read.hpp"
 #include <test_rfl/rfl.capnproto.hpp>
 #include <test_rfl/rfl.hpp>
-#include <test_rfl/rfl.json.hpp>
 
 
 namespace test_string_map {

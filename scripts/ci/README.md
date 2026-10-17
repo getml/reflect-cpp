@@ -21,14 +21,17 @@ podman build -f scripts/ci/Containerfile -t reflectcpp-ci .
 git submodule update --init --recursive
 ```
 
-The image provides GCC 11–14, Clang 16–19, their dependency scanners, Ninja,
+The image provides GCC 11–15, Clang 16–19, their dependency scanners, Ninja,
 CMake 3.31.6, and several system dependencies. By default the runner uses the
 repository's pinned vcpkg submodule, like CI. The source tree and build cache
-remain on the host. First-time vcpkg dependency builds require network access.
+remain on the host. GCC 15 comes from the Ubuntu toolchain test PPA.
+First-time vcpkg dependency builds require network access.
+CI also pins CMake 3.31.6 for benchmarks: the pinned vcpkg benchmark port passes
+an unrecognized warning category that CMake 4.4 rejects during configuration.
 
 ```sh
 python3 scripts/ci_matrix.py --container reflectcpp-ci \
-  --compiler gcc-14 --compiler llvm-19 --format JSON --cxx 20 --modules ON
+  --compiler gcc-15 --compiler llvm-19 --format JSON --cxx 20 --modules ON
 
 # Original header compatibility matrix, followed by module-capable jobs:
 python3 scripts/ci_matrix.py --container reflectcpp-ci
@@ -73,12 +76,20 @@ guarantee that a compiler implements every module feature or can compile this
 library and its dependencies. In particular, `import std` has different
 requirements and is not used by these module interfaces.
 
-This project's Clang module builds require Clang 19 or newer. Clang 18 and older
-remain in the header-build compatibility matrix. Clang 18 module importers fail
+This project's module builds require GCC 15 or Clang 19 or newer. GCC 14
+remains supported through headers: its CTRE module importer fails with
+`Bad file data`. GCC 15 requires an ADL visibility workaround in the private
+`rfl.ctre` dependency; CTRE is not re-exported by `rfl`.
+
+Clang 18 and older remain in the header-build compatibility matrix. Clang 18 module importers fail
 with PCH enabled, so that combination is no longer supported. Library and test
 PCH remain enabled by default; `-DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON` can disable
 them explicitly. Module interface sources keep `SKIP_PRECOMPILE_HEADERS` because
 their global module fragments must precede declarations.
+
+With PCH enabled, GCC 15.2 (Ubuntu 24.04, C++20), GCC 15.3 (C++20 and C++23),
+and GCC 16.2.1 (C++20) passed
+the full JSON/CLI module suite: 342 tests passed and one locale test was skipped.
 
 Sources: [CMake 3.31](https://cmake.org/cmake/help/v3.31/manual/cmake-cxxmodules.7.html),
 [GCC 14](https://gcc.gnu.org/onlinedocs/gcc-14.3.0/gcc/C_002b_002b-Modules.html),

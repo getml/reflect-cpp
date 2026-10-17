@@ -115,4 +115,64 @@ Writer::OutputObjectType Writer::new_object(const size_t _size) const {
   return OutputObjectType{};
 }
 
+void Writer::write_name(const std::string_view& _name) const {
+  auto err = msgpack_pack_str(pk_, _name.size());
+  if (err) {
+    throw std::runtime_error("Could not pack string.");
+  }
+  err = msgpack_pack_str_body(pk_, _name.data(), _name.size());
+  if (err) {
+    throw std::runtime_error("Could not pack string body.");
+  }
+}
+
+Writer::OutputVarType Writer::new_string(const std::string_view& _value) const {
+  write_name(_value);
+  return OutputVarType{};
+}
+
+Writer::OutputVarType Writer::new_binary(const void* _data, size_t _size) const {
+  auto err = msgpack_pack_bin(pk_, _size);
+  if (err) {
+    throw std::runtime_error("Could not pack binary string.");
+  }
+  err = msgpack_pack_bin_body(pk_, _data, _size);
+  if (err) {
+    throw std::runtime_error("Could not pack binary string.");
+  }
+  return OutputVarType{};
+}
+
+Writer::OutputVarType Writer::new_bool(bool _value) const {
+  const auto err = _value ? msgpack_pack_true(pk_) : msgpack_pack_false(pk_);
+  if (err) {
+    throw std::runtime_error("Could not pack boolean.");
+  }
+  return OutputVarType{};
+}
+
+Writer::OutputVarType Writer::new_double(double _value) const {
+  const auto err = msgpack_pack_double(pk_, _value);
+  if (err) {
+    throw std::runtime_error("Could not pack double.");
+  }
+  return OutputVarType{};
+}
+
+Writer::OutputVarType Writer::new_uint64(std::uint64_t _value) const {
+  const auto err = msgpack_pack_uint64(pk_, _value);
+  if (err) {
+    throw std::runtime_error("Could not pack uint.");
+  }
+  return OutputVarType{};
+}
+
+Writer::OutputVarType Writer::new_int64(std::int64_t _value) const {
+  const auto err = msgpack_pack_int64(pk_, _value);
+  if (err) {
+    throw std::runtime_error("Could not pack int.");
+  }
+  return OutputVarType{};
+}
+
 }  // namespace rfl::msgpack

@@ -4,11 +4,18 @@ module;
 
 export module rfl.ctre;
 
-// Keep CTRE's implementation in this module; only the rfl adapter is exported.
+// GCC 15 loses CTRE's non-exported ADL overloads when instantiating an imported
+// template. rfl imports this module privately, so these names stay out of rfl's API.
+#if defined(__GNUC__) && __GNUC__ == 15 && !defined(__clang__)
+export {
+#endif
 #if __has_include(<ctre.hpp>)
 #include <ctre.hpp>
 #else
 #include "rfl/thirdparty/ctre.hpp"
+#endif
+#if defined(__GNUC__) && __GNUC__ == 15 && !defined(__clang__)
+}
 #endif
 
 export namespace rfl::internal {

@@ -189,9 +189,9 @@ if(REFLECTCPP_BUILD_MODULES)
     if(NOT CMAKE_GENERATOR MATCHES "Ninja|Visual Studio")
         message(FATAL_ERROR "REFLECTCPP_BUILD_MODULES requires Ninja or Visual Studio")
     endif()
-    if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 14)
+    if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 15)
        OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19))
-        message(FATAL_ERROR "REFLECTCPP_BUILD_MODULES requires GCC 14+ or Clang 19+; use headers with older compilers")
+        message(FATAL_ERROR "REFLECTCPP_BUILD_MODULES requires GCC 15+ or Clang 19+; use headers with older compilers")
     endif()
 else()
     # Keep ordinary header builds working with older compilers and generators.
@@ -267,11 +267,12 @@ set(REFLECT_CPP_MODULES
     modules/rfl.cppm
 )
 
+# AVRO, CBOR, and UBJSON use JSON internally and in their round-trip tests.
+if (_REFLECTCPP_NEEDS_JSON_IMPL OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.json.cppm)
+endif ()
 if (REFLECTCPP_JSON OR REFLECTCPP_CHECK_HEADERS)
-    list(APPEND REFLECT_CPP_MODULES
-        modules/rfl.json.cppm
-        modules/rfl.c_arrays_and_inheritance.cppm
-    )
+    list(APPEND REFLECT_CPP_MODULES modules/rfl.c_arrays_and_inheritance.cppm)
 endif ()
 
 target_include_directories(

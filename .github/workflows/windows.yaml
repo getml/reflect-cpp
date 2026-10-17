@@ -30,6 +30,21 @@ jobs:
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
       - uses: ilammy/msvc-dev-cmd@v1
       - uses: lukka/run-vcpkg@v11
+      - name: Set up Python for benchmark tooling
+        if: matrix.format == 'benchmarks'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Use CMake 3.31.6 for the pinned benchmark port
+        if: matrix.format == 'benchmarks'
+        shell: bash
+        run: |
+          python -m pip install cmake==3.31.6
+          python -c "import cmake; print(cmake.CMAKE_BIN_DIR)" >> "$GITHUB_PATH"
+      - name: Add vcpkg runtime DLLs to PATH
+        # Some ports expose UNKNOWN imported targets, so TARGET_RUNTIME_DLLS
+        # cannot stage their DLLs for GoogleTest discovery during the build.
+        run: '"${{ github.workspace }}\build\vcpkg_installed\x64-windows\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append'
       - name: Compile benchmarks 
         if: matrix.format == 'benchmarks' 
         run: |
@@ -94,6 +109,8 @@ jobs:
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
       - uses: ilammy/msvc-dev-cmd@v1
       - uses: lukka/run-vcpkg@v11
+      - name: Add vcpkg runtime DLLs to PATH
+        run: '"${{ github.workspace }}\build\vcpkg_installed\x64-windows\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append'
       - name: Compile tests (JSON)
         if: matrix.format == 'JSON'
         run: |

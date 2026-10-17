@@ -50,6 +50,8 @@ class Box {
   }
 
   /// Default constructor - creates a Box containing a default-constructed T.
+  // Delay checking T's constructor so recursive, incomplete T remains valid.
+  template <class U = T, class = decltype(U())>
   Box() : ptr_(std::make_unique<T>()) {}
 
   /// Copy constructor - only available when C == Copyability::COPYABLE.
