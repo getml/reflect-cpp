@@ -105,7 +105,7 @@ class ViewReader {
       std::get<i>(*_found) = true;
       *_already_assigned = true;
       auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
-      if (!res) {
+      if (!res) [[unlikely]] {
         constexpr auto name = FieldType::name();
         std::stringstream stream;
         stream << "Failed to parse field '" << name
@@ -141,7 +141,7 @@ class ViewReader {
       std::get<_pos>(*_found) = true;
     }
     auto res = Parser<R, W, T, ProcessorsType>::read(_r, _var);
-    if (!res) {
+    if (!res) [[unlikely]] {
       std::stringstream stream;
       stream << "Failed to parse field '" << _current_name
              << "': " << res.error().what();
