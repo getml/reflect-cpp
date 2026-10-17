@@ -53,15 +53,6 @@ class VectorReader {
    * @return An optional error.
    */
   RFL_ALWAYS_INLINE std::optional<Error> read(const InputVarType& _var) const {
-    const auto parse = [this](const InputVarType& _var) {
-      if constexpr (is_map_like_v<VecType>) {
-        return get_pair(_var);
-      } else {
-        return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(*r_,
-                                                                          _var);
-      }
-    };
-
     const auto insert = [this](auto&& _var) -> std::optional<Error> {
       if constexpr (is_map_like_v<VecType> || is_set_like_v<VecType>) {
         vec_->insert(std::move(_var));
@@ -85,6 +76,14 @@ class VectorReader {
   }
 
  private:
+  RFL_ALWAYS_INLINE auto parse(const InputVarType& _var) const {
+    if constexpr (is_map_like_v<VecType>) {
+      return get_pair(_var);
+    } else {
+      return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(*r_, _var);
+    }
+  }
+
   auto get_pair(const auto& _var) const {
     using K = std::remove_cvref_t<typename T::first_type>;
     using V = std::remove_cvref_t<typename T::second_type>;
