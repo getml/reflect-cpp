@@ -14,7 +14,7 @@ target_include_directories(reflect-cpp-json-c-arrays-and-inheritance-tests SYSTE
 target_link_libraries(reflect-cpp-json-c-arrays-and-inheritance-tests PRIVATE reflectcpp_tests_crt)
 # Reflection reconstructs nested C arrays using valid aggregate brace elision.
 target_compile_options(reflect-cpp-json-c-arrays-and-inheritance-tests PRIVATE
-    $<$<CXX_COMPILER_ID:Clang>:-Wno-missing-braces>
+    $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-missing-braces>
 )
 
 add_custom_command(TARGET reflect-cpp-json-c-arrays-and-inheritance-tests POST_BUILD
