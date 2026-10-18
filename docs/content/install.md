@@ -142,7 +142,7 @@ CMake-config package.
    # adding the entry to your vcs .repos file, or create one
    # reflect-cpp:
    #   type: git
-   #   url: git@github.com:getml/reflect-cpp.git
+   #   url: git@github.com:munich-data-engineering/reflect-cpp.git
    #   version: main
    vcs import src < src/.repos
    ```

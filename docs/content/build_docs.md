@@ -104,7 +104,7 @@ All params support `true` or `false` toggles. Refer to the [Hextra documentation
 
 ## CI/CD: GitHub Pages Deployment
 
-The file `.github/workflows/docs.yaml` automates building and deploying the documentation to [GitHub Pages](https://getml.github.io/reflect-cpp/). It runs on every push to the `main` branch.
+The file `.github/workflows/docs.yaml` automates building and deploying the documentation to [GitHub Pages](https://munich-data-engineering.github.io/reflect-cpp/). It runs on every push to the `main` branch.
 
 ### How It Works
 

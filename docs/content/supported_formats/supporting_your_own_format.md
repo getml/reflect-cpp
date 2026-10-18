@@ -9,8 +9,8 @@ you have chosen.
 
 The reader and writer constitute a thin layer between the serialization library of your choice and reflect-cpp.
 
-The requirements are laid down in the concepts [IsReader](https://github.com/getml/reflect-cpp/blob/main/include/rfl/parsing/IsReader.hpp) and
-[IsWriter](https://github.com/getml/reflect-cpp/blob/main/include/rfl/parsing/IsWriter.hpp) and also documented below.
+The requirements are laid down in the concepts [IsReader](https://github.com/munich-data-engineering/reflect-cpp/blob/main/include/rfl/parsing/IsReader.hpp) and
+[IsWriter](https://github.com/munich-data-engineering/reflect-cpp/blob/main/include/rfl/parsing/IsWriter.hpp) and also documented below.
 
 Using the reader and the writer you can define your parser like this:
 
@@ -53,7 +53,7 @@ std::string write(const T& _obj) {
 In the following two sections, we will provide templates for your `Reader` and `Writer`.
 You should probably just copy + paste this into your own code and fill in the blanks.
 
-As a reference, you can take a look at how this is done for JSON: https://github.com/getml/reflect-cpp/tree/main/include/rfl/json
+As a reference, you can take a look at how this is done for JSON: https://github.com/munich-data-engineering/reflect-cpp/tree/main/include/rfl/json
 
 ## Implementing your own writer
 

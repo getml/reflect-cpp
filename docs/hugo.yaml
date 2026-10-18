@@ -36,7 +36,7 @@ menu:
         type: search
     - name: GitHub
       weight: 6
-      url: "https://github.com/getml/reflect-cpp/"
+      url: "https://github.com/munich-data-engineering/reflect-cpp/"
       params:
         icon: github
 

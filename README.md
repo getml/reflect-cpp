@@ -1,7 +1,7 @@
 # ![C++](https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white) reflect-cpp
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/getml/reflect-cpp/graphs/commit-activity)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/munich-data-engineering/reflect-cpp/graphs/commit-activity)
 [![Generic badge](https://img.shields.io/badge/C++-20-blue.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/gcc-11+-blue.svg)](https://shields.io/)
 [![Generic badge](https://img.shields.io/badge/clang-14+-blue.svg)](https://shields.io/)
@@ -16,13 +16,13 @@
 
 reflect-cpp supports C++-26 reflection, but most of the functionality is also available in C++-20, except where explicitly noted otherwise.
 
-Moreover, reflect-cpp is the basis for [sqlgen](https://github.com/getml/sqlgen), a **modern, type-safe ORM and SQL query generator** for C++20, inspired by Python's SQLAlchemy/SQLModel and Rust's Diesel. It provides a fluent, composable interface for database operations with compile-time type checking and SQL injection protection.
+[Moreover, reflect-cpp is the basis for [sqlgen](https://github.com/munich-data-engineering/sqlgen), a **modern, type-safe ORM and SQL query generator** for C++20, inspired by Python's SQLAlchemy/SQLModel and Rust's Diesel. It provides a fluent, composable interface for database operations with compile-time type checking and SQL injection protection.]
 
 reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boilerplate code and increase code safety. Together, they enable reliable and efficient ETL pipelines.
 
 ### Design principles for reflect-cpp include:
 
-- Close integration with [containers](https://github.com/getml/reflect-cpp?tab=readme-ov-file#support-for-containers) from the C++ standard library
+[- Close integration with [containers](https://github.com/munich-data-engineering/reflect-cpp?tab=readme-ov-file#support-for-containers) from the C++ standard library]
 - Close adherence to C++ idioms
 - Out-of-the-box support for [JSON](https://rfl.getml.com/supported_formats/json)
 - Simple [installation](https://rfl.getml.com/install)
@@ -86,7 +86,7 @@ The following table lists the serialization formats currently supported by refle
 | YAML         | [yaml-cpp](https://github.com/jbeder/yaml-cpp)       | >= 0.8.0     | MIT        | Textual format with an emphasis on readability       |
 | yas          | [yas](https://github.com/niXman/yas)                 | >= 7.1.0     | BSL 1.0    | Very fast and compact serialization library          |
 
-Support for more serialization formats is in development. Refer to the [issues](https://github.com/getml/reflect-cpp/issues) for details.
+[Support for more serialization formats is in development. Refer to the [issues](https://github.com/munich-data-engineering/reflect-cpp/issues) for details.]
 
 Please also refer to the *conanfile.py* or *vcpkg.json* in this repository.
 
@@ -733,7 +733,7 @@ enums. Refer to the [documentation](https://rfl.getml.com/cpp26_reflection) for 
 
 ## The team behind reflect-cpp
 
-reflect-cpp has been developed by [getML (Code17 GmbH)](https://getml.com), a company specializing in software engineering and machine learning for enterprise applications. reflect-cpp is currently maintained by Patrick Urbanke and Manuel Bellersen, with major contributions coming from the community.
+reflect-cpp has been developed by [Munich Data Engineering](https://www.munich-data-engineering.com), a company specializing in software engineering and machine learning for enterprise applications.
 
 ### Related projects
 
