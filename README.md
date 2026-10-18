@@ -8,7 +8,7 @@
 [![Generic badge](https://img.shields.io/badge/MSVC-17+-blue.svg)](https://shields.io/)
 [![Conan Center](https://img.shields.io/conan/v/reflect-cpp)](https://conan.io/center/recipes/reflect-cpp)
 
-**📖 Documentation**: https://rfl.getml.com
+**📖 Documentation**: https://munich-data-engineering.github.io/reflect-cpp
 
 ![image](banner1.png)
 
@@ -24,11 +24,11 @@ reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boile
 
 [- Close integration with [containers](https://github.com/munich-data-engineering/reflect-cpp?tab=readme-ov-file#support-for-containers) from the C++ standard library]
 - Close adherence to C++ idioms
-- Out-of-the-box support for [JSON](https://rfl.getml.com/supported_formats/json)
-- Simple [installation](https://rfl.getml.com/install)
-- Simple extendability to [other serialization formats](https://rfl.getml.com/supported_formats/supporting_your_own_format)
-- Simple extendability to [custom classes](https://rfl.getml.com/concepts/custom_classes)
-- Being one of the fastest serialization libraries in existence, as demonstrated by our [benchmarks](https://rfl.getml.com/benchmarks)
+- Out-of-the-box support for [JSON](https://munich-data-engineering.github.io/reflect-cpp/supported_formats/json)
+- Simple [installation](https://munich-data-engineering.github.io/reflect-cpp/install)
+- Simple extendability to [other serialization formats](https://munich-data-engineering.github.io/reflect-cpp/supported_formats/supporting_your_own_format)
+- Simple extendability to [custom classes](https://munich-data-engineering.github.io/reflect-cpp/concepts/custom_classes)
+- Being one of the fastest serialization libraries in existence, as demonstrated by our [benchmarks](https://munich-data-engineering.github.io/reflect-cpp/benchmarks)
 
 <br>
 
@@ -51,17 +51,17 @@ reflect-cpp and sqlgen fill important gaps in C++ development. They reduce boile
   - [The team behind reflect-cpp](#the-team-behind-reflect-cpp)
   - [License](#license)
 
-### More in our [documentation](https://rfl.getml.com):
-  - [Installation ↗](https://rfl.getml.com/install/#option-2-compilation-using-cmake)
-  - [C++26 reflection ↗](https://rfl.getml.com/cpp26_reflection)
-  - [Benchmarks ↗](https://rfl.getml.com/benchmarks)
-  - [How to contribute ↗](https://rfl.getml.com/contributing)
-  - [Compiling and running the tests ↗](https://rfl.getml.com/contributing/#compiling-and-running-the-tests)
+### More in our [documentation](https://munich-data-engineering.github.io/reflect-cpp):
+  - [Installation ↗](https://munich-data-engineering.github.io/reflect-cpp/install/#option-2-compilation-using-cmake)
+  - [C++26 reflection ↗](https://munich-data-engineering.github.io/reflect-cpp/cpp26_reflection)
+  - [Benchmarks ↗](https://munich-data-engineering.github.io/reflect-cpp/benchmarks)
+  - [How to contribute ↗](https://munich-data-engineering.github.io/reflect-cpp/contributing)
+  - [Compiling and running the tests ↗](https://munich-data-engineering.github.io/reflect-cpp/contributing/#compiling-and-running-the-tests)
 
 
 ## Serialization formats
 
-reflect-cpp provides a unified reflection-based interface across different serialization formats. It is deliberately designed in a very modular way, using [concepts](https://en.cppreference.com/w/cpp/language/constraints), to make it as easy as possible to interface various C or C++ libraries related to serialization. Refer to the [documentation](https://rfl.getml.com/supported_formats/bson/) for details.
+reflect-cpp provides a unified reflection-based interface across different serialization formats. It is deliberately designed in a very modular way, using [concepts](https://en.cppreference.com/w/cpp/language/constraints), to make it as easy as possible to interface various C or C++ libraries related to serialization. Refer to the [documentation](https://munich-data-engineering.github.io/reflect-cpp/supported_formats/bson/) for details.
 
 The following table lists the serialization formats currently supported by reflect-cpp and the underlying libraries used:
 
@@ -366,7 +366,7 @@ struct Config {
 // ./app data.csv -o /tmp/out -v --count=10
 ```
 
-Nested structs, `std::optional`, `std::vector`, enums, `rfl::Flatten` and `rfl::Rename` are all supported. Refer to the [documentation](https://rfl.getml.com/cli) for details.
+Nested structs, `std::optional`, `std::vector`, enums, `rfl::Flatten` and `rfl::Rename` are all supported. Refer to the [documentation](https://munich-data-engineering.github.io/reflect-cpp/cli) for details.
 
 ### Error messages
 
@@ -483,7 +483,7 @@ This results in the following JSON string:
 {"shape":"Rectangle","height":10.0,"width":5.0}
 ```
 
-Other forms of tagging are supported as well. Refer to the [documentation](https://rfl.getml.com/docs-readme) for details.
+Other forms of tagging are supported as well. Refer to the [documentation](https://munich-data-engineering.github.io/reflect-cpp/docs-readme) for details.
 
 ### Extra fields
 
@@ -666,7 +666,7 @@ In addition, it supports the following custom containers:
 
 #### Custom classes
 
-Finally, it is very easy to extend full support to your own classes, refer to the [documentation](https://rfl.getml.com/docs-readme) for details.
+Finally, it is very easy to extend full support to your own classes, refer to the [documentation](https://munich-data-engineering.github.io/reflect-cpp/docs-readme) for details.
 
 
 ## Installation
@@ -714,7 +714,7 @@ cmake --build build -j 4 # gcc, clang
 cmake --build build --config Release -j 4 # MSVC
 ```
 
-For other installation methods, refer to the [documentation](https://rfl.getml.com/docs-readme).
+For other installation methods, refer to the [documentation](https://munich-data-engineering.github.io/reflect-cpp/docs-readme).
 
 ### Compiling with C++-26 reflection
 
@@ -729,7 +729,7 @@ cmake --build build -j 4
 
 With C++-26 reflection, fixed-size C arrays and inheritance are supported out of the box (no
 `-DREFLECT_CPP_C_ARRAYS_OR_INHERITANCE` flag needed), and there are no range restrictions for
-enums. Refer to the [documentation](https://rfl.getml.com/cpp26_reflection) for details.
+enums. Refer to the [documentation](https://munich-data-engineering.github.io/reflect-cpp/cpp26_reflection) for details.
 
 ## The team behind reflect-cpp
 

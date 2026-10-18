@@ -588,7 +588,7 @@ set(CPACK_RPM_PACKAGE_REQUIRES "")
 set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
 set(CPACK_RPM_PACKAGE_LICENSE "MIT")
 set(CPACK_RPM_PACKAGE_LICENSE "MIT")
-set(CPACK_RPM_PACKAGE_URL "https://rfl.getml.com")
+set(CPACK_RPM_PACKAGE_URL "https://munich-data-engineering.github.io/reflect-cpp")
 
 include(CPack)
 
