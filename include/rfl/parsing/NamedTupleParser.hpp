@@ -59,10 +59,9 @@ concept IsReflectionTypeWrapper =
 /// `default` can be produced for it. Every type is writable, except those that
 /// can be constructed from `ReflectionType`, but not converted back to it.
 template <class T>
-concept CanWriteGeneric =
-    !has_reflection_type_v<std::remove_cvref_t<T>> ||
-    has_reflection_method_v<std::remove_cvref_t<T>> ||
-    IsReflectionTypeWrapper<std::remove_cvref_t<T>>;
+concept CanWriteGeneric = !has_reflection_type_v<std::remove_cvref_t<T>> ||
+                          has_reflection_method_v<std::remove_cvref_t<T>> ||
+                          IsReflectionTypeWrapper<std::remove_cvref_t<T>>;
 
 /// Satisfied when a schema `default` can be emitted for the field type `T`:
 /// it must be a `DefaultVal` that satisfies `CanWriteGeneric`.
@@ -120,7 +119,7 @@ struct NamedTupleParser {
    * @param _var The input variable to read from.
    * @return A Result containing the parsed named tuple or an error.
    */
-  static Result<NamedTuple<FieldTypes...>> read(
+  static RFL_ALWAYS_INLINE Result<NamedTuple<FieldTypes...>> read(
       const R& _r, const InputVarType& _var) noexcept {
     alignas(NamedTuple<FieldTypes...>) unsigned char
         buf[sizeof(NamedTuple<FieldTypes...>)];
@@ -272,15 +271,15 @@ struct NamedTupleParser {
 
   template <typename View, size_t _i>
   static void add_field_to_schema(
-      std::map<std::string, schema::Type>* _definitions,
-      SchemaType* _schema,
+      std::map<std::string, schema::Type>* _definitions, SchemaType* _schema,
       View* _view) noexcept {
     using F = internal::nth_element_t<_i, FieldTypes...>;
     using U = std::remove_cvref_t<typename F::Type>;
     if constexpr (!internal::is_skip_v<U> && !internal::is_extra_fields_v<U>) {
       // Add default value here
       auto s = Parser<R, W, U, ProcessorsType>::to_schema(_definitions);
-      if constexpr (!std::is_same_v<View, void> && internal::CanEmitDefault<U>) {
+      if constexpr (!std::is_same_v<View, void> &&
+                    internal::CanEmitDefault<U>) {
         s.variant_.visit([&](auto& value) {
           if constexpr (std::is_same_v<std::remove_cvref_t<decltype(value)>,
                                        schema::Type::DefaultVal>) {
@@ -304,10 +303,9 @@ struct NamedTupleParser {
     (add_field_to_object<_is>(_w, _tup, _ptr), ...);
   }
 
-  template <typename View,  int... _is>
+  template <typename View, int... _is>
   static void build_schema(std::map<std::string, schema::Type>* _definitions,
-                           SchemaType* _schema,
-                           View* _view,
+                           SchemaType* _schema, View* _view,
                            std::integer_sequence<int, _is...>) noexcept {
     (add_field_to_schema<View, _is>(_definitions, _schema, _view), ...);
 

@@ -6,6 +6,7 @@
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
+#include "../from_named_tuple.hpp"
 #include "../internal/HasFromReflectionMethod.hpp"
 #include "../internal/always_inline.hpp"
 #include "../internal/default_if_missing_v.hpp"
@@ -21,6 +22,7 @@
 #include "../internal/processed_t.hpp"
 #include "../internal/ptr_cast.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
+#include "../named_tuple_t.hpp"
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
 #include "MapParser.hpp"
@@ -689,10 +691,12 @@ struct Parser {
   /// might not be default-constructible.
   static RFL_ALWAYS_INLINE Result<T> read_struct(const R& _r,
                                                  const InputVarType& _var) {
-    alignas(T) unsigned char buf[sizeof(T)]{};
-    auto ptr = internal::ptr_cast<T*>(&buf);
+    using NamedTupleT = named_tuple_t<T>;
+    alignas(NamedTupleT) unsigned char buf[sizeof(NamedTupleT)]{};
+    auto ptr = internal::ptr_cast<NamedTupleT*>(&buf);
     auto raw_view = to_view(*ptr);
-    auto view = ProcessorsType::template process<T>(std::move(raw_view));
+    auto view =
+        ProcessorsType::template process<NamedTupleT>(std::move(raw_view));
     using ViewType = std::remove_cvref_t<decltype(view)>;
     const auto [set, err] =
         Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
@@ -700,7 +704,7 @@ struct Parser {
       call_destructors_where_necessary(set, &view);
       return error(err->what());
     }
-    auto res = Result<T>(std::move(*ptr));
+    auto res = Result<T>(from_named_tuple<T>(std::move(*ptr)));
     call_destructors_where_necessary(set, &view);
     return res;
   }
