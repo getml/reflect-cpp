@@ -14,7 +14,7 @@ over
 ```cpp
 #include "rfl/internal/to_ptr_named_tuple.hpp"
 ```
-For further details and reasoning, please refer to [#30](https://github.com/getml/reflect-cpp/issues/30).
+For further details and reasoning, please refer to [#30](https://github.com/munich-data-engineering/reflect-cpp/issues/30).
 
 Headers should be self-contained. This will be checked by the CI.
 

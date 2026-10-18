@@ -1,6 +1,6 @@
 # Benchmarks
 
-reflect-cpp conducts continuuous benchmarking through its [Github Actions](https://github.com/getml/reflect-cpp/actions) pipelines for different compilers, operating systems 
+reflect-cpp conducts continuuous benchmarking through its [Github Actions](https://github.com/munich-data-engineering/reflect-cpp/actions) pipelines for different compilers, operating systems 
 and architectures. Currently, we benchmark the following:
 
 1. How reflect-cpp's JSON parser compares to other JSON libraries for C or C++
@@ -8,7 +8,7 @@ and architectures. Currently, we benchmark the following:
 
 ## Viewing the benchmark results
 
-To view the benchmark results, go to the [Actions tab](https://github.com/getml/reflect-cpp/actions) 
+To view the benchmark results, go to the [Actions tab](https://github.com/munich-data-engineering/reflect-cpp/actions)
 of this Github repository, click on a recent run you are interested in and scroll down to view the summary.
 
 ## Running the benchmark results on your own machine

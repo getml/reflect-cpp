@@ -181,7 +181,7 @@ if (REFLECTCPP_USE_VCPKG)
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
 endif ()
 
-project(reflectcpp VERSION 0.25.0 LANGUAGES CXX)
+project(reflectcpp VERSION 0.26.0 LANGUAGES CXX)
 
 find_package(ament_cmake QUIET)
 
@@ -588,7 +588,7 @@ set(CPACK_RPM_PACKAGE_REQUIRES "")
 set(CPACK_RPM_FILE_NAME RPM-DEFAULT)
 set(CPACK_RPM_PACKAGE_LICENSE "MIT")
 set(CPACK_RPM_PACKAGE_LICENSE "MIT")
-set(CPACK_RPM_PACKAGE_URL "https://rfl.getml.com")
+set(CPACK_RPM_PACKAGE_URL "https://munich-data-engineering.github.io/reflect-cpp")
 
 include(CPack)
 

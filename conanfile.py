@@ -18,7 +18,7 @@ class ReflectCppConan(ConanFile):
     description = "C++-20 library for fast serialization, deserialization and validation using reflection"
     license = "MIT"
     url = "https://github.com/conan-io/conan-center-index"
-    homepage = "https://github.com/getml/reflect-cpp"
+    homepage = "https://github.com/munich-data-engineering/reflect-cpp"
     topics = (
         "reflection",
         "serialization",

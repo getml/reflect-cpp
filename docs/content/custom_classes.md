@@ -15,7 +15,7 @@ routines in reflect-cpp.
 Please be aware that due to limitations of the Avro format, it is a good idea to always have a struct as your
 `ReflectionType` when using Avro to avoid infinite recursions.
 
-If you absolutely do not want to make any changes to your original class, you can implement a [custom parser](https://github.com/getml/reflect-cpp/blob/main/docs/custom_parser.md).
+If you absolutely do not want to make any changes to your original class, you can implement a [custom parser](https://github.com/munich-data-engineering/reflect-cpp/blob/main/docs/custom_parser.md).
 
 ## Example 1: Using an Impl struct
 
