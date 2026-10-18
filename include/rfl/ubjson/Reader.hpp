@@ -2,8 +2,14 @@
 #define RFL_UBJSON_READER_HPP_
 
 #include <cstddef>
+#include <cstdint>
 #include <exception>
+#include <string_view>
+#ifdef RFL_JSONCONS_MODULE_INTERFACE
+#include "../internal/jsoncons_module_fwd.hpp"
+#else
 #include <jsoncons/json.hpp>
+#endif
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -13,11 +19,12 @@
 #include "../Result.hpp"
 #include "../Vectorstring.hpp"
 #include "../always_false.hpp"
+#include "../common.hpp"
 #include "../internal/ptr_cast.hpp"
 
 namespace rfl::ubjson {
 
-class Reader {
+class RFL_API Reader {
  public:
   struct UBJSONInputArray {
     jsoncons::json* val_;
@@ -44,99 +51,50 @@ class Reader {
       (requires(InputVarType var) { T::from_ubjson_obj(var); });
 
   rfl::Result<InputVarType> get_field_from_array(
-      const size_t _idx, const InputArrayType& _arr) const noexcept {
-    if (_idx >= _arr.val_->size()) {
-      return error("Index out of range.");
-    }
-    return InputVarType{&_arr.val_->at(_idx)};
-  }
+      const size_t _idx, const InputArrayType& _arr) const noexcept;
 
   rfl::Result<InputVarType> get_field_from_object(
-      const std::string& _name, const InputObjectType& _obj) const noexcept {
-    for (auto& kv : _obj.val_->object_range()) {
-      if (kv.key() == _name) {
-        return InputVarType{&kv.value()};
-      };
-    }
-    return error("Field name '" + _name + "' not found.");
-  }
+      const std::string& _name, const InputObjectType& _obj) const noexcept;
 
-  bool is_empty(const InputVarType& _var) const noexcept {
-    return _var.val_->is_null();
-  }
+  bool is_empty(const InputVarType& _var) const noexcept;
 
   template <class T>
   rfl::Result<T> to_basic_type(const InputVarType& _var) const noexcept {
-    if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      if (!_var.val_->is_string()) {
-        return error("Could not cast to string.");
-      }
-      return _var.val_->as<std::string>();
-
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Bytestring>() ||
-                         std::is_same<std::remove_cvref_t<T>,
-                                      rfl::Vectorstring>()) {
-      using VectorType = std::remove_cvref_t<T>;
-      using ValueType = typename VectorType::value_type;
-      if (!_var.val_->is<std::vector<uint8_t>>()) {
-        if constexpr (std::is_same<std::remove_cvref_t<T>, rfl::Bytestring>()) {
-          return error("Could not cast to bytestring.");
-        } else {
-          return error("Could not cast to vectorstring.");
-        }
-      }
-      const auto vec = _var.val_->as<std::vector<uint8_t>>();
-      const auto data = internal::ptr_cast<const ValueType*>(vec.data());
-      return VectorType(data, data + vec.size());
-
-    } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
-      if (!_var.val_->is_bool()) {
-        return error("Could not cast to boolean.");
-      }
-      return _var.val_->as<bool>();
-
-    } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-      if (_var.val_->is_double()) {
-        return static_cast<T>(_var.val_->as<double>());
-      }
-      return error("Could not cast to floating point value.");
-
-    } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      if (_var.val_->is_int64()) {
-        return static_cast<T>(_var.val_->as<int64_t>());
-      }
-      if (_var.val_->is_uint64()) {
-        return static_cast<T>(_var.val_->as<uint64_t>());
-      }
+    using Type = std::remove_cvref_t<T>;
+    if constexpr (std::is_same_v<Type, std::string>) {
+      return read_string(_var);
+    } else if constexpr (std::is_same_v<Type, rfl::Bytestring> ||
+                         std::is_same_v<Type, rfl::Vectorstring>) {
+      return read_bytes(_var, std::is_same_v<Type, rfl::Vectorstring>)
+          .transform([](const auto& bytes) {
+            using Value = typename Type::value_type;
+            const auto begin = internal::ptr_cast<const Value*>(bytes.data());
+            return Type(begin, begin + bytes.size());
+          });
+    } else if constexpr (std::is_same_v<Type, bool>) {
+      return read_bool(_var);
+    } else if constexpr (std::is_floating_point_v<Type>) {
+      return read_double(_var).transform(
+          [](double value) { return static_cast<T>(value); });
+    } else if constexpr (std::is_integral_v<Type>) {
+      if (is_int64(_var)) return static_cast<T>(read_int64(_var));
+      if (is_uint64(_var)) return static_cast<T>(read_uint64(_var));
       return error("Could not cast to integer.");
-
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }
   }
 
-  rfl::Result<InputArrayType> to_array(
-      const InputVarType& _var) const noexcept {
-    if (!_var.val_->is_array()) {
-      return error("Could not cast to an array.");
-    }
-    return InputArrayType{_var.val_};
-  }
+  rfl::Result<InputArrayType> to_array(const InputVarType& _var) const noexcept;
 
   rfl::Result<InputObjectType> to_object(
-      const InputVarType& _var) const noexcept {
-    if (!_var.val_->is_object()) {
-      return error("Could not cast to an object.");
-    }
-    return InputObjectType{_var.val_};
-  }
+      const InputVarType& _var) const noexcept;
 
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
                                   const InputArrayType& _arr) const noexcept {
-    for (auto& val : _arr.val_->array_range()) {
-      const auto err = _array_reader.read(InputVarType{&val});
+    for (size_t i = 0; i < size(_arr.val_); ++i) {
+      const auto err = _array_reader.read(InputVarType{array_at(_arr.val_, i)});
       if (err) {
         return err;
       }
@@ -147,8 +105,9 @@ class Reader {
   template <class ObjectReader>
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
-    for (auto& kv : _obj.val_->object_range()) {
-      _object_reader.read(kv.key(), InputVarType{&kv.value()});
+    for (size_t i = 0; i < size(_obj.val_); ++i) {
+      _object_reader.read(object_key(_obj.val_, i),
+                          InputVarType{object_value(_obj.val_, i)});
     }
     return std::nullopt;
   }
@@ -162,6 +121,21 @@ class Reader {
       return error(e.what());
     }
   }
+
+ private:
+  Result<std::string> read_string(const InputVarType& _var) const;
+  Result<std::vector<uint8_t>> read_bytes(const InputVarType& _var,
+                                          bool _vectorstring) const;
+  Result<bool> read_bool(const InputVarType& _var) const;
+  Result<double> read_double(const InputVarType& _var) const;
+  bool is_int64(const InputVarType& _var) const;
+  bool is_uint64(const InputVarType& _var) const;
+  int64_t read_int64(const InputVarType& _var) const;
+  uint64_t read_uint64(const InputVarType& _var) const;
+  size_t size(jsoncons::json* _value) const;
+  jsoncons::json* array_at(jsoncons::json* _value, size_t _index) const;
+  std::string_view object_key(jsoncons::json* _value, size_t _index) const;
+  jsoncons::json* object_value(jsoncons::json* _value, size_t _index) const;
 };
 
 }  // namespace rfl::ubjson

@@ -29,5 +29,6 @@ SOFTWARE.
 // Also, this speeds up compile time, compared to multiple separate .cpp files
 // compilation.
 
+#include "rfl/cereal/Archive.cpp"
 #include "rfl/cereal/Reader.cpp"
 #include "rfl/cereal/Writer.cpp"

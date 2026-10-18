@@ -2,7 +2,11 @@
 #define RFL_UBJSON_WRITER_HPP_
 
 #include <bit>
+#ifdef RFL_JSONCONS_MODULE_INTERFACE
+#include "../internal/jsoncons_module_fwd.hpp"
+#else
 #include <jsoncons_ext/ubjson/ubjson_encoder.hpp>
+#endif
 #include <map>
 #include <string>
 #include <string_view>
@@ -73,7 +77,7 @@ class RFL_API Writer {
   OutputVarType add_value_to_object(const std::string_view& _name,
                                     const T& _var,
                                     OutputObjectType* _parent) const {
-    encoder_->key(_name);
+    write_key(_name);
     return new_value(_var);
   }
 
@@ -91,21 +95,28 @@ class RFL_API Writer {
 
   OutputObjectType new_object(const size_t _size) const;
 
+  void write_key(std::string_view _key) const;
+  void write_string(const std::string& _value) const;
+  void write_bytes(const void* _data, size_t _size) const;
+  void write_bool(bool _value) const;
+  void write_double(double _value) const;
+  void write_int64(int64_t _value) const;
+
   template <class T>
   OutputVarType new_value(const T& _var) const {
     if constexpr (std::is_same<std::remove_cvref_t<T>, std::string>()) {
-      encoder_->string_value(_var);
+      write_string(_var);
     } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                       rfl::Bytestring>() ||
                          std::is_same<std::remove_cvref_t<T>,
                                       rfl::Vectorstring>()) {
-      encoder_->byte_string_value(_var);
+      write_bytes(_var.data(), _var.size());
     } else if constexpr (std::is_same<std::remove_cvref_t<T>, bool>()) {
-      encoder_->bool_value(_var);
+      write_bool(_var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
-      encoder_->double_value(static_cast<double>(_var));
+      write_double(static_cast<double>(_var));
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
-      encoder_->int64_value(static_cast<std::int64_t>(_var));
+      write_int64(static_cast<std::int64_t>(_var));
     } else {
       static_assert(rfl::always_false_v<T>, "Unsupported type.");
     }

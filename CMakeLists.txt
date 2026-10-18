@@ -381,10 +381,10 @@ if (REFLECTCPP_CBOR OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_cbor.cpp
     )
-    if (NOT TARGET jsoncons)
+    if (NOT TARGET jsoncons::jsoncons AND NOT TARGET jsoncons)
       find_package(jsoncons CONFIG REQUIRED)
     endif()
-    include_directories(PUBLIC ${jsoncons_INCLUDE_DIRS})
+    target_link_libraries(reflectcpp PUBLIC $<IF:$<TARGET_EXISTS:jsoncons::jsoncons>,jsoncons::jsoncons,jsoncons>)
 endif ()
 
 if (REFLECTCPP_CEREAL OR REFLECTCPP_CHECK_HEADERS)
@@ -397,6 +397,10 @@ if (REFLECTCPP_CEREAL OR REFLECTCPP_CHECK_HEADERS)
     endif ()
     target_link_libraries(reflectcpp PUBLIC cereal::cereal)
 endif()
+
+if (REFLECTCPP_CSV OR REFLECTCPP_PARQUET OR REFLECTCPP_CHECK_HEADERS)
+    list(APPEND REFLECT_CPP_SOURCES src/reflectcpp_arrow.cpp)
+endif ()
 
 if (REFLECTCPP_CSV OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_MODULES modules/rfl.csv.cppm)
@@ -464,10 +468,10 @@ if (REFLECTCPP_UBJSON OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_ubjson.cpp
     )
-    if (NOT TARGET jsoncons)
+    if (NOT TARGET jsoncons::jsoncons AND NOT TARGET jsoncons)
       find_package(jsoncons CONFIG REQUIRED)
     endif()
-    include_directories(PUBLIC ${jsoncons_INCLUDE_DIRS})
+    target_link_libraries(reflectcpp PUBLIC $<IF:$<TARGET_EXISTS:jsoncons::jsoncons>,jsoncons::jsoncons,jsoncons>)
 endif ()
 
 if (REFLECTCPP_XML OR REFLECTCPP_CHECK_HEADERS)

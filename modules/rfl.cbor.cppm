@@ -1,6 +1,8 @@
 module;
 
+#define RFL_JSONCONS_MODULE_INTERFACE
 #include "rfl/cbor.hpp"
+#undef RFL_JSONCONS_MODULE_INTERFACE
 
 export module rfl.cbor;
 

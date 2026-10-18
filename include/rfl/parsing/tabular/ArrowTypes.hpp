@@ -20,6 +20,7 @@
 #include "../../internal/has_reflection_type_v.hpp"
 #include "../../internal/ptr_cast.hpp"
 #include "../../named_tuple_t.hpp"
+#include "arrow_builder_operations.hpp"
 
 namespace rfl::parsing::tabular {
 
@@ -632,7 +633,7 @@ struct ArrowTypes<std::string, _s> {
    * @param _builder The builder to add to.
    */
   static void add_to_builder(const auto& _val, BuilderType* _builder) {
-    const auto status = _builder->Append(_val);
+    const auto status = append_string(_builder, _val);
     if (!status.ok()) {
       throw std::runtime_error(status.message());
     }
@@ -689,7 +690,7 @@ struct ArrowTypes<T, _s> {
    * @param _builder The builder to add to.
    */
   static void add_to_builder(const T _val, BuilderType* _builder) {
-    const auto status = _builder->Append(enum_to_string(_val));
+    const auto status = append_string(_builder, enum_to_string(_val));
     if (!status.ok()) {
       throw std::runtime_error(status.message());
     }
@@ -1005,7 +1006,7 @@ struct ArrowTypes<Timestamp<_format>, SerializationType::csv> {
    */
   static void add_to_builder(const Timestamp<_format>& _val,
                              BuilderType* _builder) {
-    const auto status = _builder->Append(_val.str());
+    const auto status = append_string(_builder, _val.str());
     if (!status.ok()) {
       throw std::runtime_error(status.message());
     }
@@ -1125,7 +1126,7 @@ struct ArrowTypes<std::optional<T>, _s> {
     if (_val) {
       ArrowTypes<T, _s>::add_to_builder(*_val, _builder);
     } else {
-      const auto status = _builder->AppendNull();
+      const auto status = append_null(_builder);
       if (!status.ok()) {
         throw std::runtime_error(status.message());
       }
@@ -1181,7 +1182,7 @@ struct ArrowTypes<std::shared_ptr<T>, _s> {
     if (_val) {
       ArrowTypes<T, _s>::add_to_builder(*_val, _builder);
     } else {
-      const auto status = _builder->AppendNull();
+      const auto status = append_null(_builder);
       if (!status.ok()) {
         throw std::runtime_error(status.message());
       }
@@ -1237,7 +1238,7 @@ struct ArrowTypes<std::unique_ptr<T>, _s> {
     if (_val) {
       ArrowTypes<T, _s>::add_to_builder(*_val, _builder);
     } else {
-      const auto status = _builder->AppendNull();
+      const auto status = append_null(_builder);
       if (!status.ok()) {
         throw std::runtime_error(status.message());
       }

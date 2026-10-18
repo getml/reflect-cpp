@@ -1,6 +1,8 @@
 module;
 
+#define RFL_CEREAL_MODULE_INTERFACE
 #include "rfl/cereal.hpp"
+#undef RFL_CEREAL_MODULE_INTERFACE
 
 export module rfl.cereal;
 

@@ -1,9 +1,6 @@
 #ifndef RFL_CEREAL_READER_HPP_
 #define RFL_CEREAL_READER_HPP_
 
-#include <cereal/archives/portable_binary.hpp>
-#include <cereal/cereal.hpp>
-#include <cereal/types/string.hpp>
 #include <exception>
 #include <sstream>
 #include <string>
@@ -15,13 +12,14 @@
 #include "../always_false.hpp"
 #include "../internal/is_literal.hpp"
 #include "../parsing/schemaful/IsSchemafulReader.hpp"
+#include "Archive.hpp"
 
 namespace rfl::cereal {
 
 /// Reader for Cereal serialization library integration.
 /// Cereal is a C++11 serialization library that supports multiple archive formats.
 /// This reader uses Cereal's portable binary archive format for cross-platform compatibility.
-struct Reader {
+struct RFL_API Reader {
   using CerealArchive = ::cereal::PortableBinaryInputArchive;
 
   struct CerealInputVar {
@@ -67,22 +65,21 @@ struct Reader {
     try {
       if constexpr (internal::is_literal_v<T>) {
         std::string str;
-        (*_var.archive_)(str);
+        detail::read_value(_var.archive_, str);
         return std::remove_cvref_t<T>::from_string(str);
 
       } else if constexpr (std::is_same<std::remove_cvref_t<T>,
                                         rfl::Bytestring>() ||
                            std::is_same<std::remove_cvref_t<T>,
                                         rfl::Vectorstring>()) {
-        size_t size;
-        (*_var.archive_)(::cereal::make_size_tag(size));
+        const auto size = detail::read_size(_var.archive_);
         std::remove_cvref_t<T> result(size);
-        (*_var.archive_)(::cereal::binary_data(result.data(), size));
+        detail::read_bytes(_var.archive_, result.data(), size);
         return result;
 
       } else {
         T value;
-        (*_var.archive_)(value);
+        detail::read_value(_var.archive_, value);
         return value;
       }
     } catch (std::exception& e) {
@@ -124,8 +121,7 @@ struct Reader {
   std::optional<Error> read_array(const ArrayReader& _array_reader,
                                   const InputArrayType& _arr) const noexcept {
     try {
-      size_t size;
-      (*_arr.archive_)(::cereal::make_size_tag(size));
+      const auto size = detail::read_size(_arr.archive_);
       for (size_t i = 0; i < size; ++i) {
         const auto err = _array_reader.read(InputVarType{_arr.archive_});
         if (err) {
@@ -148,11 +144,10 @@ struct Reader {
   std::optional<Error> read_map(const MapReader& _map_reader,
                                 const InputMapType& _map) const noexcept {
     try {
-      size_t size;
-      (*_map.archive_)(::cereal::make_size_tag(size));
+      const auto size = detail::read_size(_map.archive_);
       for (size_t i = 0; i < size; ++i) {
         std::string key;
-        (*_map.archive_)(key);
+        detail::read_value(_map.archive_, key);
         _map_reader.read(std::string_view(key), InputVarType{_map.archive_});
       }
       return std::nullopt;
@@ -190,7 +185,7 @@ struct Reader {
   rfl::Result<T> read_union(const InputUnionType& _union) const noexcept {
     try {
       size_t index;
-      (*_union.archive_)(index);
+      detail::read_value(_union.archive_, index);
       return UnionReader::read(*this, index, InputVarType{_union.archive_});
     } catch (std::exception& e) {
       return error(std::string("Cereal union read error: ") + e.what());

@@ -1,14 +1,13 @@
 #ifndef RFL_CEREAL_READ_HPP_
 #define RFL_CEREAL_READ_HPP_
 
-#include <cereal/archives/portable_binary.hpp>
-#include <cereal/cereal.hpp>
 #include <istream>
 #include <sstream>
 
 #include "../Processors.hpp"
 #include "../concepts.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
+#include "Archive.hpp"
 #include "Parser.hpp"
 #include "Reader.hpp"
 
@@ -42,8 +41,8 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
   try {
     std::stringstream ss(
         std::string(reinterpret_cast<const char*>(_bytes), _size));
-    ::cereal::PortableBinaryInputArchive archive(ss);
-    return read<T, Ps...>(archive);
+    detail::InputArchive archive(ss);
+    return read<T, Ps...>(archive.get());
   } catch (std::exception& e) {
     return error(std::string("Cereal read error: ") + e.what());
   }
@@ -67,8 +66,8 @@ auto read(const concepts::ContiguousByteContainer auto& _bytes) {
 template <class T, class... Ps>
 auto read(std::istream& _stream) {
   try {
-    ::cereal::PortableBinaryInputArchive archive(_stream);
-    return read<T, Ps...>(archive);
+    detail::InputArchive archive(_stream);
+    return read<T, Ps...>(archive.get());
   } catch (std::exception& e) {
     return Result<internal::wrap_in_rfl_array_t<T>>(
         error(std::string("Cereal read error: ") + e.what()));

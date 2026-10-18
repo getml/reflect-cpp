@@ -74,4 +74,23 @@ Writer::OutputObjectType Writer::new_object() const {
   return OutputObjectType{};
 }
 
+void Writer::write_key(std::string_view _value) const { encoder_->key(_value); }
+void Writer::write_string(const std::string& _value) const {
+  encoder_->string_value(_value);
+}
+void Writer::write_bool(bool _value) const { encoder_->bool_value(_value); }
+void Writer::write_double(double _value) const {
+  encoder_->double_value(_value);
+}
+void Writer::write_uint64(uint64_t _value) const {
+  encoder_->uint64_value(_value);
+}
+void Writer::write_int64(int64_t _value) const {
+  encoder_->int64_value(_value);
+}
+void Writer::write_bytes(const void* _data, size_t _size) const {
+  encoder_->byte_string_value(
+      jsoncons::byte_string_view(static_cast<const uint8_t*>(_data), _size));
+}
+
 }  // namespace rfl::cbor

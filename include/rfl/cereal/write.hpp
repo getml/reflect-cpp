@@ -33,8 +33,8 @@ template <class... Ps>
 std::vector<char> write(const auto& _obj) {
   std::stringstream ss;
   {
-    ::cereal::PortableBinaryOutputArchive archive(ss);
-    write<std::remove_cvref_t<decltype(_obj)>, Ps...>(_obj, archive);
+    detail::OutputArchive archive(ss);
+    write<std::remove_cvref_t<decltype(_obj)>, Ps...>(_obj, archive.get());
   }
   auto str = ss.str();
   return std::vector<char>(str.begin(), str.end());
@@ -47,8 +47,8 @@ std::vector<char> write(const auto& _obj) {
 /// @return The output stream (for chaining)
 template <class... Ps>
 std::ostream& write(const auto& _obj, std::ostream& _stream) {
-  ::cereal::PortableBinaryOutputArchive archive(_stream);
-  write<std::remove_cvref_t<decltype(_obj)>, Ps...>(_obj, archive);
+  detail::OutputArchive archive(_stream);
+  write<std::remove_cvref_t<decltype(_obj)>, Ps...>(_obj, archive.get());
   return _stream;
 }
 

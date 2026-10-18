@@ -29,4 +29,6 @@ SOFTWARE.
 // Also, this speeds up compile time, compared to multiple separate .cpp files
 // compilation.
 
+#include "rfl/cbor/Buffers.cpp"
+#include "rfl/cbor/Reader.cpp"
 #include "rfl/cbor/Writer.cpp"

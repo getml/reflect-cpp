@@ -2,7 +2,6 @@
 #define RFL_UBJSON_WRITE_HPP_
 
 #include <cstdint>
-#include <jsoncons_ext/ubjson/ubjson_encoder.hpp>
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -10,6 +9,7 @@
 
 #include "../internal/ptr_cast.hpp"
 #include "../parsing/Parent.hpp"
+#include "Buffers.hpp"
 #include "Parser.hpp"
 
 namespace rfl::ubjson {
@@ -24,14 +24,11 @@ template <class... Ps>
 std::vector<char> write(const auto& _obj) {
   using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
-  std::vector<uint8_t> buffer;
-  jsoncons::ubjson::ubjson_bytes_encoder encoder(buffer);
-  const auto writer = Writer(&encoder);
+  detail::EncodedBuffer buffer;
+  const auto writer = Writer(buffer.encoder());
   Parser<T, Processors<Ps...>>::write(writer, _obj,
                                       typename ParentType::Root{});
-  return std::vector<char>(
-      internal::ptr_cast<char*>(buffer.data()),
-      internal::ptr_cast<char*>(buffer.data() + buffer.size()));
+  return buffer.bytes();
 }
 
 /// Writes a UBJSON representation into an ostream.

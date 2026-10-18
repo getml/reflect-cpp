@@ -1,6 +1,8 @@
 module;
 
+#define RFL_JSONCONS_MODULE_INTERFACE
 #include "rfl/ubjson.hpp"
+#undef RFL_JSONCONS_MODULE_INTERFACE
 
 export module rfl.ubjson;
 

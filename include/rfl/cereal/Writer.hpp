@@ -1,9 +1,6 @@
 #ifndef RFL_CEREAL_WRITER_HPP_
 #define RFL_CEREAL_WRITER_HPP_
 
-#include <cereal/archives/portable_binary.hpp>
-#include <cereal/cereal.hpp>
-#include <cereal/types/string.hpp>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -15,12 +12,13 @@
 #include "../common.hpp"
 #include "../internal/is_literal.hpp"
 #include "../parsing/schemaful/IsSchemafulWriter.hpp"
+#include "Archive.hpp"
 
 namespace rfl::cereal {
 
 /// Writer for Cereal serialization library integration.
 /// Writes data to Cereal's portable binary archive format for cross-platform serialization.
-class Writer {
+class RFL_API Writer {
  public:
   using CerealArchive = ::cereal::PortableBinaryOutputArchive;
 
@@ -73,7 +71,7 @@ class Writer {
 
   template <class T>
   OutputVarType value_as_root(const T& _var) const {
-    (*archive_)(_var);
+    add_value(_var);
     return OutputVarType{};
   }
 
@@ -154,7 +152,7 @@ class Writer {
   template <class T>
   OutputVarType add_value_to_union(const size_t _index, const T& _var,
                                    OutputUnionType* _parent) const {
-    (*archive_)(_index);
+    detail::write_value(archive_, _index);
     add_value(_var);
     return OutputVarType{};
   }
@@ -187,11 +185,11 @@ class Writer {
 
     } else if constexpr (std::is_same<Type, rfl::Bytestring>() ||
                          std::is_same<Type, rfl::Vectorstring>()) {
-      (*archive_)(::cereal::make_size_tag(_var.size()));
-      (*archive_)(::cereal::binary_data(_var.data(), _var.size()));
+      detail::write_size(archive_, _var.size());
+      detail::write_bytes(archive_, _var.data(), _var.size());
 
     } else {
-      (*archive_)(_var);
+      detail::write_value(archive_, _var);
     }
   }
 

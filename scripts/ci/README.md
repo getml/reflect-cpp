@@ -101,18 +101,37 @@ the PCH only in header mode, because CMake does not scan the PCH itself for
 module imports. JSON benchmarks compiled and the reflect-cpp person benchmark
 ran with PCH enabled on both GCC 15 and Clang 19.
 
-The compiler minimum does not imply that every optional dependency works as a
-module. With the pinned dependency versions, GCC 16.2.1 still fails the
-Cap'n Proto 1.2.0 and Cereal 1.3.2 module interfaces because of TU-local types.
-CBOR/UBJSON with jsoncons 1.4.0 fail when imported templates cannot find
-`make_error_code` through ADL. Parquet with Arrow 21.0.0 reaches the importer
-tests, but GCC diagnoses an out-of-bounds access while inlining Arrow builder
-virtual functions; the tests use `-Werror`. These failures were reproduced in
-both C++20 and C++23 with PCH enabled, so upgrading from GCC 15 to GCC 16 alone
-does not make the complete module matrix pass.
-For diagnosis, a separate GCC 16.2.1 C++20 Parquet run added only
-`-fno-devirtualize-speculatively`, retained `-Werror`, and passed 61 tests
-(one locale test skipped). This optimization flag is not enabled by the project.
+The CBOR and UBJSON adapters now keep jsoncons 1.4.0 decoding, primitive
+access, and encoder ownership in ordinary implementation files. Module
+interfaces retain only forward declarations of the pointer types. Cereal 1.3.2
+uses the same boundary for archive ownership and primitive operations, retaining
+its native portable binary format and existing archive-reference overloads.
+Regression tests cover those overloads against a separate native Cereal TU,
+byte compatibility, stream reads/writes, and malformed input.
+
+GCC 15.2 and GCC 16.2.1 passed the CBOR, UBJSON, and Cereal module suites in
+C++20 and C++23 with PCH enabled. Clang 19 also passed a combined C++20 build
+of CBOR, UBJSON, Cereal, CSV, and Parquet: 224 tests passed and one locale test
+was skipped. The same combined suite also passed with GCC 11 in C++20
+header mode using a shared reflectcpp library (224 tests and one locale skip).
+An installed GCC 11 shared-library consumer also passed CBOR, UBJSON, and Cereal
+round trips through `find_package(reflectcpp)`; the local PyArrow fixture needs
+its library directory in `LD_LIBRARY_PATH`.
+
+Arrow string and null appends now run in an ordinary implementation file.
+GCC 16.2.1 passed the Parquet/Arrow 21.0.0 module suite in C++20 and C++23
+(61 tests and one locale skip per run) with the usual optimization flags and `-Werror`. No compiler
+warning or optimization is disabled by this workaround.
+
+Two dependency boundaries remain unresolved. GCC 15 rejects Arrow/Parquet's
+TU-local constants and static helper functions in the module interface.
+GCC 16 still rejects Cap'n Proto 1.2.0/KJ types: even exporting a struct with
+only a `capnp::DynamicValue::Reader` member reproduces the KJ `Bounded` error.
+Moving packed-message and schema-parser operations out of templates did not
+remove that type dependency. A complete rfl-side fix needs opaque reader and
+writer handles rather than merely wrapping calls; that public representation
+change is not part of this patch. Upgrading to GCC 16 alone therefore still
+does not make the entire optional-format matrix pass.
 
 Sources: [CMake 3.31](https://cmake.org/cmake/help/v3.31/manual/cmake-cxxmodules.7.html),
 [GCC 14](https://gcc.gnu.org/onlinedocs/gcc-14.3.0/gcc/C_002b_002b-Modules.html),

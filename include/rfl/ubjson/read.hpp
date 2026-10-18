@@ -3,13 +3,12 @@
 
 #include <bit>
 #include <istream>
-#include <jsoncons/json.hpp>
-#include <jsoncons_ext/ubjson/decode_ubjson.hpp>
 #include <string>
 
 #include "../Processors.hpp"
 #include "../concepts.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
+#include "Buffers.hpp"
 #include "Parser.hpp"
 #include "Reader.hpp"
 
@@ -28,12 +27,14 @@ using InputVarType = typename Reader::InputVarType;
 template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(
     const concepts::ContiguousByteContainer auto& _bytes) {
-  auto result = jsoncons::ubjson::try_decode_ubjson<jsoncons::json>(_bytes);
+  auto result = detail::decode(reinterpret_cast<const char*>(_bytes.data()),
+                               _bytes.size());
   if (result.has_value()) {
     auto r = Reader();
-    return Parser<T, Processors<Ps...>>::read(r, InputVarType{&result.value()});
+    return Parser<T, Processors<Ps...>>::read(
+        r, InputVarType{result.value().get()});
   } else {
-    return rfl::error("Could not parse UBJSON: " + result.error().message());
+    return rfl::error(result.error().what());
   }
 }
 
@@ -45,12 +46,13 @@ Result<internal::wrap_in_rfl_array_t<T>> read(
 /// @return Result containing either the parsed object (or array of objects) or an error message
 template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(std::istream& _stream) {
-  auto result = jsoncons::ubjson::try_decode_ubjson<jsoncons::json>(_stream);
+  auto result = detail::decode(_stream);
   if (result.has_value()) {
     auto r = Reader();
-    return Parser<T, Processors<Ps...>>::read(r, InputVarType{&result.value()});
+    return Parser<T, Processors<Ps...>>::read(
+        r, InputVarType{result.value().get()});
   } else {
-    return rfl::error("Could not parse UBJSON: " + result.error().message());
+    return rfl::error(result.error().what());
   }
 }
 
