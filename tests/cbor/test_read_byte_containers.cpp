@@ -4,6 +4,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <vector>
 
 #include <test_rfl/rfl.hpp>
@@ -36,8 +37,7 @@ TEST(cbor, test_read_from_byte_view) {
   std::transform(rfl_buffer.begin(), rfl_buffer.end(), my_buffer.begin(),
                  [](char c) { return static_cast<std::byte>(c); });
 
-  std::basic_string_view<std::byte> byte_view(my_buffer.data(),
-                                              rfl_buffer.size());
+  std::span<const std::byte> byte_view(my_buffer.data(), rfl_buffer.size());
 
   auto result = rfl::cbor::read<TestBox>(byte_view);
   EXPECT_TRUE(result);
