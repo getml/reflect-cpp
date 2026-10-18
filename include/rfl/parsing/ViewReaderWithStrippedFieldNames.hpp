@@ -6,11 +6,11 @@
 #include <sstream>
 #include <type_traits>
 #include <utility>
-#include <vector>
 
 #include "../Result.hpp"
 #include "../Tuple.hpp"
 #include "../internal/is_array.hpp"
+#include "FieldErrors.hpp"
 #include "Parser_base.hpp"
 
 namespace rfl::parsing {
@@ -31,12 +31,12 @@ class ViewReaderWithStrippedFieldNames {
    * @param _found A boolean array indicating which fields have been found.
    * @param _set A boolean array indicating which fields have been successfully
    * set.
-   * @param _errors The vector to collect errors in.
+   * @param _errors The field error collector.
    */
   ViewReaderWithStrippedFieldNames(const R* _r, ViewType* _view,
                                    std::array<bool, size_>* _found,
                                    std::array<bool, size_>* _set,
-                                   std::vector<std::string>* _errors)
+                                   FieldErrors<ProcessorsType>* _errors)
       : i_(0),
         r_(_r),
         view_(_view),
@@ -53,6 +53,7 @@ class ViewReaderWithStrippedFieldNames {
    * @return An optional error.
    */
   std::optional<Error> read(const InputVarType& _var) const {
+    if (should_stop_on_field_error<ProcessorsType>(*errors_)) return std::nullopt;
     if (i_ == size_) {
       std::stringstream stream;
       stream << "Expected a maximum of " << std::to_string(size_)
@@ -153,8 +154,8 @@ class ViewReaderWithStrippedFieldNames {
   /// because we have to trigger the destructors manually.
   std::array<bool, size_>* set_;
 
-  /// Collects any errors we may have come across.
-  std::vector<std::string>* errors_;
+  /// Stores field errors according to the selected processor policy.
+  FieldErrors<ProcessorsType>* errors_;
 };
 
 }  // namespace rfl::parsing

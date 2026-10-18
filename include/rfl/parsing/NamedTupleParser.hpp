@@ -23,6 +23,7 @@
 #include "../num_fields.hpp"
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
+#include "FieldErrors.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
 #include "ViewReader.hpp"
@@ -325,7 +326,8 @@ struct NamedTupleParser {
   static RFL_ALWAYS_INLINE void handle_one_missing_field(
       const std::array<bool, size_>& _found, const NamedTupleType& _view,
       std::array<bool, size_>* _set,
-      std::vector<std::string>* _errors) noexcept {
+      FieldErrors<ProcessorsType>* _errors) noexcept {
+    if (should_stop_on_field_error<ProcessorsType>(*_errors)) return;
     using FieldType = internal::nth_element_t<_i, FieldTypes...>;
     using ValueType = std::remove_reference_t<
         std::remove_pointer_t<typename FieldType::Type>>;
@@ -360,7 +362,7 @@ struct NamedTupleParser {
   template <int... _is>
   static RFL_ALWAYS_INLINE void handle_missing_fields(
       const std::array<bool, size_>& _found, const NamedTupleType& _view,
-      std::array<bool, size_>* _set, std::vector<std::string>* _errors,
+      std::array<bool, size_>* _set, FieldErrors<ProcessorsType>* _errors,
       std::integer_sequence<int, _is...>) noexcept {
     (handle_one_missing_field<_is>(_found, _view, _set, _errors), ...);
   }
@@ -383,7 +385,7 @@ struct NamedTupleParser {
     found.fill(false);
     auto set = std::array<bool, NamedTupleType::size()>();
     set.fill(false);
-    std::vector<std::string> errors;
+    FieldErrors<ProcessorsType> errors;
     const auto reader = ViewReaderType(&_r, _view, &found, &set, &errors);
     if constexpr (_no_field_names) {
       const auto err = _r.read_array(reader, _obj_or_arr);
@@ -396,18 +398,24 @@ struct NamedTupleParser {
         return std::make_pair(set, err);
       }
     }
-    handle_missing_fields(found, *_view, &set, &errors,
-                          std::make_integer_sequence<int, size_>());
-    if (errors.size() != 0) {
-      return std::make_pair(set, to_single_error_message(errors));
+    if (!should_stop_on_field_error<ProcessorsType>(errors)) {
+      handle_missing_fields(found, *_view, &set, &errors,
+                            std::make_integer_sequence<int, size_>());
     }
-    return std::make_pair(set, std::optional<Error>());
+    if constexpr (internal::fail_fast_v<ProcessorsType>) {
+      return std::make_pair(set, std::move(errors).error());
+    } else {
+      if (errors.size() != 0) {
+        return std::make_pair(set, to_single_error_message(errors));
+      }
+      return std::make_pair(set, std::optional<Error>());
+    }
   }
 
   static std::optional<Error> read_object_or_array_with_default(
       const R& _r, const InputObjectOrArrayType& _obj_or_arr,
       NamedTupleType* _view) noexcept {
-    std::vector<std::string> errors;
+    FieldErrors<ProcessorsType> errors;
     const auto reader = ViewReaderWithDefaultType(&_r, _view, &errors);
     if constexpr (_no_field_names) {
       const auto err = _r.read_array(reader, _obj_or_arr);
@@ -422,14 +430,19 @@ struct NamedTupleParser {
     }
     if constexpr (internal::has_default_val_v<NamedTupleType> &&
                   !internal::default_if_missing_v<ProcessorsType>) {
-      handle_missing_fields(reader.found(), *_view, nullptr, &errors,
-                            std::make_integer_sequence<int, size_>());
+      if (!should_stop_on_field_error<ProcessorsType>(errors)) {
+        handle_missing_fields(reader.found(), *_view, nullptr, &errors,
+                              std::make_integer_sequence<int, size_>());
+      }
     }
-    if (errors.size() != 0) {
-      return to_single_error_message(errors);
+    if constexpr (internal::fail_fast_v<ProcessorsType>) {
+      return std::move(errors).error();
+    } else {
+      if (errors.size() != 0) {
+        return to_single_error_message(errors);
+      }
+      return std::nullopt;
     }
-
-    return std::nullopt;
   }
 };
 

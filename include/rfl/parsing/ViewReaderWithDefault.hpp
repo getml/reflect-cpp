@@ -6,12 +6,12 @@
 #include <string_view>
 #include <type_traits>
 #include <utility>
-#include <vector>
 
 #include "../Ref.hpp"
 #include "../Tuple.hpp"
 #include "../internal/is_array.hpp"
 #include "../internal/no_extra_fields_v.hpp"
+#include "FieldErrors.hpp"
 #include "Parser_base.hpp"
 
 namespace rfl::parsing {
@@ -29,10 +29,10 @@ class ViewReaderWithDefault {
    *
    * @param _r The reader to use.
    * @param _view The view to read into.
-   * @param _errors The vector to collect errors in.
+   * @param _errors The field error collector.
    */
   ViewReaderWithDefault(const R* _r, ViewType* _view,
-                        std::vector<std::string>* _errors)
+                        FieldErrors<ProcessorsType>* _errors)
       : r_(_r), view_(_view), errors_(_errors) {
     found_->fill(false);
   }
@@ -53,6 +53,7 @@ class ViewReaderWithDefault {
    * @param _var The input variable to read from.
    */
   void read(const std::string_view& _name, const InputVarType& _var) const {
+    if (should_stop_on_field_error<ProcessorsType>(*errors_)) return;
     assign_to_matching_field(*r_, _name, _var, view_, errors_, found_.get(),
                              std::make_integer_sequence<int, size_>());
   }
@@ -175,8 +176,8 @@ class ViewReaderWithDefault {
   /// Indicates that a certain field has been found.
   rfl::Ref<std::array<bool, size_>> found_;
 
-  /// Collects any errors we may have come across.
-  std::vector<std::string>* errors_;
+  /// Stores field errors according to the selected processor policy.
+  FieldErrors<ProcessorsType>* errors_;
 };
 
 }  // namespace rfl::parsing
