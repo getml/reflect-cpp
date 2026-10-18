@@ -6,6 +6,23 @@
 
 namespace test_integers {
 
+TEST(json, test_narrow_integer_bounds) {
+  struct NarrowIntegers {
+    int16_t signed_value;
+    uint16_t unsigned_value;
+  };
+
+  write_and_read(NarrowIntegers{.signed_value = INT16_MIN,
+                                .unsigned_value = UINT16_MAX},
+                 R"({"signed_value":-32768,"unsigned_value":65535})");
+  EXPECT_FALSE(rfl::json::read<NarrowIntegers>(
+      R"({"signed_value":32768,"unsigned_value":1})"));
+  EXPECT_FALSE(rfl::json::read<NarrowIntegers>(
+      R"({"signed_value":-32769,"unsigned_value":1})"));
+  EXPECT_FALSE(rfl::json::read<NarrowIntegers>(
+      R"({"signed_value":0,"unsigned_value":100200})"));
+}
+
 TEST(json, test_integers) {
 
   struct Integers {
