@@ -93,4 +93,12 @@ Writer::OutputObjectType Writer::new_object() const {
   return OutputObjectType{};
 }
 
+void Writer::write_scalar(const std::string& _value) const { (*out_) << _value; }
+
+void Writer::write_scalar(bool _value) const { (*out_) << _value; }
+
+void Writer::write_scalar(std::remove_cvref_t<decltype(YAML::Null)> _value) const {
+  (*out_) << _value;
+}
+
 }  // namespace rfl::yaml

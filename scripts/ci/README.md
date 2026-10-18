@@ -91,6 +91,29 @@ With PCH enabled, GCC 15.2 (Ubuntu 24.04, C++20), GCC 15.3 (C++20 and C++23),
 and GCC 16.2.1 (C++20) passed
 the full JSON/CLI module suite: 342 tests passed and one locale test was skipped.
 
+GCC 15.2 also passed the MessagePack, XML (pugixml 1.15), and YAML module
+suites in C++20 and C++23. Their combined shared-library header build passed
+200 tests, with one locale test skipped. Clang 19 passed the Parquet module
+suite with Arrow 21.0.0 (61 tests passed, one locale test skipped).
+
+Benchmark PCH contains standard headers in module mode. `rfl.hpp` stays in
+the PCH only in header mode, because CMake does not scan the PCH itself for
+module imports. JSON benchmarks compiled and the reflect-cpp person benchmark
+ran with PCH enabled on both GCC 15 and Clang 19.
+
+The compiler minimum does not imply that every optional dependency works as a
+module. With the pinned dependency versions, GCC 16.2.1 still fails the
+Cap'n Proto 1.2.0 and Cereal 1.3.2 module interfaces because of TU-local types.
+CBOR/UBJSON with jsoncons 1.4.0 fail when imported templates cannot find
+`make_error_code` through ADL. Parquet with Arrow 21.0.0 reaches the importer
+tests, but GCC diagnoses an out-of-bounds access while inlining Arrow builder
+virtual functions; the tests use `-Werror`. These failures were reproduced in
+both C++20 and C++23 with PCH enabled, so upgrading from GCC 15 to GCC 16 alone
+does not make the complete module matrix pass.
+For diagnosis, a separate GCC 16.2.1 C++20 Parquet run added only
+`-fno-devirtualize-speculatively`, retained `-Werror`, and passed 61 tests
+(one locale test skipped). This optimization flag is not enabled by the project.
+
 Sources: [CMake 3.31](https://cmake.org/cmake/help/v3.31/manual/cmake-cxxmodules.7.html),
 [GCC 14](https://gcc.gnu.org/onlinedocs/gcc-14.3.0/gcc/C_002b_002b-Modules.html),
 [Clang status](https://clang.llvm.org/cxx_status.html).

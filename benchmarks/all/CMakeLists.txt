@@ -6,7 +6,10 @@ add_executable(
     reflect-cpp-all-format-benchmarks 
     ${SOURCES}
 )
-target_precompile_headers(reflect-cpp-all-format-benchmarks PRIVATE [["rfl.hpp"]] <iostream> <string> <functional>)
+target_precompile_headers(reflect-cpp-all-format-benchmarks PRIVATE <iostream> <string> <functional>)
+if(NOT REFLECTCPP_BUILD_MODULES)
+    target_precompile_headers(reflect-cpp-all-format-benchmarks PRIVATE [["rfl.hpp"]])
+endif()
 
 target_include_directories(reflect-cpp-all-format-benchmarks SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
 target_include_directories(reflect-cpp-all-format-benchmarks SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include/tinycbor")

@@ -68,7 +68,8 @@ consteval auto get_field_name_str_view() {
 template <class T, auto ptr>
 consteval auto get_field_name_str_lit() {
   constexpr auto name = get_field_name_str_view<T, ptr>();
-  const auto to_str_lit = [&]<auto... Ns>(std::index_sequence<Ns...>) {
+  const auto to_str_lit = []<auto... Ns>(std::index_sequence<Ns...>) {
+    constexpr auto name = get_field_name_str_view<T, ptr>();
     return StringLiteral<sizeof...(Ns) + 1>{name[Ns]...};
   };
   return to_str_lit(std::make_index_sequence<name.size()>{});

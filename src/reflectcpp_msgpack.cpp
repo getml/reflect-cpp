@@ -29,4 +29,5 @@ SOFTWARE.
 // Also, this speeds up compile time, compared to multiple separate .cpp files
 // compilation.
 
+#include "rfl/msgpack/Buffers.cpp"
 #include "rfl/msgpack/Writer.cpp"

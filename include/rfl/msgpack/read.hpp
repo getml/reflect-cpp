@@ -9,6 +9,7 @@
 #include "../concepts.hpp"
 #include "../internal/ptr_cast.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
+#include "Buffers.hpp"
 #include "Parser.hpp"
 #include "Reader.hpp"
 
@@ -41,20 +42,12 @@ auto read(const InputVarType& _obj) {
 template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(
     const concepts::ByteLike auto* _bytes, const size_t _size) {
-  msgpack_zone mempool;
-  msgpack_zone_init(&mempool, 2048);
-  msgpack_object deserialized;
-  const auto rc = msgpack_unpack(
-      internal::ptr_cast<const char*>(_bytes), _size, NULL, &mempool,
-      &deserialized);
-  if (rc != MSGPACK_UNPACK_SUCCESS && rc != MSGPACK_UNPACK_EXTRA_BYTES) {
-    msgpack_zone_destroy(&mempool);
+  detail::UnpackedBuffer buffer(internal::ptr_cast<const char*>(_bytes), _size);
+  if (!buffer.valid()) {
     return Result<internal::wrap_in_rfl_array_t<T>>(
         error("Failed to unpack msgpack data."));
   }
-  auto r = read<T, Ps...>(deserialized);
-  msgpack_zone_destroy(&mempool);
-  return r;
+  return read<T, Ps...>(buffer.object());
 }
 
 /// Parses an object from MSGPACK using reflection (contiguous container version).

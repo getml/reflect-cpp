@@ -202,12 +202,12 @@ class RFL_API Writer {
                                std::remove_cvref_t<decltype(YAML::Null)>>()) {
       (*out_) << YAML::Key << std::string(_name) << YAML::Value;
       insert_literal_block_if_needed(_var);
-      (*out_) << _var;
+      write_scalar(_var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       // std::to_string is necessary to ensure that floating point values are
       // always written as floats.
-      (*out_) << YAML::Key << std::string(_name) << YAML::Value
-              << std::to_string(_var);
+      (*out_) << YAML::Key << std::string(_name) << YAML::Value;
+      write_scalar(std::to_string(_var));
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       (*out_) << YAML::Key << std::string(_name) << YAML::Value
               << static_cast<int64_t>(_var);
@@ -228,11 +228,11 @@ class RFL_API Writer {
                   std::is_same<std::remove_cvref_t<T>,
                                std::remove_cvref_t<decltype(YAML::Null)>>()) {
       insert_literal_block_if_needed(_var);
-      (*out_) << _var;
+      write_scalar(_var);
     } else if constexpr (std::is_floating_point<std::remove_cvref_t<T>>()) {
       // std::to_string is necessary to ensure that floating point values are
       // always written as floats.
-      (*out_) << std::to_string(_var);
+      write_scalar(std::to_string(_var));
     } else if constexpr (std::is_integral<std::remove_cvref_t<T>>()) {
       (*out_) << static_cast<int64_t>(_var);
     } else {
@@ -262,6 +262,11 @@ class RFL_API Writer {
   /// @brief Create a new YAML object node as a root or child.
   /// @return OutputObjectType representing the new object.
   OutputObjectType new_object() const;
+
+ private:
+  void write_scalar(const std::string& _value) const;
+  void write_scalar(bool _value) const;
+  void write_scalar(std::remove_cvref_t<decltype(YAML::Null)> _value) const;
 
  public:
   /// @brief Reference to the YAML emitter used for output.

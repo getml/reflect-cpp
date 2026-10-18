@@ -25,7 +25,7 @@ namespace xml {
 /// @return The root element name to use
 template <internal::StringLiteral _root, class T>
 consteval auto get_root_name() {
-  if constexpr (_root != internal::StringLiteral("")) {
+  if constexpr (_root.length != 0) {
     return _root;
   } else {
     return internal::remove_namespaces<

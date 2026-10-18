@@ -1,5 +1,6 @@
 module;
 
+#include "rfl/internal/yaml_module_constants.hpp"
 #include "rfl/yaml.hpp"
 
 export module rfl.yaml;

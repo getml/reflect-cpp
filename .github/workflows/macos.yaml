@@ -32,12 +32,10 @@ jobs:
       - name: Run vcpkg
         uses: lukka/run-vcpkg@v11
       - name: Set up Python for benchmark tooling
-        if: matrix.format == 'benchmarks'
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: Use CMake 3.31.6 for the pinned benchmark port
-        if: matrix.format == 'benchmarks'
         shell: bash
         run: |
           python -m pip install cmake==3.31.6

@@ -8,6 +8,7 @@
 #include "../Processors.hpp"
 #include "../Result.hpp"
 #include "../parsing/Parent.hpp"
+#include "Buffers.hpp"
 #include "Parser.hpp"
 
 namespace rfl::msgpack {
@@ -22,20 +23,16 @@ template <class... Ps>
 std::vector<char> write(const auto& _obj) {
   using T = std::remove_cvref_t<decltype(_obj)>;
   using ParentType = parsing::Parent<Writer>;
-  msgpack_sbuffer sbuf;
-  msgpack_sbuffer_init(&sbuf);
-  msgpack_packer pk;
-  msgpack_packer_init(&pk, &sbuf, msgpack_sbuffer_write);
-  auto w = Writer(&pk);
+  detail::PackedBuffer buffer;
+  auto w = Writer(buffer.packer());
   const auto bytes = [&]() -> Result<std::vector<char>> {
     try {
       Parser<T, Processors<Ps...>>::write(w, _obj, typename ParentType::Root{});
-      return std::vector<char>(sbuf.data, sbuf.data + sbuf.size);
+      return buffer.bytes();
     } catch (const std::exception& e) {
       return error(e.what());
     }
   }();
-  msgpack_sbuffer_destroy(&sbuf);
   return bytes.value();
 }
 

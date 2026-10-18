@@ -1,5 +1,6 @@
 module;
 
+#include "rfl/internal/xml_module_constants.hpp"
 #include "rfl/xml.hpp"
 
 export module rfl.xml;
