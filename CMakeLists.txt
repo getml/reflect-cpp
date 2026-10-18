@@ -322,7 +322,7 @@ if (REFLECTCPP_AVRO OR REFLECTCPP_CHECK_HEADERS)
     )
     find_package(jansson CONFIG REQUIRED)
     if (REFLECTCPP_USE_VCPKG)
-        target_include_directories(reflectcpp SYSTEM PRIVATE "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
+        target_include_directories(reflectcpp SYSTEM PUBLIC "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include")
         if (WIN32)
             set(_AVRO_STATIC_LIB "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/avro${CMAKE_STATIC_LIBRARY_SUFFIX}")
             if(REFLECTCPP_BUILD_SHARED)
@@ -515,7 +515,7 @@ if (REFLECTCPP_YAS OR REFLECTCPP_CHECK_HEADERS)
         src/reflectcpp_yas.cpp
     )
     find_path(YAS_INCLUDE_DIRS "yas/abseil_types.hpp")
-    target_include_directories(reflectcpp PRIVATE ${YAS_INCLUDE_DIRS})
+    target_include_directories(reflectcpp SYSTEM PUBLIC ${YAS_INCLUDE_DIRS})
 endif ()
 
 if (REFLECTCPP_CLI OR REFLECTCPP_CHECK_HEADERS)
@@ -588,7 +588,9 @@ if(REFLECTCPP_CHECK_HEADERS)
             )
 
             add_library(check_header_${HEADER_NAME} "${TEST_SOURCE_FILE}")
-            
+            # Compile each header with the same usage requirements as a consumer.
+            target_link_libraries(check_header_${HEADER_NAME} PRIVATE reflectcpp)
+
             target_include_directories(check_header_${HEADER_NAME} PRIVATE
                 ${CMAKE_CURRENT_SOURCE_DIR}
                 ${ADDITIONAL_INCLUDE_DIRS}
