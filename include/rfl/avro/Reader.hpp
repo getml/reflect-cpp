@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 
 #include "../Result.hpp"
 #include "../always_false.hpp"
@@ -217,6 +218,11 @@ struct Reader {
       return Error(std::string(__FUNCTION__) + " error(" + std::to_string(res) +
                    "): " + avro_strerror());
     }
+    if constexpr (requires { _array_reader.reserve(size); }) {
+      if (const auto err = _array_reader.reserve(size)) {
+        return err;
+      }
+    }
     for (size_t ix = 0; ix < size; ++ix) {
       avro_value_t element;
       res = avro_value_get_by_index(_arr.val_, ix, &element, nullptr);
@@ -273,6 +279,32 @@ struct Reader {
     if (res != 0) {
       return Error(std::string(__FUNCTION__) + " error(" + std::to_string(res) +
                    "): " + avro_strerror());
+    }
+    if constexpr (requires {
+                    std::make_integer_sequence<int, ObjectReader::size()>{};
+                  }) {
+      if (size == ObjectReader::size()) {
+        std::optional<Error> err;
+        const auto read_field =
+            [&]<int i>(std::integral_constant<int, i> index) {
+              if (err) {
+                return;
+              }
+              avro_value_t element;
+              const int result =
+                  avro_value_get_by_index(_obj.val_, i, &element, nullptr);
+              if (result != 0) {
+                err = Error(std::string("read_object error(") +
+                            std::to_string(result) + "): " + avro_strerror());
+                return;
+              }
+              _object_reader.read(index, InputVarType{&element});
+            };
+        [&]<int... Is>(std::integer_sequence<int, Is...>) {
+          (read_field(std::integral_constant<int, Is>{}), ...);
+        }(std::make_integer_sequence<int, ObjectReader::size()>{});
+        return err;
+      }
     }
     for (size_t ix = 0; ix < size; ++ix) {
       avro_value_t element;

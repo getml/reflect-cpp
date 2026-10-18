@@ -6,6 +6,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 #include <yas/binary_iarchive.hpp>
 #include <yas/mem_streams.hpp>
 #include <yas/std_types.hpp>
@@ -120,6 +121,11 @@ struct Reader {
     try {
       std::size_t size;
       (*_arr.ar) & size;
+      if constexpr (requires { _array_reader.reserve(size); }) {
+        if (const auto err = _array_reader.reserve(size)) {
+          return err;
+        }
+      }
       for (std::size_t i = 0; i < size; ++i) {
         const auto err = _array_reader.read(InputVarType{_arr.ar});
         if (err) {
@@ -163,9 +169,11 @@ struct Reader {
   std::optional<Error> read_object(const ObjectReader& _object_reader,
                                    const InputObjectType& _obj) const noexcept {
     try {
-      for (std::size_t i = 0; i < ObjectReader::size(); ++i) {
-        _object_reader.read(i, InputVarType{_obj.ar});
-      }
+      [&]<int... Is>(std::integer_sequence<int, Is...>) {
+        (_object_reader.read(std::integral_constant<int, Is>{},
+                             InputVarType{_obj.ar}),
+         ...);
+      }(std::make_integer_sequence<int, ObjectReader::size()>{});
       return std::nullopt;
     } catch (std::exception& e) {
       return Error(std::string("yas object read error: ") + e.what());

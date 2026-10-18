@@ -25,4 +25,13 @@ TEST(json, test_timestamp) {
       bart,
       R"({"firstName":"Bart","lastName":"Simpson","birthday":"1987-04-19"})");
 }
+
+TEST(json, test_timestamp_trailing_characters) {
+  EXPECT_TRUE(!TS::from_string("1987-04-19T10:00:00"));
+  EXPECT_TRUE(!TS::from_string("1987-04-19x"));
+
+  const auto res = rfl::json::read<Person>(
+      R"({"firstName":"Bart","lastName":"Simpson","birthday":"1987-04-19x"})");
+  EXPECT_TRUE(!res);
+}
 }  // namespace test_timestamp

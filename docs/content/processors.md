@@ -40,12 +40,31 @@ reflect-cpp currently supports the following processors:
 - `rfl::DefaultIfMissing`
 - `rfl::DurationsAsCount`
 - `rfl::EnumNamesOnly`
+- `rfl::FailFast`
 - `rfl::NoExtraFields`
 - `rfl::NoFieldNames`
 - `rfl::NoOptionals`
 - `rfl::UnderlyingEnums`
 - `rfl::SnakeCaseToCamelCase`
 - `rfl::SnakeCaseToPascalCase`
+
+### `rfl::FailFast`
+
+By default, reflect-cpp collects errors from multiple object fields.
+`rfl::FailFast` reports the first field error and skips decoding the remaining
+fields of that object. It also applies to nested structs and named tuples,
+including structs stored in containers, across serialization formats.
+
+```cpp
+const auto result = rfl::yas::read<MyStruct, rfl::FailFast>(bytes);
+```
+
+This reduces error bookkeeping and can improve successful read performance.
+It does not change the serialized representation. Existing calls without the
+processor retain aggregated errors. Readers may still traverse input after a
+field failure, and document parsing or structural errors can take precedence.
+Variant matching and other parsing outside object fields keep their existing
+behavior.
 
 ### `rfl::AddStructName`
 

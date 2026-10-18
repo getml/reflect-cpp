@@ -1,6 +1,15 @@
 #ifndef RFL_BOOST_SERIALIZATION_PARSER_HPP_
 #define RFL_BOOST_SERIALIZATION_PARSER_HPP_
 
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <cstddef>
+#include <cstdint>
+#include <exception>
+#include <string>
+#include <type_traits>
+#include <vector>
+
 #include "../Generic.hpp"
 #include "../NamedTuple.hpp"
 #include "../Tuple.hpp"
@@ -12,6 +21,49 @@
 
 namespace rfl {
 namespace parsing {
+
+template <class T, class ProcessorsType>
+  requires(std::is_arithmetic_v<T> && !std::is_same_v<T, bool> &&
+           !std::is_same_v<T, char>)
+struct Parser<boost_serialization::Reader<::boost::archive::binary_iarchive>,
+              boost_serialization::Writer<::boost::archive::binary_oarchive>,
+              std::vector<T>, ProcessorsType>
+    : VectorParser<
+          boost_serialization::Reader<::boost::archive::binary_iarchive>,
+          boost_serialization::Writer<::boost::archive::binary_oarchive>,
+          std::vector<T>, ProcessorsType> {
+  using R = boost_serialization::Reader<::boost::archive::binary_iarchive>;
+  using W = boost_serialization::Writer<::boost::archive::binary_oarchive>;
+  using Type = std::vector<T>;
+
+  static Result<Type> read(const R&,
+                           const typename R::InputVarType& _var) noexcept {
+    try {
+      std::uint64_t size;
+      *_var.ar >> size;
+      Type values;
+      if (size > values.max_size()) {
+        return error("Array length exceeds vector max_size");
+      }
+      values.resize(static_cast<std::size_t>(size));
+      if (!values.empty()) {
+        _var.ar->load_binary(values.data(), values.size() * sizeof(T));
+      }
+      return values;
+    } catch (const std::exception& e) {
+      return error(std::string("Boost binary array read error: ") + e.what());
+    }
+  }
+
+  template <class ParentType>
+  static void write(const W& _w, const Type& _values,
+                    const ParentType& _parent) {
+    // Keep the adapter's array prefix and parent metadata unchanged.
+    auto arr = Parent<W>::add_array(_w, _values.size(), _parent);
+    _w.write_array_data(_values.data(), _values.size());
+    _w.end_array(&arr);
+  }
+};
 
 /// Boost.Serialization requires us to explicitly set all fields. Because
 /// of that, we require all of the fields and then set them to nullptr, if

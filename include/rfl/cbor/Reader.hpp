@@ -198,6 +198,11 @@ class Reader {
   template <class ArrayReader>
   std::optional<Error> read_array(const ArrayReader& _array_reader,
                                   const InputArrayType& _arr) const noexcept {
+    if constexpr (requires { _array_reader.reserve(_arr.val_->size()); }) {
+      if (const auto err = _array_reader.reserve(_arr.val_->size())) {
+        return err;
+      }
+    }
     for (auto& val : _arr.val_->array_range()) {
       const auto err = _array_reader.read(InputVarType{&val});
       if (err) {

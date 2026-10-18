@@ -6,11 +6,12 @@
 #include <string_view>
 #include <type_traits>
 #include <utility>
-#include <vector>
 
 #include "../Tuple.hpp"
+#include "../internal/always_inline.hpp"
 #include "../internal/is_array.hpp"
 #include "../internal/no_extra_fields_v.hpp"
+#include "FieldErrors.hpp"
 #include "Parser_base.hpp"
 #include "schemaful/IsSchemafulReader.hpp"
 
@@ -33,7 +34,7 @@ class ViewReader {
    * @param _errors The vector to collect errors in.
    */
   ViewReader(const R* _r, ViewType* _view, std::array<bool, size_>* _found,
-             std::vector<std::string>* _errors)
+             FieldErrors<ProcessorsType>* _errors)
       : r_(_r), view_(_view), found_(_found), errors_(_errors) {}
 
   ~ViewReader() = default;
@@ -45,6 +46,7 @@ class ViewReader {
    * @param _var The input variable to read from.
    */
   void read(const std::string_view& _name, const InputVarType& _var) const {
+    if (should_stop_on_field_error<ProcessorsType>(*errors_)) return;
     assign_to_matching_field(*r_, _name, _var, view_, errors_, found_,
                              std::make_integer_sequence<int, size_>());
   }
@@ -56,8 +58,17 @@ class ViewReader {
    * @param _var The input variable to read from.
    */
   void read(const int _index, const InputVarType& _var) const {
+    if (should_stop_on_field_error<ProcessorsType>(*errors_)) return;
     assign_to_matching_field(*r_, _index, _var, view_, errors_, found_,
                              std::make_integer_sequence<int, size_>());
+  }
+
+  // Positional readers already know the field at compile time.
+  template <int i>
+  void read(std::integral_constant<int, i>, const InputVarType& _var) const {
+    if (should_stop_on_field_error<ProcessorsType>(*errors_)) return;
+    assign_to_matching_field(*r_, i, _var, view_, errors_, found_,
+                             std::integer_sequence<int, i>());
   }
 
   /**
@@ -79,11 +90,9 @@ class ViewReader {
   }
 
   template <int i>
-  static void assign_if_field_matches(const R& _r,
-                                      const auto _current_name_or_index,
-                                      const auto& _var, auto* _view,
-                                      auto* _errors, auto* _found,
-                                      bool* _already_assigned) {
+  static RFL_ALWAYS_INLINE void assign_if_field_matches(
+      const R& _r, const auto _current_name_or_index, const auto& _var,
+      auto* _view, auto* _errors, auto* _found, bool* _already_assigned) {
     using FieldType = tuple_element_t<i, typename ViewType::Fields>;
     using OriginalType = typename FieldType::Type;
     using T =
@@ -98,6 +107,9 @@ class ViewReader {
         std::stringstream stream;
         stream << "Failed to parse field '" << name
                << "': " << res.error().what();
+        // Reserve lazily to avoid error-vector reallocations while keeping
+        // successful reads allocation-free.
+        _errors->reserve(size_);
         _errors->emplace_back(stream.str());
         return;
       }
@@ -195,8 +207,12 @@ class ViewReader {
   /// Indicates that a certain field has been found.
   std::array<bool, size_>* found_;
 
-  /// Collects any errors we may have come across.
-  std::vector<std::string>* errors_;
+  /// Indicates that a certain field has been successfully set - necessary,
+  /// because we have to trigger the destructors manually.
+  std::array<bool, size_>* set_;
+
+  /// Stores field errors according to the selected processor policy.
+  FieldErrors<ProcessorsType>* errors_;
 };
 
 }  // namespace rfl::parsing

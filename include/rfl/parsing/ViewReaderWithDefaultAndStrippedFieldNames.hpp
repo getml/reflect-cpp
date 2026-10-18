@@ -1,15 +1,16 @@
 #ifndef RFL_PARSING_VIEWREADERWITHDEFAULTANDSTRIPPEDFIELDNAMES_HPP_
 #define RFL_PARSING_VIEWREADERWITHDEFAULTANDSTRIPPEDFIELDNAMES_HPP_
 
+#include <array>
 #include <optional>
 #include <sstream>
 #include <type_traits>
 #include <utility>
-#include <vector>
 
 #include "../Result.hpp"
 #include "../Tuple.hpp"
 #include "../internal/is_array.hpp"
+#include "FieldErrors.hpp"
 #include "Parser_base.hpp"
 
 namespace rfl::parsing {
@@ -27,10 +28,10 @@ class ViewReaderWithDefaultAndStrippedFieldNames {
    *
    * @param _r The reader to use.
    * @param _view The view to read into.
-   * @param _errors The vector to collect errors in.
+   * @param _errors The field error collector.
    */
   ViewReaderWithDefaultAndStrippedFieldNames(const R* _r, ViewType* _view,
-                                             std::vector<std::string>* _errors)
+                                             FieldErrors<ProcessorsType>* _errors)
       : i_(0), r_(_r), view_(_view), errors_(_errors) {}
 
   ~ViewReaderWithDefaultAndStrippedFieldNames() = default;
@@ -54,14 +55,14 @@ class ViewReaderWithDefaultAndStrippedFieldNames {
    * @return An optional error.
    */
   std::optional<Error> read(const InputVarType& _var) const {
+    if (should_stop_on_field_error<ProcessorsType>(*errors_)) return std::nullopt;
     if (i_ == size_) {
       std::stringstream stream;
       stream << "Expected a maximum of " << std::to_string(size_)
              << " fields, but got at least one more.";
       return Error(stream.str());
     }
-    assign_to_field_i(*r_, _var, view_, errors_, i_,
-                      std::make_integer_sequence<int, size_>());
+    assign_to_field_i(_var, std::make_integer_sequence<int, size_>());
     ++i_;
     return std::nullopt;
   }
@@ -100,10 +101,17 @@ class ViewReaderWithDefaultAndStrippedFieldNames {
   }
 
   template <int... is>
-  static void assign_to_field_i(const R& _r, const auto& _var, auto* _view,
-                                auto* _errors, int _i,
-                                std::integer_sequence<int, is...>) {
-    (assign_if_field_is_field_i<is>(_r, _var, _view, _errors, _i), ...);
+  void assign_to_field_i(const InputVarType& _var,
+                         std::integer_sequence<int, is...>) const {
+    using ReadField = void (*)(
+        const ViewReaderWithDefaultAndStrippedFieldNames*, const InputVarType&);
+    static constexpr std::array<ReadField, sizeof...(is)> readers{
+        +[](const ViewReaderWithDefaultAndStrippedFieldNames* self,
+            const InputVarType& var) {
+          assign_if_field_is_field_i<is>(*self->r_, var, self->view_,
+                                         self->errors_, is);
+        }...};
+    readers[i_](this, _var);
   }
 
   // TODO: Unnecessary code duplication.
@@ -137,8 +145,8 @@ class ViewReaderWithDefaultAndStrippedFieldNames {
   /// The underlying view.
   ViewType* view_;
 
-  /// Collects any errors we may have come across.
-  std::vector<std::string>* errors_;
+  /// Stores field errors according to the selected processor policy.
+  FieldErrors<ProcessorsType>* errors_;
 };
 
 }  // namespace rfl::parsing

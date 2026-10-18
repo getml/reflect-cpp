@@ -7,6 +7,7 @@
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../internal/HasFromReflectionMethod.hpp"
+#include "../internal/always_inline.hpp"
 #include "../internal/default_if_missing_v.hpp"
 #include "../internal/has_const_v.hpp"
 #include "../internal/has_default_val_v.hpp"
@@ -87,7 +88,7 @@ struct Parser {
    * @param _var The input variable to read from.
    * @return A Result containing the parsed value or an error.
    */
-  static auto read(const R& _r, const InputVarType& _var) {
+  static RFL_ALWAYS_INLINE auto read(const R& _r, const InputVarType& _var) {
     if constexpr (internal::is_basic_type_v<T>) {
       return ParserBasicType<R, W, T, ProcessorsType>::read(_r, _var);
 

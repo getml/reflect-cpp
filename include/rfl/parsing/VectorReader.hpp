@@ -1,11 +1,14 @@
 #ifndef RFL_PARSING_VECTORREADER_HPP_
 #define RFL_PARSING_VECTORREADER_HPP_
 
+#include <cstddef>
+#include <exception>
 #include <optional>
 #include <string>
 #include <type_traits>
 
 #include "../Result.hpp"
+#include "../internal/always_inline.hpp"
 #include "Parser_base.hpp"
 #include "is_inplace_vector.hpp"
 #include "is_map_like.hpp"
@@ -30,13 +33,26 @@ class VectorReader {
 
   ~VectorReader() = default;
 
+  std::optional<Error> reserve(const std::size_t _size) const noexcept {
+    if constexpr (requires { vec_->reserve(_size); } &&
+                  !is_inplace_vector_v<VecType> && !is_set_like_v<VecType> &&
+                  !is_map_like_v<VecType>) {
+      try {
+        vec_->reserve(_size);
+      } catch (const std::exception& e) {
+        return Error(e.what());
+      }
+    }
+    return std::nullopt;
+  }
+
   /**
    * @brief Reads a single variable from the input.
    *
    * @param _var The input variable to read from.
    * @return An optional error.
    */
-  std::optional<Error> read(const InputVarType& _var) const {
+  RFL_ALWAYS_INLINE std::optional<Error> read(const InputVarType& _var) const {
     const auto parse = [this](const InputVarType& _var) {
       if constexpr (is_map_like_v<VecType>) {
         return get_pair(_var);

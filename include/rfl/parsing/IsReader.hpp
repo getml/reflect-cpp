@@ -69,6 +69,8 @@ concept IsReader =
 
       /// Iterates through an array and writes the contained vars into
       /// an array reader.
+      /// An array reader may optionally provide reserve(size_t), returning
+      /// std::optional<Error>, to receive the element count before reading.
       { r.read_array(array_reader, arr) } -> std::same_as<std::optional<Error>>;
 
       /// Iterates through an object and writes the key-value pairs into an
