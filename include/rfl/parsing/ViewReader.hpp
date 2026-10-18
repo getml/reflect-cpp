@@ -6,12 +6,12 @@
 #include <string_view>
 #include <type_traits>
 #include <utility>
-#include <vector>
 
 #include "../Tuple.hpp"
 #include "../internal/always_inline.hpp"
 #include "../internal/is_array.hpp"
 #include "../internal/no_extra_fields_v.hpp"
+#include "FieldErrors.hpp"
 #include "Parser_base.hpp"
 #include "schemaful/IsSchemafulReader.hpp"
 
@@ -33,10 +33,10 @@ class ViewReader {
    * @param _found A boolean array indicating which fields have been found.
    * @param _set A boolean array indicating which fields have been successfully
    * set.
-   * @param _errors The vector to collect errors in.
+   * @param _errors The field error collector.
    */
   ViewReader(const R* _r, ViewType* _view, std::array<bool, size_>* _found,
-             std::array<bool, size_>* _set, std::vector<std::string>* _errors)
+             std::array<bool, size_>* _set, FieldErrors<ProcessorsType>* _errors)
       : r_(_r), view_(_view), found_(_found), set_(_set), errors_(_errors) {}
 
   ~ViewReader() = default;
@@ -48,6 +48,7 @@ class ViewReader {
    * @param _var The input variable to read from.
    */
   void read(const std::string_view& _name, const InputVarType& _var) const {
+    if (should_stop_on_field_error<ProcessorsType>(*errors_)) return;
     assign_to_matching_field(*r_, _name, _var, view_, errors_, found_, set_,
                              std::make_integer_sequence<int, size_>());
   }
@@ -59,6 +60,7 @@ class ViewReader {
    * @param _var The input variable to read from.
    */
   void read(const int _index, const InputVarType& _var) const {
+    if (should_stop_on_field_error<ProcessorsType>(*errors_)) return;
     assign_to_matching_field(*r_, _index, _var, view_, errors_, found_, set_,
                              std::make_integer_sequence<int, size_>());
   }
@@ -66,6 +68,7 @@ class ViewReader {
   // Positional readers already know the field at compile time.
   template <int i>
   void read(std::integral_constant<int, i>, const InputVarType& _var) const {
+    if (should_stop_on_field_error<ProcessorsType>(*errors_)) return;
     assign_to_matching_field(*r_, i, _var, view_, errors_, found_, set_,
                              std::integer_sequence<int, i>());
   }
@@ -216,8 +219,8 @@ class ViewReader {
   /// because we have to trigger the destructors manually.
   std::array<bool, size_>* set_;
 
-  /// Collects any errors we may have come across.
-  std::vector<std::string>* errors_;
+  /// Stores field errors according to the selected processor policy.
+  FieldErrors<ProcessorsType>* errors_;
 };
 
 }  // namespace rfl::parsing
