@@ -27,16 +27,23 @@ jobs:
           version: 1.12.0
 
       - name: Set git credentials
+        if: github.repository == 'getml/reflect-cpp'
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
 
       - name: Fetch latest commit from gh-pages
+        if: github.repository == 'getml/reflect-cpp'
         run: |
           git fetch origin gh-pages --depth=1
 
       - name: Deploy MkDocs documentation
+        if: github.repository == 'getml/reflect-cpp'
         run: hatch run default:mkdocs gh-deploy
+
+      - name: Build MkDocs documentation on forks
+        if: github.repository != 'getml/reflect-cpp'
+        run: hatch run default:mkdocs build
 
       
         
