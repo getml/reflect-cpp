@@ -35,6 +35,8 @@ SOFTWARE.
 #include "rfl/avro/Type.cpp"
 #include "rfl/avro/Writer.cpp"
 #include "rfl/avro/to_schema.cpp"*/
+#include "rfl/capnproto/Buffers.cpp"
+#include "rfl/capnproto/NativeHandle.cpp"
 #include "rfl/capnproto/Reader.cpp"
 #include "rfl/capnproto/SchemaImpl.cpp"
 #include "rfl/capnproto/Type.cpp"

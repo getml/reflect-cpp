@@ -1,12 +1,11 @@
 #ifndef RFL_PARSING_TABULAR_CHUNKEDARRAYITERATOR_HPP_
 #define RFL_PARSING_TABULAR_CHUNKEDARRAYITERATOR_HPP_
 
-#include <arrow/api.h>
-
 #include "../../Ref.hpp"
 #include "../../Result.hpp"
 #include "../../internal/ptr_cast.hpp"
 #include "../is_required.hpp"
+#include "ArrowBridge.hpp"
 #include "array_t.hpp"
 
 namespace rfl::parsing::tabular {
@@ -44,7 +43,7 @@ class ChunkedArrayIterator {
   Result<T> operator*() const noexcept {
     const bool is_null =
         current_chunk_
-            .transform([&](const auto& _c) { return _c->IsNull(ix_); })
+            .transform([&](const auto& _c) { return array_is_null(_c, ix_); })
             .value_or(false);
 
     if (is_null) {
@@ -63,7 +62,7 @@ class ChunkedArrayIterator {
    * @brief Checks if the iterator has reached the end.
    * @return true if the end has been reached, false otherwise.
    */
-  bool end() const noexcept { return chunk_ix_ >= arr_->num_chunks(); }
+  bool end() const noexcept { return chunk_ix_ >= num_chunks(arr_); }
 
   /**
    * @brief Advances the iterator to the next position.
@@ -74,7 +73,7 @@ class ChunkedArrayIterator {
       return *this;
     }
     ++ix_;
-    if (ix_ >= (*current_chunk_)->length()) {
+    if (ix_ >= array_length(*current_chunk_)) {
       ++chunk_ix_;
       current_chunk_ = get_chunk(arr_, chunk_ix_);
       ix_ = 0;
@@ -96,8 +95,8 @@ class ChunkedArrayIterator {
    */
   static Result<Ref<ArrayType>> get_chunk(const Ref<arrow::ChunkedArray>& _arr,
                                           const int _chunk_ix) noexcept {
-    if (_chunk_ix < _arr->num_chunks()) {
-      return ArrowTypes<T, _s>::get_array(_arr->chunk(_chunk_ix));
+    if (_chunk_ix < num_chunks(_arr)) {
+      return ArrowTypes<T, _s>::get_array(array_chunk(_arr, _chunk_ix));
     } else {
       return error("chunk_ix out of bounds.");
     }

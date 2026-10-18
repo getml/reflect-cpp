@@ -1,8 +1,6 @@
 #ifndef RFL_PARSING_TABULAR_ARROWREADER_HPP_
 #define RFL_PARSING_TABULAR_ARROWREADER_HPP_
 
-#include <arrow/api.h>
-
 #include <array>
 #include <stdexcept>
 #include <string>
@@ -23,6 +21,7 @@
 #include "../../to_view.hpp"
 #include "../../view_t.hpp"
 #include "../call_destructors_where_necessary.hpp"
+#include "ArrowBridge.hpp"
 #include "make_chunked_array_iterators.hpp"
 
 namespace rfl::parsing::tabular {

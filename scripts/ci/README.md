@@ -109,29 +109,40 @@ its native portable binary format and existing archive-reference overloads.
 Regression tests cover those overloads against a separate native Cereal TU,
 byte compatibility, stream reads/writes, and malformed input.
 
-GCC 15.2 and GCC 16.2.1 passed the CBOR, UBJSON, and Cereal module suites in
-C++20 and C++23 with PCH enabled. Clang 19 also passed a combined C++20 build
-of CBOR, UBJSON, Cereal, CSV, and Parquet: 224 tests passed and one locale test
-was skipped. The same combined suite also passed with GCC 11 in C++20
-header mode using a shared reflectcpp library (224 tests and one locale skip).
-An installed GCC 11 shared-library consumer also passed CBOR, UBJSON, and Cereal
-round trips through `find_package(reflectcpp)`; the local PyArrow fixture needs
-its library directory in `LD_LIBRARY_PATH`.
+CSV and Parquet module interfaces now include Arrow forward declarations.
+Native builders, array conversions and file I/O live in ordinary implementation
+files. `to_buffer` retains its Arrow-buffer return type. String and null appends
+are also isolated from Arrow's complete builder hierarchy to avoid GCC 16's
+incorrect speculative devirtualization. No compiler warning or optimization is
+disabled. The private native conversion code preserves numerical casts, nulls,
+binary data and timestamp units.
 
-Arrow string and null appends now run in an ordinary implementation file.
-GCC 16.2.1 passed the Parquet/Arrow 21.0.0 module suite in C++20 and C++23
-(61 tests and one locale skip per run) with the usual optimization flags and `-Werror`. No compiler
-warning or optimization is disabled by this workaround.
+Cap'n Proto 1.2.0 uses opaque native-view handles and ordinary packed-message
+owners. Native calls leave the exported templates, and the schema cache has
+inline linkage. The byte/stream read/write entry points and schema API remain;
+low-level `val_` fields now hold handles, with `.as<T>()` for custom constructors
+and `.native()` for direct integration. Handle ownership adds allocations; these
+checks establish functional compatibility, not performance equivalence.
 
-Two dependency boundaries remain unresolved. GCC 15 rejects Arrow/Parquet's
-TU-local constants and static helper functions in the module interface.
-GCC 16 still rejects Cap'n Proto 1.2.0/KJ types: even exporting a struct with
-only a `capnp::DynamicValue::Reader` member reproduces the KJ `Bounded` error.
-Moving packed-message and schema-parser operations out of templates did not
-remove that type dependency. A complete rfl-side fix needs opaque reader and
-writer handles rather than merely wrapping calls; that public representation
-change is not part of this patch. Upgrading to GCC 16 alone therefore still
-does not make the entire optional-format matrix pass.
+Separate native Arrow/Parquet and Cap'n Proto translation units verify both
+read directions. Cap'n Proto checks exact bytes; Parquet checks numerical
+conversion, nanosecond timestamps, binary data, nulls, builder growth and multiple
+row groups. All local runs below keep PCH enabled and the usual optimization
+and warning flags. A locale test is skipped because its locale is unavailable.
+
+| Compiler | Standard and mode | Formats | Passed | Skipped |
+| --- | --- | --- | --- | --- |
+| GCC 15.2 | C++20 modules | CBOR, UBJSON, Cereal, CSV, Parquet, Cap'n Proto | 278 | 1 |
+| GCC 15.2 | C++23 modules | CSV, Parquet, Cap'n Proto | 130 | 1 |
+| GCC 16.2.1 | C++20 modules | Parquet | 63 | 1 |
+| GCC 16.2.1 | C++20 modules | Cap'n Proto | 98 | 1 |
+| Clang 19 | C++20 modules | All six formats above | 278 | 1 |
+| GCC 11 | C++20 headers, shared library | All six formats above | 278 | 1 |
+
+GCC 15.2 and GCC 16.2.1 also passed the CBOR, UBJSON and Cereal module suites
+in C++23. An installed GCC 11 shared-library consumer exercises all six formats
+through `find_package(reflectcpp)`; the local PyArrow fixture needs its library
+directory in `LD_LIBRARY_PATH`.
 
 Sources: [CMake 3.31](https://cmake.org/cmake/help/v3.31/manual/cmake-cxxmodules.7.html),
 [GCC 14](https://gcc.gnu.org/onlinedocs/gcc-14.3.0/gcc/C_002b_002b-Modules.html),

@@ -1,7 +1,14 @@
 #ifndef RFL_CAPNPROTO_SCHEMAIMPL_HPP_
 #define RFL_CAPNPROTO_SCHEMAIMPL_HPP_
 
+#ifndef RFL_CAPNPROTO_MODULE_INTERFACE
 #include <capnp/schema-parser.h>
+#else
+namespace capnp {
+class SchemaParser;
+class ParsedSchema;
+}  // namespace capnp
+#endif
 
 #include <string>
 
@@ -14,13 +21,13 @@ class RFL_API SchemaImpl {
  public:
   SchemaImpl(const std::string& _str);
 
-  ~SchemaImpl() = default;
+  ~SchemaImpl();
 
   /// The JSON string used to create this schema.
   const std::string& str() const { return str_; }
 
   /// The interface used to create new values.
-  const capnp::ParsedSchema& value() const { return *schema_; };
+  const capnp::ParsedSchema& value() const;
 
  private:
   static capnp::ParsedSchema make_schema(const std::string& _str,

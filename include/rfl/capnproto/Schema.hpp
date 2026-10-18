@@ -1,7 +1,14 @@
 #ifndef RFL_CAPNPROTO_SCHEMA_HPP_
 #define RFL_CAPNPROTO_SCHEMA_HPP_
 
+#ifndef RFL_CAPNPROTO_MODULE_INTERFACE
 #include <capnp/schema-parser.h>
+#else
+namespace capnp {
+class SchemaParser;
+class ParsedSchema;
+}  // namespace capnp
+#endif
 
 #include <type_traits>
 

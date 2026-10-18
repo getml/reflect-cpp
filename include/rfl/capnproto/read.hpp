@@ -1,19 +1,14 @@
 #ifndef RFL_CAPNPROTO_READ_HPP_
 #define RFL_CAPNPROTO_READ_HPP_
 
-#include <capnp/dynamic.h>
-#include <capnp/serialize-packed.h>
-#include <kj/io.h>
-
 #include <istream>
 #include <type_traits>
 
 #include "../Processors.hpp"
 #include "../SnakeCaseToCamelCase.hpp"
 #include "../concepts.hpp"
-//#include "../internal/ptr_cast.hpp"
-//#include "../internal/strings/strings.hpp"
 #include "../internal/wrap_in_rfl_array_t.hpp"
+#include "Buffers.hpp"
 #include "Parser.hpp"
 #include "Reader.hpp"
 #include "Schema.hpp"
@@ -37,15 +32,10 @@ template <class T, class... Ps>
 Result<internal::wrap_in_rfl_array_t<T>> read(
     const concepts::ByteLike auto* _bytes, const size_t _size,
     const Schema<T>& _schema) {
-  const auto array_ptr = kj::ArrayPtr<const kj::byte>(
-      internal::ptr_cast<const kj::byte*>(_bytes), _size);
-  auto input_stream = kj::ArrayInputStream(array_ptr);
-  auto message_reader = capnp::PackedMessageReader(input_stream);
   const auto root_name = get_root_name<std::remove_cv_t<T>, Ps...>();
-  const auto root_schema = _schema.value().getNested(root_name.c_str());
-  const auto input_var = InputVarType{
-      message_reader.getRoot<capnp::DynamicStruct>(root_schema.asStruct())};
-  return read<T, Ps...>(input_var);
+  const auto message =
+      detail::PackedReader(_bytes, _size, _schema.value(), root_name);
+  return read<T, Ps...>(message.root());
 }
 
 /// Parses an object from CAPNPROTO using reflection.

@@ -1,8 +1,6 @@
 #ifndef RFL_PARSING_TABULAR_ARROWWRITER_HPP_
 #define RFL_PARSING_TABULAR_ARROWWRITER_HPP_
 
-#include <arrow/api.h>
-
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
@@ -17,6 +15,7 @@
 #include "../../internal/no_optionals_v.hpp"
 #include "../../named_tuple_t.hpp"
 #include "../../to_view.hpp"
+#include "ArrowBridge.hpp"
 #include "add_to_builder.hpp"
 #include "make_arrow_builders.hpp"
 #include "make_arrow_data_types.hpp"
@@ -60,9 +59,8 @@ class ArrowWriter {
    * @return The Arrow table.
    */
   std::shared_ptr<arrow::Table> to_table(const VecType& _data) const {
-    return arrow::Table::Make(
-        make_arrow_schema<named_tuple_t<ValueType, Ps...>, _s>(),
-        to_chunked_arrays(_data));
+    return make_table(make_arrow_schema<named_tuple_t<ValueType, Ps...>, _s>(),
+                      to_chunked_arrays(_data));
   }
 
  private:
@@ -110,10 +108,7 @@ ArrowWriter<VecType, _s, Ps...>::to_chunked_arrays(const VecType& _data) const {
       std::vector<std::shared_ptr<arrow::Array>> chunks(size);
 
       const auto finish_builder = [](auto* _b, auto* _c) {
-        const auto status = _b->Finish(_c);
-        if (!status.ok()) {
-          throw std::runtime_error(status.message());
-        }
+        *_c = _b->finish();
       };
 
       [&]<size_t... _is>(auto* _b, auto* _c,
@@ -131,8 +126,8 @@ ArrowWriter<VecType, _s, Ps...>::to_chunked_arrays(const VecType& _data) const {
 
   return [&]<size_t... _is>(std::integer_sequence<size_t, _is...>) {
     return std::vector<std::shared_ptr<arrow::ChunkedArray>>(
-        {std::make_shared<arrow::ChunkedArray>(array_chunks.at(_is),
-                                               std::get<_is>(data_types))...});
+        {make_chunked_array(array_chunks.at(_is),
+                            std::get<_is>(data_types))...});
   }(std::make_integer_sequence<size_t, size>());
 }
 

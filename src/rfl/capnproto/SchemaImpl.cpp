@@ -4,6 +4,8 @@
 #include <capnp/schema.h>
 
 namespace rfl::capnproto {
+SchemaImpl::~SchemaImpl() = default;
+const capnp::ParsedSchema& SchemaImpl::value() const { return *schema_; }
 
 SchemaImpl::SchemaImpl(const std::string& _str)
     : str_(_str),

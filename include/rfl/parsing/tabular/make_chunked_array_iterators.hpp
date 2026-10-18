@@ -1,14 +1,13 @@
 #ifndef RFL_PARSING_TABULAR_MAKECHUNKEDARRAYITERATORS_HPP_
 #define RFL_PARSING_TABULAR_MAKECHUNKEDARRAYITERATORS_HPP_
 
-#include <arrow/api.h>
-
 #include <string>
 
 #include "../../NamedTuple.hpp"
 #include "../../Ref.hpp"
 #include "../../Result.hpp"
 #include "../../Tuple.hpp"
+#include "ArrowBridge.hpp"
 #include "ChunkedArrayIterator.hpp"
 
 namespace rfl::parsing::tabular {
@@ -22,18 +21,15 @@ struct MakeChunkedArrayIterators<NamedTuple<FieldTypes...>, _s> {
       Tuple<ChunkedArrayIterator<typename FieldTypes::Type, _s>...>;
 
   /**
-   * @brief Creates a tuple of chunked array iterators for the fields in the named tuple.
+   * @brief Creates a tuple of chunked array iterators for the fields in the
+   * named tuple.
    * @param _table The arrow table to read from.
    * @return A Result containing the tuple of iterators or an error.
    */
   Result<TupleType> operator()(const Ref<arrow::Table>& _table) const {
     const auto get_column =
         [&](const std::string& _colname) -> Result<Ref<arrow::ChunkedArray>> {
-      const auto col = _table->GetColumnByName(_colname);
-      if (!col) {
-        return error("Column named '" + _colname + "' not found.");
-      }
-      return Ref<arrow::ChunkedArray>::make(col);
+      return table_column(_table, _colname);
     };
 
     try {

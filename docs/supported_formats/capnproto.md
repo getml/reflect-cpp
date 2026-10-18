@@ -110,7 +110,7 @@ For large and complex systems of structs, it is often a good idea to split up
 your code into smaller compilation units. You can do so using custom constructors.
 
 For the Cap'n Proto format, these must be a static function on your struct or class called
-`from_capnproto` that take a `rfl::capnproto::Reader::InputVarType` as input and return
+`from_capnproto_obj` that take a `rfl::capnproto::Reader::InputVarType` as input and return
 the class or the class wrapped in `rfl::Result`.
 
 In your header file you can write something like this:
@@ -122,14 +122,14 @@ struct Person {
     rfl::Timestamp<"%Y-%m-%d"> birthday;
 
     using InputVarType = typename rfl::capnproto::Reader::InputVarType;
-    static rfl::Result<Person> from_capnproto(const InputVarType& _obj);
+    static rfl::Result<Person> from_capnproto_obj(const InputVarType& _obj);
 };
 ```
 
-And in your source file, you implement `from_capnproto` as follows:
+And in your source file, you implement `from_capnproto_obj` as follows:
 
 ```cpp
-rfl::Result<Person> Person::from_capnproto(const InputVarType& _obj) {
+rfl::Result<Person> Person::from_capnproto_obj(const InputVarType& _obj) {
     const auto from_nt = [](auto&& _nt) {
         return rfl::from_named_tuple<Person>(std::move(_nt));
     };
@@ -139,3 +139,11 @@ rfl::Result<Person> Person::from_capnproto(const InputVarType& _obj) {
 ```
 
 This will force the compiler to only compile the Cap'n Proto parsing when the source file is compiled.
+
+
+`InputVarType::val_` now holds an rfl-owned native-view handle. Custom constructors
+can still call `_obj.val_.as<capnp::DynamicStruct>()` when their source file
+includes `<capnp/dynamic.h>`. Use `_obj.val_.native()` when another Cap'n Proto
+API needs the native reader itself. In module consumers, include native headers
+before `import rfl.capnproto;`. The handle owns the native view, not the underlying
+message or input bytes; their lifetime requirements are unchanged.

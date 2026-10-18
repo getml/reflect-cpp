@@ -1,8 +1,8 @@
 #ifndef RFL_CSV_SETTINGS_HPP_
 #define RFL_CSV_SETTINGS_HPP_
 
-#include <arrow/csv/api.h>
-#include <arrow/io/api.h>
+#include <cstdint>
+#include <string>
 
 #include "../Settings.hpp"
 #include "../internal/deprecated_with.hpp"
@@ -36,7 +36,7 @@ struct Settings {
   const bool escaping = false;
 
   /// Escaping character (if escaping is true). Only relevant for reading.
-  const char escape_char = arrow::csv::kDefaultEscapeChar;
+  const char escape_char = '\\';
 
   /// Whether values are allowed to contain CR (0x0d) and LF (0x0a)
   /// characters. Only relevant for reading.

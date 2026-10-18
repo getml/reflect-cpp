@@ -1,11 +1,10 @@
 #ifndef RFL_PARSING_TABULAR_MAKEARROWBUILDERS_HPP_
 #define RFL_PARSING_TABULAR_MAKEARROWBUILDERS_HPP_
 
-#include <arrow/api.h>
-
 #include <type_traits>
 
 #include "../../named_tuple_t.hpp"
+#include "ArrowBridge.hpp"
 #include "ArrowTypes.hpp"
 
 namespace rfl::parsing::tabular {
@@ -48,10 +47,10 @@ struct ArrowBuildersType<NamedTuple<FieldTypes...>, _s> {
    */
   static auto schema() {
     const auto fields =
-        std::vector<std::shared_ptr<arrow::Field>>({arrow::field(
+        std::vector<std::shared_ptr<arrow::Field>>({make_arrow_field(
             typename FieldTypes::Name().str(),
             ArrowTypes<typename FieldTypes::Type, _s>::data_type())...});
-    return arrow::schema(fields);
+    return make_schema(fields);
   }
 };
 

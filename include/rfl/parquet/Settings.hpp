@@ -1,8 +1,9 @@
 #ifndef RFL_PARQUET_SETTINGS_HPP_
 #define RFL_PARQUET_SETTINGS_HPP_
 
-#include <arrow/io/api.h>
-#include <parquet/arrow/writer.h>
+#include <arrow/util/type_fwd.h>
+
+#include <cstddef>
 
 #include "../Settings.hpp"
 #include "../internal/deprecated_with.hpp"
