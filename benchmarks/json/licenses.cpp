@@ -1,4 +1,5 @@
 #include <benchmark/benchmark.h>
+#include <gperftools/profiler.h>
 #include <rapidjson/document.h>
 #include <simdjson.h>
 
@@ -492,6 +493,20 @@ static void BM_licenses_reflect_cpp(benchmark::State &state) {
   }
 }
 BENCHMARK(BM_licenses_reflect_cpp);
+
+static void BM_licenses_reflect_cpp_profiled(benchmark::State &state) {
+  const auto json_string = load_data();
+  ProfilerStart("licenses.txt");
+  for (auto _ : state) {
+    const auto res = rfl::json::read<Licenses>(json_string);
+    if (!res) {
+      std::cout << res.error().what() << std::endl;
+    }
+  }
+  ProfilerFlush();
+  ProfilerStop();
+}
+BENCHMARK(BM_licenses_reflect_cpp_profiled);
 
 // ----------------------------------------------------------------------------
 

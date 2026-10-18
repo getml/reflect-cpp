@@ -1,4 +1,5 @@
 #include <benchmark/benchmark.h>
+#include <gperftools/profiler.h>
 #include <rapidjson/document.h>
 #include <simdjson.h>
 
@@ -350,13 +351,6 @@ static rfl::Result<FeatureCollection> read_using_yyjson(
   auto person = yyjson_to_feature_collection(root);
   yyjson_doc_free(doc);
   return person;
-
-  try {
-    auto val = nlohmann::json::parse(_json_string);
-    return nlohmann_to_feature_collection(val);
-  } catch (std::exception &e) {
-    return rfl::error(e.what());
-  }
 }
 
 // ----------------------------------------------------------------------------
@@ -421,6 +415,32 @@ static void BM_canada_reflect_cpp(benchmark::State &state) {
 }
 BENCHMARK(BM_canada_reflect_cpp);
 
-// ----------------------------------------------------------------------------
+static void BM_canada_yyjson_profiled(benchmark::State &state) {
+  const auto json_string = load_data();
+  ProfilerStart("canada_yyjson.txt");
+  for (auto _ : state) {
+    const auto res = read_using_yyjson(json_string);
+    if (!res) {
+      std::cout << res.error().what() << std::endl;
+    }
+  }
+  ProfilerFlush();
+  ProfilerStop();
+}
+BENCHMARK(BM_canada_yyjson_profiled);
+
+static void BM_canada_reflect_cpp_profiled(benchmark::State &state) {
+  const auto json_string = load_data();
+  ProfilerStart("canada_reflectcpp.txt");
+  for (auto _ : state) {
+    const auto res = rfl::json::read<FeatureCollection>(json_string);
+    if (!res) {
+      std::cout << res.error().what() << std::endl;
+    }
+  }
+  ProfilerFlush();
+  ProfilerStop();
+}
+BENCHMARK(BM_canada_reflect_cpp_profiled);
 
 }  // namespace canada

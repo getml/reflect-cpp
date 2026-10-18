@@ -40,6 +40,10 @@
         {
           "name": "simdjson",
           "version>=": "3.9.3"
+        },
+        {
+          "name": "gperftools",
+          "version>=": "2.15.0"
         }
       ]
     },

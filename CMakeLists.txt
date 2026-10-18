@@ -33,6 +33,8 @@ option(REFLECTCPP_USE_BUNDLED_DEPENDENCIES "Use the bundled dependencies" ON)
 option(REFLECTCPP_USE_CPP26_REFLECTION "Use standard C++ reflection (requires C++-26)" OFF)
 option(REFLECTCPP_USE_STD_EXPECTED "Use std::expected instead of the built-in Result type (requires C++-23)" OFF)
 
+
+option(REFLECTCPP_USE_GPERFTOOLS "Use gperftools for benchmarks" OFF)
 if(REFLECTCPP_USE_CPP26_REFLECTION)
     if(NOT DEFINED CMAKE_CXX_STANDARD)
         set(CMAKE_CXX_STANDARD 26)
@@ -116,6 +118,10 @@ if (REFLECTCPP_USE_VCPKG)
 
     if (REFLECTCPP_BUILD_BENCHMARKS OR REFLECTCPP_CHECK_HEADERS)
         list(APPEND VCPKG_MANIFEST_FEATURES "benchmarks")
+    endif()
+
+    if (REFLECTCPP_USE_GPERFTOOLS AND REFLECTCPP_BUILD_BENCHMARKS)
+        list(APPEND VCPKG_MANIFEST_FEATURES "gperftools")
     endif()
 
     if (REFLECTCPP_BUILD_TESTS OR REFLECTCPP_CHECK_HEADERS)

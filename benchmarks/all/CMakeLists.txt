@@ -16,3 +16,9 @@ target_link_libraries(
     PRIVATE 
     reflectcpp
 )
+
+if (REFLECTCPP_USE_GPERFTOOLS)
+    target_include_directories(reflect-cpp-all-format-benchmarks PRIVATE "${REFLECTCPP_GPERFTOOLS_INCLUDE_DIR}")
+    target_link_libraries(reflect-cpp-all-format-benchmarks PRIVATE "${REFLECTCPP_GPERFTOOLS_TCMALLOC_LIBRARY}")
+    target_link_libraries(reflect-cpp-all-format-benchmarks PRIVATE "${REFLECTCPP_GPERFTOOLS_PROFILER_LIBRARY}")
+endif ()
