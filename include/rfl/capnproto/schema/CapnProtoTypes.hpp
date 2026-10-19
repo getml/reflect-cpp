@@ -10,6 +10,7 @@ namespace rfl::capnproto::schema {
 
 struct CapnProtoTypes {
   bool has_maps_ = false;
+  std::map<std::string, schema::Type> scalar_maps_;
   std::map<std::string, schema::Type> structs_;
   std::map<std::string, schema::Type> enums_;
   std::map<std::string, schema::Type> tuples_;
@@ -39,6 +40,15 @@ std::ostream& operator<<(std::ostream& _os, const CapnProtoTypes& _cnp_types) {
   _os << "@0xdbb9ad1f14bf0b36;" << std::endl << std::endl;
   if (_cnp_types.has_maps_) {
     _os << MAP_DEFINITION << std::endl << std::endl;
+  }
+  for (const auto& [name, value_type] : _cnp_types.scalar_maps_) {
+    _os << "struct " << name << " {\n"
+        << "  entries @0 :List(Entry);\n"
+        << "  struct Entry {\n"
+        << "    key @0 :Text;\n"
+        << "    value @1 :" << value_type << ";\n"
+        << "  }\n"
+        << "}\n\n";
   }
   _os << _cnp_types.structs_ << _cnp_types.enums_ << _cnp_types.tuples_
       << _cnp_types.unions_;

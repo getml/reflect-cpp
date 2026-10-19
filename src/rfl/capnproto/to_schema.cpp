@@ -139,6 +139,45 @@ schema::Type reference_to_capnproto_schema_type(
   }
 }
 
+schema::Type string_map_to_capnproto_schema_type(
+    const parsing::schema::Type::StringMap& _map,
+    const std::map<std::string, parsing::schema::Type>& _definitions,
+    schema::CapnProtoTypes* _cnp_types) {
+  auto value_type = type_to_capnproto_schema_type(
+      *_map.value_type_, _definitions, Parent::is_not_a_struct, _cnp_types);
+  const bool is_scalar = value_type.reflection().visit([&](const auto& _value) {
+    using T = std::remove_cvref_t<decltype(_value)>;
+    using Type = schema::Type;
+    if constexpr (std::is_same_v<T, Type::Reference>) {
+      const auto it = _definitions.find(_value.type_name);
+      return _cnp_types->enums_.contains(_value.type_name) ||
+             (it != _definitions.end() &&
+              it->second.variant_.visit([](const auto& _definition) {
+                return std::is_same_v<
+                    std::remove_cvref_t<decltype(_definition)>,
+                    parsing::schema::Type::Literal>;
+              }));
+    } else {
+      return !std::is_same_v<T, Type::Data> && !std::is_same_v<T, Type::Text> &&
+             !std::is_same_v<T, Type::List> && !std::is_same_v<T, Type::Map> &&
+             !std::is_same_v<T, Type::Struct> &&
+             !std::is_same_v<T, Type::Union>;
+    }
+  });
+  if (is_scalar) {
+    // Cap'n Proto generic parameters must be pointer types. Keep scalar values
+    // directly in a concrete Entry struct instead of instantiating Map(Value).
+    const auto name = std::string("ScalarMap") +
+                      std::to_string(_cnp_types->scalar_maps_.size() + 1);
+    _cnp_types->scalar_maps_.emplace(name, std::move(value_type));
+    return schema::Type{.value = schema::Type::Reference{name}};
+  }
+  _cnp_types->has_maps_ = true;
+  return schema::Type{
+      .value = schema::Type::Map{
+          .type = Ref<schema::Type>::make(std::move(value_type))}};
+}
+
 schema::Type type_to_capnproto_schema_type(
     const parsing::schema::Type& _type,
     const std::map<std::string, parsing::schema::Type>& _definitions,
@@ -223,12 +262,7 @@ schema::Type type_to_capnproto_schema_type(
                                                 _cnp_types);
 
     } else if constexpr (std::is_same<T, Type::StringMap>()) {
-      _cnp_types->has_maps_ = true;
-      return schema::Type{
-          .value = schema::Type::Map{
-              .type = Ref<schema::Type>::make(type_to_capnproto_schema_type(
-                  *_t.value_type_, _definitions, Parent::is_not_a_struct,
-                  _cnp_types))}};
+      return string_map_to_capnproto_schema_type(_t, _definitions, _cnp_types);
 
     } else if constexpr (std::is_same<T, Type::Tuple>()) {
       return type_to_capnproto_schema_type(
