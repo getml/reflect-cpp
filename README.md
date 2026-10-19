@@ -735,15 +735,6 @@ enums. Refer to the [documentation](https://munich-data-engineering.github.io/re
 
 reflect-cpp has been developed by [Munich Data Engineering](https://www.munich-data-engineering.com), a company specializing in software engineering and machine learning for enterprise applications.
 
-### Related projects
-
-reflect-cpp was originally developed for [getml-community](https://github.com/getml/getml-community), the fastest open-source tool for feature engineering on relational data and time series. If you are interested in Data Science and/or Machine Learning, please check it out.
-
-### Professional C++ Support
-
-For comprehensive C++ support beyond the scope of GitHub discussions, we’re here to help! Reach out at [support@getml.com](mailto:support%40getml.com?subject=C++%20support%20request) to discuss any technical challenges or project requirements. We’re excited to support your work as independent software consultants.
-
-
 ## License
 
 reflect-cpp is released under the MIT License. Refer to the LICENSE file for details.

@@ -181,7 +181,7 @@ if (REFLECTCPP_USE_VCPKG)
     set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
 endif ()
 
-project(reflectcpp VERSION 0.26.0 LANGUAGES CXX)
+project(reflectcpp VERSION 0.26.2 LANGUAGES CXX)
 
 find_package(ament_cmake QUIET)
 
@@ -323,7 +323,7 @@ if (REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
     if (NOT TARGET bson::static AND NOT TARGET bson::shared)
         find_package(bson CONFIG REQUIRED)
     endif ()
-    target_link_libraries(reflectcpp PRIVATE $<IF:$<TARGET_EXISTS:bson::static>,bson::static,bson::shared>)
+    target_link_libraries(reflectcpp PUBLIC $<IF:$<TARGET_EXISTS:bson::static>,bson::static,bson::shared>)
 endif ()
 
 if (REFLECTCPP_CAPNPROTO OR REFLECTCPP_CHECK_HEADERS)
