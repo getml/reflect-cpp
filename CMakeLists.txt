@@ -323,7 +323,7 @@ if (REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
     if (NOT TARGET bson::static AND NOT TARGET bson::shared)
         find_package(bson CONFIG REQUIRED)
     endif ()
-    target_link_libraries(reflectcpp PRIVATE $<IF:$<TARGET_EXISTS:bson::static>,bson::static,bson::shared>)
+    target_link_libraries(reflectcpp PUBLIC $<IF:$<TARGET_EXISTS:bson::static>,bson::static,bson::shared>)
 endif ()
 
 if (REFLECTCPP_CAPNPROTO OR REFLECTCPP_CHECK_HEADERS)
