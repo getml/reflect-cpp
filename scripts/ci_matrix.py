@@ -33,7 +33,7 @@ def matrix_jobs():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--list', action='store_true', help='print selected jobs without running them')
-    parser.add_argument('--compiler', action='append', help='filter, e.g. gcc-15 or llvm-19; repeatable')
+    parser.add_argument('--compiler', action='append', help='filter, e.g. gcc-16 or llvm-19; repeatable')
     parser.add_argument('--format', action='append', help='filter formats; repeatable')
     parser.add_argument('--cxx', type=int, choices=(20, 23), help='filter language standard')
     parser.add_argument('--modules', choices=('ON', 'OFF'), default='OFF')
@@ -75,11 +75,11 @@ def main():
             continue
         if args.cxx and job['cxx'] != args.cxx:
             continue
-        if args.modules == 'ON' and job['compiler-version'] < (15 if job['compiler'] == 'gcc' else 19):
+        if args.modules == 'ON' and job['compiler-version'] < (16 if job['compiler'] == 'gcc' else 19):
             continue
         selected.append((job, compiler))
     if not selected:
-        parser.error('no matching jobs (module jobs require GCC 15+ or Clang 19+)')
+        parser.error('no matching jobs (module jobs require GCC 16+ or Clang 19+)')
     if args.list:
         for job, compiler in selected:
             print(f"{job['format']}-cxx{job['cxx']}-{compiler}-modules-{args.modules}")

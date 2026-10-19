@@ -4,18 +4,14 @@ module;
 
 export module rfl.ctre;
 
-// GCC 15 loses CTRE's non-exported ADL overloads when instantiating an imported
-// template. rfl imports this module privately, so these names stay out of rfl's API.
-#if defined(__GNUC__) && __GNUC__ == 15 && !defined(__clang__)
-export {
-#endif
+// Use CTRE's native module exports. rfl imports this dependency privately.
+#define CTRE_IN_A_MODULE
+#define CTLL_IN_A_MODULE
+#define UNICODE_DB_IN_A_MODULE
 #if __has_include(<ctre.hpp>)
 #include <ctre.hpp>
 #else
 #include "rfl/thirdparty/ctre.hpp"
-#endif
-#if defined(__GNUC__) && __GNUC__ == 15 && !defined(__clang__)
-}
 #endif
 
 export namespace rfl::internal {

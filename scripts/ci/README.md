@@ -21,17 +21,17 @@ podman build -f scripts/ci/Containerfile -t reflectcpp-ci .
 git submodule update --init --recursive
 ```
 
-The image provides GCC 11–15, Clang 16–19, their dependency scanners, Ninja,
+The image provides GCC 11–16, Clang 16–19, their dependency scanners, Ninja,
 CMake 3.31.6, and several system dependencies. By default the runner uses the
 repository's pinned vcpkg submodule, like CI. The source tree and build cache
-remain on the host. GCC 15 comes from the Ubuntu toolchain test PPA.
+remain on the host. GCC 16 comes from the Ubuntu toolchain test PPA.
 First-time vcpkg dependency builds require network access.
 CI also pins CMake 3.31.6 for benchmarks: the pinned vcpkg benchmark port passes
 an unrecognized warning category that CMake 4.4 rejects during configuration.
 
 ```sh
 python3 scripts/ci_matrix.py --container reflectcpp-ci \
-  --compiler gcc-15 --compiler llvm-19 --format JSON --cxx 20 --modules ON
+  --compiler gcc-16 --compiler llvm-19 --format JSON --cxx 20 --modules ON
 
 # Original header compatibility matrix, followed by module-capable jobs:
 python3 scripts/ci_matrix.py --container reflectcpp-ci
@@ -76,16 +76,39 @@ guarantee that a compiler implements every module feature or can compile this
 library and its dependencies. In particular, `import std` has different
 requirements and is not used by these module interfaces.
 
-This project's module builds require GCC 15 or Clang 19 or newer. GCC 14
-remains supported through headers: its CTRE module importer fails with
-`Bad file data`. GCC 15 requires an ADL visibility workaround in the private
-`rfl.ctre` dependency; CTRE is not re-exported by `rfl`.
+This project's module builds require GCC 16 or Clang 19 or newer. GCC 15 and
+older remain supported through headers. GCC 14's CTRE module importer fails with
+`Bad file data`; GCC 15's native selective exports can reject valid regex matches
+at runtime. The private `rfl.ctre` dependency uses CTRE's native `CTRE_IN_A_MODULE`,
+`CTLL_IN_A_MODULE`, and `UNICODE_DB_IN_A_MODULE` export macros, with no GCC-specific
+export branch. CTRE is not re-exported by `rfl`.
+
+The failure is in recursive `ctre::evaluate` overload lookup, not regex parsing:
+an overload defined earlier calls `evaluate` with a dependent stack type, so
+later overloads must be found by ADL. GCC 15.2 and 15.3 omit non-exported
+module-linkage candidates from that instantiation context and select CTRE's
+ellipsis fallback, which returns `not_matched`. A reduced module without CTRE
+reproduces this at `-O0`; an earlier declaration or an explicit export restores
+the intended overload. GCC 16 and Clang 19 pass the same reduced case. This
+matches GCC [PR117658's ADL fix](https://gcc.gnu.org/pipermail/gcc-patches/2025-September/694072.html).
+Exporting only the evaluator overloads in a temporary CTRE copy also fixes the
+isolated matching tests. The supported GCC floor is now 16, so neither CTRE
+patches nor the former full-header export workaround are needed.
 
 Clang 18 and older remain in the header-build compatibility matrix. Clang 18 module importers fail
 with PCH enabled, so that combination is no longer supported. Library and test
 PCH remain enabled by default; `-DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON` can disable
 them explicitly. Module interface sources keep `SKIP_PRECOMPILE_HEADERS` because
 their global module fragments must precede declarations.
+
+With native CTRE exports and PCH enabled, the Ubuntu toolchain PPA's GCC 16.0.1
+snapshot passed the C++20 JSON, CLI, CBOR, UBJSON, Cereal, CSV, Parquet and
+Cap'n Proto module suites: 574 tests passed, one locale test was skipped, and
+none failed. Focused GCC 16.2.1 importer checks also passed valid and invalid
+custom regex and email cases in C++20 and C++23.
+
+The following debugging results include historical GCC 15 module configurations
+using the former export workaround; those configurations are no longer supported.
 
 With PCH enabled, GCC 15.2 (Ubuntu 24.04, C++20), GCC 15.3 (C++20 and C++23),
 and GCC 16.2.1 (C++20) passed

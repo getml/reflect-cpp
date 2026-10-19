@@ -38,12 +38,12 @@ jobs:
             compiler-version: 14
             modules: "ON"
           # Keep the matrix below GitHub's 256-job limit: GCC 14 covers headers,
-          # while GCC 15 covers the minimum supported module compiler.
+          # while GCC 16 covers the minimum supported module compiler.
           - compiler: gcc
-            compiler-version: 15
+            compiler-version: 16
             modules: "OFF"
           - compiler: gcc 
-            compiler-version: 16
+            compiler-version: 15
           - compiler: gcc 
             compiler-version: 17
           - compiler: gcc 
@@ -107,10 +107,10 @@ jobs:
           sudo apt update
           if [[ "${{ matrix.compiler-version }}" == 11 ]]; then
             sudo apt install -y ninja-build g++-11 
-          elif [[ "${{ matrix.compiler }}" == "gcc" && "${{ matrix.compiler-version }}" == 15 ]]; then
+          elif [[ "${{ matrix.compiler }}" == "gcc" && "${{ matrix.compiler-version }}" == 16 ]]; then
             sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
             sudo apt update
-            sudo apt install -y ninja-build g++-15
+            sudo apt install -y ninja-build g++-16
           elif [[ "${{ matrix.compiler }}" == "llvm" && "${{ matrix.compiler-version }}" == 19 ]]; then
             sudo apt install -y ninja-build clang-19 clang-tools-19
           else
