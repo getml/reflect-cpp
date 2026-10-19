@@ -18,6 +18,11 @@ consteval auto get_type_name() {
 #endif
 }
 
+template <class T>
+consteval auto get_type_name_str_view() {
+  return get_type_name<T>().string_view();
+}
+
 }  // namespace rfl::internal
 
 #endif

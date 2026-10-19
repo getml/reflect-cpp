@@ -320,7 +320,7 @@ if (REFLECTCPP_BSON OR REFLECTCPP_CHECK_HEADERS)
     list(APPEND REFLECT_CPP_SOURCES
         src/reflectcpp_bson.cpp
     )
-    if (NOT TARGET mongo::bson_static AND NOT TARGET mongo::bson_shared)
+    if (NOT TARGET bson::static AND NOT TARGET bson::shared)
         find_package(bson CONFIG REQUIRED)
     endif ()
     target_link_libraries(reflectcpp PRIVATE $<IF:$<TARGET_EXISTS:bson::static>,bson::static,bson::shared>)
