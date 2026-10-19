@@ -22,12 +22,16 @@ struct Counted {
   static inline int live = 0;
   static inline int constructed = 0;
   int value;
+  Counted() : Counted(0) {}
   explicit Counted(int v) : value(v) {
     ++live;
     ++constructed;
   }
+  Counted(const Counted&) = delete;
   Counted(Counted&& other) noexcept : value(other.value) { ++live; }
   ~Counted() { --live; }
+  Counted& operator=(const Counted&) = delete;
+  Counted& operator=(Counted&&) = default;
   int reflection() const { return value; }
 };
 
@@ -55,7 +59,7 @@ TEST(json, test_fail_fast_partial_object_cleanup) {
   const auto result = rfl::json::read<OwningRecord, rfl::FailFast>(
       R"({"first":1,"invalid":"bad","skipped":2})");
   ASSERT_FALSE(result);
-  EXPECT_EQ(Counted::constructed, 1);
+  EXPECT_EQ(Counted::constructed, 3);
   EXPECT_EQ(Counted::live, 0);
 }
 

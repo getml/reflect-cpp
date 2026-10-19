@@ -47,6 +47,9 @@ class NamedTuple {
   using Values = rfl::Tuple<typename std::remove_cvref_t<FieldTypes>::Type...>;
 
  public:
+  /// @brief Default constructor.
+  NamedTuple() = default;
+
   /// @brief Construct NamedTuple from values of each field type.
   /// @param _values Rvalue references to the values for each field.
   NamedTuple(typename std::remove_cvref<FieldTypes>::type::Type&&... _values)

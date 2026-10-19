@@ -9,6 +9,7 @@
 #include "../internal/HasFromReflectionMethod.hpp"
 #include "../internal/always_inline.hpp"
 #include "../internal/default_if_missing_v.hpp"
+#include "../internal/has_const_v.hpp"
 #include "../internal/has_default_val_v.hpp"
 #include "../internal/has_reflection_method_v.hpp"
 #include "../internal/has_reflection_type_v.hpp"
@@ -17,9 +18,8 @@
 #include "../internal/is_deprecated.hpp"
 #include "../internal/is_description.hpp"
 #include "../internal/is_literal.hpp"
-#include "../internal/is_validator.hpp"
 #include "../internal/processed_t.hpp"
-#include "../internal/ptr_cast.hpp"
+#include "../internal/remove_cvref_fields_t.hpp"
 #include "../internal/to_ptr_named_tuple.hpp"
 #include "../to_view.hpp"
 #include "AreReaderAndWriter.hpp"
@@ -58,12 +58,12 @@
 #include "ParserTimePoint.hpp"
 #include "ParserTuple.hpp"
 #include "ParserUniquePtr.hpp"
+#include "ParserValidator.hpp"
 #include "ParserVariant.hpp"
 #include "ParserVectorstring.hpp"
 #include "ParserWString.hpp"
 #include "Parser_base.hpp"
 #include "VectorParser.hpp"
-#include "call_destructors_where_necessary.hpp"
 #include "is_string_map.hpp"
 #include "make_type_name.hpp"
 #include "schema/Type.hpp"
@@ -137,6 +137,9 @@ struct Parser {
 
     } else if constexpr (is_rename_v<T>) {
       return ParserRename<R, W, T, ProcessorsType>::read(_r, _var);
+
+    } else if constexpr (is_validator_v<T>) {
+      return ParserValidator<R, W, T, ProcessorsType>::read(_r, _var);
 
     } else if constexpr (is_result_v<T>) {
       return ParserResult<R, W, T, ProcessorsType>::read(_r, _var);
@@ -331,6 +334,9 @@ struct Parser {
     } else if constexpr (is_rename_v<T>) {
       ParserRename<R, W, T, ProcessorsType>::write(_w, _var, _parent);
 
+    } else if constexpr (is_validator_v<T>) {
+      ParserValidator<R, W, T, ProcessorsType>::write(_w, _var, _parent);
+
     } else if constexpr (is_duration_v<T>) {
       using U = std::remove_cvref_t<T>;
       ParserDuration<R, W, typename U::rep, typename U::period,
@@ -499,6 +505,9 @@ struct Parser {
     } else if constexpr (is_rename_v<U>) {
       return ParserRename<R, W, U, ProcessorsType>::to_schema(_definitions);
 
+    } else if constexpr (is_validator_v<U>) {
+      return ParserValidator<R, W, U, ProcessorsType>::to_schema(_definitions);
+
     } else if constexpr (is_result_v<U>) {
       return ParserResult<R, W, U, ProcessorsType>::to_schema(_definitions);
 
@@ -595,9 +604,6 @@ struct Parser {
     } else if constexpr (internal::is_literal_v<U>) {
       return Type{Type::Literal{.values_ = U::strings()}};
 
-    } else if constexpr (internal::is_validator_v<U>) {
-      return make_validated<U>(_definitions);
-
     } else if constexpr (internal::has_reflection_type_v<U> ||
                          internal::has_read_reflector<U> ||
                          internal::has_write_reflector<U>) {
@@ -670,39 +676,29 @@ struct Parser {
     return Type{Type::Reference{name}};
   }
 
-  template <class U>
-  static schema::Type make_validated(
-      std::map<std::string, schema::Type>* _definitions) {
-    using Type = schema::Type;
-    using ReflectionType = std::remove_cvref_t<typename U::ReflectionType>;
-    using ValidationType = std::remove_cvref_t<typename U::ValidationType>;
-    return Type{Type::Validated{
-        .type_ = Ref<Type>::make(
-            Parser<R, W, ReflectionType, ProcessorsType>::to_schema(
-                _definitions)),
-        .validation_ = ValidationType::template to_schema<ReflectionType>()}};
-  }
-
   /// The way this works is that we allocate space on the stack in this size
   /// of the struct in which we then write the individual fields using views
   /// and placement new. This is how we deal with the fact that some fields
   /// might not be default-constructible.
-  static RFL_ALWAYS_INLINE Result<T> read_struct(const R& _r,
-                                                 const InputVarType& _var) {
-    alignas(T) unsigned char buf[sizeof(T)]{};
-    auto ptr = internal::ptr_cast<T*>(&buf);
-    auto raw_view = to_view(*ptr);
-    auto view = ProcessorsType::template process<T>(std::move(raw_view));
-    using ViewType = std::remove_cvref_t<decltype(view)>;
-    const auto [set, err] =
-        Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
-    if (err) [[unlikely]] {
-      call_destructors_where_necessary(set, &view);
-      return error(err->what());
+  static Result<T> read_struct(const R& _r, const InputVarType& _var) {
+    using ViewType = std::remove_cvref_t<view_t<T, ProcessorsType>>;
+
+    if constexpr (internal::has_const_v<ViewType>) {
+      using NamedTupleType = internal::remove_cvref_fields_t<named_tuple_t<T>>;
+      return Parser<R, W, NamedTupleType, ProcessorsType>::read(_r, _var)
+          .transform(
+              [](auto&& _nt) { return from_named_tuple<T>(std::move(_nt)); });
+
+    } else {
+      T t{};
+      auto view = ProcessorsType::template process<T>(to_view(t));
+      const auto err =
+          Parser<R, W, ViewType, ProcessorsType>::read_view(_r, _var, &view);
+      if (err) [[unlikely]] {
+        return error(err->what());
+      }
+      return t;
     }
-    auto res = Result<T>(std::move(*ptr));
-    call_destructors_where_necessary(set, &view);
-    return res;
   }
 
   /// This is actually more straight-forward than the standard case - we
@@ -711,22 +707,16 @@ struct Parser {
   /// so we only use it when the DefaultIfMissing preprocessor is added.
   static Result<T> read_struct_with_default(const R& _r,
                                             const InputVarType& _var) {
-    try {
-      auto t = T{};  // This might fail, for instance if the default value does
-                     // not satisfy the validator, but in that case we will just
-                     // return the error.
-      auto view = ProcessorsType::template process<T>(to_view(t));
-      using ViewType = decltype(view);
-      const auto err =
-          Parser<R, W, ViewType, ProcessorsType>::read_view_with_default(
-              _r, _var, &view);
-      if (err) [[unlikely]] {
-        return error(*err);
-      }
-      return t;
-    } catch (std::exception& e) {
-      return error(e.what());
+    T t{};
+    auto view = ProcessorsType::template process<T>(to_view(t));
+    using ViewType = decltype(view);
+    const auto err =
+        Parser<R, W, ViewType, ProcessorsType>::read_view_with_default(_r, _var,
+                                                                       &view);
+    if (err) [[unlikely]] {
+      return error(*err);
     }
+    return t;
   }
 };
 

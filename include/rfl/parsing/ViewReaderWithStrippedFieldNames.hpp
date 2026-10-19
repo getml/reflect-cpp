@@ -35,14 +35,8 @@ class ViewReaderWithStrippedFieldNames {
    */
   ViewReaderWithStrippedFieldNames(const R* _r, ViewType* _view,
                                    std::array<bool, size_>* _found,
-                                   std::array<bool, size_>* _set,
                                    FieldErrors<ProcessorsType>* _errors)
-      : i_(0),
-        r_(_r),
-        view_(_view),
-        found_(_found),
-        set_(_set),
-        errors_(_errors) {}
+      : i_(0), r_(_r), view_(_view), found_(_found), errors_(_errors) {}
 
   ~ViewReaderWithStrippedFieldNames() = default;
 
@@ -53,14 +47,16 @@ class ViewReaderWithStrippedFieldNames {
    * @return An optional error.
    */
   std::optional<Error> read(const InputVarType& _var) const {
-    if (should_stop_on_field_error<ProcessorsType>(*errors_)) return std::nullopt;
+    if (should_stop_on_field_error<ProcessorsType>(*errors_))
+      return std::nullopt;
     if (i_ == size_) {
       std::stringstream stream;
       stream << "Expected a maximum of " << std::to_string(size_)
              << " fields, but got at least one more.";
       return Error(stream.str());
     }
-    assign_to_field_i(_var, std::make_integer_sequence<int, size_>());
+    assign_to_field_i(*r_, _var, view_, errors_, found_, i_,
+                      std::make_integer_sequence<int, size_>());
     ++i_;
     return std::nullopt;
   }
@@ -76,7 +72,7 @@ class ViewReaderWithStrippedFieldNames {
   template <int i>
   static void assign_if_field_is_field_i(const R& _r, const auto& _var,
                                          auto* _view, auto* _errors,
-                                         auto* _found, auto* _set, int _i) {
+                                         auto* _found, int _i) {
     using FieldType = tuple_element_t<i, typename ViewType::Fields>;
     using OriginalType = typename FieldType::Type;
     using T =
@@ -97,23 +93,14 @@ class ViewReaderWithStrippedFieldNames {
       } else {
         rfl::get<i>(*_view) = std::move(*res);
       }
-      std::get<i>(*_set) = true;
     }
   }
 
   template <int... is>
-  void assign_to_field_i(const InputVarType& _var,
-                         std::integer_sequence<int, is...>) const {
-    using ReadField =
-        void (*)(const ViewReaderWithStrippedFieldNames*, const InputVarType&);
-    static constexpr std::array<ReadField, sizeof...(is)> readers{
-        +[](const ViewReaderWithStrippedFieldNames* self,
-            const InputVarType& var) {
-          assign_if_field_is_field_i<is>(*self->r_, var, self->view_,
-                                         self->errors_, self->found_,
-                                         self->set_, is);
-        }...};
-    readers[i_](this, _var);
+  static void assign_to_field_i(const R& _r, const auto& _var, auto* _view,
+                                auto* _errors, auto* _found, int _i,
+                                std::integer_sequence<int, is...>) {
+    (assign_if_field_is_field_i<is>(_r, _var, _view, _errors, _found, _i), ...);
   }
 
   // TODO: Unnecessary code duplication.
@@ -123,7 +110,7 @@ class ViewReaderWithStrippedFieldNames {
       return move_to(const_cast<std::remove_const_t<Target>*>(_t), _s);
     } else if constexpr (!rfl::internal::is_array_v<Source> &&
                          !std::is_array_v<Target>) {
-      ::new (_t) Target(std::move(*_s));
+      *_t = Target(std::move(*_s));
     } else if constexpr (rfl::internal::is_array_v<Source>) {
       static_assert(std::is_array_v<Target>,
                     "Expected target to be a c-array.");
@@ -149,10 +136,6 @@ class ViewReaderWithStrippedFieldNames {
 
   /// Indicates that a certain field has been found.
   std::array<bool, size_>* found_;
-
-  /// Indicates that a certain field has been successfully set - necessary,
-  /// because we have to trigger the destructors manually.
-  std::array<bool, size_>* set_;
 
   /// Stores field errors according to the selected processor policy.
   FieldErrors<ProcessorsType>* errors_;

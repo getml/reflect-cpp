@@ -8,6 +8,7 @@
 
 #include "../ExtraFields.hpp"
 #include "../Object.hpp"
+#include "../Validator.hpp"
 
 namespace rfl ::parsing {
 
@@ -21,6 +22,27 @@ struct is_string_map<std::map<std::string, T, Compare, Allocator>>
 template <class T, class Hash, class KeyEqual, class Allocator>
 struct is_string_map<
     std::unordered_map<std::string, T, Hash, KeyEqual, Allocator>>
+    : std::true_type {};
+
+template <class T, class... Vs, class Compare, class Allocator>
+struct is_string_map<
+    std::map<Validator<std::string, Vs...>, T, Compare, Allocator>>
+    : std::true_type {};
+
+template <class T, class... Vs, class Compare, class Allocator>
+struct is_string_map<
+    std::unordered_map<Validator<std::string, Vs...>, T, Compare, Allocator>>
+    : std::true_type {};
+
+template <class T, class U, class... Vs, class Compare, class Allocator>
+  requires(std::is_integral_v<T> || std::is_floating_point_v<T>)
+struct is_string_map<std::map<Validator<T, Vs...>, U, Compare, Allocator>>
+    : std::true_type {};
+
+template <class T, class U, class... Vs, class Compare, class Allocator>
+  requires(std::is_integral_v<T> || std::is_floating_point_v<T>)
+struct is_string_map<
+    std::unordered_map<Validator<T, Vs...>, U, Compare, Allocator>>
     : std::true_type {};
 
 template <class T>

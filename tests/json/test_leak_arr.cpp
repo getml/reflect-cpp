@@ -2,8 +2,6 @@
 #include <rfl/json.hpp>
 #include <string>
 
-#include "write_and_read.hpp"
-
 namespace test_leak_arr {
 
 class TestLeak {
@@ -12,6 +10,8 @@ class TestLeak {
   inline static int delete_count = 0;
 
   using ReflectionType = std::string;
+
+  TestLeak() : moved_(false), str_("") { ++create_count; }
 
   TestLeak(const std::string& _str) : moved_(false), str_(_str) {
     ++create_count;
@@ -40,6 +40,9 @@ class TestLeak {
   }
 
   TestLeak& operator=(TestLeak&& _other) noexcept {
+    if (this == &_other) {
+      return *this;
+    }
     str_ = std::move(_other.str_);
     _other.moved_ = true;
     ++delete_count;

@@ -23,7 +23,6 @@
 #include "AreReaderAndWriter.hpp"
 #include "Parent.hpp"
 #include "Parser_base.hpp"
-#include "call_destructors_where_necessary.hpp"
 #include "is_tagged_union_wrapper.hpp"
 #include "make_type_name.hpp"
 #include "schema/Type.hpp"

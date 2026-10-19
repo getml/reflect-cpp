@@ -17,13 +17,21 @@ class TrackedString {
   using ReflectionType = std::string;
   inline static int live = 0;
 
+  TrackedString() : TrackedString("") {}
   explicit TrackedString(std::string value) : value_(std::move(value)) {
     ++live;
   }
+  TrackedString& operator=(const TrackedString&) = delete;
   TrackedString(TrackedString&& other) : value_(std::move(other.value_)) {
     ++live;
   }
   ~TrackedString() { --live; }
+
+  TrackedString& operator=(TrackedString&& other) {
+    value_ = std::move(other.value_);
+    return *this;
+  }
+  TrackedString(const TrackedString&) = delete;
   const std::string& reflection() const { return value_; }
 
  private:

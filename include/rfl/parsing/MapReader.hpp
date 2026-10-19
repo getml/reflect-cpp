@@ -10,6 +10,8 @@
 #include "../Result.hpp"
 #include "../always_false.hpp"
 #include "../internal/has_reflection_type_v.hpp"
+#include "ParserResult.hpp"
+#include "ParserValidator.hpp"
 #include "Parser_base.hpp"
 
 namespace rfl::parsing {
@@ -58,10 +60,13 @@ class MapReader {
     try {
       if constexpr (std::is_integral_v<T> && std::is_signed_v<T>) {
         return static_cast<T>(std::stoll(_pair.first));
+
       } else if constexpr (std::is_integral_v<T> && std::is_unsigned_v<T>) {
         return static_cast<T>(std::stoull(_pair.first));
+
       } else if constexpr (std::is_floating_point_v<T>) {
         return static_cast<T>(std::stod(_pair.first));
+
       } else {
         static_assert(always_false_v<T>, "Unsupported type");
       }
@@ -70,33 +75,52 @@ class MapReader {
     }
   }
 
-  Result<std::pair<KeyType, ValueType>> make_key(auto&& _pair) const noexcept {
+  template <class KeyT>
+  Result<std::pair<KeyT, ValueType>> make_key(auto&& _pair) const noexcept {
     static_assert(std::is_rvalue_reference_v<decltype(_pair)>,
                   "Expected an rvalue");
     const auto to_pair =
-        [&](auto&& _key) -> Result<std::pair<KeyType, ValueType>> {
+        [&](auto&& _key) -> Result<std::pair<KeyT, ValueType>> {
       try {
         using K = decltype(_key);
-        return std::make_pair(KeyType(std::forward<K>(_key)),
+        return std::make_pair(KeyT(std::forward<K>(_key)),
                               std::move(_pair.second));
       } catch (std::exception& e) {
         return error(e.what());
       }
     };
 
-    if constexpr (std::is_integral_v<KeyType> ||
-                  std::is_floating_point_v<KeyType>) {
-      return key_to_numeric<KeyType>(_pair).and_then(to_pair);
+    if constexpr (std::is_integral_v<KeyT> || std::is_floating_point_v<KeyT>) {
+      return key_to_numeric<KeyT>(_pair).and_then(to_pair);
 
-    } else if constexpr (internal::has_reflection_type_v<KeyType>) {
-      using ReflT = typename KeyType::ReflectionType;
+    } else if constexpr (internal::has_reflection_type_v<KeyT>) {
+      using ReflT = typename KeyT::ReflectionType;
+      return make_key<ReflT>(std::move(_pair))
+          .and_then([](auto&& _p) -> Result<std::pair<KeyT, ValueType>> {
+            try {
+              return std::make_pair(KeyT(std::move(_p.first)),
+                                    std::move(_p.second));
+            } catch (const std::exception& e) {
+              return error(e.what());
+            }
+          });
 
-      if constexpr (std::is_integral_v<ReflT> ||
-                    std::is_floating_point_v<ReflT>) {
-        return key_to_numeric<ReflT>(_pair).and_then(to_pair);
-      } else {
-        return to_pair(std::move(_pair.first));
-      }
+    } else if constexpr (is_result_v<KeyT>) {
+      using ValT = typename KeyT::value_type;
+      return make_key<ValT>(std::move(_pair))
+          .transform([](auto&& _p) -> std::pair<KeyT, ValueType> {
+            return std::make_pair(KeyT(std::move(_p.first)),
+                                  std::move(_p.second));
+          });
+
+    } else if constexpr (is_validator_v<KeyT>) {
+      using ValT = typename KeyT::ValueType;
+      return make_key<ValT>(std::move(_pair)).and_then([](auto&& _p) {
+        return KeyT::from_value(std::move(_p.first))
+            .transform([&](auto&& _k) -> std::pair<KeyT, ValueType> {
+              return std::make_pair(std::move(_k), std::move(_p.second));
+            });
+      });
 
     } else {
       return std::move(_pair);
@@ -107,7 +131,7 @@ class MapReader {
       const std::string_view& _name, const InputVarType& _var) const noexcept {
     const auto to_pair = [&](ValueType&& _val) {
       auto pair = std::make_pair(std::string(_name), std::move(_val));
-      return make_key(std::move(pair));
+      return make_key<KeyType>(std::move(pair));
     };
     return Parser<R, W, std::remove_cvref_t<ValueType>, ProcessorsType>::read(
                *r_, _var)

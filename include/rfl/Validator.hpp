@@ -23,9 +23,9 @@ template <class T, class V, class... Vs>
   requires internal::HasValidation<AllOf<V, Vs...>, T>
 struct Validator {
  public:
-  using ReflectionType = T;
   using ValidationType =
       std::conditional_t<sizeof...(Vs) == 0, V, AllOf<V, Vs...>>;
+  using ValueType = T;
 
   /// Exception-free validation from a value.
   /// @param _value The value to validate
@@ -39,9 +39,9 @@ struct Validator {
     }
   }
 
-  /// Default constructor - validates a default-constructed T.
-  /// @throws std::exception if validation of the default value fails
-  Validator() : value_(ValidationType::validate(T()).value()) {}
+  /// Default constructor - if the default value is legal, assign default value,
+  /// else assign Error.
+  Validator() : value_(ValidationType::validate(T())) {}
 
   /// Move constructor.
   /// @param _other The validator to move from
@@ -54,7 +54,8 @@ struct Validator {
   /// Constructs from an rvalue of T (validates the value).
   /// @param _value The value to validate and wrap
   /// @throws std::exception if validation fails
-  Validator(T&& _value) : value_(ValidationType::validate(_value).value()) {}
+  Validator(T&& _value)
+      : value_(ValidationType::validate(std::forward<T>(_value)).value()) {}
 
   /// Constructs from a const reference to T (validates the value).
   /// @param _value The value to validate and wrap
@@ -135,51 +136,45 @@ struct Validator {
     return *this;
   }
 
-  /// Equality operator for comparing with other Validators.
-  /// @param _other The other validator to compare with
-  /// @return true if the underlying values are equal
-  bool operator==(const Validator& _other) const {
-    return value() == _other.value();
-  }
+  /// When used in a boolean context, returns true if the validator contains a
+  /// valid value, false otherwise.
+  operator bool() const { return value_.has_value(); }
 
   /// Returns the underlying object.
-  const T& get() const noexcept { return value_; }
+  const T& get() const noexcept { return *value_; }
 
   /// Returns the underlying object.
-  T& get() noexcept { return value_; }
+  T& get() noexcept { return *value_; }
 
   /// Returns the underlying object.
-  T& operator*() noexcept { return value_; }
+  T& operator*() noexcept { return *value_; }
 
   /// Returns the underlying object.
-  const T& operator*() const noexcept { return value_; }
+  const T& operator*() const noexcept { return *value_; }
 
   /// Returns the underlying object.
-  T& operator()() noexcept { return value_; }
+  T& operator()() noexcept { return value_.value(); }
 
   /// Returns the underlying object.
-  const T& operator()() const noexcept { return value_; }
+  const T& operator()() const noexcept { return value_.value(); }
 
   /// Pointer to the underlying value.
   /// @return Pointer to the stored value
-  T* operator->() noexcept { return &value_; }
+  T* operator->() noexcept { return &(*value_); }
 
   /// Pointer to the underlying value (const).
   /// @return Const pointer to the stored value
-  const T* operator->() const noexcept { return &value_; }
+  const T* operator->() const noexcept { return &(*value_); }
 
   /// Exposes the underlying value.
-  T& value() noexcept { return value_; }
+  T& value() noexcept { return value_.value(); }
 
   /// Exposes the underlying value.
-  const T& value() const noexcept { return value_; }
-
-  /// Necessary for the serialization to work.
-  const T& reflection() const { return value_; }
+  const T& value() const noexcept { return value_.value(); }
 
  private:
   /// The underlying value.
-  T value_;
+  Result<T> value_;
 };
 
 /// Three-way comparison operator for validators with the same validation rules.
@@ -190,9 +185,12 @@ struct Validator {
 /// @param _v2 The second validator to compare
 /// @return The ordering relationship between the underlying values
 template <class T, class V, class... Vs>
-inline auto operator<=>(const Validator<T, V, Vs...>& _v1,
-                        const Validator<T, V, Vs...>& _v2) {
-  return _v1.value() <=> _v2.value();
+inline std::partial_ordering operator<=>(const Validator<T, V, Vs...>& _v1,
+                                         const Validator<T, V, Vs...>& _v2) {
+  if (!_v1 || !_v2) {
+    return std::partial_ordering::unordered;
+  }
+  return *_v1 <=> *_v2;
 }
 
 /// Three-way comparison operator for comparing a validator with a raw value.
@@ -204,8 +202,12 @@ inline auto operator<=>(const Validator<T, V, Vs...>& _v1,
 /// @return The ordering relationship between the validator's value and the raw
 /// value
 template <class T, class V, class... Vs>
-inline auto operator<=>(const Validator<T, V, Vs...>& _v, const T& _t) {
-  return _v.value() <=> _t;
+inline std::partial_ordering operator<=>(const Validator<T, V, Vs...>& _v,
+                                         const T& _t) {
+  if (!_v) {
+    return std::partial_ordering::unordered;
+  }
+  return *_v <=> _t;
 }
 
 }  // namespace rfl
