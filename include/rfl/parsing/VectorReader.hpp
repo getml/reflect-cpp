@@ -22,6 +22,18 @@ class VectorReader {
   using InputVarType = typename R::InputVarType;
   using T = typename VecType::value_type;
 
+  static constexpr auto parsed_type() {
+    if constexpr (is_map_like_v<VecType>) {
+      using K = std::remove_cvref_t<typename T::first_type>;
+      using V = std::remove_cvref_t<typename T::second_type>;
+      return std::type_identity<std::pair<K, V>>{};
+    } else {
+      return std::type_identity<std::remove_cvref_t<T>>{};
+    }
+  }
+
+  using ParsedType = typename decltype(parsed_type())::type;
+
  public:
   /**
    * @brief Constructor.
@@ -53,43 +65,21 @@ class VectorReader {
    * @return An optional error.
    */
   RFL_ALWAYS_INLINE std::optional<Error> read(const InputVarType& _var) const {
-    const auto parse = [this](const InputVarType& _var) {
-      if constexpr (is_map_like_v<VecType>) {
-        return get_pair(_var);
-      } else {
-        return Parser<R, W, std::remove_cvref_t<T>, ProcessorsType>::read(*r_,
-                                                                          _var);
-      }
-    };
-
-    const auto insert = [this](auto&& _var) -> std::optional<Error> {
-      if constexpr (is_map_like_v<VecType> || is_set_like_v<VecType>) {
-        vec_->insert(std::move(_var));
-      } else if constexpr (is_inplace_vector_v<VecType>) {
-        if (!vec_->try_emplace_back(std::move(_var))) {
-          return Error("Too many elements, capacity is " +
-                       std::to_string(vec_->capacity()) + ".");
-        }
-      } else {
-        vec_->emplace_back(std::move(_var));
-      }
-      return std::nullopt;
-    };
-    auto res = parse(_var).transform(insert);
-    if (res) {
-      return *res;
-    } else {
-      return res.error();
+    auto res = Parser<R, W, ParsedType, ProcessorsType>::read(*r_, _var);
+    if (!res) {
+      return std::move(res).error();
     }
-    // return parse(_var).transform(insert).error();
-  }
-
- private:
-  auto get_pair(const auto& _var) const {
-    using K = std::remove_cvref_t<typename T::first_type>;
-    using V = std::remove_cvref_t<typename T::second_type>;
-    return Parser<R, W, std::remove_cvref_t<std::pair<K, V>>,
-                  ProcessorsType>::read(*r_, _var);
+    if constexpr (is_map_like_v<VecType> || is_set_like_v<VecType>) {
+      vec_->insert(std::move(*res));
+    } else if constexpr (is_inplace_vector_v<VecType>) {
+      if (!vec_->try_emplace_back(std::move(*res))) {
+        return Error("Too many elements, capacity is " +
+                     std::to_string(vec_->capacity()) + ".");
+      }
+    } else {
+      vec_->emplace_back(std::move(*res));
+    }
+    return std::nullopt;
   }
 
  private:

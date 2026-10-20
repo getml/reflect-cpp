@@ -8,6 +8,7 @@
 #include "../always_false.hpp"
 #include "../enums.hpp"
 #include "../from_named_tuple.hpp"
+#include "../internal/always_inline.hpp"
 #include "../internal/has_default_val_v.hpp"
 #include "../internal/has_reflection_method_v.hpp"
 #include "../internal/has_reflection_type_v.hpp"
@@ -47,7 +48,8 @@ struct ParserBasicType {
    * @param _var The input variable to read from.
    * @return A Result containing the parsed value or an error.
    */
-  static Result<T> read(const R& _r, const InputVarType& _var) noexcept {
+  static RFL_ALWAYS_INLINE Result<T> read(const R& _r,
+                                          const InputVarType& _var) noexcept {
     return _r.template to_basic_type<std::remove_cvref_t<T>>(_var);
   }
 

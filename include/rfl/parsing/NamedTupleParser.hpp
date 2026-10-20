@@ -389,12 +389,12 @@ struct NamedTupleParser {
     const auto reader = ViewReaderType(&_r, _view, &found, &set, &errors);
     if constexpr (_no_field_names) {
       const auto err = _r.read_array(reader, _obj_or_arr);
-      if (err) {
+      if (err) [[unlikely]] {
         return std::make_pair(set, err);
       }
     } else {
       const auto err = _r.read_object(reader, _obj_or_arr);
-      if (err) {
+      if (err) [[unlikely]] {
         return std::make_pair(set, err);
       }
     }
@@ -405,7 +405,7 @@ struct NamedTupleParser {
     if constexpr (internal::fail_fast_v<ProcessorsType>) {
       return std::make_pair(set, std::move(errors).error());
     } else {
-      if (errors.size() != 0) {
+      if (errors.size() != 0) [[unlikely]] {
         return std::make_pair(set, to_single_error_message(errors));
       }
       return std::make_pair(set, std::optional<Error>());
@@ -419,12 +419,12 @@ struct NamedTupleParser {
     const auto reader = ViewReaderWithDefaultType(&_r, _view, &errors);
     if constexpr (_no_field_names) {
       const auto err = _r.read_array(reader, _obj_or_arr);
-      if (err) {
+      if (err) [[unlikely]] {
         return err;
       }
     } else {
       const auto err = _r.read_object(reader, _obj_or_arr);
-      if (err) {
+      if (err) [[unlikely]] {
         return err;
       }
     }
@@ -438,7 +438,7 @@ struct NamedTupleParser {
     if constexpr (internal::fail_fast_v<ProcessorsType>) {
       return std::move(errors).error();
     } else {
-      if (errors.size() != 0) {
+      if (errors.size() != 0) [[unlikely]] {
         return to_single_error_message(errors);
       }
       return std::nullopt;
