@@ -14,7 +14,7 @@
 #if defined(__unix__) || defined(__APPLE__)
 #include <sys/stat.h>
 
-#include <thread>
+#include <future>
 #endif
 
 namespace test_file_io {
@@ -133,12 +133,11 @@ TEST_F(FileIO, NonSeekableFiles) {
   ASSERT_EQ(::mkfifo(path().c_str(), 0600), 0);
   const std::string data(192 * 1024 + 7, 'x');
   for (const bool binary : {true, false}) {
-    bool written = false;
-    std::jthread writer([&] {
+    auto writer = std::async(std::launch::async, [&] {
       std::ofstream out(path(), std::ios::binary);
       write(data, out);
       out.close();
-      written = bool(out);
+      return bool(out);
     });
     if (binary) {
       const auto result = rfl::io::load_bytes(path());
@@ -149,8 +148,7 @@ TEST_F(FileIO, NonSeekableFiles) {
       ASSERT_TRUE(result);
       EXPECT_EQ(*result, data);
     }
-    writer.join();
-    EXPECT_TRUE(written);
+    EXPECT_TRUE(writer.get());
   }
 }
 #endif
