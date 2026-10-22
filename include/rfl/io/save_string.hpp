@@ -20,7 +20,10 @@ Result<Nothing> save_string(const std::string& _fname, const T& _obj,
     }
     _write(_obj, outfile);
     outfile.close();
-  } catch (std::exception& e) {
+    if (!outfile) {
+      return error("Unable to write or close file '" + _fname + "'.");
+    }
+  } catch (const std::exception& e) {
     return error(e.what());
   }
   return Nothing{};

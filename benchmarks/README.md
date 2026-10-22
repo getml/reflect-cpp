@@ -38,6 +38,16 @@ to only run some of the benchmarks:
 ./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=canada_read
 ```
 
+The `BM_load_file` cases measure the shared binary and text file loaders with
+1 KiB, 1 MiB, and 32 MiB inputs. Fixture creation and content checks happen before
+timing; timed work includes opening, reading, closing, and destroying the result.
+The files are freshly written and read once for validation, so these measure
+loading with a warm filesystem cache, not cold-storage throughput.
+
+```
+./build/benchmarks/all/reflect-cpp-all-format-benchmarks --benchmark_filter=BM_load_file
+```
+
 ## Results summary
 
 ### How reflect-cpp compares to other JSON libraries

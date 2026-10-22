@@ -2,7 +2,6 @@
 #define RFL_IO_SAVE_BYTES_HPP_
 
 #include <fstream>
-#include <iostream>
 #include <string>
 
 #include "../Result.hpp"
@@ -20,7 +19,10 @@ Result<Nothing> save_bytes(const std::string& _fname, const T& _obj,
     }
     _write(_obj, output);
     output.close();
-  } catch (std::exception& e) {
+    if (!output) {
+      return error("Unable to write or close file '" + _fname + "'.");
+    }
+  } catch (const std::exception& e) {
     return error(e.what());
   }
   return Nothing{};
