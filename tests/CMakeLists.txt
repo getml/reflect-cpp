@@ -16,6 +16,16 @@ if (REFLECTCPP_JSON)
     add_subdirectory(json_c_arrays_and_inheritance)
     add_subdirectory(cli)
     add_subdirectory(env)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        # Issue #719 requires GCC, internal linkage, and -O2. The ordinary JSON
+        # suite uses -O3, which hides this regression.
+        add_executable(reflect-cpp-gcc12-optional-tests
+            regressions/gcc12_read_optional.cpp)
+        target_link_libraries(reflect-cpp-gcc12-optional-tests PRIVATE reflectcpp)
+        target_compile_options(reflect-cpp-gcc12-optional-tests PRIVATE
+            -O2 -fstrict-aliasing)
+        add_test(NAME gcc12_read_optional COMMAND reflect-cpp-gcc12-optional-tests)
+    endif()
 endif ()
 
 if (REFLECTCPP_AVRO)

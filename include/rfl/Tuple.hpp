@@ -36,7 +36,7 @@ class Tuple {
 
   static constexpr unsigned int num_bytes_ = std::get<size_>(positions_);
 
-  using DataType = std::array<unsigned char, num_bytes_>;
+  using DataType = unsigned char[num_bytes_];
 
  public:
   /// Constructs a Tuple by copying from the provided arguments.
@@ -68,7 +68,7 @@ class Tuple {
   template <int _index>
   constexpr auto& get() {
     using Type = internal::nth_element_t<_index, Types...>;
-    return *internal::ptr_cast<Type*>(data_.data() + pos<_index>());
+    return *internal::ptr_cast<Type*>(data_ + pos<_index>());
   }
 
   /// Gets an element by index (const).
@@ -77,7 +77,7 @@ class Tuple {
   template <int _index>
   constexpr const auto& get() const {
     using Type = internal::nth_element_t<_index, Types...>;
-    return *internal::ptr_cast<const Type*>(data_.data() + pos<_index>());
+    return *internal::ptr_cast<const Type*>(data_ + pos<_index>());
   }
 
   /// Copy assignment operator. Assigns from another Tuple by copy.
@@ -157,7 +157,7 @@ class Tuple {
     const auto copy_one = [this]<int _i>(const auto& _other,
                                          std::integral_constant<int, _i>) {
       using Type = internal::nth_element_t<_i, Types...>;
-      ::new (static_cast<void*>(data_.data() + pos<_i>()))
+      ::new (static_cast<void*>(data_ + pos<_i>()))
           Type(_other.template get<_i>());
     };
     (copy_one(_other, std::integral_constant<int, _is>{}), ...);
@@ -172,7 +172,7 @@ class Tuple {
     const auto copy_one = [this]<int _i>(const auto& _t,
                                          std::integral_constant<int, _i>) {
       using Type = internal::nth_element_t<_i, Types...>;
-      ::new (static_cast<void*>(data_.data() + pos<_i>())) Type(_t);
+      ::new (static_cast<void*>(data_ + pos<_i>())) Type(_t);
     };
     (copy_one(_types, std::integral_constant<int, _is>{}), ...);
   }
@@ -198,7 +198,7 @@ class Tuple {
     const auto move_one = [this]<int _i>(auto&& _other,
                                          std::integral_constant<int, _i>) {
       using Type = internal::nth_element_t<_i, Types...>;
-      ::new (static_cast<void*>(data_.data() + pos<_i>()))
+      ::new (static_cast<void*>(data_ + pos<_i>()))
           Type(std::move(_other.template get<_i>()));
     };
     (move_one(_other, std::integral_constant<int, _is>{}), ...);
@@ -212,7 +212,7 @@ class Tuple {
     const auto move_one = [this]<int _i>(auto&& _t,
                                          std::integral_constant<int, _i>) {
       using Type = internal::nth_element_t<_i, Types...>;
-      ::new (static_cast<void*>(data_.data() + pos<_i>())) Type(std::move(_t));
+      ::new (static_cast<void*>(data_ + pos<_i>())) Type(std::move(_t));
     };
     (move_one(std::move(_types), std::integral_constant<int, _is>{}), ...);
   }
